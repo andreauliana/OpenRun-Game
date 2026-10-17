@@ -28,10 +28,14 @@ private:
     f32 accel_ = 0.0f;
     static constexpr f32 MAX_SPEED = 220.0f;
     // Accelerazione: con la formula esponenziale speed += ACCEL*dt*(1-speed/MAX),
-    // ACCEL=30 raggiunge ~90% di MAX_SPEED in circa 15-18 s (sensazione OutRun:
-    // crescita che cala avvicinandosi alla velocita' massima).
-    static constexpr f32 ACCEL = 30.0f;
-    static constexpr f32 BRAKE = 10.0f;
+    // ACCEL=110: costante di tempo MAX/ACCEL = 2 s, ~63% di MAX_SPEED in 2 s e ~90% in
+    // ~4.6 s (prima ACCEL=30: ~17 s, troppo lento al pulsante; feedback v91 di Andrea).
+    static constexpr f32 ACCEL = 110.0f;
+    // Freno: ~1.8 s da MAX_SPEED a 0 (prima 10 = ~22 s, frenava meno di quanto accelera).
+    static constexpr f32 BRAKE = 120.0f;
+    // Gas rilasciato: moltiplicatore per frame. 0.995 = perde ~22% al secondo a 50 Hz
+    // (prima 0.98 = ~63% al secondo: l'auto si fermava appena si mollava il gas).
+    static constexpr f32 COAST = 0.995f;
     static constexpr f32 STEER_INC = 90.0f; // unita' x per secondo di sterzo
     static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
     static constexpr f32 X_LIMIT = 900.0f; // clamp laterale: |x| oltre questo valore l'auto esce dallo schermo

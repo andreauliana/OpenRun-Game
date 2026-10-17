@@ -36,7 +36,7 @@ void Player::update(f32 dt) {
         // Mai oltre MAX_SPEED (la funzione e' asintotica), il clamp duro resta come guardia.
         speed += ACCEL * dt * (1.0f - speed / MAX_SPEED);
     } else if (accel_ < 0.0f) speed -= BRAKE * dt;
-    else speed *= 0.98f; // attrito naturale (gas rilasciato)
+    else speed *= COAST; // attrito naturale (gas rilasciato)
     // Rallentamento fuori strada: l'erba/terra frena l'auto.
     if (offroad) speed *= OFFROAD_SLOW;
     if (speed < 0.0f) speed = 0.0f;

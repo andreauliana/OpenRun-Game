@@ -16,6 +16,7 @@
 //            4 cwd errata | 5 caso di prova non superato
 #include "game/game.h"
 #include "render/framebuffer.h"
+#include "render/sprite_raw.h"
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
@@ -55,6 +56,24 @@ void salvaPPM(const std::string& path, const u32* px, int w, int h) {
     std::fclose(f);
 }
 
+// Cartelloni sponsor veri (raw SGLR generati da strumenti_py/png_a_raw.py): stesso
+// ordine e stessi sponsor_id del runner (runner/sponsor_loader.cpp), cosi' il gate
+// disegna gli stessi sprite del gioco. Da chiamare PRIMA di init().
+void caricaSponsor(Game& game) {
+    static const char* kSponsorId[7] = {
+        "curve_pericolose", "brinis_udine", "piston_high", "canna_bis",
+        "slow_down", "erba_medica", "green_box"};
+    static const char* kStile[3] = { "neon", "atomico", "foglie" };
+    std::vector<std::pair<std::string, Sprite>> sprites;
+    for (const char* id : kSponsorId) {
+        for (const char* stile : kStile) {
+            Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/sponsor/") + id + "_" + stile + ".sglraw");
+            if (s.width > 0) sprites.push_back({id, std::move(s)});
+        }
+    }
+    game.setSponsorSprites(std::move(sprites));
+}
+
 u64 padPerFrame(i32 frameAssoluto) {
     const i32 frame = frameAssoluto % SMOKE_FRAMES; // il ciclo di 500 frame si ripete nel soak
     if (frame <= 100) return Pad::A;                 // dritto, accelera
@@ -65,7 +84,7 @@ u64 padPerFrame(i32 frameAssoluto) {
 Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     Esito e;
     Game game(12345u);
-    game.init(livello);
+    caricaSponsor(game); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate.log");
     bool sc0 = false, sc1 = false, sc2 = false;
@@ -123,7 +142,7 @@ struct EsitoAvvolgimento {
 EsitoAvvolgimento eseguiAvvolgimento(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     EsitoAvvolgimento e;
     Game game(12345u);
-    game.init(livello);
+    caricaSponsor(game); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate_avvolgimento.log");
     f32 zMax = 0.0f;
@@ -155,7 +174,7 @@ EsitoAvvolgimento eseguiAvvolgimento(const std::string& outDir, const std::strin
     }
     e.zMax = zMax; e.zFinale = game.state().playerZ;
     // Secondo run identico: determinismo.
-    Game game2(12345u); game2.init(livello);
+    Game game2(12345u); caricaSponsor(game2); game2.init(livello);
     for (i32 frame = 0; frame < totalFrames; ++frame) {
         Pad pad = padAvvolgimento(game2);
         game2.setInput(pad);
@@ -190,7 +209,7 @@ struct EsitoInattivita {
 EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     EsitoInattivita e;
     Game game(12345u);
-    game.init(livello);
+    caricaSponsor(game); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate_inattivita.log");
     for (i32 frame = 0; frame < totalFrames; ++frame) {
@@ -212,7 +231,7 @@ EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& l
                         << ' ' << (s.playerOffroad ? 1 : 0) << ' ' << blu << ' ' << verde << ' ' << h << '\n';
     }
     // Secondo run identico: determinismo.
-    Game game2(12345u); game2.init(livello);
+    Game game2(12345u); caricaSponsor(game2); game2.init(livello);
     for (i32 frame = 0; frame < totalFrames; ++frame) {
         Pad pad = padInattivita(frame);
         game2.setInput(pad);

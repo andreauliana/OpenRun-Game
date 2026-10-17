@@ -19,6 +19,9 @@ struct SpriteInstance {
 
 class Renderer {
 public:
+    // Unita' mondo coperte da un pixel sprite: un cartellone da 128 px e' largo
+    // ~640 unita' (la carreggiata e' larga 2400).
+    static constexpr f32 SPRITE_WORLD_PX = 5.0f;
     Renderer(Framebuffer& fb, const Palette& pal);
 
     // Disegna la strada (segmenti proiettati) con rumble laterali e fondo cielo.
