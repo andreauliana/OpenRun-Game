@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 cmake_minimum_required(VERSION 3.10)
 project(sglavinated LANGUAGES C CXX)
+include(CTest)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -114,4 +115,27 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/prova_gate.cpp")
     add_executable(prova_gate test/prova_gate.cpp)
     target_include_directories(prova_gate PRIVATE src)
     target_link_libraries(prova_gate PRIVATE sglavinated_core)
+
+    if(BUILD_TESTING)
+        set(GATE_TEST_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-results")
+        foreach(level lv_01_neon lv_02_atomico lv_03_foglie)
+            add_test(
+                NAME gate_smoke_${level}
+                COMMAND prova_gate "${GATE_TEST_OUTPUT}/${level}" ${level}
+            )
+            set_tests_properties(gate_smoke_${level} PROPERTIES
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+            )
+        endforeach()
+
+        foreach(mode accelerazione crash sterzo curve)
+            add_test(
+                NAME gate_${mode}
+                COMMAND prova_gate "${GATE_TEST_OUTPUT}/${mode}" lv_01_neon ${mode}
+            )
+            set_tests_properties(gate_${mode} PROPERTIES
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+            )
+        endforeach()
+    endif()
 endif()

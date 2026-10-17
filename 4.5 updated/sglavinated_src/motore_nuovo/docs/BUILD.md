@@ -96,7 +96,7 @@ corrente e dal percorso dell'eseguibile. Perciò CMake Tools può avviarlo dal p
 output `build/` senza perdere i percorsi relativi a livelli e sponsor.
 
 Per verificare separatamente l'inizializzazione SDL usata dal runner, senza aprire la
-finestra del gioco e senza CTest, dalla radice `sglavinated_src/` eseguire:
+finestra del gioco, dalla radice `sglavinated_src/` eseguire:
 
 ```bash
 sh tools/check_sdl_init.sh
@@ -104,6 +104,21 @@ sh tools/check_sdl_init.sh
 
 Lo script controlla l'exit code e la riga `SDL_Init: OK`. Per un eseguibile in un
 percorso diverso, passare il path come primo argomento.
+
+I controlli `prova_gate` sono registrati come test CTest: CMake-capable test
+discovery li puo' elencare senza un'integrazione diretta con il tool `runTests`
+di VS Code/Copilot. Per compilare ed eseguire la suite tramite l'entry point
+del repository, dalla radice `sglavinated_src/` eseguire:
+
+```bash
+sh tools/run_tests.sh
+```
+
+Lo script configura la build isolata `build_tests/`, compila `prova_gate` e
+lancia i test registrati con CTest. La directory e' distinta da `build_gate/`,
+usata da `gate_t1.sh`; lo script rifiuta percorsi `BUILD_DIR` che si sovrappongono
+a `build_gate/`. Per scegliere un'altra directory indipendente:
+`BUILD_DIR=/percorso/build sh tools/run_tests.sh`.
 
 ### Raspberry Pi 400 (Raspberry Pi OS / RetroPie, dalla cartella `sglavinated_src/`)
 
