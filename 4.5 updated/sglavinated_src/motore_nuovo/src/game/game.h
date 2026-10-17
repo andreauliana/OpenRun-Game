@@ -102,6 +102,11 @@ private:
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = false; // P1b: placeholder traffico disattivato di default (solo strada + auto)
+    bool playerFlipping_ = false;
+    u32 playerFlipFrame_ = 0;
+    u32 offroadFrames_ = 0;
+    static constexpr u32 FLIP_ANIMATION_FRAMES = 75; // 1.5 s a 50 Hz
+    static constexpr u32 OFFROAD_CRASH_FRAMES = 100; // sbanda a lungo prima del ribaltamento
 
     // Dati cartelloni da livello.json (letto una volta in init).
     bool leggiCartelloniDaFile(const std::string& livelloId);
@@ -117,6 +122,7 @@ private:
     const Ufo& ufoDati() const { return showManager_.ufo(); }
 
     void spawnTraffic();
+    bool collisioneOggettiVicini() const;
 };
 
 } // namespace sgl

@@ -26,11 +26,9 @@ public:
 private:
     f32 steer_ = 0.0f;
     f32 accel_ = 0.0f;
-    static constexpr f32 MAX_SPEED = 220.0f;
-    // Accelerazione: con la formula esponenziale speed += ACCEL*dt*(1-speed/MAX),
-    // ACCEL=110: costante di tempo MAX/ACCEL = 2 s, ~63% di MAX_SPEED in 2 s e ~90% in
-    // ~4.6 s (prima ACCEL=30: ~17 s, troppo lento al pulsante; feedback v91 di Andrea).
-    static constexpr f32 ACCEL = 110.0f;
+    static constexpr f32 MAX_SPEED = 250.0f; // velocita' di gioco, resa come alta velocita'
+    // Crescita progressiva: ~63% in 2 s, ~92% in 5 s e ~99% in 9 s a 50 Hz.
+    static constexpr f32 ACCEL = 125.0f;
     // Freno: ~1.8 s da MAX_SPEED a 0 (prima 10 = ~22 s, frenava meno di quanto accelera).
     static constexpr f32 BRAKE = 120.0f;
     // Gas rilasciato: moltiplicatore per frame. 0.995 = perde ~22% al secondo a 50 Hz

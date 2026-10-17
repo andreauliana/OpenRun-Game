@@ -37,6 +37,6 @@ if [ "$MODE" = "soak" ]; then
 fi
 
 echo "== riepilogo (da $LOG)"
-grep -E "^(modo|speed@60|offroad|ms/frame|replay 2x|GATE OK|FALLITO)" "$LOG"
+grep -E "^(modo|speed@60|accelerazione|offroad|ms/frame|replay 2x|GATE OK|FALLITO)" "$LOG"
 [ "$RC" -eq 0 ] && echo "GATE T1: TUTTO OK" || echo "GATE T1: FALLITO (exit $RC)"
 exit "$RC"

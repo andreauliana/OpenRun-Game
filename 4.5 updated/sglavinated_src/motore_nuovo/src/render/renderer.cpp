@@ -167,7 +167,7 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
-void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad) {
+void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle) {
     // Auto del giocatore: sagoma sintetica (nessun asset Sega).
     // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
     // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
@@ -182,10 +182,25 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad) {
     i32 cx = 160 + (i32)(offsetX * 0.013f);
     i32 cy = 200;
     i32 w = 34, h = 18;
-    fb_.fillRect(cx - w/2, cy - h, cx + w/2, cy, body);
-    fb_.fillRect(cx - w/4, cy - h + 2, cx + w/4, cy - 6, cabin);
-    // ombra
-    fb_.fillRect(cx - w/2 - 2, cy + 1, cx + w/2 + 2, cy + 3, pal_[14]);
+    auto drawRotatedRect = [this, rollAngle, cx, cy](i32 centerY, i32 rw, i32 rh, u32 color) {
+        const f32 c = std::cos(rollAngle);
+        const f32 s = std::sin(rollAngle);
+        const i32 extent = (rw + rh) / 2 + 1;
+        for (i32 y = centerY - extent; y <= centerY + extent; ++y) {
+            for (i32 x = cx - extent; x <= cx + extent; ++x) {
+                const f32 dx = (f32)(x - cx);
+                const f32 dy = (f32)(y - centerY);
+                const f32 localX = c * dx + s * dy;
+                const f32 localY = -s * dx + c * dy;
+                if (std::abs(localX) <= rw / 2.0f && std::abs(localY) <= rh / 2.0f)
+                    fb_.put(x, y, color);
+            }
+        }
+    };
+    drawRotatedRect(cy - h / 2, w, h, body);
+    drawRotatedRect(cy - h / 2 - 4, w / 2, h / 2, cabin);
+    if (std::abs(rollAngle) < 0.01f)
+        fb_.fillRect(cx - w/2 - 2, cy + 1, cx + w/2 + 2, cy + 3, pal_[14]);
     (void)speed; // riservato per animazione sospensione / salto
 }
 

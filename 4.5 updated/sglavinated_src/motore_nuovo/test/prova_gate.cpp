@@ -34,14 +34,22 @@ constexpr i32 INATTIVITA_FRAMES = 900; // inattivita: 60 frame di input, poi sil
 constexpr i32 AVVOLGIMENTO_FRAMES = 60000; // abbastanza per diversi giri del circuito
 constexpr i32 PIXEL_MIN = 100;      // soglia pixel per ritenere presente un rettangolo di show
 constexpr double MAX_MS_FRAME = 20.0;
+constexpr f32 MIN_SPEED_FIRST_FRAME = 4.0f;
+constexpr f32 MIN_SPEED_FRAME_60 = 140.0f;
 
 struct Esito {
     std::vector<u32> hash;      // frameHash ogni frame (confronto fra run)
+    f32 speedFirstFrame = 0.0f;
     f32 speed60 = 0.0f;
     i32 firstOffroad = -1;
     double msTot = 0.0, msMax = 0.0;
     f32 maxX = 0.0f, minX = 0.0f, zFinale = 0.0f;
 };
+
+bool accelerazionePronta(const Esito& esito) {
+    return esito.speedFirstFrame >= MIN_SPEED_FIRST_FRAME &&
+           esito.speed60 >= MIN_SPEED_FRAME_60;
+}
 
 // PPM P6; framebuffer = 0xAARRGGBB.
 void salvaPPM(const std::string& path, const u32* px, int w, int h) {
@@ -100,6 +108,7 @@ Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi,
 
         const GameState& s = game.state();
         if (s.playerOffroad && e.firstOffroad < 0) e.firstOffroad = frame;
+        if (frame == 0) e.speedFirstFrame = s.playerSpeed;
         if (frame == 60) e.speed60 = s.playerSpeed;
         if (s.playerX > e.maxX) e.maxX = s.playerX;
         if (s.playerX < e.minX) e.minX = s.playerX;
@@ -270,13 +279,17 @@ int main(int argc, char** argv) {
         for (i32 f = 0; f < TOTAL_FRAMES; f += 60) std::printf("frameHash %d %u\n", f, a.hash[f]);
         double msMed = a.msTot / TOTAL_FRAMES;
         std::printf("modo: soak, frame simulati: %d\n", TOTAL_FRAMES);
-        std::printf("speed@60=%.2f  X[min,max]=[%.1f,%.1f]  zFinale=%.1f\n", a.speed60, a.minX, a.maxX, a.zFinale);
+        std::printf("speed@60=%.2f speed@1=%.2f  X[min,max]=[%.1f,%.1f]  zFinale=%.1f\n",
+                    a.speed60, a.speedFirstFrame, a.minX, a.maxX, a.zFinale);
+        bool accelerazioneOK = accelerazionePronta(a);
+        std::printf("accelerazione: %s (speed@1 >= %.1f, speed@60 >= %.1f)\n",
+                    accelerazioneOK ? "reattiva" : "lenta", MIN_SPEED_FIRST_FRAME, MIN_SPEED_FRAME_60);
         std::printf("offroad: %s (frame %d)\n", a.firstOffroad >= 0 ? "raggiunto" : "non raggiunto", a.firstOffroad);
         std::printf("ms/frame medio=%.3f max=%.3f (limite %.0f)\n", msMed, a.msMax, MAX_MS_FRAME);
         std::printf("replay 2x: %s", deterministico ? "IDENTICO" : "DIVERSO");
         if (!deterministico) std::printf(" (prima divergenza al frame %d)\n", primaDivergenza);
 
-        if (a.speed60 <= 0.0f) { std::printf("FALLITO: nessuna partenza\n"); return 1; }
+        if (!accelerazioneOK) { std::printf("FALLITO: accelerazione poco reattiva\n"); return 6; }
         if (!deterministico)   { std::printf("FALLITO: non deterministico\n"); return 2; }
         if (msMed > MAX_MS_FRAME) { std::printf("FALLITO: troppo lento\n"); return 3; }
         std::printf("GATE OK\n");
@@ -330,7 +343,11 @@ int main(int argc, char** argv) {
     for (i32 f = 0; f < TOTAL_FRAMES; f += 60) std::printf("frameHash %d %u\n", f, a.hash[f]);
     double msMed = a.msTot / TOTAL_FRAMES;
     std::printf("modo: smoke, frame simulati: %d\n", TOTAL_FRAMES);
-    std::printf("speed@60=%.2f  X[min,max]=[%.1f,%.1f]  zFinale=%.1f\n", a.speed60, a.minX, a.maxX, a.zFinale);
+    std::printf("speed@60=%.2f speed@1=%.2f  X[min,max]=[%.1f,%.1f]  zFinale=%.1f\n",
+                a.speed60, a.speedFirstFrame, a.minX, a.maxX, a.zFinale);
+    bool accelerazioneOK = accelerazionePronta(a);
+    std::printf("accelerazione: %s (speed@1 >= %.1f, speed@60 >= %.1f)\n",
+                accelerazioneOK ? "reattiva" : "lenta", MIN_SPEED_FIRST_FRAME, MIN_SPEED_FRAME_60);
     std::printf("offroad: %s (frame %d)\n", a.firstOffroad >= 0 ? "raggiunto" : "non raggiunto", a.firstOffroad);
     std::printf("ms/frame medio=%.3f max=%.3f (limite %.0f)\n", msMed, a.msMax, MAX_MS_FRAME);
     std::printf("replay 2x: %s", deterministico ? "IDENTICO" : "DIVERSO");
@@ -338,6 +355,7 @@ int main(int argc, char** argv) {
 
     i32 rc = 0;
     if (a.speed60 <= 0.0f) { std::printf("FALLITO: nessuna partenza\n"); rc = 1; }
+    if (!accelerazioneOK) { std::printf("FALLITO: accelerazione poco reattiva\n"); rc = 6; }
     if (!deterministico)   { std::printf("FALLITO: non deterministico\n"); rc = 2; }
     if (msMed > MAX_MS_FRAME) { std::printf("FALLITO: troppo lento\n"); rc = 3; }
 

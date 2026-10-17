@@ -13,6 +13,8 @@ struct GameState {
     f32 playerX = 0;       // offset laterale dal centro strada
     f32 playerZ = 0;       // posizione assoluta sul tracciato
     bool playerOffroad = false;
+    bool playerFlipping = false;
+    u32 playerFlipFrame = 0;
 };
 
 } // namespace sgl

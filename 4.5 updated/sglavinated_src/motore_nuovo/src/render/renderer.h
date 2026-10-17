@@ -33,7 +33,7 @@ public:
     void drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen);
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
-    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad);
+    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f);
 
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
