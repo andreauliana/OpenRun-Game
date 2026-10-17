@@ -1,6 +1,6 @@
 # Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)
 
-Aggiornato: 2026-10-17 16:46 — 293 file in assets_originali/.
+Aggiornato: 2026-10-17 18:22 — 293 file in assets_originali/.
 
 ## Cosa serve per il primo livello giocabile
 
@@ -22,17 +22,17 @@ Aggiornato: 2026-10-17 16:46 — 293 file in assets_originali/.
 
 | Categoria | File | PNG | Byte | Con avvisi |
 |---|---|---|---|---|
-| (radice) | 5 | 0 | 31827 | 0 |
+| (radice) | 5 | 0 | 32063 | 0 |
 | font | 2 | 0 | 37765 | 0 |
 | palette | 9 | 3 | 7801 | 0 |
 | ricerca | 6 | 0 | 12403 | 0 |
 | scenari | 191 | 146 | 89843 | 133 |
 | skyline | 6 | 3 | 14551 | 0 |
-| sponsor | 31 | 21 | 63907 | 0 |
-| sprite | 11 | 6 | 8975 | 0 |
-| ui | 32 | 12 | 76101 | 8 |
+| sponsor | 31 | 21 | 63907 | 9 |
+| sprite | 11 | 6 | 8975 | 3 |
+| ui | 32 | 12 | 76101 | 2 |
 
-## Avvisi (141)
+## Avvisi (147)
 
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/palette.png
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png
@@ -114,7 +114,7 @@ Aggiornato: 2026-10-17 16:46 — 293 file in assets_originali/.
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/palette.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/palette.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_bancone_drive_in.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png
-- ... altri 61 nel JSON
+- ... altri 67 nel JSON
 
 ## Scelte di Andrea in uso
 

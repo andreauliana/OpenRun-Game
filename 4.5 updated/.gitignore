@@ -11,3 +11,5 @@ sglavinated_src/*_RECENTE.md
 sglavinated_src/RICHIESTA_APERTA.md
 sglavinated_src/ASSEMBLEE_APERTE.md
 sglavinated_src/bacheche/*/DIARIO_RECENTE.md
+sglavinated_src/build/
+sglavinated_src/build_gate/
