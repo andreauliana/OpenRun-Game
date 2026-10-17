@@ -188,19 +188,17 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     // sterzo visibile (inclinazione del corpo) senza spostare l'auto.
     u32 body = offroad ? pal_[12] : pal_[9];
     u32 cabin = pal_[10];
-    // Leggero spostamento visibile in proporzione allo sterzo (max ~12 px),
-    // molto meno del vecchio offsetX*0.15f (che arrivava a 135 px e faceva
-    // uscire l'auto dalla carreggiata quando la strada si spostava).
-    i32 cx = 160 + (i32)(offsetX * 0.013f);
+    // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
+    i32 cx = 160 + (i32)(offsetX * 0.035f);
     i32 cy = 200;
     i32 w = 34, h = 18;
-    auto drawRotatedRect = [this, rollAngle, cx, cy](i32 centerY, i32 rw, i32 rh, u32 color) {
+    auto drawRotatedRect = [this, rollAngle](i32 centerX, i32 centerY, i32 rw, i32 rh, u32 color) {
         const f32 c = std::cos(rollAngle);
         const f32 s = std::sin(rollAngle);
         const i32 extent = (rw + rh) / 2 + 1;
         for (i32 y = centerY - extent; y <= centerY + extent; ++y) {
-            for (i32 x = cx - extent; x <= cx + extent; ++x) {
-                const f32 dx = (f32)(x - cx);
+            for (i32 x = centerX - extent; x <= centerX + extent; ++x) {
+                const f32 dx = (f32)(x - centerX);
                 const f32 dy = (f32)(y - centerY);
                 const f32 localX = c * dx + s * dy;
                 const f32 localY = -s * dx + c * dy;
@@ -209,10 +207,15 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             }
         }
     };
-    drawRotatedRect(cy - h / 2, w, h, body);
-    drawRotatedRect(cy - h / 2 - 4, w / 2, h / 2, cabin);
-    if (std::abs(rollAngle) < 0.01f)
-        fb_.fillRect(cx - w/2 - 2, cy + 1, cx + w/2 + 2, cy + 3, pal_[14]);
+    drawRotatedRect(cx, cy - h / 2, w, h, body);
+    drawRotatedRect(cx, cy - h / 2 - 4, w / 2, h / 2, cabin);
+    drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
+    drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
+    drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
+    if (speed > 0.0f && !offroad) {
+        drawRotatedRect(cx - 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
+        drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
+    }
     (void)speed; // riservato per animazione sospensione / salto
 }
 

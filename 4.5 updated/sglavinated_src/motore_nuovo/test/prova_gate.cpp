@@ -34,8 +34,9 @@ constexpr i32 INATTIVITA_FRAMES = 900; // inattivita: 60 frame di input, poi sil
 constexpr i32 AVVOLGIMENTO_FRAMES = 60000; // abbastanza per diversi giri del circuito
 constexpr i32 PIXEL_MIN = 100;      // soglia pixel per ritenere presente un rettangolo di show
 constexpr double MAX_MS_FRAME = 20.0;
-constexpr f32 MIN_SPEED_FIRST_FRAME = 2.0f;
-constexpr f32 MIN_SPEED_FRAME_60 = 100.0f;
+constexpr f32 MIN_SPEED_FIRST_FRAME = 8.0f;
+constexpr f32 MIN_SPEED_FRAME_60 = 150.0f;
+constexpr f32 MIN_ROAD_TRAVEL_FRAME_60 = 6000.0f;
 
 struct Esito {
     std::vector<u32> hash;      // frameHash ogni frame (confronto fra run)
@@ -180,6 +181,7 @@ bool verificaAccelerazione(const std::string& livello) {
     f32 speedPrecedente = 0.0f;
     f32 speedPrimoFrame = 0.0f;
     f32 speedDopo60 = 0.0f;
+    f32 avanzamentoPrimi60 = 0.0f;
     f32 avanzamentoStrada = 0.0f;
     for (i32 frame = 0; frame < 500; ++frame) {
         game.setInput(gas);
@@ -187,18 +189,42 @@ bool verificaAccelerazione(const std::string& livello) {
         game.render();
         const f32 speed = game.state().playerSpeed;
         if (frame == 0) speedPrimoFrame = speed;
-        if (frame == 59) speedDopo60 = speed;
+        if (frame == 59) {
+            speedDopo60 = speed;
+            avanzamentoPrimi60 = game.state().playerZ;
+        }
         if (speed + 0.001f < speedPrecedente) return false;
         speedPrecedente = speed;
         avanzamentoStrada = game.state().playerZ;
     }
 
-    std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f; strada=%.1f\n",
-                speedPrimoFrame, speedDopo60, speedPrecedente, avanzamentoStrada);
+    std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f; "
+                "strada 1.2s=%.1f, finale=%.1f\n",
+                speedPrimoFrame, speedDopo60, speedPrecedente, avanzamentoPrimi60, avanzamentoStrada);
     return speedPrimoFrame >= MIN_SPEED_FIRST_FRAME &&
            speedDopo60 >= MIN_SPEED_FRAME_60 &&
+           avanzamentoPrimi60 >= MIN_ROAD_TRAVEL_FRAME_60 &&
            speedPrecedente >= 240.0f && speedPrecedente <= 250.0f &&
-           avanzamentoStrada >= 6000.0f;
+           avanzamentoStrada >= 40000.0f;
+}
+
+bool verificaSterzo() {
+    auto prova = [](u64 direzione) {
+        Player player;
+        Pad gasSterzo{};
+        gasSterzo.held = Pad::A | direzione;
+        for (i32 frame = 0; frame < 30; ++frame) {
+            player.input(gasSterzo, 1.0f / 50.0f);
+            player.update(1.0f / 50.0f);
+        }
+        return player.x;
+    };
+
+    const f32 sinistra = prova(Pad::Left);
+    const f32 destra = prova(Pad::Right);
+    std::printf("sterzo 30 frame: sinistra=%.1f destra=%.1f\n", sinistra, destra);
+    return sinistra <= -200.0f && destra >= 200.0f &&
+           std::abs(sinistra + destra) <= 0.1f;
 }
 
 // --- Caso nuovo: avvolgimento di playerZ oltre totalLen_ ---
@@ -348,6 +374,12 @@ int main(int argc, char** argv) {
         std::printf("%s\n", ok ? "GATE ACCELERAZIONE OK"
                                : "FALLITO: accelerazione non progressiva o troppo lenta");
         return ok ? 0 : 6;
+    }
+
+    if (modo == "sterzo") {
+        const bool ok = verificaSterzo();
+        std::printf("%s\n", ok ? "GATE STERZO OK" : "FALLITO: sterzo poco reattivo o asimmetrico");
+        return ok ? 0 : 7;
     }
 
     if (modo == "soak") {

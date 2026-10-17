@@ -27,14 +27,17 @@ private:
     f32 steer_ = 0.0f;
     f32 accel_ = 0.0f;
     static constexpr f32 MAX_SPEED = 250.0f; // velocita' di gioco, resa come alta velocita'
-    // Crescita progressiva: ~63% in 2 s, ~92% in 5 s e ~99% in 9 s a 50 Hz.
-    static constexpr f32 ACCEL = 125.0f;
+    // Spinta iniziale piu' forte, che cala con la velocita': resta progressiva
+    // e si avvicina a MAX_SPEED in circa 10 s a 50 Hz.
+    static constexpr f32 ACCEL_BASE = 45.0f;
+    static constexpr f32 ACCEL_BOOST = 450.0f;
+    static constexpr f32 ACCEL_BOOST_SPEED = 100.0f;
     // Freno: ~1.8 s da MAX_SPEED a 0 (prima 10 = ~22 s, frenava meno di quanto accelera).
     static constexpr f32 BRAKE = 120.0f;
     // Gas rilasciato: moltiplicatore per frame. 0.995 = perde ~22% al secondo a 50 Hz
     // (prima 0.98 = ~63% al secondo: l'auto si fermava appena si mollava il gas).
     static constexpr f32 COAST = 0.995f;
-    static constexpr f32 STEER_INC = 90.0f; // unita' x per secondo di sterzo
+    static constexpr f32 STEER_INC = 280.0f; // sterzo arcade diretto e reattivo
     static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
     static constexpr f32 X_LIMIT = 900.0f; // clamp laterale: |x| oltre questo valore l'auto esce dallo schermo
     // Rallentamento fuori strada: moltiplicatore per frame quando offroad.

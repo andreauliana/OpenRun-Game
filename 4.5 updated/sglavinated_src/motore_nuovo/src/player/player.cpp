@@ -31,10 +31,11 @@ void Player::update(f32 dt) {
     if (x < -X_LIMIT) x = -X_LIMIT;
     // Accelerazione / freno.
     if (accel_ > 0.0f) {
-        // Accelerazione stile OutRun: crescita che cala avvicinandosi a MAX_SPEED.
-        // Formula esponenziale: dv/dt = ACCEL*(1 - v/MAX) -> v(t) = MAX*(1-e^(-ACCEL*t/MAX)).
-        // Mai oltre MAX_SPEED (la funzione e' asintotica), il clamp duro resta come guardia.
-        speed += ACCEL * dt * (1.0f - speed / MAX_SPEED);
+        // La spinta extra e' piu' forte a bassa velocita' e cala gradualmente;
+        // il fattore finale mantiene una crescita progressiva verso MAX_SPEED.
+        const f32 acceleration =
+            ACCEL_BASE + ACCEL_BOOST * std::exp(-speed / ACCEL_BOOST_SPEED);
+        speed += acceleration * dt * (1.0f - speed / MAX_SPEED);
     } else if (accel_ < 0.0f) speed -= BRAKE * dt;
     else speed *= COAST; // attrito naturale (gas rilasciato)
     // Rallentamento fuori strada: l'erba/terra frena l'auto.

@@ -1,70 +1,73 @@
 -- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
--- Configuring done (0.1s)
+-- Configuring done (0.2s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
-[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
-[ 12%] Linking CXX static library libsglavinated_core.a
+[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/player/player.cpp.o
+[ 12%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
+[ 18%] Linking CXX static library libsglavinated_core.a
 [ 87%] Built target sglavinated_core
 [ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
 [100%] Linking CXX executable prova_gate
 [100%] Built target prova_gate
-frameHash 0 4292734575
-frameHash 60 2487625702
-frameHash 120 2449753038
-frameHash 180 2397884867
-frameHash 240 3643197452
-frameHash 300 1459085514
-frameHash 360 1128626984
-frameHash 420 446176332
-frameHash 480 2180693879
+frameHash 0 1983284048
+frameHash 60 3792743663
+frameHash 120 967843114
+frameHash 180 927807351
+frameHash 240 1134859917
+frameHash 300 1173819681
+frameHash 360 2599194390
+frameHash 420 2304259751
+frameHash 480 421363604
 modo: smoke, frame simulati: 500
-speed@60=114.58 speed@1=2.50  X[min,max]=[-218.1,841.7]  zFinale=5574.2
-accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
-offroad: raggiunto (frame 434)
-ms/frame medio=0.332 max=0.744 (limite 20)
+speed@60=161.79 speed@1=9.90  X[min,max]=[-705.7,900.0]  zFinale=35927.6
+accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
+offroad: raggiunto (frame 170)
+ms/frame medio=0.341 max=1.418 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=15 stimaTotalLen=56385 zMax=52515.0 zFinale=52515.0 replay 2x: IDENTICO
+wrapCount=127 stimaTotalLen=56290 zMax=28016.8 zFinale=28016.8 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
-frameHash 0 2772232615
-frameHash 60 4118154834
-frameHash 120 2238216336
-frameHash 180 509879264
-frameHash 240 984290347
-frameHash 300 2190656072
-frameHash 360 274857898
-frameHash 420 3564516781
-frameHash 480 3356105971
+frameHash 0 3370551821
+frameHash 60 1221867214
+frameHash 120 3373801667
+frameHash 180 2095280731
+frameHash 240 65666208
+frameHash 300 3484929233
+frameHash 360 3728572702
+frameHash 420 250995502
+frameHash 480 930488123
 modo: smoke, frame simulati: 500
-speed@60=114.58 speed@1=2.50  X[min,max]=[-219.3,880.9]  zFinale=5716.1
-accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
-offroad: raggiunto (frame 434)
-ms/frame medio=0.288 max=0.684 (limite 20)
+speed@60=161.79 speed@1=9.90  X[min,max]=[-714.1,849.1]  zFinale=35724.5
+accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
+offroad: raggiunto (frame 169)
+ms/frame medio=0.320 max=1.056 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=15 stimaTotalLen=57585 zMax=34515.0 zFinale=34515.0 replay 2x: IDENTICO
+wrapCount=124 stimaTotalLen=57597 zMax=48417.1 zFinale=48417.1 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
-frameHash 0 3369705889
-frameHash 60 3866590384
-frameHash 120 1683014975
-frameHash 180 2133852987
-frameHash 240 3571782850
-frameHash 300 2905427754
-frameHash 360 1273076840
-frameHash 420 2612419745
-frameHash 480 237221823
+frameHash 0 2627515527
+frameHash 60 1640921929
+frameHash 120 330903967
+frameHash 180 69921552
+frameHash 240 1775483979
+frameHash 300 3270967919
+frameHash 360 4213055839
+frameHash 420 3741715210
+frameHash 480 923835103
 modo: smoke, frame simulati: 500
-speed@60=114.58 speed@1=2.50  X[min,max]=[-218.5,900.0]  zFinale=5802.3
-accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
-offroad: raggiunto (frame 434)
-ms/frame medio=0.331 max=0.756 (limite 20)
+speed@60=161.79 speed@1=9.90  X[min,max]=[-694.6,886.2]  zFinale=35941.1
+accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
+offroad: raggiunto (frame 300)
+ms/frame medio=0.400 max=0.896 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=16 stimaTotalLen=55485 zMax=10515.0 zFinale=10515.0 replay 2x: IDENTICO
+wrapCount=129 stimaTotalLen=55458 zMax=31316.6 zFinale=31316.6 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
-accelerazione 0-10s: primo frame=2.50, 1.2s=113.21, 10s=248.36; strada=6024.8
+accelerazione 0-10s: primo frame=9.90, 1.2s=160.83, 10s=246.66; strada finale=51070.7
 GATE ACCELERAZIONE OK
 GATE RIBALTAMENTO OK
+sterzo 30 frame: sinistra=-218.3 destra=218.3
+GATE STERZO OK

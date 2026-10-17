@@ -7,7 +7,7 @@
 
 namespace sgl {
 namespace {
-constexpr f32 ROAD_SCROLL_SCALE = 3.0f;
+constexpr f32 ROAD_SCROLL_SCALE = 48.0f;
 }
 
 Game::Game() : seed_(12345), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_), showManager_(seed_) {
@@ -292,7 +292,7 @@ void Game::update() {
 
         // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.
         const f32 curvaQui = road_.curvaAt(player_.z);
-        player_.x += curvaQui * player_.speed * 0.04f * dt;
+        player_.x += curvaQui * player_.speed * 0.04f * dt * ROAD_SCROLL_SCALE;
         if (player_.x > 900.0f) player_.x = 900.0f;
         if (player_.x < -900.0f) player_.x = -900.0f;
         player_.offroad = player_.x < -700.0f || player_.x > 700.0f;
@@ -357,9 +357,14 @@ void Game::render() {
     scenaSprites_ = sprites_;
     scenaSprites_.insert(scenaSprites_.end(), cartelloni_.begin(), cartelloni_.end());
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
+    const bool steeringLeft = (input_.held & Pad::Left) != 0;
+    const bool steeringRight = (input_.held & Pad::Right) != 0;
+    const f32 steeringLean = steeringLeft == steeringRight
+        ? 0.0f : (steeringLeft ? -0.32f : 0.32f);
     const f32 rollAngle = playerFlipping_
         ? 6.2831853f * (f32)playerFlipFrame_ / (f32)FLIP_ANIMATION_FRAMES
-        : (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
+        : steeringLean * 1.5f +
+          (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
     ren_.drawPlayerCar(player_.speed, player_.x, player_.offroad, rollAngle);
     // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
     // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.

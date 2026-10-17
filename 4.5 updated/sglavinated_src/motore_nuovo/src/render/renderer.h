@@ -52,7 +52,7 @@ private:
 
     // Bande alternate (asfalto, erba, rumble, tratteggio): BAND_SEGS segmenti per banda,
     // indice preso dal segmento del MONDO, quindi le bande scorrono con la strada.
-    static constexpr i32 BAND_SEGS = 3;
+    static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
     static constexpr u32 GRASS_ALT = 0xFF008C00; // verde piu' scuro per la banda alternata
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band);
