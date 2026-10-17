@@ -14,7 +14,7 @@ Prima di scrivere uno strumento nuovo controlla qui se esiste gia'.
 | `motore_nuovo/strumenti_py/check_catalogo_grafico.py` | sviluppatore | Controlla assets_originali/CATALOGO_GRAFICO.json (lo scrive @grafico). | `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` |
 | `motore_nuovo/strumenti_py/galleria.py` | sviluppatore | Genera assets_originali/galleria/galleria.html: foto di tutti i PNG per cartella (ogni team vede il lavoro degli altri). | `python3 motore_nuovo/strumenti_py/galleria.py` |
 | `motore_nuovo/strumenti_py/indice_assets.py` | sviluppatore | Indice unico degli asset di assets_originali/ (libreria interna). | `python3 motore_nuovo/strumenti_py/indice_assets.py` |
-| `motore_nuovo/strumenti_py/indice_strumenti.py` | sviluppatore | Registro comune degli strumenti (script) che gli agenti costruiscono. | `python3 motore_nuovo/strumenti_py/indice_strumenti.py` |
+| `motore_nuovo/strumenti_py/indice_strumenti.py` | sviluppatore | Registri comuni generati da script: strumenti, consegne, libreria. | `python3 motore_nuovo/strumenti_py/indice_strumenti.py` |
 | `motore_nuovo/strumenti_py/png_a_raw.py` | sviluppatore | png_a_raw.py — converte i PNG dei cartelloni sponsor in raw per il core C++. | `python3 motore_nuovo/strumenti_py/png_a_raw.py` |
 | `motore_nuovo/strumenti_py/quota_bacheche.py` | sviluppatore | Controlla lo spazio delle bacheche personali (default 5 MB ciascuna, limite di Andrea). Esce 1 se qualcuna supera il limite. | `python3 motore_nuovo/strumenti_py/quota_bacheche.py` |
 | `motore_nuovo/strumenti_py/quota_open.py` | sviluppatore | Quota open source: % di byte (codice+asset+dati) con licenza aperta dichiarata. Soglia: 50%. Uso: python3 quota_open.py [soglia] | `python3 motore_nuovo/strumenti_py/quota_open.py` |

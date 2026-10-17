@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Registro comune degli strumenti (script) che gli agenti costruiscono.
+"""Registri comuni generati da script: strumenti, consegne, libreria.
 
 Uso, dalla radice progetto, un solo comando senza pipe:
     python3 motore_nuovo/strumenti_py/indice_strumenti.py
-Scrive libreria/STRUMENTI.md: per ogni script nelle cartelle di lavoro, il ruolo
+Scrive out/INDICE.md (consegne per ruolo) e libreria/INDICE.md (materiale riusabile),
+prima tenuti a mano dal capo, e libreria/STRUMENTI.md: per ogni script nelle cartelle di lavoro, il ruolo
 proprietario (l'unico che lo modifica), lo scopo (prima riga del commento in testa)
 e il comando d'uso. Lo rigenera il ciclo a ogni giro: nessuno lo scrive a mano.
 Segnala gli script senza descrizione e quelli fuori posto (bacheche/, out/).
@@ -78,3 +79,27 @@ with open(USCITA, "w", encoding="utf-8") as f:
 for a in avvisi:
     print(a)
 print(f"strumenti registrati: {len(righe)}, avvisi: {len(avvisi)} -> {USCITA}")
+
+
+def indice_cartella(radice, titolo, uscita, salta=()):
+    """Una riga per file: ruolo o sezione (prima sottocartella), percorso, data, byte."""
+    righe = []
+    for d, _, files in os.walk(radice):
+        for n in files:
+            p = os.path.join(d, n)
+            if p == uscita or n.startswith(".") or any(x in p for x in salta):
+                continue
+            parti = os.path.relpath(p, radice).split(os.sep)
+            gruppo = parti[0] if len(parti) > 1 else "-"
+            righe.append((gruppo, p, os.path.getmtime(p), os.path.getsize(p)))
+    righe.sort(key=lambda r: (r[0], -r[2]))
+    import time
+    with open(uscita, "w", encoding="utf-8") as f:
+        f.write(f"# {titolo} (generato da indice_strumenti.py: non modificare a mano)\n\n")
+        f.write("| Ruolo/sezione | File | Data | Byte |\n|---|---|---|---|\n")
+        for g, p, t, b in righe:
+            f.write(f"| {g} | `{p}` | {time.strftime('%d/%m %H:%M', time.localtime(t))} | {b} |\n")
+    print(f"{uscita}: {len(righe)} file")
+
+indice_cartella("out", "Consegne", "out/INDICE.md", ("/lv_0", "/soak/"))
+indice_cartella("libreria", "Libreria condivisa", "libreria/INDICE.md", ("STRUMENTI.md", "LEGGIMI.md"))

@@ -9,8 +9,6 @@ permission:
     "bacheche/capo/diario.md": allow
     "bacheche/capo/RIASSUNTO.md": allow
     "out/capo/**": allow
-    "out/INDICE.md": allow
-    "libreria/INDICE.md": allow
     "DECISIONI_ANDREA.md": allow
     "PER_CLAUDE.md": allow
     "FINITO": allow

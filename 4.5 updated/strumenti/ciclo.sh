@@ -63,7 +63,7 @@ checkpoint() {
   AUTO="$( { sh "$BASE/strumenti/verifica.sh" | tail -12; python3 motore_nuovo/strumenti_py/check_catalogo.py; python3 motore_nuovo/strumenti_py/quota_open.py; python3 motore_nuovo/strumenti_py/quota_bacheche.py; grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
   REVIEW_FILES="$(find motore_nuovo assets_originali -type f -newer .marker_checkpoint \( -name '*.cpp' -o -name '*.h' -o -name '*.json' -o -name '*.md' -o -name '*.py' -o -name 'CMakeLists.txt' -o -name '*.cmake' \) ! -path '*/.git/*' ! -path '*/__pycache__/*' ! -name '.DS_Store' 2>/dev/null | sort)"
   if [ -n "$REVIEW_FILES" ]; then
-    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Revisione interna, sola lettura e a basso costo. Esamina SOLO questi file modificati e il contesto strettamente necessario: $REVIEW_FILES. Non fare una scansione completa del progetto e non dare consigli agente per agente. Esiti dei controlli automatici: $AUTO. Rispondi in italiano con VERDETTO (OK/CORREGGI/FERMA) e al massimo 3 problemi azionabili, ciascuno con file:riga e correzione; se non ne trovi, scrivi 'OK: nessun problema'." 2>&1)"
+    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di out/collaudatore/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @sviluppatore (regola d'oro 5)." 2>&1)"
     REVIEW_RC=$?
     if [ "$REVIEW_RC" -eq 0 ]; then
       R="$REVIEW_OUTPUT"

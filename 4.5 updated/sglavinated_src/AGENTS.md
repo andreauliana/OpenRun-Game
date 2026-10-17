@@ -14,7 +14,7 @@ Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le ca
 Nel ciclo base lavorano solo @sviluppatore e @collaudatore. @capo coordina un giro su tre. @grafico e @ricercatore partono solo su richiesta (Andrea li aggiunge con `AGENTI_ATTIVI`).
 | Ruolo | Fa (ex ruoli v4) | Scrive in (oltre a `bacheche/<ruolo>/diario.md`, `bacheche/<ruolo>/RIASSUNTO.md` e `out/<ruolo>/`) |
 |---|---|---|
-| capo | coordina, propone stati e deleghe (capo) | `out/capo/STATI_PROPOSTI.md`, `DECISIONI_ANDREA.md`, `PER_CLAUDE.md`, `out/INDICE.md`, `libreria/INDICE.md`, `FINITO` |
+| capo | coordina, propone stati e deleghe (capo) | `out/capo/STATI_PROPOSTI.md`, `DECISIONI_ANDREA.md`, `PER_CLAUDE.md`, `FINITO` |
 | sviluppatore | nucleo C++, gameplay, livelli come dati (coder, traduttore, livelli) | `motore_nuovo/src/`, `motore_nuovo/CMakeLists.txt`, `motore_nuovo/dati/livelli/`, `motore_nuovo/dati/personaggi/`, `motore_nuovo/dati/sprite_raw/`, `motore_nuovo/strumenti_py/`, `motore_nuovo/dati/SPEC_GAMEPLAY.md`, `motore_nuovo/docs/LIVELLI.md`, `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`, `libreria/codice/`, `libreria/livelli/` |
 | collaudatore | build, test, review, architettura (debugger, reviewer, architetto) | `motore_nuovo/test/`, `motore_nuovo/docs/` (tranne i due file dello sviluppatore), `libreria/test/`, `libreria/docs/` |
 | grafico | sprite, scenari, palette, font, UI, frasi (asset, scenografo, tipografo, testi) | `assets_originali/` (tranne `ricerca/`), `motore_nuovo/dati/ui/`, `motore_nuovo/dati/testi/`, `motore_nuovo/dati/frasi.json`, `libreria/sprite/`, `libreria/palette/`, `libreria/scenari/`, `libreria/font/`, `libreria/testi/` |
