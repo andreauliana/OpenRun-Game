@@ -15,7 +15,7 @@ ciclo_attivo() {
   pid="$(cat "$S/.ciclo.pid")"
   pid_del_progetto "$pid" "$T/ciclo.sh"
 }
-PANNELLO_PORT=8089
+PANNELLO_PORT=8090
 PANNELLO_PID="$S/.pannello.pid"
 pannello_attivo() {
   [ -f "$PANNELLO_PID" ] || return 1

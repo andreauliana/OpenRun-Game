@@ -4,7 +4,7 @@
 # Formato output: "SGLR" + u32 LE larghezza + u32 LE altezza + byte RGBA8888.
 # Usa solo la libreria standard di Python 3 (zlib). Da lanciare dalla radice
 # del progetto (sglavinated_src):
-#   python3 out/sviluppatore/png_a_raw.py
+#   python3 motore_nuovo/strumenti_py/png_a_raw.py
 # Legge:  assets_originali/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
 # Scrive: motore_nuovo/dati/sprite_raw/sponsor/<id>_<stile>.sglraw
 # Il loader C++ corrispondente: motore_nuovo/src/render/sprite_raw.{h,cpp}.

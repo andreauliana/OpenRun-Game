@@ -1,0 +1,6 @@
+{
+  "nome": "cartelloni sponsor in formato SGLR (raw RGBA8888)",
+  "licenza": "CC0-1.0",
+  "origine": "convertiti da assets_originali/sponsor/*/cartellone_*.png con motore_nuovo/strumenti_py/png_a_raw.py",
+  "originale": true
+}

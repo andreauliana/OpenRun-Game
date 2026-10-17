@@ -16,6 +16,8 @@ permission:
     "motore_nuovo/CMakeLists.txt": allow
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/dati/personaggi/**": allow
+    "motore_nuovo/dati/sprite_raw/**": allow
+    "motore_nuovo/strumenti_py/**": allow
     "motore_nuovo/dati/SPEC_GAMEPLAY.md": allow
     "motore_nuovo/docs/LIVELLI.md": allow
     "motore_nuovo/docs/CATALOGO_PERSONAGGI.md": allow
