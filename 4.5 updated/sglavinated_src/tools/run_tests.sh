@@ -3,20 +3,20 @@
 # CMake/CTest entry point for agents and local test runs.
 cd "$(dirname "$0")/.." || exit 9
 
-BUILD_DIR="${BUILD_DIR:-build_tests}"
+BUILD_DIR="${BUILD_DIR:-build/tests}"
 mkdir -p "$(dirname "$BUILD_DIR")" || exit 12
 BUILD_DIR="$(cd "$(dirname "$BUILD_DIR")" && pwd -P)/$(basename "$BUILD_DIR")"
 GATE_DIR="$(pwd -P)/build_gate"
 
 case "$BUILD_DIR/" in
   "$GATE_DIR/"*)
-    echo "BUILD_DIR non puo' stare dentro build_gate: usare build_tests o un percorso separato."
+    echo "BUILD_DIR non puo' stare dentro build_gate: usare build/tests o un percorso separato."
     exit 12
     ;;
 esac
 case "$GATE_DIR/" in
   "$BUILD_DIR/"*)
-    echo "BUILD_DIR non puo' contenere build_gate: usare build_tests o un percorso separato."
+    echo "BUILD_DIR non puo' contenere build_gate: usare build/tests o un percorso separato."
     exit 12
     ;;
 esac

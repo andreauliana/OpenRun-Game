@@ -1,3 +1,10 @@
 #!/bin/sh
-cd "$(dirname "$0")" && sh v3.sh start
-echo; echo "(premi Invio per chiudere)"; read _
+cd "$(dirname "$0")" || exit 1
+sh v3.sh start
+status=$?
+if [ -t 0 ]; then
+  echo
+  printf "Premi Invio per chiudere..."
+  read _
+fi
+exit "$status"

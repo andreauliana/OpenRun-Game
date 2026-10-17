@@ -114,10 +114,10 @@ del repository, dalla radice `sglavinated_src/` eseguire:
 sh tools/run_tests.sh
 ```
 
-Lo script configura la build isolata `build_tests/`, compila `prova_gate` e
-lancia i test registrati con CTest. La directory e' distinta da `build_gate/`,
-usata da `gate_t1.sh`; lo script rifiuta percorsi `BUILD_DIR` che si sovrappongono
-a `build_gate/`. Per scegliere un'altra directory indipendente:
+Lo script configura la build isolata `build/tests/`, compila `prova_gate` e
+lancia i test registrati con CTest. La directory e' distinta da `build/current/`
+e da `build_gate/`; quest'ultima e' usata da `gate_t1.sh`. Lo script rifiuta percorsi `BUILD_DIR` che si sovrappongono a `build_gate/`.
+Per scegliere un'altra directory indipendente:
 `BUILD_DIR=/percorso/build sh tools/run_tests.sh`.
 
 ### Raspberry Pi 400 (Raspberry Pi OS / RetroPie, dalla cartella `sglavinated_src/`)
