@@ -1,1 +1,13 @@
 sglavinated_src/riferimento_v4/
+sglavinated_src/.*.pid
+sglavinated_src/.agente_corrente
+sglavinated_src/.agenti_attivi
+sglavinated_src/.marker_*
+sglavinated_src/STOP
+sglavinated_src/*.log
+sglavinated_src/log_agenti/
+sglavinated_src/CONTROLLO.md
+sglavinated_src/*_RECENTE.md
+sglavinated_src/RICHIESTA_APERTA.md
+sglavinated_src/ASSEMBLEE_APERTE.md
+sglavinated_src/bacheche/*/DIARIO_RECENTE.md
