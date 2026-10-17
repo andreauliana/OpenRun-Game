@@ -4,7 +4,7 @@ Lavoro principale: motore nuovo C++17 in `motore_nuovo/`. Prima di tutto leggi `
 Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le cambia solo Andrea. Le 28 regole della v4 sono in `archivio_v4/AGENTS_v4.md` (sola lettura, solo come storico).
 
 ## Le 5 regole d'oro
-1. **Un foglio, uno scrittore.** Ogni file ha un solo ruolo che lo scrive (tabella sotto). Leggere i file degli altri si', scriverli no.
+1. **Un foglio, uno scrittore.** Ogni file ha un solo ruolo che lo scrive (tabella sotto). Leggere i file degli altri si', scriverli no. Non creare sottoratelle senza senso.
 2. **Una riga di diario per turno**, in `bacheche/<ruolo>/diario.md`: `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo`. «Esito misurato» = comando + exit code + numero letto dal log; se non hai eseguito nulla scrivi `non eseguito`.
 3. **Promuovono a [x] solo Andrea e Claude.** Gli agenti propongono uno stato; `RICHIESTA.md` e `SCAMBIO.md` li scrivono solo Andrea e Claude. H e P1 passano a [x] solo con l'ok di Andrea.
 4. **Regole congelate.** Niente nuove regole, niente modifiche a questo file durante la v4.5. Un dubbio su una regola va in `DECISIONI_ANDREA.md` (lo scrive @capo).
