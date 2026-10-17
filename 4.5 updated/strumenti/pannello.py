@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Pannello di progresso (sola lettura). Uso: python3 strumenti/pannello.py [--porta 8088] [--solo-locale]
-Il controller V4 usa la porta 8089; avvio manuale predefinito 8088. Solo libreria standard."""
+Il controller V4 usa la porta 8090; avvio manuale predefinito 8088. Solo libreria standard."""
 import json, os, re, subprocess, sys, time, argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 

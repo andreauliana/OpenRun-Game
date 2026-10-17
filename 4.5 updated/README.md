@@ -8,7 +8,7 @@ La cartella v4 originale sul Desktop non e' stata toccata: resta il riferimento 
 cd "$HOME/Desktop/4.5 updated"
 sh comandi/v3.sh start
 ```
-Stato e stop: `sh comandi/v3.sh stato` e `sh comandi/v3.sh stop`. Pannello su http://localhost:8089.
+Stato e stop: `sh comandi/v3.sh stato` e `sh comandi/v3.sh stop`. Pannello su http://localhost:8090 (la v4 usa la 8089).
 I nomi interni `V3` (`comandi/v3.sh`, `V3_BASE`) restano per compatibilita': i comandi funzionano come nella v4.
 Il motore va ricompilato al primo avvio (le cartelle `build*` non sono state copiate): `cd sglavinated_src && sh tools/gate_t1.sh`.
 Sul Pi 400: `sh "$HOME/4.5 updated/pi/compila_e_installa.sh"`.
