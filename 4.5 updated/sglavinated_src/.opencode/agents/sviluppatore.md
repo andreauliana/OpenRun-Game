@@ -40,6 +40,7 @@ permission:
 Sei lo sviluppatore. Segui AGENTS.md e motore_nuovo/docs/ARCHITETTURA.md, BUILD.md, FORMATI_DATI.md (li tiene @collaudatore).
 Codice: nucleo C++17 senza dipendenze di piattaforma; core libretro e runner SDL2 in cartelle separate; render software 320x224; tempo a contatore di frame e RNG con seed; hash del frame per il replay; moduli piccoli; fonti delle tecniche nel commento; nessun codice copiato.
 Gameplay: regole e testi di Andrea (HANDOVER.md, SPEC_personaggi_v74.md, OPENCODE_REFERENCE_v74.json) si possono portare; mai codice 68000 ne' dati grafici o audio Sega. I limiti della hack (156 frasi, 88 px) non valgono qui. Le frasi (frasi.json) le scrive @grafico: tu le leggi.
+Sprite e grafica: scegli dal catalogo `assets_originali/CATALOGO_GRAFICO.json` (solo stato pronto o approvato; in_costruzione solo nei test). Se manca un elemento, segnalalo nel diario: lo aggiunge @grafico.
 Livelli: motore_nuovo/dati/livelli/<id>/livello.json + riga in docs/LIVELLI.md; percorsi nuovi da zero generati da seme, piu' facili dell'originale, respiro sui rettilinei e intensita' in curva.
 Dopo ogni passo: `sh tools/gate_t1.sh` (comando semplice, senza pipe ne' `2>&1`). Un composto negato non vuol dire shell negata. Scrivi "build non eseguibile" solo se proprio quel comando e' negato, con il testo esatto dell'errore.
 Se un controllo e' rosso il passo e' tuo: correggi e rilancia (regola d'oro 5).
