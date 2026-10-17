@@ -1,0 +1,130 @@
+[
+  {
+    "nome": "fondo_scuro",
+    "rgb": [
+      15,
+      10,
+      25
+    ]
+  },
+  {
+    "nome": "verde_acido",
+    "rgb": [
+      170,
+      255,
+      0
+    ]
+  },
+  {
+    "nome": "viola",
+    "rgb": [
+      160,
+      60,
+      220
+    ]
+  },
+  {
+    "nome": "arancio",
+    "rgb": [
+      255,
+      120,
+      30
+    ]
+  },
+  {
+    "nome": "magenta_psico",
+    "rgb": [
+      220,
+      40,
+      200
+    ]
+  },
+  {
+    "nome": "giallo_psico",
+    "rgb": [
+      255,
+      230,
+      40
+    ]
+  },
+  {
+    "nome": "verde_foglia",
+    "rgb": [
+      60,
+      180,
+      80
+    ]
+  },
+  {
+    "nome": "blu_psico",
+    "rgb": [
+      60,
+      100,
+      220
+    ]
+  },
+  {
+    "nome": "rosa_psico",
+    "rgb": [
+      240,
+      100,
+      180
+    ]
+  },
+  {
+    "nome": "grigio_fumo",
+    "rgb": [
+      120,
+      100,
+      140
+    ]
+  },
+  {
+    "nome": "marrone_terra",
+    "rgb": [
+      120,
+      80,
+      60
+    ]
+  },
+  {
+    "nome": "ciano_psico",
+    "rgb": [
+      40,
+      220,
+      200
+    ]
+  },
+  {
+    "nome": "giallo_ocra",
+    "rgb": [
+      200,
+      150,
+      40
+    ]
+  },
+  {
+    "nome": "prugna",
+    "rgb": [
+      100,
+      60,
+      120
+    ]
+  },
+  {
+    "nome": "bianco_ghiaccio",
+    "rgb": [
+      230,
+      230,
+      240
+    ]
+  },
+  {
+    "nome": "trasparente",
+    "rgb": [
+      0,
+      0,
+      0
+    ]
+  }
+]

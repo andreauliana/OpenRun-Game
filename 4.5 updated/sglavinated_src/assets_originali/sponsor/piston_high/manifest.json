@@ -1,0 +1,15 @@
+{
+  "nome": "piston_high",
+  "nome_display": "PISTON HIGH",
+  "slogan": "Erba del Pilota",
+  "descrizione": "Gioco di parole motoristico: pistone + high. Livrea da corsa.",
+  "autore": "genera_sponsor.py",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "file": [
+    "cartellone_neon.png",
+    "cartellone_atomico.png",
+    "cartellone_foglie.png"
+  ]
+}

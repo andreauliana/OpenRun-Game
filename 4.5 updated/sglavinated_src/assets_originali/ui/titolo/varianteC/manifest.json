@@ -1,0 +1,20 @@
+{
+  "id": "ui_titolo_c",
+  "tipo": "titolo",
+  "variante": "C",
+  "descrizione": "titolo variante C - UI 320x224",
+  "stato": "proposta",
+  "licenza": "CC-BY-4.0",
+  "autore": "@tipografo (reparto grafico, progetto Sglavinated)",
+  "url": "interno al progetto: assets_originali/ui/ (disegnato da zero, nessun asset Sega)",
+  "risoluzione": [
+    320,
+    224
+  ],
+  "colori_max": 16,
+  "file": [
+    "title.png",
+    "title.json"
+  ],
+  "note": "Lettering titolo 'Sglavinated Edition' disegnato da zero."
+}

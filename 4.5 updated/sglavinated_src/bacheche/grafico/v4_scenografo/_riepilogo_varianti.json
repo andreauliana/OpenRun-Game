@@ -1,0 +1,55 @@
+{
+  "licenza": "CC0-1.0",
+  "note": "Riepilogo varianti scenari BLOCCO L (@scenografo). I file risiedono in assets_originali/scenari/<id>/scenario_<nome>_variante{A,B,C}/. Nessun materiale Sega.",
+  "lv_01_neon": [
+    {
+      "variante": "A",
+      "cartella": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA",
+      "oggetti": ["lampione", "palina", "bidone", "cassetta", "palo_neon"]
+    },
+    {
+      "variante": "B",
+      "cartella": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB",
+      "oggetti": ["insegna_neon", "lampione", "palo_neon", "bidone", "segnale"]
+    },
+    {
+      "variante": "C",
+      "cartella": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC",
+      "oggetti": ["segnale", "palo_neon", "bidone", "cassetta"]
+    }
+  ],
+  "lv_02_atomico": [
+    {
+      "variante": "A",
+      "cartella": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA",
+      "oggetti": ["freccia", "cupola", "panchina_cromata", "torre_razzo", "segnale_atomico", "bancone_drive_in"]
+    },
+    {
+      "variante": "B",
+      "cartella": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB",
+      "oggetti": ["segnale_stop", "freccia", "cupola", "ufo_distanza", "panchina_cromata", "bancone_drive_in"]
+    },
+    {
+      "variante": "C",
+      "cartella": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC",
+      "oggetti": ["ufo_distanza", "torre_razzo", "panchina_cromata", "bancone_drive_in", "segnale_stop", "freccia", "cupola", "segnale_atomico"]
+    }
+  ],
+  "lv_03_foglie": [
+    {
+      "variante": "A",
+      "cartella": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA",
+      "oggetti": ["foglia_gigante", "panchina_curva", "fungo_psico", "insegna_fumosa", "panchina_fumo"]
+    },
+    {
+      "variante": "B",
+      "cartella": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB",
+      "oggetti": ["segnale_foglia", "albero_mini", "panchina_fumo", "panchina_curva", "fungo_psico"]
+    },
+    {
+      "variante": "C",
+      "cartella": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC",
+      "oggetti": ["panchina_fumo", "panchina_curva", "insegna_fumosa", "fumo", "albero_mini", "fungo_psico", "segnale_foglia", "foglia_gigante"]
+    }
+  ]
+}

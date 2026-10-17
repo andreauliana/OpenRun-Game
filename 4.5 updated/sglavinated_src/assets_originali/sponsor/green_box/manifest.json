@@ -1,0 +1,15 @@
+{
+  "nome": "green_box",
+  "nome_display": "GREEN BOX",
+  "slogan": "Il Pit Stop della felicita",
+  "descrizione": "Pit stop ironico, box verde",
+  "autore": "genera_sponsor.py",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "file": [
+    "cartellone_neon.png",
+    "cartellone_atomico.png",
+    "cartellone_foglie.png"
+  ]
+}

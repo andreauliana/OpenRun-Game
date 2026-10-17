@@ -1,0 +1,39 @@
+# .backupignore - cosa NON entrare nel backup.
+#
+# Backup = sorgenti + dati in shots/ + documenti. Esclusi gli output generati, che
+# si ricreano: senza questo il backup era 294 MB di cui 275 erano la storia git di
+# un repo vendorizzato che non e' nostro (sglavinated_src/gpgx_src/.git).
+#
+# I pattern sono quelli di zip -x: `*` attraversa anche le directory.
+#
+# Uso: sh tools/make_backup.sh <zip di destinazione>
+
+# storia git di repos vendorizzati (il core di Genesis Plus GX)
+*/.git
+*/.git/*
+
+# binari precompilati di terze parti e core compilato
+gpgx_src/builds/*
+gpgx_src/*.dll
+gpgx_src/*.dylib
+gpgx/*.so
+gpgx/*.dll
+
+# output generati dai nostri strumenti
+lr/out_audio/*
+lr/out_audit/*
+lr/out_*
+shots/out_*
+
+# Python
+*/__pycache__/*
+*.pyc
+
+# ROM e oggetti di link: escono fuori da tools/patch_z.py -> tools/build_all.sh
+*.gen
+*.gen.*
+*.o
+
+# temporanei
+*.tmp
+.DS_Store

@@ -1,0 +1,18 @@
+{
+  "id": "gesu",
+  "nome": "Gesu' (corrector)",
+  "ruolo": "personaggio che corregge: appare dopo crash e negli show periodici di escalation, dice frasi anti-droga / di sicurezza stradale",
+  "descrizione": "Nella hack v87: 4 frame (testa 4x4 + corpo 4x2 tile, APP+0x900), cade dall'alto e risale. Nel nuovo motore i disegni si rifanno originali; qui restano solo dati e regole.",
+  "stato": "nuovo",
+  "source_v87": "tools/gianni12.py (PHR/CHAR), SPEC_personaggi_v74.md sezioni 5-7, HANDOVER.md sezione 2, ARCHIVIO_V87.md",
+  "file": {
+    "fumetti": "fumetti.json",
+    "tutte_le_frasi": "../frasi.json"
+  },
+  "frasi_n": 59,
+  "id_frasi": "27-33, 66-84, 105-120, 125-133, 141, 147-151, 154-155",
+  "tabelle_show": ["xtab", "jtab", "j1t", "j2t", "j3t"],
+  "crediti": "Testi e disegni originali: Andrea Uliana (hack v87, sola lettura).",
+  "licenza": "CC-BY-4.0",
+  "note_v87_non_riportate": "Limite 156 fumetti, budget VRAM/tile, bolla max 88 px, cooldown 24 frame: limiti hardware/timing della v87, riferimenti di comportamento non vincoli del nuovo motore."
+}

@@ -1,0 +1,6 @@
+{
+  "licenza": "MIT",
+  "copre": "tutti i file .h/.cpp di motore_nuovo/src/ (25 file: core/, road/, render/, input/, audio/, player/, game/, gameplay/). Ogni file ha gia' intestazione '// SPDX-License-Identifier: MIT' in riga 1 (verificato da @debugger in ESITO_BLOCCO_H.md §3: 25/25 file MIT). Il manifest serve a quota_open.py, che conta la licenza a livello di cartella (primo manifest.json con campo 'licenza' oppure LICENSE con prima riga SPDX-License-Identifier:).",
+  "autore": "@architetto/@coder/@traduttore (progetto Sglavinated v3 open)",
+  "nota": "Nessun codice Sega, nessun asset Sega, nessun orologio di sistema nel core (vedi VISIONE.md vincoli duri)."
+}

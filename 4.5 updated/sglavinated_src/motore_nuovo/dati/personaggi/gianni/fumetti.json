@@ -1,0 +1,692 @@
+{
+  "licenza": "CC-BY-4.0",
+  "personaggio": "gianni",
+  "fonte_v87": "tools/gianni12.py (PHR/CHAR), OPENCODE_REFERENCE_v74.json",
+  "n_frasi": 97,
+  "id_frasi": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    121,
+    122,
+    123,
+    124,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    142,
+    143,
+    144,
+    145,
+    146,
+    152,
+    153
+  ],
+  "frasi": [
+    {
+      "id": 0,
+      "linea1": "HEY, FRATELLINO,",
+      "linea2": "SCENDI CON ME"
+    },
+    {
+      "id": 1,
+      "linea1": "FUOCINO, DAI,",
+      "linea2": "SCALDA QUA"
+    },
+    {
+      "id": 2,
+      "linea1": "PATTO VELOCE,",
+      "linea2": "FIRMI E SCENDI"
+    },
+    {
+      "id": 3,
+      "linea1": "TI PORTO L'ANIMA",
+      "linea2": "GRATIS, PROVA"
+    },
+    {
+      "id": 4,
+      "linea1": "SOFFIA IL FUEGO,",
+      "linea2": "VEDI CHE BELLO"
+    },
+    {
+      "id": 5,
+      "linea1": "PATTO E SCENDI",
+      "linea2": "E SEI DIO, FRA"
+    },
+    {
+      "id": 6,
+      "linea1": "FIRMA IL PATTO,",
+      "linea2": "POI VOLI VIA"
+    },
+    {
+      "id": 7,
+      "linea1": "SCENDI CON ME,",
+      "linea2": "IL PAZZO SEI TU"
+    },
+    {
+      "id": 8,
+      "linea1": "SEI SOLO SENZA",
+      "linea2": "UN FIGLIO A META"
+    },
+    {
+      "id": 9,
+      "linea1": "L'ANIMA PESANTE,",
+      "linea2": "SCALDALA CON ME"
+    },
+    {
+      "id": 10,
+      "linea1": "TREMENI, VERO?",
+      "linea2": "SCENDI, SCEMO"
+    },
+    {
+      "id": 11,
+      "linea1": "SIRINGONE?",
+      "linea2": "UNA SOLA, DAI"
+    },
+    {
+      "id": 12,
+      "linea1": "MANCHI DI ME?",
+      "linea2": "TE LO SENTI?"
+    },
+    {
+      "id": 13,
+      "linea1": "UNA RIGA LA",
+      "linea2": "FANNO TUTTI"
+    },
+    {
+      "id": 14,
+      "linea1": "FIRMA, SCENDI,",
+      "linea2": "NON RISALI"
+    },
+    {
+      "id": 15,
+      "linea1": "L'ANIMA E' MIA",
+      "linea2": "TE L'HO PRESA"
+    },
+    {
+      "id": 16,
+      "linea1": "CI PENSO IO,",
+      "linea2": "TU GUIDA E TIRA"
+    },
+    {
+      "id": 17,
+      "linea1": "SCENDI, SCEMO,",
+      "linea2": "IL PATTO E FATTO"
+    },
+    {
+      "id": 18,
+      "linea1": "VIENI QUA CON ME",
+      "linea2": "SCORDA IL SOLE"
+    },
+    {
+      "id": 19,
+      "linea1": "FUORI DAL BORDO",
+      "linea2": "TORNANDO, FRA"
+    },
+    {
+      "id": 20,
+      "linea1": "FUOCO TI ASPETTA",
+      "linea2": "STAI QUI, DAI"
+    },
+    {
+      "id": 21,
+      "linea1": "TI SENTI UNO",
+      "linea2": "SFIGATO? SCENDI"
+    },
+    {
+      "id": 22,
+      "linea1": "L'UFO TI VEDE!",
+      "linea2": "SEI SBALLATO?"
+    },
+    {
+      "id": 23,
+      "linea1": "ATTENTO AGLI",
+      "linea2": "UFO, FRATE!"
+    },
+    {
+      "id": 24,
+      "linea1": "DROGA E VOLANTE:",
+      "linea2": "MORTE CERTA"
+    },
+    {
+      "id": 25,
+      "linea1": "ATTENTO ALLA",
+      "linea2": "STRADA, DAI"
+    },
+    {
+      "id": 26,
+      "linea1": "NIENTE SBALLO",
+      "linea2": "SE GUIDI"
+    },
+    {
+      "id": 34,
+      "linea1": "UNA SIRINGA E'",
+      "linea2": "UNA BARA APERTA"
+    },
+    {
+      "id": 35,
+      "linea1": "HEY, COSA FAI?",
+      "linea2": "TI SEI PIANTATO?"
+    },
+    {
+      "id": 36,
+      "linea1": "HEY, PAUSETTA?",
+      "linea2": "ACCENDIAMO?"
+    },
+    {
+      "id": 37,
+      "linea1": "NE STAI FACENDO",
+      "linea2": "SU UNO, VERO?"
+    },
+    {
+      "id": 38,
+      "linea1": "TUTTO FERMO...",
+      "linea2": "GIRA LA CARTINA?"
+    },
+    {
+      "id": 39,
+      "linea1": "ANZI, ORA CE",
+      "linea2": "NE VUOI DUE"
+    },
+    {
+      "id": 40,
+      "linea1": "NON CHIAMARE",
+      "linea2": "NESSUNO, FUMA"
+    },
+    {
+      "id": 41,
+      "linea1": "RIPARTI E",
+      "linea2": "ACCENDI, DAI"
+    },
+    {
+      "id": 42,
+      "linea1": "CHE SFIGA!",
+      "linea2": "TIRA E PASSA"
+    },
+    {
+      "id": 43,
+      "linea1": "TI AIUTO IO,",
+      "linea2": "FIDATI DI ME"
+    },
+    {
+      "id": 44,
+      "linea1": "CHE BELLA CURVA,",
+      "linea2": "COME LA CANNA"
+    },
+    {
+      "id": 45,
+      "linea1": "HEY, FAMMO NO",
+      "linea2": "SPINO?"
+    },
+    {
+      "id": 46,
+      "linea1": "DAI, SOLO UN",
+      "linea2": "TIRO LEGGERO"
+    },
+    {
+      "id": 47,
+      "linea1": "L'ERBA NON FA",
+      "linea2": "MALE A NESSUNO"
+    },
+    {
+      "id": 48,
+      "linea1": "LA CANNA E' SOLO",
+      "linea2": "L'INIZIO, DAI"
+    },
+    {
+      "id": 49,
+      "linea1": "TI ANNOI CON LA",
+      "linea2": "ERBA? C'E' ALTRO"
+    },
+    {
+      "id": 50,
+      "linea1": "HO ROBA PIU",
+      "linea2": "FORTE, VUOI?"
+    },
+    {
+      "id": 51,
+      "linea1": "L'ECSTASY TI",
+      "linea2": "SBLOCCA LA SERA"
+    },
+    {
+      "id": 52,
+      "linea1": "UNA PASTICCA E",
+      "linea2": "BALLI PER ORE"
+    },
+    {
+      "id": 53,
+      "linea1": "LSD: UN CARTONE",
+      "linea2": "E VOLI VIA"
+    },
+    {
+      "id": 54,
+      "linea1": "ERBA SOTTO,",
+      "linea2": "FAI LA DIFESA"
+    },
+    {
+      "id": 55,
+      "linea1": "A 250 FUMATO",
+      "linea2": "TI SENTI UN DIO"
+    },
+    {
+      "id": 56,
+      "linea1": "NESSUNO LO",
+      "linea2": "SAPRA MAI"
+    },
+    {
+      "id": 57,
+      "linea1": "LA PRIMA E'",
+      "linea2": "GRATIS, POI VEDI"
+    },
+    {
+      "id": 58,
+      "linea1": "SOLO UNO SPINO,",
+      "linea2": "NON E' NIENTE"
+    },
+    {
+      "id": 59,
+      "linea1": "PASSA IL TEMPO",
+      "linea2": "CON GIANNI"
+    },
+    {
+      "id": 60,
+      "linea1": "STASERA ESCI",
+      "linea2": "E TI SBALLI"
+    },
+    {
+      "id": 61,
+      "linea1": "E' SOLO ERBA,",
+      "linea2": "POI VEDI TU"
+    },
+    {
+      "id": 62,
+      "linea1": "PERCHE' FERMARTI",
+      "linea2": "ALLA CANNA?"
+    },
+    {
+      "id": 63,
+      "linea1": "CHI PROVA NON",
+      "linea2": "SI FERMA PIU"
+    },
+    {
+      "id": 64,
+      "linea1": "STRAI E FUMI,",
+      "linea2": "CHIODI, SPERANZE"
+    },
+    {
+      "id": 65,
+      "linea1": "FUORI ANCHE TU?",
+      "linea2": "POI CI SEI, BRO"
+    },
+    {
+      "id": 85,
+      "linea1": "UNA BIRRA E",
+      "linea2": "UNO SPINO?"
+    },
+    {
+      "id": 86,
+      "linea1": "VIENI, CI SONO",
+      "linea2": "TUTTI I TUOI"
+    },
+    {
+      "id": 87,
+      "linea1": "NON DIRLO A",
+      "linea2": "NESSUNO, DAI"
+    },
+    {
+      "id": 88,
+      "linea1": "FATTI NA DIERA,",
+      "linea2": "CHE TI SISTEMA"
+    },
+    {
+      "id": 89,
+      "linea1": "DIERA E VIA,",
+      "linea2": "PASSA TUTTO"
+    },
+    {
+      "id": 90,
+      "linea1": "SENZA DIERA",
+      "linea2": "NON DORMI, EH?"
+    },
+    {
+      "id": 91,
+      "linea1": "PURPLE DRANK:",
+      "linea2": "SCIVOLA LENTO"
+    },
+    {
+      "id": 92,
+      "linea1": "UN SORSO VIOLA",
+      "linea2": "E RALLENTA TUTTO"
+    },
+    {
+      "id": 93,
+      "linea1": "UN BICCHIERE DI",
+      "linea2": "DRANK FA STILE"
+    },
+    {
+      "id": 94,
+      "linea1": "LO FANNO I",
+      "linea2": "RAPPER, DAI"
+    },
+    {
+      "id": 95,
+      "linea1": "SOLO STASERA,",
+      "linea2": "DOMANI SMETTI"
+    },
+    {
+      "id": 96,
+      "linea1": "NON SEI",
+      "linea2": "DIPENDENTE, DAI"
+    },
+    {
+      "id": 97,
+      "linea1": "UN'ALTRA E",
+      "linea2": "BASTA, PROMESSO"
+    },
+    {
+      "id": 98,
+      "linea1": "AFFITTO, LAVORO?",
+      "linea2": "DIERA E PASSA"
+    },
+    {
+      "id": 99,
+      "linea1": "SALI AL SESTO:",
+      "linea2": "C'E' SEMPRE ROBA"
+    },
+    {
+      "id": 100,
+      "linea1": "NEL PALAZZONE",
+      "linea2": "COSTA POCO"
+    },
+    {
+      "id": 101,
+      "linea1": "SCALA C, NON",
+      "linea2": "SUONARE, BUSSA"
+    },
+    {
+      "id": 102,
+      "linea1": "PRIMA LA DIERA,",
+      "linea2": "POI ROBA PESA"
+    },
+    {
+      "id": 103,
+      "linea1": "LAVORI DOMANI?",
+      "linea2": "UNA DIERA E VAI"
+    },
+    {
+      "id": 104,
+      "linea1": "VIOLA E ERBA:",
+      "linea2": "TOP, FRA"
+    },
+    {
+      "id": 121,
+      "linea1": "ERBA A BORDO?",
+      "linea2": "LA MIA E' MEGLIO"
+    },
+    {
+      "id": 122,
+      "linea1": "SEI NEL PRATO,",
+      "linea2": "COME ME, FRA"
+    },
+    {
+      "id": 123,
+      "linea1": "SULL'ERBA VAI",
+      "linea2": "PIU LEGGERO"
+    },
+    {
+      "id": 124,
+      "linea1": "PERSO LA STRADA?",
+      "linea2": "TE LA RULLO IO"
+    },
+    {
+      "id": 134,
+      "linea1": "FUORI STRADA?",
+      "linea2": "UN TIRO, RIENTRI"
+    },
+    {
+      "id": 135,
+      "linea1": "SULLA SABBIA?",
+      "linea2": "TI SERVE GIANNI"
+    },
+    {
+      "id": 136,
+      "linea1": "BORDO STRADA:",
+      "linea2": "COME LA TUA VITA"
+    },
+    {
+      "id": 137,
+      "linea1": "DI SPINELLI",
+      "linea2": "NESSUNO MUORE"
+    },
+    {
+      "id": 138,
+      "linea1": "HEY ANDIAMO A",
+      "linea2": "FARCI UNO"
+    },
+    {
+      "id": 139,
+      "linea1": "CI FACCIAMO UNA",
+      "linea2": "DIERA?"
+    },
+    {
+      "id": 140,
+      "linea1": "E' SOLO UNO",
+      "linea2": "SPINELLINO"
+    },
+    {
+      "id": 142,
+      "linea1": "BORDO? RILASSATI",
+      "linea2": "FATTI UNA DIERA"
+    },
+    {
+      "id": 143,
+      "linea1": "NEI CAMPI, FRA",
+      "linea2": "CRESCO IO, FRA"
+    },
+    {
+      "id": 144,
+      "linea1": "SBANDI? TRANQUI,",
+      "linea2": "SEI GIA IN VOLO"
+    },
+    {
+      "id": 145,
+      "linea1": "SBANDATA BELLA!",
+      "linea2": "UN ALTRO GIRO?"
+    },
+    {
+      "id": 146,
+      "linea1": "RUOTE NEL VERDE:",
+      "linea2": "CASA MIA, BRO"
+    },
+    {
+      "id": 152,
+      "linea1": "GHIAIA E FUMO,",
+      "linea2": "COPPIA PERFETTA"
+    },
+    {
+      "id": 153,
+      "linea1": "FRENI? MA NO,",
+      "linea2": "ACCENDI E VAI"
+    }
+  ],
+  "tabelle_show": {
+    "otab": [
+      134,
+      135,
+      136,
+      121,
+      142,
+      143,
+      144,
+      145,
+      146,
+      152,
+      153,
+      122,
+      123,
+      124,
+      44,
+      19,
+      54,
+      64,
+      65,
+      134,
+      135,
+      136,
+      121,
+      142,
+      143,
+      144,
+      145,
+      146,
+      152,
+      153,
+      122,
+      123
+    ],
+    "ph_tab": [
+      88,
+      89,
+      90,
+      94,
+      95,
+      96,
+      97,
+      103,
+      88,
+      137,
+      138,
+      139,
+      140,
+      88,
+      89,
+      90,
+      94,
+      95,
+      96,
+      97,
+      103,
+      88,
+      137,
+      138,
+      139,
+      140,
+      88,
+      89,
+      90,
+      94,
+      95,
+      96
+    ],
+    "g1t": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "g2t": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      12
+    ],
+    "g3t": [
+      14,
+      15,
+      17,
+      18,
+      20,
+      21
+    ],
+    "itab": [
+      35,
+      36,
+      37,
+      38
+    ]
+  }
+}

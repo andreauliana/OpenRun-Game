@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "descrizione": "Mappa temi livelli e distribuzione sponsor — Sglavinated Edition V3 (open)",
+    "licenza": "CC0-1.0",
+    "nota": "Questo file unifica la relazione tra livelli, scenari scelti (variante A) e sponsor."
+  },
+  "livelli": [
+    {
+      "id": "lv_01_neon",
+      "tema": "Autostrada di neon di notte",
+      "stile": "synthwave / C-wave",
+      "scenario": "scenario_neon_01_varianteA",
+      "palette": ["ciano", "magenta", "giallo acido", "fondo scuro"],
+      "segmenti": 1200,
+      "seme": 4211,
+      "stile_cartellone": "neon",
+      "sponsor_prevalenti": ["curve_pericolose", "brinis_udine", "piston_high"],
+      "sponsor_secondari": ["slow_down", "erba_medica", "green_box"],
+      "atmosfera": "Radio di notte, griglia di luce, insegne neon inventate, sole a righe"
+    },
+    {
+      "id": "lv_02_atomico",
+      "tema": "Strada atomica anni '50",
+      "stile": "sci-fi anni '50",
+      "scenario": "scenario_atomico_02_varianteA",
+      "palette": ["rosa pastello", "menta", "giallo burro", "cromo"],
+      "segmenti": 1100,
+      "seme": 7731,
+      "stile_cartellone": "atomico",
+      "sponsor_prevalenti": ["curve_pericolose", "brinis_udine", "slow_down"],
+      "sponsor_secondari": ["piston_high", "erba_medica", "green_box"],
+      "atmosfera": "Torri-razzo, UFO di latta, drive-in, colori pastello, atomic age"
+    },
+    {
+      "id": "lv_03_foglie",
+      "tema": "Viale delle foglie",
+      "stile": "psichedelico / cannabinoidi",
+      "scenario": "scenario_foglie_03_varianteA",
+      "palette": ["verde acido", "viola", "arancio", "fondo scuro"],
+      "segmenti": 1300,
+      "seme": 2098,
+      "stile_cartellone": "foglie",
+      "sponsor_prevalenti": ["curve_pericolose", "canna_bis", "green_box"],
+      "sponsor_secondari": ["brinis_udine", "piston_high", "erba_medica", "slow_down"],
+      "atmosfera": "Alberi giganti, fumi stilizzati, colori che cambiano, parodia ironica"
+    }
+  ],
+  "distribuzione_cartelloni": {
+    "regola": "Ogni livello usa i cartelloni nello stile corrispondente (neon/atomico/foglie)",
+    "densita_per_sponsor": {
+      "curve_pericolose": "20% dei segmenti (presente in tutti i livelli)",
+      "brinis_udine": "10-15% dei segmenti (presente in tutti i livelli)",
+      "altri": "5-10% dei segmenti a rotazione (sponsor tematicamente coerenti col livello hanno priorita)"
+    },
+    "totale_visibilita": "30-35% dei segmenti con almeno un cartellone",
+    "posizionamento": "lato strada (sinistro o destro), come oggetti bordo strada nel livello.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "nome": "brinis_udine",
+  "nome_display": "BRINIS UDINE",
+  "slogan": "Pezzi caldi per motorini che non si fermano mai!",
+  "descrizione": "Ricambi per motorini, insegna officina italiana",
+  "autore": "genera_sponsor.py",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "file": [
+    "cartellone_neon.png",
+    "cartellone_atomico.png",
+    "cartellone_foglie.png"
+  ],
+  "slogan_alt": [
+    "Diamo una spinta alle tue curve.",
+    "Dal 50ino al maxiscooter, abbiamo il pezzo che lo accende."
+  ]
+}

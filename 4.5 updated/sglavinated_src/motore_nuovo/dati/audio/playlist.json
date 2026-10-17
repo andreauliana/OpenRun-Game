@@ -1,0 +1,32 @@
+{
+  "licenza": "CC-BY-4.0",
+  "autore": "Andrea Uliana",
+  "note": "Brani tracker di Andrea, convertiti in PCM 8-bit per la hack MD. Formato: unsigned 8-bit mono, ~12922 Hz, banchi da 32768 byte. Quando disponibili i .xm originali, aggiungere qui e usare libxmp.",
+  "formato_bin": {
+    "tipo": "pcm_u8_mono",
+    "sample_rate": 12922,
+    "centro": 128,
+    "banco": 32768
+  },
+  "radio": {
+    "radio_M": {
+      "file": "shots/pcmr_M.bin",
+      "banchi_per_brano": 5,
+      "brani": ["moonlight", "irreversible", "heartbeats", "northern", "danny"]
+    },
+    "radio_A": {
+      "file": "shots/pcmr_A.bin",
+      "banchi_per_brano": 7,
+      "brani": ["atmospheric", "perna5", "overview", "dealer", "remindme"]
+    }
+  },
+  "sfx": {
+    "pcmn_d": "shots/pcmn_d.bin",
+    "pcmn_f": "shots/pcmn_f.bin"
+  },
+  "radio_iniziale": "radio_M",
+  "strumenti_riferimento": {
+    "mkradio2": "tools/mkradio2.py (conversione .xm -> .bin per Z80 MD)",
+    "xminfo": "tools/xminfo.py (parser XM: header, pattern, timeline)"
+  }
+}

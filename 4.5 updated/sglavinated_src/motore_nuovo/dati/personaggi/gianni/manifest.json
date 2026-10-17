@@ -1,0 +1,18 @@
+{
+  "id": "gianni",
+  "nome": "Gianni (la foglia, tempter)",
+  "ruolo": "personaggio che tenta: appare dopo uscite di strada e negli show periodici, dice frasi di tentazione",
+  "descrizione": "Nella hack v87: 8 pose x 4 pezzi 4x4 tile (g_frames.bin), bolla 96x24 px. Nel nuovo motore i disegni si rifanno originali; qui restano solo dati e regole.",
+  "stato": "nuovo",
+  "source_v87": "tools/gianni12.py (PHR/CHAR), SPEC_personaggi_v74.md sezioni 5-7, HANDOVER.md sezione 2, ARCHIVIO_V87.md",
+  "file": {
+    "fumetti": "fumetti.json",
+    "tutte_le_frasi": "../frasi.json"
+  },
+  "frasi_n": 97,
+  "id_frasi": "0-26, 34-65, 85-104, 121-124, 134-140, 142-146, 152-153",
+  "tabelle_show": ["otab", "ph_tab", "g1t", "g2t", "g3t", "itab"],
+  "crediti": "Testi e disegni originali: Andrea Uliana (hack v87, sola lettura).",
+  "licenza": "CC-BY-4.0",
+  "note_v87_non_riportate": "Limite 156 fumetti, budget VRAM/tile 28-87, bolla max 88 px, cooldown 24 frame: limiti hardware/timing della v87, riferimenti di comportamento non vincoli del nuovo motore."
+}

@@ -1,0 +1,96 @@
+{
+  "id": "menu_principale",
+  "descrizione": "Menu principale come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con assets_originali/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: assets_originali/ui/font/varianteB/font.png (+ font.json). Titolo: assets_originali/ui/titolo/varianteB/title.png (Antonio Bold OFL-1.1).",
+  "stato": "bozza",
+  "licenza": "MIT",
+  "autore": "@tipografo (reparto grafico, progetto Sglavinated)",
+  "url": "interno al progetto: assets_originali/ui/ (disegnato da zero, nessun asset Sega)",
+  "variante": "B",
+  "asset_dir": "../../assets_originali/ui",
+  "font_sheet": "font/varianteB/font.png",
+  "font_meta": "font/varianteB/font.json",
+  "titolo_immagine": "titolo/varianteB/title.png",
+  "titolo_meta": "titolo/varianteB/title.json",
+  "preview": "menu/varianteB/menu_preview.png",
+  "risoluzione": [
+    320,
+    224
+  ],
+  "tema": "bianco_e_nero",
+  "navigazione": "RetroPad: SU/GIU sposta selezione, A conferma, B indietro",
+  "colori": {
+    "sfondo": [0, 0, 0],
+    "cornice": [160, 160, 160],
+    "testo": [255, 255, 255],
+    "testo_sel": [0, 0, 0],
+    "sel": [255, 255, 255],
+    "azione": [160, 160, 160],
+    "azione_sel": [0, 0, 0],
+    "disabilitato": [80, 80, 80],
+    "hint": [160, 160, 160]
+  },
+  "cornice": {
+    "x": 20,
+    "y": 20,
+    "w": 280,
+    "h": 184,
+    "spessore": 2
+  },
+  "hint": {
+    "testo": "SU/GIU scegli  A conferma  B indietro",
+    "pos": [46, 190]
+  },
+  "voci": [
+    {
+      "label": "GUIDA",
+      "azione": "start",
+      "x": 40,
+      "y": 60,
+      "w": 212,
+      "h": 16
+    },
+    {
+      "label": "RADIO",
+      "azione": "radio",
+      "x": 40,
+      "y": 82,
+      "w": 212,
+      "h": 16
+    },
+    {
+      "label": "SHOW",
+      "azione": "show",
+      "x": 40,
+      "y": 104,
+      "w": 212,
+      "h": 16
+    },
+    {
+      "label": "OPZIONI",
+      "azione": "opzioni",
+      "x": 40,
+      "y": 126,
+      "w": 212,
+      "h": 16
+    },
+    {
+      "label": "CREDITI",
+      "azione": "crediti",
+      "x": 40,
+      "y": 148,
+      "w": 212,
+      "h": 16
+    },
+    {
+      "label": "ESCI",
+      "azione": "quit",
+      "x": 40,
+      "y": 170,
+      "w": 212,
+      "h": 16
+    }
+  ],
+  "voce_iniziale": 0,
+  "regole_disegno": "ogni voce e' il riquadro (x,y,w,h) della riga; etichetta disegnata in (x+6, y+(h-7)/2) con font 5x7 scala 1; colonna destra = valore 'azione' in MAIUSCOLO, destralignata con fine testo a x+w-6 sulla stessa riga; la voce iniziale (voce_iniziale) e' disegnata a inverso: riquadro pieno colore 'sel', testo 'testo_sel' e 'azione_sel'; cornice e hint dai campi omonimi; nessun altro elemento a schermo",
+  "note_tema": "Tema bianco e nero (decisione D7): nessun colore cromatico, solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Preview menu/varianteB/menu_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti. Layout posizioni elemento come riferimento strutturale all'originale (nessun asset Sega copiato)."
+}

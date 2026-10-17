@@ -1,0 +1,11 @@
+{
+  "autore": "@asset (progetto Sglavinated)",
+  "licenza": "CC0-1.0",
+  "descrizione": "Palette livello 1 stile futurista: 16 colori neon su scuro, ciano, magenta, giallo acido. Originale, disegnata da zero.",
+  "files": [
+    "palette.png",
+    "palette.json"
+  ],
+  "originale": true,
+  "riferimenti_sega": false
+}

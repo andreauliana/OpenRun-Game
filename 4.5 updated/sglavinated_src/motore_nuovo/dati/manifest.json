@@ -1,0 +1,7 @@
+{
+  "id": "dati",
+  "descrizione": "Cartella dati del motore nuovo: frasi, tabelle show, logica degli show, livelli, UI, audio.",
+  "stato": "nuovo",
+  "licenza": "CC-BY-4.0",
+  "note": "Copre i file dati direttamente in questa cartella (es. frasi.json, show_logica.md). Ogni sottocartella personaggio ha il proprio manifest."
+}

@@ -1,0 +1,35 @@
+{
+  "livello": "lv_01_neon",
+  "variante": "B",
+  "scenario": "scenario_neon_01",
+  "stile": "synthwave / C-wave",
+  "autore": "@scenografo (progetto Sglavinated, disegnato da zero, nessun materiale Sega)",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "palette_max_colori": 16,
+  "risoluzione_skyline": [
+    256,
+    128
+  ],
+  "oggetti_bordo_strada": [
+    "insegna_neon",
+    "lampione",
+    "palo_neon",
+    "bidone",
+    "segnale"
+  ],
+  "file": {
+    "skyline": "skyline.png",
+    "palette": "palette.png",
+    "palette_dati": "palette.json",
+    "oggetti": [
+      "oggetti/obj_insegna_neon.png",
+      "oggetti/obj_lampione.png",
+      "oggetti/obj_palo_neon.png",
+      "oggetti/obj_bidone.png",
+      "oggetti/obj_segnale.png"
+    ]
+  },
+  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico)."
+}

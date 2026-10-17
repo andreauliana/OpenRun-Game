@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/nemotron-3.5-super-vl-free",
+  "default_agent": "capo",
+  "permission": {
+    "bash": {
+      "*": "deny",
+      "cmake -S * -B *": "allow",
+      "cmake --build *": "allow",
+      "cmake *": "allow",
+      "cmake -S motore_nuovo -B build && cmake --build build": "allow",
+      "cmake -S * -B * && cmake --build *": "allow",
+      "sh tools/gate_t1.sh": "allow",
+      "sh tools/gate_t1.sh *": "allow",
+      "which *": "allow",
+      "make *": "allow",
+      "clang++ -std=c++17 -fsyntax-only *": "allow",
+      "ls *": "allow",
+      "cat *": "allow",
+      "grep *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "wc *": "allow",
+      "pwd": "allow",
+      "rm *": "deny",
+      "sh strumenti/verifica.sh*": "allow",
+      "sh ../strumenti/verifica.sh*": "allow"
+    },
+    "external_directory": {
+      "*": "deny",
+      "~/Desktop/4.5 updated/**": "allow"
+    },
+    "webfetch": "deny",
+    "execute": "deny"
+  }
+}

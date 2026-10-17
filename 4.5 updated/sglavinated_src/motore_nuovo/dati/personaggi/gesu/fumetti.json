@@ -1,0 +1,458 @@
+{
+  "licenza": "CC-BY-4.0",
+  "personaggio": "gesu",
+  "fonte_v87": "tools/gianni12.py (PHR/CHAR), OPENCODE_REFERENCE_v74.json",
+  "n_frasi": 59,
+  "id_frasi": [
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    141,
+    147,
+    148,
+    149,
+    150,
+    151,
+    154,
+    155
+  ],
+  "frasi": [
+    {
+      "id": 27,
+      "linea1": "OH, COGLIONE,",
+      "linea2": "GUARDA, FRA"
+    },
+    {
+      "id": 28,
+      "linea1": "ALZATI E GUIDA,",
+      "linea2": "NON FARTI, FRA"
+    },
+    {
+      "id": 29,
+      "linea1": "APRI GLI OCCHI,",
+      "linea2": "MOLLA LA CANNA"
+    },
+    {
+      "id": 30,
+      "linea1": "LA LUCE E' QUI,",
+      "linea2": "TU SEI IN ROTA"
+    },
+    {
+      "id": 31,
+      "linea1": "PIANO, CAZZONE,",
+      "linea2": "LA VITA E' UNA"
+    },
+    {
+      "id": 32,
+      "linea1": "SVEGLIA, FRA:",
+      "linea2": "IO NON FUMO"
+    },
+    {
+      "id": 33,
+      "linea1": "L'LSD TI SPACCA",
+      "linea2": "LA TESTA"
+    },
+    {
+      "id": 66,
+      "linea1": "MINCHIA, BASTA",
+      "linea2": "CON STA ROBA"
+    },
+    {
+      "id": 67,
+      "linea1": "TI FAI E SBANDI,",
+      "linea2": "COINCIDENZA?"
+    },
+    {
+      "id": 68,
+      "linea1": "PORCA MISERIA,",
+      "linea2": "TORNA IN STRADA"
+    },
+    {
+      "id": 69,
+      "linea1": "CHIUDI LA BOCCA",
+      "linea2": "E APRI GLI OCCHI"
+    },
+    {
+      "id": 70,
+      "linea1": "STAI ZITTO, FRA",
+      "linea2": "IL MONDO NON VA"
+    },
+    {
+      "id": 71,
+      "linea1": "STAI PER FINIRE,",
+      "linea2": "LO SAI, VERO?"
+    },
+    {
+      "id": 72,
+      "linea1": "TI STAI FOTTENDO",
+      "linea2": "LA VITA, FRA"
+    },
+    {
+      "id": 73,
+      "linea1": "UNA RIGA, E IL",
+      "linea2": "CUORE SI FERMA"
+    },
+    {
+      "id": 74,
+      "linea1": "DALL'ERBA A AGO",
+      "linea2": "IL PASSO E BREVE"
+    },
+    {
+      "id": 75,
+      "linea1": "SONO QUI: TORNA",
+      "linea2": "SULLA STRADA"
+    },
+    {
+      "id": 76,
+      "linea1": "IO SONO L'ALFA",
+      "linea2": "E L'OMEGA"
+    },
+    {
+      "id": 77,
+      "linea1": "NON LASCIARTI",
+      "linea2": "INGANNARE"
+    },
+    {
+      "id": 78,
+      "linea1": "TUA MADRE TI",
+      "linea2": "ASPETTA A CASA"
+    },
+    {
+      "id": 79,
+      "linea1": "UNA CANNA, POI",
+      "linea2": "UN MORTO: TU?"
+    },
+    {
+      "id": 80,
+      "linea1": "LA DROGA TI",
+      "linea2": "TOGLIE TUTTO"
+    },
+    {
+      "id": 81,
+      "linea1": "A CHI HA SETE",
+      "linea2": "DARO ACQUA VIVA"
+    },
+    {
+      "id": 82,
+      "linea1": "NON TEMERE, IO",
+      "linea2": "SONO IL VIVENTE"
+    },
+    {
+      "id": 83,
+      "linea1": "VADE RETRO,",
+      "linea2": "TENTATORE!"
+    },
+    {
+      "id": 84,
+      "linea1": "ECCO, FACCIO",
+      "linea2": "NUOVE LE COSE"
+    },
+    {
+      "id": 105,
+      "linea1": "SEI IN ROTA:",
+      "linea2": "CHIEDI AIUTO"
+    },
+    {
+      "id": 106,
+      "linea1": "NON DORMI PIU?",
+      "linea2": "COMANDA LEI"
+    },
+    {
+      "id": 107,
+      "linea1": "IL VIOLA FERMA",
+      "linea2": "IL RESPIRO"
+    },
+    {
+      "id": 108,
+      "linea1": "SCIROPPO E ALCOL",
+      "linea2": "TI FERMANO"
+    },
+    {
+      "id": 109,
+      "linea1": "ALCUNI RAPPER",
+      "linea2": "DEL DRANK: MORTI"
+    },
+    {
+      "id": 110,
+      "linea1": "BASTA, CAZZO.",
+      "linea2": "CHIAMA IL SERT"
+    },
+    {
+      "id": 111,
+      "linea1": "NON TI SALVO IO,",
+      "linea2": "TI SALVI TU"
+    },
+    {
+      "id": 112,
+      "linea1": "LA ROBA TI USA,",
+      "linea2": "NON IL CONTRARIO"
+    },
+    {
+      "id": 113,
+      "linea1": "PARLANE, FRA:",
+      "linea2": "NON SEI SOLO"
+    },
+    {
+      "id": 114,
+      "linea1": "CHIEDERE AIUTO",
+      "linea2": "NON E' DEBOLEZZA"
+    },
+    {
+      "id": 115,
+      "linea1": "SERT, MEDICO,",
+      "linea2": "AMICO: PARLANE"
+    },
+    {
+      "id": 116,
+      "linea1": "AL SESTO PIANO",
+      "linea2": "NESSUNO TI SALVA"
+    },
+    {
+      "id": 117,
+      "linea1": "CHI TI VENDE",
+      "linea2": "NON TI AIUTA"
+    },
+    {
+      "id": 118,
+      "linea1": "COSTA POCO, POI",
+      "linea2": "TI PRENDE TUTTO"
+    },
+    {
+      "id": 119,
+      "linea1": "SCALINO DOPO",
+      "linea2": "SCALINO, GIU"
+    },
+    {
+      "id": 120,
+      "linea1": "ASCIUGHERO",
+      "linea2": "OGNI TUA LACRIMA"
+    },
+    {
+      "id": 125,
+      "linea1": "NON TI FIDARE!",
+      "linea2": "TI VUOLE FREGARE"
+    },
+    {
+      "id": 126,
+      "linea1": "ANCHE IO AVEVO",
+      "linea2": "PROVATO: NO."
+    },
+    {
+      "id": 127,
+      "linea1": "MEGLIO LEGGERE",
+      "linea2": "IL TESTO, FRA"
+    },
+    {
+      "id": 128,
+      "linea1": "NON INIETTARTI",
+      "linea2": "IN VENA!"
+    },
+    {
+      "id": 129,
+      "linea1": "CERCA DI NON",
+      "linea2": "FARTI DI EROINA"
+    },
+    {
+      "id": 130,
+      "linea1": "CHIAMA DON",
+      "linea2": "LURIDO: TI AIUTA"
+    },
+    {
+      "id": 131,
+      "linea1": "AMA CHI VUOI,",
+      "linea2": "NON LA ROBA"
+    },
+    {
+      "id": 132,
+      "linea1": "ORGOGLIO VERO:",
+      "linea2": "VIVERE LUCIDI"
+    },
+    {
+      "id": 133,
+      "linea1": "ARCOBALENO SI,",
+      "linea2": "SIRINGHE NO"
+    },
+    {
+      "id": 141,
+      "linea1": "TI VEDO",
+      "linea2": "DALL'ALTO"
+    },
+    {
+      "id": 147,
+      "linea1": "LA MARIA NON",
+      "linea2": "TI SALVA, FRA"
+    },
+    {
+      "id": 148,
+      "linea1": "CARCIOFO O K:",
+      "linea2": "E' SOLO FUMO"
+    },
+    {
+      "id": 149,
+      "linea1": "APOCALIPSE:",
+      "linea2": "IL DRAGO E' QUI"
+    },
+    {
+      "id": 150,
+      "linea1": "CHI BEVE DA ME",
+      "linea2": "NON MORRA MAI"
+    },
+    {
+      "id": 151,
+      "linea1": "VANITAS",
+      "linea2": "VANITATUM, FRA"
+    },
+    {
+      "id": 154,
+      "linea1": "CHI SEMINA VENTO",
+      "linea2": "MIETE TEMPESTA"
+    },
+    {
+      "id": 155,
+      "linea1": "NESSUNO MUORE",
+      "linea2": "PER UNO SPINO"
+    }
+  ],
+  "tabelle_show": {
+    "xtab": [
+      126,
+      130,
+      141,
+      147,
+      148,
+      149,
+      150,
+      151,
+      154,
+      155,
+      73,
+      76,
+      80,
+      82,
+      106,
+      107,
+      108,
+      109,
+      126,
+      130,
+      141,
+      147,
+      148,
+      149,
+      150,
+      151,
+      154,
+      155,
+      73,
+      76,
+      80,
+      82
+    ],
+    "jtab": [
+      125,
+      126,
+      127,
+      128,
+      129,
+      141,
+      147,
+      148,
+      149,
+      150,
+      151,
+      154,
+      155,
+      106,
+      107,
+      108,
+      109,
+      114,
+      115,
+      130,
+      131,
+      132,
+      133,
+      120,
+      73,
+      76,
+      80,
+      82,
+      125,
+      126,
+      127,
+      128
+    ],
+    "j1t": [
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ],
+    "j2t": [
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "j3t": [
+      72,
+      105,
+      110,
+      111,
+      112,
+      113
+    ]
+  }
+}

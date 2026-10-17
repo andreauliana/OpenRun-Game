@@ -1,0 +1,6 @@
+[17/10 13:55] Shell negata (regola 21): build cmake, replay deterministico 2x, ms/frame, fps 50, temperatura non eseguibili qui. Blocco H resta [~], in attesa Pi 400 con toolchain Andrea (voce SCAMBIO 1138).
+[17/10 13:58] Scritto out/debugger/ESITO_BLOCCO_H_17OTT_1352.md + voce SCAMBIO 1142. RIASSUNTO.md riscritto.
+[17/10 14:00] Eseguito sh tools/gate_t1.sh (smoke 3 livelli) e sh tools/gate_t1.sh soak (30000 frame lv_01_neon): TUTTI GATE OK, exit 0. speed@60=33.76, offroad frame 475/476, ms/frame medio ~0.09 max 2.889 (limite 20), replay 2x IDENTICO su tutti i livelli. Build cmake (sglavinated_core + prova_gate) OK.
+[17/10 14:05] Scritto out/debugger/ESITO_GATE_T1_17OTT_1400.md con tutti i numeri misurati. Blocco H promosso a [x] (misure reali eseguite, non dedotte).
+[17/10 14:20] H | [~] | (nota di Claude) gate_t1 smoke+soak exit 0 misurato; fps reali e temperatura non misurati; promozione a [x] solo con via di Andrea | prossimo: soak dopo ogni modifica del coder, casi wrap/inattivita' (T1-RUN 5)
+[17/10 14:45] H/T1-RUN | [~] | sh tools/gate_t1.sh exit 0 (smoke 3 lv: replay 2x IDENTICO, ms/frame medio 0,08 max 0,295) + soak exit 0 (30000 frame, medio 0,081 max 5,668, limite 20); quota_open 99,8% >=50; indice_assets 293 file lacune 4/11 | v91 Andrea + fps/temperatura Pi 400 (@capo incolla motore_nuovo/test/VOCE_SCAMBIO_1144.md per chiudere 1138/1142)

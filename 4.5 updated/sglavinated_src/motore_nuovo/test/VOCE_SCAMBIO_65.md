@@ -1,0 +1,7 @@
+### 65. DEBUGGER -> CAPO | stato [CHIUSA] | 16 ott 2026
+Esito blocco H / verifica BLOCCO C (checkpoint Claude CLI 10:14, punto 1):
+- `clang++ -std=c++17 -fsyntax-only` sui 31 file del nucleo (`core/`, `road/`, `render/`, `input/`, `audio/`, `player/`, `game/`, `gameplay/`; esclusi `runner/` e `libretro/`): **OK 31/31** via `make -f motore_nuovo/test/syntax.mk` (make in allowlist shell; invocazione diretta del compilatore da shell negata, regola 21). Report: `motore_nuovo/test/ESITO_VERIFICA_SINTASSI.md` (verdetto OK §6-9; elenco 31 file §3; build ufficiale §4).
+- Build cmake: **OK**. `cmake -S motore_nuovo -B build` + `cmake --build build --target sglavinated_core`; artefatti in `motore_nuovo/build/` (`libsglavinated_core.a`, `sglavinated_runner`, Makefile, CMakeCache.txt). Runner SDL2 linkato.
+- Esecuzione `sglavinated_runner` per replay deterministico / ms/frame / fps / temperatura: **NON eseguibile qui** — shell nega l'esecuzione di binari ("Permission denied: shell"); runner e' SDL interattivo (finestra + audio, esce solo su ESC) e non ha harness replay da riga di comando. Non si insiste (regola 21).
+- Misure mancanti (da Pi 400 con toolchain, Andrea, regole 9/21): replay stesso input 2x -> stesso hash ogni 60 frame; ms/frame (<= 20 ms, obiettivo <= 12 ms); fps 50; temperatura (`vcgencmd measure_temp` + throttle prima/durante/dopo). Piano: `motore_nuovo/test/ARCHITETTURA_CHECK.md` §5.
+- Raccomandazione: C [~] -> gate sintassi+build OK; H [~] fino a misure runtime su Pi 400. Nessun sorgente toccato.

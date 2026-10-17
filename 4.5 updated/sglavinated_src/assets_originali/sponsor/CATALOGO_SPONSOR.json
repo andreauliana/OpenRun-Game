@@ -1,0 +1,123 @@
+{
+  "_meta": {
+    "descrizione": "Catalogo unificato sponsor fittizi — Sglavinated Edition V3 (open)",
+    "licenza": "CC0-1.0",
+    "autore": "genera_sponsor.py (Claude App)",
+    "riferimenti_sega": false,
+    "originale": true,
+    "generatore": "assets_originali/sponsor/genera_sponsor.py",
+    "sprite": "128x64 RGBA PNG",
+    "stili_disponibili": ["neon", "atomico", "foglie"],
+    "regole_posizionamento": {
+      "densita_totale": "30-35% dei segmenti con almeno un cartellone visibile",
+      "curve_pericolose": "20% dei segmenti",
+      "brinis_udine": "10-15% dei segmenti",
+      "altri_sponsor": "distribuiti nei segmenti rimanenti a rotazione",
+      "nota": "ciascun livello usa lo stile corrispondente (lv_01 -> neon, lv_02 -> atomico, lv_03 -> foglie)"
+    }
+  },
+  "sponsor": [
+    {
+      "id": "curve_pericolose",
+      "nome_display": "CURVE PERICOLOSE",
+      "categoria": "intimo / abbigliamento",
+      "slogan": "appoggiati al peggio",
+      "descrizione": "Sponsor fittizio di intimo, doppio senso guida+corpo. Pin-up stilizzate in posa su curve stradali.",
+      "icona": "icon_curva",
+      "frequenza": "alta (20%)",
+      "file_per_stile": {
+        "neon": "curve_pericolose/cartellone_neon.png",
+        "atomico": "curve_pericolose/cartellone_atomico.png",
+        "foglie": "curve_pericolose/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "brinis_udine",
+      "nome_display": "BRINIS UDINE",
+      "categoria": "ricambi motorini / officina",
+      "slogan": "Pezzi caldi per motorini che non si fermano mai!",
+      "slogan_alt": [
+        "Diamo una spinta alle tue curve.",
+        "Dal 50ino al maxiscooter, abbiamo il pezzo che lo accende."
+      ],
+      "descrizione": "Pubblicita locale, stile insegna di officina/negozio di provincia italiana.",
+      "icona": "icon_motorino",
+      "frequenza": "media (10-15%)",
+      "file_per_stile": {
+        "neon": "brinis_udine/cartellone_neon.png",
+        "atomico": "brinis_udine/cartellone_atomico.png",
+        "foglie": "brinis_udine/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "piston_high",
+      "nome_display": "PISTON HIGH",
+      "categoria": "motoristico / gioco di parole",
+      "slogan": "Erba del Pilota",
+      "descrizione": "Pistone + high. Livrea da corsa, gioco di parole motoristico.",
+      "icona": "icon_pistone",
+      "frequenza": "bassa (rotazione)",
+      "file_per_stile": {
+        "neon": "piston_high/cartellone_neon.png",
+        "atomico": "piston_high/cartellone_atomico.png",
+        "foglie": "piston_high/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "canna_bis",
+      "nome_display": "CANNA-BIS",
+      "categoria": "ironico / velocita",
+      "slogan": "L'unico sponsor che ti fa andare forte... rimanendo piantato.",
+      "descrizione": "Ironia: sponsor velocita con prodotto che rallenta. Gioco di parole cannabis/bis.",
+      "icona": "icon_foglia",
+      "frequenza": "bassa (rotazione, prevalente in lv_03_foglie)",
+      "file_per_stile": {
+        "neon": "canna_bis/cartellone_neon.png",
+        "atomico": "canna_bis/cartellone_atomico.png",
+        "foglie": "canna_bis/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "slow_down",
+      "nome_display": "SLOW DOWN",
+      "categoria": "ricambi auto / freni",
+      "slogan": "Pastiglie per freni molto rilassati",
+      "descrizione": "Pastiglie freno ironiche. Doppio senso: rallentare / rilassarsi.",
+      "icona": "icon_freno",
+      "frequenza": "bassa (rotazione)",
+      "file_per_stile": {
+        "neon": "slow_down/cartellone_neon.png",
+        "atomico": "slow_down/cartellone_atomico.png",
+        "foglie": "slow_down/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "erba_medica",
+      "nome_display": "ERBA MEDICA",
+      "categoria": "ammortizzatori / doppio senso",
+      "slogan": "Ammortizzatori ad alta quota",
+      "descrizione": "Ammortizzatori con doppio senso erba/altitudine. Nome pianta reale usato come brand fittizio.",
+      "icona": "icon_molla",
+      "frequenza": "bassa (rotazione)",
+      "file_per_stile": {
+        "neon": "erba_medica/cartellone_neon.png",
+        "atomico": "erba_medica/cartellone_atomico.png",
+        "foglie": "erba_medica/cartellone_foglie.png"
+      }
+    },
+    {
+      "id": "green_box",
+      "nome_display": "GREEN BOX",
+      "categoria": "pit stop / servizi",
+      "slogan": "Il Pit Stop della felicita",
+      "descrizione": "Pit stop ironico, box verde. Gioco di parole box = garage pit stop.",
+      "icona": "icon_box",
+      "frequenza": "bassa (rotazione)",
+      "file_per_stile": {
+        "neon": "green_box/cartellone_neon.png",
+        "atomico": "green_box/cartellone_atomico.png",
+        "foglie": "green_box/cartellone_foglie.png"
+      }
+    }
+  ]
+}

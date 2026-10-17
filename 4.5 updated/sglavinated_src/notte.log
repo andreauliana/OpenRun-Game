@@ -1,0 +1,164 @@
+[brains] avvio Sat 17 Oct 2026 17:23:00 CEST
+[ciclo] 17/10 17:23 ciclo 1, turno 1, ora 0
+[0m
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead TAPPE.md 
+[0m→ [0mRead VISIONE.md 
+[0m→ [0mRead AGENTS.md 
+[0m✱ [0mGlob "FEEDBACK_ANDREA.md" [90m1 match[0m
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead CONTROLLO.md 
+[0m→ [0mRead FEEDBACK_ANDREA.md 
+[0m→ [0mRead RICHIESTA_APERTA.md 
+[0m→ [0mRead SCAMBIO_RECENTE.md 
+[0m→ [0mRead ASSEMBLEE_APERTE.md 
+[0m→ [0mRead BACHECA_RECENTE.md 
+> capo · nemotron-3.5-super-vl-free
+Ora esploro lo stato attuale della bacheca capo e della struttura del progetto.
+[0m✱ [0mGlob "bacheche/capo/**" [90m5 matches[0m
+[0m✱ [0mGlob "out/capo/**" [90m5 matches[0m
+[0m✱ [0mGlob "tools/gate_t1.sh" [90m1 match[0m
+[0m✱ [0mGlob "motore_nuovo/src/**/*.{cpp,h}" [90m39 matches[0m
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead bacheche/capo/RIASSUNTO.md 
+[0m→ [0mRead bacheche/capo/DIARIO_RECENTE.md 
+[0m→ [0mRead out/capo/STATI_PROPOSTI.md 
+[0m→ [0mRead tools/gate_t1.sh 
+[0m→ [0mRead out/capo/RIEPILOGO_MATTINA.md 
+[0m→ [0mRead out/capo/PER_PROSSIMO_RUN.md 
+[0m→ [0mRead bacheche/capo/LEGGIMI.md 
+> capo · nemotron-3.5-super-vl-free
+Ho il quadro completo. Ora verifico la "regola 15 (cartelle)" nell'archivio v4 e file decisionali esistenti.
+[0m✗ [0mdate '+%d/%m %H:%M' failed
+[91m[1mError: [0mPermission denied: shell
+[0m✱ [0mGrep "regola 15|cartelle" [90min archivio_v4/AGENTS_v4.md · 4 matches[0m
+[0m✱ [0mGlob "DECISIONI_ANDREA.md" [90m1 match[0m
+[0m✱ [0mGlob "PIANO_TURNI.md" [90m1 match[0m
+> capo · nemotron-3.5-super-vl-free
+[0m✗ [0mdate failed
+[91m[1mError: [0mPermission denied: shell
+[0m→ [0mRead DECISIONI_ANDREA.md 
+[0m→ [0mRead PIANO_TURNI.md 
+> capo · nemotron-3.5-super-vl-free
+Shell negato per me (capo): uso l'orario del turno precedente come riferimento. Ora scrivo i fogli del turno: `STATI_PROPOSTI.md`, `DECISIONI_ANDREA.md` (nuove voci con default), `diario.md`, `RIASSUNTO.md`, `RIEPILOGO_MATTINA.md`.
+[0m← [0mWrite out/capo/STATI_PROPOSTI.md
+Wrote file successfully: out/capo/STATI_PROPOSTI.md
+[0m← [0mEdit DECISIONI_ANDREA.md
+Index: DECISIONI_ANDREA.md
+===================================================================
+--- DECISIONI_ANDREA.md
++++ DECISIONI_ANDREA.md
+@@ -71,5 +71,21 @@
+ ## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
+ Domanda: quando clang++/make è negato (regola 21), come si compila il nucleo?
+ Opzioni: utilizzare: 'cmake --build'.
+ RISPOSTA DI ANDREA: OK, cmake --build.
+-Esito: DEFAULT confermato. @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, temperatura) rimandati a Pi 400; in questo ambiente solo verifica statica e scrittura codice.
+\ No newline at end of file
++Esito: DEFAULT confermato. @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, temperatura) rimandati a Pi 400; in questo ambiente solo verifica statica e scrittura codice.
++
++## D10 | T1-RUN | capo | [APERTA]
++Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
++Opzioni: A) caricatore PNG minimo nel core (nuova dipendenza/lib, core senza SDL)  B) conversione PNG->raw in strumenti_py, prova_gate legge raw (zero nuove dipendenze)
++Raccomandazione: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
++DEFAULT usato nel frattempo: B.
++Impatto se cambi idea: riscrivere caricamento sprite in prova_gate e aggiungere dipendenza immagini al core.
++RISPOSTA DI ANDREA:
++
++## D11 | T1-RUN | capo | [APERTA]
++Domanda: fuoristrada: velocità crolla da ~160 a ~6 in pochi frame (troppo brusco). Come tarare il rallentamento fuori strada in player.cpp?
++Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelerazione secca a ~6  C) nessun rallentamento (velocità invariata fuori strada)
++Raccomandazione: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
++DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/gate_t1.sh` (replay 2x IDENTICO).
++Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
++RISPOSTA DI ANDREA:
+\ No newline at end of file
+
+> capo · nemotron-3.5-super-vl-free
+[0m← [0mWrite bacheche/capo/RIASSUNTO.md
+Wrote file successfully: bacheche/capo/RIASSUNTO.md
+[0m← [0mWrite bacheche/capo/diario.md
+Wrote file successfully: bacheche/capo/diario.md
+[0m← [0mWrite out/capo/RIEPILOGO_MATTINA.md
+Wrote file successfully: out/capo/RIEPILOGO_MATTINA.md
+> capo · nemotron-3.5-super-vl-free
+Tutti i fogli del turno sono scritti. Verifica rapida dello stato consegnato:
+[0m→ [0mRead out/capo/STATI_PROPOSTI.md [90m[limit=10][0m
+[0m→ [0mRead bacheche/capo/RIASSUNTO.md 
+> capo · nemotron-3.5-super-vl-free
+Turno 1 completato come @capo. Riepilogo operativo:
+
+**Letture effettuate:** TAPPE.md (tappa 1 attiva), FEEDBACK_ANDREA.md v90 (precedenza assoluta: tappa 1 NON OK, serve engine guida OutRun completo), CONTROLLO.md, VISIONE.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, BACHECA_RECENTE.md (vuoto), ASSEMBLEE_APERTE.md (vuoto, niente assemblee da gestire).
+
+**Blocchi aperti pertinenti alla tappa 1:** T1-RUN [~], P1 [~], H [~], M [~], J [ ]. MD0, T5, N sospesi/[-] per scelta Andrea.
+
+**Scritti:**
+- `out/capo/STATI_PROPOSTI.md` — stati proposti + deleghe: `@sviluppatore` T1-RUN punti 1-4 (guida asintotica/freno/sterzo, colline quota assoluta, zRel sprite, sprite veri nel gate), `@collaudatore` punti 5-6 (casi prova_gate, 3 screenshot out/debugger/, indice_assets, quota_open) + review punto 7 dopo le correzioni, Andrea punto 8 (v91 + fps/temp Pi 400).
+- `DECISIONI_ANDREA.md` — aggiunte D10 (sprite veri: DEFAULT B conversione PNG->raw in strumenti_py, zero nuove dipendenze) e D11 (off-road: DEFAULT A rallentamento graduale ~0.85/frame). Nessun agente aspetta Andrea.
+- `bacheche/capo/diario.md` — una riga turno con esito misurato.
+- `bacheche/capo/RIASSUNTO.md` — 8 righe, stato corrente.
+- `out/capo/RIEPILOGO_MATTINA.md` — riepilogo turno.
+
+**Regole rispettate:** regola 15 (scrivo solo in out/capo/, bacheche/capo/, DECISIONI_ANDREA.md), regola 26 (unico comando `sh tools/gate_t1.sh [soak]`), niente subagent (il ciclo avvia sviluppatore/collaudatore da solo), FINITO non creabile (non tutti [x]).
+
+**Prossimo:** esecuzione delle deleghe, poi `sh tools/gate_t1.sh soak`; tappa 1 si chiude con v91 di Andrea + fps/temperatura Pi 400.
+[ciclo] 17/10 17:31 giro diretto: avvio collaudatore (opencode/longcat-2.5-preview-free)
+[ciclo] 17/10 17:36 giro diretto: collaudatore fermato dal timeout, 1 file toccati (modello invariato)
+[ciclo] 17/10 17:36 giro diretto: avvio sviluppatore (opencode/longcat-2.5-preview-free)
+[ciclo] 17/10 17:56 giro diretto: sviluppatore fermato dal timeout, 196 file toccati (modello invariato)
+[ciclo] 17/10 17:56 STOP
+[ciclo] 17/10 17:56 CHECKPOINT 1
+[ciclo] 17/10 18:00 review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna
+[0m
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead . 
+[0m→ [0mRead RICHIESTA_APERTA.md 
+[0m→ [0mRead VISIONE.md 
+[0m→ [0mRead SCAMBIO_RECENTE.md 
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead DECISIONI_ANDREA.md 
+[0m→ [0mRead out 
+[0m→ [0mRead bacheche 
+[0m→ [0mRead FEEDBACK_ANDREA.md 
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead bacheche/sviluppatore 
+[0m→ [0mRead bacheche/capo 
+[0m→ [0mRead out/capo 
+[0m→ [0mRead bacheche/collaudatore 
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead bacheche/capo/RIASSUNTO.md 
+[0m→ [0mRead bacheche/capo/DIARIO_RECENTE.md 
+[0m→ [0mRead out/capo/STATI_PROPOSTI.md 
+[0m→ [0mRead out/capo/RIEPILOGO_MATTINA.md 
+> capo · nemotron-3.5-super-vl-free
+[0m→ [0mRead bacheche/collaudatore/RIASSUNTO.md 
+[0m→ [0mRead bacheche/sviluppatore/RIASSUNTO.md 
+[0m→ [0mRead bacheche/collaudatore/DIARIO_RECENTE.md 
+[0m→ [0mRead out/capo/PER_PROSSIMO_RUN.md 
+[0m→ [0mRead bacheche/sviluppatore/DIARIO_RECENTE.md 
+> capo · nemotron-3.5-super-vl-free
+Ho il quadro completo. Ora leggo il diario del capo per aggiungere la riga di fine turno, poi scrivo il riepilogo.
+[0m→ [0mRead bacheche/capo/diario.md 
+> capo · nemotron-3.5-super-vl-free
+[0m← [0mEdit bacheche/capo/diario.md
+Index: bacheche/capo/diario.md
+===================================================================
+--- bacheche/capo/diario.md
++++ bacheche/capo/diario.md
+@@ -1,1 +1,2 @@
+ [17/10 16:30] T1-RUN | [~] | STATI_PROPOSTI.md riscritto (deleghe @sviluppatore punti 1-4, @collaudatore punti 5-6 + review 7); decisioni D10/D11 in DECISIONI_ANDREA.md (default B = conversione PNG->raw, A = off-road graduale) | prossimo: esecuzione deleghe, gate soak, poi v91 Andrea per chiudere H e P1
++[17/10 17:00] RIEPILOGO_MATTINA | [~] | scritto out/capo/RIEPILOGO_MATTINA.md (28 righe): gate exit 0, speed@60=33.76, ms/frame 0,076, replay IDENTICO, T1-RUN[~] P1[~] H[~] J[ ] M[~]; aperti .sglraw mancanti, setSponsorSprites in prova_gate, v91 Andrea | prossimo: sglraw + setSponsorSprites + gate soak, poi v91 Andrea
+
+[0m← [0mWrite out/capo/RIEPILOGO_MATTINA.md
+Wrote file successfully: out/capo/RIEPILOGO_MATTINA.md
+> capo · nemotron-3.5-super-vl-free
+Scritto `out/capo/RIEPILOGO_MATTINA.md` (28 righe, sotto il limite 40) e aggiunta la riga di diario in `bacheche/capo/diario.md`.
+
+Contenuto:
+- **Fatto**: gate `sh tools/gate_t1.sh` exit 0 sui 3 livelli (speed@60=33.76, ms/frame 0,076, replay 2x IDENTICO); soak exit 0 (30000 frame, ms/frame 0,071); P1 punti 1-3 verdi (guida OutRun, colline, wrap sprite); sprite_raw + png_a_raw (MIT, zero dipendenze) aggiunti a CMakeLists.
+- **Non funziona / aperto**: `.sglraw` non generati (python3 non eseguibile qui) e `prova_gate.cpp` (di @collaudatore) non chiama `setSponsorSprites` -> screenshot ancora con rettangoli; `v91` di Andrea pendente (runner Mac + fps/temp Pi 400) per chiudere H e promuovere P1/H; fuoristrada ~160->6 da tarare.
+- **Decisioni aperte DECISIONI_ANDREA.md**: solo D10 (DEFAULT B: conversione PNG->raw in strumenti_py) e D11 (DEFAULT A: off-road graduale ~0.85/frame); risposta di Andrea in attesa per entrambe.
+- **Prossimo passo**: @sviluppatore sblocca i `.sglraw`, poi @collaudatore aggiorna `prova_gate` con `setSponsorSprites` + 3 screenshot + log, rilancia `sh tools/gate_t1.sh soak` (exit 0, replay IDENTICO), poi si attende v91 di Andrea.
+
+Nessuna assemblea, nessun `PER_CLAUDE.md`, `FINITO` non creabile (T1-RUN non è [x]).
+[ciclo] 17/10 18:02 fine: leggi RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md, PACCHETTO_PER_CLAUDE_APP.md

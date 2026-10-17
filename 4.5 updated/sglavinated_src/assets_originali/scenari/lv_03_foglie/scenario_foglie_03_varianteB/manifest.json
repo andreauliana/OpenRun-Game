@@ -1,0 +1,35 @@
+{
+  "livello": "lv_03_foglie",
+  "variante": "B",
+  "scenario": "scenario_foglie_03",
+  "stile": "psichedelico / cannabinoidi",
+  "autore": "@scenografo (progetto Sglavinated, disegnato da zero, nessun materiale Sega)",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "palette_max_colori": 16,
+  "risoluzione_skyline": [
+    256,
+    128
+  ],
+  "oggetti_bordo_strada": [
+    "segnale_foglia",
+    "albero_mini",
+    "panchina_fumo",
+    "panchina_curva",
+    "fungo_psico"
+  ],
+  "file": {
+    "skyline": "skyline.png",
+    "palette": "palette.png",
+    "palette_dati": "palette.json",
+    "oggetti": [
+      "oggetti/obj_segnale_foglia.png",
+      "oggetti/obj_albero_mini.png",
+      "oggetti/obj_panchina_fumo.png",
+      "oggetti/obj_panchina_curva.png",
+      "oggetti/obj_fungo_psico.png"
+    ]
+  },
+  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico)."
+}

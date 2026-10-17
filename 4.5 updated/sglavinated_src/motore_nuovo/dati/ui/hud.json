@@ -1,0 +1,150 @@
+{
+  "id": "hud_gioco",
+  "descrizione": "HUD di gioco come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con assets_originali/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: assets_originali/ui/font/varianteB/font.png (+ font.json). Elementi posizionati come riferimento strutturale all'originale (distanza in alto a sinistra, velocita in alto a destra), nessun asset Sega copiato.",
+  "stato": "bozza",
+  "licenza": "MIT",
+  "autore": "@tipografo (reparto grafico, progetto Sglavinated)",
+  "url": "interno al progetto: assets_originali/ui/ (disegnato da zero, nessun asset Sega)",
+  "variante": "B",
+  "asset_dir": "../../assets_originali/ui",
+  "preview": "hud/varianteB/hud_preview.png",
+  "risoluzione": [
+    320,
+    224
+  ],
+  "tema": "bianco_e_nero",
+  "font_sheet": "font/varianteB/font.png",
+  "font_meta": "font/varianteB/font.json",
+  "elementi": [
+    {
+      "id": "cornice",
+      "tipo": "cornice",
+      "nota": "cornice fissa attorno a distanza + barra razzo (disegnata per prima, sotto gli altri elementi)",
+      "x": 8,
+      "y": 8,
+      "w": 120,
+      "h": 60,
+      "spessore": 2,
+      "colore": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "distanza",
+      "tipo": "testo",
+      "label": "KM",
+      "valore": "000",
+      "label_pos": [
+        16,
+        12
+      ],
+      "valore_pos": [
+        16,
+        24
+      ],
+      "scala_valore": 2,
+      "colore": [
+        255,
+        255,
+        255
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "carica_razzo",
+      "tipo": "barra",
+      "label": "RAZZO",
+      "label_pos": [
+        16,
+        48
+      ],
+      "barra_pos": [
+        16,
+        58
+      ],
+      "barra_w": 60,
+      "barra_h": 6,
+      "spessore_bordo": 2,
+      "riempimento_px": 44,
+      "colore_bordo": [
+        255,
+        255,
+        255
+      ],
+      "colore_riempimento": [
+        120,
+        120,
+        120
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "velocita",
+      "tipo": "testo",
+      "label": "VEL",
+      "valore": "120",
+      "label_pos": [
+        200,
+        12
+      ],
+      "valore_pos": [
+        200,
+        24
+      ],
+      "scala_valore": 3,
+      "colore": [
+        255,
+        255,
+        255
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "unita_vel",
+      "tipo": "testo",
+      "testo": "KM/H",
+      "nota": "y=48 (era 44): con scala 3 il valore '120' arriva a riga 44, a 44 le due scritte si sovrapponevano",
+      "pos": [
+        240,
+        48
+      ],
+      "scala": 1,
+      "colore": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "show",
+      "tipo": "testo",
+      "testo": "SHOW OFF",
+      "pos": [
+        200,
+        80
+      ],
+      "scala": 1,
+      "colore": [
+        255,
+        255,
+        255
+      ]
+    }
+  ],
+  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'cornice' = rettangolo con bordo di 'spessore' px; tipo 'testo' con label/valore = etichetta in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala'; tipo 'barra' = etichetta a label_pos, bordo rettangolo (barra_pos, barra_w, barra_h) di 'spessore_bordo' px in colore_bordo, riempimento pieno in colore_riempimento di 'riempimento_px' px di larghezza e barra_h-2*spessore_bordo di altezza, partendo da barra_pos+spessore_bordo",
+  "note_tema": "Tema bianco e nero (decisione D7): nessun colore cromatico, solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Testo primario bianco [255,255,255], etichette/secondario grigio [160,160,160], barra riempimento grigio [120,120,120], bordo barra bianco [255,255,255], cornice grigio [160,160,160]. Preview hud/varianteB/hud_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti."
+}

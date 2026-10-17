@@ -1,0 +1,20 @@
+{
+  "id": "gameplay",
+  "descrizione": "Modulo gameplay: show di Gianni/Gesu', fumetti reattivi, escalation, inattivita', UFO. Interfaccia verso il nucleo in show.h; interfaccia di disegno per il renderer in disegno_show.h (ScenaShow) + testi_frasi.h (testi da dati/frasi.json); regole in dati/SPEC_GAMEPLAY.md e DISEGNO_SHOW.md.",
+  "stato": "nuovo",
+  "licenza": "MIT",
+  "file": [
+    "show.h",
+    "show.cpp",
+    "disegno_show.h",
+    "disegno_show.cpp",
+    "testi_frasi.h",
+    "testi_frasi.cpp",
+    "escalation.h",
+    "frasi.h",
+    "frasi.cpp",
+    "personaggi.h",
+    "ufo.h"
+  ],
+  "note": "Codice C++17 indipendente da SDL. Le tabelle di id frase sono una copia di lavoro di dati/frasi.json (CC-BY-4.0, autore Andrea): qui solo indici; i testi arrivano da testi_frasi.cpp (lettura unica in init, percorso relativo motore_nuovo/dati/frasi.json). Da aggiungere a sglavinated_core in CMakeLists.txt: disegno_show.cpp e testi_frasi.cpp (compito di @coder, vedi DISEGNO_SHOW.md sezione 3)."
+}
