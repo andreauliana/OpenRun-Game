@@ -32,3 +32,21 @@
 [ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
 [100%] Linking CXX executable prova_gate
 [100%] Built target prova_gate
+frameHash 0 3293350065
+frameHash 60 2513494949
+frameHash 120 4060642540
+frameHash 180 2477859142
+frameHash 240 2788643933
+frameHash 300 1814763270
+frameHash 360 1510996410
+frameHash 420 859935643
+frameHash 480 4210778494
+modo: smoke, frame simulati: 500
+speed@60=33.76  X[min,max]=[-164.8,771.3]  zFinale=992.9
+offroad: raggiunto (frame 476)
+ms/frame medio=0.087 max=1.683 (limite 20)
+replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
+wrapCount=4 stimaTotalLen=56398 zMax=36765.5 zFinale=36765.5 replay 2x: IDENTICO
+modo: inattivita, frame simulati: 900
+maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
+GATE OK
