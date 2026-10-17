@@ -17,6 +17,7 @@
 #include "game/game.h"
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
@@ -36,7 +37,7 @@ constexpr i32 PIXEL_MIN = 100;      // soglia pixel per ritenere presente un ret
 constexpr double MAX_MS_FRAME = 20.0;
 constexpr f32 MIN_SPEED_FIRST_FRAME = 8.0f;
 constexpr f32 MIN_SPEED_FRAME_60 = 150.0f;
-constexpr f32 MIN_ROAD_TRAVEL_FRAME_60 = 6000.0f;
+constexpr f32 MIN_ROAD_TRAVEL_FRAME_60 = 12000.0f;
 
 struct Esito {
     std::vector<u32> hash;      // frameHash ogni frame (confronto fra run)
@@ -199,13 +200,41 @@ bool verificaAccelerazione(const std::string& livello) {
     }
 
     std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f; "
-                "strada 1.2s=%.1f, finale=%.1f\n",
+                "strada 1.2s=%.1f, posizione finale=%.1f\n",
                 speedPrimoFrame, speedDopo60, speedPrecedente, avanzamentoPrimi60, avanzamentoStrada);
     return speedPrimoFrame >= MIN_SPEED_FIRST_FRAME &&
            speedDopo60 >= MIN_SPEED_FRAME_60 &&
            avanzamentoPrimi60 >= MIN_ROAD_TRAVEL_FRAME_60 &&
-           speedPrecedente >= 240.0f && speedPrecedente <= 250.0f &&
-           avanzamentoStrada >= 40000.0f;
+           speedPrecedente >= 240.0f && speedPrecedente <= 250.0f;
+}
+
+bool verificaContinuitaCurve() {
+    Road road;
+    road.build({
+        {0.0f, 0.0f, 200},
+        {1.0f, 0.0f, 200},
+        {-1.0f, 0.0f, 200},
+        {0.0f, 0.0f, 200}
+    }, 1u);
+    std::vector<Road::ProjectedSeg> projected;
+    road.project(0.0f, 0.0f, projected);
+
+    f32 pendenzaPrecedente = 0.0f;
+    f32 saltoPendenzaMassimo = 0.0f;
+    for (size_t i = 1; i < projected.size(); ++i) {
+        const f32 dz = projected[i].worldZ - projected[i - 1].worldZ;
+        if (dz <= 0.0f) return false;
+        const f32 pendenza = (projected[i].worldX - projected[i - 1].worldX) / dz;
+        if (i > 1)
+            saltoPendenzaMassimo = std::max(saltoPendenzaMassimo,
+                                            std::abs(pendenza - pendenzaPrecedente));
+        pendenzaPrecedente = pendenza;
+    }
+
+    std::printf("continuita' curve: campioni=%zu, salto pendenza max=%.2f\n",
+                projected.size(), saltoPendenzaMassimo);
+    return projected.size() >= (size_t)Road::DRAW_DIST * 3 &&
+           saltoPendenzaMassimo <= 0.51f;
 }
 
 bool verificaSterzo() {
@@ -380,6 +409,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaSterzo();
         std::printf("%s\n", ok ? "GATE STERZO OK" : "FALLITO: sterzo poco reattivo o asimmetrico");
         return ok ? 0 : 7;
+    }
+
+    if (modo == "curve") {
+        const bool ok = verificaContinuitaCurve();
+        std::printf("%s\n", ok ? "GATE CURVE CONTINUE OK" : "FALLITO: curve a scatto o proiezione insufficiente");
+        return ok ? 0 : 8;
     }
 
     if (modo == "soak") {

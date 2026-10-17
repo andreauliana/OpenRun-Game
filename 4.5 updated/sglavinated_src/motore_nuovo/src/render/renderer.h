@@ -50,12 +50,12 @@ private:
     Framebuffer& fb_;
     const Palette& pal_;
 
-    // Bande alternate (asfalto, erba, rumble, tratteggio): BAND_SEGS segmenti per banda,
-    // indice preso dal segmento del MONDO, quindi le bande scorrono con la strada.
+    // Bande alternate (asfalto, erba, rumble) ancorate al segmento del mondo.
     static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
     static constexpr u32 GRASS_ALT = 0xFF008C00; // verde piu' scuro per la banda alternata
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band);
+    void drawRoadsideMarkers(f32 playerZ);
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
 
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)

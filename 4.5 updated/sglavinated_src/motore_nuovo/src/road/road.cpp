@@ -16,7 +16,10 @@ void Road::build(std::vector<f32> curves, std::vector<f32> hills, u32 seed) {
     totalLen_ = 0;
 
     i32 n = (i32)curves.size();
-    if (n == 0) n = 1;
+    if (n == 0) {
+        curves.push_back(0.0f);
+        n = 1;
+    }
     if ((i32)hills.size() < n) hills.resize(n, 0.0f);
 
     // Colori alternati per i blocchi di strada (nessun asset: solo palette).
@@ -32,10 +35,13 @@ void Road::build(std::vector<f32> curves, std::vector<f32> hills, u32 seed) {
         seg.colorRumble = rumbles[i % 2];
         seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
 
-        // Il secondo punto e' il primo avanzato di SEG_LEN lungo la curva/collina.
-        // Interpolazione semplice: curva e collina agiscono linearmente sul segmento.
-        seg.p2x = curX + seg.curve * (f32)SEG_LEN;
-        seg.p2y = curY + seg.hill * (f32)SEG_LEN;
+        // La pendenza passa gradualmente dal segmento precedente a quello corrente:
+        // i giunti della pista restano continui anche con curve alternate ravvicinate.
+        const i32 prev = (i + n - 1) % n;
+        const f32 startCurve = curves[prev];
+        const f32 startHill = hills[prev];
+        seg.p2x = curX + (startCurve + seg.curve) * 0.5f * (f32)SEG_LEN;
+        seg.p2y = curY + (startHill + seg.hill) * 0.5f * (f32)SEG_LEN;
         seg.p2z = curZ + (f32)SEG_LEN;
 
         curX = seg.p2x;
@@ -66,8 +72,11 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         seg.colorRumble = rumbles[i % 2];
         seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
 
-        seg.p2x = curX + seg.curve * (f32)seg.length;
-        seg.p2y = curY + seg.hill * (f32)seg.length;
+        const size_t prev = (i + descs.size() - 1) % descs.size();
+        const f32 startCurve = descs[prev].curva;
+        const f32 startHill = descs[prev].collina;
+        seg.p2x = curX + (startCurve + seg.curve) * 0.5f * (f32)seg.length;
+        seg.p2y = curY + (startHill + seg.hill) * 0.5f * (f32)seg.length;
         seg.p2z = curZ + (f32)seg.length;
 
         curX = seg.p2x;
@@ -131,8 +140,13 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out) con
     }
     const RoadSegment& startSeg = segs_[startIdx];
     f32 segT = (z0 - acc) / (f32)startSeg.length; // 0..1 dentro il segmento
-    f32 camWorldX = startSeg.p1x + (startSeg.p2x - startSeg.p1x) * segT;
-    f32 camWorldY = startSeg.p1y + (startSeg.p2y - startSeg.p1y) * segT;
+    const i32 prevStart = (startIdx + (i32)segs_.size() - 1) % (i32)segs_.size();
+    const f32 startCurve = segs_[prevStart].curve;
+    const f32 startHill = segs_[prevStart].hill;
+    f32 camWorldX = startSeg.p1x + (f32)startSeg.length *
+        (startCurve * segT + 0.5f * (startSeg.curve - startCurve) * segT * segT);
+    f32 camWorldY = startSeg.p1y + (f32)startSeg.length *
+        (startHill * segT + 0.5f * (startSeg.hill - startHill) * segT * segT);
     // Telecamera: punto sotto l'auto sollevata di CAM_HEIGHT. playerX è l'offset
     // laterale dell'auto; le coordinate ahead sono assolute rispetto al punto
     // sotto l'auto (x e y del segmento, non integrate due volte).
@@ -141,36 +155,38 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out) con
 
     f32 curZ = 0.0f; // distanza relativa dalla telecamera
 
+    constexpr i32 SAMPLES_PER_SEGMENT = 4;
+    out.reserve((size_t)DRAW_DIST * SAMPLES_PER_SEGMENT);
     for (i32 i = 0; i < DRAW_DIST; ++i) {
         i32 idx = (startIdx + i) % (i32)segs_.size();
         const RoadSegment& seg = segs_[idx];
+        const RoadSegment& prev = segs_[(idx + (i32)segs_.size() - 1) % (i32)segs_.size()];
 
-        // Primo segmento: si avanza solo della parte ancora davanti alla telecamera,
-        // poi interi segmenti. Le coordinate sono le quote assolute p2x/p2y (fine
-        // segmento), cosi' i trapezi sono contigui e continui.
-        const f32 frac = (i == 0) ? (1.0f - segT) : 1.0f;
-        f32 curZInc = (f32)seg.length * frac;
-        curZ += curZInc;
-        f32 curX = seg.p2x;
-        f32 curY = seg.p2y;
+        const f32 tStart = (i == 0) ? segT : 0.0f;
+        for (i32 sample = 1; sample <= SAMPLES_PER_SEGMENT; ++sample) {
+            const f32 t = tStart + (1.0f - tStart) *
+                ((f32)sample / (f32)SAMPLES_PER_SEGMENT);
+            curZ += (f32)seg.length * (1.0f - tStart) /
+                (f32)SAMPLES_PER_SEGMENT;
+            const f32 curX = seg.p1x + (f32)seg.length *
+                (prev.curve * t + 0.5f * (seg.curve - prev.curve) * t * t);
+            const f32 curY = seg.p1y + (f32)seg.length *
+                (prev.hill * t + 0.5f * (seg.hill - prev.hill) * t * t);
 
-        f32 z = curZ; // distanza relativa alla telecamera (playerZ già avvolto sopra)
-        if (z < Z_NEAR) continue; // troppo vicino: evita 1/z esploso
+            const f32 z = curZ; // distanza relativa alla telecamera
+            if (z < Z_NEAR) continue;
 
-        f32 s = DEPTH / z;
-
-        f32 sx = 160.0f + s * (curX - camX) * 160.0f;  // W/2 = 160
-        f32 sy = 112.0f - s * (curY - camY) * 112.0f;  // H/2 = 112, orizzonte ~112
-
-        ProjectedSeg ps;
-        ps.index = idx;
-        ps.worldX = curX;
-        ps.worldY = curY;
-        ps.worldZ = z; // RELATIVO alla telecamera
-        ps.scale = s;
-        ps.screenX = sx;
-        ps.screenY = sy;
-        out.push_back(ps);
+            const f32 s = DEPTH / z;
+            ProjectedSeg ps;
+            ps.index = idx;
+            ps.worldX = curX;
+            ps.worldY = curY;
+            ps.worldZ = z;
+            ps.scale = s;
+            ps.screenX = 160.0f + s * (curX - camX) * 160.0f;
+            ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
+            out.push_back(ps);
+        }
     }
 }
 

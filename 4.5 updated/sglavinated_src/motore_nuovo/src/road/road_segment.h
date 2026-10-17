@@ -9,9 +9,9 @@ namespace sgl {
 //   L. Gorenfeld, "Lou's Pseudo 3d Page", https://www.extentofthejam.com/pseudo/
 //   Jake Gordon, "JavaScript Racer", https://jakesgordon.com/writing/javascript-racer/
 //
-// Un segmento ha: lunghezza fissa (unita' del mondo), curva (variante di
-// posizione laterale lungo il segmento, in rad per segmento) e collina
-// (variante di altezza lungo il segmento). La strada e' una lista circolare
+// Un segmento ha: lunghezza (unita' del mondo), curva (pendenza laterale) e
+// collina (pendenza verticale); le pendenze sono raccordate fra segmenti.
+// La strada e' una lista circolare
 // di segmenti; la posizione assoluta si avvolge (wrap) sulla lunghezza totale.
 struct RoadSegment {
     i32 index = 0;           // indice assoluto nella lista

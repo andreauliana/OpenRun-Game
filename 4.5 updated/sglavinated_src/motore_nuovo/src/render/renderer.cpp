@@ -5,6 +5,11 @@
 #include <utility> // std::move
 
 namespace sgl {
+namespace {
+constexpr f32 LANE_DASH_CYCLE = 800.0f;
+constexpr f32 LANE_DASH_LENGTH = 400.0f;
+constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
+}
 
 Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     // Preallocato una volta: zero allocazioni per frame nel ciclo di gioco.
@@ -41,10 +46,10 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ) {
         const auto& lontano = projs_[i];
         // Salta se il segmento vicino non e' sotto il lontano (degenero/contigui).
         if (lontano.screenY >= vicino.screenY) continue;
-        // Bande alternate ancorate al MONDO (indice segmento), non allo schermo: asfalto,
-        // erba, rumble e tratteggio di corsia cambiano insieme e scorrono allineati.
+        // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
         drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0);
     }
+    drawRoadsideMarkers(playerZ);
 }
 
 void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
@@ -86,10 +91,35 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         fb_.hline(lx, rx, y, road);
         fb_.hline(lx, lx + rw - 1, y, rumble);
         fb_.hline(rx - rw + 1, rx, y, rumble);
-        if (band) { // tratteggio di corsia solo sulle bande "chiare", centrato sulla strada
+        const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
+        const f32 distance = invZ > 0.0f ? 1.0f / invZ : next.worldZ;
+        f32 dashPhase = std::fmod(distance, LANE_DASH_CYCLE);
+        if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
+        if (dashPhase < LANE_DASH_LENGTH) {
             i32 lw = (i32)(hw * 0.02f);
             if (lw < 1) lw = 1;
             fb_.hline((i32)cx - lw, (i32)cx + lw, y, lane);
+        }
+    }
+}
+
+void Renderer::drawRoadsideMarkers(f32 playerZ) {
+    for (const Road::ProjectedSeg& p : projs_) {
+        f32 phase = std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING);
+        if (phase < 0.0f) phase += ROADSIDE_MARKER_SPACING;
+        if (phase >= 50.0f || p.screenY < HORIZON_Y ||
+            p.screenY >= (f32)Framebuffer::HEIGHT)
+            continue;
+
+        const f32 halfRoad = p.scale * Road::ROAD_HALF_WORLD * (Framebuffer::WIDTH / 2.0f);
+        const i32 height = std::clamp((i32)(p.scale * 300.0f * (Framebuffer::HEIGHT / 2.0f)), 2, 28);
+        const i32 width = std::clamp((i32)(p.scale * 35.0f * (Framebuffer::WIDTH / 2.0f)), 1, 4);
+        const i32 bottom = (i32)p.screenY;
+        for (i32 side : {-1, 1}) {
+            const i32 x = (i32)(p.screenX + side * (halfRoad + width * 2.0f));
+            const u32 color = side < 0 ? pal_[1] : pal_[14];
+            fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
+            fb_.hline(x - width / 2, x + width / 2, bottom - height, pal_[5]);
         }
     }
 }

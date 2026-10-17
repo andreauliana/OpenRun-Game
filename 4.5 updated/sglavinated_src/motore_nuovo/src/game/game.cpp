@@ -7,7 +7,8 @@
 
 namespace sgl {
 namespace {
-constexpr f32 ROAD_SCROLL_SCALE = 48.0f;
+constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
+constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
 }
 
 Game::Game() : seed_(12345), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_), showManager_(seed_) {
@@ -287,12 +288,14 @@ void Game::update() {
         player_.update(dt);
 
         road_.playerX = player_.x;
-        road_.advance(player_.speed * dt * ROAD_SCROLL_SCALE);
+        const f32 roadScrollScale = ROAD_SCROLL_SCALE *
+            (1.0f + ROAD_SCROLL_SPEED_BOOST * player_.speed / player_.maxSpeed());
+        road_.advance(player_.speed * dt * roadScrollScale);
         player_.z = road_.playerZ;
 
         // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.
         const f32 curvaQui = road_.curvaAt(player_.z);
-        player_.x += curvaQui * player_.speed * 0.04f * dt * ROAD_SCROLL_SCALE;
+        player_.x += curvaQui * player_.speed * 0.04f * dt * roadScrollScale;
         if (player_.x > 900.0f) player_.x = 900.0f;
         if (player_.x < -900.0f) player_.x = -900.0f;
         player_.offroad = player_.x < -700.0f || player_.x > 700.0f;

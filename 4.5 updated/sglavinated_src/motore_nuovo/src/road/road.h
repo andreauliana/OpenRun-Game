@@ -24,8 +24,8 @@ public:
     Road();
     explicit Road(u32 seed);
 
-    // Costruisce il tracciato da descrittori: per ogni descrittore si crea
-    // un segmento con curva/collina costanti. seed per RNG eventuale.
+    // Costruisce il tracciato da descrittori: ogni segmento raccorda curva e
+    // collina con quello adiacente. seed per RNG eventuale.
     void build(std::vector<f32> curves, std::vector<f32> hills, u32 seed);
 
     // Descrittore di un segmento (dati di livello.json): curva/collina/lunghezza.
