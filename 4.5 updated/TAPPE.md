@@ -8,9 +8,9 @@ Regola: si lavora solo sulla tappa attiva. Una tappa si chiude quando passa il s
 | 2 | Input completi | pad e tastiera rispondono a tutti i tasti; Start mette in pausa | test di ogni tasto |
 | 3 | Menu e interfaccia | logo → splash → menu (Start, Opzioni) → gara; HUD con velocità e tempo | navigazione avanti e indietro senza blocchi |
 | 4 | Auto e strada pseudo-3D | sprite dell'auto con 3 pose (dritta, sinistra, destra); curve e salite | fps stabili, nessun sprite che sparisce |
-| 5 | Gara con altri veicoli | traffico da sorpassare e 2-3 rivali che corrono la gara; collisioni; sexy razzo sul tasto secondario (X / Spazio); oggetti a bordo strada; traguardo | collisioni, razzo, determinismo |
+| 5 | Gara con altri veicoli | traffico da sorpassare e 2-3 rivali che corrono la gara; collisioni; sexy razzo; oggetti a bordo strada | collisioni, razzo, determinismo |
 | 6 | Contenuti | statistiche giocatore, foglia "Gianni" con fumetti, radio | Ganja, testi e tempi di comparsa |
-| 7 | Rifinitura | grafica di Andrea (`ANDREA/`), musica, bilanciamento | test completo su Pi 400 |
+| 7 | Rifinitura | grafica di Andrea (`ANDREA/`), musica, bilanciamento | test completo su Pi 400 e architettura multipiattaforma |
 
 **Tappa attiva: 1.**
 
