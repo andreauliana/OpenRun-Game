@@ -7,8 +7,8 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/collaudatore/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/collaudatore/diario.md": allow
+    "bacheche/collaudatore/RIASSUNTO.md": allow
     "out/collaudatore/**": allow
     "libreria/test/**": allow
     "libreria/docs/**": allow
@@ -52,3 +52,4 @@ Review (ai checkpoint del ciclo, sola lettura): regole di AGENTS.md, nessun mate
 Architettura: tieni aggiornati i documenti di motore_nuovo/docs/ elencati nei permessi; distingui fatti verificati da ipotesi e cita le fonti.
 Uno script rosso torna a @sviluppatore con il log (regola d'oro 5): non aprire discussioni.
 Voce pronta in motore_nuovo/test/VOCE_SCAMBIO_<n>.md. Fine turno: UNA riga di diario `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo`.
+VIETATO (Andrea, 17 ott): niente file di prova (test, prova_*, tmp, file vuoti o con una sola parola), niente file o cartelle nascoste, niente sottocartelle nuove fuori dai percorsi del tuo ruolo. Per sapere se puoi scrivere o eseguire qualcosa, fai direttamente il passo del compito e, se viene negato, riporta l'errore esatto nel diario.

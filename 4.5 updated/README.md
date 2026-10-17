@@ -43,7 +43,7 @@ Per attivare anche il grafico: `AGENTI_ATTIVI="sviluppatore collaudatore grafico
 - `sglavinated_src/.opencode/agents/` — le 5 definizioni dei ruoli (modelli e permessi).
 - `sglavinated_src/motore_nuovo/` — motore C++17 (src, dati, docs, test, strumenti_py).
 - `sglavinated_src/assets_originali/`, `libreria/` — asset originali e materiale riusabile.
-- `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche e consegne. Il lavoro dei vecchi ruoli e' in `v4_<vecchio_ruolo>/` dentro il ruolo nuovo.
+- `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario, RIASSUNTO) e consegne di ogni ruolo. Niente LEGGIMI: le regole sono solo in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
 - `sglavinated_src/out/collaudatore/` — log del gate e screenshot (prima in `out/debugger/`).
 - `sglavinated_src/archivio_v4/` — documenti superati: `AGENTS_v4.md` (regole 1-28), le 12 definizioni agenti v4, il README v4 con la technical review, note vecchie.
 - `ANDREA/` — solo di Andrea. `comandi/`, `strumenti/`, `pi/`, `locale/` — come nella v4.
@@ -55,7 +55,7 @@ Per attivare anche il grafico: `AGENTI_ATTIVI="sviluppatore collaudatore grafico
 - Dalle uscite del debugger: i file `.ppm` e le cartelle del soak (si rigenerano col gate).
 
 ## Decisioni v4.5 (default scelti, cambiabili)
-1. Il lavoro dei 12 ruoli non e' fuso nei diari nuovi: sta in `v4_<vecchio_ruolo>/`, e ogni ruolo nuovo parte con un `RIASSUNTO.md` che riprende lo stato.
+1. Il lavoro dei 12 ruoli v4 (diari, LEGGIMI, consegne) e' in `archivio_v4/bacheche/` e `archivio_v4/out/`, insieme a BAR, PIANO_TURNI e alla build Mega Drive: storico, non regole.
 2. Modelli: sviluppatore e collaudatore `longcat-2.5-preview` (quello che faceva le build nella v4), capo `nemotron-3-ultra`, grafico `mimo-v2.6-flash`, ricercatore `nemotron-3.5-lightning`. La panchina in `strumenti/panchina.txt` non cambia.
 3. Il capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
 4. Grafico e ricercatore sono spenti nel ciclo base; il giro parallelo `strumenti/giro.sh` usa i 4 ruoli operativi.

@@ -125,7 +125,10 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // proiettato a quella profondita' (it->screenX, che include curve e camera), cosi'
         // cartelloni e oggetti seguono le curve invece di restare su una retta.
         f32 sx = it->screenX + scl * s.worldX * (f32)Framebuffer::WIDTH / 2;
-        drawSprite(s, sx, sy, scl);
+        // Scala in pixel: stessa proiezione della strada (scl * W/2 per unita' mondo)
+        // per le unita' mondo di un pixel sprite. Prima si passava scl da solo
+        // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
+        drawSprite(s, sx, sy, scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale);
     }
 }
 
@@ -138,9 +141,15 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     i32 y0 = (i32)screenY - h;
     const bool palettePropria = !s.sprite->palette.empty();
     const i32 nPalette = (i32)s.sprite->palette.size();
-    for (i32 sy = 0; sy < h; ++sy) {
+    // Ritaglio allo schermo: da vicino lo sprite puo' essere molto piu' grande del
+    // framebuffer, e senza ritaglio il ciclo scorrerebbe pixel invisibili.
+    const i32 syIni = y0 < 0 ? -y0 : 0;
+    const i32 syFin = (y0 + h > Framebuffer::HEIGHT) ? Framebuffer::HEIGHT - y0 : h;
+    const i32 sxIni = x0 < 0 ? -x0 : 0;
+    const i32 sxFin = (x0 + w > Framebuffer::WIDTH) ? Framebuffer::WIDTH - x0 : w;
+    for (i32 sy = syIni; sy < syFin; ++sy) {
         i32 ty = (i32)((f32)sy / (f32)h * (f32)s.sprite->height);
-        for (i32 sx = 0; sx < w; ++sx) {
+        for (i32 sx = sxIni; sx < sxFin; ++sx) {
             i32 tx = (i32)((f32)sx / (f32)w * (f32)s.sprite->width);
             u8 idx = s.sprite->pixels[ty * s.sprite->width + tx];
             u32 col;

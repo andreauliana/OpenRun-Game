@@ -11,4 +11,4 @@
 | font/ | font e lettering approvati | @grafico |
 | livelli/ | livelli approvati | @sviluppatore |
 | test/ | script e replay di prova | @collaudatore |
-Ogni voce ha licenza e crediti (manifest.json o riga in assets_originali/CREDITI.md). Prima di creare qualcosa, cerca qui se esiste gia'. @capo tiene libreria/INDICE.md.
+Ogni voce ha licenza e crediti (manifest.json o riga in assets_originali/CREDITI.md). Prima di creare qualcosa, cerca qui se esiste gia'. libreria/INDICE.md e STRUMENTI.md li rigenera il ciclo (script, nessun modello).

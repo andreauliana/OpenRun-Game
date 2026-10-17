@@ -1,10 +1,10 @@
 # v4.5 — regole per tutti gli agenti
 
 Lavoro principale: motore nuovo C++17 in `motore_nuovo/`. Prima di tutto leggi `VISIONE.md` (idea, vincoli duri, architettura).
-Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le cambia solo Andrea. Le 28 regole della v4 sono in `archivio_v4/AGENTS_v4.md` (sola lettura, solo come storico).
+Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le cambia solo Andrea. **Fonti delle regole: solo questo file e il tuo `.opencode/agents/<ruolo>.md`.** Tutto cio' che sta in `archivio_v4/` (vecchie regole 1-28, LEGGIMI, diari dei 12 ruoli v4, BAR, PIANO_TURNI) e' storico: non e' una regola, non aprirlo se il compito non lo chiede. Se un altro documento cita una "regola N", vale la regola d'oro corrispondente qui sotto.
 
 ## Le 5 regole d'oro
-1. **Un foglio, uno scrittore.** Ogni file ha un solo ruolo che lo scrive (tabella sotto). Leggere i file degli altri si', scriverli no. Non creare sottoratelle senza senso.
+1. **Un foglio, uno scrittore.** Ogni file ha un solo ruolo che lo scrive (tabella sotto). Leggere i file degli altri si', scriverli no. Non creare sottocartelle senza senso.
 2. **Una riga di diario per turno**, in `bacheche/<ruolo>/diario.md`: `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo`. «Esito misurato» = comando + exit code + numero letto dal log; se non hai eseguito nulla scrivi `non eseguito`.
 3. **Promuovono a [x] solo Andrea e Claude.** Gli agenti propongono uno stato; `RICHIESTA.md` e `SCAMBIO.md` li scrivono solo Andrea e Claude. H e P1 passano a [x] solo con l'ok di Andrea.
 4. **Regole congelate.** Niente nuove regole, niente modifiche a questo file durante la v4.5. Un dubbio su una regola va in `DECISIONI_ANDREA.md` (lo scrive @capo).
@@ -12,14 +12,17 @@ Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le ca
 
 ## Squadra: 5 ruoli
 Nel ciclo base lavorano solo @sviluppatore e @collaudatore. @capo coordina un giro su tre. @grafico e @ricercatore partono solo su richiesta (Andrea li aggiunge con `AGENTI_ATTIVI`).
-| Ruolo | Fa (ex ruoli v4) | Scrive in (oltre a `bacheche/<ruolo>/`, `out/<ruolo>/`, `BACHECA_PUBBLICA.md`) |
+| Ruolo | Fa (ex ruoli v4) | Scrive in (oltre a `bacheche/<ruolo>/diario.md`, `bacheche/<ruolo>/RIASSUNTO.md` e `out/<ruolo>/`) |
 |---|---|---|
-| capo | coordina, propone stati e deleghe (capo) | `out/capo/STATI_PROPOSTI.md`, `DECISIONI_ANDREA.md`, `ASSEMBLEA.md`, `PER_CLAUDE.md`, `out/INDICE.md`, `libreria/INDICE.md`, `FINITO` |
+| capo | coordina, propone stati e deleghe (capo) | `out/capo/STATI_PROPOSTI.md`, `DECISIONI_ANDREA.md`, `PER_CLAUDE.md`, `FINITO` |
 | sviluppatore | nucleo C++, gameplay, livelli come dati (coder, traduttore, livelli) | `motore_nuovo/src/`, `motore_nuovo/CMakeLists.txt`, `motore_nuovo/dati/livelli/`, `motore_nuovo/dati/personaggi/`, `motore_nuovo/dati/sprite_raw/`, `motore_nuovo/strumenti_py/`, `motore_nuovo/dati/SPEC_GAMEPLAY.md`, `motore_nuovo/docs/LIVELLI.md`, `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`, `libreria/codice/`, `libreria/livelli/` |
 | collaudatore | build, test, review, architettura (debugger, reviewer, architetto) | `motore_nuovo/test/`, `motore_nuovo/docs/` (tranne i due file dello sviluppatore), `libreria/test/`, `libreria/docs/` |
 | grafico | sprite, scenari, palette, font, UI, frasi (asset, scenografo, tipografo, testi) | `assets_originali/` (tranne `ricerca/`), `motore_nuovo/dati/ui/`, `motore_nuovo/dati/testi/`, `motore_nuovo/dati/frasi.json`, `libreria/sprite/`, `libreria/palette/`, `libreria/scenari/`, `libreria/font/`, `libreria/testi/` |
 | ricercatore | cerca risorse con licenza libera, su richiesta (cercaasset) | `libreria/ricerca/` (proposte; le righe di `CREDITI.md` le scrive @grafico) |
-Il lavoro dei vecchi ruoli e' in `bacheche/<ruolo>/v4_<vecchio_ruolo>/` e `out/<ruolo>/v4_<vecchio_ruolo>/`: si legge, non si riscrive.
+**La bacheca e' solo memoria, non un'officina**: dentro ci sono soltanto `diario.md` e `RIASSUNTO.md`. Codice, dati e strumenti vanno in `motore_nuovo/`; materiale riusabile in `libreria/`; consegne finite in `out/<ruolo>/`. Niente `bozze/`, script o copie nella bacheca.
+Il lavoro dei vecchi ruoli v4 e' in `archivio_v4/bacheche/` e `archivio_v4/out/`: solo storico, non si riscrive.
+**Strumenti (script) in comune.** Uno strumento che costruisci va in una cartella che il tuo ruolo scrive (sviluppatore `motore_nuovo/strumenti_py/`, collaudatore `motore_nuovo/test/`, grafico `assets_originali/`), mai in bacheca, con in testa una riga di scopo e il comando d'uso. Il ciclo lo registra da solo in `libreria/STRUMENTI.md`: tutti lo usano, lo modifica solo chi lo ha scritto (gli altri chiedono il cambio nel diario). Prima di scriverne uno nuovo, controlla li' se esiste gia'.
+Risparmio crediti: leggi solo i file elencati nel prompt del turno e quelli del tuo blocco; niente scansioni dell'intero progetto, niente riassunti lunghi, niente file di prova.
 
 ## Fogli comuni
 | Cosa | Dove | Chi scrive |
@@ -28,7 +31,6 @@ Il lavoro dei vecchi ruoli e' in `bacheche/<ruolo>/v4_<vecchio_ruolo>/` e `out/<
 | Messaggi e voci consegnate | `SCAMBIO.md` (leggi l'estratto `SCAMBIO_RECENTE.md`) | Andrea e Claude |
 | Voce pronta da incollare | `out/<ruolo>/VOCE_SCAMBIO_<n>.md` (collaudatore: `motore_nuovo/test/`) | tu |
 | Stato corrente, max 12 righe, riscritto ogni turno | `bacheche/<ruolo>/RIASSUNTO.md` | tu |
-| Bozze e prove | `bacheche/<ruolo>/bozze/` | tu |
 | Proposte di stato e deleghe | `out/capo/STATI_PROPOSTI.md` | capo |
 | Scelte di Andrea | `FEEDBACK_ANDREA.md` (copia di `../ANDREA/FEEDBACK.md`) | solo il ciclo |
 | `DIARIO_RECENTE.md`, estratti, `CONTROLLO.md`, `log_agenti/` | cartelle del ciclo | solo il ciclo |

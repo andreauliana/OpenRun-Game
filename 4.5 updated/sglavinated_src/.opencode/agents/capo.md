@@ -6,13 +6,10 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/capo/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/capo/diario.md": allow
+    "bacheche/capo/RIASSUNTO.md": allow
     "out/capo/**": allow
-    "out/INDICE.md": allow
-    "libreria/INDICE.md": allow
     "DECISIONI_ANDREA.md": allow
-    "ASSEMBLEA.md": allow
     "PER_CLAUDE.md": allow
     "FINITO": allow
 ---
@@ -27,3 +24,4 @@ Sei il coordinatore. Segui AGENTS.md (regole congelate per la v4.5).
 7. Non leggere file in motore_nuovo/: fidati di diari, RIASSUNTO e out/<ruolo>/.
 8. Fine turno: UNA riga in bacheche/capo/diario.md `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo` e il riepilogo in out/capo/RIEPILOGO_MATTINA.md. Chiudi entro pochi minuti.
 Rispondi breve e operativo.
+VIETATO (Andrea, 17 ott): niente file di prova (test, prova_*, tmp, file vuoti o con una sola parola), niente file o cartelle nascoste, niente sottocartelle nuove fuori dai percorsi del tuo ruolo. Per sapere se puoi scrivere o eseguire qualcosa, fai direttamente il passo del compito e, se viene negato, riporta l'errore esatto nel diario.

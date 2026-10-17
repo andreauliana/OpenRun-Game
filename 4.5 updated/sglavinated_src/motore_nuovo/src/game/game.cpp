@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
+#include <cmath> // std::fmod
 #include <cstdio> // std::fopen/fread/fclose
 #include <utility> // std::move
 
@@ -64,8 +65,8 @@ void Game::init(const std::string& livelloId) {
         if (!leggiCartelloniDaFile(livelloId)) {
             // Campo assente o non valido -> fallback casualita' deterministica.
             Rng rndCartelloni(seed_);
-            const f32 latoSx = -1100.0f; // bordo strada sinistro (unita' mondo)
-            const f32 latoDx = 1100.0f;  // bordo strada destro
+            const f32 latoSx = -1600.0f; // bordo strada sinistro (unita' mondo)
+            const f32 latoDx = 1600.0f;  // bordo strada destro
             i32 k = 0;
             const i32 nSeg = (i32)road_.segments().size();
             for (i32 i = 0; i < nSeg; ++i) {
@@ -228,11 +229,11 @@ bool Game::leggiCartelloniDaFile(const std::string& livelloId) {
         JsonValue latoV;
         if (jsonGet(o, "lato", latoV) && jsonIsString(latoV)) {
             const std::string& lato = jsonAsString(latoV);
-            if (lato == "destro") worldX = 1100.0f;
-            else if (lato == "sinistro") worldX = -1100.0f;
-            else worldX = (rndCampi.next(2) == 0) ? -1100.0f : 1100.0f; // lato non valido: a caso (seed)
+            if (lato == "destro") worldX = 1600.0f;
+            else if (lato == "sinistro") worldX = -1600.0f;
+            else worldX = (rndCampi.next(2) == 0) ? -1600.0f : 1600.0f; // lato non valido: a caso (seed)
         } else {
-            worldX = (rndCampi.next(2) == 0) ? -1100.0f : 1100.0f; // lato mancante: a caso (seed)
+            worldX = (rndCampi.next(2) == 0) ? -1600.0f : 1600.0f; // lato mancante: a caso (seed)
         }
 
         std::string sponsorId;
@@ -358,9 +359,11 @@ void Game::render() {
 void Game::spawnTraffic() {
     // Placeholder: qualche sprite di traffico a distanze fisse (nessun asset).
     sprites_.clear();
+    const f32 giro = (f32)road_.totalLength(); // lunghezza reale del tracciato (prima 3000 fisso)
+    const f32 zGiro = giro > 0.0f ? std::fmod(road_.playerZ, giro) : 0.0f;
     for (i32 i = 1; i <= 6; ++i) {
         SpriteInstance s;
-        s.worldZ = (f32)(i * 500) + (f32)((int)road_.playerZ % 3000);
+        s.worldZ = (f32)(i * 500) + zGiro;
         s.worldX = (i % 2 == 0) ? -800.0f : 800.0f;
         s.scale = 1.0f;
         s.sprite = nullptr; // nessun sprite carico ancora: non disegna nulla

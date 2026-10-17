@@ -63,7 +63,7 @@ checkpoint() {
   AUTO="$( { sh "$BASE/strumenti/verifica.sh" | tail -12; python3 motore_nuovo/strumenti_py/check_catalogo.py; python3 motore_nuovo/strumenti_py/quota_open.py; python3 motore_nuovo/strumenti_py/quota_bacheche.py; grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
   REVIEW_FILES="$(find motore_nuovo assets_originali -type f -newer .marker_checkpoint \( -name '*.cpp' -o -name '*.h' -o -name '*.json' -o -name '*.md' -o -name '*.py' -o -name 'CMakeLists.txt' -o -name '*.cmake' \) ! -path '*/.git/*' ! -path '*/__pycache__/*' ! -name '.DS_Store' 2>/dev/null | sort)"
   if [ -n "$REVIEW_FILES" ]; then
-    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Revisione interna, sola lettura e a basso costo. Esamina SOLO questi file modificati e il contesto strettamente necessario: $REVIEW_FILES. Non fare una scansione completa del progetto e non dare consigli agente per agente. Esiti dei controlli automatici: $AUTO. Rispondi in italiano con VERDETTO (OK/CORREGGI/FERMA) e al massimo 3 problemi azionabili, ciascuno con file:riga e correzione; se non ne trovi, scrivi 'OK: nessun problema'." 2>&1)"
+    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di out/collaudatore/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @sviluppatore (regola d'oro 5)." 2>&1)"
     REVIEW_RC=$?
     if [ "$REVIEW_RC" -eq 0 ]; then
       R="$REVIEW_OUTPUT"
@@ -112,6 +112,19 @@ echo "[ciclo] $(date '+%d/%m %H:%M') fine: leggi RIEPILOGO_MATTINA.md, DECISIONI
 # 1) modelli: ogni agente deve avere un modello presente in panchina.txt (altrimenti torna al primo); 2) errori ricorrenti nei log;
 # 3) stato workflow (blocchi, agenti con lavoro aperto, pause per limite). Taglia i log troppo grandi.
 manutenzione() {
+  # Registri comuni (solo script, nessun modello: non consuma crediti).
+  python3 motore_nuovo/strumenti_py/indice_strumenti.py > /dev/null 2>&1 || true
+  # Bacheche: restano solo diario, RIASSUNTO e i file del ciclo. Il resto (script, cartelle,
+  # copie, file di prova) va in archivio_v4/fuori_posto/<data>/<ruolo>/ e se ne parla in CONTROLLO.md.
+  for d in bacheche/*/; do
+    [ -d "$d" ] || continue; ag=$(basename "$d")
+    for x in "$d".* "$d"*; do
+      [ -e "$x" ] || continue; n=$(basename "$x")
+      case "$n" in .|..|diario.md|RIASSUNTO.md|DIARIO_RECENTE.md|diario_archivio.md) continue ;; esac
+      q="archivio_v4/fuori_posto/$(date +%Y%m%d)/$ag"; mkdir -p "$q"
+      mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $n in $q/ (fuori posto)" | tee -a .fuori_posto.log
+    done
+  done
   # Log: un file al giorno per agente; i giorni precedenti vanno in log_agenti/vecchi/ e restano 3 giorni (minimo 24 ore).
   mkdir -p log_agenti/vecchi; oggi=$(date +%Y%m%d); ieri=$(cat log_agenti/.giorno 2>/dev/null || echo "$oggi")
   if [ "$oggi" != "$ieri" ]; then
@@ -134,7 +147,7 @@ manutenzione() {
       [ -f "$l" ] || continue; ag=$(basename "$l" .log); t=$(tail -n 300 "$l" | sed "s/${ESC}\[[0-9;]*[A-Za-z]//g")
       rl=$(printf '%s\n' "$t" | grep -c 'Rate limit'); pd=$(printf '%s\n' "$t" | grep -c 'Permission denied'); nf=$(printf '%s\n' "$t" | grep -c 'File not found\|does not exist'); tot=$((tot+rl+pd+nf))
       [ $((rl+pd+nf)) -gt 0 ] && echo "- $ag: rate limit $rl, permessi negati $pd, file/cartella inesistente $nf"
-      [ "$pd" -ge 3 ] && echo "  -> $ag: usa solo percorsi relativi e solo le tue cartelle (regola 15); non provare shell/cd."
+      [ "$pd" -ge 3 ] && echo "  -> $ag: usa solo percorsi relativi e solo le tue cartelle (AGENTS.md); non provare shell/cd."
       [ "$nf" -ge 3 ] && echo "  -> $ag: controlla il percorso con 'ls' prima di leggere; niente percorsi assoluti."
       sz=$(wc -c < "$l" | tr -d ' '); [ "$sz" -gt 20000000 ] && { tail -n 20000 "$l" > "$l.tmp" && mv "$l.tmp" "$l"; echo "  (log tagliato: era $sz byte)"; }
     done
@@ -155,6 +168,7 @@ manutenzione() {
     echo "- blocchi chiusi [x]: $(grep -c '^| Stato.*\[x\]' RICHIESTA.md); in corso [~]: $(grep -c '^| Stato.*\[~\]' RICHIESTA.md); da fare [ ]: $(grep -c '^| Stato.*\[ \]' RICHIESTA.md)"
     echo "- agenti con lavoro aperto: $(agenti_liberi | tr '\n' ' ')"
     echo "- decisioni aperte per Andrea: $(grep -c '^## D[0-9].*\[APERTA\]' DECISIONI_ANDREA.md)"
+    [ -s .fuori_posto.log ] && { echo; echo "## File spostati dalle bacheche (fuori posto, ultimi 10)"; tail -10 .fuori_posto.log | sed 's/^\[ciclo\] /- /'; }
     echo "- istruzione: in pausa non servono nuove richieste; riprendi dai blocchi [~] e chiudi i file lasciati a meta."
   } > "$C.tmp" && mv "$C.tmp" "$C"
 }
@@ -226,7 +240,7 @@ giro_diretto() {
     touch .marker_giro
     echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: avvio $ag ($(grep -m1 '^model:' ".opencode/agents/$ag.md" | sed 's/^model: *//'))"
     OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"
-    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Prima leggi bacheche/$ag/RIASSUNTO.md e bacheche/$ag/DIARIO_RECENTE.md se presenti (stato breve e ultimi 6 appunti di diario; non aprire diario.md, diario_archivio.md ne' log_agenti/, che sono del ciclo), FEEDBACK_ANDREA.md (scelte di Andrea: precedenza assoluta), poi AGENTS.md, RICHIESTA_APERTA.md e SCAMBIO_RECENTE.md. Leggi BACHECA_RECENTE.md e ASSEMBLEE_APERTE.md solo se pertinenti al tuo blocco. RICHIESTA.md e SCAMBIO.md sono di sola lettura per te (li aggiornano Andrea e Claude): se hai una voce da pubblicare scrivila in un file VOCE_SCAMBIO_<n>.md nella tua cartella (regola 27). Lavora SOLO sui tuoi blocchi con Stato [ ] o [~] (max 15 minuti), scrivi nelle tue cartelle (regola 15), lo stato dei tuoi blocchi e' una proposta, la scrivi nella riga di diario. Usa solo percorsi RELATIVI alla cartella corrente (mai cd, mai percorsi assoluti: vengono negati). A fine lavoro: aggiungi UNA riga in bacheche/$ag/diario.md nel formato della regola 27 ([gg/mm hh:mm] blocco | stato | esito misurato (exit code) | prossimo); poi RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe (cosa hai fatto, cosa resta, decisioni, problemi aperti), sostituendo il testo vecchio; metti i risultati condivisi in out/$ag/. Se aspetti altri o hai finito, fermati senza scrivere altro. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
+    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, FEEDBACK_ANDREA.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti) e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se aspetti altri o hai finito, fermati. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
@@ -252,7 +266,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"
-  if oc --agent capo "Siamo nel TURNO $turno (ora $ore di $MAX_ORE). Leggi TAPPE.md e, se esiste, FEEDBACK_ANDREA.md (le scelte di Andrea hanno precedenza assoluta): lavora solo sulla tappa attiva. Se non ci sono blocchi aperti [ ] o [~] pertinenti alla tappa in RICHIESTA.md, proponi in out/capo/STATI_PROPOSTI.md solo quelli necessari al suo Gate. Poi leggi CONTROLLO.md, VISIONE.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, BACHECA_RECENTE.md e ASSEMBLEE_APERTE.md. Applica i consigli del collaudatore e di Claude se presenti; dalla bacheca smista solo richieste operative pertinenti, ignora i messaggi informali senza rispondere. Gestisci le assemblee aperte secondo la regola 14. RICHIESTA.md e SCAMBIO.md sono di sola lettura per te (li aggiornano Andrea e Claude): proponi stati e deleghe in out/capo/STATI_PROPOSTI.md (sostituiscilo a ogni turno), le domande ad Andrea in DECISIONI_ANDREA.md, le decisioni trasversali in ASSEMBLEA.md, le richieste a Claude in PER_CLAUDE.md. Non aprire un'assemblea per decisioni di routine; per una decisione trasversale usa ASSEMBLEA.md, per quelle riservate ad Andrea DECISIONI_ANDREA.md. Esegui solo blocchi aperti [ ] o [~] compatibili con la tappa attiva: il suo Gate prevale su PIANO_TURNI.md; usa il piano per ordinare solo attivita' compatibili, senza avviare tappe future. Passa i compiti agli agenti necessari. Non aspettare Andrea: scrivi le decisioni con default in DECISIONI_ANDREA.md e prosegui sui blocchi indipendenti della tappa. Applica la regola 15 (cartelle). Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. Usa solo percorsi RELATIVI (mai cd ne' percorsi assoluti)."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, FEEDBACK_ANDREA.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (nomi dei 5 ruoli v4.5, percorsi out/<ruolo>/). Domande ad Andrea in DECISIONI_ANDREA.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi
   giro_diretto
