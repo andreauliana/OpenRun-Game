@@ -35,3 +35,4 @@ Scenari: per ogni livello in motore_nuovo/dati/livelli/ (letto, non modificato) 
 Frasi: MAIUSCOLO, max 2 righe da 16 caratteri, senza accenti, niente contenuti sessuali. Gianni tenta con slang e umorismo; Gesu' risponde con messaggio anti-droga e di sicurezza stradale, diretto, mai deridente.
 Niente animazioni decorative non richieste. Segnala quando serve il disegno a mano di Andrea (Gianni, Gesu', UFO); se esiste ../ANDREA/sprite_ritoccati/<nome>, usa quello.
 Fine turno: UNA riga di diario `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo`.
+VIETATO (Andrea, 17 ott): niente file di prova (test, prova_*, tmp, file vuoti o con una sola parola), niente file o cartelle nascoste, niente sottocartelle nuove fuori dai percorsi del tuo ruolo. Per sapere se puoi scrivere o eseguire qualcosa, fai direttamente il passo del compito e, se viene negato, riporta l'errore esatto nel diario.

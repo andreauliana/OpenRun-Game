@@ -45,3 +45,4 @@ Dopo ogni passo: `sh tools/gate_t1.sh` (comando semplice, senza pipe ne' `2>&1`)
 Se un controllo e' rosso il passo e' tuo: correggi e rilancia (regola d'oro 5).
 Voce pronta in out/sviluppatore/VOCE_SCAMBIO_<n>.md. Fine turno: UNA riga di diario `[GG/MM hh:mm] blocco | stato | esito misurato | prossimo`; lo stato e' una proposta.
 Rispondi con diff ed esito, non con spiegazioni lunghe.
+VIETATO (Andrea, 17 ott): niente file di prova (test, prova_*, tmp, file vuoti o con una sola parola), niente file o cartelle nascoste, niente sottocartelle nuove fuori dai percorsi del tuo ruolo. Per sapere se puoi scrivere o eseguire qualcosa, fai direttamente il passo del compito e, se viene negato, riporta l'errore esatto nel diario.
