@@ -162,3 +162,8 @@ Contenuto:
 
 Nessuna assemblea, nessun `PER_CLAUDE.md`, `FINITO` non creabile (T1-RUN non è [x]).
 [ciclo] 17/10 18:02 fine: leggi RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md, PACCHETTO_PER_CLAUDE_APP.md
+[brains] avvio Sat 17 Oct 2026 18:17:11 CEST
+[ciclo] 17/10 18:17 ciclo 1, turno 1, ora 0
+[ciclo] 17/10 18:17 opencode interrotto dal watchdog (timeout)
+[ciclo] 17/10 18:17 errore opencode (1)
+[ciclo] 17/10 18:17 giro diretto: avvio collaudatore (opencode/longcat-2.5-preview-free)

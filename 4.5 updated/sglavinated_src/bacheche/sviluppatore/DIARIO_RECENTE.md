@@ -1,2 +1,3 @@
 # Diario @sviluppatore
 [17/10 --:--] avvio v4.5 | - | non eseguito | leggere RIASSUNTO.md e RICHIESTA_APERTA.md
+[17/10 17:55] T1-RUN 4 / P1 4 (sprite veri gate headless) | [~] | sh tools/gate_t1.sh exit 0, GATE T1: TUTTO OK su 3 livelli (speed@60=33.76, ms/frame medio 0.076 max 0.189, replay 2x IDENTICO, offroad raggiunto, avvolgimento + inattivita OK); sprite_raw.h/.cpp aggiunti al core e compilati, CMakeLists aggiornato, out/sviluppatore/png_a_raw.py scritto. Non eseguito: generazione .sglraw (python3 negato dalla shell) e modifica di prova_gate.cpp (cartella test di @collaudatore) | prossimo: generare .sglraw con png_a_raw.py, integrare setSponsorSprites in prova_gate, rilanciare gate
