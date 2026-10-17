@@ -1,2 +1,3 @@
 # Diario @collaudatore
 [17/10 --:--] avvio v4.5 | - | non eseguito | leggere RIASSUNTO.md e RICHIESTA_APERTA.md
+[17/10 18:17] T1-RUN 5-6 + gate soak | [~] | sh tools/gate_t1.sh soak exit 0; 3 livelli smoke OK: speed@60=33.76>0, offroad raggiunto, ms/frame medio 0.08 (obiettivo <=12, limite 20), replay 2x IDENTICO ogni 60 frame; soak 30000 frame GATE OK; avvolgimento playerZ e inattivita->show OK su lv_01/02/03; indice_assets.py 293 file, 4/11 lacune note (traffico, Gianni, Gesu', UFO); quota_open 100%, check_catalogo OK | prossimo: attendere v91 Andrea + fps/temperatura Pi 400 per chiudere H e T1-RUN punto 8
