@@ -1,37 +1,27 @@
--- The C compiler identification is AppleClang 14.0.0.14000029
--- The CXX compiler identification is AppleClang 14.0.0.14000029
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/bin/cc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
 -- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
--- Configuring done (1.4s)
+-- Configuring done (0.1s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
-[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/core/replay.cpp.o
-[ 12%] Building CXX object CMakeFiles/sglavinated_core.dir/src/road/road.cpp.o
-[ 18%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/framebuffer.cpp.o
-[ 25%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/palette.cpp.o
-[ 31%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o
-[ 37%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/sprite_raw.cpp.o
-[ 43%] Building CXX object CMakeFiles/sglavinated_core.dir/src/audio/mixer.cpp.o
-[ 50%] Building CXX object CMakeFiles/sglavinated_core.dir/src/player/player.cpp.o
-[ 56%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
-[ 62%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/frasi.cpp.o
-[ 68%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/show.cpp.o
-[ 75%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/disegno_show.cpp.o
-[ 81%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/testi_frasi.cpp.o
-[ 87%] Linking CXX static library libsglavinated_core.a
 [ 87%] Built target sglavinated_core
-[ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
-[100%] Linking CXX executable prova_gate
 [100%] Built target prova_gate
+frameHash 0 4140407698
+frameHash 60 2724156753
+frameHash 120 4096659199
+frameHash 180 1006148430
+frameHash 240 1062977715
+frameHash 300 2810494244
+frameHash 360 1186875831
+frameHash 420 2762609495
+frameHash 480 745926747
+modo: smoke, frame simulati: 500
+speed@60=33.76  X[min,max]=[-164.8,771.1]  zFinale=992.9
+offroad: raggiunto (frame 476)
+ms/frame medio=0.072 max=0.141 (limite 20)
+replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
+wrapCount=4 stimaTotalLen=57599 zMax=31965.1 zFinale=31965.1 replay 2x: IDENTICO
+modo: inattivita, frame simulati: 900
+maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
+GATE OK
 frameHash 0 3293350065
 frameHash 60 2513494949
 frameHash 120 4060642540
@@ -44,9 +34,27 @@ frameHash 480 4210778494
 modo: smoke, frame simulati: 500
 speed@60=33.76  X[min,max]=[-164.8,771.3]  zFinale=992.9
 offroad: raggiunto (frame 476)
-ms/frame medio=0.087 max=1.683 (limite 20)
+ms/frame medio=0.076 max=0.191 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=4 stimaTotalLen=56398 zMax=36765.5 zFinale=36765.5 replay 2x: IDENTICO
+modo: inattivita, frame simulati: 900
+maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
+GATE OK
+frameHash 0 1460393231
+frameHash 60 144643705
+frameHash 120 4210194390
+frameHash 180 416524423
+frameHash 240 3087526958
+frameHash 300 1166189639
+frameHash 360 3208229574
+frameHash 420 3629297422
+frameHash 480 2199864451
+modo: smoke, frame simulati: 500
+speed@60=33.76  X[min,max]=[-164.8,772.7]  zFinale=992.3
+offroad: raggiunto (frame 475)
+ms/frame medio=0.079 max=0.436 (limite 20)
+replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
+wrapCount=4 stimaTotalLen=55496 zMax=40365.5 zFinale=40365.5 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
@@ -62,7 +70,7 @@ frameHash 480 745926747
 modo: smoke, frame simulati: 500
 speed@60=33.76  X[min,max]=[-164.8,771.1]  zFinale=992.9
 offroad: raggiunto (frame 476)
-ms/frame medio=0.077 max=0.176 (limite 20)
+ms/frame medio=0.077 max=0.177 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=4 stimaTotalLen=57599 zMax=31965.1 zFinale=31965.1 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
@@ -80,7 +88,7 @@ frameHash 480 2199864451
 modo: smoke, frame simulati: 500
 speed@60=33.76  X[min,max]=[-164.8,772.7]  zFinale=992.3
 offroad: raggiunto (frame 475)
-ms/frame medio=0.078 max=0.400 (limite 20)
+ms/frame medio=0.076 max=0.270 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=4 stimaTotalLen=55496 zMax=40365.5 zFinale=40365.5 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
@@ -589,5 +597,5 @@ frameHash 29940 3490885055
 modo: soak, frame simulati: 30000
 speed@60=33.76  X[min,max]=[-164.8,900.0]  zFinale=28814.2
 offroad: raggiunto (frame 476)
-ms/frame medio=0.079 max=1.958 (limite 20)
+ms/frame medio=0.076 max=40.222 (limite 20)
 replay 2x: IDENTICOGATE OK

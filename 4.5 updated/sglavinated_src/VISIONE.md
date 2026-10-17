@@ -10,11 +10,10 @@ Gioco di guida arcade, notturno, sci-fi + lofi hip hop + jungle. Simpatico e din
 | Crash | Gesu' interviene; effetto colori psichedelici temporaneo |
 | Errori ripetuti | escalation: frasi piu' dure e personaggi piu' frequenti (livelli 0-3, decadimento a tempo) |
 | 10 s senza input | Gianni parla |
-| Velocita' alta | l'auto si alza (salto/volo breve con ombra e atterraggio) |
-| Tasto B | razzo: parte in prospettiva e colpisce il traffico |
-| Rettilineo / curva | calma / intensita' (musica e colori) |
-| Fine corsa | schermata finale a tema |
-Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale (vedi assets_originali/DIREZIONE_ARTISTICA.md).
+| Velocita' alta | l'auto si alza (volo breve con ombra) |
+| Tasto B | razzo: parte in prospettiva e colpisce gli altri concorrenti della corsa automatizzati (utilizzano gli stessi modelli di macchine per la prima fase) |
+| Rettilineo / curve / rettilineo / variazione / curve |  scelta | cambio percorso  / curve / rettilineo / variazione / curve  | scelta | percorso  / curve / rettilineo / variazione / curve  | finale a tema  / animazione personaggi a tema - donne premiano, arrivano ufo, confisca dei beni, arresto velocita alta , varie |
+Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale creata o editata da Andrea (vedi assets_originali/DIREZIONE_ARTISTICA.md).
 
 ## Vincoli duri (gate)
 | Vincolo | Soglia | Come si misura |
@@ -36,9 +35,9 @@ Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale (vedi assets_or
 2. Replay deterministico e hash di test.
 3. Gianni/Gesu'/UFO e fumetti (dati + modulo gameplay).
 4. Razzo (B) e auto che si alza.
-5. Effetti psichedelici e musica.
-6. Livelli a tema e rifinitura.
+5. Effetti psichedelici e musica .mx gestita intelligentemente per i diversi livelli e sezioni gioco.
+6. Livelli a tema e rifinitura dei dettagli di gioco ed esperienza (menu, score, personaggi, animazioni, grafica, fumetti, testi, logo, cruscotto del giocatore durante game play).
 Ogni passo chiude con: build, test di replay, misura frame, review.
 
 ## Come la usano gli agenti
-`capo` legge questo file all'inizio di ogni ciclo e scompone il lavoro in blocchi di RICHIESTA.md. Se una funzione rompe un vincolo duro, si ferma e scrive PER_CLAUDE.md.
+`capo` legge questo file all'inizio di ogni ciclo e scompone il lavoro in blocchi di RICHIESTA.md. Se una funzione rompe un vincolo duro, si ferma e scrive PER_CLAUDE.md senza cancellare altre note precedenti o di altri utenti.

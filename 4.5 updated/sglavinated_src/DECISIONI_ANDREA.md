@@ -21,8 +21,8 @@ Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md. Il DEFA
 
 ## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
 Esito: sponsor (intimo femminile, Bar, Negozi). Contenuti femminili: glamour/pin-up e sponsor di intimo (vedi DIREZIONE_ARTISTICA.md.
-Da decidere (D2b, non urgente): nome e slogan degli sponsor inventati (vedi sotto o esempi gia creati), dove compare (cartelloni di tappa).
-DEFAULT: @sviluppatore e @grafico propongono 3 varianti di cartellone sponsor.
+Da decidere (D2b, non urgente): nome e slogan degli sponsor inventati (vedi esempi libreria gia creati) che compaiono durante la gara/corsa sparsi nei diversi livelli a senso, ricreando il feeling per ogni livello e lo stile descritto, utilizza gia gli elementi creati, indicizzare, e proseguire. Arrivare a un buon feeling di 'popolazione' dei vari livelli, con aree di transizione (bivi) tra i percorsi connessi.
+DEFAULT: @sviluppatore e @grafico affinano le 3 varianti di cartellone sponsor e utilizzano i vari asset grafici creati.
 RISPOSTA DI ANDREA: OK
 
 ## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
@@ -30,7 +30,7 @@ Domanda: quante tappe/finali ha l'albero di bivi dell'originale, da copiare come
 Raccomandazione: @collaudatore verifica da fonti tecniche (FEDELTA.md voce 3) e propone numero e temi; tu confermi.
 DEFAULT usato nel frattempo: 5 tappe per percorso con bivi, 3 livelli di prova.
 RISPOSTA DI ANDREA: OK
-Esito: confermato il DEFAULT (5 tappe per percorso con bivi, 3 livelli di prova). @collaudatore puo' ancora proporre correzioni motivate da fonti tecniche, ma si procede cosi'.
+Esito: confermato il DEFAULT (5 tappe per percorso con bivi, 3 livelli di prova). @collaudatore puo' ancora proporre correzioni motivate da migliorie, ma si procede cosi'.
 
 ## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale configurazione tipografica per il gioco?
