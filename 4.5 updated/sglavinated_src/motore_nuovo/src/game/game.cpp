@@ -6,6 +6,9 @@
 #include <utility> // std::move
 
 namespace sgl {
+namespace {
+constexpr f32 ROAD_SCROLL_SCALE = 3.0f;
+}
 
 Game::Game() : seed_(12345), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_), showManager_(seed_) {
     audioBuf_.resize(AUDIO_FRAME_SAMPLES * 2, 0);
@@ -284,7 +287,7 @@ void Game::update() {
         player_.update(dt);
 
         road_.playerX = player_.x;
-        road_.advance(player_.speed * dt);
+        road_.advance(player_.speed * dt * ROAD_SCROLL_SCALE);
         player_.z = road_.playerZ;
 
         // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.

@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <filesystem>
 #include <vector>
 
 using namespace sgl; // runner: puo' usare i tipi del nucleo senza prefisso
@@ -15,6 +16,50 @@ namespace {
 constexpr i32 WINDOW_SCALE = 2; // finestra 640x448 per comodita' sul desktop
 constexpr i32 TARGET_FPS = 50;
 constexpr u32 FRAME_MS = 1000 / TARGET_FPS;
+constexpr const char* PROJECT_DATA_MARKER =
+    "motore_nuovo/dati/livelli/lv_01_neon/livello.json";
+
+bool trovaRadiceProgetto(const char* executablePath) {
+    std::error_code ec;
+    std::vector<std::filesystem::path> starts;
+    auto cwd = std::filesystem::current_path(ec);
+    if (!ec) starts.push_back(cwd);
+    ec.clear();
+    auto executable = std::filesystem::absolute(executablePath, ec);
+    if (!ec) starts.push_back(executable.parent_path());
+
+    for (const auto& start : starts) {
+        auto candidate = start;
+        while (!candidate.empty()) {
+            for (const auto& root : {candidate, candidate / "sglavinated_src"}) {
+                ec.clear();
+                if (!std::filesystem::exists(root / PROJECT_DATA_MARKER, ec) || ec)
+                    continue;
+                std::filesystem::current_path(root, ec);
+                if (!ec) return true;
+                std::fprintf(stderr, "Impossibile impostare la cartella dati %s: %s\n",
+                             root.string().c_str(), ec.message().c_str());
+                return false;
+            }
+            const auto parent = candidate.parent_path();
+            if (parent == candidate) break;
+            candidate = parent;
+        }
+    }
+
+    std::fprintf(stderr,
+                 "Dati del gioco non trovati (%s). Avviare l'eseguibile dal progetto o dalla sua cartella build.\n",
+                 PROJECT_DATA_MARKER);
+    return false;
+}
+
+bool inizializzaSDL() {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0) {
+        SDL_Log("SDL_Init fallita: %s", SDL_GetError());
+        return false;
+    }
+    return true;
+}
 
 sgl::Pad sdlToPad(const Uint8* kb, SDL_Joystick* joy) {
     sgl::Pad p;
@@ -69,11 +114,17 @@ void audioCallback(void* userdata, Uint8* stream, int len) {
 
 } // namespace
 
-int main(int, char**) {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0) {
-        SDL_Log("SDL_Init fallita: %s", SDL_GetError());
-        return 1;
+int main(int argc, char** argv) {
+    const bool checkSDL = argc == 2 && std::strcmp(argv[1], "--check-sdl-init") == 0;
+    if (checkSDL) {
+        if (!inizializzaSDL()) return 1;
+        std::puts("SDL_Init: OK");
+        SDL_Quit();
+        return 0;
     }
+
+    if (!trovaRadiceProgetto(argv[0])) return 2;
+    if (!inizializzaSDL()) return 1;
 
     SDL_Window* win = SDL_CreateWindow("Sglavinated — motore nuovo (prototipo)",
                                        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

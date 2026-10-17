@@ -91,6 +91,20 @@ target `sglavinated_core`. La directory `motore_nuovo/build_local` evita di riut
 cache CMake di altri checkout; il Pi 400 serve per la verifica su hardware, non per
 compilare il core.
 
+Il runner cerca automaticamente la radice `sglavinated_src/` partendo dalla directory
+corrente e dal percorso dell'eseguibile. Perciò CMake Tools può avviarlo dal proprio
+output `build/` senza perdere i percorsi relativi a livelli e sponsor.
+
+Per verificare separatamente l'inizializzazione SDL usata dal runner, senza aprire la
+finestra del gioco e senza CTest, dalla radice `sglavinated_src/` eseguire:
+
+```bash
+sh tools/check_sdl_init.sh
+```
+
+Lo script controlla l'exit code e la riga `SDL_Init: OK`. Per un eseguibile in un
+percorso diverso, passare il path come primo argomento.
+
 ### Raspberry Pi 400 (Raspberry Pi OS / RetroPie, dalla cartella `sglavinated_src/`)
 
 ```bash

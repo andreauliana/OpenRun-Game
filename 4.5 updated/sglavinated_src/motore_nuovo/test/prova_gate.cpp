@@ -180,6 +180,7 @@ bool verificaAccelerazione(const std::string& livello) {
     f32 speedPrecedente = 0.0f;
     f32 speedPrimoFrame = 0.0f;
     f32 speedDopo60 = 0.0f;
+    f32 avanzamentoStrada = 0.0f;
     for (i32 frame = 0; frame < 500; ++frame) {
         game.setInput(gas);
         game.update();
@@ -189,13 +190,15 @@ bool verificaAccelerazione(const std::string& livello) {
         if (frame == 59) speedDopo60 = speed;
         if (speed + 0.001f < speedPrecedente) return false;
         speedPrecedente = speed;
+        avanzamentoStrada = game.state().playerZ;
     }
 
-    std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f\n",
-                speedPrimoFrame, speedDopo60, speedPrecedente);
+    std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f; strada=%.1f\n",
+                speedPrimoFrame, speedDopo60, speedPrecedente, avanzamentoStrada);
     return speedPrimoFrame >= MIN_SPEED_FIRST_FRAME &&
            speedDopo60 >= MIN_SPEED_FRAME_60 &&
-           speedPrecedente >= 240.0f && speedPrecedente <= 250.0f;
+           speedPrecedente >= 240.0f && speedPrecedente <= 250.0f &&
+           avanzamentoStrada >= 6000.0f;
 }
 
 // --- Caso nuovo: avvolgimento di playerZ oltre totalLen_ ---

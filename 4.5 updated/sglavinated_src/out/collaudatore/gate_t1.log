@@ -1,49 +1,70 @@
 -- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
--- Configuring done (0.2s)
+-- Configuring done (0.1s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
-[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o
-[ 12%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
-[ 18%] Linking CXX static library libsglavinated_core.a
+[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
+[ 12%] Linking CXX static library libsglavinated_core.a
 [ 87%] Built target sglavinated_core
 [ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
 [100%] Linking CXX executable prova_gate
 [100%] Built target prova_gate
-frameHash 0 2524503558
-frameHash 60 551801284
-frameHash 120 568919610
-frameHash 180 283251928
-frameHash 240 1532958390
-frameHash 300 3925681332
-frameHash 360 1125441543
-frameHash 420 1802041679
-frameHash 480 1370166076
+frameHash 0 4292734575
+frameHash 60 2487625702
+frameHash 120 2449753038
+frameHash 180 2397884867
+frameHash 240 3643197452
+frameHash 300 1459085514
+frameHash 360 1128626984
+frameHash 420 446176332
+frameHash 480 2180693879
 modo: smoke, frame simulati: 500
-speed@60=114.58 speed@1=2.50  X[min,max]=[-218.3,900.0]  zFinale=1934.1
+speed@60=114.58 speed@1=2.50  X[min,max]=[-218.1,841.7]  zFinale=5574.2
 accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
 offroad: raggiunto (frame 434)
-ms/frame medio=0.335 max=0.750 (limite 20)
+ms/frame medio=0.332 max=0.744 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=5 stimaTotalLen=56395 zMax=17505.0 zFinale=17505.0 replay 2x: IDENTICO
+wrapCount=15 stimaTotalLen=56385 zMax=52515.0 zFinale=52515.0 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
-frameHash 0 3633494575
-frameHash 60 3029190077
-frameHash 120 1702679726
-frameHash 180 4003642032
-frameHash 240 479360521
-frameHash 300 2919006206
-frameHash 360 980375230
-frameHash 420 3211133486
-frameHash 480 3226834694
+frameHash 0 2772232615
+frameHash 60 4118154834
+frameHash 120 2238216336
+frameHash 180 509879264
+frameHash 240 984290347
+frameHash 300 2190656072
+frameHash 360 274857898
+frameHash 420 3564516781
+frameHash 480 3356105971
 modo: smoke, frame simulati: 500
-speed@60=114.58 speed@1=2.50  X[min,max]=[-219.8,884.5]  zFinale=1910.3
+speed@60=114.58 speed@1=2.50  X[min,max]=[-219.3,880.9]  zFinale=5716.1
 accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
-offroad: raggiunto (frame 435)
-ms/frame medio=0.278 max=0.660 (limite 20)
+offroad: raggiunto (frame 434)
+ms/frame medio=0.288 max=0.684 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=5 stimaTotalLen=57595 zMax=11505.0 zFinale=11505.0 replay 2x: IDENTICO
+wrapCount=15 stimaTotalLen=57585 zMax=34515.0 zFinale=34515.0 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
+frameHash 0 3369705889
+frameHash 60 3866590384
+frameHash 120 1683014975
+frameHash 180 2133852987
+frameHash 240 3571782850
+frameHash 300 2905427754
+frameHash 360 1273076840
+frameHash 420 2612419745
+frameHash 480 237221823
+modo: smoke, frame simulati: 500
+speed@60=114.58 speed@1=2.50  X[min,max]=[-218.5,900.0]  zFinale=5802.3
+accelerazione: reattiva (speed@1 >= 2.0, speed@60 >= 100.0)
+offroad: raggiunto (frame 434)
+ms/frame medio=0.331 max=0.756 (limite 20)
+replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
+wrapCount=16 stimaTotalLen=55485 zMax=10515.0 zFinale=10515.0 replay 2x: IDENTICO
+modo: inattivita, frame simulati: 900
+maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
+GATE OK
+accelerazione 0-10s: primo frame=2.50, 1.2s=113.21, 10s=248.36; strada=6024.8
+GATE ACCELERAZIONE OK
+GATE RIBALTAMENTO OK
