@@ -1,5 +1,5 @@
 ---
-description: Grafico. Asset ORIGINALI (sprite, scenari, palette, font, menu, HUD, titoli) con Python/Pillow e frasi di Gianni e Gesu'. Su richiesta. Unisce i ruoli v4 asset, scenografo, tipografo e testi.
+description: Grafico. Asset ORIGINALI (sprite, scenari, palette, font, menu, HUD, titoli) con Python/Pillow e frasi di Gianni e Gesu'. Su richiesta. Gestisce asset, scenari, UI, font, lettering e testi.
 mode: subagent
 model: opencode/mimo-v2.6-flash-free
 temperature: 0.5

@@ -1,0 +1,5 @@
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/build/CMakeFiles/sglavinated_core.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/build/CMakeFiles/sglavinated_runner.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/build/CMakeFiles/prova_gate.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/build/CMakeFiles/edit_cache.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/build/CMakeFiles/rebuild_cache.dir

@@ -13,9 +13,9 @@
 | debugger | big-pickle | build e test, cause dei bug | nessuno |
 | livelli | nemotron-3.5-super-vl-free | progetta i livelli come dati (JSON) | motore_nuovo/dati/livelli/ |
 | scenografo | big-pickle | grafica dei livelli: sfondi, bordo strada, palette | assets_originali/scenari/ |
-| tipografo | nemotron-3.5-super-vl-free | font, lettering, menu, HUD, schermate | assets_originali/ui/, dati/ui/ |
 | reviewer | minimax-m2.1-free | controllo codice/licenze/asset | nessuno |
 Nomi dei modelli e assegnazione: ipotesi iniziale, non provata.
+Font, lettering, menu, HUD e schermate sono gestiti dal ruolo grafico, non da un ruolo separato.
 
 ## 2. Scaletta a fasi
 | Fase | Cosa | Responsabile | Uscita | Blocco in RICHIESTA.md |

@@ -41,7 +41,7 @@ Trigger show (da dati/show_logica.md): crash -> Gesu' (priorita'), uscita di str
 ## Note di conformita
 
 - Regola 16: i 3 livelli usano 3 stili diversi (synthwave/C-wave, sci-fi anni '50, psichedelico/cannabinoidi); tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso (l'albero completo, default 5 tappe/bivi, e' definito nel blocco FED/D3; questi 3 sono i livelli di prova).
-- Regola 16 / FEDELTA.md: >= 50% di somiglianza di struttura e sensazione con l'originale (mai asset): tratti 2 (tempo limite + checkpoint), 3 (bivi/albero di tappe), 4 (traffico da sorpassare), 5 (ambiente diverso per tappa), 8 (sensazione di velocita' a 50 Hz), 9 (schermata finale a tema, a carico di @tipografo).
+- Regola 16 / FEDELTA.md: >= 50% di somiglianza di struttura e sensazione con l'originale (mai asset): tratti 2 (tempo limite + checkpoint), 3 (bivi/albero di tappe), 4 (traffico da sorpassare), 5 (ambiente diverso per tappa), 8 (sensazione di velocita' a 50 Hz), 9 (schermata finale a tema, a carico di @grafico).
 - Tracciati generati da seme, da zero, mai tracciati Sega. Nessun asset, musica o nome Sega.
 - Determinismo: seme fisso, tempo = contatore di frame, nessun orologio di sistema.
 - Ogni file: licenza dichiarata (CC-BY-4.0), autore indicato.

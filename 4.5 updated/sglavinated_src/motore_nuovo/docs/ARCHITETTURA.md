@@ -47,7 +47,7 @@ Tutti i moduli stanno in `motore_nuovo/src/`. Nessun modulo dipende da SDL2 (sol
 | input | `src/input/` | lettura pad tipo RetroPad, mappatura tasti | `dati/config.json` |
 | personaggi / gameplay | `src/gameplay/` (era `src/personaggi/`) | Gianni, Gesu', UFO: logica show, scelta frasi, escalation, inattivita' | `dati/frasi.json`, `dati/personaggi/*/`, `dati/show_logica.md` |
 | fx (esempio) | `src/fx/razzo_b/`, `src/fx/sollevamento_auto/` | funzione extra con flag on/off, propri dati, test | `dati/config.json` |
-| ui | `src/ui/` | menu, titolo, HUD letti da `dati/ui/*.json` (font e grafica: @tipografo) | `dati/ui/menu.json`, `dati/ui/hud.json` |
+| ui | `src/ui/` | menu, titolo, HUD letti da `dati/ui/*.json` (font e grafica: @grafico) | `dati/ui/menu.json`, `dati/ui/hud.json` |
 
 Interfacce (descritte a parole, no codice C++ in questa fase):
 - `core` espone `frame()`, `rng()`, `replay_save/load()`, `frame_hash()`.
@@ -92,7 +92,7 @@ Tutti i formati sono in `motore_nuovo/docs/FORMATI_DATI.md`:
 - `dati/frasi.json`: frasi dei personaggi (nessun limite artificiale al numero).
 - `dati/personaggi/<nome>/manifest.json`: id, ruolo, file, palette, crediti, licenza, stato.
 - `dati/audio/playlist.json`: radio -> elenco brani (.xm).
-- `dati/ui/menu.json`, `dati/ui/hud.json`: layout UI (font e grafica: @tipografo).
+- `dati/ui/menu.json`, `dati/ui/hud.json`: layout UI (font e grafica: @grafico).
 - `dati/config.json`: seed, moduli fx on/off, target fps.
 
 Immagini: PNG. Audio: .xm (riferimento di Andrea, sostituibile via playlist).

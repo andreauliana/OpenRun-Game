@@ -8,7 +8,7 @@ T1-RUN | [~] | @sviluppatore punto 4 (genera .sglraw / dati raw per sprite-carte
 P1 | [~] | @sviluppatore punto 4 (sprite veri nel gate, stesso di T1-RUN punto 4). Punti 1-3 e 5 gia' fatti. Prova: build cmake ok + gate smoke exit 0.
 H | [~] | attende Andrea punto 8 (v91 su FEEDBACK_ANDREA.md, runner SDL2 su Mac, fps/temperatura Pi 400 vcgencmd). Chiude quando Andrea scrive v91.
 J | [ ] | escalazione a Claude solo dopo 2 tentativi falliti sullo stesso problema o fine blocco importante; non ancora.
-M | [~] | tipografo HUD/font — Tappa 3, non indispensabile al Gate T1; resta in attesa, nessuna nuova funzione avviata.
+M | [~] | @grafico HUD/font — Tappa 3, non indispensabile al Gate T1; resta in attesa, nessuna nuova funzione avviata.
 
 ## Deleghe del turno
 @sviluppatore: T1-RUN punto 4 + P1 punto 4 in motore_nuovo/src/ e motore_nuovo/strumenti_py/: generare i 21 .sglraw in motore_nuovo/dati/sprite_raw/sponsor/ (eseguire python3 motore_nuovo/strumenti_py/png_a_raw.py o fornire dati raw equivalenti) oppure, se DEFAULT B non e' confermato da Andrea, preparare caricatore PNG minimo nel core. Licenza SPDX MIT, zero alloc nel ciclo di gioco, determinismo, core senza SDL. Poi `sh tools/gate_t1.sh` smoke; replay 2x deve restare IDENTICO.

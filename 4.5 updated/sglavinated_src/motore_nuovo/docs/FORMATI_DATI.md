@@ -156,7 +156,7 @@ Esempio:
 
 ## 7. UI — ui/*.json
 
-Percorso: `dati/ui/menu.json` e `dati/ui/hud.json`. Layout, font e posizioni (grafica e font: @tipografo, BLOCCO M), risoluzione target 320x224.
+Percorso: `dati/ui/menu.json` e `dati/ui/hud.json`. Layout, font e posizioni (grafica e font: @grafico, BLOCCO M), risoluzione target 320x224.
 
 `dati/ui/hud.json` (esempio): campi `tachimetro`, `tempo`, `punteggio`, `indicatore_tappa` con posizione e dimensione su framebuffer 320x224.
 

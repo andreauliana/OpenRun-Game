@@ -27,7 +27,7 @@ Sul Pi 400: `sh "$HOME/4.5 updated/pi/compila_e_installa.sh"`.
 | capo | capo | un giro su tre |
 | sviluppatore | coder, traduttore, livelli | ciclo base |
 | collaudatore | debugger, reviewer, architetto | ciclo base e checkpoint |
-| grafico | asset, scenografo, tipografo, testi | su richiesta |
+| grafico | asset, scenografo, testi; include font e UI | su richiesta |
 | ricercatore | cercaasset | su richiesta |
 Per attivare anche il grafico: `AGENTI_ATTIVI="sviluppatore collaudatore grafico" sh comandi/v3.sh start`.
 
@@ -45,7 +45,7 @@ Per attivare anche il grafico: `AGENTI_ATTIVI="sviluppatore collaudatore grafico
 - `sglavinated_src/assets_originali/`, `libreria/` — asset originali e materiale riusabile.
 - `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario, RIASSUNTO) e consegne di ogni ruolo. Niente LEGGIMI: le regole sono solo in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
 - `sglavinated_src/out/collaudatore/` — log del gate e screenshot (prima in `out/debugger/`).
-- `sglavinated_src/archivio_v4/` — documenti superati: `AGENTS_v4.md` (regole 1-28), le 12 definizioni agenti v4, il README v4 con la technical review, note vecchie.
+- `sglavinated_src/archivio_v4/` — documenti superati: `AGENTS_v4.md` (regole 1-28), le definizioni storiche degli agenti v4, il README v4 con la technical review, note vecchie.
 - `ANDREA/` — solo di Andrea. `comandi/`, `strumenti/`, `pi/`, `locale/` — come nella v4.
 
 ## Cosa non e' stato copiato (resta nella cartella v4)

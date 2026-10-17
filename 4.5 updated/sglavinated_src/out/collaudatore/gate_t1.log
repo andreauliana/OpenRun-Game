@@ -1,13 +1,8 @@
--- SDL2 non trovata: target sglavinated_runner escluso. Installare libsdl2-dev (o brew install sdl2) e rilanciare cmake.
--- Configuring done (0.0s)
+-- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
+-- Configuring done (0.1s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/claude/openrun-game/4.5 updated/sglavinated_src/build_gate
-[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o
-[ 12%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
-[ 18%] Linking CXX static library libsglavinated_core.a
+-- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
 [ 87%] Built target sglavinated_core
-[ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
-[100%] Linking CXX executable prova_gate
 [100%] Built target prova_gate
 frameHash 0 1916384578
 frameHash 60 1367032091
@@ -21,7 +16,7 @@ frameHash 480 781228046
 modo: smoke, frame simulati: 500
 speed@60=100.83  X[min,max]=[-218.4,899.9]  zFinale=1702.0
 offroad: raggiunto (frame 434)
-ms/frame medio=0.265 max=6.106 (limite 20)
+ms/frame medio=0.295 max=0.668 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=4 stimaTotalLen=56397 zMax=37939.3 zFinale=37939.3 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
@@ -39,27 +34,9 @@ frameHash 480 3167295492
 modo: smoke, frame simulati: 500
 speed@60=100.83  X[min,max]=[-219.8,899.9]  zFinale=1703.6
 offroad: raggiunto (frame 435)
-ms/frame medio=0.228 max=0.315 (limite 20)
+ms/frame medio=0.235 max=0.540 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=4 stimaTotalLen=57598 zMax=33139.3 zFinale=33139.3 replay 2x: IDENTICO
-modo: inattivita, frame simulati: 900
-maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
-GATE OK
-frameHash 0 182757675
-frameHash 60 642922042
-frameHash 120 700724675
-frameHash 180 1304020024
-frameHash 240 3733184376
-frameHash 300 2960225317
-frameHash 360 183545510
-frameHash 420 2376616106
-frameHash 480 2321356935
-modo: smoke, frame simulati: 500
-speed@60=100.83  X[min,max]=[-218.8,900.0]  zFinale=1700.4
-offroad: raggiunto (frame 433)
-ms/frame medio=0.207 max=0.533 (limite 20)
-replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=4 stimaTotalLen=55496 zMax=41539.3 zFinale=41539.3 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
