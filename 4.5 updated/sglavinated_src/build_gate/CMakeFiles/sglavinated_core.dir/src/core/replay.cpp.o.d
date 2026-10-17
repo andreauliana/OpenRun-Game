@@ -1,7 +1,7 @@
 CMakeFiles/sglavinated_core.dir/src/core/replay.cpp.o: \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/core/replay.cpp \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/core/replay.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/core/replay.cpp \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/core/replay.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \

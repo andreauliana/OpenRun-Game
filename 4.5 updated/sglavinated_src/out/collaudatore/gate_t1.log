@@ -1,2 +1,34 @@
-CMake Error: The current CMakeCache.txt directory /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeCache.txt is different than the directory /Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
-CMake Error: The source "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/CMakeLists.txt" does not match the source "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.
+-- The C compiler identification is AppleClang 14.0.0.14000029
+-- The CXX compiler identification is AppleClang 14.0.0.14000029
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
+-- Configuring done (1.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
+[  6%] Building CXX object CMakeFiles/sglavinated_core.dir/src/core/replay.cpp.o
+[ 12%] Building CXX object CMakeFiles/sglavinated_core.dir/src/road/road.cpp.o
+[ 18%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/framebuffer.cpp.o
+[ 25%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/palette.cpp.o
+[ 31%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o
+[ 37%] Building CXX object CMakeFiles/sglavinated_core.dir/src/render/sprite_raw.cpp.o
+[ 43%] Building CXX object CMakeFiles/sglavinated_core.dir/src/audio/mixer.cpp.o
+[ 50%] Building CXX object CMakeFiles/sglavinated_core.dir/src/player/player.cpp.o
+[ 56%] Building CXX object CMakeFiles/sglavinated_core.dir/src/game/game.cpp.o
+[ 62%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/frasi.cpp.o
+[ 68%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/show.cpp.o
+[ 75%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/disegno_show.cpp.o
+[ 81%] Building CXX object CMakeFiles/sglavinated_core.dir/src/gameplay/testi_frasi.cpp.o
+[ 87%] Linking CXX static library libsglavinated_core.a
+[ 87%] Built target sglavinated_core
+[ 93%] Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
+[100%] Linking CXX executable prova_gate
+[100%] Built target prova_gate

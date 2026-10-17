@@ -53,10 +53,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo"
+CMAKE_SOURCE_DIR = "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate"
+CMAKE_BINARY_DIR = "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/sglavinated_runner.dir/depend.make
@@ -73,32 +73,32 @@ CMakeFiles/sglavinated_runner.dir/codegen:
 .PHONY : CMakeFiles/sglavinated_runner.dir/codegen
 
 CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o: CMakeFiles/sglavinated_runner.dir/flags.make
-CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o: /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/runner/main.cpp
+CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/runner/main.cpp
 CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o: CMakeFiles/sglavinated_runner.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o -MF CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o.d -o CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o -c "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o -MF CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o.d -o CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o -c "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp"
 
 CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" > CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" > CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.i
 
 CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" -o CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" -o CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.s
 
 CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o: CMakeFiles/sglavinated_runner.dir/flags.make
-CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o: /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp
+CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp
 CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o: CMakeFiles/sglavinated_runner.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o -MF CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o.d -o CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o -c "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o -MF CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o.d -o CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o -c "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp"
 
 CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" > CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" > CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.i
 
 CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" -o CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" -o CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.s
 
 # Object files for target sglavinated_runner
 sglavinated_runner_OBJECTS = \
@@ -115,7 +115,7 @@ sglavinated_runner: libsglavinated_core.a
 sglavinated_runner: /usr/local/lib/libSDL2-2.0.0.dylib
 sglavinated_runner: /usr/local/lib/libSDL2main.a
 sglavinated_runner: CMakeFiles/sglavinated_runner.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable sglavinated_runner"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable sglavinated_runner"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sglavinated_runner.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -127,6 +127,6 @@ CMakeFiles/sglavinated_runner.dir/clean:
 .PHONY : CMakeFiles/sglavinated_runner.dir/clean
 
 CMakeFiles/sglavinated_runner.dir/depend:
-	cd "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_runner.dir/DependInfo.cmake" "--color=$(COLOR)" sglavinated_runner
+	cd "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_runner.dir/DependInfo.cmake" "--color=$(COLOR)" sglavinated_runner
 .PHONY : CMakeFiles/sglavinated_runner.dir/depend
 

@@ -1,7 +1,7 @@
 CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o: \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/renderer.cpp \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/renderer.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/renderer.cpp \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/renderer.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \
@@ -34,7 +34,7 @@ CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_uintptr_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_intmax_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_uintmax_t.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/framebuffer.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/framebuffer.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/array \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__debug \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iosfwd \
@@ -349,13 +349,13 @@ CMakeFiles/sglavinated_core.dir/src/render/renderer.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/transform.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/unique_copy.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/unique.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/palette.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/palette.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/vector \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__bit_reference \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__split_buffer \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/road/road.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/road/road_segment.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/road/road.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/road/road_segment.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cmath \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/math.h

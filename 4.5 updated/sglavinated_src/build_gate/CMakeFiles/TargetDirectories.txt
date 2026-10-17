@@ -1,5 +1,5 @@
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_core.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_runner.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/prova_gate.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/edit_cache.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/rebuild_cache.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_core.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/sglavinated_runner.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/prova_gate.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/edit_cache.dir
+/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/rebuild_cache.dir

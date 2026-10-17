@@ -1,8 +1,8 @@
 CMakeFiles/sglavinated_core.dir/src/render/sprite_raw.cpp.o: \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite_raw.cpp \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite_raw.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite.h \
-  /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite_raw.cpp \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite_raw.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/render/sprite.h \
+  /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/src/core/types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdint \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__config_site \

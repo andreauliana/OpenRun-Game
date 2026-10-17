@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" "CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o" "gcc" "CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o.d"
-  "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" "CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o" "gcc" "CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o.d"
+  "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/main.cpp" "CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o" "gcc" "CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o.d"
+  "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src/runner/sponsor_loader.cpp" "CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o" "gcc" "CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

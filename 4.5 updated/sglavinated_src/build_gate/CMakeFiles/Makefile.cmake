@@ -10,7 +10,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/4.4.4/CMakeCCompiler.cmake"
   "CMakeFiles/4.4.4/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.4.4/CMakeSystem.cmake"
-  "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/CMakeLists.txt"
+  "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/CMakeLists.txt"
   "/usr/local/lib/cmake/SDL2/SDL2Config.cmake"
   "/usr/local/lib/cmake/SDL2/SDL2ConfigVersion.cmake"
   "/usr/local/lib/cmake/SDL2/SDL2Targets-release.cmake"

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I"/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/src" -isystem /usr/local/include/SDL2
+CXX_INCLUDES = -I"/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/src" -isystem /usr/local/include/SDL2
 
 CXX_FLAGS = -O3 -DNDEBUG -std=c++17
 

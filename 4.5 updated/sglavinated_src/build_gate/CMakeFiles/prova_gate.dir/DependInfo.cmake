@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" "CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o" "gcc" "CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o.d"
+  "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" "CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o" "gcc" "CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

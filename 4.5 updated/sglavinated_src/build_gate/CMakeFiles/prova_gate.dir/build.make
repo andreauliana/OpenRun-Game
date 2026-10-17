@@ -53,10 +53,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo"
+CMAKE_SOURCE_DIR = "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate"
+CMAKE_BINARY_DIR = "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/prova_gate.dir/depend.make
@@ -73,18 +73,18 @@ CMakeFiles/prova_gate.dir/codegen:
 .PHONY : CMakeFiles/prova_gate.dir/codegen
 
 CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o: CMakeFiles/prova_gate.dir/flags.make
-CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o: /Users/andreauliana/Desktop/Outrun\ Sglavinated\ Edition\ v4\ .5\ (OpenWay)/4.5\ updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp
+CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5\ updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp
 CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o: CMakeFiles/prova_gate.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o -MF CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o.d -o CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o -c "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o -MF CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o.d -o CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o -c "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp"
 
 CMakeFiles/prova_gate.dir/test/prova_gate.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/prova_gate.dir/test/prova_gate.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" > CMakeFiles/prova_gate.dir/test/prova_gate.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" > CMakeFiles/prova_gate.dir/test/prova_gate.cpp.i
 
 CMakeFiles/prova_gate.dir/test/prova_gate.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/prova_gate.dir/test/prova_gate.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" -o CMakeFiles/prova_gate.dir/test/prova_gate.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo/test/prova_gate.cpp" -o CMakeFiles/prova_gate.dir/test/prova_gate.cpp.s
 
 # Object files for target prova_gate
 prova_gate_OBJECTS = \
@@ -97,7 +97,7 @@ prova_gate: CMakeFiles/prova_gate.dir/test/prova_gate.cpp.o
 prova_gate: CMakeFiles/prova_gate.dir/build.make
 prova_gate: libsglavinated_core.a
 prova_gate: CMakeFiles/prova_gate.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable prova_gate"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable prova_gate"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/prova_gate.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -109,6 +109,6 @@ CMakeFiles/prova_gate.dir/clean:
 .PHONY : CMakeFiles/prova_gate.dir/clean
 
 CMakeFiles/prova_gate.dir/depend:
-	cd "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build_gate/CMakeFiles/prova_gate.dir/DependInfo.cmake" "--color=$(COLOR)" prova_gate
+	cd "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/motore_nuovo" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate" "/Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate/CMakeFiles/prova_gate.dir/DependInfo.cmake" "--color=$(COLOR)" prova_gate
 .PHONY : CMakeFiles/prova_gate.dir/depend
 
