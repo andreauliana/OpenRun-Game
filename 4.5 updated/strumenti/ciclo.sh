@@ -112,6 +112,19 @@ echo "[ciclo] $(date '+%d/%m %H:%M') fine: leggi RIEPILOGO_MATTINA.md, DECISIONI
 # 1) modelli: ogni agente deve avere un modello presente in panchina.txt (altrimenti torna al primo); 2) errori ricorrenti nei log;
 # 3) stato workflow (blocchi, agenti con lavoro aperto, pause per limite). Taglia i log troppo grandi.
 manutenzione() {
+  # Registri comuni (solo script, nessun modello: non consuma crediti).
+  python3 motore_nuovo/strumenti_py/indice_strumenti.py > /dev/null 2>&1 || true
+  # Bacheche: restano solo diario, RIASSUNTO e i file del ciclo. Il resto (script, cartelle,
+  # copie, file di prova) va in archivio_v4/fuori_posto/<data>/<ruolo>/ e se ne parla in CONTROLLO.md.
+  for d in bacheche/*/; do
+    [ -d "$d" ] || continue; ag=$(basename "$d")
+    for x in "$d".* "$d"*; do
+      [ -e "$x" ] || continue; n=$(basename "$x")
+      case "$n" in .|..|diario.md|RIASSUNTO.md|DIARIO_RECENTE.md|diario_archivio.md) continue ;; esac
+      q="archivio_v4/fuori_posto/$(date +%Y%m%d)/$ag"; mkdir -p "$q"
+      mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $n in $q/ (fuori posto)" | tee -a .fuori_posto.log
+    done
+  done
   # Log: un file al giorno per agente; i giorni precedenti vanno in log_agenti/vecchi/ e restano 3 giorni (minimo 24 ore).
   mkdir -p log_agenti/vecchi; oggi=$(date +%Y%m%d); ieri=$(cat log_agenti/.giorno 2>/dev/null || echo "$oggi")
   if [ "$oggi" != "$ieri" ]; then
@@ -155,6 +168,7 @@ manutenzione() {
     echo "- blocchi chiusi [x]: $(grep -c '^| Stato.*\[x\]' RICHIESTA.md); in corso [~]: $(grep -c '^| Stato.*\[~\]' RICHIESTA.md); da fare [ ]: $(grep -c '^| Stato.*\[ \]' RICHIESTA.md)"
     echo "- agenti con lavoro aperto: $(agenti_liberi | tr '\n' ' ')"
     echo "- decisioni aperte per Andrea: $(grep -c '^## D[0-9].*\[APERTA\]' DECISIONI_ANDREA.md)"
+    [ -s .fuori_posto.log ] && { echo; echo "## File spostati dalle bacheche (fuori posto, ultimi 10)"; tail -10 .fuori_posto.log | sed 's/^\[ciclo\] /- /'; }
     echo "- istruzione: in pausa non servono nuove richieste; riprendi dai blocchi [~] e chiudi i file lasciati a meta."
   } > "$C.tmp" && mv "$C.tmp" "$C"
 }

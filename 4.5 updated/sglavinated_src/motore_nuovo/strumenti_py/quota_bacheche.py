@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Controlla lo spazio delle bacheche personali (default 500 MB ciascuna). Esce 1 se qualcuna supera il limite."""
+"""Controlla lo spazio delle bacheche personali (default 5 MB ciascuna, limite di Andrea). Esce 1 se qualcuna supera il limite."""
 import pathlib, sys
 proj = pathlib.Path(__file__).resolve().parent.parent.parent
-lim = float(sys.argv[1]) if len(sys.argv) > 1 else 500.0
+lim = float(sys.argv[1]) if len(sys.argv) > 1 else 5.0
 bad = 0
 for d in sorted((proj/"bacheche").glob("*")):
     if d.is_dir():

@@ -21,6 +21,7 @@ Nel ciclo base lavorano solo @sviluppatore e @collaudatore. @capo coordina un gi
 | ricercatore | cerca risorse con licenza libera, su richiesta (cercaasset) | `libreria/ricerca/` (proposte; le righe di `CREDITI.md` le scrive @grafico) |
 **La bacheca e' solo memoria, non un'officina**: dentro ci sono soltanto `diario.md` e `RIASSUNTO.md`. Codice, dati e strumenti vanno in `motore_nuovo/`; materiale riusabile in `libreria/`; consegne finite in `out/<ruolo>/`. Niente `bozze/`, script o copie nella bacheca.
 Il lavoro dei vecchi ruoli v4 e' in `archivio_v4/bacheche/` e `archivio_v4/out/`: solo storico, non si riscrive.
+**Strumenti (script) in comune.** Uno strumento che costruisci va in una cartella che il tuo ruolo scrive (sviluppatore `motore_nuovo/strumenti_py/`, collaudatore `motore_nuovo/test/`, grafico `assets_originali/`), mai in bacheca, con in testa una riga di scopo e il comando d'uso. Il ciclo lo registra da solo in `libreria/STRUMENTI.md`: tutti lo usano, lo modifica solo chi lo ha scritto (gli altri chiedono il cambio nel diario). Prima di scriverne uno nuovo, controlla li' se esiste gia'.
 Risparmio crediti: leggi solo i file elencati nel prompt del turno e quelli del tuo blocco; niente scansioni dell'intero progetto, niente riassunti lunghi, niente file di prova.
 
 ## Fogli comuni
