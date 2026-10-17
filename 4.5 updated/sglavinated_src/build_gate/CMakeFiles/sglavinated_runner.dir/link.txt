@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/sglavinated_runner.dir/src/runner/main.cpp.o CMakeFiles/sglavinated_runner.dir/src/runner/sponsor_loader.cpp.o -o sglavinated_runner  -Wl,-rpath,/usr/local/lib libsglavinated_core.a /usr/local/lib/libSDL2-2.0.0.dylib /usr/local/lib/libSDL2main.a

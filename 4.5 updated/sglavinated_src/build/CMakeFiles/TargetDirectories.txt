@@ -1,5 +1,0 @@
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build/CMakeFiles/sglavinated_core.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build/CMakeFiles/sglavinated_runner.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build/CMakeFiles/prova_gate.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build/CMakeFiles/edit_cache.dir
-/Users/andreauliana/Desktop/Outrun Sglavinated Edition v4 .5 (OpenWay)/4.5 updated/sglavinated_src/build/CMakeFiles/rebuild_cache.dir
