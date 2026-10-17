@@ -42,7 +42,7 @@ RISPOSTA DI ANDREA: Antonio Bold per titoli e peso 'regular' per fumetti, B per 
 ## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale stile per la sagoma dell'auto del giocatore?
 Scelta di Andrea: silhouette GT europea anni '70-'90, ispirata a: Citroën CX/DS, Ford Sierra XR4i/Cosworth, Capri, Escort RS, Mustang, Cortina. Auto 2 porte, ruote larghe, seduta bassa, rivisitata in chiave neon/sci-fi. 3 varianti di colore.
-RISPOSTA DI ANDREA: procedere (cotrollo e verifica)
+RISPOSTA DI ANDREA: OK
 
 ## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: nome e slogan dello sponsor inventato (intimo), dove compare (cartelloni, titolo, radio).
@@ -52,8 +52,8 @@ Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale, stile 
 
 ## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: 9 varianti di scenario prodotte per i 3 livelli. Quale variante per ciascun livello?
-RISPOSTA DI ANDREA: variante A per tutti, confermato. Procedere.
-Esito: lv_01_neon varianteA, lv_02_atomico varianteA, lv_03_foglie varianteA. Le varianti B/C restano in archivio per eventuali livelli e implementazioni future.
+RISPOSTA DI ANDREA: variante A, OK
+Esito: lv_01_neon varianteA, lv_02_atomico varianteA, lv_03_foglie varianteA. Le varianti B/C e altre future restano in archivio per eventuali livelli e implementazioni future.
 
 ## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: layout menu e HUD.
@@ -62,17 +62,17 @@ Esito: @grafico produce menu/HUD definitivo variante B, palette bianco/nero, lay
 
 ## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
 Domanda: hud.json (variante B) manca dell'elemento "tempo" citato da D7. Posizione e dato da definire.
-Opzioni: A) tempo residuo (secondi contati all'indietro), sotto la velocità, a sinistra  B) tempo totale percorso, sopra la distanza, a destra  C) nessun elemento tempo (tempo solo nel menu pausa)
+Opzioni: A) tempo residuo (secondi contati all'indietro), sotto la velocità  B) tempo totale percorso  C) nessun elemento tempo (tempo solo nel menu pausa)
 Raccomandazione: A (coerente con arcade 'OutRun Style', D7 già cita "tempo" in HUD).
 DEFAULT usato nel frattempo: A (tempo residuo sotto velocità, a sinistra).
 Impatto se cambi idea: aggiornare hud.json e regenerare hud_preview.png con genera_ui_b.py.
-RISPOSTA DI ANDREA: Andrea non risponde (regola 11) -> DEFAULT A applicato senza aspettare. @grafico aggiunge elemento "tempo" (residuo, secondi contati all'indietro, sotto velocità, a sinistra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @sviluppatore espone il dato nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
+RISPOSTA DI ANDREA: A  @grafico aggiunge elementi grafici interfaccia di gioco (no menu) con elemento "tempo" (residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @sviluppatore espone i dati del 'cruscotto' nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
 
 ## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
 Domanda: quando clang++/make è negato (regola 21), come si compila il nucleo?
 Opzioni: utilizzare: 'cmake --build'.
 RISPOSTA DI ANDREA: OK, cmake --build.
-Esito: DEFAULT confermato. @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, temperatura) rimandati a Pi 400; in questo ambiente solo verifica statica e scrittura codice.
+Esito: @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
 
 ## D10 | T1-RUN | capo | [APERTA]
 Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
@@ -80,7 +80,7 @@ Opzioni: A) caricatore PNG minimo nel core (nuova dipendenza/lib, core senza SDL
 Raccomandazione: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
 DEFAULT usato nel frattempo: B.
 Impatto se cambi idea: riscrivere caricamento sprite in prova_gate e aggiungere dipendenza immagini al core.
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
 
 ## D11 | T1-RUN | capo | [APERTA]
 Domanda: fuoristrada: velocità crolla da ~160 a ~6 in pochi frame (troppo brusco). Come tarare il rallentamento fuori strada in player.cpp?
@@ -88,4 +88,4 @@ Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelera
 Raccomandazione: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/gate_t1.sh` (replay 2x IDENTICO).
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: A, stile 'OutRun'
