@@ -7,8 +7,8 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/grafico/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/grafico/diario.md": allow
+    "bacheche/grafico/RIASSUNTO.md": allow
     "out/grafico/**": allow
     "assets_originali/**": allow
     "motore_nuovo/dati/ui/**": allow

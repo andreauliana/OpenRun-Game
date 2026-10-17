@@ -6,13 +6,12 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/capo/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/capo/diario.md": allow
+    "bacheche/capo/RIASSUNTO.md": allow
     "out/capo/**": allow
     "out/INDICE.md": allow
     "libreria/INDICE.md": allow
     "DECISIONI_ANDREA.md": allow
-    "ASSEMBLEA.md": allow
     "PER_CLAUDE.md": allow
     "FINITO": allow
 ---

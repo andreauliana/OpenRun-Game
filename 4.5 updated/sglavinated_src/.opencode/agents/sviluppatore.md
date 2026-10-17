@@ -7,8 +7,8 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/sviluppatore/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/sviluppatore/diario.md": allow
+    "bacheche/sviluppatore/RIASSUNTO.md": allow
     "out/sviluppatore/**": allow
     "libreria/codice/**": allow
     "libreria/livelli/**": allow

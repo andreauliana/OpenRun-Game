@@ -7,8 +7,8 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/collaudatore/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/collaudatore/diario.md": allow
+    "bacheche/collaudatore/RIASSUNTO.md": allow
     "out/collaudatore/**": allow
     "libreria/test/**": allow
     "libreria/docs/**": allow

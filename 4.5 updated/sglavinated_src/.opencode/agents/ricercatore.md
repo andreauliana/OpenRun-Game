@@ -7,8 +7,8 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/ricercatore/**": allow
-    "BACHECA_PUBBLICA.md": allow
+    "bacheche/ricercatore/diario.md": allow
+    "bacheche/ricercatore/RIASSUNTO.md": allow
     "out/ricercatore/**": allow
     "libreria/ricerca/**": allow
   webfetch: allow
