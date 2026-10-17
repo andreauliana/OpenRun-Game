@@ -101,7 +101,7 @@ private:
     std::vector<SpriteInstance> cartelloni_;   // posizioni bordo strada fissate in init(), nessun alloc dopo
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
-    bool trafficoAttivo_ = false; // P1b: placeholder traffico disattivato di default (solo strada + auto)
+    bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;
     u32 playerFlipFrame_ = 0;
     u32 offroadFrames_ = 0;

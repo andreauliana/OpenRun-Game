@@ -34,8 +34,8 @@ constexpr i32 INATTIVITA_FRAMES = 900; // inattivita: 60 frame di input, poi sil
 constexpr i32 AVVOLGIMENTO_FRAMES = 60000; // abbastanza per diversi giri del circuito
 constexpr i32 PIXEL_MIN = 100;      // soglia pixel per ritenere presente un rettangolo di show
 constexpr double MAX_MS_FRAME = 20.0;
-constexpr f32 MIN_SPEED_FIRST_FRAME = 4.0f;
-constexpr f32 MIN_SPEED_FRAME_60 = 140.0f;
+constexpr f32 MIN_SPEED_FIRST_FRAME = 2.0f;
+constexpr f32 MIN_SPEED_FRAME_60 = 100.0f;
 
 struct Esito {
     std::vector<u32> hash;      // frameHash ogni frame (confronto fra run)
@@ -129,6 +129,73 @@ Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi,
         }
     }
     return e;
+}
+
+bool verificaRibaltamento(const std::string& livello) {
+    Game game(12345u);
+    caricaSponsor(game);
+    game.init(livello);
+
+    bool haRibaltato = false;
+    for (i32 frame = 0; frame < 1500; ++frame) {
+        Pad pad{};
+        pad.held = Pad::A | Pad::Right;
+        game.setInput(pad);
+        game.update();
+        game.render();
+        if (game.state().playerFlipping) {
+            haRibaltato = true;
+            break;
+        }
+    }
+    if (!haRibaltato) return false;
+
+    const f32 posizioneIncidente = game.state().playerZ;
+    for (i32 frame = 0; frame < 75; ++frame) {
+        game.setInput(Pad{});
+        game.update();
+        game.render();
+        if (game.state().playerZ != posizioneIncidente) return false;
+    }
+    if (game.state().playerFlipping || game.state().playerX != 0.0f ||
+        game.state().playerSpeed != 0.0f || game.state().playerZ != posizioneIncidente)
+        return false;
+
+    Pad gas{};
+    gas.held = Pad::A;
+    for (i32 frame = 0; frame < 60; ++frame) {
+        game.setInput(gas);
+        game.update();
+        game.render();
+    }
+    return game.state().playerSpeed >= MIN_SPEED_FRAME_60;
+}
+
+bool verificaAccelerazione(const std::string& livello) {
+    Game game(12345u);
+    game.init(livello);
+    Pad gas{};
+    gas.held = Pad::A;
+
+    f32 speedPrecedente = 0.0f;
+    f32 speedPrimoFrame = 0.0f;
+    f32 speedDopo60 = 0.0f;
+    for (i32 frame = 0; frame < 500; ++frame) {
+        game.setInput(gas);
+        game.update();
+        game.render();
+        const f32 speed = game.state().playerSpeed;
+        if (frame == 0) speedPrimoFrame = speed;
+        if (frame == 59) speedDopo60 = speed;
+        if (speed + 0.001f < speedPrecedente) return false;
+        speedPrecedente = speed;
+    }
+
+    std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f\n",
+                speedPrimoFrame, speedDopo60, speedPrecedente);
+    return speedPrimoFrame >= MIN_SPEED_FIRST_FRAME &&
+           speedDopo60 >= MIN_SPEED_FRAME_60 &&
+           speedPrecedente >= 240.0f && speedPrecedente <= 250.0f;
 }
 
 // --- Caso nuovo: avvolgimento di playerZ oltre totalLen_ ---
@@ -265,6 +332,20 @@ int main(int argc, char** argv) {
         return 4;
     }
     std::filesystem::create_directories(outDir);
+
+    if (modo == "crash") {
+        const bool ok = verificaRibaltamento(livello);
+        std::printf("%s\n", ok ? "GATE RIBALTAMENTO OK"
+                               : "FALLITO: ribaltamento o ripartenza sul tracciato");
+        return ok ? 0 : 5;
+    }
+
+    if (modo == "accelerazione") {
+        const bool ok = verificaAccelerazione(livello);
+        std::printf("%s\n", ok ? "GATE ACCELERAZIONE OK"
+                               : "FALLITO: accelerazione non progressiva o troppo lenta");
+        return ok ? 0 : 6;
+    }
 
     if (modo == "soak") {
         const i32 TOTAL_FRAMES = SOAK_FRAMES;

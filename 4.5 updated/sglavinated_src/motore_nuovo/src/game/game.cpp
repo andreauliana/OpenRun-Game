@@ -88,6 +88,10 @@ void Game::init(const std::string& livelloId) {
     road_.playerX = 0.0f;
     player_.z = 0.0f;
     player_.x = 0.0f;
+    player_.speed = 0.0f;
+    playerFlipping_ = false;
+    playerFlipFrame_ = 0;
+    offroadFrames_ = 0;
     showManager_.reset(seed_); // stesso seed = stessi show (determinismo)
 
     // Testi fumetti da frasi.json (dati, CC-BY-4.0 Andrea): carica una volta,
@@ -105,8 +109,8 @@ void Game::init(const std::string& livelloId) {
     state_.seed = seed_;
     state_.frame = 0;
 
-    // Radio: nessun path hardcodato su shots/ (cartella del filone Hack Mega Drive
-    // v87: possibile materiale Sega, regola 1; e fuori dal flusso audio guidato
+    // Radio: nessun path hardcodato su shots/ (cartella del filone Mega Drive
+    // v87: regola 1; e fuori dal flusso audio guidato
     // da dati della regola 8, motore_nuovo/dati/audio/playlist.json).
     // Il runner carica il brano da playlist.json e lo passa al mixer; qui si
     // lascia radioM senza path -> loadRadio() restituisce 0 (silenzio, nessun crash).
@@ -241,7 +245,7 @@ bool Game::leggiCartelloniDaFile(const std::string& livelloId) {
         if (jsonGet(o, "sponsor_id", idV) && jsonIsString(idV)) sponsorId = jsonAsString(idV);
         i32 spriteIdx = risolviSponsorSprite(sponsorId);
         if (spriteIdx < 0) {
-            // sponsor_id mancante o senza sprite caricato: sponsor a caso (seed).
+            // sponsor a caso (seed).
             // Guardia: senza sprite registrati (setSponsorSprites non chiamato)
             // l'accesso sotto andrebbe fuori range (modulo per zero). init()
             // usa allora il posizionamento cartelloni di fallback.
@@ -264,43 +268,50 @@ void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
     f32 dt = 1.0f / 50.0f; // un frame di gioco a 50 Hz
 
-    player_.input(input_, dt);
-    player_.update(dt);
-
-    road_.playerX = player_.x;
-    road_.advance(player_.speed * dt);
-    player_.z = road_.playerZ;
-
-    // Spinta laterale verso l'esterno della curva (forza centrifuga):
-    // la strada curva spinge l'auto verso l'esterno in proporzione a curva e
-    // velocita'. K_CURVA = 0.04f: effetto modesto rispetto allo sterzo
-    // (STEER_INC=90) ma percettibile nelle curve senza input.
-    // Fonte tecnica: Jake Gordon, "JavaScript Racer" (centrifugal force).
-    const f32 curvaQui = road_.curvaAt(player_.z);
-    player_.x += curvaQui * player_.speed * 0.04f * dt;
-    // Rieseguo il clamp laterale dopo la spinta centrifuga (X_LIMIT di Player).
-    if (player_.x > 900.0f) player_.x = 900.0f;
-    if (player_.x < -900.0f) player_.x = -900.0f;
-
-    // 4) Collisioni giocatore <-> traffico (placeholder deterministico).
-    //    P1b: traffico segnaposto disattivato di default (flag trafficoAttivo_,
-    //    acceso solo in T5). Con il placeholder attivo le 6 auto fisse a x = +/-800
-    //    scatenavano una collisione continua (|dx| < 700) appena lo sterzo superava
-    //    x = 100: crash infinito e auto che "spariva". Ora resta solo strada + auto.
-    if (trafficoAttivo_) {
-        spawnTraffic();
-        bool collisione = false;
-        for (const SpriteInstance& s : sprites_) {
-            const f32 dz = s.worldZ - road_.playerZ; // davanti al giocatore
-            const f32 dx = s.worldX - player_.x;
-            if (dz > 0.0f && dz < 600.0f && dx > -700.0f && dx < 700.0f) collisione = true;
+    if (playerFlipping_) {
+        ++playerFlipFrame_;
+        if (playerFlipFrame_ >= FLIP_ANIMATION_FRAMES) {
+            playerFlipping_ = false;
+            playerFlipFrame_ = 0;
+            offroadFrames_ = 0;
+            player_.x = 0.0f;
+            player_.speed = 0.0f;
+            player_.offroad = false;
+            road_.playerX = 0.0f;
         }
-        // Crash: un evento per contatto (fronte di salita), priorita' massima nello show.
+    } else {
+        player_.input(input_, dt);
+        player_.update(dt);
+
+        road_.playerX = player_.x;
+        road_.advance(player_.speed * dt);
+        player_.z = road_.playerZ;
+
+        // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.
+        const f32 curvaQui = road_.curvaAt(player_.z);
+        player_.x += curvaQui * player_.speed * 0.04f * dt;
+        if (player_.x > 900.0f) player_.x = 900.0f;
+        if (player_.x < -900.0f) player_.x = -900.0f;
+        player_.offroad = player_.x < -700.0f || player_.x > 700.0f;
+
+        if (player_.offroad) ++offroadFrames_;
+        else offroadFrames_ = 0;
+
+        if (trafficoAttivo_) spawnTraffic();
+        const bool collisione = collisioneOggettiVicini();
         if (collisione && !inCollision_) {
             showManager_.crash();
             inCollision_ = true;
         } else if (!collisione) {
             inCollision_ = false;
+        }
+
+        if (collisione || offroadFrames_ >= OFFROAD_CRASH_FRAMES) {
+            if (!collisione) showManager_.crash();
+            playerFlipping_ = true;
+            playerFlipFrame_ = 0;
+            player_.speed = 0.0f;
+            offroadFrames_ = 0;
         }
     }
 
@@ -329,6 +340,8 @@ void Game::update() {
     state_.playerX = player_.x;
     state_.playerZ = player_.z;
     state_.playerOffroad = player_.offroad;
+    state_.playerFlipping = playerFlipping_;
+    state_.playerFlipFrame = playerFlipFrame_;
 
     clock_.tick();
 }
@@ -341,7 +354,10 @@ void Game::render() {
     scenaSprites_ = sprites_;
     scenaSprites_.insert(scenaSprites_.end(), cartelloni_.begin(), cartelloni_.end());
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
-    ren_.drawPlayerCar(player_.speed, player_.x, player_.offroad);
+    const f32 rollAngle = playerFlipping_
+        ? 6.2831853f * (f32)playerFlipFrame_ / (f32)FLIP_ANIMATION_FRAMES
+        : (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
+    ren_.drawPlayerCar(player_.speed, player_.x, player_.offroad, rollAngle);
     // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
     // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.
     const gameplay::ScenaShow& sc = disegnoShow_.scena();
@@ -356,15 +372,35 @@ void Game::render() {
     }
 }
 
+bool Game::collisioneOggettiVicini() const {
+    const f32 giro = (f32)road_.totalLength();
+    if (giro <= 0.0f) return false;
+
+    auto collide = [this, giro](const SpriteInstance& oggetto, f32 profondita, f32 larghezza) {
+        f32 dz = std::fmod(oggetto.worldZ - road_.playerZ, giro);
+        if (dz < 0.0f) dz += giro;
+        const f32 dx = oggetto.worldX - player_.x;
+        return dz < profondita && std::abs(dx) < larghezza;
+    };
+
+    for (const SpriteInstance& oggetto : sprites_)
+        if (collide(oggetto, 120.0f, 180.0f)) return true;
+
+    for (const SpriteInstance& oggetto : cartelloni_)
+        if (collide(oggetto, 90.0f, 760.0f)) return true;
+
+    return false;
+}
+
 void Game::spawnTraffic() {
-    // Placeholder: qualche sprite di traffico a distanze fisse (nessun asset).
+    // Traffico sintetico: auto senza asset, disegnate come sagome dal renderer.
     sprites_.clear();
     const f32 giro = (f32)road_.totalLength(); // lunghezza reale del tracciato (prima 3000 fisso)
     const f32 zGiro = giro > 0.0f ? std::fmod(road_.playerZ, giro) : 0.0f;
     for (i32 i = 1; i <= 6; ++i) {
         SpriteInstance s;
         s.worldZ = (f32)(i * 500) + zGiro;
-        s.worldX = (i % 2 == 0) ? -800.0f : 800.0f;
+        s.worldX = (i % 2 == 0) ? -500.0f : 500.0f;
         s.scale = 1.0f;
         s.sprite = nullptr; // nessun sprite carico ancora: non disegna nulla
         s.paletteBase = 9;
@@ -388,6 +424,8 @@ u32 Game::frameHash() const {
     h ^= (u32)state_.playerX;
     h ^= (u32)state_.playerZ;
     h ^= state_.playerOffroad ? 1u : 0u;
+    h ^= state_.playerFlipping ? 0x80000000u : 0u;
+    h ^= state_.playerFlipFrame * 0x9e3779b9u;
     h ^= rng_.state(); // stato RNG (xorshift32): se diverge, l'hash diverge
     h *= 0x01000193u;
     return h;

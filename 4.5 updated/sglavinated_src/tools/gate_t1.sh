@@ -35,8 +35,18 @@ if [ "$MODE" = "soak" ]; then
   echo "   exit $R"
   [ "$R" -ne 0 ] && RC=$R
 fi
+echo "== verifica accelerazione 10 s"
+./build_gate/prova_gate out/collaudatore/accelerazione lv_01_neon accelerazione >> "$LOG" 2>&1
+R=$?
+echo "   exit $R"
+[ "$R" -ne 0 ] && RC=$R
+echo "== verifica ribaltamento e ripartenza"
+./build_gate/prova_gate out/collaudatore/crash lv_01_neon crash >> "$LOG" 2>&1
+R=$?
+echo "   exit $R"
+[ "$R" -ne 0 ] && RC=$R
 
 echo "== riepilogo (da $LOG)"
-grep -E "^(modo|speed@60|accelerazione|offroad|ms/frame|replay 2x|GATE OK|FALLITO)" "$LOG"
+grep -E "^(modo|speed@60|accelerazione|offroad|ms/frame|replay 2x|GATE .* OK|GATE OK|FALLITO)" "$LOG"
 [ "$RC" -eq 0 ] && echo "GATE T1: TUTTO OK" || echo "GATE T1: FALLITO (exit $RC)"
 exit "$RC"

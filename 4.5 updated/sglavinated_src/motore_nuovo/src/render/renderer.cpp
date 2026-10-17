@@ -125,6 +125,18 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // proiettato a quella profondita' (it->screenX, che include curve e camera), cosi'
         // cartelloni e oggetti seguono le curve invece di restare su una retta.
         f32 sx = it->screenX + scl * s.worldX * (f32)Framebuffer::WIDTH / 2;
+        if (!s.sprite) {
+            const f32 projectionScale = scl * (f32)Framebuffer::WIDTH / 2;
+            const i32 w = std::max(4, (i32)(26.0f * projectionScale));
+            const i32 h = std::max(3, (i32)(18.0f * projectionScale));
+            const i32 cx = (i32)sx;
+            const i32 cy = (i32)sy;
+            fb_.fillRect(cx - w / 2, cy - h, cx + w / 2, cy, pal_[s.paletteBase]);
+            fb_.fillRect(cx - w / 4, cy - h + 1, cx + w / 4, cy - h / 2, pal_[10]);
+            fb_.fillRect(cx - w / 2, cy - 2, cx - w / 3, cy + 1, pal_[14]);
+            fb_.fillRect(cx + w / 3, cy - 2, cx + w / 2, cy + 1, pal_[14]);
+            continue;
+        }
         // Scala in pixel: stessa proiezione della strada (scl * W/2 per unita' mondo)
         // per le unita' mondo di un pixel sprite. Prima si passava scl da solo
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
