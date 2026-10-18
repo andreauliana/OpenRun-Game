@@ -12,9 +12,7 @@
       "tail *": "allow",
       "wc *": "allow",
       "pwd": "allow",
-      "rm *": "deny",
-      "sh strumenti/verifica.sh*": "allow",
-      "sh ../strumenti/verifica.sh*": "allow"
+      "rm *": "deny"
     },
     "external_directory": {
       "*": "deny",

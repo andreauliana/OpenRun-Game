@@ -13,5 +13,14 @@ sglavinated_src/ASSEMBLEE_APERTE.md
 sglavinated_src/bacheche/*/DIARIO_RECENTE.md
 sglavinated_src/build/
 sglavinated_src/build_gate/
+sglavinated_src/UFFICIO/Officina/build*/
+!sglavinated_src/UFFICIO/Officina/build/README.md
+sglavinated_src/UFFICIO/Officina/Test area/gate_t1.log
+sglavinated_src/UFFICIO/Officina/Test area/lv_*/
+sglavinated_src/UFFICIO/Officina/Test area/soak/
+sglavinated_src/UFFICIO/Officina/Test area/accelerazione/
+sglavinated_src/UFFICIO/Officina/Test area/crash/
+sglavinated_src/UFFICIO/Officina/Test area/sterzo/
+sglavinated_src/UFFICIO/Officina/Test area/curve/
 sglavinated_src/.fuori_posto.log
 sglavinated_src/archivio_v4/fuori_posto/

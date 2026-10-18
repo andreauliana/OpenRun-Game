@@ -12,7 +12,16 @@ permission:
     "UFFICIO/Dipartimento Grafico/TOOLS/**": allow
     "UFFICIO/Dipartimento Grafico/Libreria/**": allow
     "assets_originali/**": allow
-    "libreria/**": allow
+    "libreria/INDICE.md": allow
+    "libreria/LEGGIMI.md": allow
+    "libreria/STRUMENTI.md": allow
+    "libreria/sprite/**": allow
+    "libreria/palette/**": allow
+    "libreria/scenari/**": allow
+    "libreria/font/**": allow
+    "libreria/testi/**": allow
+    "libreria/ricerca/**": allow
+    "motore_nuovo/dati/sprite_raw/**": allow
     "motore_nuovo/dati/ui/**": allow
     "motore_nuovo/dati/testi/**": allow
     "motore_nuovo/dati/frasi.json": allow

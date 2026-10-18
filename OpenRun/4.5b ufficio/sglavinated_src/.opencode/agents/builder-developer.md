@@ -15,7 +15,6 @@ permission:
     "motore_nuovo/CMakeLists.txt": allow
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/dati/personaggi/**": allow
-    "motore_nuovo/dati/sprite_raw/**": allow
     "motore_nuovo/strumenti_py/**": allow
     "motore_nuovo/dati/SPEC_GAMEPLAY.md": allow
     "motore_nuovo/docs/LIVELLI.md": allow
@@ -24,9 +23,8 @@ permission:
     "libreria/livelli/**": allow
   bash:
     "*": deny
-    "cmake -S * -B *": allow
-    "cmake --build *": allow
-    "cmake *": allow
+    "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
+    "cmake --build UFFICIO/Officina/build*": allow
     "sh tools/gate_t1.sh": allow
     "sh tools/gate_t1.sh *": allow
     "make *": allow

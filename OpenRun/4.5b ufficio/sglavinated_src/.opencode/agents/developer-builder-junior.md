@@ -10,14 +10,14 @@ permission:
     "bacheche/developer-builder-junior/**": allow
     "out/developer-builder-junior/**": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
+    "UFFICIO/Officina/TOOL/**": allow
     "UFFICIO/Officina/Test area/strumenti/**": allow
     "motore_nuovo/src/**": allow
     "motore_nuovo/test/**": allow
   bash:
     "*": deny
-    "cmake -S * -B *": allow
-    "cmake --build *": allow
-    "cmake *": allow
+    "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
+    "cmake --build UFFICIO/Officina/build*": allow
     "sh tools/gate_t1.sh": allow
     "sh tools/gate_t1.sh *": allow
     "make *": allow

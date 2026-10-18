@@ -106,8 +106,8 @@ endif()
 # ---------------------------------------------------------------------------
 # Target: prova_gate — test automatico del gate Tappa 1 (blocco P1e/H).
 # Guida da solo 10 s e salva 3 screenshot (partenza/curva/fuori-strada) in
-# out/collaudatore/ con velocita' e posizione nel log.
-# Il file sorgente motore_nuovo/test/prova_gate.cpp e' consegnato da @debugger.
+# UFFICIO/Officina/Test area/ con velocita' e posizione nel log.
+# Il file sorgente motore_nuovo/test/prova_gate.cpp e' mantenuto dal team di sviluppo.
 # Core-only: nessun SDL, output PPM puro senza librerie esterne.
 # Il target si attiva solo quando prova_gate.cpp esiste.
 # ---------------------------------------------------------------------------
