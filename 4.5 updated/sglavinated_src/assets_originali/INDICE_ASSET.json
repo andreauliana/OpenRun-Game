@@ -1,6 +1,6 @@
 {
- "generato": "2026-10-17 18:22",
- "n_file": 293,
+ "generato": "2026-10-18 09:11",
+ "n_file": 294,
  "lacune": [
   {
    "serve": "auto giocatore",
@@ -70,6 +70,17 @@
   }
  ],
  "file": [
+  {
+   "percorso": "assets_originali/CATALOGO_GRAFICO.json",
+   "categoria": "(radice)",
+   "tipo": "json",
+   "byte": 14935,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "mtime": 1792259327,
+   "flag": []
+  },
   {
    "percorso": "assets_originali/CREDITI.md",
    "categoria": "(radice)",
@@ -292,11 +303,11 @@
    "percorso": "assets_originali/ricerca/font_pixel.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 1428,
+   "byte": 1426,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242224,
+   "mtime": 1792270756,
    "flag": []
   },
   {
