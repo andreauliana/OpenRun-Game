@@ -649,3 +649,26 @@ blocchi da fare [ ]: 7
 > collaudatore · nemotron-3.5-super-vl-free
 > collaudatore · nemotron-3.5-super-vl-free
 OK
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 13:53 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13705012 di 13705012 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK
