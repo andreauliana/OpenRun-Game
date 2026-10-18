@@ -20,12 +20,17 @@ public:
     static constexpr f32 Z_NEAR = 60.0f;          // sotto questa distanza il segmento non si proietta (evita 1/z esploso)
     static constexpr f32 CAM_HEIGHT = 1000.0f; // altezza telecamera
     static constexpr f32 CAM_Z = 0.0f;       // (relativa all'auto, gestita in update)
+    // curva di livello.json -> curvatura (variazione di pendenza laterale per unita').
+    // Con curva 0.8 la strada all'orizzonte si sposta di circa mezzo schermo.
+    static constexpr f32 CURVE_SCALE = 3.0e-4f;
+    // collina di livello.json -> quota assoluta della strada (unita' mondo).
+    static constexpr f32 HILL_HEIGHT = 6000.0f;
 
     Road();
     explicit Road(u32 seed);
 
-    // Costruisce il tracciato da descrittori: ogni segmento raccorda curva e
-    // collina con quello adiacente. seed per RNG eventuale.
+    // Costruisce il tracciato con un segmento per valore (curva, collina).
+    // seed per RNG eventuale.
     void build(std::vector<f32> curves, std::vector<f32> hills, u32 seed);
 
     // Descrittore di un segmento (dati di livello.json): curva/collina/lunghezza.
@@ -36,7 +41,8 @@ public:
         i32 lunghezza = SEG_LEN;
     };
 
-    // Costruisce il tracciato da descrittori con lunghezza variabile.
+    // Costruisce il tracciato da descrittori: ogni descrittore diventa
+    // "lunghezza" segmenti da SEG_LEN, con curva e collina raccordate.
     void build(const std::vector<SegmentDesc>& descs, u32 seed);
 
     // Avanza la posizione "occhi" di dt unita' lungo la strada (chiamato ogni frame).
@@ -51,7 +57,7 @@ public:
     // Proietta i segmenti visibili a partire da playerZ e riempie out (max DRAW_DIST).
     struct ProjectedSeg {
         i32 index;
-        f32 worldX, worldY, worldZ;  // punto centrale del segmento (inizio)
+        f32 worldX, worldY, worldZ;  // centro strada: x laterale rispetto alla telecamera, quota, distanza
         f32 scale;                   // scala di proiezione (cameraY / zRel)
         f32 screenX;                 // centro orizzontale sullo schermo
         f32 screenY;                 // base sullo schermo

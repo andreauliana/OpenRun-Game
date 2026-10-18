@@ -9,6 +9,7 @@ namespace sgl {
 namespace {
 constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
+constexpr f32 CURVA_SPINTA = 0.015f; // forza centrifuga in curva (vedi update)
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
 std::string leggiFileTesto(const std::string& path) {
@@ -48,24 +49,29 @@ void Game::init(const std::string& livelloId) {
     std::vector<Road::SegmentDesc> descs;
     const bool daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
     if (daFile) {
-        // Ripeti il pattern dei segmenti fino ad averne almeno 2*DRAW_DIST:
-        // il tracciato e' un circuito; con troppo pochi segmenti la proiezione
-        // con wrap mostrerebbe segmenti troppo lontani (sotto lo schermo).
+        // Ripeti il pattern finche' il giro ha almeno 2*DRAW_DIST segmenti
+        // ("lunghezza" conta segmenti): il tracciato e' un circuito; con troppo
+        // pochi segmenti la proiezione con wrap mostrerebbe segmenti troppo lontani.
         std::vector<Road::SegmentDesc> pattern = std::move(descs);
         descs.clear();
-        const size_t minSeg = (size_t)Road::DRAW_DIST * 2;
-        while (descs.size() < minSeg)
-            descs.insert(descs.end(), pattern.begin(), pattern.end());
+        i32 segTotali = 0;
+        const i32 minSeg = Road::DRAW_DIST * 2;
+        while (segTotali < minSeg) {
+            for (const Road::SegmentDesc& d : pattern) {
+                descs.push_back(d);
+                segTotali += d.lunghezza > 0 ? d.lunghezza : 1;
+            }
+        }
         road_.build(descs, seed_);
     } else {
         // Fallback deterministico (hardcoded): 400 segmenti con pattern inventato.
         std::vector<f32> curves, hills;
         for (i32 i = 0; i < 400; ++i) {
             f32 c = 0.0f, h = 0.0f;
-            if (i % 60 < 20) c = 0.0004f;     // curva a destra
-            if (i % 60 < 20 && i % 120 >= 60) c = -0.0004f; // curva a sinistra
-            if (i % 90 < 30) h = 0.02f;        // salita
-            if (i % 90 < 30 && i % 180 >= 90) h = -0.02f; // discesa
+            if (i % 60 < 20) c = 0.6f;        // curva a destra
+            if (i % 60 < 20 && i % 120 >= 60) c = -0.6f; // curva a sinistra
+            if (i % 90 < 30) h = 0.15f;       // salita
+            if (i % 90 < 30 && i % 180 >= 90) h = -0.15f; // discesa
             curves.push_back(c);
             hills.push_back(h);
         }
@@ -287,8 +293,11 @@ void Game::update() {
         player_.z = road_.playerZ;
 
         // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.
+        // Le curve ora durano centinaia di metri: la spinta resta sotto lo sterzo
+        // (a curva 0.8 e velocita' massima circa 7 unita'/frame contro 11 di sterzo),
+        // cosi' la curva si tiene sterzando.
         const f32 curvaQui = road_.curvaAt(player_.z);
-        player_.x += curvaQui * player_.speed * 0.04f * dt * roadScrollScale;
+        player_.x += curvaQui * player_.speed * CURVA_SPINTA * dt * roadScrollScale;
         if (player_.x > 900.0f) player_.x = 900.0f;
         if (player_.x < -900.0f) player_.x = -900.0f;
         player_.offroad = player_.x < -700.0f || player_.x > 700.0f;
