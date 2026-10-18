@@ -5,16 +5,6 @@
   "permission": {
     "bash": {
       "*": "deny",
-      "cmake -S * -B *": "allow",
-      "cmake --build *": "allow",
-      "cmake *": "allow",
-      "cmake -S motore_nuovo -B build && cmake --build build": "allow",
-      "cmake -S * -B * && cmake --build *": "allow",
-      "sh tools/gate_t1.sh": "allow",
-      "sh tools/gate_t1.sh *": "allow",
-      "which *": "allow",
-      "make *": "allow",
-      "clang++ -std=c++17 -fsyntax-only *": "allow",
       "ls *": "allow",
       "cat *": "allow",
       "grep *": "allow",
@@ -28,7 +18,7 @@
     },
     "external_directory": {
       "*": "deny",
-      "~/Desktop/4.5 updated/**": "allow"
+      "/Users/andreauliana/Documents/GitHub/OpenRun-Game/OpenRun/4.5b ufficio/ANDREA/**": "ask"
     },
     "webfetch": "deny",
     "execute": "deny"
