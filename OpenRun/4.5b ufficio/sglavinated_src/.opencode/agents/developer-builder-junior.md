@@ -3,7 +3,6 @@ description: "Developer/Builder Junior OpenRun: contribuisce a codice, test e di
 model: opencode/nemotron-3.5-super-vl-free
 mode: subagent
 permission:
-  execute: deny
   read:
     "../ANDREA/**": ask
   edit:

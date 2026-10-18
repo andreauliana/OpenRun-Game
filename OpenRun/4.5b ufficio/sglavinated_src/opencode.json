@@ -18,7 +18,6 @@
       "*": "deny",
       "/Users/andreauliana/Documents/GitHub/OpenRun-Game/OpenRun/4.5b ufficio/ANDREA/**": "ask"
     },
-    "webfetch": "deny",
-    "execute": "deny"
+    "webfetch": "deny"
   }
 }

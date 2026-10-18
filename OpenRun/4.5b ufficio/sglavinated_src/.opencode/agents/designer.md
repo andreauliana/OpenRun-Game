@@ -3,7 +3,6 @@ description: "Designer / Art Director per OpenRun: crea e cataloga asset, verifi
 model: opencode/nemotron-3.5-super-vl-free
 mode: subagent
 permission:
-  execute: deny
   read:
     "../ANDREA/**": ask
   edit:
