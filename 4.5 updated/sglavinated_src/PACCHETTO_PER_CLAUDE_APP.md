@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 08:26
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 10:19
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -57,38 +57,27 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 178:| Stato | [-] (tappa 5) |
 
 ## Decisioni aperte
+27:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
+36:## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
+42:## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
+49:## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
+56:## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
+61:## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
+67:## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
+72:## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
+77:## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
+85:## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
+91:## D10 | T1-RUN | capo | [APERTA]
+99:## D11 | T1-RUN | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-> collaudatore · nemotron-3.5-super-vl-free
-Leggo i quattro file da revisionare in parallelo.
-[0m→ [0mRead motore_nuovo/CMakeLists.txt 
-[0m→ [0mRead assets_originali/DIREZIONE_ARTISTICA.md 
-[0m→ [0mRead motore_nuovo/src/render/sprite_raw.cpp 
-[0m→ [0mRead motore_nuovo/src/render/sprite_raw.h 
-> collaudatore · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
-1) `assets_originali/DIREZIONE_ARTISTICA.md:42` — "Look alike di Salvini" è una real person; AGENTS.md vieta esplicitamente "real people, real brands, umiliazione di group di people". Correzione: rimuovere il riferimento a Salvini (e ogni persona reale) e sostituirlo con un personaggio inventato/caricatura non riconoscibile.
-
-2) `motore_nuovo/src/render/sprite_raw.cpp:60` in contrasto con `assets_originali/DIREZIONE_ARTISTICA.md:12` — la direzione artistica fissa max 16 colori per sprite, ma il codice consente alla palette di crescere fino a 256 (`< 256`). Correzione: allineare il codice alla regola di direzione, portando il limite a 16 (`< 16`) in `sprite_raw.cpp:60` e coerente il commento di `sprite_raw.h:13-14` ("max 256 colori" → "max 16 colori"); in alternativa aggiornare la DA a 256.
-
-Resto coerente: intestazioni SPDX MIT presenti, CMake target condizionati e indipendenti da SDL nel core, lettura raw deterministica (stesso input → stessa palette/quantizzazione). Nessun blocco.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 07:55 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
 OK      sintassi run.sh
 OK      nessuna ROM Sega presente
 OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835321 di 13835321 byte), soglia 50.0%
+quota open: 100.0% (13848499 di 13848499 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
@@ -97,7 +86,7 @@ blocchi da fare [ ]: 7
 > collaudatore · nemotron-3.5-super-vl-free
 OK
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 08:25 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:25 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
@@ -111,7 +100,30 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13848499 di 13848499 byte), soglia 50.0%
+quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:57 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
