@@ -10,7 +10,7 @@
 ## Non funziona / aperto
 - Shell `Permission denied: shell` (anche comandi semplici): screenshot P1 e qualsiasi esecuzione diretta bloccati; unica via permessa `sh tools/gate_t1.sh` [soak] per sviluppatore/collaudatore.
 - T1-RUN e P1 non promossi a [x]: competenza solo Andrea/Claude, dopo v91 Andrea.
-- H: v91 guida runner Mac + fps/temp Pi 400 ancora mancanti.
+- H: v91 guida runner Mac + fps/temperatura Pi 400 ancora mancanti.
 - Nessun PER_CLAUDE.md, nessun FINITO (P1 e H non [x]).
 
 ## Prossimo passo consigliato
