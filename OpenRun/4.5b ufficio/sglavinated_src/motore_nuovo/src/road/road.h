@@ -20,12 +20,21 @@ public:
     static constexpr f32 Z_NEAR = 60.0f;          // sotto questa distanza il segmento non si proietta (evita 1/z esploso)
     static constexpr f32 CAM_HEIGHT = 1000.0f; // altezza telecamera
     static constexpr f32 CAM_Z = 0.0f;       // (relativa all'auto, gestita in update)
+    // curva di livello.json -> curvatura (variazione di pendenza laterale per unita').
+    // Con curva 0.8 la strada all'orizzonte si sposta di circa mezzo schermo.
+    static constexpr f32 CURVE_SCALE = 3.0e-4f;
+    // collina di livello.json -> quota assoluta della strada (unita' mondo).
+    static constexpr f32 HILL_HEIGHT = 6000.0f;
+    // Bivio a fine tappa (solo in gara): la strada si apre in due rami.
+    static constexpr i32 BIVIO_SEG = 800;          // segmenti finali occupati dal bivio
+    static constexpr f32 BIVIO_DIST = 1900.0f;     // centro di ogni ramo a bivio aperto (unita' mondo)
+    static constexpr f32 BIVIO_SVOLTA = 1.5e-4f;   // quanto il ramo non scelto si allontana (curva via)
 
     Road();
     explicit Road(u32 seed);
 
-    // Costruisce il tracciato da descrittori: ogni segmento raccorda curva e
-    // collina con quello adiacente. seed per RNG eventuale.
+    // Costruisce il tracciato con un segmento per valore (curva, collina).
+    // seed per RNG eventuale.
     void build(std::vector<f32> curves, std::vector<f32> hills, u32 seed);
 
     // Descrittore di un segmento (dati di livello.json): curva/collina/lunghezza.
@@ -36,7 +45,8 @@ public:
         i32 lunghezza = SEG_LEN;
     };
 
-    // Costruisce il tracciato da descrittori con lunghezza variabile.
+    // Costruisce il tracciato da descrittori: ogni descrittore diventa
+    // "lunghezza" segmenti da SEG_LEN, con curva e collina raccordate.
     void build(const std::vector<SegmentDesc>& descs, u32 seed);
 
     // Avanza la posizione "occhi" di dt unita' lungo la strada (chiamato ogni frame).
@@ -49,14 +59,33 @@ public:
     f32 curvaAt(f32 z) const;
 
     // Proietta i segmenti visibili a partire da playerZ e riempie out (max DRAW_DIST).
+    // Carreggiate a una posizione del tracciato: una sola, o i due rami del bivio.
+    // centro[] e' lo spostamento laterale dal centro strada (unita' mondo),
+    // fattore la larghezza di ciascun ramo rispetto alla strada intera.
+    struct Carreggiate {
+        f32 centro[2] = {0.0f, 0.0f};
+        f32 fattore = 1.0f;
+        bool doppia = false;
+    };
+    // Attiva il bivio sugli ultimi BIVIO_SEG segmenti (gara a tappe). La scelta
+    // si blocca a bivioBloccoZ(): da li' i rami sono separati dallo spartitraffico.
+    void impostaBivio(bool attivo) { bivio_ = attivo; }
+    bool bivioAttivo() const { return bivio_; }
+    f32 bivioInizioZ() const { return (f32)(totalLen_ - BIVIO_SEG * SEG_LEN); }
+    f32 bivioBloccoZ() const { return bivioInizioZ() + 0.6f * (f32)(BIVIO_SEG * SEG_LEN); }
+    // zAbs: distanza dall'inizio della tappa (anche oltre la fine). lato: 0 = scelta
+    // aperta (rami a -D e +D), -1/+1 = ramo scelto, ricentrato a 0 (l'altro curva via).
+    Carreggiate carreggiate(f32 zAbs, i32 lato) const;
+
     struct ProjectedSeg {
         i32 index;
-        f32 worldX, worldY, worldZ;  // punto centrale del segmento (inizio)
+        f32 worldX, worldY, worldZ;  // centro strada: x laterale rispetto alla telecamera, quota, distanza
         f32 scale;                   // scala di proiezione (cameraY / zRel)
         f32 screenX;                 // centro orizzontale sullo schermo
         f32 screenY;                 // base sullo schermo
+        Carreggiate carr;            // rami del bivio a questa profondita'
     };
-    void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out) const;
+    void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio = 0) const;
 
     const std::vector<RoadSegment>& segments() const { return segs_; }
     i32 totalLength() const { return totalLen_; }
@@ -69,6 +98,7 @@ private:
     i32 totalLen_ = 0;
     f32 curX = 0.0f, curY = 0.0f, curZ = 0.0f; // cursore di costruzione
     u32 seed_ = 1;
+    bool bivio_ = false;
 };
 
 } // namespace sgl

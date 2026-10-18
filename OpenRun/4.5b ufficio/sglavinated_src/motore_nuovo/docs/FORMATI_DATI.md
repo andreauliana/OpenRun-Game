@@ -56,6 +56,13 @@ Campi:
 | tempo_limite_frame | numero (frame) | no | tempo limite con checkpoint che ridanno tempo |
 | checkpoint | array | no | posizioni dei checkpoint |
 | musica | oggetto | no | radio iniziale e brani (riferimento playlist.json) |
+| segmenti | array di oggetti | no | tracciato: lista `{curva, collina, lunghezza}` ripetuta in anello (vedi sotto) |
+| cartelloni_sponsor | array di oggetti | no | `{segmento, lato, sponsor_id}`; `segmento` = indice di segmento da 200 unità |
+
+**segmenti** (letti da `Game::init`, costruiti da `Road::build`):
+- `lunghezza`: numero di segmenti da 200 unità (es. 80 = 16000 unità, circa mezzo secondo a velocità massima). Lo stesso indice usato da `cartelloni_sponsor.segmento`.
+- `curva`: curvatura, circa -1..1 (0 = rettilineo, positivo = destra). La strada si piega verso l'orizzonte, la telecamera resta allineata alla strada come in OutRun; l'ingresso è raccordato nel primo terzo del tratto partendo dalla curva del tratto precedente. Con 0.8 la strada all'orizzonte esce di lato dallo schermo.
+- `collina`: quota della strada a fine tratto, circa -0.3..0.3 (moltiplicata per 6000 unità; la telecamera è a 1000). È una quota assoluta, non una pendenza: il giro si chiude sempre alla stessa altezza.
 
 Esempio (livello 1 di prova):
 

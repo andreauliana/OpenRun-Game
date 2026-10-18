@@ -286,7 +286,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png",
    "livelli": [
-    "lv_01_neon"
+    "lv_01_neon",
+    "lv_05_spray"
    ],
    "nota": "D6: variante A"
   },
@@ -296,7 +297,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png",
    "livelli": [
-    "lv_01_neon"
+    "lv_01_neon",
+    "lv_05_spray"
    ],
    "nota": "D6: variante A"
   },
@@ -306,7 +308,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png",
    "livelli": [
-    "lv_01_neon"
+    "lv_01_neon",
+    "lv_04_cromo"
    ],
    "nota": "D6: variante A"
   },
@@ -316,7 +319,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palina.png",
    "livelli": [
-    "lv_01_neon"
+    "lv_01_neon",
+    "lv_06_desktop"
    ],
    "nota": "D6: variante A"
   },
@@ -326,7 +330,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png",
    "livelli": [
-    "lv_01_neon"
+    "lv_01_neon",
+    "lv_04_cromo"
    ],
    "nota": "D6: variante A"
   },
@@ -356,7 +361,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png",
    "livelli": [
-    "lv_02_atomico"
+    "lv_02_atomico",
+    "lv_04_cromo"
    ],
    "nota": "D6: variante A"
   },
@@ -366,7 +372,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png",
    "livelli": [
-    "lv_02_atomico"
+    "lv_02_atomico",
+    "lv_05_spray"
    ],
    "nota": "D6: variante A"
   },
@@ -376,7 +383,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png",
    "livelli": [
-    "lv_02_atomico"
+    "lv_02_atomico",
+    "lv_06_desktop"
    ],
    "nota": "D6: variante A"
   },
@@ -386,7 +394,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png",
    "livelli": [
-    "lv_02_atomico"
+    "lv_02_atomico",
+    "lv_05_spray"
    ],
    "nota": "D6: variante A"
   },
@@ -396,7 +405,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png",
    "livelli": [
-    "lv_02_atomico"
+    "lv_02_atomico",
+    "lv_04_cromo"
    ],
    "nota": "D6: variante A"
   },
@@ -446,7 +456,8 @@
    "stato": "pronto",
    "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_curva.png",
    "livelli": [
-    "lv_03_foglie"
+    "lv_03_foglie",
+    "lv_06_desktop"
    ],
    "nota": "D6: variante A"
   },
@@ -522,6 +533,66 @@
    "stato": "mancante",
    "file": [],
    "nota": "UFO, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+  },
+  {
+   "id": "skyline.futurista",
+   "tipo": "skyline",
+   "stato": "pronto",
+   "file": "assets_originali/skyline/varianteA_futurista/skyline.png",
+   "livelli": [
+    "lv_04_cromo"
+   ],
+   "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea"
+  },
+  {
+   "id": "scenario.lv_05_spray.skyline",
+   "tipo": "skyline",
+   "stato": "mancante",
+   "file": [],
+   "livelli": [
+    "lv_05_spray"
+   ],
+   "nota": "da disegnare: capannoni, ciminiere, muri a spray (stile punk)"
+  },
+  {
+   "id": "scenario.lv_06_desktop.skyline",
+   "tipo": "skyline",
+   "stato": "mancante",
+   "file": [],
+   "livelli": [
+    "lv_06_desktop"
+   ],
+   "nota": "da disegnare: prato e cielo con nuvole da desktop (Windows 95 vibe)"
+  },
+  {
+   "id": "scenario.lv_04_cromo.oggetti",
+   "tipo": "oggetto_bordo_strada",
+   "stato": "mancante",
+   "file": [],
+   "livelli": [
+    "lv_04_cromo"
+   ],
+   "nota": "da disegnare: guard-rail cromati, lampioni a lama, robot (ora in prestito da neon/atomico)"
+  },
+  {
+   "id": "scenario.lv_05_spray.oggetti",
+   "tipo": "oggetto_bordo_strada",
+   "stato": "mancante",
+   "file": [],
+   "livelli": [
+    "lv_05_spray"
+   ],
+   "nota": "da disegnare: bidoni, transenne, cassonetti (ora in prestito da neon/atomico)"
+  },
+  {
+   "id": "scenario.lv_06_desktop.oggetti",
+   "tipo": "oggetto_bordo_strada",
+   "stato": "mancante",
+   "file": [],
+   "livelli": [
+    "lv_06_desktop"
+   ],
+   "nota": "da disegnare: pali con cavi, case-computer, delfini di cartone (ora in prestito)"
   }
  ]
 }

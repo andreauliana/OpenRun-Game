@@ -130,17 +130,21 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/prova_gate.cpp")
 
     if(BUILD_TESTING)
         set(GATE_TEST_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-results")
-        foreach(level lv_01_neon lv_02_atomico lv_03_foglie)
+        foreach(level lv_01_neon lv_02_atomico lv_03_foglie lv_04_cromo lv_05_spray lv_06_desktop)
             add_test(
                 NAME gate_smoke_${level}
                 COMMAND prova_gate "${GATE_TEST_OUTPUT}/${level}" ${level}
             )
-            set_tests_properties(gate_smoke_${level} PROPERTIES
+            add_test(
+                NAME gate_percorso_${level}
+                COMMAND prova_gate "${GATE_TEST_OUTPUT}/percorso_${level}" ${level} percorso
+            )
+            set_tests_properties(gate_smoke_${level} gate_percorso_${level} PROPERTIES
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
             )
         endforeach()
 
-        foreach(mode accelerazione crash sterzo curve)
+        foreach(mode accelerazione crash sterzo curve gara)
             add_test(
                 NAME gate_${mode}
                 COMMAND prova_gate "${GATE_TEST_OUTPUT}/${mode}" lv_01_neon ${mode}

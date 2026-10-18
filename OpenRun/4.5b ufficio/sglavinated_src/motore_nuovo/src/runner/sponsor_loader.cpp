@@ -86,7 +86,7 @@ std::vector<std::pair<std::string, Sprite>> caricaSponsorSprite(const std::strin
             SDL_Surface* conv = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA8888, 0);
             SDL_FreeSurface(surf);
             if (!conv) continue;
-            out.push_back({kSponsorId[si], convertiSprite(conv)});
+            out.push_back({std::string(kSponsorId[si]) + "/" + kStile[ti], convertiSprite(conv)});
             SDL_FreeSurface(conv);
             std::printf("sponsor_loader: caricato %s (%d x %d, %zu colori)\n",
                         path.c_str(), out.back().second.width, out.back().second.height,

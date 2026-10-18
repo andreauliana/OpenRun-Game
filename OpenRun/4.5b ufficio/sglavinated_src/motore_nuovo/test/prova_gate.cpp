@@ -3,7 +3,9 @@
 // Build : cmake --build build --target prova_gate
 // Uso   : ./build/prova_gate [cartella_output=out/debugger] [livello=lv_01_neon] [modo]
 //         modo = smoke (500 frame, default) | soak (30000 frame) |
-//                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti)
+//                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti) |
+//                percorso (profilo del tracciato + un giro intero con guida automatica) |
+//                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
 //   2. determinismo: frameHash identico ogni 60 frame fra run A e run B
@@ -13,7 +15,8 @@
 // Scrive: <out>/prova_gate*.log, screenshot PPM.
 // Esegui dalla radice progetto (sglavinated_src): i dati sono letti con percorsi relativi.
 // Exit code: 0 OK | 1 niente partenza | 2 replay non deterministico | 3 troppo lento |
-//            4 cwd errata | 5 caso di prova non superato
+//            4 cwd errata | 5 caso di prova non superato | 13 percorso poco vario o non guidabile
+//            14 gara a tappe non completa
 #include "game/game.h"
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
@@ -21,6 +24,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -79,7 +83,7 @@ void caricaSponsor(Game& game) {
     for (const char* id : kSponsorId) {
         for (const char* stile : kStile) {
             Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/sponsor/") + id + "_" + stile + ".sglraw");
-            if (s.width > 0) sprites.push_back({id, std::move(s)});
+            if (s.width > 0) sprites.push_back({std::string(id) + "/" + stile, std::move(s)});
         }
     }
     game.setSponsorSprites(std::move(sprites));
@@ -483,6 +487,130 @@ bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
     return frameCurva > 0 && frameSponsor > 0 && framePers > 0;
 }
 
+// --- Percorso: il tracciato del livello e' vario e si guida da capo a fondo ---
+// Profilo: rettilinei fra 25% e 75% del giro, curve forti (|curva| >= 0.3) a destra
+// e a sinistra, almeno un rettilineo lungo 300 segmenti. Guida: gas pieno e uno
+// sterzo semplice che riporta l'auto verso il centro; il giro deve finire senza
+// uscire di strada per piu' dell'1% dei frame.
+bool verificaPercorso(const std::string& livello) {
+    Game game(12345u);
+    game.init(livello);
+    const auto& segs = game.road().segments();
+    const i32 n = (i32)segs.size();
+    i32 dritti = 0, rettilineoMax = 0, corsa = 0;
+    f32 destraMax = 0.0f, sinistraMax = 0.0f;
+    for (const RoadSegment& seg : segs) {
+        if (std::abs(seg.curve) < 0.05f) { ++dritti; rettilineoMax = std::max(rettilineoMax, ++corsa); }
+        else corsa = 0;
+        destraMax = std::max(destraMax, seg.curve);
+        sinistraMax = std::max(sinistraMax, -seg.curve);
+    }
+    const f32 quotaDritti = n > 0 ? (f32)dritti / (f32)n : 0.0f;
+
+    const f32 giro = (f32)game.road().totalLength();
+    f32 percorso = 0.0f, zPrima = 0.0f;
+    i32 frame = 0, fuori = 0;
+    const i32 FRAME_MAX = 20000; // 400 s: un giro normale ne richiede meno di 60
+    while (percorso < giro && frame < FRAME_MAX) {
+        Pad pad;
+        pad.held = (u64)Pad::A;
+        const f32 x = game.state().playerX;
+        if (x > 120.0f) pad.held |= (u64)Pad::Left;
+        else if (x < -120.0f) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        game.update();
+        const f32 z = game.state().playerZ;
+        f32 dz = z - zPrima;
+        if (dz < 0.0f) dz += giro; // avvolgimento a fine giro
+        percorso += dz;
+        zPrima = z;
+        if (game.state().playerOffroad) ++fuori;
+        ++frame;
+    }
+    const bool giroFinito = percorso >= giro;
+    const f32 quotaFuori = frame > 0 ? (f32)fuori / (f32)frame : 1.0f;
+    std::printf("percorso %s: segmenti=%d rettilineo=%.0f%% (piu' lungo %d) curva max destra=%.2f sinistra=%.2f\n",
+                livello.c_str(), n, quotaDritti * 100.0f, rettilineoMax, destraMax, sinistraMax);
+    std::printf("giro guidato: %s in %d frame (%.1f s), fuori strada %d frame (%.1f%%)\n",
+                giroFinito ? "finito" : "NON finito", frame, frame / 50.0f, fuori, quotaFuori * 100.0f);
+    return quotaDritti >= 0.25f && quotaDritti <= 0.75f && rettilineoMax >= 300 &&
+           destraMax >= 0.3f && sinistraMax >= 0.3f && giroFinito && quotaFuori <= 0.01f;
+}
+
+// --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
+// Guida automatica: gas pieno, schiva gli avversari davanti, al bivio va sul
+// ramo voluto. Per ogni combinazione di scelte controlla le tappe attraversate,
+// l'arrivo e il determinismo (due corse identiche danno lo stesso risultato).
+struct EsitoGara {
+    std::vector<std::string> tappe;
+    bool arrivo = false;
+    i32 posizione = 0;
+    u32 frame = 0;
+    u32 incidenti = 0;
+};
+
+EsitoGara corriGara(const char* scelte) {
+    EsitoGara e;
+    Game game(12345u);
+    caricaSponsor(game);
+    if (!game.avviaGara()) return e;
+    e.tappe.push_back(game.tappaCorrente());
+    bool ribaltato = false;
+    for (i32 frame = 0; frame < 15000 && !game.state().arrivo; ++frame) {
+        const GameState& s = game.state();
+        const Road& road = game.road();
+        f32 obiettivo = 0.0f;
+        const i32 indice = s.tappa - 1;
+        const i32 lato = indice < (i32)std::strlen(scelte) && scelte[indice] == 'S' ? -1 : 1;
+        if (road.bivioAttivo() && s.latoBivio == 0 && s.playerZ > road.bivioInizioZ())
+            obiettivo = (f32)lato * Road::BIVIO_DIST;
+        for (const SpriteInstance& t : game.traffico()) {
+            const f32 dz = t.worldZ - s.playerZ;
+            if (dz > 0.0f && dz < 5000.0f && std::abs(t.worldX - s.playerX) < 380.0f)
+                obiettivo = t.worldX + (t.worldX > obiettivo ? -650.0f : 650.0f);
+        }
+        Pad pad;
+        pad.held = (u64)Pad::A;
+        if (s.playerX > obiettivo + 120.0f) pad.held |= (u64)Pad::Left;
+        else if (s.playerX < obiettivo - 120.0f) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        game.update();
+        if (game.state().playerFlipping && !ribaltato) ++e.incidenti;
+        ribaltato = game.state().playerFlipping;
+        if (game.tappaCorrente() != e.tappe.back()) e.tappe.push_back(game.tappaCorrente());
+    }
+    e.arrivo = game.state().arrivo;
+    e.posizione = game.state().posizione;
+    e.frame = game.state().frameGara;
+    return e;
+}
+
+bool verificaGara() {
+    // S = sinistra, D = destra a ogni bivio; atteso: la tappa di arrivo.
+    struct Caso { const char* scelte; const char* atteso[3]; };
+    const Caso casi[] = {
+        {"SS", {"lv_01_neon", "lv_02_atomico", "lv_04_cromo"}},
+        {"SD", {"lv_01_neon", "lv_02_atomico", "lv_05_spray"}},
+        {"DS", {"lv_01_neon", "lv_03_foglie", "lv_05_spray"}},
+        {"DD", {"lv_01_neon", "lv_03_foglie", "lv_06_desktop"}},
+    };
+    bool ok = true;
+    for (const Caso& c : casi) {
+        const EsitoGara a = corriGara(c.scelte);
+        const EsitoGara b = corriGara(c.scelte);
+        bool tappeOk = a.tappe.size() == 3;
+        for (size_t i = 0; tappeOk && i < 3; ++i) tappeOk = a.tappe[i] == c.atteso[i];
+        const bool uguali = a.frame == b.frame && a.posizione == b.posizione && a.tappe == b.tappe;
+        std::printf("gara %s: %s -> %s -> %s, arrivo %s in %.1f s, posizione %d/8, incidenti %u, replay %s\n",
+                    c.scelte, a.tappe.size() > 0 ? a.tappe[0].c_str() : "-", a.tappe.size() > 1 ? a.tappe[1].c_str() : "-",
+                    a.tappe.size() > 2 ? a.tappe[2].c_str() : "-", a.arrivo ? "si" : "NO", a.frame / 50.0f,
+                    a.posizione, a.incidenti, uguali ? "IDENTICO" : "DIVERSO");
+        // Una tappa dura circa un minuto: la gara intera resta sotto i 5 minuti.
+        ok = ok && tappeOk && a.arrivo && uguali && a.frame < 15000u && a.posizione >= 1 && a.posizione <= 8;
+    }
+    return ok;
+}
+
 int main(int argc, char** argv) {
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
@@ -495,6 +623,18 @@ int main(int argc, char** argv) {
         return 4;
     }
     std::filesystem::create_directories(outDir);
+
+    if (modo == "gara") {
+        const bool ok = verificaGara();
+        std::printf("%s\n", ok ? "GATE GARA OK" : "FALLITO: gara a tappe non completa");
+        return ok ? 0 : 14;
+    }
+
+    if (modo == "percorso") {
+        const bool ok = verificaPercorso(livello);
+        std::printf("%s\n", ok ? "GATE PERCORSO OK" : "FALLITO: percorso poco vario o non guidabile");
+        return ok ? 0 : 13;
+    }
 
     if (modo == "screenshot") {
         const bool ok = salvaScreenshotP1(outDir, livello);

@@ -1,0 +1,332 @@
+{
+  "id": "lv_06_desktop",
+  "versione": 1,
+  "licenza": "CC-BY-4.0",
+  "autore": "Claude (solo percorso; scenario da fare a cura del designer)",
+  "tema": "prato verde e cielo con nuvole da sfondo del desktop: colline continue, saliscendi e curve medie",
+  "stile": "Windows 95 vibe",
+  "parte_di_albero": true,
+  "variante_albero": "prova_F",
+  "lunghezza": {
+    "segmenti": 5450,
+    "durata_stimata_s": 39
+  },
+  "segmenti": [
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
+    {"curva": 0.0, "collina": 0.25, "lunghezza": 400},
+    {"curva": 0.4, "collina": -0.1, "lunghezza": 500},
+    {"curva": 0.0, "collina": 0.3, "lunghezza": 400},
+    {"curva": -0.5, "collina": -0.15, "lunghezza": 500},
+    {"curva": 0.0, "collina": 0.2, "lunghezza": 350},
+    {"curva": 0.5, "collina": -0.2, "lunghezza": 450},
+    {"curva": 0.0, "collina": 0.25, "lunghezza": 400},
+    {"curva": -0.4, "collina": 0.0, "lunghezza": 500},
+    {"curva": 0.0, "collina": -0.2, "lunghezza": 400},
+    {"curva": 0.6, "collina": 0.15, "lunghezza": 450},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 600}
+  ],
+  "seme": 9595,
+  "tempo_limite_s": 55,
+  "checkpoint_ogni_segmenti": 300,
+  "difficolta": "facile",
+  "note_difficolta": "curve ampie e dolci, colline rare, rettilinei lunghi per respirare, traffico leggero; intensita' solo nelle curve",
+  "traffico": {
+    "densita": "bassa",
+    "veicoli_per_km": 5,
+    "tipi": [
+      {
+        "id": "berlina",
+        "percentuale": 50,
+        "descrizione": "auto civile compatta"
+      },
+      {
+        "id": "furgoncino",
+        "percentuale": 35,
+        "descrizione": "furgone consegne"
+      },
+      {
+        "id": "sportiva",
+        "percentuale": 15,
+        "descrizione": "coupe veloce che sorpassa"
+      }
+    ]
+  },
+  "show": {
+    "durata_frame": 260,
+    "cooldown_frame": 24,
+    "guardia_avvio_frame": 250,
+    "intervallo_periodico_frame_stage0": 480,
+    "soglia_inattivita_frame": 500,
+    "ufo": {
+      "attivo": true,
+      "passaggio_ogni_frame": 800,
+      "frase": false,
+      "esclude_show_in_corso": true
+    },
+    "trigger_map": {
+      "crash": {
+        "personaggio": "Gesu'",
+        "tabella": "xtab",
+        "priorita": true,
+        "interrompe_gianni": true
+      },
+      "uscita_di_strada": {
+        "personaggio": "Gianni",
+        "tabella": "otab",
+        "cooldown_frame": 24,
+        "conta_errore": false
+      },
+      "periodico": {
+        "tabelle": [
+          "ph_tab",
+          "jtab"
+        ],
+        "intervallo_frame": 480,
+        "parlante_per_escalation": {
+          "0": "Gianni",
+          "1": "Gesu' 1 volta su 2",
+          "2": "Gesu' 3 volte su 4",
+          "3": "Gesu'"
+        }
+      },
+      "inattivita": {
+        "personaggio": "Gianni",
+        "tabella": "itab",
+        "soglia_frame": 500
+      }
+    }
+  },
+  "moduli_fx": {
+    "razzo_B": true,
+    "sollevamento_auto_alta_velocita": true
+  },
+  "scenario_richiesto": {
+    "nome": "scenario_desktop_06",
+    "elementi": [
+      "prato verde",
+      "cielo blu con nuvole",
+      "finestre con bordo bevel",
+      "icone giganti"
+    ],
+    "oggetti_bordo_strada": [
+      "pali con cavi",
+      "case-computer",
+      "delfini di cartone"
+    ],
+    "palette_richiesta": [
+      "verde prato",
+      "blu cielo",
+      "grigio bevel",
+      "bianco"
+    ],
+    "note_per_scenografo": "DA FARE: scenario non ancora disegnato; max 16 colori per sprite; nessun elemento Sega"
+  },
+  "colori": {"cielo": "#3A8EE6", "erba": "#34A834", "erba_alt": "#2C922C", "rumble": "#C0C0C0"},
+  "tema_grafico": {
+    "skyline": "scenario.lv_06_desktop.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_01_neon.palina",
+      "oggetto.lv_02_atomico.panchina_cromata",
+      "oggetto.lv_03_foglie.panchina_curva"
+    ],
+    "stile_cartellone": "foglie",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+  },
+  "cartelloni_sponsor": [
+    {
+      "segmento": 0,
+      "lato": "sinistro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 140,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 280,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 420,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 560,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 700,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 840,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 980,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 1120,
+      "lato": "destro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 1260,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1400,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1540,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1680,
+      "lato": "sinistro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 1820,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 1960,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 2100,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 2240,
+      "lato": "destro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 2380,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2520,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2660,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2800,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 2940,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 3080,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 3220,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 3360,
+      "lato": "sinistro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 3500,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3640,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3780,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3920,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 4060,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 4200,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 4340,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 4480,
+      "lato": "destro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 4620,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4760,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4900,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5040,
+      "lato": "sinistro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 5180,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 5320,
+      "lato": "destro",
+      "sponsor_id": "brinis_udine"
+    }
+  ]
+}

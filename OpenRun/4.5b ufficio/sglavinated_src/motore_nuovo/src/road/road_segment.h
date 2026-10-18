@@ -16,8 +16,8 @@ namespace sgl {
 struct RoadSegment {
     i32 index = 0;           // indice assoluto nella lista
     i32 length = 200;        // lunghezza in unita' mondo (default = Road::SEG_LEN)
-    f32 curve = 0.0f;        // curvatura: delta di world_x per passo lungo lo segmento
-    f32 hill = 0.0f;         // collina: delta di world_y per passo lungo lo segmento
+    f32 curve = 0.0f;        // curva (valore di livello.json, gia' raccordato); curvatura = curve * Road::CURVE_SCALE
+    f32 hill = 0.0f;         // collina del tratto (quota finale = hill * Road::HILL_HEIGHT)
     u32 colorRoad = 0xFF808080;  // colore asfalto (palette index -> render)
     u32 colorRumble = 0xFFFFFFFF; // colore strisce laterali
     // world coordinates del primo punto (calcolati da Road al build)

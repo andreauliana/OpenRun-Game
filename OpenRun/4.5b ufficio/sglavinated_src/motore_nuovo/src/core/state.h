@@ -15,6 +15,16 @@ struct GameState {
     bool playerOffroad = false;
     bool playerFlipping = false;
     u32 playerFlipFrame = 0;
+    // Gara a tappe (Game::avviaGara)
+    bool gara = false;
+    i32 tappa = 1;         // numero della tappa (1 = partenza)
+    i32 latoBivio = 0;     // 0 = scelta aperta, -1 sinistra, +1 destra
+    i32 posizione = 0;     // 1 = primo
+    i32 concorrenti = 0;   // giocatore compreso
+    bool arrivo = false;   // tappa finale completata
+    u32 frameGara = 0;     // tempo di gara in frame (50 Hz), fermo all'arrivo
+    u32 tempoResiduoFrame = 0; // tempo rimasto (ogni tappa aggiunge tempo_limite_s)
+    bool tempoScaduto = false; // game over: tempo finito prima dell'arrivo
 };
 
 } // namespace sgl
