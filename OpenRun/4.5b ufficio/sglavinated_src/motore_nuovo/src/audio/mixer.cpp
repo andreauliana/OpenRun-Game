@@ -25,8 +25,9 @@ i32 Mixer::loadRadio(const RadioDef& def) {
     if (sz <= 0) { std::fclose(f); return 0; }
 
     radioData_.resize((size_t)sz);
-    std::fread(radioData_.data(), 1, (size_t)sz, f);
+    const size_t letti = std::fread(radioData_.data(), 1, (size_t)sz, f);
     std::fclose(f);
+    if (letti != (size_t)sz) { radioData_.clear(); return 0; } // file troncato: radio muta, nessun crash
 
     banksPerTrack_ = def.banksPerTrack;
     radioRate_ = def.sampleRate;

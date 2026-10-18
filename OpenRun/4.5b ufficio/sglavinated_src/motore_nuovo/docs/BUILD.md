@@ -195,3 +195,16 @@ Output: `out/debugger/prova_gate.log` (frame velocita X Z offroad hash), `prova_
 
 Esito 17 ott (cloud Linux, g++/cmake): lv_01/02/03 OK, replay 2x identico, 0,05 ms/frame, soak 30000 frame OK,
 ASan+UBSan puliti. **Non misurato**: fps/temperatura su Pi 400 (tocca ad Andrea), runner SDL2 (SDL2 assente in cloud).
+
+---
+
+## Opzioni del runner SDL2 (dal 18 ott)
+
+| Opzione | Effetto |
+|---|---|
+| `--data <cartella>` | cartella `sglavinated_src` con i dati; senza, il runner la cerca da solo (cartella corrente, cartella dell'eseguibile) |
+| `--fullscreen` / `--window` | schermo intero (consigliato sul Pi) o finestra; F11 alterna durante il gioco |
+| `--no-vsync` | disattiva la sincronizzazione con lo schermo (solo per driver che si bloccano) |
+
+Tasti: ESC esce; sul pad Select+Start esce, Start+B (o R sulla tastiera) cambia brano.
+La logica resta a passo fisso di 1/50 s (replay e hash invariati); il video si presenta con vsync e l'audio va in coda (`SDL_QueueAudio`), senza buchi.

@@ -19,6 +19,7 @@
 #include <vector>
 
 namespace sgl {
+struct JsonValue; // core/json_mini.h (usato solo in game.cpp)
 using gameplay::ShowManager;
 using gameplay::DatiShow;
 using gameplay::StatoGameplayInput;
@@ -42,6 +43,10 @@ public:
     // livelloId: id della cartella in motore_nuovo/dati/livelli/<id>/ (default "lv_01_neon");
     // legge "cartelloni_sponsor" da <id>/livello.json (tutte le allocazioni qui).
     void init(const std::string& livelloId = "lv_01_neon");
+
+    // Cartella dati (sglavinated_src) da usare al posto della cartella corrente:
+    // serve al core libretro e a chi lancia il gioco da altre cartelle. Prima di init().
+    void setRadiceDati(std::string radice) { radiceDati_ = std::move(radice); }
 
     // Passa gli input del frame corrente (dal runner o dal core libretro).
     void setInput(const Pad& pad);
@@ -109,10 +114,14 @@ private:
     static constexpr u32 OFFROAD_CRASH_FRAMES = 100; // sbanda a lungo prima del ribaltamento
 
     // Dati cartelloni da livello.json (letto una volta in init).
-    bool leggiCartelloniDaFile(const std::string& livelloId);
+    // radice: livello.json gia' analizzato (nullptr se il file manca o non e' valido).
+    bool leggiCartelloniDaFile(const JsonValue* radice);
     // Segmenti del tracciato da livello.json (campo "segmenti"): curva/collina/lunghezza.
     // Ritorna false se il file e' illeggibile o il campo manca/vuoto (init usa il fallback).
-    bool leggiSegmentiDaFile(const std::string& livelloId, std::vector<Road::SegmentDesc>& out) const;
+    bool leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::SegmentDesc>& out) const;
+    // Percorso di un file dati: relativo alla cartella corrente oppure a radiceDati_.
+    std::string percorsoDati(const std::string& relativo) const;
+    std::string radiceDati_; // vuota = cartella corrente (runner), es. sglavinated_src
     i32 risolviSponsorSprite(const std::string& sponsorId) const;
 
     // Accessori verso renderer/HUD/fx (dati show, nessun testo qui).

@@ -7,6 +7,7 @@ namespace sgl {
 Player::Player() = default;
 
 void Player::input(const Pad& pad, f32 dt) {
+    (void)dt; // riservato: input analogico con rampa
     steer_ = 0.0f;
     accel_ = 0.0f;
     if (pad.held & Pad::Left)  steer_ = -1.0f;
