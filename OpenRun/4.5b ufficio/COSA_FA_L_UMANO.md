@@ -62,7 +62,7 @@ Leggi ../TAPPE.md e lavora solo sul Gate della tappa attiva. Per la tappa 1, con
 | Prototipo pronto | provalo sul Pi 400 o sul Mac; scrivi in SCAMBIO.md fps e temperatura |
 | Varianti di asset | scegli tu (scenografo: A/B/C per livello) |
 | Sprite principali (Gianni, Gesu', UFO) | li disegni tu |
-| Scelte aperte | `DECISIONI_ANDREA.md`; D9 (regola make/clang++) non ancora aperta |
+| Scelte aperte | `sglavinated_src/ANDREA_REVIEW.md`; le vecchie `FEEDBACK_ANDREA.md` e `DECISIONI_ANDREA.md` rimandano alla fonte unica |
 | Build completa (`cmake --build`) | quando vuoi, sul Mac o sul Pi 400 |
 | Prima di distribuire qualcosa (sponsor compreso) | legale |
 
@@ -90,6 +90,6 @@ Da controllare prima di spostarli, perche' li genera ancora qualche script:
 | `sglavinated_src/CONTROLLO.md` | stato automatico (non modificare) |
 | `sglavinated_src/RICHIESTA.md` | foglio incarichi |
 | `sglavinated_src/SCAMBIO.md` | risposte degli agenti |
-| `sglavinated_src/DECISIONI_ANDREA.md` | le tue decisioni |
+| `sglavinated_src/ANDREA_REVIEW.md` | feedback e decisioni di Andrea; fonte unica |
 | `sglavinated_src/bacheche/<agente>/DIARIO_RECENTE.md` | ultimi 20 appunti personali, preparati dal ciclo |
 | `SCALETTA.md`, `PIANO_V3.md`, `RISORSE_TECNICHE.md` | piano e riferimenti |

@@ -20,7 +20,7 @@ Regole applicabili (PIANO_V3 Decisione, BLOCCO 4, BLOCCO 8, VISIONE.md):
 - La pista C e' un motore nuovo scritto da zero in C++17, indipendente dalla piattaforma (render software 320x224, 50 Hz, audio int16 stereo, input tipo RetroPad, tempo a contatore di frame, RNG con seed).
 
 Distinzione fatti / ipotesi:
-- FATTI VERIFICATI: tratti dai file letti in questa sessione (PIANO_V3.md, RAPPORTO_FATTIBILITA.md, censimento_motori_outrun.md, DECISIONI_ANDREA.md, VISIONE.md, ARCHIVIO_V87.md, FEDELTA.md, MODULI_E_REPARTI.md, CATALOGO_PERSONAGGI.md) e dalle pagine citate laddove esplicitamente indicato come verificato.
+- FATTI VERIFICATI: tratti dai file letti in questa sessione (PIANO_V3.md, RAPPORTO_FATTIBILITA.md, censimento_motori_outrun.md, ANDREA_REVIEW.md, VISIONE.md, ARCHIVIO_V87.md, FEDELTA.md, MODULI_E_REPARTI.md, CATALOGO_PERSONAGGI.md) e dalle pagine citate laddove esplicitamente indicato come verificato.
 - IPOTESI: tutto cio' che non e' stato letto o verificato direttamente in questa sessione (es. altri motori pseudo-3D non elencati qui) e' marcato come "ipotesi da verificare" e non e' usato per decisioni.
 
 ---
@@ -90,7 +90,7 @@ Conclusioni del censimento (per il reparto tecnico e Andrea):
 | PIANO_V3.md (blocco 4, 8, 9, 11, Decisione) | File locale del progetto | Letto, verificato |
 | RAPPORTO_FATTIBILITA.md | File locale del progetto | Letto, verificato |
 | censimento_motori_outrun.md (assets_originali/ricerca/) | File locale del progetto | Letto, verificato |
-| DECISIONI_ANDREA.md (voci D1, D2) | File locale del progetto | Letto, verificato |
+| ANDREA_REVIEW.md (voci D1, D2) | Fonte canonica locale per feedback e decisioni di Andrea | Letto, verificato |
 | VISIONE.md, ARCHIVIO_V87.md, FEDELTA.md, MODULI_E_REPARTI.md, CATALOGO_PERSONAGGI.md | File locali del progetto | Letti, verificati |
 | https://github.com/djyt/cannonball (+ docs/license.txt) | Web | Pagina e licenza lette e citate nei documenti del progetto |
 | https://wiki-next.recalbox.com/en/emulators/ports/out-run | Web | Citato da PIANO_V3 BLOCCO 11 (ROM richieste, Pi 4/400); non ricontrollato direttamente in questa sessione -> da ritenere come riportato |
@@ -103,7 +103,7 @@ Conclusioni del censimento (per il reparto tecnico e Andrea):
 
 ## 6. Licenza di questo documento
 
-Questo file (motore_nuovo/docs/FONTI.md) e' rilasciato sotto **MIT** (SPDX-License-Identifier: MIT), scelta DEFAULT della raccomandazione D1 di DECISIONI_ANDREA.md (per i docs si dichiara MIT o CC-BY; qui si sceglie MIT per coerenza con il codice del progetto). La licenza del documento non estende alcuna licenza delle fonti citate, che restano di proprieta' dei rispettivi autori.
+Questo file (motore_nuovo/docs/FONTI.md) e' rilasciato sotto **MIT** (SPDX-License-Identifier: MIT), scelta DEFAULT della raccomandazione D1 di ANDREA_REVIEW.md (per i docs si dichiara MIT o CC-BY; qui si sceglie MIT per coerenza con il codice del progetto). La licenza del documento non estende alcuna licenza delle fonti citate, che restano di proprieta' dei rispettivi autori.
 
 ---
 
