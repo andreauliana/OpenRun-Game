@@ -9,6 +9,8 @@
 | Revisore indipendente | Ruolo assegnato, diverso dall'autore |
 | Percorsi autorizzati | ... |
 | Decisioni richieste ad Andrea | Nessuna / descrivere e indicare stato |
+| Handoff Designer (se grafica coinvolta) | [STATUS_GRAFICO_PER_CAPO.md](../out/designer/STATUS_GRAFICO_PER_CAPO.md) / non applicabile |
+| Handoff Officina (se codice/build/test coinvolti) | [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) / non applicabile |
 
 ## Sintesi
 
@@ -37,6 +39,9 @@ Non copiare output estesi: conservare il log nel percorso operativo e collegarlo
 - Esito: IN ATTESA / POSITIVA / NEGATIVA
 - Rilievi e correzioni richieste:
 - Nuova review dopo correzione:
+- Status di reparto consultati (se applicabile): data/report e prove confrontate:
+- Handoff Designer verificato: data/versione e prove confrontate / non applicabile:
+- Handoff Officina verificato: data/versione e prove confrontate / non applicabile:
 
 ## Decisione di Andrea
 

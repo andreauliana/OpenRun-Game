@@ -15,7 +15,7 @@ import hashlib, json, os, re, struct, sys, time
 RADICE = "assets_originali"
 SALTA = {".DS_Store", "__pycache__", "INDICE_ASSET.json", "INDICE_ASSET.md"}
 
-# Scelte gia' prese da Andrea (DECISIONI_ANDREA.md).
+# Scelte gia' prese da Andrea (ANDREA_REVIEW.md).
 SCELTE = [
     ("scenari/", r"varianteA", "D6: variante A per tutti i livelli"),
     ("ui/", r"varianteB", "D7: UI variante B (Lofi Jungle, bianco e nero)"),

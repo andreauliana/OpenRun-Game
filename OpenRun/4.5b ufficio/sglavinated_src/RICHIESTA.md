@@ -88,7 +88,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Stato | [x] | (@grafico, voce SCAMBIO 34 + voce 37; 9 cartelle variante piene, manifest per livello, 3 righe CREDITI.md, licenza CC0-1.0, originale=true)
 
 ## BLOCCO FED — @collaudatore (con B)
-| Compito | compilare motore_nuovo/docs/FEDELTA.md (10 tratti, prova per ciascuno) e proporre in DECISIONI_ANDREA.md D3 il numero di tappe/bivi |
+| Compito | compilare motore_nuovo/docs/FEDELTA.md (10 tratti, prova per ciascuno) e proporre in ANDREA_REVIEW.md D3 il numero di tappe/bivi |
 | Stato | [x] | (consegnato con BLOCCO B, SCAMBIO voce 16: FEDELTA.md 10 tratti, punteggio 50.0% soglia; D3 default 5 tappe/bivi, 3 livelli di prova)
 
 ## BLOCCO CONS — @sviluppatore (conservazione, subito dopo B0)
@@ -158,14 +158,14 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | 5 @collaudatore | Aggiungere casi a prova_gate: wrap di playerZ oltre totalLen_, inattivita' 10 s -> show/fumetto visibile in screenshot. `sh tools/gate_t1.sh soak` ad ogni modifica del coder. |
 | 6 Libreria asset | @collaudatore (o chi genera asset con Python) lancia `python3 motore_nuovo/strumenti_py/indice_assets.py` dopo ogni generazione; il primo indice (da elenco cartelle) e' gia' in assets_originali/INDICE_ASSET.json/.md, senza dimensioni PNG ne' duplicati veri finche' lo script non gira sui file reali: produce `assets_originali/INDICE_ASSET.json/.md` (cosa esiste, dimensioni, duplicati, segnaposto, lacune). Gli agenti grafici consultano l'indice prima di creare. Lacune note: traffico, sprite personaggi (Gianni, Gesu'), UFO. |
 | 7 @collaudatore | Rivedere SOLO: renderer.cpp/.h, road.cpp, prova_gate.cpp, game.h, tools/gate_t1.sh. |
-| 8 Andrea | Provare `sglavinated_runner` sul Mac (SDL2) e scrivere in FEEDBACK_ANDREA.md v91 se la guida ora e' OK; misurare fps/temperatura su Pi 400 (`vcgencmd measure_temp`, `get_throttled`). Questo chiude H. |
+| 8 Andrea | Provare `sglavinated_runner` sul Mac (SDL2) e registrare in `ANDREA_REVIEW.md` l'esito della guida; misurare fps/temperatura su Pi 400 (`vcgencmd measure_temp`, `get_throttled`). Questo chiude H solo dopo aver registrato la prova. |
 | Fuori scope | MD0, T5 (traffico/collisioni/razzo), N, M (finche' Andrea non approva i PNG). Non promuovere H/P1 senza i punti 4 e 8. |
 | Gate | `sh tools/gate_t1.sh soak` exit 0; screenshot con cartelloni veri e strada con bande allineate; v91 di Andrea. |
 | Stato | [~] | (in esecuzione: @sviluppatore punti 1-4, @collaudatore punti 5-6; build e gate OK 17 ott 14:51, quota open 99,8%; v91 di Andrea pendente. Dettaglio: SCAMBIO 1144)
 
 ## BLOCCO G1 — @grafico — catalogo unico delle risorse grafiche (da Andrea e Claude 17 ott)
 | Compito | Tenere `assets_originali/CATALOGO_GRAFICO.json` come unico elenco delle risorse grafiche: un elemento per riga con `id`, `tipo`, `stato` (mancante, bozza, in_costruzione, pronto, approvato, scartato), `file`, `raw` (versione per il motore) e `livelli`. Claude ha creato la prima versione (52 elementi: 21 cartelloni, 3 auto, skyline e oggetti di variante A per i 3 livelli, UI variante B, font; mancano traffico, Gianni, Gesu', UFO). 1) Catalogare i 100 PNG oggi fuori elenco (varianti B/C, scenari doppi `scenario_<n>_01_*` e `scenario_lv_*`): per ognuno `scartato` o un elemento nuovo, senza cancellare file. 2) Ogni sprite nuovo entra nel catalogo con il suo stato prima di essere usato. 3) Dopo ogni modifica: `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` (exit 0). |
-| Input | `assets_originali/CATALOGO_GRAFICO.json`, `INDICE_ASSET.md`, `MAPPA_LIVELLI_SPONSOR.json`, `DECISIONI_ANDREA.md` (D2, D4-D7) |
+| Input | `assets_originali/CATALOGO_GRAFICO.json`, `INDICE_ASSET.md`, `MAPPA_LIVELLI_SPONSOR.json`, `ANDREA_REVIEW.md` (D2, D4-D7) |
 | Vincoli | Solo @grafico scrive il catalogo. Il motore e i test usano solo `pronto` e `approvato` (`in_costruzione` solo nei test). Niente sottocartelle nuove senza voce nel catalogo. |
 | Gate | `check_catalogo_grafico.py` exit 0 e "PNG non catalogati: 0" |
 | Stato | [ ] |

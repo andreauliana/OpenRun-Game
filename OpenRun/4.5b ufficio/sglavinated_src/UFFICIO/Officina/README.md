@@ -4,6 +4,7 @@ Reparto dei due ruoli di sviluppo. Builder/Developer guida l'implementazione e l
 
 Sorgenti attivi: `../../motore_nuovo/`. Strumenti di build attivi: `../../tools/`. I sorgenti non sono ancora stati spostati in `ENGINE COMPILER/`; non creare copie.
 
+- [STATUS_OFFICINA.md](./STATUS_OFFICINA.md): handoff tecnico aggiornato per il Capo, con ultimo report e sintesi dei log precedenti.
 - `TOOL/`: destinazione degli strumenti di sviluppo.
 - `ENGINE COMPILER/`: destinazione dei sorgenti di prodotto nella fase successiva.
 - `build/`: output generato, non modificare a mano.

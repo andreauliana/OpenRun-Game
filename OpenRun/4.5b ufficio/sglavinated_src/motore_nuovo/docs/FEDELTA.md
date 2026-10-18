@@ -28,7 +28,7 @@ Responsabile: @architetto (compila), @reviewer (controlla a ogni checkpoint).
 
 ---
 
-## D3 — proposta numero tappe/bivi e temi (per DECISIONI_ANDREA.md, voce D3)
+## D3 — proposta numero tappe/bivi e temi (per ANDREA_REVIEW.md, voce D3)
 
 Domanda: quante tappe/finali ha l'albero di bivi, da copiare come STRUTTURA (non come contenuto).
 
@@ -36,9 +36,9 @@ Proposta @architetto:
 - Riferimento numerico di analisi (solo numeri, mai codice/asset/tracciati Sega): l'originale OutRun ha 15 tappe totali disposte su 5 percorsi, ogni percorso 5 tappe, 5 finali (fonte: Cannonball come analisi dei numeri di gameplay, FONTI.md; i percorsi/tematiche veri sono nostri).
 - Struttura proposta: **albero di 5 percorsi, 5 tappe per percorso, 5 finali**. Ogni tappa ha `stile` diverso (DIREZIONE_ARTISTICA.md: sci-fi anni '50, futurista, punk, synthwave/C-wave, Windows 95 vibe, parodia societa', psichedelico/cannabinoidi).
 - Per il prototipo (BLOCCO K): **3 livelli di prova**, ciascuno con stile diverso scelto da DIREZIONE_ARTISTICA.md, tema, lunghezza, seme, traffico, difficolta facile, punti show, moduli fx, scenario.
-- DEFAULT usato nel frattempo (DECISIONI_ANDREA.md D3): 5 tappe per percorso con bivi, 3 livelli di prova.
+- DEFAULT usato nel frattempo (ANDREA_REVIEW.md D3): 5 tappe per percorso con bivi, 3 livelli di prova.
 
 Verifica su FEDELTA voce 3: conteggio tappe/finali definito nella proposta sopra; prova = proposta D3 + schema livello.json (ogni tappa = un livello.json con id/tema/stile).
 
-Testo da riportare da @capo in DECISIONI_ANDREA.md (voce D3, riga RISPOSTA DI ANDREA):
+Testo da riportare da @capo in ANDREA_REVIEW.md (voce D3, riga RISPOSTA DI ANDREA):
 "Confermo: albero di 5 percorsi x 5 tappe = 15 tappe, 5 finali; prototipo con 3 livelli di prova (stili diversi da DIREZIONE_ARTISTICA.md). Licenza e grafiche: vedesi voce D1."

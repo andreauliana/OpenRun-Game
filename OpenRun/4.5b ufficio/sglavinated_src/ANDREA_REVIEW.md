@@ -1,5 +1,18 @@
-# Decisioni per Andrea (a blocchi)
-Gli agenti aggiungono qui; tu rispondi nella riga RISPOSTA. Nessun agente aspetta: usa il DEFAULT e prosegue dove possibile.
+# Andrea — Feedback, decisioni e Review
+
+Fonte canonica unica per feedback e decisioni di Andrea. Il Capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
+
+## Uso nel ciclo 4.6
+
+- Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
+- Assegnazioni, criteri, prove e review indipendenti restano nel dossier `Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
+- Le voci legacy sotto sono contesto storico: il Capo ne conferma la pertinenza nel checkpoint prima di riaprirle. Non prevalgono sulle regole 4.6.
+- Una risposta registrata non equivale a verifica tecnica o chiusura del checkpoint. L'autore non approva il proprio lavoro.
+
+## Nuovo feedback o decisione
+
+Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il Capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
+
 Formato (copiare per ogni voce):
 ```
 ## D<numero> | <blocco> | <agente> | [APERTA]
@@ -13,16 +26,23 @@ RISPOSTA DI ANDREA:
 
 ## Tappa attiva: 1 — Gate T1 (blocco T1-RUN)
 
-D1 | Chiudere T1-RUN a [x]? Gate soak eseguito dal capo: `sh tools/gate_t1.sh soak` exit 0, `out/collaudatore/gate_t1.log` "GATE T1: TUTTO OK" (speed@60=161.79 > 0 frame 60, replay 2x IDENTICO 3 livelli, ms/frame <= 20, offroad raggiunto, 3 screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_01_neon, lv_02_atomico, lv_03_foglie). DEFAULT: sì.
+Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non collidere con le decisioni storiche D1-D4. Sono richieste legacy senza risposta registrata in questa fonte.
 
-D2 | Autorizzare promozione P1 a [x] una volta che @sviluppatore consegna 3 screenshot in out/sviluppatore/ (pista curva, traffico, cartelloni pubblicitari, elementi decorativi percorso, personaggio con fumetto; build cmake già ok)? DEFAULT: sì.
+### T1-Q1 | Chiusura proposta del gate T1
 
-D3 | Andrea esegue punto 8 T1-RUN (v91 FEEDBACK_ANDREA.md su runner Mac SDL2, guida OK o ritocco un parametro alla volta; fps/temperatura Pi 400 vcgencmd) per chiudere H? DEFAULT: sì, appena possibile.
+Gate soak dichiarato nella registrazione v4.5: `sh tools/gate_t1.sh soak`, exit 0, replay identico su tre livelli, soglie di frame rispettate e screenshot registrati. La prova non basta da sola a chiudere il checkpoint 4.6. Risposta di Andrea: non registrata.
 
-D4 | Attivare @grafico per G1 (catalogo grafico CATALOGO_GRAFICO.json, check_catalogo_grafico.py exit 0)? DEFAULT: no (non richiesta, fuori scope Tappa 1).
+### T1-Q2 | Promozione P1
 
-Rispondi in FEEDBACK_ANDREA.md o qui; se non rispondo entro il prossimo turno attendere e proseguire test debug.
+Promozione storicamente subordinata a screenshot del gameplay e build CMake verificata. Risposta di Andrea: non registrata.
 
+### T1-Q3 | Prova manuale su Mac e Pi 400
+
+Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400. Esito/risposta di Andrea: non registrati qui.
+
+### T1-Q4 | Attivazione del lavoro grafico G1
+
+Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicato: non attivare, fuori scope T1. Risposta di Andrea: non registrata.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
@@ -88,7 +108,7 @@ Opzioni: utilizzare: 'cmake --build'.
 RISPOSTA DI ANDREA: OK, cmake --build.
 Esito: @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
 
-## D10 | T1-RUN | capo | [APERTA]
+## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
 Opzioni: A) caricatore PNG minimo nel core (nuova dipendenza/lib, core senza SDL)  B) conversione PNG->raw in strumenti_py, prova_gate legge raw (zero nuove dipendenze)
 Raccomandazione: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
@@ -96,10 +116,22 @@ DEFAULT usato nel frattempo: B.
 Impatto se cambi idea: riscrivere caricamento sprite in prova_gate e aggiungere dipendenza immagini al core.
 RISPOSTA DI ANDREA: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
 
-## D11 | T1-RUN | capo | [APERTA]
+## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: fuoristrada: velocità crolla da ~160 a ~6 in pochi frame (troppo brusco). Come tarare il rallentamento fuori strada in player.cpp?
 Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelerazione secca a ~6  C) nessun rallentamento (velocità invariata fuori strada)
 Raccomandazione: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/gate_t1.sh` (replay 2x IDENTICO).
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
 RISPOSTA DI ANDREA: A, stile 'OutRun'
+
+## Feedback storico v90 — 2026-10-17
+
+Importato da `FEEDBACK_ANDREA.md`; si conserva qui come contesto storico, non come specifica attiva per OpenRun 4.6. La decisione di progetto allora registrata privilegiava il motore C++ in `motore_nuovo/`, sospendeva ROM/export Mega Drive e chiedeva di concentrarsi sul primo gate giocabile.
+
+Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di guida convincente. Le priorita' indicate erano:
+
+1. Rendere strada, corsie, proiezione delle colline e auto leggibili; inventariare e collegare al gameplay i contenuti grafici e gli sponsor gia' prodotti.
+2. Implementare accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento fuori strada, ribaltamento/collisioni e pannello informativo.
+3. Rappresentare nel pannello velocita' e risposta del motore simulato con cambio automatico.
+
+Personaggi animati e relativi effetti erano rinviati a una fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.

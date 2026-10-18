@@ -9,6 +9,7 @@ permission:
     "*": deny
     "bacheche/builder-developer/**": allow
     "out/builder-developer/**": allow
+    "UFFICIO/Officina/STATUS_OFFICINA.md": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
     "motore_nuovo/src/**": allow
@@ -25,8 +26,11 @@ permission:
     "*": deny
     "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
     "cmake --build UFFICIO/Officina/build*": allow
+    "sh tools/run_tests.sh": allow
     "sh tools/gate_t1.sh": allow
     "sh tools/gate_t1.sh *": allow
+    "sh tools/check_sdl_init.sh": allow
+    "sh tools/check_sdl_init.sh *": allow
     "make *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
     "python3 motore_nuovo/strumenti_py/*": allow
@@ -42,6 +46,8 @@ Sei il Builder/Developer. Implementi codice di prodotto C++17, integrazione e co
 
 - Mantieni il core indipendente da SDL, deterministico e compatibile con i vincoli multipiattaforma.
 - Usa asset approvati e leggibili da `assets_originali/`/catalogo senza modificarli. Le modifiche agli asset tornano al Designer.
+- Per il test CMake/CTest usa `sh tools/run_tests.sh`; per il gate prestazionale e funzionale usa `sh tools/gate_t1.sh`. Entrambi scrivono build e risultati sotto `UFFICIO/Officina/`. Per il runner SDL usa `sh tools/check_sdl_init.sh` dopo aver compilato il target `sglavinated_runner`.
+- A fine task aggiorna lo status operativo condiviso `UFFICIO/Officina/STATUS_OFFICINA.md` con il report più recente, misure, comando/esito, link al log e blocchi; sintetizza i report precedenti senza duplicare i log.
 - Quando fai una review assegnata, non essere l'autore: verifica diff, requisiti, test, log e regressioni, poi registra rilievi concreti o esito motivato.
 - Non modifichi i test del Junior salvo task esplicito; non approvi autonomamente la release.
 - Esegui solo build/test consentiti e riporta comando, exit code e misure effettive.

@@ -89,16 +89,13 @@ def attivi():
 
 def versione():
     v = leggi(".versione").strip() or "90"
-    fb = leggi("FEEDBACK_ANDREA.md")
-    if not fb:
-        try: fb = open(os.path.join(BASE, "ANDREA", "FEEDBACK.md"), encoding="utf-8", errors="replace").read()
-        except OSError: fb = ""
+    fb = leggi("ANDREA_REVIEW.md")
     m = re.search(r"Tappa attiva:\s*(\S+)", fb)
     d = os.path.join(S, "out", "review")
     rv = sorted(os.listdir(d), key=lambda f: int(re.sub(r"\D", "", f) or 0)) if os.path.isdir(d) else []
     return {"versione": "v" + v, "tappa": m.group(1) if m else "?", "ultima_review": rv[-1] if rv else ""}
 
-DOCS = {"tappe": "TAPPE.md", "feedback": "ANDREA/FEEDBACK.md", "readme": "README.md"}
+DOCS = {"tappe": "TAPPE.md", "feedback": "sglavinated_src/ANDREA_REVIEW.md", "readme": "README.md"}
 def documento(k):
     if k == "review":
         d = os.path.join(S, "out", "review")
@@ -152,7 +149,7 @@ def stato():
     return {"ora": time.strftime("%a %d %H:%M"), "generale": gen, "processi": pr, "log_sec": eta, "ultima_modifica_sec": ultima_modifica,
             "ciclo": ciclo, "log": "\n".join(righe[-25:]), "attivita": att, "bins": bins,
             "agenti": ag, "blocchi": blocchi(), "out": nout, "libreria": nlib, "squadra": squadra, "ver": versione(),
-            "decisioni_aperte": len(re.findall(r"^## D\d[^\n]*\[APERTA\]", leggi("DECISIONI_ANDREA.md"), re.M)),
+            "decisioni_aperte": len(re.findall(r"^## (?:D\d+|A\d+|T1-Q\d+)[^\n]*\[APERTA\]", leggi("ANDREA_REVIEW.md"), re.M)),
             "anomalie": leggi("../../NOTE_ANOMALIE_NOTTE.md", 6)}
 
 PAGINA = r"""<!doctype html><html lang=it><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">

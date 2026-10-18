@@ -3,7 +3,7 @@
 # Regola 2 AGENTS.md: ogni risorsa esterna usata va riportata qui (autore, licenza, URL).
 # Nota: nulla e' stato scaricato. Questa lista censura le risorse trovate; si conferma/inserisce definitivamente solo quelle che Andrea sceglie di usare (CC-BY e simili: obbligo di attribuzione).
 # Le licenze indicate sono quelle dichiarate sulla pagina di origine (VERIFICATA) o presunte via raccolta (da verificare per item prima dell'uso).
-# Licenza di progetto da decidere (voce D1, DECISIONI_ANDREA.md / AGENTS.md).
+# Licenza di progetto da decidere (voce D1, ANDREA_REVIEW.md / AGENTS.md).
 
 | File | Autore | Licenza | URL |
 |---|---|---|---|

@@ -78,7 +78,7 @@ checkpoint() {
   { echo; echo "### CHECKPOINT $chk | REVIEWER | $(date '+%F %H:%M') | [APERTA]"; echo "$AUTO"; echo; echo "$R"; } >> SCAMBIO.md
   C=""
   if [ "${CHK_CLAUDE_OGNI:-0}" -gt 0 ] && command -v claude >/dev/null 2>&1 && [ $(( chk % CHK_CLAUDE_OGNI )) -eq 1 ]; then
-    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto V3 (open). Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, DECISIONI_ANDREA.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Se un agente rende poco: 'CAMBIA_MODELLO: <agente>'." --allowedTools "Read,Grep,Glob" 2>&1)"
+    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto V3 (open). Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Se un agente rende poco: 'CAMBIA_MODELLO: <agente>'." --allowedTools "Read,Grep,Glob" 2>&1)"
     { echo; echo "### CHECKPOINT $chk | CLAUDE CLI -> CAPO | $(date '+%F %H:%M') | [APERTA]"; echo "$C"; } >> SCAMBIO.md
   else
     echo "[ciclo] $(date '+%d/%m %H:%M') review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna"
@@ -97,15 +97,15 @@ checkpoint() {
 # chiusura: checkpoint + riepilogo + pacchetto per la revisione umana con Claude app
 chiusura() {
 checkpoint
-command -v opencode >/dev/null 2>&1 && oc --agent capo "Scrivi RIEPILOGO_MATTINA.md (max 40 righe): cosa e' stato fatto per blocco/agente, cosa non funziona, decisioni aperte in DECISIONI_ANDREA.md (le 3 piu' importanti), prossimo passo consigliato." || true
+command -v opencode >/dev/null 2>&1 && oc --agent capo "Scrivi RIEPILOGO_MATTINA.md (max 40 righe): cosa e' stato fatto per blocco/agente, cosa non funziona, decisioni aperte in ANDREA_REVIEW.md (le 3 piu' importanti), prossimo passo consigliato." || true
 {
   echo "# Pacchetto per Claude app (capo supremo) — $(date '+%F %H:%M')"
-  echo "Incolla in Claude app (con accesso alla cartella): \"Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi.\""
+  echo "Incolla in Claude app (con accesso alla cartella): \"Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi.\""
   echo; echo "## Stato blocchi"; grep -n '^## BLOCCO\|^| Stato' RICHIESTA.md
-  echo; echo "## Decisioni aperte"; grep -n '^## D[0-9]' DECISIONI_ANDREA.md
+  echo; echo "## Decisioni aperte"; grep -n '^## D[0-9]' ANDREA_REVIEW.md
   echo; echo "## Ultime righe di SCAMBIO.md"; tail -60 SCAMBIO.md
 } > PACCHETTO_PER_CLAUDE_APP.md
-echo "[ciclo] $(date '+%d/%m %H:%M') fine: leggi RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md, PACCHETTO_PER_CLAUDE_APP.md"
+echo "[ciclo] $(date '+%d/%m %H:%M') fine: leggi RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md, PACCHETTO_PER_CLAUDE_APP.md"
 }
 
 # Controllo automatico (solo shell, nessuna richiesta ai modelli: non consuma il limite). Scrive CONTROLLO.md per il capo.
@@ -167,7 +167,7 @@ manutenzione() {
     echo; echo "## Workflow"
     echo "- blocchi chiusi [x]: $(grep -c '^| Stato.*\[x\]' RICHIESTA.md); in corso [~]: $(grep -c '^| Stato.*\[~\]' RICHIESTA.md); da fare [ ]: $(grep -c '^| Stato.*\[ \]' RICHIESTA.md)"
     echo "- agenti con lavoro aperto: $(agenti_liberi | tr '\n' ' ')"
-    echo "- decisioni aperte per Andrea: $(grep -c '^## D[0-9].*\[APERTA\]' DECISIONI_ANDREA.md)"
+    echo "- decisioni aperte per Andrea: $(grep -c '^## D[0-9].*\[APERTA\]' ANDREA_REVIEW.md)"
     [ -s .fuori_posto.log ] && { echo; echo "## File spostati dalle bacheche (fuori posto, ultimi 10)"; tail -10 .fuori_posto.log | sed 's/^\[ciclo\] /- /'; }
     echo "- istruzione: in pausa non servono nuove richieste; riprendi dai blocchi [~] e chiudi i file lasciati a meta."
   } > "$C.tmp" && mv "$C.tmp" "$C"
@@ -195,7 +195,6 @@ agenti_liberi() {
 
 # Estratti brevi (solo shell, zero crediti): gli agenti leggono questi invece dei file lunghi.
 estratti() {
-  [ -f "$BASE/ANDREA/FEEDBACK.md" ] && cp "$BASE/ANDREA/FEEDBACK.md" FEEDBACK_ANDREA.md
   [ -f "$BASE/TAPPE.md" ] && cp "$BASE/TAPPE.md" TAPPE.md
   # Il "MODELLO" (blocchi di esempio dentro un recinto ```) non va passato agli agenti: ~3 KB inutili a ogni turno.
   awk '/^## MODELLO/{skip=1; f=0; next} skip{ if($0=="```"){f++; if(f==2) skip=0} next } {print}' RICHIESTA.md | awk '/^## BLOCCO/{if(b!="" && b!~/\| Stato \| \[x\]/) printf "%s", b; b=""} {b=b $0 "\n"} END{if(b!~/\| Stato \| \[x\]/) printf "%s", b}' > RICHIESTA_APERTA.md.tmp && mv RICHIESTA_APERTA.md.tmp RICHIESTA_APERTA.md
@@ -216,11 +215,11 @@ estratti() {
 review_versione() {
   v=$(cat .versione 2>/dev/null || echo 90); mkdir -p out/review; f="out/review/v$v.md"
   { echo "# Versione v$v pronta per la review di Andrea — $(date '+%d/%m/%Y %H:%M')"
-    echo; echo "Tappa: $(grep -m1 -i 'tappa attiva' FEEDBACK_ANDREA.md 2>/dev/null || echo 'vedi TAPPE.md')"
+    echo; echo "Tappa: $(grep -m1 -i 'tappa attiva' ANDREA_REVIEW.md 2>/dev/null || echo 'vedi TAPPE.md')"
     echo; echo "## Blocchi chiusi"; grep -B6 '^| Stato | \[x\]' RICHIESTA.md | grep '^## BLOCCO' | sed 's/^## /- /'
     echo; echo "## Memoria degli agenti"; for r in bacheche/*/RIASSUNTO.md; do [ -f "$r" ] && { echo "### $(basename "$(dirname "$r")")"; cat "$r"; echo; }; done
     echo "## File cambiati in questa versione"; find . -newer .marker_review -type f ! -path './log_agenti/*' ! -path './.opencode/*' ! -name '*.log' ! -name '.*' 2>/dev/null | sort | head -80
-    echo; echo "## Cosa fare (Andrea)"; echo "1. Prova la build e guarda gli screenshot in out/."; echo "2. Scrivi il feedback in ANDREA/FEEDBACK.md sotto 'Versione v$v' (OK tappa, correzioni, scelte)."; echo "3. Riavvia: sh comandi/v3.sh start"
+    echo; echo "## Cosa fare (Andrea)"; echo "1. Prova la build e guarda gli screenshot in out/."; echo "2. Registra feedback e decisioni in sglavinated_src/ANDREA_REVIEW.md sotto 'Feedback' o nella voce pertinente."; echo "3. Riavvia: sh comandi/v3.sh start"
   } > "$f"
   echo $((v+1)) > .versione; touch .marker_review
   echo "[ciclo] $(date '+%d/%m %H:%M') nessun lavoro aperto: versione v$v pronta per la review -> sglavinated_src/$f. Ciclo fermo in attesa del tuo feedback."
@@ -240,7 +239,7 @@ giro_diretto() {
     touch .marker_giro
     echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: avvio $ag ($(grep -m1 '^model:' ".opencode/agents/$ag.md" | sed 's/^model: *//'))"
     OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"
-    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, FEEDBACK_ANDREA.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti) e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se aspetti altri o hai finito, fermati. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
+    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti) e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se aspetti altri o hai finito, fermati. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
@@ -266,7 +265,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"
-  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, FEEDBACK_ANDREA.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (nomi dei 5 ruoli v4.5, percorsi out/<ruolo>/). Domande ad Andrea in DECISIONI_ANDREA.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (nomi dei 5 ruoli v4.5, percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi
   giro_diretto

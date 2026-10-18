@@ -1,6 +1,6 @@
 # Cartella ricerca asset esterni — licenza
 # SPDX-License-Identifier: CC0-1.0 (solo il testo di questi file di catalogo)
-# Progetto: Outrun Sglavinated Edition v3 (open) — licenza di progetto in decisione (voce D1, DECISIONI_ANDREA.md / AGENTS.md).
+# Progetto: Outrun Sglavinated Edition v3 (open) — licenza di progetto in decisione (voce D1, ANDREA_REVIEW.md / AGENTS.md).
 # Nota: qui si catalogano solo RIFERIMENTI a risorse esterne. Nessun file e' stato scaricato.
 # Ogni risorsa elencata mantiene la propria licenza indicata nella sua tabella; verificare la pagina di origine prima dell'uso.
 

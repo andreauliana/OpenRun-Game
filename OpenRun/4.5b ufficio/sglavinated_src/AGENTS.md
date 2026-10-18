@@ -53,9 +53,11 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 3. Il Designer verifica formato, catalogo, provenienza e licenza prima della pubblicazione in `Shared asset/`.
 4. Il Capo verifica completezza delle review, prove, esiti e decisioni di Andrea; non si autovaluta come revisore tecnico né dichiara una build verificata senza prova registrata.
 5. Review negativa o incompleta: il Capo registra i rilievi nel checkpoint, assegna la correzione all'autore e richiede una nuova review indipendente. Se il revisore autorizzato non è disponibile, il checkpoint resta in attesa.
-6. All'avvio il Capo usa `Checkpoint Revision/STATO_CORRENTE.md` come riferimento sintetico, quindi consulta il `REGISTRO_REVISIONI.md` e il solo dossier attivo necessario.
+6. All'avvio il Capo usa `Checkpoint Revision/STATO_CORRENTE.md` come riferimento sintetico, quindi consulta il `REGISTRO_REVISIONI.md` e il solo dossier attivo necessario. Per i task grafici consulta `out/designer/STATUS_GRAFICO_PER_CAPO.md`; per codice/build/test consulta `UFFICIO/Officina/STATUS_OFFICINA.md`. Se il checkpoint coinvolge entrambi i reparti, legge entrambi gli status.
 7. Il Capo assegna ID progressivi `CP-NNN`, usa `Checkpoint Revision/TEMPLATE_CHECKPOINT.md` e aggiorna dossier, registro append-only e stato corrente nella stessa operazione. Le prove estese restano nei log originali: registrare comando, exit code, misure e link relativo, senza duplicarle.
 8. Gli stati e le condizioni di chiusura sono definiti in `Checkpoint Revision/README.md`. `PRONTO PER ANDREA` richiede review indipendenti positive; `CHIUSO` richiede la decisione di Andrea o una motivazione esplicita per cui non è necessaria.
+9. Per lavori grafici il Capo legge `out/designer/STATUS_GRAFICO_PER_CAPO.md`, lo cita nel dossier e assegna comunque una review indipendente. È l'unico handoff corrente del Designer, non una prova di approvazione.
+10. Per lavori di sviluppo, build o test il Capo legge `UFFICIO/Officina/STATUS_OFFICINA.md`, cita data/report e log sorgente nel dossier e assegna comunque una review indipendente. È l'unico handoff tecnico corrente, non una peer review né una prova di approvazione.
 
 ## Vincoli di progetto
 

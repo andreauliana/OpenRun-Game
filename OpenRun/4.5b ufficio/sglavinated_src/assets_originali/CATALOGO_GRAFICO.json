@@ -7,7 +7,7 @@
    "bozza": "prima prova, non usare nel gioco",
    "in_costruzione": "in lavorazione, usabile solo nei test",
    "pronto": "finito, in attesa dell'ok di Andrea",
-   "approvato": "scelto da Andrea (DECISIONI_ANDREA.md)",
+   "approvato": "scelto da Andrea (ANDREA_REVIEW.md)",
    "scartato": "da non usare; il file resta come storico"
   },
   "regole": [

@@ -3,7 +3,7 @@
 # Verifica SDL_Init tramite il runner reale, senza CTest o finestra di gioco.
 cd "$(dirname "$0")/.." || exit 9
 
-RUNNER=${1:-../build/sglavinated_runner}
+RUNNER=${1:-UFFICIO/Officina/build/sglavinated_runner}
 if [ ! -x "$RUNNER" ]; then
   echo "Runner non trovato o non eseguibile: $RUNNER" >&2
   echo "Compilare prima il target sglavinated_runner." >&2
