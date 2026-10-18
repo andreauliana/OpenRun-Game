@@ -1,1 +1,0 @@
-[18/10 12:40] gate T1 smoke | [x] | sh tools/gate_t1.sh exit 0; GATE T1 TUTTO OK; 3 livelli speed@60=161.79 replay IDENTICO ms/frame medio 0.36 max 0.904; avvolgimento/inattività OK; review punto 7 OK; quota open 100% | prossimo: PASSAGGIO frenata/costa (gate_t1.sh non di mia scrittura); H attende Andrea v91 + Pi 400

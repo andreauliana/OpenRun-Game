@@ -12,46 +12,58 @@ LOG=out/collaudatore/gate_t1.log
 mkdir -p out/collaudatore
 : > "$LOG"
 
+# Non cancellare mai la build esistente: gli ZIP possono essere spostati su un'altra
+# macchina e contenere una CMakeCache con percorsi assoluti non piu' validi.
+BUILD_DIR=build_gate
+EXPECTED_SOURCE=$(cd motore_nuovo && pwd -P) || exit 9
+if [ -f "$BUILD_DIR/CMakeCache.txt" ]; then
+  CACHED_SOURCE=$(sed -n 's/^CMAKE_HOME_DIRECTORY:INTERNAL=//p' "$BUILD_DIR/CMakeCache.txt" | head -n 1)
+  if [ -n "$CACHED_SOURCE" ] && [ "$CACHED_SOURCE" != "$EXPECTED_SOURCE" ]; then
+    BUILD_DIR="build_gate_relocated_$(printf '%s' "$EXPECTED_SOURCE" | cksum | awk '{print $1}')"
+    echo "Cache CMake non portabile: uso $BUILD_DIR senza cancellare la build precedente." >> "$LOG"
+  fi
+fi
+
 echo "== configurazione (cmake)"
-cmake -S motore_nuovo -B build_gate -DCMAKE_BUILD_TYPE=Release >> "$LOG" 2>&1 || {
+cmake -S motore_nuovo -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release >> "$LOG" 2>&1 || {
   echo "CMAKE CONFIGURE FALLITO (exit 10). Ultime righe di $LOG:"; tail -n 15 "$LOG"; exit 10; }
 
 echo "== compilazione (cmake --build)"
-cmake --build build_gate --target prova_gate >> "$LOG" 2>&1 || {
+cmake --build "$BUILD_DIR" --target prova_gate >> "$LOG" 2>&1 || {
   echo "BUILD FALLITO (exit 11). Errori:"; grep -n "error" "$LOG" | head -n 20; exit 11; }
 
 RC=0
 for LV in lv_01_neon lv_02_atomico lv_03_foglie; do
   echo "== prova_gate $LV"
-  ./build_gate/prova_gate "out/collaudatore/$LV" "$LV" >> "$LOG" 2>&1
+  ./"$BUILD_DIR"/prova_gate "out/collaudatore/$LV" "$LV" >> "$LOG" 2>&1
   R=$?
   echo "   exit $R"
   [ "$R" -ne 0 ] && RC=$R
 done
 if [ "$MODE" = "soak" ]; then
   echo "== soak 30000 frame lv_01_neon"
-  ./build_gate/prova_gate out/collaudatore/soak lv_01_neon soak >> "$LOG" 2>&1
+  ./"$BUILD_DIR"/prova_gate out/collaudatore/soak lv_01_neon soak >> "$LOG" 2>&1
   R=$?
   echo "   exit $R"
   [ "$R" -ne 0 ] && RC=$R
 fi
 echo "== verifica accelerazione 10 s"
-./build_gate/prova_gate out/collaudatore/accelerazione lv_01_neon accelerazione >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate out/collaudatore/accelerazione lv_01_neon accelerazione >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica ribaltamento e ripartenza"
-./build_gate/prova_gate out/collaudatore/crash lv_01_neon crash >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate out/collaudatore/crash lv_01_neon crash >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica sterzo sinistra/destra"
-./build_gate/prova_gate out/collaudatore/sterzo lv_01_neon sterzo >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate out/collaudatore/sterzo lv_01_neon sterzo >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica continuita' curve e corsie"
-./build_gate/prova_gate out/collaudatore/curve lv_01_neon curve >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate out/collaudatore/curve lv_01_neon curve >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
