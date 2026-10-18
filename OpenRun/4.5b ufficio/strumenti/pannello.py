@@ -7,7 +7,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 BASE = os.environ.get("V3_BASE") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 BASE = os.path.abspath(BASE)
 S = os.path.join(BASE, "sglavinated_src")
-AGENTI = ["capo","sviluppatore","collaudatore","grafico","ricercatore"]
+AGENTI = ["capo","builder-developer","developer-builder-junior","designer",
+          "sviluppatore","collaudatore","grafico","ricercatore"]  # 4.6 + storici v4.5
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 DATA_LOG = re.compile(r"(?<!\d)(\d{1,2})/\d{1,2}(?:/\d{2,4})?(\s+\d{2}:\d{2})(?!\d)")
 
@@ -85,7 +86,7 @@ def parts_ok(p):
 
 def attivi():
     t = leggi(".agenti_attivi").split()
-    return t or ["sviluppatore", "collaudatore"]
+    return t or ["builder-developer", "developer-builder-junior"]
 
 def versione():
     v = leggi(".versione").strip() or "90"

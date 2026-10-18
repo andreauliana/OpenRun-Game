@@ -1,5 +1,6 @@
 ---
 description: "Builder/Developer OpenRun: guida implementazione C++, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
+model: opencode/nemotron-3.5-super-vl-free
 mode: subagent
 permission:
   execute: deny

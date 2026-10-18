@@ -19,6 +19,7 @@
 #include "render/sprite_raw.h"
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -410,6 +411,78 @@ EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& l
 
 } // namespace
 
+
+// Screenshot P1 (gate Tappa 1): tre immagini scelte in automatico guidando
+// 3000 frame (60 s): la curva piu' marcata, il cartellone sponsor piu' grande,
+// il primo frame con personaggio e fumetto a schermo. Servono agli agenti che
+// non possono lanciare il runner a finestra: escono dallo stesso gate_t1.sh.
+namespace {
+bool coloreMotore(u32 c) {
+    static const u32 kMotore[] = {
+        0xFF000000u, 0xFFFFFFFFu, 0xFF7A7A7Au, 0xFF5A5A5Au, 0xFF3A3A3Au, 0xFFFF00FFu,
+        0xFF202040u, 0xFF00AA00u, 0xFFFF8800u, 0xFF00FFFFu, 0xFFFFFF00u, 0xFFFF0000u,
+        0xFF00FF00u, 0xFF444444u, 0xFFAAAAAAu, 0xFF008C00u, 0xFFFFF4B0u, 0xFF0000FFu};
+    for (u32 m : kMotore) if (c == m) return true;
+    return false;
+}
+
+// Centro della carreggiata (pixel grigio asfalto) sulla riga y, -1 se assente.
+f32 centroStrada(const u32* d, i32 y) {
+    i32 somma = 0, n = 0;
+    for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+        const u32 c = d[y * Framebuffer::WIDTH + x];
+        if (c == 0xFF7A7A7Au || c == 0xFF5A5A5Au) { somma += x; ++n; }
+    }
+    return n > 20 ? (f32)somma / (f32)n : -1.0f;
+}
+} // namespace
+
+bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
+    Game game(12345u);
+    caricaSponsor(game);
+    game.init(livello);
+    std::vector<u32> curva(Framebuffer::WIDTH * Framebuffer::HEIGHT), sponsor(curva.size());
+    f32 curvaMax = 0.0f;
+    i32 sponsorMax = 0, framePers = -1, frameCurva = -1, frameSponsor = -1;
+    for (i32 frame = 1; frame <= 3000; ++frame) {
+        Pad pad;
+        // Gas fino al frame 600, poi a tratti: le pause fanno partire gli show di inattivita'.
+        pad.held = (frame > 600 && (frame / 40) % 2) ? 0ull : (u64)Pad::A;
+        game.setInput(pad);
+        game.update();
+        game.render();
+        const u32* d = game.fb().data();
+        const i32 nPx = Framebuffer::WIDTH * Framebuffer::HEIGHT;
+
+        const f32 cAlto = centroStrada(d, 125), cBasso = centroStrada(d, 195);
+        if (cAlto >= 0.0f && cBasso >= 0.0f && std::abs(cAlto - cBasso) > curvaMax) {
+            curvaMax = std::abs(cAlto - cBasso);
+            std::copy(d, d + nPx, curva.begin());
+            frameCurva = frame;
+        }
+        i32 verdi = 0, blu = 0, esterni = 0;
+        for (i32 i = 0; i < nPx; ++i) {
+            if (d[i] == 0xFF00FF00u) ++verdi;
+            else if (d[i] == 0xFF0000FFu) ++blu;
+            else if (!coloreMotore(d[i])) ++esterni; // colori propri dei cartelloni sponsor
+        }
+        if (esterni > sponsorMax) {
+            sponsorMax = esterni;
+            std::copy(d, d + nPx, sponsor.begin());
+            frameSponsor = frame;
+        }
+        if (framePers < 0 && verdi >= 400 && blu >= 200) {
+            framePers = frame;
+            salvaPPM(outDir + "/p1_personaggio_fumetto.ppm", d, Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        }
+    }
+    if (frameCurva > 0) salvaPPM(outDir + "/p1_curva.ppm", curva.data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+    if (frameSponsor > 0) salvaPPM(outDir + "/p1_cartelloni_sponsor.ppm", sponsor.data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+    std::printf("screenshot P1: curva frame %d (scarto %.0f px), sponsor frame %d (%d px), personaggio+fumetto frame %d\n",
+                frameCurva, curvaMax, frameSponsor, sponsorMax, framePers);
+    return frameCurva > 0 && frameSponsor > 0 && framePers > 0;
+}
+
 int main(int argc, char** argv) {
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
@@ -422,6 +495,12 @@ int main(int argc, char** argv) {
         return 4;
     }
     std::filesystem::create_directories(outDir);
+
+    if (modo == "screenshot") {
+        const bool ok = salvaScreenshotP1(outDir, livello);
+        std::printf("%s\n", ok ? "GATE SCREENSHOT P1 OK" : "FALLITO: screenshot P1 incompleti");
+        return ok ? 0 : 12;
+    }
 
     if (modo == "crash") {
         const bool ok = verificaRibaltamento(livello);

@@ -68,7 +68,13 @@ R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
+echo "== screenshot P1 (curva, cartelloni sponsor, personaggio con fumetto)"
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
+R=$?
+echo "   exit $R  (immagini in UFFICIO/Officina/Test area/screenshot_p1/)"
+[ "$R" -ne 0 ] && RC=$R
+
 echo "== riepilogo (da $LOG)"
-grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|GATE .* OK|GATE OK|FALLITO)" "$LOG"
+grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|screenshot P1|GATE .* OK|GATE OK|FALLITO)" "$LOG"
 [ "$RC" -eq 0 ] && echo "GATE T1: TUTTO OK" || echo "GATE T1: FALLITO (exit $RC)"
 exit "$RC"

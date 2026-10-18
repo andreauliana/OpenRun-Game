@@ -1,5 +1,6 @@
 ---
 description: "Developer/Builder Junior OpenRun: contribuisce a codice, test e diagnosi in task delimitati e svolge peer review quando assegnato."
+model: opencode/nemotron-3.5-super-vl-free
 mode: subagent
 permission:
   execute: deny
