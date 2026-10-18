@@ -756,3 +756,24 @@ blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 20:51 | [APERTA]
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+NOTA    builder-developer:  non e' in panchina.txt
+NOTA    capo:  non e' in panchina.txt
+NOTA    designer:  non e' in panchina.txt
+NOTA    developer-builder-junior:  non e' in panchina.txt
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== CI SONO ERRORI ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (4624450 di 4624450 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
