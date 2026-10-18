@@ -2,7 +2,7 @@
 
 | Ruolo/sezione | File | Data | Byte |
 |---|---|---|---|
-| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 20:43 | 4222 |
+| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 20:49 | 4347 |
 | capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:32 | 1979 |
 | capo | `out/capo/RICHIESTA_STORICO_17OTT.md` | 17/10 13:12 | 12195 |
 | capo | `out/capo/SCAMBIO_ARCHIVIO_fino_92.md` | 17/10 13:12 | 125863 |
@@ -14,6 +14,9 @@
 | collaudatore | `out/collaudatore/manifest.json` | 17/10 13:13 | 23 |
 | collaudatore | `out/collaudatore/prova_gate_partenza.png` | 17/10 13:13 | 9721 |
 | designer | `out/designer/STATUS_GRAFICO_PER_CAPO.md` | 18/10 15:45 | 3297 |
+| sviluppatore | `out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png` | 18/10 21:02 | 7379 |
+| sviluppatore | `out/sviluppatore/screenshot_p1/p1_curva.png` | 18/10 21:02 | 6537 |
+| sviluppatore | `out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png` | 18/10 21:02 | 8846 |
 | sviluppatore | `out/sviluppatore/VOCE_SCAMBIO_1155.md` | 18/10 11:53 | 1686 |
 | sviluppatore | `out/sviluppatore/VOCE_SCAMBIO_1154.md` | 18/10 11:11 | 978 |
 | sviluppatore | `out/sviluppatore/VOCE_SCAMBIO_1153.md` | 18/10 10:03 | 1525 |
