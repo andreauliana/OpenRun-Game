@@ -122,6 +122,18 @@
     ],
     "note_per_scenografo": "max 16 colori per sprite; atmosfera radio di notte; nessun elemento Sega"
   },
+  "tema_grafico": {
+    "skyline": "scenario.lv_01_neon.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_01_neon.palo_neon",
+      "oggetto.lv_01_neon.lampione",
+      "oggetto.lv_01_neon.palina",
+      "oggetto.lv_01_neon.bidone",
+      "oggetto.lv_01_neon.cassetta"
+    ],
+    "stile_cartellone": "neon",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,

@@ -124,6 +124,18 @@
     ],
     "note_per_scenografo": "DA FARE: scenario non ancora disegnato; max 16 colori per sprite; nessun elemento Sega"
   },
+  "colori": {"cielo": "#5A5A66", "erba": "#8A7F6A", "erba_alt": "#7A705C", "rumble": "#E01020"},
+  "tema_grafico": {
+    "skyline": "scenario.lv_05_spray.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_01_neon.bidone",
+      "oggetto.lv_01_neon.cassetta",
+      "oggetto.lv_02_atomico.freccia",
+      "oggetto.lv_02_atomico.segnale_atomico"
+    ],
+    "stile_cartellone": "atomico",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,

@@ -23,20 +23,20 @@ i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
     return (i32)sponsorSprites_.size() - 1;
 }
 
-void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ) {
+void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio) {
     const auto& segs = road.segments();
     if (segs.empty()) return;
 
     projs_.clear();
-    road.project(playerX, playerZ, projs_);
+    road.project(playerX, playerZ, projs_, latoBivio);
     if (projs_.empty()) return;
 
     // playerX del frame: drawSprites riusa la stessa proiezione della strada.
     lastPlayerX_ = playerX; // (riservato; drawSprites usa il centro strada proiettato)
 
     // Cielo (parte superiore dello schermo) e terra (sotto l'orizzonte).
-    fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, pal_[7]);   // cielo notturno
-    fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, pal_[8]); // erba
+    fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, tema_.cielo);
+    fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, tema_.erba);
 
     // Disegna i segmenti dal piu' LONTANO al piu' VICINO: projs_ e' ordinato
     // vicino->lontano (i=0 e' il segmento piu' vicino), quindi si itera a ritroso.
@@ -64,41 +64,47 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     if (dy <= 0) return;
 
     // Mezza larghezza strada in px, coerente con Road::project (W/2 * scala * ROAD_HALF_WORLD).
-    const f32 hwNear = cur.scale  * Road::ROAD_HALF_WORLD * (Framebuffer::WIDTH / 2.0f);
-    const f32 hwFar  = next.scale * Road::ROAD_HALF_WORLD * (Framebuffer::WIDTH / 2.0f);
+    // Al bivio ci sono due rami: stesso disegno, centro spostato e larghezza ridotta.
+    const f32 pxNear = cur.scale  * (Framebuffer::WIDTH / 2.0f);
+    const f32 pxFar  = next.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hwNear = pxNear * Road::ROAD_HALF_WORLD * cur.carr.fattore;
+    const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
+    const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
 
-    const u32 grass  = band ? pal_[8] : GRASS_ALT;
+    const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
-    const u32 rumble = band ? pal_[5] : pal_[6]; // bianco / magenta neon
+    const u32 rumble = band ? pal_[5] : tema_.rumbleAlt; // bianco / colore della tappa
     const u32 lane   = pal_[1];
 
     for (i32 y = ny; y <= cy; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
-        const f32 cx = next.screenX + (cur.screenX - next.screenX) * t;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        const i32 lx = (i32)(cx - hw);
-        const i32 rx = (i32)(cx + hw);
+        if (y >= HORIZON_Y) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
+            fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
         // Rumble: larghezza proporzionale alla larghezza locale, quindi continua
         // fra segmenti contigui (nessun gradino ai confini).
         i32 rw = (i32)(hw * 0.14f);
         if (rw < 1) rw = 1;
-
-        if (y >= HORIZON_Y) { // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
-            fb_.hline(0, lx - 1, y, grass);
-            fb_.hline(rx + 1, Framebuffer::WIDTH - 1, y, grass);
-        }
-        fb_.hline(lx, rx, y, road);
-        fb_.hline(lx, lx + rw - 1, y, rumble);
-        fb_.hline(rx - rw + 1, rx, y, rumble);
         const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distance = invZ > 0.0f ? 1.0f / invZ : next.worldZ;
         f32 dashPhase = std::fmod(distance, LANE_DASH_CYCLE);
         if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
-        if (dashPhase < LANE_DASH_LENGTH) {
-            i32 lw = (i32)(hw * 0.02f);
-            if (lw < 1) lw = 1;
-            fb_.hline((i32)cx - lw, (i32)cx + lw, y, lane);
+        for (i32 r = 0; r < rami; ++r) {
+            const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
+            const f32 cFar  = next.screenX + next.carr.centro[r] * pxFar;
+            const f32 cx = cFar + (cNear - cFar) * t;
+            const i32 lx = (i32)(cx - hw);
+            const i32 rx = (i32)(cx + hw);
+            if (rx < 0 || lx >= Framebuffer::WIDTH) continue; // ramo fuori schermo
+            fb_.hline(lx, rx, y, road);
+            fb_.hline(lx, lx + rw - 1, y, rumble);
+            fb_.hline(rx - rw + 1, rx, y, rumble);
+            if (dashPhase < LANE_DASH_LENGTH) {
+                i32 lw = (i32)(hw * 0.02f);
+                if (lw < 1) lw = 1;
+                fb_.hline((i32)cx - lw, (i32)cx + lw, y, lane);
+            }
         }
     }
 }
@@ -111,12 +117,15 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
             p.screenY >= (f32)Framebuffer::HEIGHT)
             continue;
 
-        const f32 halfRoad = p.scale * Road::ROAD_HALF_WORLD * (Framebuffer::WIDTH / 2.0f);
+        const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+        const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+        const f32 sinistra = std::min(p.carr.centro[0], p.carr.centro[1]) * pxUnita;
+        const f32 destra = std::max(p.carr.centro[0], p.carr.centro[1]) * pxUnita;
         const i32 height = std::clamp((i32)(p.scale * 300.0f * (Framebuffer::HEIGHT / 2.0f)), 2, 28);
         const i32 width = std::clamp((i32)(p.scale * 35.0f * (Framebuffer::WIDTH / 2.0f)), 1, 4);
         const i32 bottom = (i32)p.screenY;
         for (i32 side : {-1, 1}) {
-            const i32 x = (i32)(p.screenX + side * (halfRoad + width * 2.0f));
+            const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * (halfRoad + width * 2.0f));
             const u32 color = side < 0 ? pal_[1] : pal_[14];
             fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
             fb_.hline(x - width / 2, x + width / 2, bottom - height, pal_[5]);
@@ -141,7 +150,9 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
             zRel = std::fmod(zRel, totalLen);
             if (zRel < 0.0f) zRel += totalLen;
         }
-        if (zRel <= 0.0f) continue; // dietro la telecamera
+        // Dietro la telecamera, o cosi' vicino da coprire lo schermo intero
+        // (succede passando accanto a un cartello): non si disegna.
+        if (zRel < Road::Z_NEAR) continue;
         // Stessa proiezione della strada: s = depth/z, sx = W/2 + s*(worldX - camX)*W/2.
         f32 scl = Road::DEPTH / zRel;
         // Base verticale: screenY del primo segmento con worldZ >= zRel
@@ -272,6 +283,25 @@ void Renderer::drawHud(f32 speedPct, i32 gear, bool offroad) {
     // Avviso fuoristrada: rosso fisso quando offroad.
     if (offroad)
         fb_.fillRect(gx + 20, y0, gx + 27, y0 + 7, pal_[12]);
+}
+
+void Renderer::drawGara(i32 posizione, i32 concorrenti, i32 tappa, bool arrivo, u64 frame) {
+    // In alto a sinistra: concorrenti in fila, il primo a sinistra; il
+    // giocatore e' il quadratino giallo. Sotto: una tacca per tappa raggiunta.
+    const i32 x0 = 8, y0 = 8, lato = 6, passo = 9;
+    fb_.fillRect(x0 - 2, y0 - 2, x0 + concorrenti * passo, y0 + lato + 8, pal_[4]);
+    for (i32 i = 0; i < concorrenti; ++i) {
+        const u32 col = (i + 1 == posizione) ? pal_[11] : pal_[15];
+        fb_.fillRect(x0 + i * passo, y0, x0 + i * passo + lato - 1, y0 + lato - 1, col);
+    }
+    for (i32 t = 0; t < tappa; ++t)
+        fb_.fillRect(x0 + t * passo, y0 + lato + 3, x0 + t * passo + lato - 1, y0 + lato + 5, pal_[10]);
+    if (arrivo && (frame / 25) % 2 == 0) {
+        // Bandiera a scacchi in alto al centro.
+        for (i32 r = 0; r < 4; ++r)
+            for (i32 c = 0; c < 16; ++c)
+                fb_.fillRect(96 + c * 8, 24 + r * 8, 103 + c * 8, 31 + r * 8, ((r + c) & 1) ? pal_[0] : pal_[1]);
+    }
 }
 
 } // namespace sgl

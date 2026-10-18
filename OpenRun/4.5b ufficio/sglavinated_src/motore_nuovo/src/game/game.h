@@ -44,6 +44,13 @@ public:
     // legge "cartelloni_sponsor" da <id>/livello.json (tutte le allocazioni qui).
     void init(const std::string& livelloId = "lv_01_neon");
 
+    // Gara a tappe (dati/percorso_gara.json): parte dalla tappa di partenza con
+    // gli avversari in griglia; a fine tappa un bivio porta, a sinistra o a
+    // destra, alla tappa seguente; una tappa senza rami e' l'arrivo.
+    // Senza avviaGara() il livello di init() gira in tondo (test, prove).
+    bool avviaGara(const std::string& fileTappe = "motore_nuovo/dati/percorso_gara.json");
+    const std::string& tappaCorrente() const { return tappaId_; }
+
     // Cartella dati (sglavinated_src) da usare al posto della cartella corrente:
     // serve al core libretro e a chi lancia il gioco da altre cartelle. Prima di init().
     void setRadiceDati(std::string radice) { radiceDati_ = std::move(radice); }
@@ -71,6 +78,7 @@ public:
     // Esporta lo stato (per HUD, moduli fx, replay, test).
     const GameState& state() const { return state_; }
     const Road& road() const { return road_; } // tracciato (per i test di percorso)
+    const std::vector<SpriteInstance>& traffico() const { return sprites_; } // avversari/traffico del frame
     const Pad& input() const { return input_; }
     Framebuffer& fb() { return fb_; }
     const std::vector<i16>& audio() const { return audioBuf_; } // stereo interleaved
@@ -133,6 +141,43 @@ private:
 
     void spawnTraffic();
     bool collisioneOggettiVicini() const;
+
+    // Tracciato, cartelloni e tema di una tappa (senza toccare auto e show).
+    void caricaLivello(const std::string& livelloId);
+    void leggiTemaDaFile(const JsonValue* radice);
+    std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
+
+    // --- Gara a tappe ---
+    struct Tappa {
+        std::string id, sinistra, destra; // rami vuoti = arrivo
+    };
+    struct Rivale {
+        f32 progresso = 0.0f; // distanza percorsa dalla partenza (tutte le tappe)
+        f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
+        f32 passo = 0.0f, passoMax = 0.0f; // unita' di strada per frame
+        i32 ramo = 1;   // ramo preso ai bivi (-1 sinistra, +1 destra)
+        i32 colore = 9; // indice di palette della sagoma
+    };
+    static constexpr i32 RIVALI = 7;
+    const Tappa* trovaTappa(const std::string& id) const;
+    void preparaBivio();
+    void inizializzaRivali();
+    void aggiornaRivali();
+    void fineTappa(f32 avanzo);
+    i32 posizioneGiocatore() const;
+    void aggiornaStatoGara();
+    std::vector<Tappa> tappe_;
+    std::string tappaId_;
+    bool gara_ = false;
+    bool arrivo_ = false;
+    i32 numeroTappa_ = 1;
+    i32 latoBivio_ = 0; // 0 = scelta aperta, -1 sinistra, +1 destra
+    i32 posizioneArrivo_ = 0;
+    u32 frameGara_ = 0;
+    f32 progressoTappePrecedenti_ = 0.0f;
+    f32 passoGiocatore_ = 0.0f; // strada percorsa dal giocatore nell'ultimo frame
+    Rivale rivali_[RIVALI];
+    Rng rndRivali_{1u};
 };
 
 } // namespace sgl

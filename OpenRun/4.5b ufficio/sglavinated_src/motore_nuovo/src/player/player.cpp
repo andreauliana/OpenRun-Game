@@ -20,16 +20,7 @@ void Player::input(const Pad& pad, f32 dt) {
 void Player::update(f32 dt) {
     // Sterzo: influenza x in proporzione alla velocita' (piu' veloci = piu' reattivi).
     x += steer_ * STEER_INC * dt * (1.0f + speed / MAX_SPEED);
-    // Offroad: troppo lontano dal centro. Calcolato PRIMA del clamp a X_LIMIT:
-    // OFFROAD_LIMIT=700 < X_LIMIT=900, quindi il clamp non nasconde mai l'offroad
-    // (con 1200 > 900 sarebbe sempre stato falso: codice morto pal_[12] in renderer).
-    offroad = (x < -OFFROAD_LIMIT) || (x > OFFROAD_LIMIT);
-    // Clamp laterale (P1b): dopo 60 frame di sterzata a destra playerX arrivava a 125 e oltre,
-    // cx = 160 + x*4 in renderer portava l'auto fuori dallo schermo (spariva).
-    // Con X_LIMIT=900 e fattore 0.15f in drawPlayerCar, cx resta in [25, 295] su 320 px:
-    // l'auto e' sempre interamente visibile e i numeri restano limitati (determinismo).
-    if (x > X_LIMIT)  x = X_LIMIT;
-    if (x < -X_LIMIT) x = -X_LIMIT;
+    vincolaAllaCorsia();
     // Accelerazione / freno.
     if (accel_ > 0.0f) {
         // La spinta extra e' piu' forte a bassa velocita' e cala gradualmente;
@@ -47,6 +38,16 @@ void Player::update(f32 dt) {
     z += speed * dt;
     // Marcia: semplice per HUD.
     gear = (speed > 110.0f) ? 2 : 1;
+}
+
+void Player::vincolaAllaCorsia() {
+    // Offroad: troppo lontano dal centro della corsia. Calcolato PRIMA del clamp a
+    // X_LIMIT: OFFROAD_LIMIT=700 < X_LIMIT=900, quindi il clamp non nasconde mai
+    // l'offroad. Il clamp tiene l'auto sullo schermo (cx resta in [25, 295] su 320 px).
+    const f32 rel = x - centroCorsia;
+    offroad = (rel < -OFFROAD_LIMIT * larghezzaCorsia) || (rel > OFFROAD_LIMIT * larghezzaCorsia);
+    if (rel > X_LIMIT)  x = centroCorsia + X_LIMIT;
+    if (rel < -X_LIMIT) x = centroCorsia - X_LIMIT;
 }
 
 } // namespace sgl

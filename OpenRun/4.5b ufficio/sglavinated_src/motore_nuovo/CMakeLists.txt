@@ -144,7 +144,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/prova_gate.cpp")
             )
         endforeach()
 
-        foreach(mode accelerazione crash sterzo curve)
+        foreach(mode accelerazione crash sterzo curve gara)
             add_test(
                 NAME gate_${mode}
                 COMMAND prova_gate "${GATE_TEST_OUTPUT}/${mode}" lv_01_neon ${mode}

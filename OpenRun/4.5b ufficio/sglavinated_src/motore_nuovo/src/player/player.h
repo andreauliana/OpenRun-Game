@@ -23,6 +23,15 @@ public:
 
     f32 maxSpeed() const { return MAX_SPEED; }
 
+    // Carreggiata su cui sta l'auto (al bivio: il ramo piu' vicino). x resta
+    // assoluto; fuoristrada e limite laterale si misurano da centroCorsia.
+    f32 centroCorsia = 0.0f;
+    f32 larghezzaCorsia = 1.0f; // 1 = strada intera, meno sui rami del bivio
+    // Calcola offroad e applica il limite laterale rispetto alla corsia.
+    void vincolaAllaCorsia();
+    static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
+    static constexpr f32 X_LIMIT = 900.0f; // clamp laterale: |x| oltre questo valore l'auto esce dallo schermo
+
 private:
     f32 steer_ = 0.0f;
     f32 accel_ = 0.0f;
@@ -38,8 +47,6 @@ private:
     // (prima 0.98 = ~63% al secondo: l'auto si fermava appena si mollava il gas).
     static constexpr f32 COAST = 0.995f;
     static constexpr f32 STEER_INC = 280.0f; // sterzo arcade diretto e reattivo
-    static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
-    static constexpr f32 X_LIMIT = 900.0f; // clamp laterale: |x| oltre questo valore l'auto esce dallo schermo
     // Rallentamento fuori strada: moltiplicatore per frame quando offroad.
     // 0.99 = perde ~1% della velocita' per frame a 50 Hz: rallentamento percepibile
     // ma non brusco (prima 0.85 crollava da ~160 a ~6 in pochi frame).

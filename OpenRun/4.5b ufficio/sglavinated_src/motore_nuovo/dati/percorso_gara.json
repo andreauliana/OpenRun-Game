@@ -1,0 +1,14 @@
+{
+  "versione": 1,
+  "licenza": "CC-BY-4.0",
+  "descrizione": "Albero delle tappe (piramide come in OutRun, percorsi nostri): ogni tappa finisce con un bivio; sinistra e destra portano alla tappa seguente. Le tappe senza rami sono arrivi.",
+  "partenza": "lv_01_neon",
+  "tappe": [
+    {"id": "lv_01_neon", "sinistra": "lv_02_atomico", "destra": "lv_03_foglie"},
+    {"id": "lv_02_atomico", "sinistra": "lv_04_cromo", "destra": "lv_05_spray"},
+    {"id": "lv_03_foglie", "sinistra": "lv_05_spray", "destra": "lv_06_desktop"},
+    {"id": "lv_04_cromo"},
+    {"id": "lv_05_spray"},
+    {"id": "lv_06_desktop"}
+  ]
+}

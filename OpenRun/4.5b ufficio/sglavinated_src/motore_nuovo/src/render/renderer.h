@@ -17,6 +17,15 @@ struct SpriteInstance {
     i32 paletteBase = 0; // offset di palette (per variazioni colore auto)
 };
 
+// Colori di ambiente della tappa (da livello.json "colori"); i default sono
+// quelli storici della palette del motore.
+struct TemaColori {
+    u32 cielo = 0xFF202040;
+    u32 erba = 0xFF00AA00;
+    u32 erbaAlt = 0xFF008C00;
+    u32 rumbleAlt = 0xFFFF00FF;
+};
+
 class Renderer {
 public:
     // Unita' mondo coperte da un pixel sprite: un cartellone da 128 px e' largo
@@ -25,7 +34,10 @@ public:
     Renderer(Framebuffer& fb, const Palette& pal);
 
     // Disegna la strada (segmenti proiettati) con rumble laterali e fondo cielo.
-    void drawRoad(const Road& road, f32 playerX, f32 playerZ);
+    // latoBivio: ramo scelto al bivio di fine tappa (0 = ancora da scegliere).
+    void drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio = 0);
+    void impostaTema(const TemaColori& t) { tema_ = t; }
+    const TemaColori& tema() const { return tema_; }
 
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
@@ -38,6 +50,10 @@ public:
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
     void drawHud(f32 speedPct, i32 gear, bool offroad);
+
+    // Gara: posizione (un quadratino per concorrente, il giocatore evidenziato),
+    // tappa raggiunta e, all'arrivo, bandiera a scacchi lampeggiante.
+    void drawGara(i32 posizione, i32 concorrenti, i32 tappa, bool arrivo, u64 frame);
 
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
@@ -57,7 +73,6 @@ private:
     // Bande alternate (asfalto, erba, rumble) ancorate al segmento del mondo.
     static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
-    static constexpr u32 GRASS_ALT = 0xFF008C00; // verde piu' scuro per la banda alternata
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band);
     void drawRoadsideMarkers(f32 playerZ);
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
@@ -65,6 +80,7 @@ private:
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
+    TemaColori tema_;                       // colori di ambiente della tappa
 };
 
 } // namespace sgl

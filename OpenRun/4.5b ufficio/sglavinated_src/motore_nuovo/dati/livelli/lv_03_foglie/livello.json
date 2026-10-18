@@ -125,6 +125,19 @@
     ],
     "note_per_scenografo": "max 16 colori per sprite; parodia ironica dentro il messaggio educativo di Gianni e Gesu' (sicurezza stradale), mai promozionale; nessun elemento Sega"
   },
+  "colori": {"cielo": "#2A0E3A", "erba": "#2E8B2E", "erba_alt": "#1F6F1F", "rumble": "#FFD100"},
+  "tema_grafico": {
+    "skyline": "scenario.lv_03_foglie.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_03_foglie.foglia_gigante",
+      "oggetto.lv_03_foglie.fungo_psico",
+      "oggetto.lv_03_foglie.insegna_fumosa",
+      "oggetto.lv_03_foglie.panchina_fumo",
+      "oggetto.lv_03_foglie.panchina_curva"
+    ],
+    "stile_cartellone": "foglie",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 6,

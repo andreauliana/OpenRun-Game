@@ -25,7 +25,7 @@ struct Opzioni {
     bool fullscreen = false;
     bool vsync = true;      // --no-vsync: per driver che bloccano la presentazione
     std::string radiceDati; // --data: cartella sglavinated_src (vuota = ricerca automatica)
-    std::string livello = "lv_01_neon"; // --livello: cartella in motore_nuovo/dati/livelli/
+    std::string livello;    // --livello: solo quella pista, in tondo (vuoto = gara a tappe)
 };
 
 Opzioni leggiOpzioni(int argc, char** argv) {
@@ -186,7 +186,7 @@ int main(int argc, char** argv) {
     {
         std::error_code ec;
         const std::string lv = "motore_nuovo/dati/livelli/" + opz.livello + "/livello.json";
-        if (!std::filesystem::exists(lv, ec)) {
+        if (!opz.livello.empty() && !std::filesystem::exists(lv, ec)) {
             std::fprintf(stderr, "--livello %s: file %s non trovato\n", opz.livello.c_str(), lv.c_str());
             return 2;
         }
@@ -251,7 +251,10 @@ int main(int argc, char** argv) {
     auto sponsorSprites = sgl::caricaSponsorSprite("assets_originali/sponsor"); // (sponsor_id, Sprite) per abbinamento a livello.json
     game.setSponsorSprites(std::move(sponsorSprites));
 
-    game.init(opz.livello);
+    // Default: gara a tappe con bivi (dati/percorso_gara.json). --livello <id>:
+    // una sola pista che gira in tondo, per provarla.
+    if (!opz.livello.empty()) game.init(opz.livello);
+    else if (!game.avviaGara()) game.init();
 
     Controller ctrl;
     ctrl.apri();

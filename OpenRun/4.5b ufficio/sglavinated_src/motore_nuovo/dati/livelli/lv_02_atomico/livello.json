@@ -124,6 +124,20 @@
     ],
     "note_per_scenografo": "max 16 colori per sprite; atmosfera atomic age, mai inquietante; nessun elemento Sega"
   },
+  "colori": {"cielo": "#F2B8C6", "erba": "#D9C38A", "erba_alt": "#C9B074", "rumble": "#8FE3C8"},
+  "tema_grafico": {
+    "skyline": "scenario.lv_02_atomico.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_02_atomico.torre_razzo",
+      "oggetto.lv_02_atomico.cupola",
+      "oggetto.lv_02_atomico.segnale_atomico",
+      "oggetto.lv_02_atomico.bancone_drive_in",
+      "oggetto.lv_02_atomico.panchina_cromata",
+      "oggetto.lv_02_atomico.freccia"
+    ],
+    "stile_cartellone": "atomico",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 8,

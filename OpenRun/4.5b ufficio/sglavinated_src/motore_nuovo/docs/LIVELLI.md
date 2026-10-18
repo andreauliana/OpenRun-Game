@@ -47,6 +47,13 @@ fra 25% e 75% del giro, almeno un rettilineo di 300 segmenti, curve forti (>= 0.
 destra e a sinistra, e un giro intero guidato in automatico senza uscire di strada.
 Per provarla a mano: `sglavinated_runner --livello <id>`.
 
+**Gara a tappe.** Il runner senza opzioni avvia la gara: lv_01 in partenza, poi un bivio
+(sinistra lv_02, destra lv_03), poi un secondo bivio verso l'arrivo (lv_04, lv_05 o lv_06).
+L'albero e' in `dati/percorso_gara.json`; il bivio occupa gli ultimi 800 segmenti di ogni
+tappa con rami, quindi quelle tappe devono finire con un rettilineo. Il gate
+`prova_gate <out> lv_01_neon gara` percorre le 4 combinazioni di scelte. Il flusso completo
+(intro, menu, finali, risultati) e' proposto in `FLUSSO_GIOCO.md`.
+
 ## Note di conformita
 
 - Regola 16: i 3 livelli usano 3 stili diversi (synthwave/C-wave, sci-fi anni '50, psichedelico/cannabinoidi); tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso (l'albero completo, default 5 tappe/bivi, e' definito nel blocco FED/D3; questi 3 sono i livelli di prova).

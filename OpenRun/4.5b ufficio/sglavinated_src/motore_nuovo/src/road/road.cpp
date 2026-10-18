@@ -104,7 +104,29 @@ f32 Road::curvaAt(f32 z) const {
     return 0.0f; // non trovato (non dovrebbe accadere dopo il wrap)
 }
 
-void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out) const {
+Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
+    Carreggiate c;
+    if (!bivio_ || totalLen_ <= 0) return c;
+    const f32 inizio = bivioInizioZ(), blocco = bivioBloccoZ();
+    if (zAbs <= inizio) return c;
+    const f32 apertura = zAbs >= blocco ? 1.0f : raccordo((zAbs - inizio) / (blocco - inizio));
+    const f32 d = apertura * BIVIO_DIST;
+    c.fattore = 1.0f - 0.4f * apertura; // ogni ramo e' piu' stretto della strada intera
+    c.doppia = true;
+    if (lato == 0) {
+        c.centro[0] = -d;
+        c.centro[1] = d;
+    } else {
+        // Il giocatore e' stato ricentrato sul ramo scelto al blocco della scelta.
+        const f32 oltre = zAbs > blocco ? zAbs - blocco : 0.0f;
+        const f32 l = (f32)lato;
+        c.centro[0] = l * (d - BIVIO_DIST);
+        c.centro[1] = -l * (d + BIVIO_DIST) - l * BIVIO_SVOLTA * oltre * oltre;
+    }
+    return c;
+}
+
+void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio) const {
     out.clear();
     out.reserve(DRAW_DIST);
     if (segs_.empty() || totalLen_ <= 0) return; // strada vuota: niente da proiettare
@@ -172,6 +194,7 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out) con
             ps.scale = s;
             ps.screenX = 160.0f + s * (x - playerX) * 160.0f;
             ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
+            ps.carr = carreggiate(z0 + z, latoBivio);
             out.push_back(ps);
         }
     }

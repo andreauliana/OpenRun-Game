@@ -121,6 +121,17 @@
     ],
     "note_per_scenografo": "DA FARE: scenario non ancora disegnato; max 16 colori per sprite; nessun elemento Sega"
   },
+  "colori": {"cielo": "#3A8EE6", "erba": "#34A834", "erba_alt": "#2C922C", "rumble": "#C0C0C0"},
+  "tema_grafico": {
+    "skyline": "scenario.lv_06_desktop.skyline",
+    "oggetti_bordo_strada": [
+      "oggetto.lv_01_neon.palina",
+      "oggetto.lv_02_atomico.panchina_cromata",
+      "oggetto.lv_03_foglie.panchina_curva"
+    ],
+    "stile_cartellone": "foglie",
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,
