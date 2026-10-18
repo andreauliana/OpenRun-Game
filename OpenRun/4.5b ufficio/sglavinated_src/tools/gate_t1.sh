@@ -33,9 +33,15 @@ cmake --build "$BUILD_DIR" --target prova_gate >> "$LOG" 2>&1 || {
   echo "BUILD FALLITO (exit 11). Errori:"; grep -n "error" "$LOG" | head -n 20; exit 11; }
 
 RC=0
-for LV in lv_01_neon lv_02_atomico lv_03_foglie; do
+LIVELLI="lv_01_neon lv_02_atomico lv_03_foglie lv_04_cromo lv_05_spray lv_06_desktop"
+for LV in $LIVELLI; do
   echo "== prova_gate $LV"
   ./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/$LV" "$LV" >> "$LOG" 2>&1
+  R=$?
+  echo "   exit $R"
+  [ "$R" -ne 0 ] && RC=$R
+  echo "== percorso $LV (profilo + giro guidato)"
+  ./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/percorso_$LV" "$LV" percorso >> "$LOG" 2>&1
   R=$?
   echo "   exit $R"
   [ "$R" -ne 0 ] && RC=$R
@@ -75,6 +81,6 @@ echo "   exit $R  (immagini in UFFICIO/Officina/Test area/screenshot_p1/)"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== riepilogo (da $LOG)"
-grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|screenshot P1|GATE .* OK|GATE OK|FALLITO)" "$LOG"
+grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|screenshot P1|percorso |giro guidato|GATE .* OK|GATE OK|FALLITO)" "$LOG"
 [ "$RC" -eq 0 ] && echo "GATE T1: TUTTO OK" || echo "GATE T1: FALLITO (exit $RC)"
 exit "$RC"

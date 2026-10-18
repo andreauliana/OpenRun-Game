@@ -1,0 +1,394 @@
+{
+  "id": "lv_04_cromo",
+  "versione": 1,
+  "licenza": "CC-BY-4.0",
+  "autore": "Claude (solo percorso; scenario da fare a cura del designer)",
+  "tema": "tangenziale sopraelevata tra megastrutture cromate: curvoni lunghi e veloci, una grande discesa",
+  "stile": "futurista",
+  "parte_di_albero": true,
+  "variante_albero": "prova_D",
+  "lunghezza": {
+    "segmenti": 7500,
+    "durata_stimata_s": 54
+  },
+  "segmenti": [
+    {"curva": 0.0, "collina": 0.1, "lunghezza": 700},
+    {"curva": 0.3, "collina": 0.2, "lunghezza": 1000},
+    {"curva": 0.0, "collina": 0.25, "lunghezza": 600},
+    {"curva": -0.35, "collina": 0.2, "lunghezza": 1100},
+    {"curva": 0.0, "collina": -0.2, "lunghezza": 900},
+    {"curva": 0.2, "collina": -0.25, "lunghezza": 700},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 500},
+    {"curva": 0.0, "collina": 0.1, "lunghezza": 800},
+    {"curva": 0.4, "collina": 0.0, "lunghezza": 700}
+  ],
+  "seme": 5309,
+  "tempo_limite_s": 130,
+  "checkpoint_ogni_segmenti": 300,
+  "difficolta": "facile",
+  "note_difficolta": "curve ampie e dolci, colline rare, rettilinei lunghi per respirare, traffico leggero; intensita' solo nelle curve",
+  "traffico": {
+    "densita": "media",
+    "veicoli_per_km": 7,
+    "tipi": [
+      {
+        "id": "berlina",
+        "percentuale": 50,
+        "descrizione": "auto civile compatta"
+      },
+      {
+        "id": "furgoncino",
+        "percentuale": 35,
+        "descrizione": "furgone consegne"
+      },
+      {
+        "id": "sportiva",
+        "percentuale": 15,
+        "descrizione": "coupe veloce che sorpassa"
+      }
+    ]
+  },
+  "show": {
+    "durata_frame": 260,
+    "cooldown_frame": 24,
+    "guardia_avvio_frame": 250,
+    "intervallo_periodico_frame_stage0": 480,
+    "soglia_inattivita_frame": 500,
+    "ufo": {
+      "attivo": true,
+      "passaggio_ogni_frame": 800,
+      "frase": false,
+      "esclude_show_in_corso": true
+    },
+    "trigger_map": {
+      "crash": {
+        "personaggio": "Gesu'",
+        "tabella": "xtab",
+        "priorita": true,
+        "interrompe_gianni": true
+      },
+      "uscita_di_strada": {
+        "personaggio": "Gianni",
+        "tabella": "otab",
+        "cooldown_frame": 24,
+        "conta_errore": false
+      },
+      "periodico": {
+        "tabelle": [
+          "ph_tab",
+          "jtab"
+        ],
+        "intervallo_frame": 480,
+        "parlante_per_escalation": {
+          "0": "Gianni",
+          "1": "Gesu' 1 volta su 2",
+          "2": "Gesu' 3 volte su 4",
+          "3": "Gesu'"
+        }
+      },
+      "inattivita": {
+        "personaggio": "Gianni",
+        "tabella": "itab",
+        "soglia_frame": 500
+      }
+    }
+  },
+  "moduli_fx": {
+    "razzo_B": true,
+    "sollevamento_auto_alta_velocita": true
+  },
+  "scenario_richiesto": {
+    "nome": "scenario_cromo_04",
+    "elementi": [
+      "megastrutture cromate",
+      "palazzi a gradoni",
+      "luna e pianeti",
+      "stelle"
+    ],
+    "oggetti_bordo_strada": [
+      "guard-rail cromati",
+      "lampioni a lama",
+      "robot di servizio"
+    ],
+    "palette_richiesta": [
+      "grigi",
+      "cromo",
+      "blu elettrico",
+      "bianco"
+    ],
+    "note_per_scenografo": "DA FARE: scenario non ancora disegnato; max 16 colori per sprite; nessun elemento Sega"
+  },
+  "cartelloni_sponsor": [
+    {
+      "segmento": 0,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 140,
+      "lato": "destro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 280,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 420,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 560,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 700,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 840,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 980,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1120,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1260,
+      "lato": "sinistro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 1400,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 1540,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1680,
+      "lato": "sinistro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 1820,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1960,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2100,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2240,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2380,
+      "lato": "destro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 2520,
+      "lato": "sinistro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 2660,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 2800,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 2940,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3080,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3220,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3360,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3500,
+      "lato": "destro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 3640,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 3780,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 3920,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 4060,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4200,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4340,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4480,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 4620,
+      "lato": "sinistro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 4760,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 4900,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5040,
+      "lato": "sinistro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 5180,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5320,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5460,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5600,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 5740,
+      "lato": "destro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 5880,
+      "lato": "sinistro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 6020,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 6160,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 6300,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 6440,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 6580,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 6720,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 6860,
+      "lato": "destro",
+      "sponsor_id": "slow_down"
+    },
+    {
+      "segmento": 7000,
+      "lato": "destro",
+      "sponsor_id": "piston_high"
+    },
+    {
+      "segmento": 7140,
+      "lato": "sinistro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 7280,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 7420,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    }
+  ]
+}

@@ -30,13 +30,22 @@ blocco (regola 7: ogni livello ha il suo scenario e il suo livello.json).
 
 Trigger show (da dati/show_logica.md): crash -> Gesu' (priorita'), uscita di strada -> Gianni (cooldown 24 frame, non conta errore), periodico -> Gianni/Gesu' in base all'escalation, inattivita 10 s -> Gianni, UFO -> passaggio senza frase.
 
-## Tabella riassuntiva (3 livelli di prova)
+## Tabella riassuntiva (6 piste di prova)
 
-| id | tema | stile | lunghezza | seme | traffico | difficolta | scenario |
+| id | tema | stile | carattere del percorso | segmenti (giro a gas pieno) | seme | traffico | scenario |
 |---|---|---|---|---|---|---|---|
-| lv_01_neon | autostrada di neon di notte | synthwave / C-wave | 1200 segm (~150 s) | 4211 | bassa, 5/km | facile | scenario_neon_01 |
-| lv_02_atomico | strada atomica anni '50 | sci-fi anni '50 | 1100 segm (~140 s) | 7731 | bassa, 6/km | facile | scenario_atomico_02 |
-| lv_03_foglie | viale delle foglie, parodia | psichedelico / cannabinoidi | 1300 segm (~160 s) | 2098 | media, 7/km | facile | scenario_foglie_03 |
+| lv_01_neon | autostrada di neon di notte | synthwave / C-wave | rettilinei lunghi, curvoni larghi, colline dolci | 7650 (~53 s) | 4211 | bassa, 5/km | scenario_neon_01 |
+| lv_02_atomico | strada atomica anni '50 | sci-fi anni '50 | dossi forti, chicane sinistra-destra-sinistra, un tornante | 7250 (~51 s) | 7731 | bassa, 6/km | scenario_atomico_02 |
+| lv_03_foglie | viale delle foglie, parodia | psichedelico / cannabinoidi | tortuoso: esse continue, tornanti, rettilinei corti | 5900 (~42 s) | 2098 | media, 7/km | scenario_foglie_03 |
+| lv_04_cromo | tangenziale sopraelevata tra megastrutture | futurista | veloce: curvoni lunghi in salita, grande discesa | 7500 (~52 s) | 5309 | media, 7/km | scenario_cromo_04 (da fare) |
+| lv_05_spray | periferia industriale con muri a spray | punk | cittadino: curve secche quasi a 90 gradi, rettilinei corti | 4950 (~35 s) | 8812 | alta, 9/km | scenario_spray_05 (da fare) |
+| lv_06_desktop | prato e nuvole da sfondo del desktop | Windows 95 vibe | saliscendi continui con curve medie | 5450 (~39 s) | 9595 | bassa, 5/km | scenario_desktop_06 (da fare) |
+
+Il formato di `segmenti` (curva, collina, lunghezza in segmenti da 200 unita') e' in
+`FORMATI_DATI.md`. Ogni pista passa il gate `prova_gate <out> <id> percorso`: rettilinei
+fra 25% e 75% del giro, almeno un rettilineo di 300 segmenti, curve forti (>= 0.3) a
+destra e a sinistra, e un giro intero guidato in automatico senza uscire di strada.
+Per provarla a mano: `sglavinated_runner --livello <id>`.
 
 ## Note di conformita
 

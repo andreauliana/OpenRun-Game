@@ -3,7 +3,8 @@
 // Build : cmake --build build --target prova_gate
 // Uso   : ./build/prova_gate [cartella_output=out/debugger] [livello=lv_01_neon] [modo]
 //         modo = smoke (500 frame, default) | soak (30000 frame) |
-//                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti)
+//                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti) |
+//                percorso (profilo del tracciato + un giro intero con guida automatica)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
 //   2. determinismo: frameHash identico ogni 60 frame fra run A e run B
@@ -13,7 +14,7 @@
 // Scrive: <out>/prova_gate*.log, screenshot PPM.
 // Esegui dalla radice progetto (sglavinated_src): i dati sono letti con percorsi relativi.
 // Exit code: 0 OK | 1 niente partenza | 2 replay non deterministico | 3 troppo lento |
-//            4 cwd errata | 5 caso di prova non superato
+//            4 cwd errata | 5 caso di prova non superato | 13 percorso poco vario o non guidabile
 #include "game/game.h"
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
@@ -483,6 +484,56 @@ bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
     return frameCurva > 0 && frameSponsor > 0 && framePers > 0;
 }
 
+// --- Percorso: il tracciato del livello e' vario e si guida da capo a fondo ---
+// Profilo: rettilinei fra 25% e 75% del giro, curve forti (|curva| >= 0.3) a destra
+// e a sinistra, almeno un rettilineo lungo 300 segmenti. Guida: gas pieno e uno
+// sterzo semplice che riporta l'auto verso il centro; il giro deve finire senza
+// uscire di strada per piu' dell'1% dei frame.
+bool verificaPercorso(const std::string& livello) {
+    Game game(12345u);
+    game.init(livello);
+    const auto& segs = game.road().segments();
+    const i32 n = (i32)segs.size();
+    i32 dritti = 0, rettilineoMax = 0, corsa = 0;
+    f32 destraMax = 0.0f, sinistraMax = 0.0f;
+    for (const RoadSegment& seg : segs) {
+        if (std::abs(seg.curve) < 0.05f) { ++dritti; rettilineoMax = std::max(rettilineoMax, ++corsa); }
+        else corsa = 0;
+        destraMax = std::max(destraMax, seg.curve);
+        sinistraMax = std::max(sinistraMax, -seg.curve);
+    }
+    const f32 quotaDritti = n > 0 ? (f32)dritti / (f32)n : 0.0f;
+
+    const f32 giro = (f32)game.road().totalLength();
+    f32 percorso = 0.0f, zPrima = 0.0f;
+    i32 frame = 0, fuori = 0;
+    const i32 FRAME_MAX = 20000; // 400 s: un giro normale ne richiede meno di 60
+    while (percorso < giro && frame < FRAME_MAX) {
+        Pad pad;
+        pad.held = (u64)Pad::A;
+        const f32 x = game.state().playerX;
+        if (x > 120.0f) pad.held |= (u64)Pad::Left;
+        else if (x < -120.0f) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        game.update();
+        const f32 z = game.state().playerZ;
+        f32 dz = z - zPrima;
+        if (dz < 0.0f) dz += giro; // avvolgimento a fine giro
+        percorso += dz;
+        zPrima = z;
+        if (game.state().playerOffroad) ++fuori;
+        ++frame;
+    }
+    const bool giroFinito = percorso >= giro;
+    const f32 quotaFuori = frame > 0 ? (f32)fuori / (f32)frame : 1.0f;
+    std::printf("percorso %s: segmenti=%d rettilineo=%.0f%% (piu' lungo %d) curva max destra=%.2f sinistra=%.2f\n",
+                livello.c_str(), n, quotaDritti * 100.0f, rettilineoMax, destraMax, sinistraMax);
+    std::printf("giro guidato: %s in %d frame (%.1f s), fuori strada %d frame (%.1f%%)\n",
+                giroFinito ? "finito" : "NON finito", frame, frame / 50.0f, fuori, quotaFuori * 100.0f);
+    return quotaDritti >= 0.25f && quotaDritti <= 0.75f && rettilineoMax >= 300 &&
+           destraMax >= 0.3f && sinistraMax >= 0.3f && giroFinito && quotaFuori <= 0.01f;
+}
+
 int main(int argc, char** argv) {
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
@@ -495,6 +546,12 @@ int main(int argc, char** argv) {
         return 4;
     }
     std::filesystem::create_directories(outDir);
+
+    if (modo == "percorso") {
+        const bool ok = verificaPercorso(livello);
+        std::printf("%s\n", ok ? "GATE PERCORSO OK" : "FALLITO: percorso poco vario o non guidabile");
+        return ok ? 0 : 13;
+    }
 
     if (modo == "screenshot") {
         const bool ok = salvaScreenshotP1(outDir, livello);

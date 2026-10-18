@@ -70,6 +70,7 @@ public:
 
     // Esporta lo stato (per HUD, moduli fx, replay, test).
     const GameState& state() const { return state_; }
+    const Road& road() const { return road_; } // tracciato (per i test di percorso)
     const Pad& input() const { return input_; }
     Framebuffer& fb() { return fb_; }
     const std::vector<i16>& audio() const { return audioBuf_; } // stereo interleaved

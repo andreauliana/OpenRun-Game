@@ -8,29 +8,24 @@
   "parte_di_albero": true,
   "variante_albero": "prova_B",
   "lunghezza": {
-    "durata_stimata_s": 140
+    "segmenti": 7250,
+    "durata_stimata_s": 52
   },
   "segmenti": [
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 180},
-    {"curva": 0.5, "collina": 0.15, "lunghezza": 70},
-    {"curva": -0.6, "collina": 0.0, "lunghezza": 90},
-    {"curva": 0.0, "collina": -0.1, "lunghezza": 120},
-    {"curva": 0.7, "collina": 0.1, "lunghezza": 60},
-    {"curva": -0.4, "collina": -0.15, "lunghezza": 100},
-    {"curva": 0.3, "collina": 0.0, "lunghezza": 110},
-    {"curva": 0.0, "collina": 0.2, "lunghezza": 80},
-    {"curva": -0.8, "collina": 0.0, "lunghezza": 70},
-    {"curva": 0.5, "collina": -0.1, "lunghezza": 90},
-    {"curva": 0.0, "collina": 0.1, "lunghezza": 130},
-    {"curva": -0.5, "collina": 0.0, "lunghezza": 100},
-    {"curva": 0.6, "collina": -0.2, "lunghezza": 60},
-    {"curva": 0.0, "collina": 0.15, "lunghezza": 90},
-    {"curva": -0.3, "collina": -0.1, "lunghezza": 120},
-    {"curva": 0.4, "collina": 0.0, "lunghezza": 80},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 100},
-    {"curva": -0.7, "collina": 0.1, "lunghezza": 70},
-    {"curva": 0.5, "collina": -0.15, "lunghezza": 90},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 110}
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 600},
+    {"curva": 0.0, "collina": 0.3, "lunghezza": 500},
+    {"curva": 0.0, "collina": -0.1, "lunghezza": 500},
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.0, "collina": 0.1, "lunghezza": 700},
+    {"curva": -0.5, "collina": 0.2, "lunghezza": 800},
+    {"curva": 0.0, "collina": -0.05, "lunghezza": 400},
+    {"curva": 0.9, "collina": 0.0, "lunghezza": 400},
+    {"curva": 0.0, "collina": 0.25, "lunghezza": 900},
+    {"curva": 0.0, "collina": -0.15, "lunghezza": 400},
+    {"curva": 0.4, "collina": 0.0, "lunghezza": 600},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 700}
   ],
   "seme": 7731,
   "tempo_limite_s": 125,
@@ -131,267 +126,267 @@
   },
   "cartelloni_sponsor": [
     {
-      "segmento": 2,
+      "segmento": 8,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 32,
+      "segmento": 121,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 57,
+      "segmento": 215,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 87,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 119,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 143,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 171,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 199,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 207,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 226,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 239,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 251,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 274,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 297,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 323,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 344,
-      "lato": "destro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 369,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 397,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 421,
+      "segmento": 329,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
       "segmento": 449,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 465,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 478,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 495,
+      "segmento": 540,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 646,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 751,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 782,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 853,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 902,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 948,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1035,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1121,
+      "lato": "destro",
+      "sponsor_id": "erba_medica"
+    },
+    {
+      "segmento": 1220,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1299,
+      "lato": "destro",
+      "sponsor_id": "green_box"
+    },
+    {
+      "segmento": 1393,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 1499,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 1590,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1695,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1756,
+      "lato": "destro",
+      "sponsor_id": "curve_pericolose"
+    },
+    {
+      "segmento": 1805,
+      "lato": "sinistro",
+      "sponsor_id": "brinis_udine"
+    },
+    {
+      "segmento": 1869,
       "lato": "destro",
       "sponsor_id": "slow_down"
     },
     {
-      "segmento": 518,
+      "segmento": 1956,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 545,
+      "segmento": 2058,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 565,
+      "segmento": 2133,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 583,
+      "segmento": 2201,
       "lato": "sinistro",
       "sponsor_id": "piston_high"
     },
     {
-      "segmento": 596,
+      "segmento": 2251,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 608,
+      "segmento": 2296,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 640,
+      "segmento": 2417,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 655,
+      "segmento": 2473,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 673,
+      "segmento": 2541,
       "lato": "sinistro",
       "sponsor_id": "slow_down"
     },
     {
-      "segmento": 701,
+      "segmento": 2647,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 728,
+      "segmento": 2749,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 744,
+      "segmento": 2809,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 766,
+      "segmento": 2892,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 783,
+      "segmento": 2957,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 814,
+      "segmento": 3074,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 831,
+      "segmento": 3138,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 847,
+      "segmento": 3198,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 867,
+      "segmento": 3274,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 886,
+      "segmento": 3346,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 907,
+      "segmento": 3425,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 924,
+      "segmento": 3489,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 952,
+      "segmento": 3595,
       "lato": "sinistro",
       "sponsor_id": "erba_medica"
     },
     {
-      "segmento": 967,
+      "segmento": 3651,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 983,
+      "segmento": 3712,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 999,
+      "segmento": 3772,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 1021,
+      "segmento": 3855,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 1041,
+      "segmento": 3931,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 1059,
+      "segmento": 3999,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 1075,
+      "segmento": 4059,
       "lato": "destro",
       "sponsor_id": "slow_down"
     },
     {
-      "segmento": 1092,
+      "segmento": 4123,
       "lato": "sinistro",
       "sponsor_id": "green_box"
     }

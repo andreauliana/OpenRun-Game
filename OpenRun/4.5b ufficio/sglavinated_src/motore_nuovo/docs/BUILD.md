@@ -206,6 +206,7 @@ ASan+UBSan puliti. **Non misurato**: fps/temperatura su Pi 400 (tocca ad Andrea)
 | Opzione | Effetto |
 |---|---|
 | `--data <cartella>` | cartella `sglavinated_src` con i dati; senza, il runner la cerca da solo (cartella corrente, cartella dell'eseguibile) |
+| `--livello <id>` | pista da guidare, cartella in `motore_nuovo/dati/livelli/` (default `lv_01_neon`; 6 piste: lv_01_neon … lv_06_desktop) |
 | `--fullscreen` / `--window` | schermo intero (consigliato sul Pi) o finestra; F11 alterna durante il gioco |
 | `--no-vsync` | disattiva la sincronizzazione con lo schermo (solo per driver che si bloccano) |
 
