@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-17 18:02
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 07:56
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -50,9 +50,11 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 142:## BLOCCO P1b — @sviluppatore — TAPPA 1: niente collisioni fantasma
 145:| Stato | [x] | (codice SCAMBIO 86/87; gate headless 17 ott PASSATO: sterzo sx/dx, offroad f.476, 30000 frame senza crash)
 147:## BLOCCO T1-RUN — @sviluppatore + @collaudatore — prossimo run: implementazione e test (da Claude 17 ott 14:00)
-163:| Stato | [~] | (in esecuzione: @sviluppatore punti 1-4, @collaudatore punti 5-6; build e gate OK 17 ott 14:51, quota open 99,8%; v91 di Andrea pendente. Dettaglio: SCAMBIO 1144)
-165:## BLOCCO T5 — @sviluppatore — TAPPA 5: altri veicoli, collisioni, razzo
-170:| Stato | [-] (tappa 5) |
+164:| Stato | [~] | (in esecuzione: @sviluppatore punti 1-4, @collaudatore punti 5-6; build e gate OK 17 ott 14:51, quota open 99,8%; v91 di Andrea pendente. Dettaglio: SCAMBIO 1144)
+166:## BLOCCO G1 — @grafico — catalogo unico delle risorse grafiche (da Andrea e Claude 17 ott)
+171:| Stato | [ ] |
+173:## BLOCCO T5 — @sviluppatore — TAPPA 5: altri veicoli, collisioni, razzo
+178:| Stato | [-] (tappa 5) |
 
 ## Decisioni aperte
 13:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
@@ -69,29 +71,6 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 85:## D11 | T1-RUN | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-[0m→ [0mRead motore_nuovo/src/game/game.cpp 
-[0m→ [0mRead motore_nuovo/test/prova_gate.cpp 
-[0m→ [0mRead motore_nuovo/test/VOCE_SCAMBIO_1146.md 
-[0m→ [0mRead motore_nuovo/src/player/player.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.cpp 
-[0m→ [0mRead motore_nuovo/src/road/road.cpp 
-> reviewer · nemotron-3.5-super-vl-free
-Let me verify the credits file (required by rule 2) and confirm license completeness.
-[0m→ [0mRead assets_originali/CREDITI.md 
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead assets_originali/font/antonio/manifest.json 
-> reviewer · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
-Ho letto solo i 9 file indicati più CREDITI.md e il manifest del font (contesto stretto per la regola 2). Controlli eseguiti: intestazioni SPDX/MIT su tutto il codice; licenze in INDICE_ASSET.json (CC0-1.0 per asset interni, OFL-1.1 per il font, tutte compatibili); nessun materiale Sega (commenti citano OutRun/Jake Gordon/Lou's solo come riferimenti di progettazione, non codice/asset); determinismo regola 5b (`dt = 1/50` fisso, RNG con seed, nessun orologio di sistema nella logica di gioco, `std::chrono` solo nel test harness); prestazioni (gate: ms/frame medio 0,071 max 0,157, limite 20; replay 2x identico; offroad raggiunto) ben dentro il budget Pi 400/50 fps; INDICE_ASSET.json e .md coerenti (293 file, stesse lacune già note e dichiarate come non difetti: traffico, Gianni, Gesù, UFO); prova_gate.cpp:96-97 è un commento giustificato (falso positivo del reviewer già risolto, non un bug).
-
-Problema azionabile (1/3):
-
-1. `assets_originali/CREDITI.md` — manca la risorsa esterna scelta con decisione D4 (regola 2: ogni risorsa esterna va in CREDITI con autore, licenza, URL). Il font `assets_originali/font/antonio/Antonio-Bold.ttf` è segnato `originale: false` in INDICE_ASSET.json e usato per titoli/fumetti, ma non è in CREDITI.md.
-   Correzione: aggiungi in fondo alla tabella (dopo riga 19) i dati già verificati in `assets_originali/font/antonio/manifest.json`:
-   `| assets_originali/font/antonio/Antonio-Bold.ttf | Impallari Type (Pablo Impallari) | OFL-1.1 | https://fonts.google.com/specimen/Antonio |`
-
 Nessun altro problema nei file revisionati. Una volta corretto CREDITI.md, il blocco è pulito per il checkpoint.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 18:00 | [APERTA]
@@ -129,3 +108,26 @@ VERDETTO: CORREGGI
 2) `motore_nuovo/src/render/sprite_raw.cpp:60` in contrasto con `assets_originali/DIREZIONE_ARTISTICA.md:12` — la direzione artistica fissa max 16 colori per sprite, ma il codice consente alla palette di crescere fino a 256 (`< 256`). Correzione: allineare il codice alla regola di direzione, portando il limite a 16 (`< 16`) in `sprite_raw.cpp:60` e coerente il commento di `sprite_raw.h:13-14` ("max 256 colori" → "max 16 colori"); in alternativa aggiornare la DA a 256.
 
 Resto coerente: intestazioni SPDX MIT presenti, CMake target condizionati e indipendenti da SDL nel core, lettura raw deterministica (stesso input → stessa palette/quantizzazione). Nessun blocco.
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 07:55 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13835321 di 13835321 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK

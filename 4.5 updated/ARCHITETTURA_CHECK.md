@@ -9,15 +9,16 @@ Pi 400: 4 core Cortex-A72 a 1,8 GHz, 4 GB RAM, uscita 1080p. Target: 50 Hz (PAL)
 | A: motore nativo + asset nuovi | app nativa (SDL) o core libretro | no |
 | B: ROM Mega Drive riscritta | core Mega Drive | si: provarla su piu' core |
 
-Se la Pista A: il problema non e' l'emulatore ma il motore. Se la Pista B: confronta i core, ma resta la v87 come riferimento.
+Se la Pista A: il problema non e' l'emulatore ma il motore. 
+Se la Pista B: confronta i core, ma resta la v87 come riferimento.
 
 ## Criteri per scegliere il motore (compila con @architetto (licenze, motori) e @cercaasset (risorse))
 | Criterio | Soglia |
 |---|---|
 | Licenza | libera (MIT/BSD/GPL), nessun asset originale richiesto |
 | Gira su Pi 4/400 | 50 fps stabili a 1080p o 720p |
-| Dipendenze | disponibili su RetroPie/Raspberry Pi OS (apt) |
-| Asset | formato semplice (PNG/WAV/tracker), sostituibile da file |
+| Dipendenze | disponibili su RetroPie/Linux |
+| Asset | formato semplice (PNG/.mx/tracker), sostituibile da Andrea |
 | Codice | piccolo e leggibile, build con `make`/`cmake` senza fatica |
 | Manutenzione | commit recenti, issue aperte gestibili |
 

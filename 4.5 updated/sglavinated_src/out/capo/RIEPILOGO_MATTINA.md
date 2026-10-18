@@ -1,41 +1,20 @@
-# Riepilogo mattina — Turno 1 (ora 0 di 12), 18 ott 2026
-Tappa attiva: 1 (Gate: strada che scorre, accelera A, frena B, sterza sx/dx, 5 min senza crash; `sh tools/gate_t1.sh soak` exit 0 + v91 Andrea).
+# Riepilogo mattina — 18 ott 2026
 
-## Stati blocchi T1
-| Blocco | Stato | Nota |
-|---|---|---|
-| T1-RUN | [~] | punti 1-4 codice su disco; manca gate soak exit 0 + v91 Andrea |
-| P1 | [~] | sprite veri (.sglraw + prova_gate) su disco; manca gate exit 0 |
-| H | [~] | attende Andrea v91 (runner Mac, fps/temp Pi 400) |
-| P1b | [~] | codice su disco, gate da eseguire |
-| P2 | [x] | segmenti nei 3 livello.json fatti |
-| P3 | [~] | interfaccia show pronta, collegamento renderer non indispensabile al Gate |
-| M | [~] | bloccato fino a screenshot out/coder/ |
-| J | [ ] | non ancora |
-| N | [ ] | attende C su Pi 400 (regola 9) |
-| MD0 | [-] | sospeso (Andrea 17 ott) |
-| T5 | [-] | non iniziare (tappa 5) |
+## Per blocco / agente (letto, non dedotto)
+- @sviluppatore (T1-RUN/P1): punti 1-4 su disco: player.cpp dinamica OutRun (accel A/Up, freno B/Down, offroad OFFROAD_LIMIT=700<X_LIMIT=900, sterzo vs velocita'), road.cpp proiezione/curva/collina corretta, renderer.cpp sprite veri zRel modulo totalLen, 21 .sglraw sponsor in dati/sprite_raw/sponsor/, prova_gate.cpp casi smoke/soak/avvolgimento/inattivita/sterzo/curve/crash.
+- @collaudatore (T1-RUN 5-7): sh tools/gate_t1.sh e soak exit 0; 3 livelli speed@60=161.79>0, offroad f278, ms/frame medio ~0.38 (limite 20), replay 2x IDENTICO, avvolgimento+inattivita OK; indice_assets.py 293 file (4 lacune: traffico, Gianni, Gesu', UFO); quota_open 100%; check_catalogo OK; review p7 OK (game.cpp:363 %3000 fixato).
+- @grafico / @ricercatore: non attivati.
+- Andrea (H punto 8): runner Mac + fps/temperatura Pi 400 pendenti (v91 in FEEDBACK_ANDREA.md).
 
-## Cosa e' su disco (letto, non dedotto)
-- motore_nuovo/src/player/player.cpp: dinamica OutRun completa (ACC 110, BRAKE 120, COAST 0.995, OFFROAD_LIMIT=700 < X_LIMIT=900, sterzo vs velocita')
-- motore_nuovo/src/road/road.cpp: proiezione pseudo-3D depth/z corretta, camera segue auto, colline integrate una volta
-- motore_nuovo/src/render/renderer.cpp: sprite veri con zRel modulo totalLen, disegno lontano->vicino, strisce di corsia tratteggiate
-- motore_nuovo/dati/sprite_raw/sponsor/: 21 .sglraw (7 sponsor x 3 stili)
-- motore_nuovo/test/prova_gate.cpp: smoke/soak/avvolgimento/inattivita/sterzo/accelerazione/curve/crash, caricaSponsor prima di init
-- motore_nuovo/CMakeLists.txt: target prova_gate, SDL2_image CONFIG QUIET, json_mini.h, disegno_show/testi_frasi inclusi
+## Non funziona / ancora aperto
+- v91 Andrea pendente: chiude H e permette promozione T1-RUN/P1 a [x].
+- Lacune grafiche non catalogate: traffico, sprite personaggi (Gianni, Gesu', UFO).
+- Nessun bug noto in codice; game.cpp:363 gia' corretto.
 
-## Manca per chiudere il Gate T1
-1. `sh tools/gate_t1.sh soak` exit 0 (non eseguibile dal capo: shell negata) -> delegato a @collaudatore
-2. 3 screenshot out/collaudatore/<livello>/ (partenza, curva, fuori strada) + log velocita e posizione
-3. v91 di Andrea in FEEDBACK_ANDREA.md (runner Mac, guida OK) + fps/temperatura Pi 400
-4. check_catalogo.py + quota_open.py >= 50% (da @collaudatore)
+## Decisioni aperte (3 piu' importanti, DECISIONI_ANDREA.md)
+1. D10 T1-RUN (capo): sprite/cartelloni veri nel gate — PNG nel core vs conversione PNG->raw offline. RISPOSTA Andrea: B (zero dipendenze). DEFAULT B. Da chiudere formalmente.
+2. D11 T1-RUN (capo): fuoristrada troppo brusco (160->6). RISPOSTA Andrea: A (graduale ~0.85/frame). DEFAULT A. Da chiudere formalmente.
+3. Nessuna altra aperta: D1-D9 CHIUSE, nessun PER_CLAUDE.md.
 
-## Deleghe del turno
-- @sviluppatore: presidio codice su disco; se gate rosso torna qui con il log (regola 5)
-- @collaudatore: esegue `sh tools/gate_t1.sh soak`, report exit code + numeri da gate_t1.log, screenshot, indice_assets/quota_open, review 7 (max 3 rilievi)
-- Andrea (punto 8): provare runner su Mac, scrivere v91, fps/temp Pi 400
-
-## Decisioni aperte
-D10=B e D11=A già risposte da Andrea in DECISIONI_ANDREA.md (non chiuse formalmente, ancora [APERTA]). Nessun nuovo PER_CLAUDE.md. FINITO non creabile (T1 non tutti [x]).
-
-Prossimo: collaudatore esegue gate soak -> exit 0 -> v91 Andrea -> promozione T1-RUN/P1/H a [x] (solo Andrea/Claude).
+## Prossimo passo consigliato
+@collaudatore: report gate soak (exit code + numeri gate_t1.log) + 3 screenshot out/collaudatore/<livello>/; poi v91 Andrea (runner Mac, guida OK + fps/temp Pi 400) -> T1-RUN/P1/H a [x] (solo Andrea/Claude); se tutti i blocchi tappa 1 sono [x], creare FINITO.

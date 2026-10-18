@@ -1,6 +1,6 @@
-# RIASSUNTO @sviluppatore — v4.5 turno 17/10 17:55
-- Gate OK: `sh tools/gate_t1.sh` exit 0 su lv_01_neon, lv_02_atomico, lv_03_foglie; speed@60=33.76, ms/frame medio 0.076 (max 0.189, limite 20), replay 2x IDENTICO, offroad raggiunto, avvolgimento + inattivita OK. Log: out/collaudatore/gate_t1.log.
-- T1-RUN punto 4 / P1 punto 4 [~]: aggiunto motore_nuovo/src/render/sprite_raw.h/.cpp (MIT, loader raw "SGLR" + RGBA8888, quantizzazione a palette, zero dipendenze esterne) e inserito in CMakeLists.txt (target sglavinated_core; compila). Scritto out/sviluppatore/png_a_raw.py (MIT, PNG 8-bit -> raw, 7 sponsor x 3 stili, solo stdlib Python 3).
-- Bloccato in questo turno: file .sglraw non generati (python3 non eseguibile via shell); prova_gate.cpp (motore_nuovo/test/, di @collaudatore per regola un-foglio-uno-scrittore) non chiama ancora setSponsorSprites -> niente cartelloni veri negli screenshot (richiesto da FEEDBACK_ANDREA v90 per chiudere T1-RUN).
-- P1 punti 1-3 (guida OutRun, colline quota assoluta, wrap sprite) gia' fatti e gate-verde. v91 di Andrea (runner SDL2 su Mac, fps/temperatura Pi 400) pendente (T1-RUN punto 8).
-- Prossimo: generare .sglraw, @collaudatore aggiorna prova_gate con setSponsorSprites prima di init(), rilanciare gate.
+# RIASSUNTO @sviluppatore — v4.5 turno 18/10 07:43
+- Gate OK: `sh tools/gate_t1.sh` exit 0 su 3 livelli + accelerazione/ribaltamento/sterzo/curve; speed@60=161.79, ms/frame medio ~0.4 (max 3.150, limite 20), replay 2x IDENTICO, offroad raggiunto. Log: out/collaudatore/gate_t1.log.
+- P1 [~]: player.cpp (A accelera, B freno, coast, sterzo dipendente dalla velocita') e game.cpp (segmenti da livello.json, spinta in curva, rallentamento offroad, ribaltamento) gia fatti; gate verde. Mancano 3 screenshot in out/sviluppatore/ (gate P1).
+- T1-RUN [~]: colline quota assoluta + camera sotto auto, sprite zRel modulo totalLen, sprite veri .sglraw (21 file, cartelloni sponsor nel gate), HUD pannello info (barra velocita, marcia, offroad) in renderer.h/.cpp + game.cpp. Pendente: v91 di Andrea (punto 8).
+- png_a_raw.py (SPDX MIT) e 21 .sglraw gia generati; quota open OK.
+- Prossimo: attendere v91 Andrea e screenshot runner per chiudere P1/T1-RUN.

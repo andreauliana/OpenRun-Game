@@ -463,3 +463,26 @@ VERDETTO: CORREGGI
 2) `motore_nuovo/src/render/sprite_raw.cpp:60` in contrasto con `assets_originali/DIREZIONE_ARTISTICA.md:12` — la direzione artistica fissa max 16 colori per sprite, ma il codice consente alla palette di crescere fino a 256 (`< 256`). Correzione: allineare il codice alla regola di direzione, portando il limite a 16 (`< 16`) in `sprite_raw.cpp:60` e coerente il commento di `sprite_raw.h:13-14` ("max 256 colori" → "max 16 colori"); in alternativa aggiornare la DA a 256.
 
 Resto coerente: intestazioni SPDX MIT presenti, CMake target condizionati e indipendenti da SDL nel core, lettura raw deterministica (stesso input → stessa palette/quantizzazione). Nessun blocco.
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 07:55 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13835321 di 13835321 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK
