@@ -1,5 +1,6 @@
 ---
 description: "Designer / Art Director per OpenRun: crea e cataloga asset, verifica licenze e provenienza e approva gli asset condivisi."
+model: opencode/nemotron-3.5-super-vl-free
 mode: subagent
 permission:
   execute: deny
