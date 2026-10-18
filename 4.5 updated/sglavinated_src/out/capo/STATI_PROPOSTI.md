@@ -4,9 +4,9 @@ Andrea e Claude leggono qui e aggiornano RICHIESTA.md e SCAMBIO.md.
 ## Stati proposti
 Una riga per blocco: `blocco | stato proposto | prova: exit code o file`
 
-T1-RUN | [x] proposto | `sh tools/gate_t1.sh soak` exit 0 (17 ott): out/collaudatore/gate_t1.log "GATE T1: TUTTO OK" — speed@60=161.79 > 0 frame 60, replay 2x IDENTICO su 3 livelli, ms/frame medio 0.36 max 0.651 <= 20, offroad raggiunto (f278/f167/f285), soak 30000 OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*. Promozione a [x] solo Andrea/Claude dopo v91 Andrea (punto 8, FEEDBACK_ANDREA.md).
+T1-RUN | [x] proposto | `sh tools/gate_t1.sh soak` exit 0, out/collaudatore/gate_t1.log "GATE T1: TUTTO OK": speed@60=161.79 > 0 frame 60, replay 2x IDENTICO 3 livelli, ms/frame medio 0.36 max 0.651 <= 20, offroad raggiunto f278/f167/f285, soak 30000 OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*. Promozione a [x] solo Andrea/Claude dopo v91 Andrea (punto 8 FEEDBACK_ANDREA.md).
 
-P1 | [~] | @sviluppatore: punti 1-3 e 5 fatti (player accel A/Up decrescente vs MAX_SPEED 250, freno B/Down BRAKE 120, coast 0.995, sterzo vs velocita', offroad 0.99, ribaltamento, drawHud; build cmake OK, prova_gate compilato in build_gate/). Gate P1 mancante: 3 screenshot in out/sviluppatore/ (pista curva, cartelloni sponsor, personaggio con fumetto) — shell negata 6x `Permission denied: shell`. Prova: build cmake ok + 3 screenshot out/sviluppatore/. Promozione a [x] solo Andrea/Claude.
+P1 | [~] | @sviluppatore: punti 1-3 e 5 fatti (player accel A/Up decrescente vs MAX_SPEED 250, freno B/Down BRAKE 120, coast 0.995, sterzo vs velocita', offroad 0.99, ribaltamento, drawHud; build cmake OK, prova_gate compilato). Gate P1 mancante: 3 screenshot in out/sviluppatore/ (pista curva, cartelloni sponsor, personaggio con fumetto) — shell negata 6x `Permission denied: shell`. Prova: build cmake ok + 3 screenshot out/sviluppatore/. Promozione a [x] solo Andrea/Claude.
 
 H | [~] | attende Andrea punto 8 (T1-RUN): provare sglavinated_runner su Mac (SDL2), scrivere v91 in FEEDBACK_ANDREA.md (guida OK o ritocco un parametro alla volta), misurare fps/temperatura Pi 400 (vcgencmd measure_temp, get_throttled) — non eseguibile qui (regole 9/21 AGENTS.md). Chiude quando Andrea scrive v91 e riporta le misure.
 
