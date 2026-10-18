@@ -65,6 +65,12 @@ target_include_directories(sglavinated_core PRIVATE src)
 # ---------------------------------------------------------------------------
 find_package(SDL2 QUIET)
 find_package(SDL2_image CONFIG QUIET) # PNG (cartelloni sponsor) nel runner di test; target SDL2_image::SDL2_image
+if(NOT TARGET SDL2_image::SDL2_image AND NOT TARGET SDL2::SDL2_image)
+    find_package(PkgConfig QUIET)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(SDL2_IMAGE QUIET IMPORTED_TARGET SDL2_image)
+    endif()
+endif()
 if(SDL2_FOUND)
     add_executable(sglavinated_runner
         src/runner/main.cpp
@@ -75,9 +81,15 @@ if(SDL2_FOUND)
     if(TARGET SDL2_image::SDL2_image)
         target_link_libraries(sglavinated_runner PRIVATE SDL2_image::SDL2_image)
         target_compile_definitions(sglavinated_runner PRIVATE SGL_HAVE_SDL2_IMAGE)
+        message(STATUS "SDL2_image trovata: caricamento PNG degli sponsor abilitato.")
     elseif(TARGET SDL2::SDL2_image)
         target_link_libraries(sglavinated_runner PRIVATE SDL2::SDL2_image)
         target_compile_definitions(sglavinated_runner PRIVATE SGL_HAVE_SDL2_IMAGE)
+        message(STATUS "SDL2_image trovata: caricamento PNG degli sponsor abilitato.")
+    elseif(TARGET PkgConfig::SDL2_IMAGE)
+        target_link_libraries(sglavinated_runner PRIVATE PkgConfig::SDL2_IMAGE)
+        target_compile_definitions(sglavinated_runner PRIVATE SGL_HAVE_SDL2_IMAGE)
+        message(STATUS "SDL2_image trovata via pkg-config: caricamento PNG degli sponsor abilitato.")
     else()
         message(STATUS "SDL2_image non trovata: target runner compilato senza decodifica PNG "
                        "(cartelloni sponsor disabilitati, gioco comunque funzionante).")

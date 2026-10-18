@@ -25,7 +25,9 @@ Tutti i comandi sotto sono lanciati dalla cartella `sglavinated_src/` (percorso 
 | Cosa | Mac | Raspberry Pi OS / RetroPie | Licenza | Stato |
 |---|---|---|---|---|
 | Compilatore + CMake | `xcode-select --install`; `brew install cmake` | `sudo apt install build-essential cmake` | CMake: Kitware (BSD-like) | [C] da verificare |
-| SDL2 (finestra, input) | `brew install sdl2 sdl2_image sdl2_mixer` | `sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev` | SDL2: zlib; image/mixer: zlib | [C] |
+| SDL2 (finestra, input) | `brew install sdl2` | `sudo apt install libsdl2-dev` | SDL2: zlib | [C] |
+| SDL2_image (PNG nel runner desktop, opzionale) | `brew install sdl2_image` | `sudo apt install libsdl2-image-dev` | zlib | [C] |
+| SDL2_mixer (audio runner, opzionale) | `brew install sdl2_mixer` | `sudo apt install libsdl2-mixer-dev` | zlib | [C] |
 | JSON | `src/core/json_mini.h` (parser interno, nessuna dipendenza) | idem | MIT | [x] |
 | Musica tracker .xm (opzionale) | libxmp via brew | libxmp via apt | LGPL | [C] |
 | Test Pi 400 | n/a | `vcgencmd measure_temp`, `vcgencmd get_throttled` | n/a | [C] |
@@ -66,8 +68,8 @@ Target CMake:
 ### Mac (Homebrew, dalla cartella `sglavinated_src/`)
 
 ```bash
-# dipendenze
-brew install cmake sdl2 sdl2_image sdl2_mixer
+# dipendenze core + runner desktop con supporto PNG sponsor
+brew install cmake sdl2 sdl2_image
 
 # build isolata del core C++17 (non richiede SDL2)
 cmake -S motore_nuovo -B motore_nuovo/build_local -DCMAKE_BUILD_TYPE=Release
@@ -123,9 +125,9 @@ Per scegliere un'altra directory indipendente:
 ### Raspberry Pi 400 (Raspberry Pi OS / RetroPie, dalla cartella `sglavinated_src/`)
 
 ```bash
-# dipendenze
+# dipendenze core + runner SDL2 con supporto PNG sponsor
 sudo apt update
-sudo apt install build-essential cmake libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev
+sudo apt install build-essential cmake libsdl2-dev libsdl2-image-dev
 
 # configurazione e build
 cmake -S motore_nuovo -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=17
@@ -159,6 +161,7 @@ watch -n1 'vcgencmd measure_temp; vcgencmd get_throttled'
 ## 7. Note
 
 - Il core C++ non include SDL2: solo runner e core libretro lo fanno.
+- SDL2_image è opzionale e serve solo al runner desktop per caricare i cartelloni PNG; core e gate headless non dipendono da essa.
 - La build della hack v87 (`tools/`, `lr/`) è separata e non si tocca (AGENTS.md regola 6).
 - Ogni nuova dipendenza deve avere licenza verificata in `motore_nuovo/docs/LICENZE.md` prima dell'uso.
 
