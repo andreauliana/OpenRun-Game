@@ -24,3 +24,12 @@ sglavinated_src/UFFICIO/Officina/Test area/sterzo/
 sglavinated_src/UFFICIO/Officina/Test area/curve/
 sglavinated_src/.fuori_posto.log
 sglavinated_src/archivio_v4/fuori_posto/
+# Cartelle di build CMake (si rigenerano con cmake; contengono percorsi assoluti del Mac)
+build/
+build_*/
+sglavinated_src/motore_nuovo/build*/
+# Log dei test prova_gate (si rigenerano a ogni gate; erano circa 9 MB nella repo)
+sglavinated_src/out/collaudatore/**/prova_gate*.log
+# File temporanei del checkpoint automatico (ciclo.sh)
+sglavinated_src/.auto_rosso
+sglavinated_src/.auto_verifica.tmp

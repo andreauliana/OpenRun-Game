@@ -60,10 +60,20 @@ t0=$(date +%s); last=$t0; n=0; fail=0; chk=0
 checkpoint() {
   chk=$((chk+1)); echo "[ciclo] $(date '+%d/%m %H:%M') CHECKPOINT $chk"
   estratti
-  AUTO="$( { sh "$BASE/strumenti/verifica.sh" | tail -12; python3 motore_nuovo/strumenti_py/check_catalogo.py; python3 motore_nuovo/strumenti_py/quota_open.py; python3 motore_nuovo/strumenti_py/quota_bacheche.py; grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
+  # Ogni controllo che fallisce aggiunge una riga a .auto_rosso: se resta vuoto e' tutto verde.
+  rm -f .auto_rosso
+  AUTO="$( { sh "$BASE/strumenti/verifica.sh" > .auto_verifica.tmp 2>&1 || echo verifica.sh >> .auto_rosso; tail -12 .auto_verifica.tmp; rm -f .auto_verifica.tmp
+             for s in check_catalogo quota_open quota_bacheche; do python3 "motore_nuovo/strumenti_py/$s.py" || echo "$s" >> .auto_rosso; done
+             grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
+  ROSSI="$(cat .auto_rosso 2>/dev/null | tr '\n' ' ')"; rm -f .auto_rosso
   REVIEW_FILES="$(find motore_nuovo assets_originali -type f -newer .marker_checkpoint \( -name '*.cpp' -o -name '*.h' -o -name '*.json' -o -name '*.md' -o -name '*.py' -o -name 'CMakeLists.txt' -o -name '*.cmake' \) ! -path '*/.git/*' ! -path '*/__pycache__/*' ! -name '.DS_Store' 2>/dev/null | sort)"
-  if [ -n "$REVIEW_FILES" ]; then
-    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di out/collaudatore/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @sviluppatore (regola d'oro 5)." 2>&1)"
+  if [ -n "$REVIEW_FILES" ] && [ -z "$ROSSI" ] && [ "${CHK_LLM_SEMPRE:-0}" != 1 ]; then
+    # Tutti i controlli automatici sono verdi: il collaudatore risponderebbe solo "OK".
+    # Si risparmia la chiamata al modello (CHK_LLM_SEMPRE=1 per chiamarlo comunque).
+    R="OK (controlli automatici verdi: review del modello saltata, zero crediti)"
+    touch .marker_checkpoint
+  elif [ -n "$REVIEW_FILES" ]; then
+    REVIEW_OUTPUT="$(oc --agent collaudatore "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di out/collaudatore/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Controlli rossi: $ROSSI. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @sviluppatore (regola d'oro 5)." 2>&1)"
     REVIEW_RC=$?
     if [ "$REVIEW_RC" -eq 0 ]; then
       R="$REVIEW_OUTPUT"

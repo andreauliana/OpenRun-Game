@@ -9,13 +9,25 @@ namespace sgl {
 namespace {
 constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
+
+// Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
+std::string leggiFileTesto(const std::string& path) {
+    std::string testo;
+    std::FILE* f = std::fopen(path.c_str(), "rb");
+    if (!f) return testo;
+    char buf[4096];
+    size_t n;
+    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
+    std::fclose(f);
+    return testo;
+}
 }
 
-Game::Game() : seed_(12345), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_), showManager_(seed_) {
-    audioBuf_.resize(AUDIO_FRAME_SAMPLES * 2, 0);
-    sprites_.reserve(6); // niente allocazioni per traffico dopo il primo frame
-    scenaSprites_.reserve(16); // cresce a init() con i cartelloni
+std::string Game::percorsoDati(const std::string& relativo) const {
+    return radiceDati_.empty() ? relativo : radiceDati_ + "/" + relativo;
 }
+
+Game::Game() : Game(12345u) {}
 
 Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_), showManager_(seed_) {
     audioBuf_.resize(AUDIO_FRAME_SAMPLES * 2, 0);
@@ -28,8 +40,13 @@ void Game::init(const std::string& livelloId) {
     // lunghezza}) da motore_nuovo/dati/livelli/<livelloId>/livello.json.
     // Se il campo manca o il file e' illeggibile, usa il fallback deterministico
     // hardcoded sotto. Stesso seme = stesso tracciato (determinismo).
+    // livello.json letto e analizzato una volta sola: ne usano i dati
+    // sia i segmenti sia i cartelloni (prima il file veniva letto due volte).
+    JsonReader livello(leggiFileTesto(percorsoDati("motore_nuovo/dati/livelli/" + livelloId + "/livello.json")));
+    const JsonValue* radiceLivello = livello.parse() ? &livello.valore() : nullptr;
+
     std::vector<Road::SegmentDesc> descs;
-    const bool daFile = leggiSegmentiDaFile(livelloId, descs) && !descs.empty();
+    const bool daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
     if (daFile) {
         // Ripeti il pattern dei segmenti fino ad averne almeno 2*DRAW_DIST:
         // il tracciato e' un circuito; con troppo pochi segmenti la proiezione
@@ -66,7 +83,7 @@ void Game::init(const std::string& livelloId) {
     // Tutte le allocazioni avvengono qui (init): zero alloc nel ciclo di gioco.
     cartelloni_.clear();
     if (!sponsorSpriteIdx_.empty()) {
-        if (!leggiCartelloniDaFile(livelloId)) {
+        if (!leggiCartelloniDaFile(radiceLivello)) {
             // Campo assente o non valido -> fallback casualita' deterministica.
             Rng rndCartelloni(seed_);
             const f32 latoSx = -1600.0f; // bordo strada sinistro (unita' mondo)
@@ -102,7 +119,7 @@ void Game::init(const std::string& livelloId) {
     // verifica l'invariante personaggio<->frase, collega a DisegnoShow per il
     // layout del fumetto. Percorso relativo come livello.json (regola: niente
     // path assoluti). Tutte le allocazioni stanno qui (init).
-    testiFrasi_.carica("motore_nuovo/dati/frasi.json");
+    testiFrasi_.carica(percorsoDati("motore_nuovo/dati/frasi.json").c_str());
     testiFrasi_.verifica(); // log su false: dati incoerenti
     disegnoShow_.setTesti(&testiFrasi_);
     ShowLayout lay = disegnoShow_.layout();
@@ -149,21 +166,9 @@ void Game::setSponsorSprites(std::vector<std::pair<std::string, Sprite>> sprites
     // Possesso esclusivo del Renderer; puntatori stabili dopo questa chiamata.
 }
 
-bool Game::leggiSegmentiDaFile(const std::string& livelloId, std::vector<Road::SegmentDesc>& out) const {
-    // Percorso relativo alla working dir del runner (sglavinated_src/).
-    std::string path = "motore_nuovo/dati/livelli/" + livelloId + "/livello.json";
-    std::FILE* f = std::fopen(path.c_str(), "rb");
-    if (!f) return false;
-    std::string testo;
-    char buf[4096];
-    size_t n;
-    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
-    std::fclose(f);
-    if (testo.empty()) return false;
-
-    JsonReader reader(testo);
-    if (!reader.parse()) return false;
-    const JsonValue& root = reader.valore();
+bool Game::leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::SegmentDesc>& out) const {
+    if (!radice) return false; // file assente o non valido: init() usa il fallback hardcoded
+    const JsonValue& root = *radice;
     JsonValue campo;
     if (!jsonIsObject(root) ||
         !jsonGet(jsonAsObject(root), "segmenti", campo) ||
@@ -194,21 +199,9 @@ bool Game::leggiSegmentiDaFile(const std::string& livelloId, std::vector<Road::S
     return !out.empty();
 }
 
-bool Game::leggiCartelloniDaFile(const std::string& livelloId) {
-    // Percorso relativo alla working dir del runner (sglavinated_src/).
-    std::string path = "motore_nuovo/dati/livelli/" + livelloId + "/livello.json";
-    std::FILE* f = std::fopen(path.c_str(), "rb");
-    if (!f) return false;
-    std::string testo;
-    char buf[4096];
-    size_t n;
-    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
-    std::fclose(f);
-    if (testo.empty()) return false;
-
-    JsonReader reader(testo);
-    if (!reader.parse()) return false;
-    const JsonValue& root = reader.valore();
+bool Game::leggiCartelloniDaFile(const JsonValue* radice) {
+    if (!radice) return false; // file assente o non valido: init() usa il fallback casuale deterministico
+    const JsonValue& root = *radice;
     JsonValue campo;
     if (!jsonIsObject(root) ||
         !jsonGet(jsonAsObject(root), "cartelloni_sponsor", campo) ||
@@ -330,7 +323,7 @@ void Game::update() {
     gi.inGara = true;      // no menu/demo in questo prototipo
     gi.inputAttivo = (input_.held != 0ull);
     gi.offRoad = player_.offroad;
-    const DatiShow& show = showManager_.aggiorna(gi);
+    showManager_.aggiorna(gi); // risultato letto da showDati() / disegnoShow_
     disegnoShow_.aggiorna(clock_.frame, showManager_); // stesso frame!
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
