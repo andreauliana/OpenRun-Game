@@ -1,0 +1,1 @@
+18/10 22:20 builder-developer: verifica blocchi P1 e T1-RUN completata, nessuna modifica di codice necessaria; gate sh tools/gate_t1.sh non rieseguibile (shell negata per tutto il turno, nessun exit code/misure); nessun file di prodotto modificato.

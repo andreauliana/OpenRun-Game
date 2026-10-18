@@ -1,22 +1,20 @@
-# RIEPILOGO_MATTINA — OpenRun 4.6
-Data: 2026-10-18 | Autore: Capo | File: Checkpoint Revision/RIEPILOGO_MATTINA.md
+# RIEPILOGO_MATTINA — OpenRun 4.6 (2026-10-18)
 
 ## Fatto per blocco/agente
-Officina (sviluppo): gate T1 exit 0, 3 livelli OK, replay identico, ms/frame max 0.393; build CMake OK in UFFICIO/Officina/build/; runner compila con caricamento PNG disabilitato; CTest: 7 test scoperti ma non eseguiti; cartelloni diradati (Neon 56, Atomico 53, Foglie 61).
-Designer (grafico): inventario verificato, catalogo 52 voci (30 approvate, 16 pronte, 2 in costruzione, 4 mancanti), 100 PNG non catalogati; 3 livelli OK, 6 percorsi mancanti; 3 sprite auto OK, concorrente mancante; sponsor 21 banner OK; fumetti testi completi (156), personaggi e 3 finali animati mancanti.
-Capo (checkpoint): CP-001 chiuso (baseline); CP-002, CP-003, CP-004 aperti in attesa di review indipendenti.
+- Capo: STATO_CORRENTE.md e REGISTRO_REVISIONI.md aggiornati; CP-001 chiuso come riferimento documentale (nessuna approvazione di release); CP-002, CP-003, CP-004 aperti, ciascuno in attesa di review indipendente.
+- Designer/Art Director: STATUS_GRAFICO_PER_CAPO.md aggiornato; catalogo 52 voci (30 approvate, 16 pronte, 2 in costruzione, 4 mancanti), 100 PNG non catalogati segnalati; testi fumetti completi (156); mancanti: sprite concorrente `auto.traffico`, personaggi Gianni/Gesù/UFO, 3 finali animati, sei percorsi selezionabili. `check_catalogo_grafico.py` exit 0.
+- Builder/Developer + Junior (Officina): STATUS_OFFICINA.md scritto come handoff unico; wrapper CMake/test e allowlist aggiornati; CMake configurato in `UFFICIO/Officina/build/`; `sglavinated_runner` compila senza SDL2_image; gate T1: exit 0 (report 1155), 3 livelli, replay 2x identico, ms/frame medio ~0.20 max 0.393 (<=20); 7 test CTest scoperti ma non eseguiti; CMake Tools VS Code senza progetto attivo.
 
 ## Non funziona / blocchi
-- SDL2_image non trovata: caricamento PNG disabilitato, prova_gate disegna rettangoli (decisione D10-B non ancora implementata).
-- CTest: 7 test mai eseguiti; VS Code CMake senza progetto attivo selezionato.
-- Homebrew sdl2_image fallito (conflitti symlink libtool); Pi 400 non verificato (gate solo macOS).
-- Nessuna licenza applicata a LICENSE/manifest/CREDITI (D1 chiusa da Andrea, opzione A, da scrivere).
-- Asset mancanti: sprite concorrenti, personaggi (Gianni, Gesù, UFO), 3 finali animati, 6 percorsi.
+- SDL2_image non installabile via brew (conflitti symlink libtool): caricamento PNG disabilitato, prova_gate disegna rettangoli (Andrea D10 ha scelto B: conversione PNG->raw offline, da implementare).
+- CP-002, CP-003, CP-004 senza revisore indipendente assegnato (autore distinto).
+- 7 test CTest non eseguiti in questa sessione; CP-003 non validato da peer review.
+- Nessuna risposta di Andrea registrata per T1-Q1..T1-Q4.
 
-## Decisioni aperte in ANDREA_REVIEW.md (top 3)
-1. T1-Q1 | Chiusura gate T1 — risposta di Andrea non registrata; DEFAULT: chiudi se gate soak exit 0, replay 2x identico, <= 20 ms/frame.
-2. T1-Q2 | Promozione P1 — risposta non registrata; DEFAULT: sì, screenshot differiti (shell negata).
-3. T1-Q3 | Prova manuale Mac e Pi 400 — esito non registrato; DEFAULT: Andrea appena possibile, gate headless verde.
+## 3 decisioni aperte in ANDREA_REVIEW.md (piu' importanti)
+1. T1-Q1 — Chiusura gate T1: DEFAULT sì se `gate_t1.sh soak` exit 0, replay 2x IDENTICO, ms/frame <= 20. Risposta Andrea: non registrata.
+2. T1-Q2 — Promozione P1: DEFAULT sì (screenshot bloccati, prova differita). Risposta Andrea: non registrata.
+3. T1-Q3 — Prova manuale su Mac e Pi 400 (FPS, temperatura/throttling). DEFAULT sì appena possibile. Esito: non registrato.
 
 ## Prossimo passo consigliato
-Assegnare revisori indipendenti a CP-002, CP-003, CP-004; per CP-003 attivare progetto CMake in VS Code ed eseguire CTest; se verde, chiedere ad Andrea T1-Q1/T1-Q2 per chiudere il gate.
+Capo assegna revisori indipendenti per CP-002, CP-003, CP-004 (diversi dagli autori); per CP-003 esegue `sh tools/run_tests.sh` registrando comando, exit code ed esito misurabile; poi richiede ad Andrea le risposte T1-Q1..Q3 prima di chiudere T1-RUN e promuovere P1.

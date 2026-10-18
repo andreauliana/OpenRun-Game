@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 21:31
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 22:29
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -71,44 +71,12 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 125:## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 
 ## Ultime righe di SCAMBIO.md
-OK      nessuna ROM Sega presente
-NOTA    builder-developer:  non e' in panchina.txt
-NOTA    capo:  non e' in panchina.txt
-NOTA    designer:  non e' in panchina.txt
-NOTA    developer-builder-junior:  non e' in panchina.txt
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== CI SONO ERRORI ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (4624450 di 4624450 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
-REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 20:51 | [APERTA]
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-NOTA    builder-developer:  non e' in panchina.txt
-NOTA    capo:  non e' in panchina.txt
-NOTA    designer:  non e' in panchina.txt
-NOTA    developer-builder-junior:  non e' in panchina.txt
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== CI SONO ERRORI ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (4624450 di 4624450 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 21:15 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 22:10 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
@@ -121,13 +89,45 @@ OK      nessuna ROM Sega presente
 OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
+GATE GARA OK
+screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
   senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
   senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.5% (4624450 di 4647212 byte), soglia 50.0%
+quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 22:28 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE GARA OK
+screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.

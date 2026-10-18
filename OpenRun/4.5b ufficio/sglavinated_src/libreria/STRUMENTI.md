@@ -14,6 +14,7 @@ Prima di scrivere uno strumento nuovo controlla qui se esiste gia'.
 | `assets_originali/ui/genera_ui_b.py` | grafico | genera_ui_b.py - rigenera gli asset UI della VARIANTE B in bianco e nero (D7). | `python3 assets_originali/ui/genera_ui_b.py` |
 | `motore_nuovo/strumenti_py/check_catalogo.py` | sviluppatore | Fallisce se dati/personaggi/* e CATALOGO_PERSONAGGI.md non coincidono, o se manca il manifest. | `python3 motore_nuovo/strumenti_py/check_catalogo.py` |
 | `motore_nuovo/strumenti_py/check_catalogo_grafico.py` | sviluppatore | Controlla assets_originali/CATALOGO_GRAFICO.json (lo scrive @grafico). | `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` |
+| `motore_nuovo/strumenti_py/font_a_header.py` | sviluppatore | Converte il font pixel dell'HUD (assets_originali/ui/font/varianteB/font.png | `python3 motore_nuovo/strumenti_py/font_a_header.py` |
 | `motore_nuovo/strumenti_py/galleria.py` | sviluppatore | Genera assets_originali/galleria/galleria.html: foto di tutti i PNG per cartella (ogni team vede il lavoro degli altri). | `python3 motore_nuovo/strumenti_py/galleria.py` |
 | `motore_nuovo/strumenti_py/indice_assets.py` | sviluppatore | Indice unico degli asset di assets_originali/ (libreria interna). | `python3 motore_nuovo/strumenti_py/indice_assets.py` |
 | `motore_nuovo/strumenti_py/indice_strumenti.py` | sviluppatore | Registri comuni generati da script: strumenti, consegne, libreria. | `python3 motore_nuovo/strumenti_py/indice_strumenti.py` |

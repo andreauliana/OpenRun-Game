@@ -1,6 +1,6 @@
 # STATUS OFFICINA — OpenRun 4.6
 
-Aggiornato: 2026-10-18 20:25 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
+Aggiornato: 2026-10-18 22:33 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
 
 ## Stato corrente
 
@@ -46,3 +46,34 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - `ctest --test-dir UFFICIO/Officina/build -N`: sette test scoperti; non eseguiti da questo comando.
 - CMake Tools in VS Code non ha un progetto CMake attivo selezionato e non è riuscito a configurarlo; il pannello diagnostica non mostra errori. Non conteggiare questa operazione come build o test passati.
 - Prossimo test eseguibile dal ruolo di sviluppo: `sh tools/run_tests.sh`; riportare comando, exit code e risultati CTest in questo status, mantenendo il log originale in Officina.
+
+## Report turno 21:56 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata: RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATUS_OFFICINA.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN punti 1-4 @sviluppatore, 5-6 @collaudatore; G1 @grafico). Nessuna modifica di codice, nessun test eseguito, nessuna build avviata in questo turno.
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-18_2156.md.
+- Gate T1 di riferimento non rieseguito: ultimo esito noto da @collaudatore, sh tools/gate_t1.sh exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20 (DEFAULT T1-Q1 soddisfatto; risposta Andrea non registrata).
+
+## Report turno 22:15 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata (ordine richiesto): RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN punti 1-4 @sviluppatore, 5-6 @collaudatore; G1 @grafico). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita in questo turno.
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-18_2215.md; questo status aggiornato.
+- Gate T1 di riferimento non rieseguito: ultimo esito noto da @collaudatore, sh tools/gate_t1.sh exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20 (DEFAULT T1-Q1 soddisfatto; risposta Andrea non registrata).
+
+## Report turno 22:33 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata (ordine richiesto): RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN punti 1-4 @sviluppatore, 5-6 @collaudatore; G1 @grafico). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita in questo turno.
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-18_2233.md; questo status aggiornato.
+- Gate T1 di riferimento non rieseguito: ultimo esito noto da @collaudatore, sh tools/gate_t1.sh exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20 (DEFAULT T1-Q1 soddisfatto; risposta Andrea non registrata).
+
+## Sintesi dei report precedenti pertinenti
+
+- 22:33 — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
+- 22:15 — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
+- 21:56 — developer-builder-junior: lettura fonti completata, nessuna modifica di codice, consegne scritte; gate T1 di riferimento exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20.
+- 20:25 — STATUS_OFFICINA: CP-003 aperto, review indipendente da assegnare; ultimo report sviluppatore 1155 (13:49), gate exit 0, tre livelli, replay identico, speed@60=161.79, max 0.393 ms/frame; CTest sette test scoperti non rieseguiti; runner compila senza SDL2_image.
+- 13:49 — report 1155: gate exit 0 sui tre livelli, media 0.19-0.20 ms/frame, massimo 0.393 ms/frame, replay doppio identico, off-road raggiunto, accelerazione/ribaltamento/sterzo/curve verificati.
+- 13:00 — report 1154: diradamento riferimenti cartelloni nei dati livello (Neon 444->56, Atomico 418->53, Foglie 481->61), gate positivo, massimo 0.277 ms/frame.
+- 21:15 — SCAMBIO_RECENTE checkpoint 1 review: TUTTO OK, quota open 99.5%, blocchi fatti 19 / da fare 7; 3 screenshot in out/sviluppatore/screenshot_p1/ senza licenza (fuori competenza del ruolo Junior).
