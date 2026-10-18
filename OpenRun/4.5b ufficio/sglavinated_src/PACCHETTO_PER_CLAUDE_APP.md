@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 19:58
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 20:44
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -90,27 +90,6 @@ blocchi da fare [ ]: 7
 
 REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 17:20 | [APERTA]
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-NOTA    builder-developer:  non e' in panchina.txt
-NOTA    capo:  non e' in panchina.txt
-NOTA    designer:  non e' in panchina.txt
-NOTA    developer-builder-junior:  non e' in panchina.txt
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== CI SONO ERRORI ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13705009 di 13705009 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
-
 ### CHECKPOINT 1 | REVIEWER | 2026-10-18 19:55 | [APERTA]
 OK      sintassi start_process_brains.sh
 OK      sintassi verifica.sh
@@ -126,6 +105,27 @@ OK      comando claude presente (review automatica possibile)
 == CI SONO ERRORI ==
 catalogo: 11 righe, 2 cartelle
 quota open: 100.0% (4624460 di 4624460 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 20:44 | [APERTA]
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+NOTA    builder-developer:  non e' in panchina.txt
+NOTA    capo:  non e' in panchina.txt
+NOTA    designer:  non e' in panchina.txt
+NOTA    developer-builder-junior:  non e' in panchina.txt
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== CI SONO ERRORI ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (4624450 di 4624450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7

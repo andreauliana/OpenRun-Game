@@ -5,8 +5,8 @@ Fonti lette: TAPPE.md, ANDREA_REVIEW.md, CONTROLLO.md, VISIONE.md, AGENTS.md, RI
 ## Stati proposti (Tappa 1)
 Una riga per blocco: `blocco | stato proposto | prova: exit code o file | responsabile -> revisore | percorsi scrivibili`
 
-T1-RUN | [~] (DEFAULT T1-Q1: sì, chiudi [x] se gate soak exit 0, replay 2x IDENTICO, ms/frame <= 20) | `sh tools/gate_t1.sh soak` exit 0 (17 ott 14:51); out/collaudatore/gate_t1.log: replay 2x IDENTICO 3 livelli, ms/frame medio 0.05 max 3.5 <= 20, soak 30000 OK | @collaudatore -> @sviluppatore | out/collaudatore/
-P1 | [~] (DEFAULT T1-Q2: sì, promuovi [x] solo Andrea/Claude) | mancano 3 screenshot in out/sviluppatore/ (pista curva, cartelloni sponsor, personaggio con fumetto) — shell negata, prova differita | @sviluppatore -> @collaudatore | out/sviluppatore/
+T1-RUN | [~] (DEFAULT T1-Q1: sì, chiudi [x] se gate soak exit 0, replay 2x IDENTICO, ms/frame <= 20) | `sh tools/gate_t1.sh soak`: GATE OK x3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 (limite 20), offroad, accelerazione, sterzo, curve continue OK (out/collaudatore/gate_t1.log righe 1-70) | @collaudatore -> @sviluppatore | out/collaudatore/
+P1 | [~] (DEFAULT T1-Q2: sì, promuovi [x] solo Andrea/Claude) | mancano 3 screenshot in out/sviluppatore/ (pista curva, cartelloni sponsor, personaggio con fumetto); shell negata, prova differita; CMake: SDL2_image non trovata -> runner senza decodifica PNG (gate_t1.log riga 1) | @sviluppatore -> @collaudatore | out/sviluppatore/
 H | [~] (DEFAULT T1-Q3: sì) | attende Andrea punto 8: `sglavinated_runner` su Mac SDL2 + fps/temperatura Pi 400 (`vcgencmd measure_temp`, `get_throttled`), v91 in ANDREA_REVIEW.md; non eseguibile qui (regole 9/21) | Andrea -> @capo | out/capo/ (solo registrazione)
 J | [ ] | escalazione a Claude solo dopo 2 tentativi falliti o fine blocco importante; non serve. Nessun PER_CLAUDE.md. | — | —
 M | [~] | HUD/font (Tappa 3) — non avviato; Andrea 17 ott: niente tappe successive ora | — | —

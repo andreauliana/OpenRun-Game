@@ -2,7 +2,7 @@
 
 | Ruolo/sezione | File | Data | Byte |
 |---|---|---|---|
-| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 19:55 | 4004 |
+| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 20:43 | 4222 |
 | capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:32 | 1979 |
 | capo | `out/capo/RICHIESTA_STORICO_17OTT.md` | 17/10 13:12 | 12195 |
 | capo | `out/capo/SCAMBIO_ARCHIVIO_fino_92.md` | 17/10 13:12 | 125863 |
