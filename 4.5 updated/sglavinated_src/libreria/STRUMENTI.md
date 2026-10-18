@@ -5,7 +5,9 @@ Prima di scrivere uno strumento nuovo controlla qui se esiste gia'.
 
 | Strumento | Proprietario | Scopo | Uso (dalla radice sglavinated_src) |
 |---|---|---|---|
+| `tools/check_sdl_init.sh` | Claude | Verifica SDL_Init tramite il runner reale, senza CTest o finestra di gioco. | `sh tools/check_sdl_init.sh` |
 | `tools/gate_t1.sh` | Claude | Gate Tappa 1 in UN SOLO comando: configura, compila, lancia prova_gate sui 3 livelli. | `sh tools/gate_t1.sh` |
+| `tools/run_tests.sh` | Claude | CMake/CTest entry point for agents and local test runs. | `sh tools/run_tests.sh` |
 | `assets_originali/genera_bloccoF.py` | grafico | Generatore asset BLOCCO F — Outrun Sglavinated Edition v3 (open) | `python3 assets_originali/genera_bloccoF.py` |
 | `assets_originali/sponsor/genera_sponsor.py` | grafico | Genera sprite cartelloni sponsor per Sglavinated Edition v3 (open). | `python3 assets_originali/sponsor/genera_sponsor.py` |
 | `assets_originali/sprite/auto_gt/genera_auto.py` | grafico | Genera sagoma auto GT europea anni '70-'90 per Sglavinated Edition v3. | `python3 assets_originali/sprite/auto_gt/genera_auto.py` |
