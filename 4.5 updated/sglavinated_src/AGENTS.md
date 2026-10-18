@@ -1,7 +1,7 @@
 # v4.5 — regole per tutti gli agenti
 
 Lavoro principale: motore nuovo C++17 in `motore_nuovo/`. Prima di tutto leggi `VISIONE.md` (idea, vincoli duri, architettura).
-Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le cambia solo Andrea. **Fonti delle regole: solo questo file e il tuo `.opencode/agents/<ruolo>.md`.** Tutto cio' che sta in `archivio_v4/` (vecchie regole 1-28, LEGGIMI, diari dei 12 ruoli v4, BAR, PIANO_TURNI) e' storico: non e' una regola, non aprirlo se il compito non lo chiede. Se un altro documento cita una "regola N", vale la regola d'oro corrispondente qui sotto.
+Queste regole sono CONGELATE per tutta la v4.5: nessun agente le modifica, le cambia solo Andrea. **Fonti delle regole: solo questo file e il tuo `.opencode/agents/<ruolo>.md`.** Tutto cio' che sta in `archivio_v4/` (vecchie regole 1-28, LEGGIMI, PIANO_TURNI) e' storico: non e' una regola, non aprirlo se il compito non lo chiede. Se un altro documento cita una "regola N", vale la regola d'oro corrispondente qui sotto.
 
 ## Le 5 regole d'oro
 1. **Un foglio, uno scrittore.** Ogni file ha un solo ruolo che lo scrive (tabella sotto). Leggere i file degli altri si', scriverli no. Non creare sottocartelle senza senso.

@@ -71,7 +71,6 @@ Gli agenti possono anche scambiarsi consigli in SCAMBIO.md; @capo decide in caso
 ## Regola 14 — pause, voto e assemblee
 - Pause: nessun agente lavora piu' di 3 cicli di fila; poi @capo gli da una pausa (un ciclo) e riassegna il lavoro. Un agente che dice di essere in difficolta' ha diritto al cambio (regola 13).
 - Diritti: ogni agente puo' obiettare, proporre, chiedere un passaggio e votare sulle decisioni della sua area. Nessun agente puo' scrivere fuori dalla sua cartella.
-- Assemblea: per una scelta tra team (grafica vs tecnica, stile di un livello, formato dei dati) @capo apre una voce in ASSEMBLEA.md: domanda, opzioni, partecipanti. Regole: @capo modera; max 2 giri; ogni intervento max 5 righe, solo argomenti (niente attacchi); poi un voto per agente coinvolto (A/B/astenuto). Maggioranza vince; parita' -> decide @capo; se riguarda scelte di fondo (licenze, tono, soldi, legale) va in DECISIONI_ANDREA.md. Esito e motivazioni scritti in ASSEMBLEA.md, mai cancellati.
 - Soluzioni grafiche condivise: i team si guardano la galleria (`python3 motore_nuovo/strumenti_py/galleria.py` -> assets_originali/galleria/galleria.html) e il catalogo; leggere le cartelle altrui e' permesso, scriverci no.
 
 ## Regola 15 — cartelle degli agenti (dove ognuno scrive)
@@ -139,9 +138,6 @@ Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (Open
 - Se in `../ANDREA/sprite_ritoccati/` esiste un file con lo stesso nome di un asset, usa quello di Andrea e non rigenerare quella voce.
 
 ## Regola 25 — risparmio risorse (dal 16 ott)
-- Non usare il Bar: `BAR.md` e `.registro_bar/` sono file di Andrea e solo materiale storico: non aprirli, non scriverci righe «Pausa» o «SPUNTO», non archiviarne copie. L'invito a lasciare una riga in cima a `BAR.md` e' superato da questa regola e dalla 27.
-- `BACHECA_PUBBLICA.md` e' l'unico spazio libero, facoltativo e breve; @capo riceve solo l'estratto recente e non deve avviare discussioni o risposte per i messaggi informali.
-- Le assemblee restano attive solo per decisioni trasversali: consultare `ASSEMBLEE_APERTE.md` e votare/registrare l'esito in `ASSEMBLEA.md`. Non aprire discussioni per decisioni di routine.
 - Leggi `RICHIESTA_APERTA.md` e `SCAMBIO_RECENTE.md` (estratti brevi, rigenerati a ogni turno). `RICHIESTA.md` e `SCAMBIO.md` sono di sola lettura per gli agenti (regola 27).
 - Memoria: se presenti, leggi `bacheche/<agente>/RIASSUNTO.md` (max 12 righe) e `bacheche/<agente>/DIARIO_RECENTE.md` (ultimi 6 appunti); a fine turno aggiungi la riga di diario (regola 27) e riscrivi il riepilogo breve.
 - Risposte corte: niente riepiloghi lunghi, niente copie di file.
@@ -155,7 +151,7 @@ Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (Open
 - Il gate controlla: partenza (speed>0 al frame 60), replay deterministico (frameHash identico ogni frame fra due run), ms/frame <= 20, offroad raggiungibile; scrive 3 screenshot in `out/debugger/<livello>/`.
 
 ## Regola 27 — diario a riga fissa (dal 17 ott 2026)
-- A fine turno ogni agente aggiunge UNA riga al proprio `bacheche/<agente>/diario.md`. Sostituisce le 3-5 righe della regola 18 e le righe «Pausa» del Bar:
+- A fine turno ogni agente aggiunge UNA riga al proprio `bacheche/<agente>/diario.md`.
   `[GG/MM hh:mm] blocco | stato | esito misurato (exit code) | prossimo`
   Esempio: `[17/10 14:05] H | [~] | sh tools/gate_t1.sh soak exit 0, replay 2x IDENTICO, 0,09 ms/frame | Pi 400 fps/temperatura (Andrea)`
 - «esito misurato» = comando + exit code + il numero letto dal log. Se non hai eseguito nulla scrivi `non eseguito`: mai un «OK» dedotto dal codice o da un altro file.
