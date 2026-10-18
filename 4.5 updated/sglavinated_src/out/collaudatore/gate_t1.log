@@ -1,6 +1,6 @@
 -- SDL2_image non trovata: target runner compilato senza decodifica PNG (cartelloni sponsor disabilitati, gioco comunque funzionante).
 -- Configuring done (0.2s)
--- Generating done (0.2s)
+-- Generating done (0.1s)
 -- Build files have been written to: /Users/andreauliana/Documents/GitHub/OpenRun-Game/4.5 updated/sglavinated_src/build_gate
 [ 87%] Built target sglavinated_core
 [100%] Built target prova_gate
@@ -17,54 +17,9 @@ modo: smoke, frame simulati: 500
 speed@60=161.79 speed@1=9.90  X[min,max]=[-647.8,855.1]  zFinale=33349.2
 accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
 offroad: raggiunto (frame 278)
-ms/frame medio=0.387 max=0.850 (limite 20)
+ms/frame medio=0.381 max=0.711 (limite 20)
 replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
 wrapCount=630 stimaTotalLen=55937 zMax=50826.7 zFinale=50826.7 replay 2x: IDENTICO
 modo: inattivita, frame simulati: 900
 maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
 GATE OK
-frameHash 0 4192019100
-frameHash 60 3229637131
-frameHash 120 942368488
-frameHash 180 2519872388
-frameHash 240 4209698525
-frameHash 300 3758677295
-frameHash 360 526272505
-frameHash 420 116091932
-frameHash 480 3725896299
-modo: smoke, frame simulati: 500
-speed@60=161.79 speed@1=9.90  X[min,max]=[-728.5,894.7]  zFinale=51335.6
-accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
-offroad: raggiunto (frame 167)
-ms/frame medio=0.358 max=0.603 (limite 20)
-replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=617 stimaTotalLen=57385 zMax=43626.6 zFinale=43626.6 replay 2x: IDENTICO
-modo: inattivita, frame simulati: 900
-maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
-GATE OK
-frameHash 0 4023477761
-frameHash 60 602570461
-frameHash 120 4128776322
-frameHash 180 223414525
-frameHash 240 4023972577
-frameHash 300 3217045530
-frameHash 360 2658527250
-frameHash 420 637969737
-frameHash 480 3447446931
-modo: smoke, frame simulati: 500
-speed@60=161.79 speed@1=9.90  X[min,max]=[-617.0,876.8]  zFinale=40768.9
-accelerazione: reattiva (speed@1 >= 8.0, speed@60 >= 150.0)
-offroad: raggiunto (frame 285)
-ms/frame medio=0.415 max=8.680 (limite 20)
-replay 2x: IDENTICOmodo: avvolgimento, frame simulati: 60000
-wrapCount=641 stimaTotalLen=55456 zMax=7326.7 zFinale=7326.7 replay 2x: IDENTICO
-modo: inattivita, frame simulati: 900
-maxBollaDopoIdle=4655 maxPersonaggioDopoIdle=6497 (soglia bolla 100) replay 2x: IDENTICO
-GATE OK
-accelerazione 0-10s: primo frame=9.90, 1.2s=160.83, 10s=246.66; strada 1.2s=12747.0, posizione finale=16114.5
-GATE ACCELERAZIONE OK
-GATE RIBALTAMENTO OK
-sterzo 30 frame: sinistra=-218.3 destra=218.3
-GATE STERZO OK
-continuita' curve: campioni=1199, salto pendenza max=0.50
-GATE CURVE CONTINUE OK
