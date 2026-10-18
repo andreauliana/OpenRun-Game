@@ -1,24 +1,26 @@
-# Riepilogo mattina — Tappa 1 (18 ott 2026)
-Stati: T1-RUN [~] proposto [x] | P1 [~] | H [~] | J [ ] | M [~] | G1 [ ].
+# RIEPILOGO MATTINA — capo | 18/10 2026 | Tappa 1 (Gate T1)
 
-Fatto per blocco/agente:
-- @collaudatore: gate T1 smoke+soak exit 0, "GATE T1: TUTTO OK" (out/collaudatore/gate_t1.log): speed@60=161.79 > 0 frame 60, replay 2x IDENTICO su 3 livelli, ms/frame medio 0.35-0.40 max 0.833 (<=20), offroad f278/f167/f285, avvolgimento+inattivita OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*; indice_assets 294 file, lacune 4/11 (traffico, Gianni, Gesu', UFO); review T1-RUN 7 OK; quota_open 100% >= 50%.
-- @sviluppatore: engine guida OutRun (accel decrescente vs MAX_SPEED 250, freno BRAKE 120, coast 0.995, sterzo vs velocita', spinta in curva, offroad 0.99, ribaltamento, HUD); build cmake OK, prova_gate compilato, sprite_raw.h/.cpp e png_a_raw.py scritti. Blocco: shell negata 6x `Permission denied: shell` -> 3 screenshot in out/sviluppatore/ non generabili; P1 non chiuso.
-- @capo: STATI_PROPOSTI.md, DECISIONI_ANDREA.md (D1-D3 DEFAULT sì/sì/sì, D4 DEFAULT no), diario aggiornato.
-- Andrea punto 8 T1-RUN: v91 su FEEDBACK_ANDREA.md (runner Mac SDL2, guida OK o ritocco un parametro alla volta) + fps/temperatura Pi 400 (vcgencmd) — in attesa, non eseguibile qui (regole 9/21); chiude H.
+## Fatto per blocco/agente (oggi)
+T1-RUN (@sviluppatore + @collaudatore): `sh tools/gate_t1.sh soak` exit 0, GATE T1: TUTTO OK — 3 livelli, replay 2x IDENTICO, speed@60=161.79, offroad raggiunto (lv1 f278 / lv2 f167 / lv3 f285), ms/frame medio <=1.67 (max 71 ms lv2, da tarare), soak 30000 OK. Quota open 99,8% >= 50%. prova_gate carica i 21 .sglraw prima di init(); screenshot con cartelloni veri in out/collaudatore/lv_0*/. Codice: accel/freno/coast/sterzo/offroad/ribaltamento/HUD su disco, build cmake OK, prova_gate compilato.
+P1 (@sviluppatore): punti 1-3 e 5 fatti (Pad::A accelera, B/Down freno, segmenti da livello.json, wiring show). Mancano 3 screenshot in out/sviluppatore/ (shell negata 6x `Permission denied: shell`; binary build_gate/prova_gate pronto).
+H (@collaudatore + Andrea): in attesa v91 Andrea (runner Mac SDL2 + giudizio guida + fps/temperatura Pi 400).
+G1 [ ], J [ ], MD0 [-], T5 [-]: non avviati (fuori scope Tappa 1 / non richiesti da Andrea).
 
-Non funziona / mancante:
-- Shell negata per ./build_gate/prova_gate e cp in out/sviluppatore/: 3 screenshot P1 mancanti (gate_t1.sh eseguibile, shell diretta no).
-- Frenata (Pad::B) e costa (COAST) non misurati nel gate (gate_t1.sh non li invoca, script non scrivibile).
-- fps/temperatura Pi 400 non misurabili su macOS (servono Andrea); v91 guida in attesa.
-- Sprite veri nel gate headless ancora rettangoli (D10 opzione B approvata: conversione PNG->raw, .sglraw non generati per shell negata).
-- Fuoristrada rallentamento brusco ~160->6 (D11 opzione A, taratura da confermare).
+## Non funziona / manca
+- 3 screenshot out/sviluppatore/ per chiusura P1 (shell negata).
+- v91 Andrea mancante: blocca H e le promozioni a [x] di T1-RUN/P1 (solo Andrea/Claude).
+- Sprite/cartelloni veri nel gate headless: prova_gate usa .sglraw segnaposto; D10 DEFAULT B (conversione PNG->raw in strumenti_py) da attuare.
+- Rallentamento fuoristrada troppo brusco (D11: DEFAULT A graduale, tuning parametro alla volta).
+- ms/frame max 71 ms su lv_02 (limite 20): spike da verificare/attutire.
+- fps/temperatura reali su Pi 400 ancora non misurati (Andrea).
 
-Decisioni aperte in DECISIONI_ANDREA.md (3 piu' importanti):
-- D1: chiudere T1-RUN a [x]? DEFAULT: sì.
-- D2: promuovere P1 a [x] dopo 3 screenshot in out/sviluppatore/? DEFAULT: sì.
-- D3: Andrea esegue punto 8 (v91 + misure Pi 400) per chiudere H? DEFAULT: sì, appena possibile.
-(D4: attivare @grafico per G1? DEFAULT: no.)
+## Decisioni aperte in DECISIONI_ANDREA.md (3 piu' importanti)
+D1 | Chiudere T1-RUN a [x]? DEFAULT: sì. Gate soak verde, screenshot out/collaudatore/lv_0*/ già fatti.
+D2 | Promuovere P1 a [x] dopo 3 screenshot out/sviluppatore/? DEFAULT: sì.
+D3 | Andrea punto 8 (v91 FEEDBACK_ANDREA.md + fps/temp Pi 400) per chiudere H? DEFAULT: sì, appena possibile.
+Altre aperte (già risposte Andrea, da attuare): D10 conversione PNG->raw DEFAULT B; D11 offroad graduale DEFAULT A.
 
-Prossimo passo consigliato:
-v91 Andrea su FEEDBACK_ANDREA.md (+ misure Pi 400) -> @sviluppatore 3 screenshot in out/sviluppatore/ (se shell si sblocca) -> promozioni [x] solo Andrea/Claude -> chiusura Tappa 1 -> Tappa 2.
+## Prossimo passo consigliato
+1) @sviluppatore riprova shell e produce 3 screenshot in out/sviluppatore/ con `./build_gate/prova_gate out/sviluppatore/ lv_01_neon/lv_02_atomico/lv_03_foglie smoke` -> chiude P1.
+2) Andrea scrive v91 in FEEDBACK_ANDREA.md e le misure Pi 400 -> chiude H.
+3) Solo allora Andrea/Claude promuovono T1-RUN e P1 a [x] -> chiusura Tappa 1, poi Tappa 2.

@@ -1,7 +1,7 @@
 ---
 description: Collaudatore. Build e test, replay deterministico, review di codice e licenze, documenti di architettura. Non modifica il codice di prodotto. Unisce i ruoli v4 debugger, reviewer e architetto.
 mode: all
-model: opencode/longcat-2.5-preview-free
+model: opencode/space-bunny-free
 temperature: 0.1
 permission:
   execute: deny

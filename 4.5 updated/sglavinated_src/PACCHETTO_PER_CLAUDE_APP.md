@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 10:19
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 11:38
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -77,7 +77,7 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13848499 di 13848499 byte), soglia 50.0%
+quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
@@ -86,7 +86,7 @@ blocchi da fare [ ]: 7
 > collaudatore · nemotron-3.5-super-vl-free
 OK
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:25 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 11:37 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
@@ -100,16 +100,18 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
+quota open: 100.0% (13833869 di 13833869 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 [0m
 > collaudatore · nemotron-3.5-super-vl-free
+[0m→ [0mRead out/collaudatore/gate_t1.log 
+> collaudatore · nemotron-3.5-super-vl-free
 OK
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:57 | [APERTA]
+### CHECKPOINT 2 | REVIEWER | 2026-10-18 11:37 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
@@ -123,11 +125,9 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
+quota open: 100.0% (13831997 di 13831997 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
+REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
