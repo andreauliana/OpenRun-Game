@@ -1,6 +1,5 @@
-# RIASSUNTO @sviluppatore — v4.5 turno 18/10 11:17
-- Codice: engine guida OutRun completo in motore_nuovo/src/player/, road.cpp, renderer.cpp, game.cpp (accel A con spinta BOOST calante verso MAX_SPEED 250, freno B/Down, coast 0.995, sterzo dipendente velocità, spinta esterna curva, offroad 0.99, ribaltamento uscita/collisione, marcia 1/2, HUD velocità/barra/marcia/offroad; proiezione colline quota assoluta e camera sotto auto; drawSprites zRel modulo totalLen; drawPlayerCar rollio finto 3D).
-- Gate: sh tools/gate_t1.sh exit 0, GATE T1: TUTTO OK lv_01/lv_02/lv_03 + estesi (speed@60=161.79 ovunque, ms/frame medio 1.0-1.7, replay 2x IDENTICO, offroad raggiunto frame 278/167/285, accelerazione 0-10s OK, ribaltamento+ripartenza OK, sterzo -218/+218 OK, curve continue salto 0.50 OK); log out/collaudatore/gate_t1.log.
-- Blocco misurato: shell negata (`Permission denied: shell`) per ./build_gate/prova_gate out/sviluppatore/ e cp -> screenshot P1 non copiabili in out/sviluppatore/; gate salva in out/collaudatore/<livello>/.
-- Stati: P1 [~] (punti 1-3,5 fatti; punto 4 sprite veri bloccato su G1 @grafico, catalogo [ ]); T1-RUN [~] (punti 1-4 fatti; residuo: densita' cartelloni in livello.json, troppi, uno ogni 1-4 segmenti).
-- Prossimo: sfoltire cartelloni lv_01/lv_02/lv_03, consegnare VOCE_SCAMBIO a Andrea, v91 pendente (test runner Mac da Andrea).
+# RIASSUNTO @sviluppatore — v4.5 turno 18/10 13:00
+- Cartelloni diradati in lv_01/lv_02/lv_03: cartelloni_sponsor 444→56, 418→53, 481→61 voci (1 ogni 8 posizioni array, ~1 ogni 20-30 sottosegmenti; sponsor invariati dal catalogo approvato).
+- Gate: sh tools/gate_t1.sh exit 0, GATE T1: TUTTO OK 3 livelli (speed@60=161.79, ms/frame medio 0.18-0.29 max 0.277 <=20, replay 2x IDENTICO, offroad frame 278/167/285, accelerazione/ribaltamento/sterzo/curve continue OK).
+- Stati: P1 [~], T1-RUN [~] (in attesa v91 Andrea su test runner Mac).
+- Prossimo: VOCE_SCAMBIO_1154 consegnata; attendere v91 per chiudere P1/T1-RUN.

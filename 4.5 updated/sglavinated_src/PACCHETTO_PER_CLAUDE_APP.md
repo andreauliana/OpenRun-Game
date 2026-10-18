@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 11:38
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 12:05
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -77,29 +77,6 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 11:37 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
 quota open: 100.0% (13833869 di 13833869 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
@@ -131,3 +108,26 @@ blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 12:04 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13833868 di 13833868 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK

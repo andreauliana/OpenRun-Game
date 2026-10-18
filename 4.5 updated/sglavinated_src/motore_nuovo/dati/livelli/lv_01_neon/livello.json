@@ -136,79 +136,9 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 4,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 7,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 8,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 12,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 17,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 18,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 20,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 26,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 26,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 26,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 32,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 32,
-      "lato": "sinistro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 33,
-      "lato": "destro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 34,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 38,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
     },
     {
       "segmento": 41,
@@ -216,117 +146,12 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 42,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 44,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 49,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 54,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 60,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 61,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 61,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 63,
       "lato": "sinistro",
       "sponsor_id": "piston_high"
     },
     {
-      "segmento": 66,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 69,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 70,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 70,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 76,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 76,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 78,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 80,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 83,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 83,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 85,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 87,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 88,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 91,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 93,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -336,117 +161,12 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 103,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 111,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 114,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 119,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 121,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 121,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 121,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 123,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 123,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 126,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 130,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 131,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 132,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 133,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 137,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 137,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 138,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 140,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 144,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 146,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 150,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 152,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 157,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -456,117 +176,12 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 164,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 167,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 175,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 177,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 179,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 181,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 184,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 190,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 191,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 194,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 195,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 196,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 197,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 198,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
       "segmento": 203,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 203,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 204,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 207,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 208,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 211,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 213,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 215,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 216,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -576,77 +191,7 @@
       "sponsor_id": "green_box"
     },
     {
-      "segmento": 218,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 219,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 226,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 226,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 227,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 236,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 241,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 245,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 246,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 251,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 254,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 258,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 259,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 263,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 264,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
     },
@@ -656,69 +201,9 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 279,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 281,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 291,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 293,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 299,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 299,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 301,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 303,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 304,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 307,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 307,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 308,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 309,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 310,
@@ -726,94 +211,9 @@
       "sponsor_id": "erba_medica"
     },
     {
-      "segmento": 312,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 314,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 315,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 318,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 319,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 322,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 326,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 328,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 330,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 336,
       "lato": "destro",
       "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 339,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 340,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 341,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 344,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 346,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 350,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 351,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 351,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
     },
     {
       "segmento": 355,
@@ -821,74 +221,9 @@
       "sponsor_id": "green_box"
     },
     {
-      "segmento": 360,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 361,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 362,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 365,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 371,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 372,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 375,
       "lato": "sinistro",
       "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 375,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 376,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 384,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 384,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 394,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 395,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 395,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
     },
     {
       "segmento": 396,
@@ -896,99 +231,9 @@
       "sponsor_id": "erba_medica"
     },
     {
-      "segmento": 400,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 403,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 406,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 413,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 415,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 421,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 427,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 430,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 431,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 433,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 434,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 434,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 440,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 444,
-      "lato": "sinistro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 445,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 459,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 462,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 462,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 465,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 468,
@@ -996,62 +241,7 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 469,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 469,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 472,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 474,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 474,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 475,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 476,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 477,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 479,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 482,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 484,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 486,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1061,107 +251,12 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 492,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 495,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 496,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 501,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 513,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 515,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 516,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 517,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 517,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 518,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 518,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 519,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 520,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 521,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 522,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 524,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 531,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 537,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 543,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 548,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 551,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1171,139 +266,14 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 556,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 564,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 565,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 566,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 572,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 575,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 577,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 577,
       "lato": "sinistro",
       "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 581,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 584,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 587,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 588,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 595,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 595,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 596,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 597,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 600,
-      "lato": "sinistro",
+      "lato": "destro",
       "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 602,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 606,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 607,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 610,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 611,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 614,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 619,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 620,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 622,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 623,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 628,
@@ -1311,67 +281,7 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 634,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 636,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 639,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 640,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 641,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 641,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 642,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 647,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 650,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 651,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 654,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 662,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 664,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1381,67 +291,7 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 670,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 671,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 674,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 675,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 682,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 683,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 684,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 689,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 699,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 700,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 700,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 701,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 708,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1451,84 +301,9 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 713,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 716,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 724,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 728,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 730,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 736,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 738,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 738,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 740,
       "lato": "sinistro",
       "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 741,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 746,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 748,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 749,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 751,
-      "lato": "destro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 752,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 759,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 760,
@@ -1536,124 +311,14 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 764,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 767,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 768,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 770,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 788,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 789,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 791,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 799,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 800,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 801,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 808,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 809,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 811,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 819,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 820,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 820,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 821,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 827,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 829,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 832,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 835,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 838,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 838,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 843,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 843,
@@ -1661,114 +326,14 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 845,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 846,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 846,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 848,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 850,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 859,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 859,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 860,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 861,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 862,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 866,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 868,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 873,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 873,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 875,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 878,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 881,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 885,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 886,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 891,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 893,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 894,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 897,
@@ -1776,137 +341,7 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 906,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 907,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 907,
-      "lato": "sinistro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 907,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 910,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 912,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 914,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 919,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 927,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 928,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 928,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 930,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 931,
-      "lato": "sinistro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 932,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 933,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 936,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 938,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 943,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 946,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 948,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 949,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 953,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 954,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 954,
-      "lato": "destro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 956,
-      "lato": "destro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 957,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 957,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1916,62 +351,7 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 966,
-      "lato": "destro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 970,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 973,
-      "lato": "sinistro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 975,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 981,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 981,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 982,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 983,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 984,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 986,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 987,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 995,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -1981,127 +361,17 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 1001,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1002,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1003,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1008,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1011,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1013,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 1014,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 1015,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1018,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1030,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1031,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1033,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1036,
-      "lato": "sinistro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 1037,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 1037,
       "lato": "destro",
       "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 1039,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1041,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1045,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1047,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1048,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
     },
     {
       "segmento": 1053,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1060,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1061,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1062,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1065,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -2111,62 +381,7 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 1076,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1078,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1079,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1086,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 1091,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1095,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1103,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1106,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1112,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1113,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1116,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1116,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     },
@@ -2176,124 +391,14 @@
       "sponsor_id": "curve_pericolose"
     },
     {
-      "segmento": 1119,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1122,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1123,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 1124,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1126,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1126,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1127,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 1127,
       "lato": "destro",
       "sponsor_id": "slow_down"
     },
     {
-      "segmento": 1130,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1131,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 1132,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1135,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1137,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1140,
-      "lato": "sinistro",
-      "sponsor_id": "green_box"
-    },
-    {
-      "segmento": 1142,
-      "lato": "destro",
-      "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 1146,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1147,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1148,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
       "segmento": 1148,
       "lato": "sinistro",
       "sponsor_id": "piston_high"
-    },
-    {
-      "segmento": 1152,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 1154,
-      "lato": "destro",
-      "sponsor_id": "erba_medica"
-    },
-    {
-      "segmento": 1156,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1159,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1160,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
     },
     {
       "segmento": 1163,
@@ -2301,52 +406,7 @@
       "sponsor_id": "brinis_udine"
     },
     {
-      "segmento": 1171,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1172,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1173,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1176,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1177,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1178,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
       "segmento": 1188,
-      "lato": "destro",
-      "sponsor_id": "curve_pericolose"
-    },
-    {
-      "segmento": 1190,
-      "lato": "sinistro",
-      "sponsor_id": "slow_down"
-    },
-    {
-      "segmento": 1192,
-      "lato": "sinistro",
-      "sponsor_id": "brinis_udine"
-    },
-    {
-      "segmento": 1195,
       "lato": "destro",
       "sponsor_id": "curve_pericolose"
     }
