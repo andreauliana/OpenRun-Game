@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 07:56
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 08:26
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, DECISIONI_ANDREA.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -57,43 +57,8 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 178:| Stato | [-] (tappa 5) |
 
 ## Decisioni aperte
-13:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
-22:## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
-28:## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
-35:## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
-42:## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
-47:## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
-53:## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
-58:## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
-63:## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
-71:## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
-77:## D10 | T1-RUN | capo | [APERTA]
-85:## D11 | T1-RUN | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-Nessun altro problema nei file revisionati. Una volta corretto CREDITI.md, il blocco è pulito per il checkpoint.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-17 18:00 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== CI SONO ERRORI ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/png_a_raw.py (nessuna)
-quota open: 100.0% (11234372 di 11238712 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 6
-
-[0m
 > collaudatore · nemotron-3.5-super-vl-free
 Leggo i quattro file da revisionare in parallelo.
 [0m→ [0mRead motore_nuovo/CMakeLists.txt 
@@ -124,6 +89,29 @@ OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
 quota open: 100.0% (13835321 di 13835321 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+[0m
+> collaudatore · nemotron-3.5-super-vl-free
+OK
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 08:25 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13848499 di 13848499 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7

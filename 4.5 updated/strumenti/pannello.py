@@ -199,10 +199,12 @@ const e=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]
 const fa=s=>s==null?'-':s<60?s+' s':s<3600?Math.floor(s/60)+' min':Math.floor(s/3600)+' h '+Math.floor(s%3600/60)+' min';
 const T={lavora:'Stanno lavorando',attivo:'Attivo (file scritti da poco)',pausa:'In pausa (limite di richieste)',attesa:'Ciclo in attesa',review:'Versione pronta: aspetta il tuo feedback',fermo:'Fermo'};
 let logAg='ciclo',aperti=new Set();
+const formatoOra=new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZoneName:'short'});
+function aggiornaOra(){const parti=Object.fromEntries(formatoOra.formatToParts(new Date()).map(p=>[p.type,p.value]));document.getElementById('ora').textContent=`${parti.weekday} ${parti.day} ${parti.hour}:${parti.minute}:${parti.second} ${parti.timeZoneName}`}
+aggiornaOra();setInterval(aggiornaOra,1000);
 async function carLog(){try{const tx=await (await fetch('/log?ag='+logAg)).text();const lg=document.getElementById('log'),bas=lg.scrollTop+lg.clientHeight>=lg.scrollHeight-5;lg.textContent=tx||'(log vuoto)';if(bas)lg.scrollTop=lg.scrollHeight}catch(x){}}
 let tf=Date.now(),visti=new Set(),primo=true,ultimoOk=0;
 async function t(){try{const d=await (await fetch('/api')).json();tf=Date.now();ultimoOk=tf;
-document.getElementById('ora').textContent=d.ora;
 document.getElementById('ver').textContent=d.ver.versione+' · tappa '+d.ver.tappa+(d.ver.ultima_review?' · review '+d.ver.ultima_review:'');
 document.getElementById('big').className='big '+d.generale;
 const n=d.processi.in_corso.map(x=>x.nome);

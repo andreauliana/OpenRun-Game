@@ -10,6 +10,20 @@ DEFAULT usato nel frattempo:
 Impatto se cambi idea:
 RISPOSTA DI ANDREA:
 ```
+
+## Tappa attiva: 1 — Gate T1 (blocco T1-RUN)
+
+D1 | Chiudere T1-RUN a [x]? Gate soak eseguito dal capo: `sh tools/gate_t1.sh soak` exit 0, `out/collaudatore/gate_t1.log` "GATE T1: TUTTO OK" (speed@60=161.79 > 0 frame 60, replay 2x IDENTICO 3 livelli, ms/frame <= 20, offroad raggiunto, 3 screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_01_neon, lv_02_atomico, lv_03_foglie). DEFAULT: sì.
+
+D2 | Autorizzare promozione P1 a [x] una volta che @sviluppatore consegna 3 screenshot in out/sviluppatore/ (pista curva, traffico, cartelloni pubblicitari, elementi decorativi percorso, personaggio con fumetto; build cmake già ok)? DEFAULT: sì.
+
+D3 | Andrea esegue punto 8 T1-RUN (v91 FEEDBACK_ANDREA.md su runner Mac SDL2, guida OK o ritocco un parametro alla volta; fps/temperatura Pi 400 vcgencmd) per chiudere H? DEFAULT: sì, appena possibile.
+
+D4 | Attivare @grafico per G1 (catalogo grafico CATALOGO_GRAFICO.json, check_catalogo_grafico.py exit 0)? DEFAULT: no (non richiesta, fuori scope Tappa 1).
+
+Rispondi in FEEDBACK_ANDREA.md o qui; se non rispondo entro il prossimo turno attendere e proseguire test debug.
+
+
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
 Opzioni: A) codice MIT, grafiche CC-BY  B) codice GPL-3.0, grafiche CC-BY-SA  C) codice aperto, grafiche riservate

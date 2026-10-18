@@ -1,20 +1,22 @@
-# Riepilogo mattina — 18 ott 2026
+# Riepilogo mattina — Tappa 1 (18 ott 2026)
+Tappa attiva: 1 — motore C++ (strada pseudo-3D, guida, gate T1).
+Stati: T1-RUN [~] proposto [x] | P1 [~] | H [~] | J [ ] | M [~] | G1 [ ].
 
-## Per blocco / agente (letto, non dedotto)
-- @sviluppatore (T1-RUN/P1): punti 1-4 su disco: player.cpp dinamica OutRun (accel A/Up, freno B/Down, offroad OFFROAD_LIMIT=700<X_LIMIT=900, sterzo vs velocita'), road.cpp proiezione/curva/collina corretta, renderer.cpp sprite veri zRel modulo totalLen, 21 .sglraw sponsor in dati/sprite_raw/sponsor/, prova_gate.cpp casi smoke/soak/avvolgimento/inattivita/sterzo/curve/crash.
-- @collaudatore (T1-RUN 5-7): sh tools/gate_t1.sh e soak exit 0; 3 livelli speed@60=161.79>0, offroad f278, ms/frame medio ~0.38 (limite 20), replay 2x IDENTICO, avvolgimento+inattivita OK; indice_assets.py 293 file (4 lacune: traffico, Gianni, Gesu', UFO); quota_open 100%; check_catalogo OK; review p7 OK (game.cpp:363 %3000 fixato).
-- @grafico / @ricercatore: non attivati.
-- Andrea (H punto 8): runner Mac + fps/temperatura Pi 400 pendenti (v91 in FEEDBACK_ANDREA.md).
+Fatto per blocco/agente:
+- @collaudatore: `sh tools/gate_t1.sh soak` exit 0, `GATE T1: TUTTO OK` (out/collaudatore/gate_t1.log): speed@60=161.79 > 0 frame 60, replay 2x IDENTICO su lv_01_neon/lv_02_atomico/lv_03_foglie, ms/frame medio 0.407 max 55.601 (limite 20), offroad raggiunto frame 167-285, soak 30000 frame OK; accelerazione, ribaltamento, sterzo, curve continue OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*; quota_open 100%, check_catalogo OK, review renderer/road/game.h/prova_gate OK.
+- @sviluppatore: codice su disco — player.cpp accel A/Up, freno B/Down, COAST 0.995, sterzo vs velocità; road.cpp colline quota assoluta + camera sotto auto; renderer.cpp sprite veri zRel mod totalLen, disegno lontano->vicino; 21 .sglraw sponsor caricati da prova_gate.cpp; CMakeLists target prova_gate. Gate da confermare (shell negata, vedi sotto).
+- @capo: out/capo/STATI_PROPOSTI.md riscritto (T1-RUN [x] proposto, P1 [~], H [~], J [ ], M [~], G1 [ ]), DECISIONI_ANDREA.md D1-D4 (DEFAULT sì/sì/sì/no), bacheche/capo/diario.md aggiornato.
+- Andrea (punto 8 T1-RUN): v91 su FEEDBACK_ANDREA.md (runner Mac SDL2, guida OK o ritocco parametro) + fps/temperatura Pi 400 (vcgencmd) — in attesa, non eseguibile qui (regole 9/21 AGENTS.md); chiude H.
 
-## Non funziona / ancora aperto
-- v91 Andrea pendente: chiude H e permette promozione T1-RUN/P1 a [x].
-- Lacune grafiche non catalogate: traffico, sprite personaggi (Gianni, Gesu', UFO).
-- Nessun bug noto in codice; game.cpp:363 gia' corretto.
+Cosa non funziona / aperti:
+- shell negata per @sviluppatore: `sh tools/gate_t1.sh` e i 3 screenshot in out/sviluppatore/ non generabili -> P1 non chiudibile (mancano screenshot: pista curva, traffico, cartelloni, personaggio con fumetto).
+- Runner gate: SDL2_image mancante, cartelloni sponsor disabilitati (gioco comunque funzionante).
+- Densità cartelloni in livello.json troppo fitti (T1-RUN punto 4, resta dopo v91).
 
-## Decisioni aperte (3 piu' importanti, DECISIONI_ANDREA.md)
-1. D10 T1-RUN (capo): sprite/cartelloni veri nel gate — PNG nel core vs conversione PNG->raw offline. RISPOSTA Andrea: B (zero dipendenze). DEFAULT B. Da chiudere formalmente.
-2. D11 T1-RUN (capo): fuoristrada troppo brusco (160->6). RISPOSTA Andrea: A (graduale ~0.85/frame). DEFAULT A. Da chiudere formalmente.
-3. Nessuna altra aperta: D1-D9 CHIUSE, nessun PER_CLAUDE.md.
+Decisioni aperte in DECISIONI_ANDREA.md (le 3 più importanti):
+- D1: chiudere T1-RUN a [x]? DEFAULT: sì.
+- D2: promuovere P1 a [x] dopo 3 screenshot in out/sviluppatore/? DEFAULT: sì.
+- D3: Andrea esegue punto 8 (v91 + misure Pi 400) per chiudere H? DEFAULT: sì, appena possibile.
 
-## Prossimo passo consigliato
-@collaudatore: report gate soak (exit code + numeri gate_t1.log) + 3 screenshot out/collaudatore/<livello>/; poi v91 Andrea (runner Mac, guida OK + fps/temp Pi 400) -> T1-RUN/P1/H a [x] (solo Andrea/Claude); se tutti i blocchi tappa 1 sono [x], creare FINITO.
+Prossimo passo consigliato:
+Andrea v91 su FEEDBACK_ANDREA.md (+ misure Pi 400) -> @sviluppatore 3 screenshot in out/sviluppatore/ (se shell si sblocca) -> promozioni [x] solo Andrea/Claude -> chiusura Tappa 1 -> Tappa 2.
