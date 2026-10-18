@@ -2,16 +2,10 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # DISEGNO_SHOW — interfaccia di disegno degli show (DatiShow -> renderer)
 
-Traduzione del BLOCCO P3 (SCAMBIO voce 73): **cosa disegnare a ogni frame** a
+Documento d'interfaccia del BLOCCO P3: **cosa disegnare a ogni frame** a
 partire da `DatiShow` (personaggio, posa, posizione, fumetto, UFO) e come
-collegarla al renderer — oggi in `src/game/game.cpp` lo show viene scartato
-con `(void)show;` (riga 219).
-
-Nota di perimetro: il documento sta in `src/gameplay/` perche' a @traduttore
-la scrittura e' stata negata sia in `motore_nuovo/docs/` sia in
-`motore_nuovo/dati/*.md` (permission denied, regola 21: non si insiste;
-segnalato a @capo in SCAMBIO voce 76). Se @capo lo preferisce, lo spostare in
-`motore_nuovo/docs/DISEGNO_SHOW.md`.
+collegarlo al renderer. Il collegamento dati->scena->framebuffer e' presente
+in `src/game/game.cpp`; la resa finale di sprite e testo resta incompleta.
 
 Moduli (codice MIT, SPDX in testa a ogni file):
 
@@ -71,88 +65,33 @@ testa; larghezza = max caratteri x `carattereLarghezza` + padding, con
 (`carattereLarghezza`, `rigaAltezza`) va allineata al font di @tipografo
 quando esiste: `disegnoShow_.setLayout(...)`.
 
-## 3. Collegamento al nucleo (compito di @coder, `src/game/` + `src/render/` + CMakeLists)
+## 3. Stato del collegamento nel progetto
 
-1. **CMakeLists.txt**: aggiungere alla lista di `sglavinated_core` (sono elenco
-   esplicito, non glob): `src/gameplay/disegno_show.cpp`,
-   `src/gameplay/disegno_show.h`, `src/gameplay/testi_frasi.cpp`,
-   `src/gameplay/testi_frasi.h`.
-2. **game.h**: `#include "gameplay/disegno_show.h"` e
-   `#include "gameplay/testi_frasi.h"`; due membri:
-   `gameplay::TestiFrasi testiFrasi_;` e `gameplay::DisegnoShow disegnoShow_;`
-   (dopo `showManager_`).
-3. **init()** (una sola volta, tutte le alloc qui):
-   ```cpp
-   testiFrasi_.carica("motore_nuovo/dati/frasi.json"); // percorso relativo, come livello.json
-   testiFrasi_.verifica();     // invariante personaggio<->frase (log su false)
-   disegnoShow_.setTesti(&testiFrasi_);
-   disegnoShow_.layout().schermoW = Framebuffer::WIDTH;   // opzionale, 320x224
-   disegnoShow_.layout().schermoH = Framebuffer::HEIGHT;
-   ```
-4. **update()**: al posto di `(void)show;` (riga 219):
-   ```cpp
-   const DatiShow& show = showManager_.aggiorna(gi);
-   disegnoShow_.aggiorna(clock_.frame, showManager_); // stesso frame!
-   ```
-   Va chiamato **dopo** `showManager_.aggiorna()` e con lo stesso contatore di
-   frame, altrimenti bolla e posa arrivano di un frame indietro.
-5. **render()**, dopo `ren_.drawPlayerCar(...)`:
-   ```cpp
-   const ScenaShow& sc = disegnoShow_.scena();
-   if (sc.ufoVisibile)          { /* sprite UFO a sc.ufoX/ufoY */ }
-   if (sc.personaggioVisibile)   { /* sprite pose sc.pose in box persX/persY/persW/persH */ }
-   if (sc.bollaVisibile)         { /* scatola bollaX/Y/W/H, coda codaX/Y, testo testoX/rigaY[0..1] */ }
-   ```
-6. **Hook necessari nel `Renderer`** (sono di @coder, questo modulo non puo'
-   toccare `src/render/`):
-   - `void disegnaSpriteSchermo(const Sprite& s, i32 x, i32 y, i32 w, i32 h);`
-     — disegna in coordinate schermo con scala nearest-neighbour sul box dato
-     (oggi `drawSprite` e' privato e solo per il mondo). Serve anche per l'UFO.
-   - Fumetto: `disegnaRettangolo(x, y, w, h, riempimento, bordo, spessore)` (o
-     `Framebuffer::fillRect`, che e' gia' pubblico) + il testo col font di
-     @tipografo (`assets_originali/ui/font/` + `dati/ui/`).
-   - **Verifica immediata anche senza sprite**: con solo
-     `fb().fillRect(bollaX, bollaY, bollaX+bollaW, bollaY+bollaH, ...)` e un
-     rettangolo di prova per `persX/persY/persW/persH` si vede gia' l'intero
-     comportamento (entrata/tenuta/uscita, posa che cambia come indice,
-     fumetto che appare e sparisce, UFO che attraversa). Deterministico, zero
-     asset.
-7. **Asset delle pose** (quando @asset li produce, registro in
-   `docs/CATALOGO_PERSONAGGI.md`): chiavi `gianni/pose_00..07`,
-   `gesu/pose_00..03`, `ufo` (un solo sprite: il volo e' dato da ufoX/ufoY).
-   Registrazione come gli sponsor (`Renderer::aggiungiSponsorSprite`); la
-   mappatura chiave -> indice spetta al runner, il modulo fornisce solo la
-   chiave (`DisegnoShow::chiaveSprite(personaggio, pose, buf, dim)`).
+- `motore_nuovo/CMakeLists.txt` include `disegno_show.cpp` e `testi_frasi.cpp`
+  nel core.
+- `Game::init()` carica e collega i testi e configura `DisegnoShow`.
+- `Game::update()` aggiorna `ShowManager` e `DisegnoShow` sullo stesso frame.
+- `Game::render()` consuma `ScenaShow` dopo l'auto. Attualmente UFO,
+  personaggio e fumetto sono rappresentati da rettangoli di debug; il testo
+  delle frasi e gli sprite non sono ancora disegnati dal renderer.
 
-## 4. Riferimenti nel codice
+## 4. Lavoro ancora necessario
 
-- `dati/SPEC_GAMEPLAY.md` §5 (show e bolla) e §7 (interfaccia verso il nucleo):
-  la sezione §9 "interfaccia di disegno" va aggiunta da @capo (scrittura
-  negata a me su `dati/*.md`): il testo pronto e' il paragrafo qui sotto.
-- `dati/show_logica.md` §3 (tavole pose/sway/bob) e §6 (interfaccia al nucleo).
-- `src/gameplay/show.h`: `DatiShow`, `ShowManager::bollaVisibile()`, `ufo()`.
-- `src/gameplay/testi_frasi.h`: invariante personaggio <-> frase (`verifica()`).
+1. Collegare le chiavi sprite `gianni/pose_00..07`, `gesu/pose_00..03` e `ufo`
+   agli asset approvati nel catalogo; non usare asset in bozza come risorse di
+   produzione.
+2. Disegnare le pose e il fumetto (contorno, coda e testo letto da
+   `ScenaShow`) mantenendo l'ordine UFO, personaggio, fumetto.
+3. Aggiungere o aggiornare test per timing, visibilita', layout entro 320x224
+   e replay deterministico; registrare prove nel checkpoint attivo.
 
-Testo pronto per SPEC_GAMEPLAY.md §9 (da incollare da @capo):
-"§9 Interfaccia di disegno (DatiShow -> renderer) — BLOCCO P3. Oltre alla
-logica, il modulo espone cosa disegnare a ogni frame
-(`src/gameplay/disegno_show.h/.cpp`, MIT): `DisegnoShow::aggiorna(frame,
-showManager_)` -> `ScenaShow` con box del personaggio in px
-(`persX/persY/persW/persH`), `pose` (Gianni 0-7, Gesu' 0-3, chiave asset
-`gianni/pose_07`), scatola del fumetto (`bollaX/Y/W/H`, `testoX`, `rigaY[2]`,
-coda `codaX/codaY`), testo gi' letto da `dati/frasi.json` (`TestiFrasi`), UFO
-(`ufoX/ufoY`, mai frase). I tempi del fumetto restano quelli di §5:
-`bollaVisibile()` dell'`ShowManager` e' l'unica fonte. Entrata/uscita in dati
-(`ShowLayout`): Gianni scivola da sinistra, Gesu' dall'alto e risale; pose
-ogni 16 frame; deriva sway/bob da tabelle intere (tecnica della v87, valori
-nostri, nessun libm -> determinismo replay). Tutto in px sul framebuffer
-320x224; il modulo non include `render/` ne' SDL."
+Non aggiungere nuovamente i file al CMake o ripetere il wiring gia' presente.
+Per la logica e le invarianti consultare `dati/SPEC_GAMEPLAY.md`,
+`dati/show_logica.md`, `src/gameplay/show.h` e `src/gameplay/testi_frasi.h`.
 
-## 5. Fonti e licenza
+## 5. Provenienza e licenza
 
-Fonti (sola lettura): `HANDOVER.md` §0/§2/§4, `SPEC_personaggi_v74.md` §4-§7,
-`OPENCODE_REFERENCE_v74.json`, `tools/gianni12.py`, `dati/frasi.json`,
-`dati/show_logica.md`, `dati/SPEC_GAMEPLAY.md`, `dati/personaggi/*/manifest.json`.
-Testi delle frasi: Andrea (CC-BY-4.0 in `frasi.json`). Questo documento:
-CC-BY-4.0. Codice: MIT (SPDX in testa ai file).
-Nessun codice 68000, nessun asset/grafica/audio Sega, percorsi relativi.
+I dettagli di timing e posa derivano dai dati del progetto e dalle regole
+documentate; il codice e gli asset devono mantenere le licenze registrate nei
+rispettivi manifest. Questo documento e' CC-BY-4.0. Nessun codice 68000 o
+asset/audio Sega e' parte dell'implementazione.

@@ -16,5 +16,5 @@
     "personaggi.h",
     "ufo.h"
   ],
-  "note": "Codice C++17 indipendente da SDL. Le tabelle di id frase sono una copia di lavoro di dati/frasi.json (CC-BY-4.0, autore Andrea): qui solo indici; i testi arrivano da testi_frasi.cpp (lettura unica in init, percorso relativo motore_nuovo/dati/frasi.json). Da aggiungere a sglavinated_core in CMakeLists.txt: disegno_show.cpp e testi_frasi.cpp (compito di @coder, vedi DISEGNO_SHOW.md sezione 3)."
+  "note": "Codice C++17 indipendente da SDL. Le tabelle di id frase sono una copia di lavoro di dati/frasi.json (CC-BY-4.0, autore Andrea): qui solo indici; i testi arrivano da testi_frasi.cpp (lettura unica in init, percorso relativo motore_nuovo/dati/frasi.json). disegno_show.cpp e testi_frasi.cpp sono gia' inclusi in sglavinated_core; la resa renderer di sprite e testo resta da completare (vedi DISEGNO_SHOW.md)."
 }

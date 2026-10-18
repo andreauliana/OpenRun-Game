@@ -1,12 +1,12 @@
 # Stato corrente — OpenRun 4.6
 
-> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-10-18. Fonte dettagliata: [CP-001 — baseline](./CP-001-baseline-openrun-46.md).
+> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-10-18. Fonte dettagliata: [CP-004 — fonte Andrea e archivio v4](./CP-004-review-e-archivio-v4.md).
 
 | Campo | Stato |
 |---|---|
 | Fase | 4.6, migrazione graduale |
-| Ultimo checkpoint | [CP-003](./CP-003-status-officina-e-test.md) — status Officina, tool e permessi di test, aperto |
-| Stato attività | CP-003 attende review indipendente e test CTest; CP-002 inventario grafico resta aperto in attesa di revisore |
+| Ultimo checkpoint | [CP-004](./CP-004-review-e-archivio-v4.md) — fonte Andrea e archivio v4, aperto |
+| Stato attività | CP-004 attende review indipendente; CP-003 attende review e prova CTest; CP-002 inventario grafico resta aperto in attesa di revisore |
 | Sorgenti attivi | `motore_nuovo/`, `assets_originali/`, `libreria/`, `tools/`; nessuno spostamento fisico completato |
 | Ruoli | Capo, Designer, Builder/Developer, Developer/Builder Junior |
 | Review | Peer review tra i due sviluppatori; autore distinto dal revisore |
@@ -25,7 +25,8 @@ Leggere [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) per l'ultim
 ## Prossime azioni
 
 1. Il Capo assegna revisori indipendenti per CP-002 e CP-003; per CP-003 attiva inoltre il progetto CMake in VS Code e richiede l'esecuzione del test interno.
-2. I revisori registrano esito e prove nei rispettivi checkpoint; in caso di rilievi, il Capo mantiene aperto il checkpoint e richiede correzione e nuova review indipendente.
-3. Il Capo aggiorna questa scheda e il registro quando cambia lo stato o si apre/chiude un checkpoint.
+2. Il Capo assegna un revisore indipendente per CP-004 e verifica i riferimenti attivi e la classificazione archivio.
+3. I revisori registrano esito e prove nei rispettivi checkpoint; in caso di rilievi, il Capo mantiene aperto il checkpoint e richiede correzione e nuova review indipendente.
+4. Il Capo aggiorna questa scheda e il registro quando cambia lo stato o si apre/chiude un checkpoint.
 
 Per la cronologia e gli ID, consultare [REGISTRO_REVISIONI.md](./REGISTRO_REVISIONI.md). Per una nuova scheda, usare [TEMPLATE_CHECKPOINT.md](./TEMPLATE_CHECKPOINT.md).
