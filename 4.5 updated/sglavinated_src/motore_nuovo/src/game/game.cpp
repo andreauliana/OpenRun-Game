@@ -381,6 +381,8 @@ void Game::render() {
     if (sc.bollaVisibile) {
         fb_.fillRect(sc.bollaX, sc.bollaY, sc.bollaX + sc.bollaW, sc.bollaY + sc.bollaH, 0xFF0000FFu);
     }
+    // Pannello di info (tappa 1): velocita, marcia, fuoristrada.
+    ren_.drawHud(player_.speed / player_.maxSpeed(), player_.gear, player_.offroad);
 }
 
 bool Game::collisioneOggettiVicini() const {

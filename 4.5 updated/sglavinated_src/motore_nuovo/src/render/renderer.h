@@ -35,6 +35,10 @@ public:
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f);
 
+    // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
+    // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
+    void drawHud(f32 speedPct, i32 gear, bool offroad);
+
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
 

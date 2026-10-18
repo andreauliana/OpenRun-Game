@@ -249,4 +249,29 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     (void)speed; // riservato per animazione sospensione / salto
 }
 
+void Renderer::drawHud(f32 speedPct, i32 gear, bool offroad) {
+    // Pannello info in basso a sinistra: barra velocita, marcia, avviso offroad.
+    const i32 x0 = 8, y0 = 204, wBarMax = 120, hBar = 6;
+    f32 pct = speedPct < 0.0f ? 0.0f : (speedPct > 1.0f ? 1.0f : speedPct);
+    // Sfondo e bordo del pannello.
+    fb_.fillRect(x0 - 2, y0 - 2, x0 + wBarMax + 36, y0 + hBar + 16, pal_[4]);
+    fb_.fillRect(x0 - 1, y0 - 1, x0 + wBarMax + 35, y0 + hBar + 15, pal_[7]);
+    // Barra velocita: piena a 100%, gialla oltre l'85%.
+    if (pct > 0.0f)
+        fb_.fillRect(x0, y0, x0 + (i32)(pct * (f32)wBarMax) - 1, y0 + hBar - 1,
+                     pct > 0.85f ? pal_[11] : pal_[9]);
+    // Tacche 33% e 66%.
+    fb_.fillRect(x0 + wBarMax / 3, y0 - 2, x0 + wBarMax / 3, y0 + hBar + 1, pal_[15]);
+    fb_.fillRect(x0 + 2 * wBarMax / 3, y0 - 2, x0 + 2 * wBarMax / 3, y0 + hBar + 1, pal_[15]);
+    // Marcia: due quadratini, quelli raggiunti verdi.
+    const i32 gx = x0 + wBarMax + 8;
+    for (i32 g = 1; g <= 2; ++g) {
+        const u32 col = (gear >= g) ? pal_[13] : pal_[15];
+        fb_.fillRect(gx + (g - 1) * 10, y0, gx + (g - 1) * 10 + 7, y0 + 7, col);
+    }
+    // Avviso fuoristrada: rosso fisso quando offroad.
+    if (offroad)
+        fb_.fillRect(gx + 20, y0, gx + 27, y0 + 7, pal_[12]);
+}
+
 } // namespace sgl

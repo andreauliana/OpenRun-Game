@@ -256,6 +256,38 @@ bool verificaSterzo() {
            std::abs(sinistra + destra) <= 0.1f;
 }
 
+// --- Caso nuovo: freno (Pad::B / Down) riduce la velocita' ---
+bool verificaFrenata() {
+    Player player;
+    Pad gas{}; gas.held = Pad::A;
+    for (i32 frame = 0; frame < 100; ++frame) { player.input(gas, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    const f32 speedPrima = player.speed;
+    Pad freno{}; freno.held = Pad::B;
+    for (i32 frame = 0; frame < 100; ++frame) { player.input(freno, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    const f32 speedDopo = player.speed;
+    std::printf("frenata: prima=%.2f dopo=%.2f (BRAKE=120, dt=0.02)\n", speedPrima, speedDopo);
+    return speedPrima > 60.0f && speedDopo <= speedPrima * 0.3f && speedDopo >= 0.0f;
+}
+
+// --- Caso nuovo: gas rilasciato -> coast (COAST=0.995), decadimento graduale e monotono ---
+bool verificaCosta() {
+    Player player;
+    Pad gas{}; gas.held = Pad::A;
+    for (i32 frame = 0; frame < 150; ++frame) { player.input(gas, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    const f32 speedPrima = player.speed;
+    Pad nullo{};
+    f32 speedPre = speedPrima;
+    bool decrescente = true;
+    for (i32 frame = 0; frame < 250; ++frame) {  // 5 s di inerzia
+        player.input(nullo, 1.0f / 50.0f);
+        player.update(1.0f / 50.0f);
+        if (player.speed > speedPre + 0.001f) decrescente = false;
+        speedPre = player.speed;
+    }
+    std::printf("costa: prima=%.2f dopo5s=%.2f decrescente=%d\n", speedPrima, player.speed, decrescente);
+    return speedPrima > 100.0f && player.speed < speedPrima * 0.45f && decrescente;
+}
+
 // --- Caso nuovo: avvolgimento di playerZ oltre totalLen_ ---
 // Guida tenuta vicino al centro: accelera sempre, sterza verso centro quando |x| e' alto.
 Pad padAvvolgimento(const Game& game) {
@@ -479,6 +511,18 @@ int main(int argc, char** argv) {
         bool ok = (e.maxBollaDopoIdle >= PIXEL_MIN) && deterministico;
         std::printf("%s\n", ok ? "GATE INATTIVITA OK" : "FALLITO: show/fumetto inattivita non visibile");
         return ok ? 0 : 5;
+    }
+
+    if (modo == "frenata") {
+        const bool ok = verificaFrenata();
+        std::printf("%s\n", ok ? "GATE FRENATA OK" : "FALLITO: freno non riduce la velocita'");
+        return ok ? 0 : 9;
+    }
+
+    if (modo == "costa") {
+        const bool ok = verificaCosta();
+        std::printf("%s\n", ok ? "GATE COSTA OK" : "FALLITO: gas rilasciato non decelera");
+        return ok ? 0 : 10;
     }
 
     // --- modo smoke (default) ---
