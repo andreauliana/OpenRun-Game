@@ -1,29 +1,20 @@
-# RIEPILOGO MATTINA — 18/10 (max 40 righe)
+# RIEPILOGO MATTINA — OpenRun 4.6 (18/10/2026)
 
-## Fatto per blocco/agente
+## Fatto per blocco/agente (18/10)
+- Officina / Builder (Copilot): STATUS_OFFICINA.md come unico handoff tecnico; wrapper CMake/test e allowlist aggiornati. Gate T1 `sh tools/gate_t1.sh` exit 0: 3 livelli, replay identico, acc/ribaltamento/sterzo/curve OK; 0,19-0,20 ms/frame, max 0,393 ms/frame (report 1155). Log: gate_t1.log; exit code del processo non registrato nel log. CP-003 aperto.
+- Designer / Grafico (audit Copilot): STATUS_GRAFICO_PER_CAPO.md unico handoff; catalogo 52 voci (30 app, 16 pronte, 2 in costruzione, 4 mancanti), 100 PNG non catalogati; 3 livelli, 3 auto 64x32, 21 banner sponsor, testi fumetti 156. Mancano sprite concorrenti/personaggi, 6 percorsi, 3 finali animati. CP-002 aperto.
+- Capo / Andrea + archivio v4 (Copilot): ANDREA_REVIEW.md fonte unica canonica; D1-D11 e feedback v90 conservati, T1-Q1..Q4 rinominate; archivio v4 (126 file) congelato e classificato. CP-004 aperto.
 
-@sviluppatore — P1 [~]: punti 1-3 e 5 fatti (Pad::A accelera, B/Down freno, coast 0.995, segmenti da livello.json, build cmake OK, prova_gate compilato). T1-RUN punti 1,4 eseguiti (interpolazione trapezio, sprite/cartelloni veri nel gate). Shell negata 6x (`Permission denied: shell`, anche `date`): 3 screenshot in out/sviluppatore/ NON generabili, binari pronti.
+## Non funziona / blocchi
+- Nessun checkpoint (CP-002, CP-003, CP-004) ha revisore indipendente assegnato: esiti IN ATTESA.
+- CP-003: `ctest -N` scopre 7 test ma non li esegue; CMake Tools VS Code senza progetto attivo; exit code del gate non nel log.
+- Runner SDL2 senza SDL2_image: nel gate headless prova_gate disegna rettangoli, non sprite PNG (D10: scelta B in attesa di verifica tecnica).
+- Nessuna prova su Raspberry Pi 400; solo macOS.
 
-@collaudatore — gate T1 verde: `sh tools/gate_t1.sh soak` exit 0, `GATE T1: TUTTO OK` (speed@60=161.79 > 0 al frame 60, replay 2x IDENTICO su 3 livelli, ms/frame medio 0.36 max 0.651 <= 20, offroad f278/f167/f285, soak 30000 frame OK). Screenshot per livello in out/collaudatore/lv_0*/.
-
-@capo — STATI_PROPOSTI.md, ANDREA_REVIEW.md, deleghe, diario e RIASSUNTO aggiornati. Nessuna promozione a [x] (solo Andrea/Claude).
-
-@grafico / @ricercatore — non attivati (D4 DEFAULT no, fuori scope Tappa 1).
-
-## Cosa non funziona / blocca
-
-- Shell negata `Permission denied: shell`: i 3 screenshot P1 (pista curva, cartelloni, personaggio con fumetto) non si generano -> P1 non promovibile.
-- H [~]: attende Andrea punto 8 T1-RUN (prova runner Mac SDL2, v91 in ANDREA_REVIEW.md, fps/temperatura Pi 400).
-- Andrea v91 + risposte D1-D4 pendenti: senza, T1-RUN/P1/H non chiudono e Tappa 1 non si chiude.
-
-## Decisioni aperte in ANDREA_REVIEW.md (top 3)
-
-1. D1 — Chiudere T1-RUN a [x]? DEFAULT: sì (gate già verde).
-2. D2 — Promuovere P1 a [x] con 3 screenshot? DEFAULT: sì (bloccato dalla shell).
-3. D3 — Andrea esegue punto 8 T1-RUN per chiudere H? DEFAULT: sì, appena possibile.
-
-(D4 = no per ora, G1 fuori scope.)
+## Decisioni aperte in ANDREA_REVIEW.md (3 più importanti)
+1. T1-Q1 chiusura gate T1: risposta non registrata (DEFAULT sì se soak exit 0, replay 2x identico, <=20 ms/frame).
+2. T1-Q2 promozione P1: risposta non registrata (DEFAULT sì, screenshot differiti).
+3. T1-Q3 prova manuale Mac + Pi 400: esito non registrato (DEFAULT sì appena possibile).
 
 ## Prossimo passo consigliato
-
-Andrea: v91 e risposte D1-D4 in ANDREA_REVIEW.md (DEFAULT: sì/sì/sì). Poi @sviluppatore riprova shell per i 3 screenshot P1 -> promozioni [x] solo Andrea/Claude -> chiusura Tappa 1, poi avvio tappa 2. Nessun PER_CLAUDE.md, nessun FINITO.
+Capo assegna revisori indipendenti per CP-002, CP-003, CP-004; richiede `sh tools/gate_t1.sh soak` + `ctest` con exit code e misure registrate, poi sollecita ad Andrea le risposte T1-Q1..Q3.

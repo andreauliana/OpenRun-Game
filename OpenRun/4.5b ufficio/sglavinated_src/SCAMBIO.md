@@ -672,3 +672,24 @@ blocchi da fare [ ]: 7
 [0m
 > collaudatore · nemotron-3.5-super-vl-free
 OK
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 16:31 | [APERTA]
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+NOTA    builder-developer:  non e' in panchina.txt
+NOTA    capo:  non e' in panchina.txt
+NOTA    designer:  non e' in panchina.txt
+NOTA    developer-builder-junior:  non e' in panchina.txt
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== CI SONO ERRORI ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13705009 di 13705009 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"

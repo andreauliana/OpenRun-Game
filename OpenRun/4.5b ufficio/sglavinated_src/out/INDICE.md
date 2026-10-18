@@ -2,8 +2,8 @@
 
 | Ruolo/sezione | File | Data | Byte |
 |---|---|---|---|
-| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 16:19 | 3957 |
-| capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:19 | 1935 |
+| capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:32 | 1979 |
+| capo | `out/capo/STATI_PROPOSTI.md` | 18/10 16:30 | 4007 |
 | capo | `out/capo/RICHIESTA_STORICO_17OTT.md` | 17/10 13:12 | 12195 |
 | capo | `out/capo/SCAMBIO_ARCHIVIO_fino_92.md` | 17/10 13:12 | 125863 |
 | capo | `out/capo/PER_PROSSIMO_RUN.md` | 17/10 13:12 | 5248 |

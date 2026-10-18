@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 13:54
+# Pacchetto per Claude app (capo supremo) — 2026-10-18 16:33
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -57,41 +57,20 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 178:| Stato | [-] (tappa 5) |
 
 ## Decisioni aperte
-27:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
-36:## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
-42:## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
-49:## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
-56:## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
-61:## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
-67:## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
-72:## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
-77:## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
-85:## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
-91:## D10 | T1-RUN | capo | [APERTA]
-99:## D11 | T1-RUN | capo | [APERTA]
+53:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
+62:## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
+68:## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
+75:## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
+82:## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
+87:## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
+93:## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
+98:## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
+103:## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
+111:## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
+117:## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
+125:## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 
 ## Ultime righe di SCAMBIO.md
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13833868 di 13833868 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 13:11 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
 OK      sintassi run.sh
 OK      nessuna ROM Sega presente
 OK      opencode installato
@@ -131,3 +110,24 @@ blocchi da fare [ ]: 7
 [0m
 > collaudatore · nemotron-3.5-super-vl-free
 OK
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-18 16:31 | [APERTA]
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+NOTA    builder-developer:  non e' in panchina.txt
+NOTA    capo:  non e' in panchina.txt
+NOTA    designer:  non e' in panchina.txt
+NOTA    developer-builder-junior:  non e' in panchina.txt
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== CI SONO ERRORI ==
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (13705009 di 13705009 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 7
+
+REVIEW FALLITA (exit 1): [91m[1mError: [0mAgent not found: "collaudatore"

@@ -30,15 +30,21 @@ Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non coll
 
 ### T1-Q1 | Chiusura proposta del gate T1
 
-Gate soak dichiarato nella registrazione v4.5: `sh tools/gate_t1.sh soak`, exit 0, replay identico su tre livelli, soglie di frame rispettate e screenshot registrati. La prova non basta da sola a chiudere il checkpoint 4.6. Risposta di Andrea: non registrata.
+Gate soak dichiarato nella registrazione v4.5: `sh tools/gate_t1.sh soak`, exit 0, replay identico su tre livelli, soglie di frame rispettate e screenshot registrati. La prova non basta da sola a chiudere il checkpoint 4.6.
+DEFAULT usato nel frattempo: sì — chiudi T1-RUN a [x] se `sh tools/gate_t1.sh soak` exit 0, replay 2x IDENTICO, ms/frame <= 20.
+Risposta di Andrea: non registrata.
 
 ### T1-Q2 | Promozione P1
 
-Promozione storicamente subordinata a screenshot del gameplay e build CMake verificata. Risposta di Andrea: non registrata.
+Promozione storicamente subordinata a screenshot del gameplay e build CMake verificata.
+DEFAULT usato nel frattempo: sì — promuovi P1 a [x] (screenshot bloccati da shell negata, prova differita).
+Risposta di Andrea: non registrata.
 
 ### T1-Q3 | Prova manuale su Mac e Pi 400
 
-Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400. Esito/risposta di Andrea: non registrati qui.
+Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400.
+DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
+Esito/risposta di Andrea: non registrati qui.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
