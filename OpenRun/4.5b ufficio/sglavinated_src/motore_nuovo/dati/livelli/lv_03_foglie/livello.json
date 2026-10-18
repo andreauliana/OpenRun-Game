@@ -31,7 +31,7 @@
     {"curva": 0.0, "collina": 0.0, "lunghezza": 500}
   ],
   "seme": 2098,
-  "tempo_limite_s": 140,
+  "tempo_limite_s": 65,
   "checkpoint_ogni_segmenti": 325,
   "difficolta": "facile",
   "note_difficolta": "curve piu' frequenti ma dolci, qualche collina, traffico moderato; show piu' frequenti (escalation rapida da testare)",

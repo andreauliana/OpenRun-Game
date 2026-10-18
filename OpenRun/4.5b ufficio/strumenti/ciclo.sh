@@ -66,6 +66,8 @@ checkpoint() {
   # Ogni controllo che fallisce aggiunge una riga a .auto_rosso: se resta vuoto e' tutto verde.
   rm -f .auto_rosso
   AUTO="$( { sh "$BASE/strumenti/verifica.sh" > .auto_verifica.tmp 2>&1 || echo verifica.sh >> .auto_rosso; tail -12 .auto_verifica.tmp; rm -f .auto_verifica.tmp
+             # Build + test del motore (stesso gate degli sviluppatori): rosso se non compila o un test fallisce.
+             sh tools/gate_t1.sh > .auto_gate.tmp 2>&1 || echo gate_t1.sh >> .auto_rosso; tail -4 .auto_gate.tmp; rm -f .auto_gate.tmp
              for s in check_catalogo quota_open quota_bacheche; do python3 "motore_nuovo/strumenti_py/$s.py" || echo "$s" >> .auto_rosso; done
              grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
   ROSSI="$(cat .auto_rosso 2>/dev/null | tr '\n' ' ')"; rm -f .auto_rosso

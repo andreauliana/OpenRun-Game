@@ -29,7 +29,7 @@
     {"curva": 0.0, "collina": 0.0, "lunghezza": 400}
   ],
   "seme": 8812,
-  "tempo_limite_s": 130,
+  "tempo_limite_s": 50,
   "checkpoint_ogni_segmenti": 300,
   "difficolta": "facile",
   "note_difficolta": "curve ampie e dolci, colline rare, rettilinei lunghi per respirare, traffico leggero; intensita' solo nelle curve",

@@ -23,6 +23,8 @@ struct GameState {
     i32 concorrenti = 0;   // giocatore compreso
     bool arrivo = false;   // tappa finale completata
     u32 frameGara = 0;     // tempo di gara in frame (50 Hz), fermo all'arrivo
+    u32 tempoResiduoFrame = 0; // tempo rimasto (ogni tappa aggiunge tempo_limite_s)
+    bool tempoScaduto = false; // game over: tempo finito prima dell'arrivo
 };
 
 } // namespace sgl

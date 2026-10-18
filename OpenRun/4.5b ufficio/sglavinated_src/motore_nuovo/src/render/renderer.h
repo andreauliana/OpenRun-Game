@@ -5,6 +5,7 @@
 #include "render/palette.h"
 #include "render/sprite.h" // Sprite (usato da SpriteInstance e dagli sprite sponsor)
 #include "road/road.h"
+#include <string>
 #include <vector>
 
 namespace sgl {
@@ -24,6 +25,32 @@ struct TemaColori {
     u32 erba = 0xFF00AA00;
     u32 erbaAlt = 0xFF008C00;
     u32 rumbleAlt = 0xFFFF00FF;
+};
+
+// Un elemento dell'HUD da dati/ui/hud.json (variante B, bianco e nero).
+// tipo: "cornice" | "testo" | "barra"; l'id lega l'elemento a un dato vivo.
+struct HudElemento {
+    std::string id, tipo, label, testo;
+    i32 x = 0, y = 0, w = 0, h = 0, spessore = 2;   // cornice / barra (barra_pos, barra_w, barra_h)
+    i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
+    i32 scalaValore = 1, scala = 1;
+    u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
+};
+
+// Dati vivi dell'HUD per il frame (nessuna allocazione: solo numeri).
+struct HudDati {
+    i32 kmh = 0;          // velocita' mostrata
+    f32 km = 0.0f;        // distanza percorsa
+    f32 giri = 0.0f;      // 0..1 contagiri
+    bool gara = false;    // tempo, tappa e posizione solo in gara
+    i32 tempoS = 0;       // secondi rimasti
+    i32 tappa = 1, tappe = 3, posizione = 0, concorrenti = 0;
+    bool marciaAlta = false;
+    bool show = false;
+    bool fuoristrada = false;
+    i32 bivio = 0;        // 1 = bivio in vista e scelta aperta: frecce SX / DX
+    bool arrivo = false, tempoScaduto = false;
+    u64 frame = 0;        // per i lampeggi
 };
 
 class Renderer {
@@ -50,6 +77,14 @@ public:
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
     void drawHud(f32 speedPct, i32 gear, bool offroad);
+
+    // HUD da hud.json: se impostato, sostituisce drawHud/drawGara.
+    void impostaHud(std::vector<HudElemento> elementi) { hud_ = std::move(elementi); }
+    bool haHud() const { return !hud_.empty(); }
+    void drawHudDati(const HudDati& d);
+    // Testo col font pixel dell'HUD (font_hud.h); scala intera, ombra nera di 1 px.
+    void drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala = 1, bool ombra = true);
+    static i32 larghezzaTesto(const char* testo, i32 scala = 1);
 
     // Gara: posizione (un quadratino per concorrente, il giocatore evidenziato),
     // tappa raggiunta e, all'arrivo, bandiera a scacchi lampeggiante.
@@ -81,6 +116,7 @@ private:
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
     TemaColori tema_;                       // colori di ambiente della tappa
+    std::vector<HudElemento> hud_;          // elementi di hud.json (caricati una volta)
 };
 
 } // namespace sgl

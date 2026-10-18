@@ -28,7 +28,7 @@
     {"curva": 0.0, "collina": 0.0, "lunghezza": 700}
   ],
   "seme": 7731,
-  "tempo_limite_s": 125,
+  "tempo_limite_s": 70,
   "checkpoint_ogni_segmenti": 275,
   "difficolta": "facile",
   "note_difficolta": "curve morbide, poche colline, rettilinei di respiro tra i gruppi di curve; traffico scarso",

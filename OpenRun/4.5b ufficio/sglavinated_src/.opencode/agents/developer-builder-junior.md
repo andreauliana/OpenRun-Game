@@ -26,8 +26,18 @@ permission:
     "sh tools/check_sdl_init.sh": allow
     "sh tools/check_sdl_init.sh *": allow
     "make *": allow
+    "ctest --test-dir UFFICIO/Officina/build*": allow
+    "./UFFICIO/Officina/build/prova_gate *": allow
+    "UFFICIO/Officina/build/prova_gate *": allow
+    "git status": allow
+    "git status *": allow
+    "git diff": allow
+    "git diff *": allow
+    "git log *": allow
+    "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
     "python3 motore_nuovo/test/*": allow
+    "python3 motore_nuovo/strumenti_py/*": allow
     "ls *": allow
     "grep *": allow
     "head *": allow
@@ -45,3 +55,4 @@ Sei il Developer/Builder Junior. Lavora solo sul task e sui percorsi indicati da
 - Non approvi da solo la release e non pubblichi asset: le richieste grafiche vanno al Designer.
 - Non cancellare file, non ampliare il tuo perimetro e non modificare checkpoint.
 - Riporta file, scopo, comando, exit code, misure, problemi residui e provenienza quando pertinente.
+- Review: guarda le modifiche con `git status` e `git diff` (sola lettura, mai commit/push). Un singolo test: `./UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa per sviluppatori: `motore_nuovo/docs/SVILUPPATORI.md`.

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "render/renderer.h"
+#include "render/font_hud.h"
+#include <cstdio>
 #include <algorithm>
 #include <cmath> // std::fmod per il wrap di zRel
 #include <utility> // std::move
@@ -304,4 +306,102 @@ void Renderer::drawGara(i32 posizione, i32 concorrenti, i32 tappa, bool arrivo, 
     }
 }
 
+i32 Renderer::larghezzaTesto(const char* testo, i32 scala) {
+    i32 n = 0;
+    while (testo[n]) ++n;
+    return n * FONT_HUD_W * scala;
+}
+
+void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala, bool ombra) {
+    // Font pixel 5x7 della variante B (approvato): una cella 6x8 per carattere.
+    for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
+        const i32 d = passo == 0 ? 1 : 0; // prima l'ombra, spostata di 1 px
+        const u32 col = passo == 0 ? 0xFF000000u : colore;
+        i32 cx = x;
+        for (const char* c = testo; *c; ++c, cx += FONT_HUD_W * scala) {
+            const i32 codice = (u8)*c;
+            if (codice < 32 || codice > 126) continue;
+            const u8* righe = FONT_HUD[codice - 32];
+            for (i32 r = 0; r < FONT_HUD_H; ++r)
+                for (i32 k = 0; k < FONT_HUD_W; ++k)
+                    if (righe[r] & (1u << (FONT_HUD_W - 1 - k)))
+                        fb_.fillRect(cx + k * scala + d, y + r * scala + d,
+                                     cx + (k + 1) * scala - 1 + d, y + (r + 1) * scala - 1 + d, col);
+        }
+    }
+}
+
+namespace {
+void cornicePiena(Framebuffer& fb, i32 x, i32 y, i32 w, i32 h, i32 sp, u32 col) {
+    fb.fillRect(x, y, x + w - 1, y + sp - 1, col);
+    fb.fillRect(x, y + h - sp, x + w - 1, y + h - 1, col);
+    fb.fillRect(x, y, x + sp - 1, y + h - 1, col);
+    fb.fillRect(x + w - sp, y, x + w - 1, y + h - 1, col);
+}
+} // namespace
+
+void Renderer::drawHudDati(const HudDati& d) {
+    // Disposizione da hud.json (riferimento strutturale all'originale: distanza
+    // in alto a sinistra, velocita' e tempo in alto a destra). Tema bianco e nero.
+    char buf[32];
+    for (const HudElemento& e : hud_) {
+        if (e.tipo == "cornice") {
+            cornicePiena(fb_, e.x + 1, e.y + 1, e.w, e.h, e.spessore, 0xFF000000u); // ombra
+            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.colore);
+            continue;
+        }
+        if (e.tipo == "barra") {
+            f32 pieno = e.id == "giri" ? d.giri : 0.0f;
+            pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
+            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.coloreBordo);
+            const i32 interno = e.w - 2 * e.spessore;
+            const i32 px = (i32)(pieno * (f32)interno);
+            fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.w - e.spessore - 1, e.y + e.h - e.spessore - 1, 0xFF000000u);
+            if (px > 0)
+                fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.spessore + px - 1, e.y + e.h - e.spessore - 1,
+                             pieno > 0.9f ? e.coloreBordo : e.coloreRiempimento);
+            continue;
+        }
+        // testo: valore vivo per id; gli elementi di gara spariscono fuori gara.
+        const bool soloGara = e.id == "tempo" || e.id == "tappa" || e.id == "posizione";
+        if (soloGara && !d.gara) continue;
+        const char* valore = nullptr;
+        u32 coloreValore = e.colore;
+        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%05.1f", d.km); valore = buf; }
+        else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
+        else if (e.id == "tempo") {
+            std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);
+            valore = buf;
+            if (d.tempoS <= 10 && (d.frame / 12) % 2) coloreValore = e.coloreLabel; // lampeggia negli ultimi 10 s
+        }
+        else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
+        else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
+        else if (e.id == "marcia") valore = d.marciaAlta ? "HIGH" : "LOW";
+        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+        if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
+        if (e.tx >= 0) {
+            const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();
+            drawTesto(e.tx, e.ty, t, e.colore, e.scala);
+        }
+    }
+
+    // Messaggi al centro dello schermo.
+    auto centro = [this](i32 y, const char* t, i32 scala) {
+        drawTesto((Framebuffer::WIDTH - larghezzaTesto(t, scala)) / 2, y, t, 0xFFFFFFFFu, scala);
+    };
+    if (d.tempoScaduto) centro(96, "TEMPO SCADUTO", 2);
+    else if (d.arrivo) {
+        centro(70, "ARRIVO", 3);
+        std::snprintf(buf, sizeof(buf), "POSIZIONE %d/%d", d.posizione, d.concorrenti);
+        centro(100, buf, 1);
+    } else if (d.bivio && (d.frame / 15) % 2 == 0) {
+        drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
+        drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);
+    } else if (d.fuoristrada && (d.frame / 10) % 2 == 0) {
+        centro(150, "FUORI STRADA", 1);
+    }
+}
+
 } // namespace sgl
+

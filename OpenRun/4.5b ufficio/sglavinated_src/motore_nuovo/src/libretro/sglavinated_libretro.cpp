@@ -45,7 +45,7 @@ void retro_get_system_av_info(struct retro_system_av_info* info) {
 
 void retro_init(void) {
     g_game = new sgl::Game(20261015u);
-    g_game->init();
+    if (!g_game->avviaGara()) g_game->init(); // gara a tappe; senza percorso_gara.json pista singola
 }
 
 void retro_deinit(void) {
@@ -54,7 +54,7 @@ void retro_deinit(void) {
 }
 
 void retro_reset(void) {
-    if (g_game) g_game->init();
+    if (g_game && !g_game->avviaGara()) g_game->init();
 }
 
 static void retro_run_wrapper(void) {

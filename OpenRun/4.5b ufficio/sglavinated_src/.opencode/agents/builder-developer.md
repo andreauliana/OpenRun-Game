@@ -33,6 +33,15 @@ permission:
     "sh tools/check_sdl_init.sh": allow
     "sh tools/check_sdl_init.sh *": allow
     "make *": allow
+    "ctest --test-dir UFFICIO/Officina/build*": allow
+    "./UFFICIO/Officina/build/prova_gate *": allow
+    "UFFICIO/Officina/build/prova_gate *": allow
+    "git status": allow
+    "git status *": allow
+    "git diff": allow
+    "git diff *": allow
+    "git log *": allow
+    "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
     "python3 motore_nuovo/strumenti_py/*": allow
     "ls *": allow
@@ -53,3 +62,4 @@ Sei il Builder/Developer. Implementi codice di prodotto C++17, integrazione e co
 - Non modifichi i test del Junior salvo task esplicito; non approvi autonomamente la release.
 - Esegui solo build/test consentiti e riporta comando, exit code e misure effettive.
 - Piste (`motore_nuovo/dati/livelli/`, 6 dal 18 ott): ogni pista ha un percorso suo (vedi `docs/LIVELLI.md`). Se cambi `segmenti`, `sh tools/gate_t1.sh` deve dare `GATE PERCORSO OK` per tutte e 6.
+- Review: guarda le modifiche con `git status` e `git diff` (sola lettura, mai commit/push). Un singolo test: `./UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa per sviluppatori: `motore_nuovo/docs/SVILUPPATORI.md`.

@@ -11,6 +11,9 @@ namespace {
 constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
 constexpr f32 CURVA_SPINTA = 0.015f; // forza centrifuga in curva (vedi update)
+constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
+// Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' per frame a 50 Hz.
+constexpr f32 UNITA_PER_KM = 590.0f * 50.0f * 3600.0f / 293.0f;
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
 std::string leggiFileTesto(const std::string& path) {
@@ -118,6 +121,9 @@ void Game::init(const std::string& livelloId) {
     gara_ = false;
     road_.impostaBivio(false);
     latoBivio_ = 0;
+    tempoScaduto_ = false;
+    km_ = 0.0f;
+    leggiHud();
     caricaLivello(livelloId);
 
     road_.playerZ = 0.0f;
@@ -179,6 +185,74 @@ bool leggiColore(const JsonObject& o, const char* chiave, u32& out) {
 }
 } // namespace
 
+namespace {
+i32 numero(const JsonObject& o, const char* chiave, i32 predefinito) {
+    JsonValue v;
+    return jsonGet(o, chiave, v) && jsonIsNumber(v) ? (i32)jsonAsNumber(v) : predefinito;
+}
+bool coppia(const JsonObject& o, const char* chiave, i32& a, i32& b) {
+    JsonValue v;
+    if (!jsonGet(o, chiave, v) || !jsonIsArray(v)) return false;
+    const JsonArray& arr = jsonAsArray(v);
+    if (arr.size() < 2 || !jsonIsNumber(arr[0]) || !jsonIsNumber(arr[1])) return false;
+    a = (i32)jsonAsNumber(arr[0]);
+    b = (i32)jsonAsNumber(arr[1]);
+    return true;
+}
+bool rgb(const JsonObject& o, const char* chiave, u32& out) {
+    JsonValue v;
+    if (!jsonGet(o, chiave, v) || !jsonIsArray(v)) return false;
+    const JsonArray& arr = jsonAsArray(v);
+    if (arr.size() < 3) return false;
+    u32 c = 0xFF000000u;
+    for (i32 i = 0; i < 3; ++i) {
+        if (!jsonIsNumber(arr[i])) return false;
+        c |= ((u32)jsonAsNumber(arr[i]) & 0xFFu) << (16 - 8 * i);
+    }
+    out = c;
+    return true;
+}
+std::string stringa(const JsonObject& o, const char* chiave) {
+    JsonValue v;
+    return jsonGet(o, chiave, v) && jsonIsString(v) ? jsonAsString(v) : std::string();
+}
+} // namespace
+
+void Game::leggiHud() {
+    // dati/ui/hud.json (variante B): letto una volta; senza file resta l'HUD a barre.
+    if (ren_.haHud()) return;
+    JsonReader file(leggiFileTesto(percorsoDati("motore_nuovo/dati/ui/hud.json")));
+    if (!file.parse() || !jsonIsObject(file.valore())) return;
+    JsonValue elenco;
+    if (!jsonGet(jsonAsObject(file.valore()), "elementi", elenco) || !jsonIsArray(elenco)) return;
+    std::vector<HudElemento> elementi;
+    for (const JsonValue& v : jsonAsArray(elenco)) {
+        if (!jsonIsObject(v)) continue;
+        const JsonObject& o = jsonAsObject(v);
+        HudElemento e;
+        e.id = stringa(o, "id");
+        e.tipo = stringa(o, "tipo");
+        e.label = stringa(o, "label");
+        e.testo = stringa(o, "testo");
+        e.x = numero(o, "x", 0); e.y = numero(o, "y", 0);
+        e.w = numero(o, "w", 0); e.h = numero(o, "h", 0);
+        e.spessore = numero(o, "spessore", numero(o, "spessore_bordo", 2));
+        coppia(o, "barra_pos", e.x, e.y);
+        e.w = numero(o, "barra_w", e.w); e.h = numero(o, "barra_h", e.h);
+        coppia(o, "label_pos", e.lx, e.ly);
+        coppia(o, "valore_pos", e.vx, e.vy);
+        coppia(o, "pos", e.tx, e.ty);
+        e.scalaValore = numero(o, "scala_valore", 1);
+        e.scala = numero(o, "scala", 1);
+        rgb(o, "colore", e.colore);
+        rgb(o, "colore_label", e.coloreLabel);
+        rgb(o, "colore_bordo", e.coloreBordo);
+        rgb(o, "colore_riempimento", e.coloreRiempimento);
+        if (e.tipo == "cornice" || e.tipo == "testo" || e.tipo == "barra") elementi.push_back(std::move(e));
+    }
+    ren_.impostaHud(std::move(elementi));
+}
+
 void Game::leggiTemaDaFile(const JsonValue* radice) {
     // Default storici: livelli senza "colori" o "tema_grafico" restano come prima.
     TemaColori tema;
@@ -193,6 +267,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "erba_alt", tema.erbaAlt);
             leggiColore(c, "rumble", tema.rumbleAlt);
         }
+        tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
         JsonValue grafica, stile;
         if (jsonGet(root, "tema_grafico", grafica) && jsonIsObject(grafica) &&
             jsonGet(jsonAsObject(grafica), "stile_cartellone", stile) && jsonIsString(stile))
@@ -234,6 +309,7 @@ bool Game::avviaGara(const std::string& fileTappe) {
     progressoTappePrecedenti_ = 0.0f;
     frameGara_ = 0;
     arrivo_ = false;
+    tempoResiduoFrame_ = (u32)tempoLimiteTappaS_ * 50u; // tempo della prima tappa
     preparaBivio();
     inizializzaRivali();
     aggiornaStatoGara();
@@ -347,6 +423,7 @@ void Game::fineTappa(f32 avanzo) {
     caricaLivello(prossima);
     tappaId_ = prossima;
     ++numeroTappa_;
+    if (!tempoScaduto_) tempoResiduoFrame_ += (u32)tempoLimiteTappaS_ * 50u; // checkpoint: tempo extra
     preparaBivio();
     road_.playerZ = avanzo;
     player_.z = avanzo;
@@ -369,6 +446,8 @@ void Game::aggiornaStatoGara() {
     state_.posizione = arrivo_ ? posizioneArrivo_ : posizioneGiocatore();
     state_.arrivo = arrivo_;
     state_.frameGara = frameGara_;
+    state_.tempoResiduoFrame = tempoResiduoFrame_;
+    state_.tempoScaduto = tempoScaduto_;
 }
 
 void Game::setInput(const Pad& pad) {
@@ -523,7 +602,7 @@ void Game::update() {
         player_.centroCorsia = carr.centro[vicino];
         player_.larghezzaCorsia = carr.fattore;
         Pad comandi = input_;
-        if (arrivo_) comandi = Pad{}; // dopo l'arrivo l'auto prosegue per inerzia
+        if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
         player_.input(comandi, dt);
         player_.update(dt);
 
@@ -532,6 +611,7 @@ void Game::update() {
             (1.0f + ROAD_SCROLL_SPEED_BOOST * player_.speed / player_.maxSpeed());
         const f32 zPrima = road_.playerZ;
         passoGiocatore_ = player_.speed * dt * roadScrollScale;
+        km_ += passoGiocatore_ / UNITA_PER_KM;
         road_.advance(passoGiocatore_);
         if (gara_ && road_.playerZ < zPrima) fineTappa(road_.playerZ); // fine del tracciato
         player_.z = road_.playerZ;
@@ -602,7 +682,11 @@ void Game::update() {
     state_.playerFlipping = playerFlipping_;
     state_.playerFlipFrame = playerFlipFrame_;
     if (gara_) {
-        if (!arrivo_) ++frameGara_;
+        if (!arrivo_ && !tempoScaduto_) {
+            ++frameGara_;
+            if (tempoResiduoFrame_ > 0) --tempoResiduoFrame_;
+            if (tempoResiduoFrame_ == 0) tempoScaduto_ = true; // game over
+        }
         aggiornaStatoGara();
     }
 
@@ -639,8 +723,31 @@ void Game::render() {
         fb_.fillRect(sc.bollaX, sc.bollaY, sc.bollaX + sc.bollaW, sc.bollaY + sc.bollaH, 0xFF0000FFu);
     }
     // Pannello di info (tappa 1): velocita, marcia, fuoristrada.
-    ren_.drawHud(player_.speed / player_.maxSpeed(), player_.gear, player_.offroad);
-    if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
+    if (ren_.haHud()) {
+        HudDati h;
+        h.kmh = (i32)(player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH + 0.5f);
+        h.km = km_;
+        // Contagiri del cambio automatico a due marce: sale in LOW, riparte piu' alto in HIGH.
+        const f32 v = player_.speed / player_.maxSpeed();
+        constexpr f32 CAMBIO = 110.0f / 250.0f;
+        h.giri = player_.gear <= 1 ? v / CAMBIO : 0.45f + 0.55f * (v - CAMBIO) / (1.0f - CAMBIO);
+        h.marciaAlta = player_.gear >= 2;
+        h.gara = gara_;
+        h.tempoS = (i32)((tempoResiduoFrame_ + 49u) / 50u);
+        h.tappa = numeroTappa_;
+        h.posizione = state_.posizione;
+        h.concorrenti = state_.concorrenti;
+        h.show = showManager_.showAttivo();
+        h.fuoristrada = player_.offroad;
+        h.bivio = (road_.bivioAttivo() && latoBivio_ == 0 && player_.z > road_.bivioInizioZ() - 30000.0f) ? 1 : 0;
+        h.arrivo = arrivo_;
+        h.tempoScaduto = tempoScaduto_;
+        h.frame = clock_.frame;
+        ren_.drawHudDati(h);
+    } else {
+        ren_.drawHud(player_.speed / player_.maxSpeed(), player_.gear, player_.offroad);
+        if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
+    }
 }
 
 bool Game::collisioneOggettiVicini() const {

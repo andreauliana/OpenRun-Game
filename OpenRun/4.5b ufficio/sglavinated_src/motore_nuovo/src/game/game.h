@@ -145,6 +145,11 @@ private:
     // Tracciato, cartelloni e tema di una tappa (senza toccare auto e show).
     void caricaLivello(const std::string& livelloId);
     void leggiTemaDaFile(const JsonValue* radice);
+    void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
+    i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
+    u32 tempoResiduoFrame_ = 0;  // tempo rimasto in gara (frame a 50 Hz)
+    bool tempoScaduto_ = false;
+    f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
     std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
 
     // --- Gara a tappe ---
