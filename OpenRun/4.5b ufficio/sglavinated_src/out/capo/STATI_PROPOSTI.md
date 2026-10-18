@@ -4,11 +4,11 @@ Andrea e Claude leggono qui e aggiornano RICHIESTA.md e SCAMBIO.md.
 ## Stati proposti
 Una riga per blocco: `blocco | stato proposto | prova: exit code o file`
 
-T1-RUN | [~] in corso, [x] proposto (condizionato v91 Andrea) | `sh tools/gate_t1.sh soak` exit 0, out/collaudatore/gate_t1.log "GATE T1: TUTTO OK": speed@60=161.79 > 0 frame 60, replay 2x IDENTICO 3 livelli, ms/frame medio 0.36 max 0.651 <= 20, offroad raggiunto f278/f167/f285, soak 30000 OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*. Promozione [x] solo Andrea/Claude dopo v91 Andrea (punto 8 FEEDBACK_ANDREA.md, D1 DEFAULT sì).
+T1-RUN | [~] in corso, [x] proposto (condizionato v91 Andrea) | `sh tools/gate_t1.sh soak` exit 0, out/collaudatore/gate_t1.log "GATE T1: TUTTO OK": speed@60=161.79 > 0 frame 60, replay 2x IDENTICO 3 livelli, ms/frame medio 0.36 max 0.651 <= 20, offroad raggiunto f278/f167/f285, soak 30000 OK; screenshot partenza/curva/fuoristrada per livello in out/collaudatore/lv_0*. Promozione [x] solo Andrea/Claude dopo v91 Andrea (punto 8 ANDREA_REVIEW.md, D1 DEFAULT sì).
 
 P1 | [~] | @sviluppatore punti 1-3 e 5 fatti (Pad::A accelera, B/Down freno, coast 0.995, sterzo vs velocita', segmenti da livello.json, build cmake OK, prova_gate compilato). Mancante: 3 screenshot in out/sviluppatore/ (pista curva, cartelloni sponsor, personaggio con fumetto); shell `Permission denied: shell` 6x (anche `date`), binary build_gate/prova_gate pronto. Promozione [x] solo Andrea/Claude (D2 DEFAULT sì, bloccato shell).
 
-H | [~] | attende Andrea punto 8 T1-RUN: provare sglavinated_runner su Mac (SDL2), scrivere v91 in FEEDBACK_ANDREA.md (guida OK o ritocco un parametro alla volta), fps/temperatura Pi 400 (vcgencmd measure_temp, get_throttled) — non eseguibile qui (regole 9/21). Chiude quando Andrea scrive v91 + misure (D3 DEFAULT sì).
+H | [~] | attende Andrea punto 8 T1-RUN: provare sglavinated_runner su Mac (SDL2), scrivere v91 in ANDREA_REVIEW.md (guida OK o ritocco un parametro alla volta), fps/temperatura Pi 400 (vcgencmd measure_temp, get_throttled) — non eseguibile qui (regole 9/21). Chiude quando Andrea scrive v91 + misure (D3 DEFAULT sì).
 
 J | [ ] | escalazione a Claude solo dopo 2 tentativi falliti sullo stesso problema o fine blocco importante; non serve. PER_CLAUDE.md solo se richiesto.
 
@@ -26,7 +26,7 @@ T5 | [-] | tappa 5, non avviata.
 
 @collaudatore (out/collaudatore/, motore_nuovo/test/): gate T1 gia' verde (`sh tools/gate_t1.sh soak` exit 0, log out/collaudatore/gate_t1.log, screenshot out/collaudatore/lv_0*/). Consegnare VOCE_SCAMBIO con esito e numeri (speed, replay 2x, ms/frame, offroad). Se richiesto da @sviluppatore dopo modifiche: rivedere SOLO renderer.cpp/.h, road.cpp, prova_gate.cpp, game.h, tools/gate_t1.sh (max 3 rilievi azionabili, sola lettura, out/REVIEW/). Lanciare indice_assets.py e quota_open.py (>= 50%) se non fatti dopo l'ultima generazione asset. Non avviare nuove tappe.
 
-Andrea (punto 8 T1-RUN): v91 su FEEDBACK_ANDREA.md (runner Mac SDL2, guida OK o ritocco un parametro alla volta) + fps/temperatura Pi 400. Rispondere D1-D4 in DECISIONI_ANDREA.md (DEFAULT: D1 sì, D2 sì, D3 sì, D4 no). Questo chiude H e permette le promozioni T1-RUN/P1 a [x] (solo Andrea/Claude).
+Andrea (punto 8 T1-RUN): v91 su ANDREA_REVIEW.md (runner Mac SDL2, guida OK o ritocco un parametro alla volta) + fps/temperatura Pi 400. Rispondere D1-D4 in ANDREA_REVIEW.md (DEFAULT: D1 sì, D2 sì, D3 sì, D4 no). Questo chiude H e permette le promozioni T1-RUN/P1 a [x] (solo Andrea/Claude).
 
 @grafico / @ricercatore: non attivati in questo turno (nessuna richiesta Andrea, G1 non richiesta, D4 DEFAULT no).
 

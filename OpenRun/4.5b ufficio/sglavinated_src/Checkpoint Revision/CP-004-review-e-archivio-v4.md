@@ -7,13 +7,14 @@
 | Ambito e criteri di completamento | Consolidare feedback e decisioni di Andrea in una fonte corrente; riallineare i riferimenti attivi; classificare l'archivio v4 senza perdere materiale storico |
 | Responsabile | Aggiornamento operativo 4.6 (Copilot) |
 | Revisore indipendente | Da assegnare dal Capo; deve essere diverso dall'autore |
-| Percorsi autorizzati | `ANDREA_REVIEW.md`, `DECISIONI_ANDREA.md`, `FEEDBACK_ANDREA.md`, `AGENTS.md`, strumenti in `../strumenti/`, documentazione gameplay e `Checkpoint Revision/` |
+| Percorsi autorizzati | `ANDREA_REVIEW.md`, `DECISIONI_ANDREA.md`, `FEEDBACK_ANDREA.md`, `AGENTS.md`, `COSA_FA_L_UMANO.md`, `DA_FARE_QUANDO_SONO_DAVANTI.md`, `bacheche/capo/`, `out/capo/`, strumenti in `../strumenti/`, documentazione gameplay e `Checkpoint Revision/` |
 | Decisioni richieste ad Andrea | Nessuna per consolidamento documentale; non implica approvazione del gate o della release |
 | Review collegata | Dossier corrente per la verifica dei riferimenti e della classificazione |
 
 ## Sintesi
 
 - `ANDREA_REVIEW.md` è la fonte canonica 4.6 per feedback e decisioni. I contenuti sostanziali della precedente decisione D1-D11 e del feedback v90 sono conservati; le richieste T1 che collidono con D1-D4 sono rinominate T1-Q1–T1-Q4.
+- `FEEDBACK_ANDREA.md` e `DECISIONI_ANDREA.md` non contengono piu' decisioni autonome: sono rimandi compatibili. Manuale, promemoria, handoff del Capo e documentazione delle fonti ora indirizzano alla fonte canonica.
 - D10 e D11 hanno risposte esplicite di Andrea. La risposta non chiude il checkpoint né sostituisce la prova tecnica: il Capo deve verificare il risultato nel dossier pertinente.
 - `DECISIONI_ANDREA.md` e `FEEDBACK_ANDREA.md` restano rimandi legacy. Il ciclo, il pannello e il recap attivi leggono la fonte canonica; il ciclo non copia più il feedback privato nell'area pubblica.
 - `archivio_v4/` contiene 126 file tra regole, profili di agenti, strumenti, bacheche, report, bozze e prove storiche. È congelato e non è stato cancellato o modificato.
@@ -41,6 +42,7 @@ L'indice strumenti esclude `archivio_v4/` dalla scansione; l'archivio non è inp
 | `../strumenti/ciclo.sh`, `../strumenti/pannello.py`, `../strumenti/recap.sh` | Lettura della fonte canonica al posto dei nomi legacy | Copilot |
 | `AGENTS.md`, `motore_nuovo/src/gameplay/DISEGNO_SHOW.md`, `motore_nuovo/src/gameplay/manifest.json` | Regole di fonte/archivio e stato corrente del wiring gameplay | Copilot |
 | `RICHIESTA.md`, `PACCHETTO_PER_CLAUDE_APP.md`, documenti/cataloghi collegati | Riferimenti attivi alla fonte canonica | Copilot |
+| `COSA_FA_L_UMANO.md`, `DA_FARE_QUANDO_SONO_DAVANTI.md`, `bacheche/capo/`, `out/capo/`, `motore_nuovo/docs/FONTI.md` | Handoff attivi riallineati; registri storici lasciati invariati | Copilot |
 
 ## Prove
 
@@ -48,7 +50,7 @@ L'indice strumenti esclude `archivio_v4/` dalla scansione; l'archivio non è inp
 |---|---|---|---|---|
 | 2026-10-18 | Inventario `archivio_v4/` | Completato | 126 file; nessun file rimosso | Inventario della cartella |
 | 2026-10-18 | Ispezione codice gameplay | Completato | offroad prima del clamp; show aggiornato e consumato dal renderer; `frameHash()` presente | `motore_nuovo/src/player/player.cpp`, `motore_nuovo/src/game/game.cpp` |
-| 2026-10-18 | Sintassi shell/Python/JSON e `git diff --check` | Da eseguire | — | — |
+| 2026-10-18 | Audit riferimenti attivi e `git diff --check` | Completato | Handoff correnti usano `ANDREA_REVIEW.md`; alias mantenuti, riferimenti storici preservati | Diff locale |
 
 ## Review indipendente
 
@@ -56,6 +58,7 @@ L'indice strumenti esclude `archivio_v4/` dalla scansione; l'archivio non è inp
 - File/diff esaminati:
 - Esito: IN ATTESA.
 - Verificare che non siano rimaste istruzioni attive a scrivere nei file alias; controllare i riferimenti del ciclo/pannello e la coerenza della classificazione dell'archivio.
+- I riferimenti rimasti nei registri/diari storici descrivono il flusso v4.5 dell'epoca e non sono istruzioni attive; non riscriverli.
 - Verificare in particolare che il ciclo v4.5 non venga presentato come automazione 4.6: la migrazione completa dei ruoli e dei registri legacy non rientra in questo dossier.
 - Nuova review dopo correzione:
 
@@ -66,3 +69,4 @@ L'indice strumenti esclude `archivio_v4/` dalla scansione; l'archivio non è inp
 ## Eventi
 
 - 2026-10-18 — aperto dopo il consolidamento della fonte Andrea e la classificazione dell'archivio v4; in attesa di review indipendente.
+- 2026-10-18 — aggiornati i riferimenti nei manuali e negli handoff correnti; i due file legacy restano solo per compatibilità e i log storici sono stati preservati.
