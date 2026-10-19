@@ -12,13 +12,13 @@
     "durata_stimata_s": 54
   },
   "segmenti": [
-    {"curva": 0.0, "collina": 0.1, "lunghezza": 700},
-    {"curva": 0.3, "collina": 0.2, "lunghezza": 1000},
-    {"curva": 0.0, "collina": 0.25, "lunghezza": 600},
-    {"curva": -0.35, "collina": 0.2, "lunghezza": 1100},
-    {"curva": 0.0, "collina": -0.2, "lunghezza": 900},
+    {"curva": 0.0, "collina": 0.1, "lunghezza": 800},
+    {"curva": 0.3, "collina": 0.2, "lunghezza": 700},
+    {"curva": 0.0, "collina": 0.25, "lunghezza": 800},
+    {"curva": -0.35, "collina": 0.2, "lunghezza": 700},
+    {"curva": 0.0, "collina": -0.2, "lunghezza": 800},
     {"curva": 0.2, "collina": -0.25, "lunghezza": 700},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 1000},
     {"curva": -0.6, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.0, "collina": 0.1, "lunghezza": 800},
     {"curva": 0.4, "collina": 0.0, "lunghezza": 700}

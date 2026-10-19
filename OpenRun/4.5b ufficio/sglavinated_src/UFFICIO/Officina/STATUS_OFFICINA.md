@@ -199,3 +199,10 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - **09:39 (19/10) — Andrea (prova Mac):** GATE T1: FALLITO (exit 13). Gate core OK, performance OK (ms/frame ~0.19 max 0.94, replay IDENTICO). Giro guidato FALLITO 5/6 livelli: solo lv_02_atomico (rettilineo 40%) supera. Causa: percorsi poco vari. Azione: @sviluppatore rivede parametri generazione percorsi.
 - 09:30 (19/10) — builder-developer: nessun blocco [ ]/[~] eseguibile (P1 punto 4 e G1 [ ] di Designer/@grafico, v91 di Andrea); nessuna modifica di codice né gate; stato riconfermato da report 18/10 22:56 (exit 0, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 soak, replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti).
 
+## Report turno 10:56 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata nell'ordine richiesto: RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN @sviluppatore + @collaudatore; P1 @sviluppatore; G1 @grafico; H @collaudatore + Andrea; J [ ] escalation; MD0/T5 [-] sospesi). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi).
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_1056.md; questo status aggiornato.
+- Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 18/10 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1 (risposta Andrea T1-Q1: sì); zero scritture nei sorgenti. In attesa: task dal Capo.
+
