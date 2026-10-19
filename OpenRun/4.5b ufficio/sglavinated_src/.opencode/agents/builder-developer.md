@@ -1,6 +1,7 @@
 ---
 description: "Builder/Developer OpenRun: guida implementazione C++, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
 model: opencode/nemotron-3.5-super-vl-free
+# fallback (cambia manualmente se il modello sopra non è disponibile): longcat-2.5-preview
 mode: subagent
 permission:
   read:

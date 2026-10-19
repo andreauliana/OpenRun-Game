@@ -1,2 +1,31 @@
 # File di sistema macOS
 .DS_Store
+**/.DS_Store
+
+# Log agenti (rigenerabili, cambiano a ogni sessione)
+OpenRun/4.5b ufficio/sglavinated_src/log_agenti/*.log
+OpenRun/4.5b ufficio/sglavinated_src/log_agenti/vecchi/
+
+# File di stato runtime (creati dagli script all'avvio)
+OpenRun/4.5b ufficio/sglavinated_src/.ciclo.pid
+OpenRun/4.5b ufficio/sglavinated_src/.pannello.pid
+OpenRun/4.5b ufficio/sglavinated_src/.agente_corrente
+OpenRun/4.5b ufficio/sglavinated_src/.marker_giro
+OpenRun/4.5b ufficio/sglavinated_src/.marker_checkpoint
+OpenRun/4.5b ufficio/sglavinated_src/.marker_review
+OpenRun/4.5b ufficio/sglavinated_src/.agenti_attivi
+OpenRun/4.5b ufficio/sglavinated_src/pannello.log
+OpenRun/4.5b ufficio/sglavinated_src/notte.log
+
+# Build output (rigenerabile con gate_t1.sh)
+OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/build/
+OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/Test area/*.ppm
+OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/Test area/*.log
+
+# Screenshot gate (.ppm rigenerabili)
+OpenRun/4.5b ufficio/sglavinated_src/out/collaudatore/**/*.ppm
+OpenRun/4.5b ufficio/sglavinated_src/out/collaudatore/*/*.ppm
+
+# Python cache
+__pycache__/
+*.pyc

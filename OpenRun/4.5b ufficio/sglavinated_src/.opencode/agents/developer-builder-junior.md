@@ -1,6 +1,7 @@
 ---
 description: "Developer/Builder Junior OpenRun: contribuisce a codice, test e diagnosi in task delimitati e svolge peer review quando assegnato."
 model: opencode/mimo-v2.6-flash-free
+# fallback (cambia manualmente se il modello sopra non è disponibile): longcat-2.5-preview
 mode: subagent
 permission:
   read:

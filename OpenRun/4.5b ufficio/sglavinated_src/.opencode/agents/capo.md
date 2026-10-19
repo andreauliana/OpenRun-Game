@@ -1,6 +1,7 @@
 ---
 description: Coordina OpenRun 4.6, assegna task e revisori indipendenti, verifica completezza e gestisce checkpoint e documenti per Andrea.
 model: opencode/nemotron-3.5-super-vl-free
+# fallback (cambia manualmente se il modello sopra non è disponibile): longcat-2.5-preview
 mode: primary
 permission:
   execute: deny
