@@ -16,3 +16,27 @@ Mac, Pi 400 (solo HDMI), monitor e TV moderni, anche in Europa, lavorano a 60 Hz
 - `ctest` verde a 60 Hz e a 50 Hz; il giro guidato dura gli stessi secondi (+/- 1%) con le due frequenze.
 - Replay 2x IDENTICO a ciascuna frequenza (i replay registrati a una frequenza si riproducono a quella).
 - Il runner su Mac con vsync a 60 Hz: nessun frame ripetuto in 60 s di guida (contatore nel log del runner).
+
+---
+
+# Parte 2 — SDL, compilazione e compatibilita' multipiattaforma (Andrea, 19 ott)
+
+Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso checkpoint o in uno a parte.
+
+## Stato verificato (main 162dc5d)
+- Il core (`sglavinated_core`) e' C++17 puro, senza SDL e senza `std::filesystem`: bene, resta cosi'.
+- Solo il runner usa SDL2 (+ SDL2_image opzionale per i PNG sponsor). Funzioni usate: video/renderer, texture streaming, `SDL_QueueAudio`, GameController/Joystick, `SDL_RenderSetIntegerScale`. **Versione minima reale: SDL 2.0.5** (per `SDL_RenderSetIntegerScale`).
+- Il core libretro (per RetroPie) non usa SDL: dipende solo da `libretro.h`, che oggi manca, quindi `BUILD_LIBRETRO=ON` non compila.
+
+## Da fare
+1. **Include portabile:** in `src/runner/main.cpp` usare `#include <SDL.h>` (con il target `SDL2::SDL2`) invece di `<SDL2/SDL.h>`, che non funziona con alcune installazioni Windows e con il framework macOS.
+2. **SDL2main solo se esiste:** in `CMakeLists.txt` collegare `SDL2::SDL2main` solo `if(TARGET SDL2::SDL2main)`; su alcune distribuzioni Linux il target non c'e' e CMake si ferma.
+3. **Versione minima dichiarata:** `find_package(SDL2 2.0.5)` e un messaggio chiaro se manca. Scrivere in `docs/SVILUPPATORI.md` come installarla: macOS `brew install sdl2 sdl2_image`; Raspberry Pi OS / Debian `sudo apt install libsdl2-dev libsdl2-image-dev`; Windows con vcpkg o i pacchetti MinGW ufficiali di SDL.
+4. **`libretro.h`:** aggiungere l'header ufficiale (licenza MIT) in `src/libretro/` cosi' il core RetroPie compila su Linux/Pi; la frequenza dichiarata segue la Parte 1.
+5. **Pi 400 senza desktop / RetroPie come porta:** il runner deve poter partire anche dalla console con il driver video KMSDRM di SDL (`SDL_VIDEODRIVER=kmsdrm`); documentarlo nella guida Pi.
+6. **Windows XP (piu' avanti, dopo Mac e Pi):** verificare l'ultima versione di SDL2 che supporta ancora XP e un compilatore C++17 che produca eseguibili per XP. Nel runner `std::filesystem` puo' essere un problema su XP e sui macOS vecchi (serve 10.15+): sostituirlo con `SDL_GetBasePath` + funzioni C standard, dato che il runner usa gia' SDL. Non bloccare il lavoro attuale per XP: solo non introdurre nuove dipendenze che lo escludano.
+
+## Gate
+- Build pulita del runner su macOS (Homebrew) e su Linux/Raspberry Pi OS con SDL di sistema; `ctest` verde.
+- Con `BUILD_LIBRETRO=ON` il core compila su Linux.
+- `docs/SVILUPPATORI.md` e la guida Pi riportano versioni e comandi di installazione.
