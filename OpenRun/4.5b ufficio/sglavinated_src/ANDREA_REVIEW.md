@@ -32,45 +32,41 @@ Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non coll
 
 Gate soak dichiarato nella registrazione v4.5: `sh tools/gate_t1.sh soak`, exit 0, replay identico su tre livelli, soglie di frame rispettate e screenshot registrati. La prova non basta da sola a chiudere il checkpoint 4.6.
 DEFAULT usato nel frattempo: sì — chiudi T1-RUN a [x] se `sh tools/gate_t1.sh soak` exit 0, replay 2x IDENTICO, ms/frame <= 20.
-Risposta di Andrea: non registrata.
+Risposta di Andrea: sì.
 
 ### T1-Q2 | Promozione P1
 
 Promozione storicamente subordinata a screenshot del gameplay e build CMake verificata.
 DEFAULT usato nel frattempo: sì — promuovi P1 a [x] (screenshot bloccati da shell negata, prova differita).
-Risposta di Andrea: non registrata.
+Risposta di Andrea: sì.
 
 ### T1-Q3 | Prova manuale su Mac e Pi 400
 
 Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400.
 DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
-Esito/risposta di Andrea: non registrati qui.
+Esito/risposta di Andrea: sì.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
-Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicato: non attivare, fuori scope T1. Risposta di Andrea: non registrata.
+Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicato: non attivare, fuori scope T1. Risposta di Andrea: attivare.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
 Opzioni: A) codice MIT, grafiche CC-BY  B) codice GPL-3.0, grafiche CC-BY-SA  C) codice aperto, grafiche riservate
-Raccomandazione: A (massima compatibilita').
-DEFAULT usato nel frattempo: nessuna licenza dichiarata.
-Impatto se cambi idea: aggiornare LICENSE e manifest.
-RISPOSTA DI ANDREA: OK
-Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md. Il DEFAULT 'nessuna licenza' decade.
+RISPOSTA DI ANDREA: A
+Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md.
 
 ## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
 Esito: sponsor (intimo femminile, Bar, Negozi). Contenuti femminili: glamour/pin-up e sponsor di intimo (vedi DIREZIONE_ARTISTICA.md.
-Da decidere (D2b, non urgente): nome e slogan degli sponsor inventati (vedi esempi libreria gia creati) che compaiono durante la gara/corsa sparsi nei diversi livelli a senso, ricreando il feeling per ogni livello e lo stile descritto, utilizza gia gli elementi creati, indicizzare, e proseguire. Arrivare a un buon feeling di 'popolazione' dei vari livelli, con aree di transizione (bivi) tra i percorsi connessi.
-DEFAULT: @sviluppatore e @grafico affinano le 3 varianti di cartellone sponsor e utilizzano i vari asset grafici creati.
-RISPOSTA DI ANDREA: OK
+Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, Banner degli Sponsors -> @grafico verifica asset Libreria Dipartimento Grafico per essere utilizzati nei 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop). Considerare anche aree di transizione (bivi) tra i percorsi connessi tra di loro, ed elementi decorativi.
+DEFAULT: @sviluppatore e @grafico verificano ed inseriscono le risorse grafiche del 'Dipartimento Grafico' utilizzando i vari asset grafici creati per i 6 percorsi e Temi.
+RISPOSTA DI ANDREA: sì
 
-## D3 | struttura | architetto | [CHIUSA 2026-10-16 da Andrea]
-Domanda: quante tappe/finali ha l'albero di bivi dell'originale, da copiare come STRUTTURA (tu hai detto 16 opzioni)?
-Raccomandazione: @collaudatore verifica da fonti tecniche (FEDELTA.md voce 3) e propone numero e temi; tu confermi.
-DEFAULT usato nel frattempo: 5 tappe per percorso con bivi, 3 livelli di prova.
-RISPOSTA DI ANDREA: OK
-Esito: confermato il DEFAULT (5 tappe per percorso con bivi, 3 livelli di prova). @collaudatore puo' ancora proporre correzioni motivate da migliorie, ma si procede cosi'.
+## D3 | struttura | architetto | [CHIUSA 2026-10-19 da Andrea]
+Domanda: quante tappe/finali ha l'albero di bivi usare come STRUTTURA?
+Raccomandazione: @collaudatore verifica da fonti tecniche (FEDELTA.md voce 3) e propone numero, tu confermi.
+DEFAULT usato nel frattempo: 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop) per gara percorso con 3 bivi di transizione percorsi o 'livelli'.
+RISPOSTA DI ANDREA: sì, 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray) per gara percorso con 3 bivi di transizione percorsi o 'livelli'.
 
 ## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale configurazione tipografica per il gioco?
@@ -82,18 +78,18 @@ RISPOSTA DI ANDREA: Antonio Bold per titoli e peso 'regular' per fumetti, B per 
 ## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale stile per la sagoma dell'auto del giocatore?
 Scelta di Andrea: silhouette GT europea anni '70-'90, ispirata a: Citroën CX/DS, Ford Sierra XR4i/Cosworth, Capri, Escort RS, Mustang, Cortina. Auto 2 porte, ruote larghe, seduta bassa, rivisitata in chiave neon/sci-fi. 3 varianti di colore.
-RISPOSTA DI ANDREA: OK
+RISPOSTA DI ANDREA: sì
 
 ## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
-Domanda: nome e slogan dello sponsor inventato (intimo), dove compare (cartelloni, titolo, radio).
-RISPOSTA DI ANDREA: "Curve Pericolose" — slogan "appoggiati al peggio". Compare ai lati delle strade come cartelloni pubblicitari sparsi al 20% dei segmenti dei diversi livelli. Nessun marchio reale.
-Esito: @grafico produce sprite cartelloni per entrambi gli sponsor (varianti per livello), @sviluppatore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
-Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale, stile insegna di officina/negozio di provincia italiana. Cartelloni separati da Curve Pericolose, distribuiti indipendentemente al 10-15% dei segmenti. Totale cartelloni sponsor: ~30-35% dei segmenti con almeno un cartellone visibile.
+Domanda: nome e slogan degli Sponsor, dove compare (Banner stradali).
+RISPOSTA DI ANDREA: "Curve Pericolose" — slogan "appoggiati al peggio". Compare ai lati delle strade come cartelloni pubblicitari sparsi al 20% dei segmenti dei diversi livelli.
+Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop), @sviluppatore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
+Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale. Cartelloni separati da Curve Pericolose, distribuiti indipendentemente al 10-15% dei segmenti. Totale cartelloni sponsor: ~20-30% dei percorsi di gara.
 
 ## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
-Domanda: 9 varianti di scenario prodotte per i 3 livelli. Quale variante per ciascun livello?
+Domanda: 6 varianti di scenario prodotte per i 6 livelli. Quale variante per ciascun livello?
 RISPOSTA DI ANDREA: variante A, OK
-Esito: lv_01_neon varianteA, lv_02_atomico varianteA, lv_03_foglie varianteA. Le varianti B/C e altre future restano in archivio per eventuali livelli e implementazioni future.
+Esito: lv_01_neon varianteA, lv_02_atomico varianteA, lv_03_foglie varianteA. Le varianti B/C e altre future restano in archivio per eventuali livelli. Confermati 6 temi per livelli: Neon, Atomico, Foglie, Futurista, Spray, Desktop.
 
 ## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: layout menu e HUD.

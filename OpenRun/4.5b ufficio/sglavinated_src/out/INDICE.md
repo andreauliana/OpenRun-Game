@@ -2,13 +2,22 @@
 
 | Ruolo/sezione | File | Data | Byte |
 |---|---|---|---|
+| builder-developer | `out/builder-developer/RISULTATI_1910_0828.md` | 19/10 08:30 | 1680 |
+| builder-developer | `out/builder-developer/RISULTATI_1910_0823.md` | 19/10 08:26 | 1699 |
+| builder-developer | `out/builder-developer/VOCE_SCAMBIO_1168.md` | 19/10 08:19 | 904 |
+| builder-developer | `out/builder-developer/RISULTATI_1910_0817.md` | 19/10 08:19 | 1208 |
+| builder-developer | `out/builder-developer/RISULTATI_1910_0809.md` | 19/10 08:11 | 1097 |
+| builder-developer | `out/builder-developer/VOCE_SCAMBIO_1167.md` | 19/10 08:11 | 904 |
+| builder-developer | `out/builder-developer/RISULTATI_1910_0803.md` | 19/10 08:06 | 1062 |
+| builder-developer | `out/builder-developer/VOCE_SCAMBIO_1166.md` | 19/10 07:50 | 1125 |
+| builder-developer | `out/builder-developer/RISULTATI_1910_0727.md` | 19/10 07:29 | 1034 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1165.md` | 19/10 07:25 | 1048 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1164.md` | 19/10 07:17 | 1048 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1163.md` | 19/10 07:06 | 1000 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1162.md` | 19/10 06:54 | 1000 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1161.md` | 18/10 23:27 | 908 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1160.md` | 18/10 23:07 | 1775 |
-| capo | `out/capo/STATI_PROPOSTI.md` | 19/10 07:20 | 4724 |
+| capo | `out/capo/STATI_PROPOSTI.md` | 19/10 08:14 | 5021 |
 | capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:32 | 1979 |
 | capo | `out/capo/RICHIESTA_STORICO_17OTT.md` | 17/10 13:12 | 12195 |
 | capo | `out/capo/SCAMBIO_ARCHIVIO_fino_92.md` | 17/10 13:12 | 125863 |
@@ -20,6 +29,15 @@
 | collaudatore | `out/collaudatore/manifest.json` | 17/10 13:13 | 23 |
 | collaudatore | `out/collaudatore/prova_gate_partenza.png` | 17/10 13:13 | 9721 |
 | designer | `out/designer/STATUS_GRAFICO_PER_CAPO.md` | 18/10 15:45 | 3297 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0826.md` | 19/10 08:28 | 946 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0821.md` | 19/10 08:22 | 946 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0814.md` | 19/10 08:15 | 977 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0806.md` | 19/10 08:08 | 946 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0802.md` | 19/10 08:03 | 946 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0751.md` | 19/10 07:53 | 946 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0747.md` | 19/10 07:49 | 977 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0732.md` | 19/10 07:33 | 979 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0725.md` | 19/10 07:26 | 1767 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0720.md` | 19/10 07:22 | 1767 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0718.md` | 19/10 07:19 | 1767 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0712.md` | 19/10 07:13 | 1465 |
