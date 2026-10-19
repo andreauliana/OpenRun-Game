@@ -156,6 +156,13 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_0917.md; questo status aggiornato.
 - Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1 (risposta Andrea T1-Q1: sì); zero scritture nei sorgenti. In attesa: task dal Capo.
 
+## Report turno 09:21 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer/@grafico (fuori scope T1); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (T1-Q3/T1-Q8). P1 promosso [x] per T1-Q2 sì di Andrea.
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, speed@60=161.79, T1-RUN [x] DEFAULT T1-Q1 (risposta Andrea T1-Q1: sì).
+- Consegne scritte: bacheche/builder-developer/diario.md (una riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1173.md e RISULTATI_1910_0921.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.
+
 ## Sintesi dei report precedenti pertinenti
 
 - 09:17 (19/10) — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore, 22:56).
