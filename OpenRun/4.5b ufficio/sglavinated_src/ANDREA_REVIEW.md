@@ -1,17 +1,13 @@
 # Andrea — Feedback, decisioni e Review
 
-Fonte canonica unica per feedback e decisioni di Andrea. Il Capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
+Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
 
 ## Uso nel ciclo 4.6
 
 - Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
 - Assegnazioni, criteri, prove e review indipendenti restano nel dossier `Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
-- Le voci legacy sotto sono contesto storico: il Capo ne conferma la pertinenza nel checkpoint prima di riaprirle. Non prevalgono sulle regole 4.6.
+- Le voci legacy sotto sono contesto storico: il @capo ne conferma la pertinenza nel checkpoint prima di riaprirle.
 - Una risposta registrata non equivale a verifica tecnica o chiusura del checkpoint. L'autore non approva il proprio lavoro.
-
-## Nuovo feedback o decisione
-
-**Nota nuova 2026-10-19 — frequenza di gioco: leggere `NOTA_ANDREA_2026-10-19_FREQUENZA.md` (decisione di Andrea: misure in secondi, 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2). Parte 2 nello stesso file: SDL, compilazione e compatibilita' multipiattaforma.**
 
 Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il Capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
 
@@ -60,7 +56,7 @@ Dettaglio misure (headless, Mac):
   - lv_05_spray: rettilineo 21%, curva max 0.90 — FALLITO
   - lv_06_desktop: rettilineo 12%, curva max 0.56 — FALLITO
 
-Azione richiesta a @sviluppatore: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
+Azione richiesta a @builder-developer: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
@@ -68,13 +64,11 @@ Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicat
 
 ### T1-Q5 | Soglie giro guidato e tuning percorsi (T1-RUN)
 
-Azione richiesta a @sviluppatore (ANDREA_REVIEW T1-Q3): rivedere generazione/parametri percorsi per varietà (alternanza curve/rettilinei) così il giro guidato passa su tutti i 6 livelli.
+Azione richiesta a @builder-developer (ANDREA_REVIEW T1-Q3): rivedere generazione/parametri percorsi per varietà (alternanza curve/rettilinei) così il giro guidato passa su tutti i 6 livelli.
 Domanda: confermare soglie giro guidato (rettilineo ~>=35-40%, curva max coerente 0.6-1.0, riferimento lv_02_atomico rettilineo 40% / curva max 0.86) e che builder-developer proceda col tuning un parametro alla volta con `sh tools/gate_t1.sh soak`?
 Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) no, ridefinire soglie e parametri
 Raccomandazione: A
-DEFAULT usato nel frattempo: A — builder-developer allinea i percorsi e rilancia `sh tools/gate_t1.sh soak`; developer-builder-junior esegue peer review indipendente del diff/log.
-Impatto se cambi idea: modificare soglie gate e parametri livello.json; rieseguire gate.
-RISPOSTA DI ANDREA (2026-10-19, via Claude): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per sviluppatori. Serve una logica di tracciato modificabile a mano per le 6 piste. Le soglie non si abbassano. Compito operativo: blocco R1 in RICHIESTA.md (tratti con nome, regole per pista, gate che indica il tratto da correggere). Ruoli confermati: il Designer verifica le risorse e ne crea di nuove; il Capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
+RISPOSTA DI ANDREA (2026-10-19, via Claude): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per sviluppatori. Serve una logica di tracciato per i tracciati. Compito operativo: blocco R1 in RICHIESTA.md (tratti con nome, regole per pista, gate che indica il tratto da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il Capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
 ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su RetroPie e Raspberry Pi 400. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Pi/RetroPie oltre a non rompere la build Linux. Note per allora: RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
@@ -85,8 +79,8 @@ Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md.
 
 ## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
 Esito: Contenuti in Libreria indicizzati da @grafico secondo DIREZIONE_ARTISTICA.md.
-Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, come banner sponsor, ed altri, etc etc, per lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop -> @grafico verifica ed aggiorna gli asset Libreria 'Dipartimento Grafico' per essere utilizzati.  @sviluppatore verifica le implementazioni di questi asset grafici nei percorsi.
-DEFAULT: @sviluppatore verifica ed inserisce le risorse del @grafico inserite e indicizzate nella Libreria del 'Dipartimento Grafico'.
+Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, come banner sponsor, ed altri, per lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop -> @grafico verifica ed aggiorna gli asset per essere utilizzati dal @builder-developer che verifica le implementazioni.
+DEFAULT: @builder-developer inserisce le risorse del @grafico.
 RISPOSTA DI ANDREA: sì
 
 ## D3 | struttura | architetto | [CHIUSA 2026-10-19 da Andrea]
@@ -110,7 +104,7 @@ RISPOSTA DI ANDREA: sì
 ## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: nome e slogan degli Sponsor, dove compare (Banner stradali).
 RISPOSTA DI ANDREA: "Curve Pericolose" — slogan "appoggiati al peggio". Compare ai lati delle strade come cartelloni pubblicitari sparsi al 20% dei segmenti dei diversi livelli.
-Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), @sviluppatore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
+Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), @builder-developer patore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
 Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale. Cartelloni separati da Curve Pericolose, distribuiti indipendentemente al 10-15% dei segmenti. Totale cartelloni sponsor: ~20-30% dei percorsi di gara.
 
 ## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
@@ -121,7 +115,7 @@ Esito: lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_
 ## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: layout menu e HUD.
 RISPOSTA DI ANDREA: Lofi Jungle (B) per tema menu/HUD. Basato sulla posizione degli elementi della referenza del 'feeling' percepito dello standard gioco 'OutRun', con tema grafico in bianco e nero.
-Esito: @grafico conferma utilizzo dei menu/HUD creati, variante B, palette bianco/nero, layout ispirato al 'feeling' percepito dello standard gioco 'OutRun' (ad esempio: velocita, tempo, punteggio, visualizzatore accelerazione). Usare asset originali della Libreria del 'Dipartimento Grafico' @grafico che verifica la disposizione grafica. @sviluppatore integra il menu e HUD nel gioco allineandosi al @grafico.
+Esito: @grafico conferma utilizzo dei menu/HUD creati, variante B, palette bianco/nero, layout ispirato al 'feeling' percepito dello standard gioco 'OutRun' (ad esempio: velocita, tempo, punteggio, visualizzatore accelerazione). Usare asset originali della Libreria del 'Dipartimento Grafico' @grafico che verifica la disposizione grafica. @builder-developer  integra il menu e HUD nel gioco allineandosi al @grafico.
 
 ## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
 Domanda: hud.json (variante B) manca dell'elemento "tempo" citato da D7. Posizione e dato da definire.
@@ -129,13 +123,13 @@ Opzioni: A) tempo residuo (secondi contati all'indietro), sotto la velocità  B)
 Raccomandazione: A (coerente con arcade 'OutRun Style', D7 già cita "tempo" in HUD).
 DEFAULT usato nel frattempo: A (tempo residuo sotto velocità, a sinistra).
 Impatto se cambi idea: aggiornare hud.json e regenerare hud_preview.png con genera_ui_b.py.
-RISPOSTA DI ANDREA: A  @grafico aggiunge elementi grafici interfaccia di gioco (no menu) con elemento "tempo" (residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @sviluppatore espone i dati del 'cruscotto' nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
+RISPOSTA DI ANDREA: A  @grafico aggiunge elementi grafici interfaccia di gioco (no menu) con elemento "tempo" (residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @builder-developer  espone i dati del 'cruscotto' nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
 
 ## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
 Domanda: quando clang++/make è negato (regola 21), come si compila il nucleo?
 Opzioni: utilizzare: 'cmake --build'.
 RISPOSTA DI ANDREA: OK, cmake --build.
-Esito: @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
+Esito: @@builder-developer esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
 
 ## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
@@ -154,19 +148,71 @@ RISPOSTA DI ANDREA: A (dinamica OutRun: rallentamento fuori strada controllato, 
 Domanda:
 Dopo peer review incrociata su R1 e gate `sh tools/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
 Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B) no, si procede direttamente a Pi 400 dopo peer review
-Raccomandazione: A
-DEFAULT usato nel frattempo: A — builder-developer completa R1 e rilancia gate; developer-builder-junior esegue peer review indipendente; si attende il via di Andrea su Mac prima di ogni lavoro dedicato a Pi/RetroPie (salvo non rompere la build Linux).
-Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, oggi non compila per mancanza libretro.h).
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: A
+Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
+
+
 
 ## Feedback storico v90 — 2026-10-17
 
-Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come contesto storico, non come specifica attiva per OpenRun 4.6. La decisione di progetto allora registrata privilegiava il motore C++ in `motore_nuovo/`, sospendeva ROM/export Mega Drive e chiedeva di concentrarsi sul primo gate giocabile. Le assegnazioni personali v4.5 non prevalgono sui ruoli 4.6.
+Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come contesto storico. La decisione di progetto privilegiava il motore C++ in `motore_nuovo/`, sospendeva ROM/export Mega Drive e chiedeva di concentrarsi sul primo gate giocabile.
 
 Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di guida convincente. Le priorita' indicate erano:
 
-1. Rendere strada, elementi decorativi, fluidita del percorso, scorrimento delle animazioni del gioco, risposta ai controlli di gioco, animazione e fluidita del mondo esterno rispettivamente ad auto, scorrevoli, meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico nella Libreria del 'Dipartimento Grafico', per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
-2. Implementare accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento fuori strada, ribaltamento/collisioni e pannello menu.
-3. Rappresentare nel pannello velocita' e risposta del motore simulato con cambio automatico.
+1. Migliorare percorso stradale e feeling della velocita', elementi decorativi nei percorsi distribuiti, fluidita' e scorrevolezza del percorso, scorrimento del gioco, risposta ai controlli di gioco, Sterzo non reattivo da veicolo fermo, percezione di velocita' e fluidita' del movimento 'external world' rispetto a veicolo guidato piu scorrevole, con elementi grafici meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico, per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
+2. Migliorare principi di guida: accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento a bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della corsa).
+3. Rappresentare nel pannello velocita' (HUV) e risposta del motore simulato con cambio automatico animazioni brani audio radio interpretando segnali dei brani .mx Traker.
 
-Personaggi animati e relativi effetti erano rinviati a una fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
+Perfezionamento dei Personaggi animati sono rinviati a fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
+
+
+## Nuovo feedback o decisione (Andrea, 19 ott)
+
+**frequenza di gioco: 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2). Parte 2 nello stesso file: SDL, compilazione e compatibilita' multipiattaforma.**
+
+# Nota di Andrea per sviluppatori — frequenza di gioco (19 ott 2026)
+Decisione di Andrea. Vale come voce di ANDREA_REVIEW: precedenza sulle altre fonti.
+Destinatari: @builder-developer (autore), @developer-builder-junior (revisore). @capo apre un checkpoint dedicato.
+Ordine: dopo R1, prima di R2.
+
+## Decisione
+1. **Tutte le misure del gioco in secondi, non in frame.** Tempo limite, durata show (oggi 260 frame), soglia di inattivita' (500 frame), timer di checkpoint, animazioni, accelerazioni e attriti devono usare `dt` in secondi.
+2. **Frequenza logica predefinita: 60 Hz.** Oggi e' 50 Hz (`src/game/game.cpp:678` `dt = 1/50`, `game.cpp:831` `/50`, `UNITA_PER_KM` in `game.cpp:17`, `src/libretro/sglavinated_libretro.cpp:37` `fps = 50` e `:78` `RETRO_REGION_PAL`).
+3. **Opzione 50 Hz** in configurazione (per TV a tubo PAL o RetroPie impostato in PAL), es. `dati/config.json` `"frequenza_hz": 60` oppure opzione del runner `--hz 50`. Il core libretro dichiara la frequenza scelta (60 -> NTSC).
+
+## Perche'
+Mac, Pi 400 (solo HDMI), monitor e TV moderni, anche in Europa, lavorano a 60 Hz; anche Windows XP gira su monitor da 60 Hz in su. A 50 Hz logici su uno schermo a 60 il runner ripete un'immagine ogni 6: la strada che scorre fa un piccolo scatto continuo. Una possibile versione per Windows XP (dopo Mac e Pi) non cambia questa scelta.
+
+## Gate
+- `ctest` verde a 60 Hz; il giro guidato dura gli stessi secondi (+/- 1%) con le due frequenze.
+- Replay 2x IDENTICO a ciascuna frequenza (i replay registrati a una frequenza si riproducono a quella).
+- Il runner su Mac con vsync a 60 Hz: nessun frame ripetuto in 60 s di guida (contatore nel log del runner).
+
+
+# SDL, compilazione e compatibilita' multipiattaforma (Andrea, 19 ott)
+Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso checkpoint o in uno a parte.
+**Piattaforme, in quest'ordine:** 1) macOS, 2) Linux, 3) RetroPie su Raspberry Pi 400, 4) Windows XP in futuro. Ogni modifica deve compilare su 1-3; per 4 basta non introdurre dipendenze che lo escludano.
+
+## Stato verificato (main 162dc5d)
+- Il core (`sglavinated_core`) e' C++17 puro, senza SDL e senza `std::filesystem`: bene, resta cosi'.
+- Solo il runner usa SDL2 (+ SDL2_image opzionale per i PNG sponsor). Funzioni usate: video/renderer, texture streaming, `SDL_QueueAudio`, GameController/Joystick, `SDL_RenderSetIntegerScale`. **Versione minima reale: SDL 2.0.5** (per `SDL_RenderSetIntegerScale`).
+- Il core libretro (per RetroPie) non usa SDL: dipende solo da `libretro.h`, che oggi manca, quindi `BUILD_LIBRETRO=ON` non compila.
+
+## Da fare
+1. **Include portabile:** in `src/runner/main.cpp` usare `#include <SDL.h>` (con il target `SDL2::SDL2`) invece di `<SDL2/SDL.h>`, che non funziona con alcune installazioni Windows e con il framework macOS.
+2. **SDL2main solo se esiste:** in `CMakeLists.txt` collegare `SDL2::SDL2main` solo `if(TARGET SDL2::SDL2main)`; su alcune distribuzioni Linux il target non c'e' e CMake si ferma.
+3. **Versione minima dichiarata:** `find_package(SDL2 2.0.5)` e un messaggio chiaro se manca. Scrivere in `docs/SVILUPPATORI.md` come installarla: macOS `brew install sdl2 sdl2_image`; Raspberry Pi OS / Debian `sudo apt install libsdl2-dev libsdl2-image-dev`; Windows con vcpkg o i pacchetti MinGW ufficiali di SDL.
+4. **`libretro.h`:** aggiungere l'header ufficiale (licenza MIT) in `src/libretro/` cosi' il core RetroPie compila su Linux/Pi; la frequenza dichiarata segue la Parte 1.
+5. **Avvio del runner in RetroPie (Andrea, 19 ott):** il runner deve partire dal menu di RetroPie/EmulationStation come voce del sistema **Ports**, senza desktop. Da preparare:
+   - lo script `pi/retropie/OpenRun.sh` (da copiare in `~/RetroPie/roms/ports/`), che entra nella cartella del gioco, imposta `SDL_VIDEODRIVER=kmsdrm` e `SDL_AUDIODRIVER=alsa` e lancia `sglavinated_runner` a schermo intero;
+   - l'uscita pulita con Select+Start (pad) ed Esc (tastiera), che torna a EmulationStation;
+   - il pad configurato in RetroPie funzionante anche nel gioco (SDL GameController);
+   - le istruzioni passo passo nella guida Pi (`guide/BUILD_E_AVVIO_RASPBERRY_PI.md` del progetto e `docs/SVILUPPATORI.md`): compilare sul Pi, copiare lo script, riavviare EmulationStation.
+   Il core libretro (punto 4) resta la seconda strada, per giocarlo come "sistema" di RetroArch.
+6. **Windows XP (piu' avanti, dopo Mac e Pi):** verificare l'ultima versione di SDL2 che supporta ancora XP e un compilatore C++17 che produca eseguibili per XP. Nel runner `std::filesystem` puo' essere un problema su XP e sui macOS vecchi (serve 10.15+): sostituirlo con `SDL_GetBasePath` + funzioni C standard, dato che il runner usa gia' SDL. Non bloccare il lavoro attuale per XP: solo non introdurre nuove dipendenze che lo escludano.
+
+## Gate
+- Build pulita del runner su macOS (Homebrew) e su Linux/Raspberry Pi OS con SDL di sistema; `ctest` verde.
+- Con `BUILD_LIBRETRO=ON` il core compila su Linux.
+- `docs/SVILUPPATORI.md` e la guida Pi riportano versioni e comandi di installazione.
+- Su Pi 400 con RetroPie: OpenRun compare in Ports, parte, si guida col pad e torna a EmulationStation (prova di Andrea, dopo l'ok su Mac).

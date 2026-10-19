@@ -6,7 +6,7 @@ Eseguire i comandi dalla radice `sglavinated_src/`. L'agente Designer ha accesso
 
 | Strumento | Comando | Funzione e output |
 |---|---|---|
-| Verifica catalogo grafico | `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` | Sola lettura; controlla ID, stati e riferimenti PNG/raw, avvisa sui PNG non catalogati. |
+| Verifica catalogo @grafico | `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` | Sola lettura; controlla ID, stati e riferimenti PNG/raw, avvisa sui PNG non catalogati. |
 | Indice asset | `python3 motore_nuovo/strumenti_py/indice_assets.py` | Aggiorna `assets_originali/INDICE_ASSET.json` e `INDICE_ASSET.md` con percorso, categoria, dimensioni, hash, licenza/stato rilevati e avvisi. |
 | Galleria PNG | `python3 motore_nuovo/strumenti_py/galleria.py` | Genera `assets_originali/galleria/galleria.html` per la revisione visiva delle immagini. |
 | Conversione PNG in raw | `python3 motore_nuovo/strumenti_py/png_a_raw.py` | Genera `.sglraw` degli sponsor in `motore_nuovo/dati/sprite_raw/sponsor/`; output generato, non modificare a mano. |
