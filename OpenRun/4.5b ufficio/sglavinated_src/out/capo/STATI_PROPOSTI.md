@@ -1,17 +1,17 @@
 # STATI PROPOSTI — Capo (sostituisci a ogni turno)
 
 Turno 1 — ora 0 di 12. Tappa attiva: **1 — Gate T1-RUN** (`sh tools/gate_t1.sh soak`).
-Fonti lette (solo queste): TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+Fonti lette (solo queste): TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Handoff: out/designer/STATUS_GRAFICO_PER_CAPO.md, UFFICIO/Officina/STATUS_OFFICINA.md.
 
 ## Stati proposti — Tappa 1 (Gate T1-RUN)
 
 | Blocco | Stato | Prova / criterio di completamento | Responsabile → revisore indipendente | Percorsi scrivibili |
 |---|---|---|---|---|
 | C | [x] | Baseline 4.6 chiusa (CP-001 riferimento documentale, nessuna approvazione release). | capo → — | Checkpoint Revision/ |
-| T1-RUN | [x] | `sh tools/gate_t1.sh soak` exit 0; replay 2x IDENTICO; ms/frame <= 20 (0,09 ms/frame registrato). T1-Q1 Andrea: "sì". | builder-developer → developer-builder-junior (peer review diff/log) | out/builder-developer/ (fase 1: motore_nuovo/src/, tools/, dati/livelli/) |
-| P1 | [x] | Promozione T1-Q2 Andrea: "sì" (prova differita, screenshot shell-negata già registrati in SCAMBIO_RECENTE). Punto 4 sprite veri → G1 attivato. | builder-developer → developer-builder-junior | out/builder-developer/ (report); out/sviluppatore/screenshot_p1/ solo lettura (legacy) |
+| T1-RUN | [x] | `sh tools/gate_t1.sh soak` exit 0 (22:56, log Officina); replay 2x IDENTICO; ms/frame medio 0.185 max 0.518 <= 20; 6 percorsi GATE PERCORSO OK. T1-Q1 Andrea: "sì". | builder-developer → developer-builder-junior (peer review diff/log) | out/builder-developer/ (fase 1: motore_nuovo/src/, tools/, dati/livelli/) |
+| P1 | [x] | Promozione T1-Q2 Andrea: "sì" (prova differita, screenshot shell-negata già registrati in SCAMBIO_RECENTE). Punto 4 sprite veri → in G1. | builder-developer → developer-builder-junior | out/builder-developer/ (report); out/sviluppatore/screenshot_p1/ solo lettura (legacy) |
 | H | [~] | Andrea prova `sglavinated_runner` su Mac (SDL2) e registra v91 in ANDREA_REVIEW.md; fps/temperatura Pi 400 (`vcgencmd measure_temp`, `get_throttled`). T1-Q3 Andrea: "sì", appena possibile. Gate headless verde. Non eseguibile qui (regole 9/21). | Andrea → capo (solo registrazione esito) | out/capo/ |
-| G1 | [~] | ATTIVATO (T1-Q4 Andrea: "attivare"). `check_catalogo_grafico.py` exit 0 e "PNG non catalogati: 0". Catalogo 52 elementi, 100 PNG non classificati. | designer → capo | out/designer/ (fase 1: assets_originali/, libreria/, dati UI/testo assegnati) |
+| G1 | [~] | ATTIVATO (T1-Q4 Andrea: "attivare"). `check_catalogo_grafico.py` exit 0 e "PNG non catalogati: 0". Catalogo 52 elementi; 100 PNG non classificati. CP-002, review indipendente richiesta. | designer → capo | out/designer/ (fase 1: assets_originali/, libreria/, dati UI/testo assegnati) |
 | M | [~] | Tappa 3 (HUD/font) non avviata. | designer → capo | out/designer/ |
 | MD0 | [-] | Sospeso (scelta Andrea 17 ott: prima il C++). | — | — |
 | T5 | [-] | Tappa 5 non avviata. | — | — |
@@ -35,4 +35,4 @@ Regole 4.6: autore ≠ revisore indipendente; il Capo non è revisore tecnico de
 
 ## Esito turno
 
-Non tutti i blocchi della tappa sono [x] (H [~], G1 [~], M [~], MD0 [-], T5 [-], J [ ]): **nessun FINITO**. Nessun blocco hard (CONTROLLO.md: decisioni aperte per Andrea 0; nessun PER_CLAUDE.md; agenti aperti builder-developer e developer-builder-junior). Si riprende dai blocchi [~] e si procede con i DEFAULT: prove P1/H differite → chiusura Tappa 1, poi review e Tappa 2.
+Non tutti i blocchi della tappa sono [x] (H [~], G1 [~], M [~], MD0 [-], T5 [-], J [ ]): **nessun FINITO**. Nessun blocco hard (CONTROLLO.md: decisioni aperte per Andrea 0; nessun PER_CLAUDE.md). Si riprende dai blocchi [~]: H in attesa di Andrea, G1 e M in carico al designer. Poi review indipendenti e passaggio a Tappa 2.

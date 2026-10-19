@@ -40,7 +40,7 @@ Promozione storicamente subordinata a screenshot del gameplay e build CMake veri
 DEFAULT usato nel frattempo: sì — promuovi P1 a [x] (screenshot bloccati da shell negata, prova differita).
 Risposta di Andrea: sì.
 
-### T1-Q3 | Prova manuale su Mac e Pi 400
+### T1-Q3 | Prova manuale su Mac e Pi 400/Linux
 
 Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400.
 DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
@@ -57,44 +57,44 @@ RISPOSTA DI ANDREA: A
 Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md.
 
 ## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
-Esito: sponsor (intimo femminile, Bar, Negozi). Contenuti femminili: glamour/pin-up e sponsor di intimo (vedi DIREZIONE_ARTISTICA.md.
-Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, Banner degli Sponsors -> @grafico verifica asset Libreria Dipartimento Grafico per essere utilizzati nei 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop). Considerare anche aree di transizione (bivi) tra i percorsi connessi tra di loro, ed elementi decorativi.
-DEFAULT: @sviluppatore e @grafico verificano ed inseriscono le risorse grafiche del 'Dipartimento Grafico' utilizzando i vari asset grafici creati per i 6 percorsi e Temi.
+Esito: Contenuti in Libreria indicizzati da @grafico secondo DIREZIONE_ARTISTICA.md.
+Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, come banner sponsor, ed altri, etc etc, per lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop -> @grafico verifica ed aggiorna gli asset Libreria 'Dipartimento Grafico' per essere utilizzati.  @sviluppatore verifica le implementazioni di questi asset grafici nei percorsi.
+DEFAULT: @sviluppatore verifica ed inserisce le risorse del @grafico inserite e indicizzate nella Libreria del 'Dipartimento Grafico'.
 RISPOSTA DI ANDREA: sì
 
 ## D3 | struttura | architetto | [CHIUSA 2026-10-19 da Andrea]
 Domanda: quante tappe/finali ha l'albero di bivi usare come STRUTTURA?
-Raccomandazione: @collaudatore verifica da fonti tecniche (FEDELTA.md voce 3) e propone numero, tu confermi.
-DEFAULT usato nel frattempo: 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop) per gara percorso con 3 bivi di transizione percorsi o 'livelli'.
-RISPOSTA DI ANDREA: sì, 6 Percorsi con Temi (Neon, Atomico, Foglie, Futurista, Spray) per gara percorso con 3 bivi di transizione percorsi o 'livelli'.
+DEFAULT: 6 livelli/percorsi con temi confermati da @grafico: lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop.
+3 finali con animazione (premiazione/arrivo) al arrivo/fine livello. 3 bivi transitori.
+RISPOSTA DI ANDREA: sì, 6 Percorsi con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), 3 finali.
 
 ## D4 | tipografia | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale configurazione tipografica per il gioco?
 Scelta di Andrea (semplificata):
 - Fumetti e titolazioni: Antonio Bold (OFL-1.1) — un solo font vettoriale per tutto
-- UI pixel (menu, HUD, velocita, tempo): variante B (Lofi Jungle) pixel 5x7, disegnato dal tipografo
+- UI pixel (menu, HUD, velocita, tempo): variante B (Lofi Jungle) pixel 5x7, disegnato negli asset del @grafico nella Libreria del 'Dipartimento Grafico'
 RISPOSTA DI ANDREA: Antonio Bold per titoli e peso 'regular' per fumetti, B per pixel UI. Confermato.
 
 ## D5 | sagoma auto | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: quale stile per la sagoma dell'auto del giocatore?
-Scelta di Andrea: silhouette GT europea anni '70-'90, ispirata a: Citroën CX/DS, Ford Sierra XR4i/Cosworth, Capri, Escort RS, Mustang, Cortina. Auto 2 porte, ruote larghe, seduta bassa, rivisitata in chiave neon/sci-fi. 3 varianti di colore.
+Scelta di Andrea: silhouette GT europea anni '70-'90, ispirata a: Citroën CX/DS, Ford Sierra XR4i/Cosworth, Capri, Escort RS, Mustang, Cortina. 3 varianti di colore.
 RISPOSTA DI ANDREA: sì
 
 ## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: nome e slogan degli Sponsor, dove compare (Banner stradali).
 RISPOSTA DI ANDREA: "Curve Pericolose" — slogan "appoggiati al peggio". Compare ai lati delle strade come cartelloni pubblicitari sparsi al 20% dei segmenti dei diversi livelli.
-Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (Neon, Atomico, Foglie, Futurista, Spray, Desktop), @sviluppatore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
+Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), @sviluppatore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
 Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale. Cartelloni separati da Curve Pericolose, distribuiti indipendentemente al 10-15% dei segmenti. Totale cartelloni sponsor: ~20-30% dei percorsi di gara.
 
 ## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: 6 varianti di scenario prodotte per i 6 livelli. Quale variante per ciascun livello?
 RISPOSTA DI ANDREA: variante A, OK
-Esito: lv_01_neon varianteA, lv_02_atomico varianteA, lv_03_foglie varianteA. Le varianti B/C e altre future restano in archivio per eventuali livelli. Confermati 6 temi per livelli: Neon, Atomico, Foglie, Futurista, Spray, Desktop.
+Esito: lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop.
 
 ## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: layout menu e HUD.
-RISPOSTA DI ANDREA: Lofi Jungle (B) per tema menu/HUD. Basato su posizione elementi dell'originale (OutRun, e referenze), con tema in bianco e nero.
-Esito: @grafico produce menu/HUD definitivo variante B, palette bianco/nero, layout ispirato alla disposizione elementi del gioco originale 'OutRun' e simili (velocita, tempo, punteggio, accelerazione, distanza nelle stesse posizioni). Usare asset originale, solo verificare la disposizione come riferimento strutturale (considerare retro enginering, se utile, e librerie implementate).
+RISPOSTA DI ANDREA: Lofi Jungle (B) per tema menu/HUD. Basato sulla posizione degli elementi della referenza del 'feeling' percepito dello standard gioco 'OutRun', con tema grafico in bianco e nero.
+Esito: @grafico conferma utilizzo dei menu/HUD creati, variante B, palette bianco/nero, layout ispirato al 'feeling' percepito dello standard gioco 'OutRun' (ad esempio: velocita, tempo, punteggio, visualizzatore accelerazione). Usare asset originali della Libreria del 'Dipartimento Grafico' @grafico che verifica la disposizione grafica. @sviluppatore integra il menu e HUD nel gioco allineandosi al @grafico.
 
 ## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
 Domanda: hud.json (variante B) manca dell'elemento "tempo" citato da D7. Posizione e dato da definire.
@@ -113,18 +113,14 @@ Esito: @collaudatore esegue `cmake --build build --target prova_gate` su Pi 400/
 ## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
 Opzioni: A) caricatore PNG minimo nel core (nuova dipendenza/lib, core senza SDL)  B) conversione PNG->raw in strumenti_py, prova_gate legge raw (zero nuove dipendenze)
-Raccomandazione: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
-DEFAULT usato nel frattempo: B.
-Impatto se cambi idea: riscrivere caricamento sprite in prova_gate e aggiungere dipendenza immagini al core.
 RISPOSTA DI ANDREA: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/CC0).
 
 ## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: fuoristrada: velocità crolla da ~160 a ~6 in pochi frame (troppo brusco). Come tarare il rallentamento fuori strada in player.cpp?
-Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelerazione secca a ~6  C) nessun rallentamento (velocità invariata fuori strada)
-Raccomandazione: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
+Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelerazione secca a ~6  C) nessun rallentamento (velocità invariata fuori strada) 
 DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/gate_t1.sh` (replay 2x IDENTICO).
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
-RISPOSTA DI ANDREA: A, stile 'OutRun'
+RISPOSTA DI ANDREA: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 
 ## Feedback storico v90 — 2026-10-17
 
@@ -132,8 +128,8 @@ Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come 
 
 Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di guida convincente. Le priorita' indicate erano:
 
-1. Rendere strada, corsie, proiezione delle colline e auto leggibili; inventariare e collegare al gameplay i contenuti grafici e gli sponsor gia' prodotti.
-2. Implementare accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento fuori strada, ribaltamento/collisioni e pannello informativo.
+1. Rendere strada, elementi decorativi, fluidita del percorso, scorrimento delle animazioni del gioco, risposta ai controlli di gioco, animazione e fluidita del mondo esterno rispettivamente ad auto, scorrevoli, meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico nella Libreria del 'Dipartimento Grafico', per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
+2. Implementare accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento fuori strada, ribaltamento/collisioni e pannello menu.
 3. Rappresentare nel pannello velocita' e risposta del motore simulato con cambio automatico.
 
 Personaggi animati e relativi effetti erano rinviati a una fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
