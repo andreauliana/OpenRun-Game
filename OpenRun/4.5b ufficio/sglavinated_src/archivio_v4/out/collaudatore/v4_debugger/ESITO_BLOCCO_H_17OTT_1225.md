@@ -10,7 +10,7 @@ Blocco H [~] — invariato. Build cmake, replay deterministico, ms/frame, fps, t
   2. `motore_nuovo/CMakeLists.txt:17` — `src/core/json_mini.h` presente in `sglavinated_core`. OK.
   3. `motore_nuovo/src/road/road.cpp:87-88` — wrap `playerX` a `+/-ROAD_HALF_WORLD` (900), compatibile con clamp. OK.
   4. `motore_nuovo/src/render/renderer.cpp:115-118` — `std::lower_bound` su `projs_` ordinato per `worldZ`. OK.
-  -> Tutti i 3 rilievi voce 1113 già sanati da @coder su disco. Nessun patch da applicare (regola 15: debugger non modifica codice di prodotto).
+  -> Tutti i 3 rilievi voce 1113 già sanati da @developer su disco. Nessun patch da applicare (regola 15: debugger non modifica codice di prodotto).
 
 ## Rilievo residuo
 - `motore_nuovo/docs/BUILD.md:29` e comandi `:70`, `:99` elencano `nlohmann/json` come dipendenza, ma il codice usa il parser interno `core/json_mini.h` (`game.cpp:3`) e `CMakeLists.txt` non richiama nlohmann. Correzione proposta (diff, da applicare a @architetto, motore_nuovo/docs/):

@@ -14,12 +14,12 @@
 
 ## Sintesi
 
-- L'indice della Libreria 4.6 e la guida strumenti ora descrivono le fonti v4.5 attive senza duplicarle. Gli asset non sono ancora stati spostati nella nuova Libreria o Shared asset.
+- L'indice della Libreria 4.6 e la guida strumenti ora descrive le fonti. Gli asset non sono ancora stati spostati nella nuova Libreria o Shared asset.
 - Catalogo: 52 elementi (30 approvati, 16 pronti, 2 in costruzione, 4 mancanti). Il controllo segnala 100 PNG non catalogati come varianti/doppioni da valutare.
 - Esistono tre livelli configurati (Neon, Atomico, Foglie), non sei percorsi autonomi; le tre auto 64x32 e i 21 banner sponsor sono approvati; i 16 elementi bordo sono pronti.
-- Le frasi di Gianni e Gesù sono complete: 97 + 59 = 156, secondo la specifica [SPEC_personaggi_v74.md](../SPEC_personaggi_v74.md). La grafica dei personaggi/balloon non è per questo approvata.
+- Le frasi di Gianni e Gesù sono complete: 97 + 59 = 156, secondo la specifica [SPEC_personaggi_v74.md](../SPEC_personaggi_v74.md). La grafica dei personaggi non è confermata ancora.
 - Sei percorsi selezionabili, tre finali con animazioni e sprite avversari non risultano disponibili come asset attivi approvati.
-- Sono stati documentati i tool già esistenti e concessi al Designer i comandi galleria e conversione PNG->raw. Nessun asset generato o spostato in questo checkpoint.
+- Sono stati documentati i tool già esistenti e concessi al @grafico, i comandi galleria e conversione PNG->raw al @developer. 
 
 ## Evidenze
 

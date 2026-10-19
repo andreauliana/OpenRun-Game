@@ -114,8 +114,8 @@ chiusura() {
 checkpoint
 command -v opencode >/dev/null 2>&1 && oc --agent capo "Scrivi RIEPILOGO_MATTINA.md (max 40 righe): cosa e' stato fatto per blocco/agente, cosa non funziona, decisioni aperte in ANDREA_REVIEW.md (le 3 piu' importanti), prossimo passo consigliato." || true
 {
-  echo "# Pacchetto per Claude app (capo supremo) — $(date '+%F %H:%M')"
-  echo "Incolla in Claude app (con accesso alla cartella): \"Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi.\""
+  echo "# Pacchetto per Claude — $(date '+%F %H:%M')"
+  echo "Incolla in Claude (con accesso alla cartella): \"Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi.\""
   echo; echo "## Stato blocchi"; grep -n '^## BLOCCO\|^| Stato' RICHIESTA.md
   echo; echo "## Decisioni aperte"; grep -n '^## D[0-9]' ANDREA_REVIEW.md
   echo; echo "## Ultime righe di SCAMBIO.md"; tail -60 SCAMBIO.md
@@ -203,11 +203,11 @@ ok_limite() { rl_n=0; }
 agenti_liberi() {
   # agenti con almeno un blocco aperto ([ ] o [~]) in RICHIESTA.md, in ordine
   # RICHIESTA.md usa i nomi v4.5: si traducono nei ruoli 4.6
-  #   sviluppatore  -> developer
+  #   developer  -> @developer
   #   collaudatore  -> developer-junior
   #   grafico       -> designer
   #   ricercatore   -> (nessun agente attivo in 4.6)
-  # Gestisce anche blocchi con più tag (es. @sviluppatore + @collaudatore): tutti vengono estratti.
+  # Gestisce anche blocchi con più tag: tutti vengono estratti.
   awk '/^## BLOCCO/ {
     ags = ""
     s = $0
@@ -233,25 +233,6 @@ agenti_liberi() {
     | while read -r ag; do [ -f ".opencode/agents/$ag.md" ] && echo "$ag"; done
   # Default 4.6: developer e developer-junior; designer solo su richiesta
   # (AGENTI_ATTIVI="developer developer-junior designer").
-}
-
-# Estratti brevi (solo shell, zero crediti): gli agenti leggono questi invece dei file lunghi.
-estratti() {
-  [ -f "$BASE/TAPPE.md" ] && cp "$BASE/TAPPE.md" TAPPE.md
-  # Il "MODELLO" (blocchi di esempio dentro un recinto ```) non va passato agli agenti: ~3 KB inutili a ogni turno.
-  awk '/^## MODELLO/{skip=1; f=0; next} skip{ if($0=="```"){f++; if(f==2) skip=0} next } {print}' RICHIESTA.md | awk '/^## BLOCCO/{if(b!="" && b!~/\| Stato \| \[x\]/) printf "%s", b; b=""} {b=b $0 "\n"} END{if(b!~/\| Stato \| \[x\]/) printf "%s", b}' > RICHIESTA_APERTA.md.tmp && mv RICHIESTA_APERTA.md.tmp RICHIESTA_APERTA.md
-  awk -v k="${SCAMBIO_VOCI:-3}" -v m="${SCAMBIO_RIGHE:-30}" '/^### /{n++} {l[NR]=$0; v[NR]=n} END{for(i=1;i<=NR;i++) if(v[i]>n-k){ if(v[i]!=pv){c=0; pv=v[i]} c++; if(c<=m) print l[i]; else if(c==m+1) print "[... voce troncata dopo " m " righe: intera in SCAMBIO.md]" }}' SCAMBIO.md > SCAMBIO_RECENTE.md.tmp && mv SCAMBIO_RECENTE.md.tmp SCAMBIO_RECENTE.md
-  [ -f BACHECA_PUBBLICA.md ] && tail -n "${BACHECA_RIGHE:-24}" BACHECA_PUBBLICA.md > BACHECA_RECENTE.md.tmp && mv BACHECA_RECENTE.md.tmp BACHECA_RECENTE.md || rm -f BACHECA_RECENTE.md
-  [ -f ASSEMBLEA.md ] && awk '
-    /^## A[0-9]+/ {
-      if (aperta && blocco != "") printf "%s", blocco
-      aperta = ($0 ~ /\[APERTA\]/)
-      blocco = aperta ? $0 "\n" : ""
-      next
-    }
-    aperta { blocco = blocco $0 "\n" }
-    END { if (aperta && blocco != "") printf "%s", blocco }
-  ' ASSEMBLEA.md > ASSEMBLEE_APERTE.md.tmp && mv ASSEMBLEE_APERTE.md.tmp ASSEMBLEE_APERTE.md || rm -f ASSEMBLEE_APERTE.md
 }
 
 review_versione() {

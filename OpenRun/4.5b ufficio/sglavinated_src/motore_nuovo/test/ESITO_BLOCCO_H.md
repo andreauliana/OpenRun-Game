@@ -1,7 +1,7 @@
 # ESITO_BLOCCO_H — verifica statica BLOCCO C (motore nuovo)
 
 Progetto: Outrun Sglavinated Edition v3 (open). Agente: @debugger. Data: 16 ott 2026.
-Ambito: verifica del BLOCCO C (motore_nuovo/src/ + CMakeLists.txt) dopo le correzioni di @coder (voce 21). Sola lettura del codice; nessun file di @coder modificato. Questo file vive in motore_nuovo/test/ (unica cartella scrivibile da @debugger).
+Ambito: verifica del BLOCCO C (motore_nuovo/src/ + CMakeLists.txt) dopo le correzioni di @developer/@developer-junior (voce 21). Sola lettura del codice; nessun file di @developer/@developer-junior modificato. Questo file vive in motore_nuovo/test/ (cartella scrivibile da @developer/@developer-junior).
 
 Ambiente: Pi/Mac del turno, shell ristretta (regola 21). **Nessun cmake** (`cmake` -> command not found, exit 127), nessun compilatore C++ raggiungibile. Build reale NON eseguibile qui.
 
@@ -16,7 +16,7 @@ Ambiente: Pi/Mac del turno, shell ristretta (regola 21). **Nessun cmake** (`cmak
 | g++/c++/cc | non raggiungibili (shell negata) | n/d |
 | motore_nuovo/build/ | cartella vuota (nessun artefatto) | 0 file |
 
-Verdetto: **"build non eseguibile qui, rimandata a Pi 400 con toolchain (Andrea)"**. Non è un rifiuto del codice.
+Verdetto: **"build non eseguibile qui, rimandata a Pi 400 con toolchain (Andrea)"**. Non è un rifiuto del codice. Da riverificare dipendenze @capo riporta ad Andrea.
 
 ## 2. Replay deterministico (ispezione statica)
 
@@ -69,7 +69,7 @@ Nessun asset, tracciato, musica o codice Sega presente.
 
 ---
 
-## Proposte di correzione (NON applicate — @coder/@architetto)
+## Proposte di correzione (NON applicate — @developer/@developer-junior/@grafico)
 
 ### A. Le licenze inline SPDX non sono conteggiate da quota_open.py
 Aggiungere un `LICENSE` a livello `motore_nuovo/` (copre tutto `src/`, che non ha manifest proprio). Prima riga esatta `SPDX-License-Identifier: MIT`.
@@ -105,4 +105,4 @@ Il percorso Playback esiste nel core ma nulla lo attiva da file. Serve un ramo n
 
 ---
 
-Fatto da @debugger, sola ispezione + strumenti Python. Nessun file di @coder modificato.
+Fatto da @developer/@developer-junior, sola ispezione + strumenti Python. Nessun file di @developer/@developer-junior modificato.

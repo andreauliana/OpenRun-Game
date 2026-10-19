@@ -10,12 +10,8 @@ Il ciclo calcola il turno dal tempo trascorso. `TAPPE.md` e il Gate della tappa 
 | T3 | 4-6 | @sviluppatore: replay deterministico, personaggi/fx (razzo, sollevamento) come moduli · @grafico: L (varianti scenari) · @grafico: F (varianti sagome) · @collaudatore: H (build, fps, replay) | prototipo con 1 livello, varianti da scegliere |
 | CHECK 3 | 6h | controlli automatici + collaudatore solo se ci sono altri cambi | riepilogo breve |
 | T4 | 6-8 | rifinitura: applicare i rilievi, @collaudatore esegue i test di accettazione, aggiornare CATALOGO e CREDITI, quota open · preparare il blocco N solo se C gira | stato pulito per la revisione umana |
-| PACCHETTO | 8h (poi si prosegue fino a 12h al massimo) | pacchetto per Claude app (PACCHETTO_PER_CLAUDE_APP.md) + RIEPILOGO_MATTINA.md | Andrea + Claude app Pro decidono |
+| PACCHETTO | 8h (poi si prosegue fino a 12h al massimo) | pacchetto per Claude (PACCHETTO_PER_CLAUDE_APP.md) + RIEPILOGO_MATTINA.md | Andrea + Claude decidono |
 
-Gerarchia: agenti OpenCode lavorano; @collaudatore fa un solo controllo leggero ai checkpoint; **Claude app Pro** interviene a mano dopo le 6-8 ore leggendo il pacchetto. Se un turno non finisce nel suo tempo, il lavoro prosegue nel successivo; nessun blocco viene saltato senza una riga in SCAMBIO.md.
+Gerarchia: @DEVELOPER-JUNIOR fa un solo controllo leggero ai checkpoint; Claude interviene a mano dopo le 8 ore leggendo il pacchetto. Se un turno non finisce nel suo tempo, il lavoro prosegue nel successivo; nessun blocco viene saltato senza una riga in SCAMBIO.md.
 
-Cambi: ogni agente puo' chiedere un passaggio ad altro agente o un cambio modello (AGENTS.md regola 13); il ciclo applica i cambi modello a ogni checkpoint.
-
-Pause e assemblee: regola 14 di AGENTS.md (max 3 cicli di fila per agente; BACHECA_PUBBLICA.md viene letta a ogni turno, ASSEMBLEA.md si usa per decisioni trasversali ed e' moderata da @capo).
-
-Bacheca pubblica: facoltativa, massimo 3 righe per messaggio; il ciclo passa al capo solo le ultime 24 righe e non richiede risposte ai messaggi informali.
+Cambi: ogni agente puo' chiedere un passaggio ad altro agente o un cambio modello; il ciclo applica i cambi modello a ogni checkpoint.

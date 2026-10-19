@@ -1,6 +1,6 @@
-# RIEPILOGO TURNO 2 — @coder (16 ott 2026)
+# RIEPILOGO TURNO 2 — @developer (16 ott 2026)
 
-Stato: nessun blocco [ ]/[~] attuabile per @coder in questo ambiente (shell ed esecuzione comandi negati, regola 21; nessun compilatore C++/cmake accessibile).
+Stato: nessun blocco [ ]/[~] attuabile per @developer in questo ambiente (shell ed esecuzione comandi negati, regola 21; nessun compilatore C++/cmake accessibile).
 
 Verifica voce 56 (Blocco C — cartelloni_sponsor da livello.json) — esito su disco, codice non modificato:
 - motore_nuovo/src/game/game.cpp: leggiCartelloniDaFile() legge il campo "cartelloni_sponsor" da motore_nuovo/dati/livelli/<id>/livello.json (3 livelli già scritti da @livelli, voce 48); segmento/lato/sponsor_id -> worldZ/worldX/sprite; campi mancanti -> Rng(seed_) deterministico (scelta a caso solo se assente); tutte le allocazioni in init(), zero alloc nel ciclo di gioco.

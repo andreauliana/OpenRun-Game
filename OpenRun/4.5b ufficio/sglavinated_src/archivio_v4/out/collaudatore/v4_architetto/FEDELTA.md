@@ -17,7 +17,7 @@ Stato attuale: architettura e formati dati definiti (BLOCCO B), codice non ancor
 | 4 | traffico da sorpassare, collisioni con rallentamento | parziale | ARCHITETTURA.md modulo road (traffico base, collisione auto/traffico, fuori-strada); codice in BLOCCO C |
 | 5 | ambiente diverso per tappa | parziale | FORMATI_DATI.md livello.json: `tema`, `stile` (da DIREZIONE_ARTISTICA.md), `scenario`; 3 livelli di prova previsti (BLOCCO K) |
 | 6 | radio con scelta di brani prima/durante la partenza | parziale | FORMATI_DATI.md playlist.json (radio -> elenco brani .xm, sostituibile senza codice, regola 8) |
-| 7 | HUD: tachimetro, tempo, punteggio, indicatore tappa | parziale | FORMATI_DATI.md ui/hud.json (layout su framebuffer 320x224, grafica/font: @tipografo BLOCCO M) |
+| 7 | HUD: tachimetro, tempo, punteggio, indicatore tappa | parziale | FORMATI_DATI.md ui/hud.json (layout su framebuffer 320x224, grafica/font: @developer BLOCCO M) |
 | 8 | sensazione di velocita' a 50 Hz (curve, colline, fuori strada) | parziale | ARCHITETTURA.md vincoli (50 Hz, frame <=20 ms obiettivo <=12 ms); BUILD.md obiettivo Pi 400; misura fps da fare (@debugger BLOCCO H) |
 | 9 | schermata finale / scena di arrivo | parziale | VISIONE.md tabella evento "Fine corsa" (schermata finale a tema); non ancora progettata nei dati |
 | 10 | marcia bassa/alta o equivalente | parziale | non definita nei dati attuali; equivalente candidato: modulo fx razzo B / sollevamento auto (FORMATI_DATI.md config.json moduli_fx), da decidere |

@@ -30,7 +30,7 @@ for f in "$P"/.opencode/agents/*.md; do
 done
 command -v opencode >/dev/null 2>&1 && ok "opencode installato" || echo "NOTA    opencode non trovato nel PATH"
 command -v claude >/dev/null 2>&1 && ok "comando claude presente (review automatica possibile)" || echo "NOTA    comando claude assente: review a mano"
-# chiavi duplicate nel frontmatter degli agenti (OpenCode v2 scarta l'agente)
+# chiavi duplicate nel frontmatter degli agenti
 for f in "$BASE"/sglavinated_src/.opencode/agents/*.md; do
   python3 - "$f" <<'PY' || ko "$(basename "$f"): chiave duplicata nel frontmatter"
 import re,sys,collections

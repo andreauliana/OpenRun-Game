@@ -1,4 +1,4 @@
-# P1b + P1 punti 1-3 — esito @coder (17 ott 2026)
+# P1b + P1 punti 1-3 — esito @developer (17 ott 2026)
 
 ## Comandi eseguiti
 Nessun comando shell: shell negata in questa sessione ("Permission denied: shell", regola 21).
@@ -35,4 +35,4 @@ Shell negata: impossibile provare headless/runner o salvare screenshot in `out/c
 ## Coda aperta
 Build + gate P1b da eseguire dove shell e' consentita (voce 76: `clang++` in allowlist per
 @debugger; `cmake --build` su Pi 400 o Mac con toolchain, regola 9/21).
-Voce in SCAMBIO.md a cura di @capo (regola 15: @coder scrive solo src/, CMakeLists.txt, out/coder/).
+Voce in SCAMBIO.md a cura di @capo (regola 15: @developer scrive solo src/, CMakeLists.txt, out/coder/).

@@ -5,15 +5,15 @@
 | Stato | APERTO — in attesa di review indipendente e prova CTest |
 | Aperto / ultima attività | 2026-10-18 / 2026-10-18 |
 | Ambito e criteri di completamento | Centralizzare l'handoff tecnico per il Capo; verificare target CMake, wrapper di test, output Officina e allowlist; ottenere una peer review e una prova CTest valida |
-| Responsabile | Aggiornamento operativo 4.6 (Copilot) |
+| Responsabile | Aggiornamento operativo 4.6 |
 | Revisore indipendente | Da assegnare dal Capo; deve essere diverso dall'autore |
-| Percorsi autorizzati | `UFFICIO/Officina/`, `.opencode/agents/`, `AGENTS.md`, `tools/`, `Checkpoint Revision/` |
+| Percorsi autorizzati | `UFFICIO/Officina/`, `tools/`, `Checkpoint Revision/` |
 | Decisioni richieste ad Andrea | Nessuna per documentare lo status; nessuna approvazione di release implicata |
 | Handoff Officina | [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) |
 
 ## Sintesi
 
-- Creato uno status unico dell'Officina per il Capo, con il report sviluppatore 1155, sintesi dei report precedenti, log sorgente, toolchain e blocchi.
+- Creato uno status unico dell'Officina per il Capo, con il report @developer 1155, sintesi dei report precedenti, log sorgente, toolchain e blocchi.
 - Documentati i target `sglavinated_core`, `sglavinated_runner`, `sglavinated_libretro` opzionale e `prova_gate`; l'area CMake di test registra sette test.
 - Aggiunte allowlist per `tools/run_tests.sh`, `tools/check_sdl_init.sh` e aggiornamento dello status tecnico ai due ruoli di sviluppo; il Capo ha accesso in lettura.
 - Spostata la build predefinita del wrapper CMake/CTest in `UFFICIO/Officina/build/` e corretto il percorso predefinito del runner SDL.
@@ -21,12 +21,12 @@
 
 ## Modifiche
 
-| Percorso/file | Scopo | Autore |
+| Percorso/file | Scopo |
 |---|---|---|
-| `UFFICIO/Officina/STATUS_OFFICINA.md` | Handoff tecnico unico e sintesi dei report/log | Copilot |
-| `.opencode/agents/{builder-developer,developer-builder-junior,capo}.md` | Permessi e procedura di lettura/aggiornamento status | Copilot |
-| `tools/run_tests.sh`, `tools/check_sdl_init.sh` | Usare build e runner predefiniti nell'area Officina | Copilot |
-| `UFFICIO/Officina/*`, `AGENTS.md`, `Checkpoint Revision/*` | Documentare tool, output, status e procedura di checkpoint | Copilot |
+| `UFFICIO/Officina/STATUS_OFFICINA.md` | Handoff tecnico unico e sintesi dei report/log  |
+| `.opencode/agents/{builder-developer,developer-builder-junior,capo}.md` | Permessi e procedura di lettura/aggiornamento status |
+| `tools/run_tests.sh`, `tools/check_sdl_init.sh` | Usare build e runner predefiniti nell'area Officina | 
+| `UFFICIO/Officina/*`, `Checkpoint Revision/*` | Documentare tool, output, status e procedura di checkpoint |
 
 ## Prove
 

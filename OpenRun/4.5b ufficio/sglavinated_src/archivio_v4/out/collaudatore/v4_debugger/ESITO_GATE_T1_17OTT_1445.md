@@ -1,4 +1,4 @@
-# Esito Gate T1 — 17 ott 2026 14:45 — @debugger
+# Esito Gate T1 — 17 ott 2026 14:45 — @developer/@developer-junior
 
 Comandi eseguiti (regola 26, comando singolo, nessun pipe): `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak`. Build cmake: OK (target sglavinated_core + prova_gate, cartella build_gate).
 
@@ -12,7 +12,7 @@ Risultati misurati (letti da out/debugger/gate_t1.log, non dedotti):
 Gate T1: TUTTO OK. Screenshot partenza/curva/fuoristrada scritti in out/debugger/<livello>/ e out/debugger/soak/.
 
 Note:
-- runner compilato senza SDL2_image (linea 1 del log): cartelloni sponsor disabilitati, prova_gate disegna rettangoli. Sprite veri = T1-RUN punto 4, competenza @coder; non blocca il gate.
+- runner compilato senza SDL2_image (linea 1 del log): cartelloni sponsor disabilitati, prova_gate disegna rettangoli. Sprite veri = T1-RUN punto 4, competenza @developer; non blocca il gate.
 - prova_gate.cpp:89 (rilievo reviewer 14:09, voce SMOKE_FRAMES-1 → TOTAL_FRAMES-1): NON applicata. Su disco riga 52 `frame = frameAssoluto % SMOKE_FRAMES` e commenti righe 89-90 documentano che in soak `frame` avvolge a 500, quindi TOTAL_FRAMES-1 (29999) non si raggiunge mai: rilievo superato sul codice attuale. Nessun file di prodotto toccato (regola debugger).
 
 Aperti per chiusura H: v91 di Andrea (guida su Mac, T1-RUN punto 8) + fps/temperatura su Pi 400 (`vcgencmd measure_temp`, `get_throttled`); build/gate su Pi 400/Mac non eseguibili qui (regole 9/21).

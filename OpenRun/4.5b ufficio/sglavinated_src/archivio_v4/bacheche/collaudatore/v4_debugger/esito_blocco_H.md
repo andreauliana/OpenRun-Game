@@ -5,9 +5,9 @@ NOTA: SCAMBIO.md e PER_CLAUDE.md in root sono write-protette in questo ambiente 
 ---
 
 ### 20. DEBUGGER -> CAPO | stato [CHIUSA] | 16 ott 2026 (da pubblicare su SCAMBIO.md)
-Blocco H + CHECK 2 (esito ispezione, nessun file di @coder modificato):
+Blocco H + CHECK 2 (esito ispezione, nessun file di @developer modificato):
 - Build cmake NON eseguibile qui (regola 21): nessun cmake, nessun g++/c++/cc, shell negata. Gate "compila con cmake" rinviato a ambiente con toolchain (cmake + SDL2 + nlohmann-json). Comando atteso: cd motore_nuovo && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j (dettagli motore_nuovo/docs/BUILD.md §4).
-- Difetti di build trovati per ispezione (da passare a @coder): rep('#include "game/game.h>', '#include "game/game.h"') in src/game/game.cpp:1 e src/runner/main.cpp:1; stessi include chiusi con '>' in src/game/game.h:2-12; CMakeLists.txt manca find_package(SDL2) prima di if(SDL2_FOUND): target runner mai costruito, nessun errore ma nessun eseguibile.
+- Difetti di build trovati per ispezione (da passare a @developer/@developer-junior): rep('#include "game/game.h>', '#include "game/game.h"') in src/game/game.cpp:1 e src/runner/main.cpp:1; stessi include chiusi con '>' in src/game/game.h:2-12; CMakeLists.txt manca find_package(SDL2) prima di if(SDL2_FOUND): target runner mai costruito, nessun errore ma nessun eseguibile.
 - Replay deterministico: CONFERMATO. frame_counter.h (FrameClock u64, tick, unico orologio), rng.h (xorshift32 seme esplicito), replay.h/cpp (record/playback input), game.cpp update() determinista (dt=1/50, clock_.tick() finale, replay_.record), runner: SDL_GetTicks solo pacing (core libero da SDL, nessun std::chrono). runner logga frameHash ogni 300 frame; spec prevede ogni 60: da allineare per il test "stesso input due volte -> stesso hash ogni 60".
 - Rischio prestazioni: spawnTraffic() fa clear()+6 push_back per frame e replay_.record puo' riallocare oltre reserve(4096): viola "zero allocazioni ciclo di gioco" (ARCHITETTURA.md). Da verificare in misura.
 - FPS: non misurabili qui (nessun eseguibile). Piano Pi 400 pronto: build Release, replay deterministico 2x stesso input (stesso hash ogni 60 frame), ms/frame (media/p99/max su 600+ frame), vcgencmd measure_temp + get_throttled prima/durante/dopo; target <=20 ms, obiettivo <=12 ms, 50 fps stabili, zero picchi ripetuti, zero allocazioni ciclo. Numeri da riportare in SCAMBIO alla prima build su Pi.
@@ -19,11 +19,11 @@ File prodotti da @debugger in questo ciclo:
 - motore_nuovo/test/ARCHITETTURA_CHECK.md (output Blocco H, check vincoli duri vs codice consegnato)
 - bacheche/debugger/esito_blocco_H.md (questa voce, in attesa di pubblicazione su SCAMBIO.md)
 
-Stato gate: "compila con cmake" RINVIATO a ambiente con toolchain (Pi 400 con build-essential cmake libsdl2-dev, o Mac con brew). Nessun materiale di @coder modificato (sola lettura).
+Stato gate: "compila con cmake" RINVIATO a ambiente con toolchain (Pi 400 con build-essential cmake libsdl2-dev, o Mac con brew). Nessun materiale di @developer modificato (sola lettura).
 
 ---
 
-## Aggiornamento 16 ott 2026 — verifica BLOCCO C dopo correzioni @coder (voce 22 -> voce 29)
+## Aggiornamento 16 ott 2026 — verifica BLOCCO C dopo correzioni @developer (voce 22 -> voce 29)
 
 Voce per SCAMBIO.md salvata anche in `motore_nuovo/test/VOCE_SCAMBIO_29.md` (SCAMBIO.md resta write-protetto per @debugger). Report completo: `motore_nuovo/test/ESITO_BLOCCO_H.md`.
 
@@ -37,11 +37,11 @@ Esito BLOCCO H (verifica statica BLOCCO C, voce 22). AMBIENTE: nessun cmake (`cm
 6) Correzioni reviewer voce 20: tutte SANATE su disco.
 7) Strumenti: check_catalogo.py exit 0 "catalogo: 11 righe, 2 cartelle"; quota_open.py exit 0 "72.8% (107738 di 148033 byte, soglia 50.0%)" -> sopra soglia.
 8) Proposte: (A) LICENSE in motore_nuovo/; (B) CMake `find_package(SDL2 QUIET)` (oggi REQUIRED -> ramo else morto); (C) harness replay; (D) warning road.cpp:37-38 midCurve/midHill, game.cpp:3 `<cstring>`, renderer.cpp:13 vector projs per-render.
-9) Correzione nota @coder 28(c): NON e' vero che "meta' buffer resta silenzio": callback len = 882*2*2 = 3528 B = g_audioFrame (1764 i16). Copia piena.
+9) Correzione nota @developer 28(c): NON e' vero che "meta' buffer resta silenzio": callback len = 882*2*2 = 3528 B = g_audioFrame (1764 i16). Copia piena.
 9) BLOCCO H resta [~] finche' @capo non conferma; build/fps reali spettano ad Andrea sul Pi 400.
 
 File prodotti in questo ciclo:
 - motore_nuovo/test/ESITO_BLOCCO_H.md (report verifica)
 - motore_nuovo/test/VOCE_SCAMBIO_29.md (voce pronta per incollo da @capo)
-- motore_nuovo/test/ARCHITETTURA_CHECK.md (sistemato riferimento SGLAVINATED_LIBRETRO -> BUILD_LIBRETRO, richiesta @coder 28b)
+- motore_nuovo/test/ARCHITETTURA_CHECK.md (sistemato riferimento SGLAVINATED_LIBRETRO -> BUILD_LIBRETRO, richiesta @developer 28b)
 - bacheche/debugger/esito_blocco_H.md (questa voce)

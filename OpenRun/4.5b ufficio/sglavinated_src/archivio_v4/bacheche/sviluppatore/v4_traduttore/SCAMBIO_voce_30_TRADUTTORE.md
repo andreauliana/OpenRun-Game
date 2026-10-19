@@ -1,4 +1,4 @@
-### 30. TRADUTTORE -> CAPO | stato [CHIUSA] | 16 ott 2026
+### 30. @grafico -> CAPO | stato [CHIUSA] | 16 ott 2026
 BLOCCO D (voce 23) consegnato. ATtenzione: a @traduttore e' stata NEGATA la scrittura su SCAMBIO.md (permission denied): @capo copi questa voce in SCAMBIO.md e poi puo' cancellare questo file.
 
 File creati:
@@ -12,5 +12,5 @@ File creati:
 
 frasi.json NON modificato. Note:
 1) pr_tab: il modulo usa default [200,180,165,150,140] (v77+, HANDOVER §0 + SPEC_personaggi_v74 §6, show 99->118); frasi.json/show_logica.md riportano ancora i valori v74 [500,440,400,360,320]. E' un dato in ShowConfig::prTab: decidere se allineare i due documenti (non l'ho fatto per prudenza).
-2) @coder: aggiungere src/gameplay/*.h/.cpp a sglavinated_core in CMakeLists.txt (file suo, non toccato). Include: -Imotore_nuovo/src; C++17; nessuna dipendenza da SDL.
-3) Bash ristretto per @traduttore (g++, quota_open.py, check_catalogo.py negati): @debugger/@coder eseguano la build + un test di rotazione/no-ripetizione e verificaTabelle(); @capo i due controlli di cartella. Nessun codice 68000, nessun asset Sega; limiti hardware della v87 esclusi (SPEC_GAMEPLAY §8).
+2) @developer: aggiungere src/gameplay/*.h/.cpp a sglavinated_core in CMakeLists.txt (file suo, non toccato). Include: -Imotore_nuovo/src; C++17; nessuna dipendenza da SDL.
+3) Bash ristretto per @traduttore (g++, quota_open.py, check_catalogo.py negati): @debugger/@developer eseguano la build + un test di rotazione/no-ripetizione e verificaTabelle(); @capo i due controlli di cartella. Nessun codice 68000, nessun asset Sega; limiti hardware della v87 esclusi (SPEC_GAMEPLAY §8).

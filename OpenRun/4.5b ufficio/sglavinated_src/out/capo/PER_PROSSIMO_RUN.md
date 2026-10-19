@@ -1,7 +1,7 @@
-# Per il prossimo run — 17 ott 2026 14:00 (scritto da Claude, build reale)
+# Per il prossimo run — 17 ott 2026 (Claude)
 
 ## Cosa è cambiato (verificato eseguendo, non solo leggendo)
-- `cmake --build build --target prova_gate` **compila e passa** (g++/cmake in cloud Linux, Release).
+- `cmake --build build --target prova_gate` **compila e passa** (g++/cmake).
 - Il pacchetto del mattino diceva "mai compilato": non è vero. I 3 rilievi del reviewer sono applicati e la build ha trovato 2 errori VERI, ora corretti:
   1. `src/game/game.h`: mancava `using gameplay::ShowLayout;` (game.cpp:99 non compilava).
   2. `test/prova_gate.cpp`: mancava `using namespace sgl;` (u32/i32/Framebuffer non risolti). Il file è stato riscritto.
@@ -38,7 +38,7 @@
 5. Sprite: worldZ assoluto vs playerZ avvolto sul giro (T1-RUN punto 3).
 
 ## Stati
-C [x], P1b [x] (gate headless passato), H [~], P1 [~], P2 [x], P3 [x], M [~], J [ ], N [ ], MD0 [-], T5 [-]. Nuovo blocco **T1-RUN** in RICHIESTA.md con compiti per @coder, @debugger, @reviewer e Andrea.
+C [x], P1b [x] (gate headless passato), H [~], P1 [~], P2 [x], P3 [x], M [~], J [ ], N [ ], MD0 [-], T5 [-]. Nuovo blocco **T1-RUN** in RICHIESTA.md con compiti per @developer, @debugger, @reviewer e Andrea.
 
 ## Nota operativa
 Gli agenti coder e debugger risultavano attivi (`.agenti_attivi`) mentre questi file venivano scritti. Se un file è stato sovrascritto da loro, rifare l'edit dai punti sopra: sono tutti piccoli.

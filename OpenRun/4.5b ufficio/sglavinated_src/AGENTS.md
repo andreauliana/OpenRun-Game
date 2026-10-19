@@ -59,7 +59,7 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 8. Gli stati e le condizioni di chiusura sono definiti in `Checkpoint Revision/README.md`. `PRONTO PER ANDREA` richiede review indipendenti positive; `CHIUSO` richiede la decisione di Andrea o una motivazione esplicita per cui non è necessaria.
 9. Per lavori grafici il Capo legge `out/grafico/STATUS_GRAFICO_PER_CAPO.md`, lo cita nel dossier e assegna comunque una review indipendente. È l'unico handoff corrente del Grafico, non una prova di approvazione.
 10. Per lavori di sviluppo, build o test il Capo legge `UFFICIO/Officina/STATUS_OFFICINA.md`, cita data/report e log sorgente nel dossier e assegna comunque una review indipendente. È l'unico handoff tecnico corrente, non una peer review né una prova di approvazione.
-11. `ANDREA_REVIEW.md` è la fonte unica corrente per feedback e decisioni di Andrea. Il Capo cita nel checkpoint gli ID pertinenti senza duplicare il contenuto. `DECISIONI_ANDREA.md` e `FEEDBACK_ANDREA.md` sono rimandi legacy e non vanno aggiornati.
+11. `ANDREA_REVIEW.md` è la fonte unica corrente per feedback e decisioni di Andrea. Il Capo cita nel checkpoint gli ID pertinenti senza duplicare il contenuto.
 
 ## Vincoli di progetto
 

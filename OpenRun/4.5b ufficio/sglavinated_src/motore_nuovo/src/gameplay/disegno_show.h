@@ -51,7 +51,7 @@ struct PersonaggioLayout {
 
 // Layout del fumetto: la scatola e' calcolata sul testo (max 2 righe di
 // frasi.json). Metrica del font allineabile a dati/ui/font (dove il renderer
-// avra' il font di @tipografo).
+// avra' il font di @grafico).
 struct BollaLayout {
     i32 sopra = 6;                // distanza dalla testa del personaggio
     i32 paddingX = 6;

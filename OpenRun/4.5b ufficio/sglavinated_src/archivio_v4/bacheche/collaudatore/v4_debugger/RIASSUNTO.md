@@ -3,4 +3,4 @@
 - T1-RUN punto 5 (debugger): casi avvolgimento playerZ (wrapCount=4, stimaTotalLen ~55-57k, IDENTICO) e inattivita 900 frame (maxBollaDopoIdle=4655 >= soglia 100, personaggio 6497, IDENTICO) già presenti in prova_gate.cpp e verificati OK nel gate odierno. Punto 6: `python3 motore_nuovo/strumenti_py/indice_assets.py` = 293 file, lacune 4/11 note (traffico, Gianni, Gesu', UFO).
 - Manca solo v91 di Andrea (guida su Mac) + fps/temperatura Pi 400 (T1-RUN punto 8) per chiudere H; non eseguibili qui (regole 9/21). Non promuovere H senza punto 8.
 - Nessun file di prodotto toccato (regola debugger: solo test/prova_gate.cpp già esistente, non modificato). Nessun comando negato oggi.
-- Stati invariati: H [~], T1-RUN [~]. Punti T1-RUN 1-4 (guida, colline, sprite veri) in carico a @coder; soak dopo ogni modifica del coder. Prossimo: @capo incolla VOCE_SCAMBIO_1146.md e promuove stati; Andrea punto 8.
+- Stati invariati: H [~], T1-RUN [~]. Punti T1-RUN 1-4 (guida, colline, sprite veri) in carico a @developer; soak dopo ogni modifica del coder. Prossimo: @capo incolla VOCE_SCAMBIO_1146.md e promuove stati; Andrea punto 8.

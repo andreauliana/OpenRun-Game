@@ -1,7 +1,7 @@
 # ARCHITETTURA_CHECK — output Blocco H (debugger)
 
 Progetto: Outrun Sglavinated Edition v3 (open), motore nuovo (pista C).
-Data: 16 ott 2026. Agente: @debugger. Stato: build bloccata (nessun toolchain in questo ambiente, regola 21), check eseguito per ispezione del codice consegnato da @coder (BLOCCO C, motore_nuovo/src/ + CMakeLists.txt, sola lettura).
+Data: 16 ott 2026. Agente: @debugger. Stato: build bloccata (nessun toolchain in questo ambiente, regola 21), check eseguito per ispezione del codice consegnato da @developer (BLOCCO C, motore_nuovo/src/ + CMakeLists.txt, sola lettura).
 
 Riferimenti: motore_nuovo/docs/ARCHITETTURA.md (vincoli duri), motore_nuovo/docs/BUILD.md (comandi e dipendenze), PIANO_TURNI.md (CHECK 2: misura fps se esiste il runner), VISIONE.md.
 
@@ -19,7 +19,7 @@ Gate "compila con cmake": rinviato a un ambiente con toolchain (Pi 400 con build
 
 ---
 
-## 2. Difetti di build individuati per ispezione (da passare a @coder, non modificati)
+## 2. Difetti di build individuati per ispezione (da passare a @developer/@developer-junior (Officina), non modificati)
 
 Questi impedirebbero la compilazione o la produzione del runner anche appena disponibile un compilatore:
 
@@ -30,7 +30,7 @@ Questi impedirebbero la compilazione o la produzione del runner anche appena dis
 | 3 | src/runner/main.cpp:1 | `#include "game/game.h>` chiuso con `>` invece di `"` | `#include "game/game.h"` |
 | 4 | CMakeLists.txt:43 | `if(SDL2_FOUND)` senza `find_package(SDL2)` prima: il target `sglavinated_runner` viene sempre escluso (nessun errore, nessun eseguibile) | inserire `find_package(SDL2 REQUIRED)` prima dell'if |
 
-Rep proposti (solo indicativi, applica @coder):
+Rep proposti (solo indicativi, applica @developer):
 - rep('#include "game/game.h>', '#include "game/game.h"') in game.cpp:1 e runner/main.cpp:1
 - rep('#include "core/frame_counter.h>', '#include "core/frame_counter.h"') e simili in game.h:2-12
 - CMakeLists: aggiungere `find_package(SDL2 REQUIRED)` prima di `if(SDL2_FOUND)`
@@ -84,4 +84,4 @@ Eseguire solo su Pi 400 con toolchain (build Release, nessun debug):
 Questo file è il risultato del Blocco H e va conservato in `motore_nuovo/test/ARCHITETTURA_CHECK.md`. Non sostituisce la review di @reviewer (Blocco I) né la misura effettiva su Pi 400.
 
 ---
-Fatto da @debugger, sola ispezione, nessun file di @coder modificato.
+Fatto da @developer/@developer-junior, sola ispezione.

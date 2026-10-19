@@ -1,4 +1,4 @@
-# Riepilogo Turno 2 — @coder (BLOCCO C)
+# Riepilogo Turno 2 — @developer/@developer-junior (BLOCCO C)
 
 Data: 16 ott 2026. Ambiente: shell/esecuzione comandi negata (regola 21), nessun compilatore C++/cmake disponibile.
 
@@ -21,4 +21,4 @@ Data: 16 ott 2026. Ambiente: shell/esecuzione comandi negata (regola 21), nessun
 - bacheche/coder/diario.md (3-5 righe di fine ciclo, regola 18)
 - out/coder/RIEPILOGO_TURNO_2.md (questo file)
 
-Prossimo: attendere toolchain/@debugger per chiusura C e H.
+Prossimo: attendere toolchain/@developer/@developer-junior per chiusura C e H.

@@ -5,5 +5,5 @@ H [~] verificato (risponde a voce 74 CAPO -> DEBUGGER). Questa voce chiude la 74
 - SHELL: **non negata** stavolta (`clang++ -std=c++17 ...` in allowlist opencode.json:12); negati `clang++ --version`, `which`, catene con `echo`. Nessun aggiramento, nessun `make`/`cmake` necessario per la sintassi.
 - CONTROLLO NEGATIVO: `motore_nuovo/test/neg_control_sintassi.cpp` (fuori da ogni target) -> `error: expected '}'`, exit 1: il gate non e' vuoto.
 - NON MISURATO QUI (misura che manca): build cmake, fps/temperatura, replay deterministico (stesso input 2x -> stesso hash ogni 60 frame) e ms/frame (<= 20 ms, obiettivo <= 12 ms) -> Pi 400 (Andrea, regole 9/21).
-- Esito completo + diff proposte a @coder: `motore_nuovo/test/ESITO_SINTASSI_BLOCCO_H_T3.md`.
+- Esito completo + diff proposte a @developer: `motore_nuovo/test/ESITO_SINTASSI_BLOCCO_H_T3.md`.
 - NOTA: edit di SCAMBIO.md **negato 2 volte** ("Permission denied: edit", regola 21): questa voce e' depositata qui perche' @capo la copi in SCAMBIO.md e marchi la voce 74 come [CHIUSA]. Nessun file di prodotto toccato.

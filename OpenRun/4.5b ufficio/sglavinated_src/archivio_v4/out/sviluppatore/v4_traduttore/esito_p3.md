@@ -18,7 +18,7 @@ Esito P3 (chiude voce 73 [APERTA] -> [CHIUSA]):
 - `src/gameplay/testi_frasi.h/.cpp` (MIT): legge `dati/frasi.json` una sola
   volta in init (id -> linea1/linea2, 156 fumetti) e riverifica l'invariante
   personaggio<->frase (`verifica()`: Gianni 97 id, Gesu' 59).
-- Collegamento al renderer per @coder in `src/gameplay/DISEGNO_SHOW.md`:
+- Collegamento al renderer per @developer in `src/gameplay/DISEGNO_SHOW.md`:
   CMakeLists (4 file), game.h/init/update/render (sostituisce `(void)show;`),
   hook renderer (`disegnaSpriteSchermo` + scatola/testo fumetto); verifica
   possibile anche oggi con soli `fb().fillRect`, zero asset.
@@ -30,6 +30,6 @@ Esito P3 (chiude voce 73 [APERTA] -> [CHIUSA]):
   @debugger/@reviewer.
 - File toccati: `motore_nuovo/src/gameplay/{disegno_show.h, disegno_show.cpp,
   testi_frasi.h, testi_frasi.cpp, DISEGNO_SHOW.md, manifest.json}`.
-- Atteso: collegamento da @coder; `-fsyntax-only` sui due nuovi .cpp da
+- Atteso: collegamento da @developer; `-fsyntax-only` sui due nuovi .cpp da
   @debugger (voce 74).
 ---

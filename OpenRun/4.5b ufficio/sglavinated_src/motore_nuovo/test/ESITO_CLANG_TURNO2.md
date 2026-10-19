@@ -65,4 +65,4 @@ La verifica richiesta non e' eseguibile qui: shell respinta. I controlli statici
 
 Blocco C [~] e Blocco H [~] restano tali finché `clang++ -fsyntax-only` non passa sul nucleo (CHECKPOINT Claude CLI 10:14). Build/replay/fps/temperatura reali sono rimandati a Pi 400 con toolchain (Andrea): non è un rifiuto del codice.
 
-Fatto da @debugger, sola ispezione + read/grep. Nessun file di @coder modificato.
+Fatto da @debugger, sola ispezione + read/grep. Nessun file di @developer/@developer-junior modificato.

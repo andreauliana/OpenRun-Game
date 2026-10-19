@@ -1,7 +1,7 @@
-# Esito Gate Tappa 1 — @debugger — 17/10/2026 14:00
+# Esito Gate Tappa 1 — @developer/@developer-junior — 17/10/2026 14:00
 
 Eseguito: `sh tools/gate_t1.sh` (smoke 500 frame = 10s su 3 livelli) e `sh tools/gate_t1.sh soak` (30000 frame = 10 min simulati su lv_01_neon).
-Toolchain: cmake + g++ (regola 26, build concessa a @debugger). Build dir: build_gate. Target: sglavinated_core + prova_gate.
+Toolchain: cmake + g++ (regola 26, build concessa a @developer/@developer-junior). Build dir: build_gate. Target: sglavinated_core + prova_gate.
 
 Risultati MISURATI (exit code 0, non dedotti):
 
@@ -12,6 +12,6 @@ SOAK lv_01_neon (30000 frame) — speed@60=33.76, X[min,max]=[-164.8,900.0], zFi
 
 Frame: 50 fps stabili (ms/frame ~0.08-0.09 << obiettivo <=12 ms, limite 20 ms). Temperatura: non misurabile (non Pi 400).
 Sintassi nucleo: OK 34/34 file (clang++ -fsyntax-only, voce 76/78).
-Tre rilievi reviewer CHECKPOINT 1 (13:26): gia' sanati su disco da @coder (include path, guard strada vuota, SPDX MIT). Nessun file di prodotto toccato da @debugger (regola debugger).
+Tre rilievi reviewer CHECKPOINT 1 (13:26): gia' sanati su disco da @developer (include path, guard strada vuota, SPDX MIT). Nessun file di prodotto toccato da @debugger (regola debugger).
 
 Blocco H: TUTTE LE MISURE PASSANO. Da promuovere a [x] se Andrea conferma sui screenshot/log. Report log: out/debugger/gate_t1.log.

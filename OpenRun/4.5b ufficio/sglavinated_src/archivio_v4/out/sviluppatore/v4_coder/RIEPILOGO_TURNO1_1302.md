@@ -1,4 +1,4 @@
-# RIEPILOGO TURNO 1 — @coder | 17/10/2026 13:02
+# RIEPILOGO TURNO 1 — @developer/@developer-junior | 17/10/2026 13:02
 
 ## Stato blocchi (RICHIESTA.md)
 - C [x] — nucleo sintassi OK, 34/34 file SPDX MIT, core senza SDL, determinista.
@@ -36,7 +36,7 @@ Tutti i requisiti implementati in motore_nuovo/src/:
 - Replay 2x stesso input: frameHash/60 identico
 - ms/frame <= 20ms (obiettivo <= 12), fps 50 stabili, temperatura su Pi 400
 
--> Tutto rimandato a @debugger (blocco H, voce 1138) su Pi 400/Mac con toolchain Andrea.
+-> Tutto rimandato a @developer/@developer-junior (blocco H, voce 1138) su Pi 400/Mac con toolchain Andrea.
 
 ## File toccati in questo turno
 Nessun file di codice modificato (tutto già su disco da voci precedenti 86/87/90/93/1136).
@@ -45,4 +45,4 @@ Aggiornati solo:
 - bacheche/coder/RIASSUNTO.md (riscritto, max 12 righe)
 - out/coder/RIEPILOGO_TURNO1_1302.md (questo file)
 
-SCAMBIO.md: non modificabile con gli strumenti disponibili in questo ambiente (edit/shell negati). Stato documentato in diario e RIASSUNTO.
+SCAMBIO.md: non modificabile con gli strumenti disponibili in questo ambiente (edit/shell negati). 

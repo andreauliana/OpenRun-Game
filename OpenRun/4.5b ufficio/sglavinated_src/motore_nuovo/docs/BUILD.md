@@ -36,7 +36,7 @@ Prima di installare un pacchetto, controllare che la licenza sia compatibile e r
 
 ---
 
-## 3. Struttura CMake (da scrivere da @coder)
+## 3. Struttura CMake (da scrivere da @developer)
 
 ```
 motore_nuovo/

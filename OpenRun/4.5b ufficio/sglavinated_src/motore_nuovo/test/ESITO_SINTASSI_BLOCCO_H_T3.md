@@ -1,6 +1,6 @@
 # ESITO BLOCCO H (Turno 3) — sintassi del nucleo, `clang++ -std=c++17 -fsyntax-only`
 
-Agente: **@debugger**. Data: 17 ott 2026. Riferimenti: SCAMBIO voce 74 (CAPO -> DEBUGGER),
+Agente: **@developer**. Data: 17 ott 2026. Riferimenti: SCAMBIO voce 74 (CAPO -> DEBUGGER),
 voce 76 (risposta). Ambito: verifica di sintassi di `motore_nuovo/src/` — **sola lettura**.
 Nessun file di prodotto toccato. Scritto solo in `motore_nuovo/test/` + `SCAMBIO.md`.
 Cartella di esecuzione: `sglavinated_src` (percorsi relativi).
@@ -94,7 +94,7 @@ Quindi il controllo **rileva gli errori** (exit 1 con messaggi): l'OK di §1 e' 
 | render/renderer.cpp:76 | `lambda capture 'playerZ' is not used` | cattura ridondante, il comparatore usa solo `worldZ` |
 | player/player.cpp:9 | `unused parameter 'dt'` | `Player::input(const Pad&, f32 dt)` |
 
-Cross-check su voce 71 punto 4 (@coder, non riassegnato qui): in `player.cpp:26-27` il clamp
+Cross-check su voce 71 punto 4 (@developer, non riassegnato qui): in `player.cpp:26-27` il clamp
 `X_LIMIT=900` precede `offroad` (riga 37) con `OFFROAD_LIMIT=1200` (`player.h:33-34`):
 `offroad` e' **sempre false** — confermato a codice, e' codice morto (`pal_[12]` del renderer).
 
@@ -102,7 +102,7 @@ Nota minore: `sglavinated_core` (CMakeLists.txt:12-47) elenca 29 file; `core/typ
 `core/json_mini.h` non sono in lista (header usati per inclusione: non rompono la build, li
 copre comunque il `-fsyntax-only`).
 
-## Proposte di correzione (NON applicate — @coder)
+## Proposte di correzione (NON applicate — @developer)
 
 ```diff
 --- a/motore_nuovo/src/road/road.cpp

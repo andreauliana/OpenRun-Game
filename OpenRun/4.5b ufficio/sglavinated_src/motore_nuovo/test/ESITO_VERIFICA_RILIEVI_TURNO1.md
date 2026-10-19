@@ -4,7 +4,7 @@ Ambito: sola lettura motore_nuovo/src/ (game.cpp, player.h, player.cpp, CMakeLis
 
 ## Causa isolata
 
-Tutti e 3 i rilievi del reviewer CHECKPOINT 2 delle 09:09 (SCAMBIO voci 892-912) sono già sanati nel codice consegnato da @coder (voce 87). Il reviewer ha letto una versione precedente del codice; la verifica per lettura sui file correnti conferma:
+Tutti e 3 i rilievi del reviewer CHECKPOINT 2 delle 09:09 (SCAMBIO voci 892-912) sono già sanati nel codice consegnato da @developer (voce 87). Il reviewer ha letto una versione precedente del codice; la verifica per lettura sui file correnti conferma:
 
 | # | Rilievo | File:riga | Stato | Evidenza nel codice corrente |
 |---|---------|-----------|-------|------------------------------|
@@ -22,7 +22,7 @@ Sintassi nucleo: già OK 34/34 (voci 76/78; non rieseguita qui, shell negata).
 - ms/frame <= 20 ms (obiettivo <= 12), fps 50, temperatura: solo Pi 400.
 - Gate FEEDBACK_ANDREA (tappa 1): strada visibile con strisce di corsia che scorrono + velocità percepibile; dinamica guida OutRun (già parzialmente in player.cpp: accel che tende a maxSpeed 220, freno BRAKE, attrito 0.98, sterzo proporzionale a velocità); target CMake `prova_gate` (programma headless senza finestra, 10 s = 500 frame, 3 screenshot in out/debugger/, log velocità e posizione).
 
-## Correzioni proposte (NON applicate — spetta a @coder)
+## Correzioni proposte (NON applicate — spetta a @developer)
 
 Diff A — CMakeLists.txt: target `sglavinated_prova_gate` (eseguibile senza finestra SDL, linka solo `sglavinated_core`, sorgente nuovo `src/test/prova_gate.cpp`) che esegue 500 frame con input schema fisso (accelerazione + sterzo sx/dx alternato), stampa `state().playerSpeed`, `state().playerX`, `state().playerZ` a ogni frame su stdout e salva `fb().data()` raw ai frame 0 (partenza), ~250 (curva), 499 (fuori strada) in `out/debugger/`.
 

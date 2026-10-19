@@ -1,4 +1,4 @@
-# RIASSUNTO @coder — 17 ott 2026 16:20
+# RIASSUNTO @developer/@developer-junior — 17 ott 2026 16:20
 - T1-RUN punti 1-3 fatti e verificati col gate:
   1) player.h: OFFROAD_SLOW 0.85f -> 0.99f (fuoristrada non piu' brusco: decadenza ~1%/frame a 50 Hz).
   2) road.cpp project(): collina/curva non ri-integrate; quote assolute p1x/p2x p1y/p2y da build(); camera = punto sotto l'auto + CAM_HEIGHT; ascissa relativa al punto sotto l'auto (strada non sale piu' nel cielo).

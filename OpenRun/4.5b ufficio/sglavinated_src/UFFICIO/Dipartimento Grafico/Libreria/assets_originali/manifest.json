@@ -1,7 +1,7 @@
 {
   "descrizione": "Cartella assets_originali: tutti gli asset grafici originali del progetto Sglavinated Edition (sprite, scenari, palette, font, UI, sponsor). Nessun asset copiato o imitato da giochi esistenti.",
   "licenza": "CC0-1.0",
-  "autore": "@asset, @scenografo, @tipografo (progetto Sglavinated, creato da zero)",
+  "autore": "@asset, @scenografo, @developer (progetto Sglavinated, creato da zero)",
   "originale": true,
   "riferimenti_sega": false,
   "copre": [

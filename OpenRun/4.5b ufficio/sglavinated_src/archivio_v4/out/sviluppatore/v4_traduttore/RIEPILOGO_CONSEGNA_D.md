@@ -1,6 +1,6 @@
 # out/traduttore — consegna BLOCCO D (@traduttore)
 
-Stato: [x] (consegnato, turno 1 / 16 ott 2026). Agente: @traduttore.
+Stato: [x] (consegnato, turno 1 / 16 ott 2026). Agente: @grafico.
 Cartelle: motore_nuovo/dati/, motore_nuovo/src/gameplay/.
 
 ## Contenuto (blocco D — SPEC_GAMEPLAY + modulo gameplay)
@@ -17,8 +17,8 @@ Cartelle: motore_nuovo/dati/, motore_nuovo/src/gameplay/.
 - escalation.h: commento decadimento corretto a 12 s.
 - show.h/show.cpp: offRoadAttesa (250 frame) ora usata: l'evento off-road in attesa (SBORDATA v85c) si serve solo dopo i 250 frame di attesa; frameOffRoadAttesa_ tracciato in reset()/cambiaStage/avvio.
 
-## Note aperte (per @capo/@coder/@debugger)
+## Note aperte (per @capo/@developer)
 - pr_tab: il modulo usa default [200,180,165,150,140] (v77+, HANDOVER §0); frasi.json/show_logica.md riportano ancora i valori v74 [500,440,400,360,320]. Dato in ShowConfig::prTab: decidere se allineare i due documenti.
-- @coder: aggiungere src/gameplay/*.h/.cpp a sglavinated_core in CMakeLists.txt (già fatto nel rifinitura round 2 del blocco C per escalation.h, frasi.h/cpp, personaggi.h, show.h/cpp, ufo.h; confermare completezza).
+- @developer: aggiungere src/gameplay/*.h/.cpp a sglavinated_core in CMakeLists.txt (già fatto nel rifinitura round 2 del blocco C per escalation.h, frasi.h/cpp, personaggi.h, show.h/cpp, ufo.h; confermare completezza).
 - Build/test rotazione e no-ripetizione non eseguibili qui (nessun compilatore, regola 21): rimandati a @debugger (blocco H) e Pi 400.
 - Nessun codice 68000, nessun asset/grafica/audio Sega; limiti hardware della v87 esclusi (SPEC_GAMEPLAY §8).

@@ -1,4 +1,4 @@
-# Riepilogo turno @coder — 17/10/2026 12:55
+# Riepilogo turno @developer — 17/10/2026 12:55
 
 ## Blocchi miei (Stato [~])
 - P1 [~] (PRIORITA' MASSIMA): codice completo su motore_nuovo/src/ + CMakeLists.txt. Gate: build cmake + 3 screenshot out/coder/ — non eseguibile qui (regola 21).
@@ -16,7 +16,7 @@
 
 ## Bloccante ambientale
 - Shell/compilatore negati (regola 21): build cmake, prova_gate, fps/replay su Pi 400/Mac con toolchain Andrea (@debugger H).
-- BUILD.md nlohmann/json: fuori perimetro @coder, segnalato a @architetto (voce 1137, non bloccante).
+- BUILD.md nlohmann/json: fuori perimetro @developer/@developer-junior, segnalato a @architetto (voce 1137, non bloccante).
 
 ## Stati
 C [x], H [~], P1 [~], P1b [~], P2 [x], P3 [x], M [~], J [ ], N [ ], MD0 [-], T5 [-].

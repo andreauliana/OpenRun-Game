@@ -1,7 +1,7 @@
-# out/coder — consegna BLOCCO C (@coder)
+# out/coder — consegna BLOCCO C (@developer)
 
 Stato: [x] (consegnato T2, SCAMBIO.md voce 17; rifinitura round 1 documentata in bacheche/coder/diario.md).
-Data: 16 ott 2026. Agente: @coder. Cartelle: motore_nuovo/src/, motore_nuovo/CMakeLists.txt.
+Data: 16 ott 2026. Agente: @developer. Cartelle: motore_nuovo/src/, motore_nuovo/CMakeLists.txt.
 
 ## Contenuto
 - core/: types.h, frame_counter.h (contatore frame = unico orologio), rng.h (xorshift32 con seme), state.h, replay.h/cpp (registrazione/riproduzione input per test replay)
@@ -22,9 +22,9 @@ cmake/build e misura fps non eseguibili in questo ambiente (nessun compilatore, 
 ## Rifinitura round 1
 Corretto errore di battitura negli include (`#include "...h>` -> `#include "...h"`) in 9 file di motore_nuovo/src/ cosicche' il core compili con cmake non appena la toolchain e' disponibile.
 
-## Rifinitura round 2 (16 ott 2026, turn@coder)
+## Rifinitura round 2 (16 ott 2026, turn@developer)
 - CMakeLists.txt: aggiunti src/gameplay/escalation.h, frasi.h/cpp, personaggi.h, show.h/cpp, ufo.h a sglavinated_core (interfaccia verso il nucleo, blocco D, scritto da @traduttore in src/gameplay/); find_package(SDL2 QUIET): il core si compila anche senza SDL2, il runner solo se SDL2 e' presente (match BUILD.md riga 78).
 - game.h/game.cpp: ShowManager membro di Game; update() passa StatoGameplayInput (frame, stage=0, inGara=true, inputAttivo, offRoad), chiama crash() sul fronte di salita della collisione giocatore-traffico (placeholder deterministico), espone showDati()/showAttivo()/livelloEscalation()/ufoDati() per renderer/HUD/fx; showManager_.reset(seed_) in init() (stesso seed = stessi show).
 - Pulizia: rimossi midCurve/midHill non usati (road.cpp) e #include <cstring> (game.cpp); renderer.cpp riutilizza projs_ membro (zero riallocazioni per frame dopo il primo).
 - Verifica statica: 32/32 file src con SPDX MIT riga 1; include "..." OK (0 chiusi con `>`); ordine membri/inizializzatori OK; frameHash ogni 60 frame OK; core senza SDL e senza orologio di sistema; niente asset/tracciato/musica/codice Sega (grep solo commenti negativi).
-- Gate "compila con cmake", misura fps e replay deterministico NON eseguibili qui (regola 21: nessun cmake/compilatore, shell negata, non si insiste) -> rimandati a @debugger (blocco H) e Pi 400 con toolchain. BLOCCO C resta [x] con caveat build; aggiornamento stato RICHIESTA.md spetta a @capo (scrittura .md di coordinamento negata a @coder: esito lasciato in out/coder/ e bacheche/coder/diario.md).
+- Gate "compila con cmake", misura fps e replay deterministico NON eseguibili qui (regola 21: nessun cmake/compilatore, shell negata, non si insiste) -> rimandati a @debugger (blocco H) e Pi 400 con toolchain. BLOCCO C resta [x] con caveat build; aggiornamento stato RICHIESTA.md spetta a @capo (scrittura .md di coordinamento negata a @developer: esito lasciato in out/coder/ e bacheche/coder/diario.md).

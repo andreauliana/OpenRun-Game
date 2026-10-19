@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generatore deterministico asset UI per @tipografo (Blocco M).
+"""Generatore deterministico asset UI per @developer (Blocco M).
 Disegna da zero: 3 varianti di font pixel, lettering titolo, menu, HUD.
 Risoluzione riferimento 320x224. Max 16 colori per elemento.
 Nessun riferimento a font/asset Sega. Output: assets_originali/ui/ + motore_nuovo/dati/ui/.
@@ -44,7 +44,7 @@ PALETTE = {
 
 LICENZA_IMM = "CC-BY-4.0"
 LICENZA_JSON = "MIT"
-AUTORE = "@tipografo (reparto grafico, progetto Sglavinated)"
+AUTORE = "@developer (reparto grafico, progetto Sglavinated)"
 URL = "interno al progetto: assets_originali/ui/ (disegnato da zero, nessun asset Sega)"
 
 # ---------------------------------------------------------------- font 5x7
@@ -439,7 +439,7 @@ def main():
         (hdir / "manifest.json").write_text(json.dumps(manifest(var, "hud", ["hud_preview.png"], "Mockup HUD. Dati reali in motore_nuovo/dati/ui/hud.json."), indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"variante {var} OK")
 
-    # JSON dati per @coder: selezione variante A di default (Andrea sceglie dopo)
+    # JSON dati per @developer: selezione variante A di default (Andrea sceglie dopo)
     DATI_UI.mkdir(parents=True, exist_ok=True)
     with (UI / "font" / "varianteA" / "font.json").open(encoding="utf-8") as f:
         fontA = json.load(f)

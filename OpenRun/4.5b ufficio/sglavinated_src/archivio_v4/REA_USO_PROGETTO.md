@@ -13,8 +13,7 @@ Data: 16 ott 2026. Fonte metodo: `libreria/REA_METODO.md` (copia della skill REA
 - Fonti open source con licenza compatibile.
 
 ## Cosa NON si analizza
-- file `.gen`, né loro derivati.
 - musica o codice del gioco originale.
 
 ## Chi lo usa
-- Andrea, a mano, dal Terminale o da Claude Code.
+- Andrea o @grafico, a mano, dal Terminale o da Claude.

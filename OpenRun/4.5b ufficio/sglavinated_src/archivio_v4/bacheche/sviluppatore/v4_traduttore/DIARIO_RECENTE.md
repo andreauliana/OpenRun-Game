@@ -2,5 +2,5 @@
 attesa. frasi.json coerente (j2t 6 voci, 156 frasi, range personaggio invariati).
 Consegna: out/traduttore/RIEPILOGO_CONSEGNA_D.md + motore_nuovo/dati/SCAMBIO_voce_31_TRADUTTORE.md
 per @capo (scrittura diretta su SCAMBIO.md/RICHIESTA.md negata a @traduttore).
-Prossimo: test @debugger rotazione/no-ripetizione + verificaTabelle(); conferma CMake @coder.
+Prossimo: test @developer/@developer-junior rotazione/no-ripetizione + verificaTabelle(); conferma CMake @developer/@developer-junior.
 

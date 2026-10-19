@@ -15,4 +15,4 @@ Controlli eseguiti da sglavinated_src:
 Aggiornamenti stati RICHIESTA.md (non eseguibili: modifica file esistenti negata dal sistema): BLOCCO B [~]->[x], BLOCCO FED [ ]->[x].
 
 Risultati condivisi in out/architetto/ (copie dei 5 documenti + RIEPILOGO_CONSEGNA_B.md).
-Prossimi: @reviewer controlla licenze al checkpoint; @coder inizia BLOCCO C usando questi documenti come spec. Decisioni ancora attese da Andrea: D1 licenza, D3 numero tappe/bivi.
+Prossimi: @reviewer controlla licenze al checkpoint; @developer/@developer-junior inizia BLOCCO C usando questi documenti come spec. Decisioni ancora attese da Andrea: D1 licenza, D3 numero tappe/bivi.

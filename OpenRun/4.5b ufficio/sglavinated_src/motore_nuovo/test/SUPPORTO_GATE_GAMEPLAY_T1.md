@@ -2,7 +2,7 @@
 
 SPDX-License-Identifier: MIT
 
-Nota operativa per @coder e @debugger. Basata sull'ispezione statica dei sorgenti
+Nota operativa per @developer e @debugger. Basata sull'ispezione statica dei sorgenti
 attuali; non attesta che build o test siano stati eseguiti o superati.
 
 ## Priorita' 0 — rendere il target di prova compilabile e affidabile

@@ -1,4 +1,4 @@
-# ESITO BLOCCO H (2° giro, dopo le modifiche P1b di @coder) — sintassi del nucleo
+# ESITO BLOCCO H (2° giro, dopo le modifiche P1b di @developer) — sintassi del nucleo
 
 Agente: **@debugger**. Data: 17 ott 2026. Seguito della voce 76 (SCAMBIO.md) e di
 `motore_nuovo/test/ESITO_SINTASSI_BLOCCO_H_T3.md`. Ambito: **sola lettura** dei sorgenti;
@@ -89,7 +89,7 @@ servono.
 
 ### B. [aperto] `offroad` e' **ancora** codice morto: il rilievo 3 del @reviewer non e' risolto, solo spostato
 
-@coder ha giustamente spostato il calcolo di `offroad` **prima** del clamp
+@developer ha giustamente spostato il calcolo di `offroad` **prima** del clamp
 (`player.cpp:25` contro clamp a `player.cpp:30-31`), ma con i numeri attuali la condizione
 non puo' mai diventare vera:
 
@@ -104,7 +104,7 @@ non puo' mai diventare vera:
   `pal_[12]`) resta irraggiungibile e il gioco non da' nessun segnale di fuori pista.
 
 E' una scelta di gameplay (quanto largo e' il fuori pista), quindi la decisione e' di
-@coder/@capo; le due vie sono nel diff di §4-B.
+@developer/@capo; le due vie sono nel diff di §4-B.
 
 ### C. [proposta, per il gate del blocco H] replay deterministico e hash: manca l'attrezzo, non solo il Pi
 
@@ -117,7 +117,7 @@ E' una scelta di gameplay (quanto largo e' il fuori pista), quindi la decisione 
   dalla tastiera (`main.cpp:121-123`). Quindi **oggi "stesso file di input riprodotto due
   volte" non e' eseguibile da nessuna parte**, indipendentemente dal Pi 400: serve prima
   l'attrezzo (registrazione/scrittura del replay + modalita' headless con numero di frame
-  fisso e nessun orologio nel core). Va assegnato a @coder prima che il gate H sia misurabile.
+  fisso e nessun orologio nel core). Va assegnato a @developer prima che il gate H sia misurabile.
 
 ## 4. Warning `-Wall -Wextra` (5, non bloccanti) e diff proposte (NON applicate)
 
@@ -193,7 +193,7 @@ mancanza dell'attrezzo** (§3-C):
 | fps (target 50) | **non misurato** | serve il runner su Pi 400 |
 | ms/frame (<= 20 ms, obiettivo <= 12 ms) | **non misurato** | idem; il runner non ha un contatore di tempo per frame (`main.cpp:166-170` usa solo `SDL_Delay` sul target 50 fps) |
 | temperatura Pi 400 | **non misurata** | hardware assente |
-| replay deterministico: stesso input 2x -> stesso hash ogni 60 frame | **non eseguibile** | l'hash esiste ed e' stampato ogni 60 frame (`main.cpp:173-178`), ma `Replay` non legge/scrive file e il runner non accetta un file di input (§3-C): da completare a @coder, poi misura su Pi 400 |
+| replay deterministico: stesso input 2x -> stesso hash ogni 60 frame | **non eseguibile** | l'hash esiste ed e' stampato ogni 60 frame (`main.cpp:173-178`), ma `Replay` non legge/scrive file e il runner non accetta un file di input (§3-C): da completare a @developer, poi misura su Pi 400 |
 
 Nota: la consegna di questo giro diceva esplicitamente che build/replay/ms/frame/fps/temperatura
 non sono eseguibili qui; confermo che **lo restano**, con la precisazione che il replay ha anche

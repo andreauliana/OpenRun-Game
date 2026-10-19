@@ -2,7 +2,7 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # Logica degli show (Gianni / Gesù / UFO) — riferimento v85c (hack v87)
 
-Questo file descrive il COMPORTAMENTO del modulo gameplay (Gianni, Gesù, fumetti, escalation, inattività) da implementare nel motore nuovo in `src/gameplay/` (compito di @coder). I dati sono in `dati/frasi.json` e `dati/personaggi/{gianni,gesu}/fumetti.json`.
+Questo file descrive il COMPORTAMENTO del modulo gameplay (Gianni, Gesù, fumetti, escalation, inattività) da implementare nel motore nuovo in `src/gameplay/` (compito di @developer). I dati sono in `dati/frasi.json` e `dati/personaggi/{gianni,gesu}/fumetti.json`.
 
 Origine (sola lettura, mai toccata): `HANDOVER.md`, `SPEC_personaggi_v74.md`, `OPENCODE_REFERENCE_v74.json`, `tools/gianni12.py`, `ARCHIVIO_V87.md`.
 
@@ -78,7 +78,7 @@ Nella v87 esisteva anche `ctab` (32 id, codice morto, ramo Gesù-ma-frasi-Gianni
 
 Tavole di animazione/timing (riferimento comportamentale v87, non da copiare come codice): `sq` (sequenza pose 32), `ez_tab` (entrata 24), `xo_tab` (uscita 24), `bz_tab` (rimbalzo bolla 12), `sw_tab` (sway 4), `bob` (hover 16), `gmask` (pezzi 64).
 
-## 6. Interfaccia verso il nucleo (per @coder)
+## 6. Interfaccia verso il nucleo (per @developer)
 
 Il modulo gameplay espone, per frame:
 - `show_event(tipo)`: registra crash / uscita-di-strada / inattività scaduta.

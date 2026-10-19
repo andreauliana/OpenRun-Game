@@ -22,10 +22,10 @@ Perche': le celle Stato e i RIEPILOGO TURNO di RICHIESTA.md erano diventati para
 | Stato | [~] | (consegnato T2, SCAMBIO voce 15; variante A default, scelta Andrea in attesa; manifest tornati "bozza" dopo PNG B/N, voce 62/63, D8 elemento "tempo" da aggiungere a hud.json)
 
 ### BLOCCO P1
-| Stato | [~] | (16 ott 17:55, Claude: punti 1-2 fatti; punto 3 segmenti da livello.json fatto da @coder voce 78; punto 5 wiring show fatto da @coder voce 87; punto 4 sprite veri in attesa di Andrea ANDREA/sprite_ritoccati/. Gate build cmake + 3 screenshot da fare sul Mac/Pi 400, regola 21). **[17 ott 14:00 Claude, build reale in cloud Linux g++/cmake]** Build OK, 3 screenshot strada (partenza/curva/fuoristrada) in out/debugger/. RESTA [~]: gli screenshot mostrano ancora rettangoli segnaposto al posto di sprite/cartelloni, nessun traffico, nessun personaggio/fumetto: vedi BLOCCO T1-RUN. |
+| Stato | [~] | (16 ott 17:55, Claude: punti 1-2 fatti; punto 3 segmenti da livello.json fatto da @developer voce 78; punto 5 wiring show fatto da @developer voce 87; punto 4 sprite veri in attesa di Andrea ANDREA/sprite_ritoccati/. Gate build cmake + 3 screenshot da fare sul Mac/Pi 400, regola 21). **[17 ott 14:00 Claude, build reale in cloud Linux g++/cmake]** Build OK, 3 screenshot strada (partenza/curva/fuoristrada) in out/debugger/. RESTA [~]: gli screenshot mostrano ancora rettangoli segnaposto al posto di sprite/cartelloni, nessun traffico, nessun personaggio/fumetto: vedi BLOCCO T1-RUN. |
 
 ### BLOCCO P1b
-| Stato | [x] | (tutte le modifiche codice fatte da @coder voce 86/87: traffico disattivo trafficoAttivo_=false, offroad prima del clamp X_LIMIT, OFFROAD_LIMIT=700, guardia sponsorSpriteIdx_, niente shots/pcmr_M.bin -> playlist.json. Gate: prova headless/runner 10s sterzo sx/dx, auto visibile, nessun crash — NON eseguibile qui, regola 21; da fare su Pi 400/Mac con toolchain Andrea). **[17 ott 14:00 Claude, build reale in cloud Linux g++/cmake]** Gate headless PASSATO in cloud: sterzo sx (X min -165) e dx, auto visibile, offroad raggiunto al frame 476, 30000 frame senza crash. |
+| Stato | [x] | (tutte le modifiche codice fatte da @developer voce 86/87: traffico disattivo trafficoAttivo_=false, offroad prima del clamp X_LIMIT, OFFROAD_LIMIT=700, guardia sponsorSpriteIdx_, niente shots/pcmr_M.bin -> playlist.json. Gate: prova headless/runner 10s sterzo sx/dx, auto visibile, nessun crash — NON eseguibile qui, regola 21; da fare su Pi 400/Mac con toolchain Andrea). **[17 ott 14:00 Claude, build reale in cloud Linux g++/cmake]** Gate headless PASSATO in cloud: sterzo sx (X min -165) e dx, auto visibile, offroad raggiunto al frame 476, 30000 frame senza crash. |
 
 ## 2. Sezioni RIEPILOGO / AGGIORNAMENTO TURNO originali
 
@@ -36,19 +36,19 @@ Stati aggiornati:
 - C [~] -> [x] (sintassi nucleo OK, build cmake/fps su Pi 400 in blocco H)
 - H [~] invariato (build/fps/replay solo su Pi 400, regola 21)
 - P1 [~] invariato (punti 1-2 fatti da Claude voce 66, punti 3-5 dipendono da P2/P3)
-- P1b [ ] -> [~] (@coder: disattiva traffico segnaposto + collisioni, fixa clamp playerX)
+- P1b [ ] -> [~] (@developer: disattiva traffico segnaposto + collisioni, fixa clamp playerX)
 - P2 [ ] invariato (non avviato: coder+debugger solo per il Gate)
 - P3 [ ] invariato (non avviato: coder+debugger solo per il Gate)
 - M [x] -> [~] (manifest tornati "bozza", D8 elemento "tempo" da aggiungere a hud.json)
 
-Assegnati: P1b -> @coder; verifica sintassi nucleo -> @debugger.
+Assegnati: P1b -> @developer; verifica sintassi nucleo -> @debugger.
 D9 aperta in DECISIONI_ANDREA.md (build: solo cmake --build quando clang++ negato).
 
 ## RIEPILOGO TURNO 3 (ora 4 di 12) — @capo | 17 ott 2026
 Tappa attiva: 1 (Gate: strada che scorre, accelera A, frena B, sterza sx/dx, 5 min senza crash). FEEDBACK_ANDREA: priorita al primo Gate C++ giocabile, squadra coder+debugger, niente tappe future; grafica provvisoria finché ANDREA/sprite_ritoccati/ vuoto.
 Stati confermati: C [x], H [~], P1 [~], P1b [~], P2 [x], P3 [x], M [~], J [ ], N [ ], MD0 [-], T5 [-].
 Esiti: P1b codice su disco (3 rilievi reviewer sanati: guardia sponsorSpriteIdx_, niente path shots/, offroad prima del clamp, traffico disattivo e collisioni guardate - voce 87 SCAMBIO); P1 punti 1-2 OK (Pad::A accelera, Pad::B frena), punto 3 aggiunto (Game::init legge segmenti da livello.json), punto 5 wiring show fatto (voce 87), punto 4 sprite veri in attesa di Andrea. Build cmake e gate test NON eseguibili qui (regola 21): rimandati a Pi 400/Mac con toolchain (D9 DEFAULT: solo cmake --build). H: sintassi OK 34/34 file; build/fps/replay su Pi 400 (Andrea).
-Deleghe chiuse: voce 86/87 (@coder P1b + 3 rilievi reviewer CHECKPOINT 2) [CHIUSA], voce 72 (@livelli P2) chiusa voce 75, voce 73 (@traduttore P3) chiusa voce 77, voce 74 (@debugger sintassi) chiusa voce 76.
+Deleghe chiuse: voce 86/87 (@developer P1b + 3 rilievi reviewer CHECKPOINT 2) [CHIUSA], voce 72 (@livelli P2) chiusa voce 75, voce 73 (@traduttore P3) chiusa voce 77, voce 74 (@debugger sintassi) chiusa voce 76.
 D9 [APERTA]: DEFAULT solo cmake --build; Andrea non ha risposto, si prosegue col default.
 Niente nuovi manifest/PNG/documenti finché P1 non ha 3 screenshot in out/coder/ (voce 70/77). check_catalogo OK; quota_open 100% > 50%. Nessun PER_CLAUDE.md (nessun doppio fallimento). FINITO non creabile (blocchi T1 non tutti [x]).
 
@@ -56,7 +56,7 @@ Niente nuovi manifest/PNG/documenti finché P1 non ha 3 screenshot in out/coder/
 Tappa attiva: 1 (Gate: strada che scorre, accelera A, frena B, sterza sx/dx, 5 min senza crash). FEEDBACK_ANDREA: priorita al primo Gate C++ giocabile, squadra coder+debugger, niente tappe future; grafica provvisoria finché ANDREA/sprite_ritoccati/ vuoto.
 Stati confermati: C [x], H [~], P1 [~], P1b [~], P2 [x], P3 [x], M [~], J [ ], N [ ], MD0 [-], T5 [-].
 Esiti: nulla di nuovo eseguibile in questo ambiente (regola 21: shell/compilatore negati; build e test reali su Pi 400 con toolchain Andrea; D9 DEFAULT solo cmake --build). P1b codice su disco, 3 rilievi reviewer sanati (voce 87 SCAMBIO); P1 punti 1-2-3 OK (Pad::A/B accelera/frena, SDL2_image, Game::init legge segmenti da livello.json), punti 4-5 in attesa (sprite veri = Andrea; show wiring fatto voce 87, non indispensabile al Gate per reviewer); H sintassi OK 34/34 file (voce 76/78), build cmake/replay/fps/temperatura in attesa Pi 400.
-Deleghe voce 79 SCAMBIO.md: P1b verifica gate -> @coder (Pi 400/Mac); H test accettazione -> @debugger (Pi 400, Andrea).
+Deleghe voce 79 SCAMBIO.md: P1b verifica gate -> @developer (Pi 400/Mac); H test accettazione -> @debugger (Pi 400, Andrea).
 Nessuna assemblea aperta (ASSEMBLEE_APERTE.md vuoto); BACHECA_RECENTE.md senza messaggi operativi (ignorati messaggi informali). DECISIONI_ANDREA.md D9 [CHIUSA] (Andrea ha risposto: DEFAULT solo cmake --build). Nessun PER_CLAUDE.md. FINITO non creabile (blocchi T1 non tutti [x]).
 
 ## RIEPILOGO TURNO 1 (ora 0 di 12) — @capo | 17 ott 2026 (snapshot storico, superato dagli aggiornamenti sotto)
@@ -65,7 +65,7 @@ Tappa attiva: 1 (Gate FEEDBACK_ANDREA v90: strada che scorre con strisce di cors
 FEEDBACK_ANDREA v90: NON OK tappa 1 — manca engine di guida completo e proiezione strada corretta. CLAUDE voce 91: 4 bug in road.cpp/renderer.cpp (scala proiettiva fuori misura, strada ignora playerX, ordine disegno invertito, sprite con formula diversa). I rilievi successivi del reviewer sono riepilogati nella voce 1135 di `SCAMBIO.md`.
 Stati: C [x], H [~], P1 [~], P1b [~], P2 [x], P3 [~], M [~], J [ ], N [ ], MD0 [-], T5 [-].
 Deleghe Turn 1:
-- @coder (P1 [~], priorita' massima): (1) road.cpp project() — nuova proiezione pseudo-3D unica (depth=1/tan(FOV/2), camX=playerX*ROAD_WIDTH, s=depth/z, sx=W/2+s*(worldX-camX)*W/2, sy=H/2-s*(worldY-camY)*H/2, curve accumulate dx+=curve); (2) renderer.cpp drawRoad() — disegna segmenti dal lontano al vicino; (3) renderer.cpp drawSprites() — stessa proiezione della strada (base in sy del segmento, sx stessa scala); (4) road.cpp — rimuovere Rng rng(seed;) righe 18 e 57; (5) BUILD.md — rimuovere nlohmann/json da tabella riga 29 e comandi righe 70, 99; (6) CMakeLists.txt — aggiungere src/core/json_mini.h alla lista sglavinated_core. Solo motore_nuovo/src/ + CMakeLists.txt + motore_nuovo/docs/BUILD.md, SPDX MIT, zero alloc ciclo, niente asset Sega, determinismo preservato. Build cmake (D9 DEFAULT: solo cmake --build) e test su Pi 400/Mac, toolchain Andrea (regola 21) -> @debugger H.
+- @developer (P1 [~], priorita' massima): (1) road.cpp project() — nuova proiezione pseudo-3D unica (depth=1/tan(FOV/2), camX=playerX*ROAD_WIDTH, s=depth/z, sx=W/2+s*(worldX-camX)*W/2, sy=H/2-s*(worldY-camY)*H/2, curve accumulate dx+=curve); (2) renderer.cpp drawRoad() — disegna segmenti dal lontano al vicino; (3) renderer.cpp drawSprites() — stessa proiezione della strada (base in sy del segmento, sx stessa scala); (4) road.cpp — rimuovere Rng rng(seed;) righe 18 e 57; (5) BUILD.md — rimuovere nlohmann/json da tabella riga 29 e comandi righe 70, 99; (6) CMakeLists.txt — aggiungere src/core/json_mini.h alla lista sglavinated_core. Solo motore_nuovo/src/ + CMakeLists.txt + motore_nuovo/docs/BUILD.md, SPDX MIT, zero alloc ciclo, niente asset Sega, determinismo preservato. Build cmake (D9 DEFAULT: solo cmake --build) e test su Pi 400/Mac, toolchain Andrea (regola 21) -> @debugger H.
 - @debugger (H [~]): su Pi 400/Mac con toolchain Andrea (D9: solo `cmake --build`) — configurare e compilare core, `prova_gate` e runner; eseguire smoke test headless 10s previsto da FEEDBACK_ANDREA v90 e prova d'accettazione di 10 minuti senza crash (durata indicata nella voce 93 di `SCAMBIO.md`), replay 2x con stesso input e hash/60 identici, frame <=20ms (obiettivo <=12), 50 fps stabili, temperatura, 3 screenshot distinti e leggibili (partenza, curva, fuori strada) e log velocita'/posizione. Consultare `motore_nuovo/test/SUPPORTO_GATE_GAMEPLAY_T1.md` per i controlli di compilazione, coordinate/sprite e validazione; non dichiarare superato cio' che non e' stato eseguito. Non eseguibile qui (regola 21).
 D9 [CHIUSA] (Andrea: cmake --build). check_catalogo OK; quota_open > 50%. Nessun PER_CLAUDE.md. FINITO non creabile (blocchi T1 non tutti [x]).
 

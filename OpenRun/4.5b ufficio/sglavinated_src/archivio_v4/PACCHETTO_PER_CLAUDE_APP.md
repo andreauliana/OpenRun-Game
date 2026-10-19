@@ -9,7 +9,7 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 25:| Stato | [x] |
 28:## BLOCCO B — @architetto
 33:| Stato | [x] | (consegnato T2, SCAMBIO voce 16)
-35:## BLOCCO C — @coder
+35:## BLOCCO C — @developer
 40:| Stato | [x] | (sintassi 30/30 SPDX MIT; build e gate reali OK il 17 ott 14:00, vedi H e T1-RUN)
 42:## BLOCCO D — @traduttore
 46:| Stato | [x] | (SPEC_GAMEPLAY.md + src/gameplay/ + 156 fumetti in dati/frasi.json; SCAMBIO 23)
@@ -22,7 +22,7 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 63:## BLOCCO H — @debugger (+ Andrea sul Pi)
 65:| Stato | [~] | (17 ott 14:00 gate reale OK: 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame, exit 0. Mancano fps/temperatura su Pi 400 e la v91 di Andrea sulla guida; [x] solo con T1-RUN punto 8. Dettaglio: out/debugger/ESITO_GATE_T1_17OTT_1400.md)
 67:## BLOCCO I — @reviewer
-69:| Stato | [x] | (CHECK 2 ore 4, esito in SCAMBIO.md voce 20; B/C/K/M confermati [x], correzioni segnalate a @coder prima di H)
+69:| Stato | [x] | (CHECK 2 ore 4, esito in SCAMBIO.md voce 20; B/C/K/M confermati [x], correzioni segnalate a @developer prima di H)
 71:## BLOCCO J — Escalation a Claude
 74:| Stato | [ ] |
 78:## BLOCCO K — @livelli (dopo B0; in parallelo a C)
@@ -33,25 +33,25 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 91:| Stato | [x] | (consegnato con BLOCCO B, SCAMBIO voce 16: FEDELTA.md 10 tratti, punteggio 50.0% soglia; D3 default 5 tappe/bivi, 3 livelli di prova)
 93:## BLOCCO CONS — @traduttore (conservazione, subito dopo B0)
 96:| Stato | [x] |
-98:## BLOCCO M — @tipografo (in parallelo a K)
+98:## BLOCCO M — @developer (in parallelo a K)
 102:| Stato | [~] | (consegnato T2, SCAMBIO 15; manifest in "bozza" finche' Andrea non approva i PNG B/N; D8 "tempo" da aggiungere a hud.json)
 104:## BLOCCO N — @architetto (solo dopo che C gira; facoltativo)
 108:| Stato | [ ] |
 110:## BLOCCO X — @agente
 115:| Stato | [ ] |
-118:## BLOCCO P1 — @coder (PRIORITA' MASSIMA, da Andrea 16 ott: primo livello giocabile)
+118:## BLOCCO P1 — @developer (PRIORITA' MASSIMA, da Andrea 16 ott: primo livello giocabile)
 122:| Stato | [~] | (punti 1-3 e 5 fatti; punto 4 sprite veri ancora aperto = T1-RUN 4; build e 3 screenshot strada OK in out/debugger/)
 124:## BLOCCO P2 — @livelli (per P1)
 126:| Stato | [x] |
 129:## BLOCCO P3 — @traduttore (per P1)
 131:| Stato | [x] |
-134:## BLOCCO MD0 — @coder — TAPPA 1: la ROM parte e si pilota
+134:## BLOCCO MD0 — @developer — TAPPA 1: la ROM parte e si pilota
 139:| Stato | [-] (sospeso: prima il C++, scelta di Andrea 17 ott) |
-141:## BLOCCO P1b — @coder — TAPPA 1: niente collisioni fantasma
+141:## BLOCCO P1b — @developer — TAPPA 1: niente collisioni fantasma
 144:| Stato | [x] | (codice SCAMBIO 86/87; gate headless 17 ott PASSATO: sterzo sx/dx, offroad f.476, 30000 frame senza crash)
-146:## BLOCCO T1-RUN — @coder + @debugger — prossimo run: implementazione e test (da Claude 17 ott 14:00)
-162:| Stato | [~] | (in esecuzione: @coder punti 1-4, @debugger punti 5-6; build e gate OK 17 ott 14:51, quota open 99,8%; v91 di Andrea pendente. Dettaglio: SCAMBIO 1144)
-164:## BLOCCO T5 — @coder + @livelli — TAPPA 5: altri veicoli, collisioni, razzo
+146:## BLOCCO T1-RUN — @developer + @debugger — prossimo run: implementazione e test (da Claude 17 ott 14:00)
+162:| Stato | [~] | (in esecuzione: @developer punti 1-4, @debugger punti 5-6; build e gate OK 17 ott 14:51, quota open 99,8%; v91 di Andrea pendente. Dettaglio: SCAMBIO 1144)
+164:## BLOCCO T5 — @developer + @livelli — TAPPA 5: altri veicoli, collisioni, razzo
 169:| Stato | [-] (tappa 5) |
 
 ## Decisioni aperte

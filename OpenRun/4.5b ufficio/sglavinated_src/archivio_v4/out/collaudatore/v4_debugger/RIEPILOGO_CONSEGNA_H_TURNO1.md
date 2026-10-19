@@ -1,7 +1,7 @@
 # RIEPILOGO CONSEGNA — @debugger, Blocco H, Turno 1 (16 ott 2026)
 
-Blocco: BLOCCO H (@debugger). Stato RICHIESTA.md: [~] (build/fps rimandati a Pi 400).
-Esito: verifica statica di BLOCCO C su motore_nuovo/src/ + CMakeLists.txt. Sola lettura: nessun file di @coder modificato.
+Blocco: BLOCCO H (@developer/@developer-junior). Stato RICHIESTA.md: [~] (build/fps rimandati a Pi 400).
+Esito: verifica statica di BLOCCO C su motore_nuovo/src/ + CMakeLists.txt. Sola lettura: nessun file di @developer modificato.
 
 - Build cmake: N/D (nessun cmake, nessun compilatore C++, regola 21; motore_nuovo/build/ vuota).
   Comando atteso su Pi 400/Mac con toolchain: cmake -S motore_nuovo -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build (motore_nuovo/docs/BUILD.md §4; opzione -DBUILD_LIBRETRO=ON per il core libretro).

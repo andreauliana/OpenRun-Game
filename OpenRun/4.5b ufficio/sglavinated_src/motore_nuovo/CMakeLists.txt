@@ -39,7 +39,7 @@ add_library(sglavinated_core
     src/game/game.cpp
     # ---------------------------------------------------------------------------
     # Modulo gameplay (blocco D): interfaccia verso il nucleo (show.h).
-    # Scritto da @traduttore in src/gameplay/; @coder lo collega al ciclo di gioco
+    # Scritto da @grafico in src/gameplay/; @developer lo collega al ciclo di gioco
     # e lo aggiunge alla build del core (CMakeLists.txt).
     # ---------------------------------------------------------------------------
     src/gameplay/escalation.h

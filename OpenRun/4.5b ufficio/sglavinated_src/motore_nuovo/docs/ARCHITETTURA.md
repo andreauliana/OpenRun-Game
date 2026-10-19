@@ -11,7 +11,7 @@ Percorso: motore_nuovo/docs/ARCHITETTURA.md
 
 Motore nuovo scritto da zero in C++17, pista C decisa da Andrea (2026-10-15; PIANO_V3.md BLOCCO 3). Nessun codice, asset, sprite, tracciato o musica della ROM originale Sega. Idee e tecniche solo da fonti citate in FONTI.md e LICENZE.md §4 (Lou's Pseudo 3d Page: matematica della strada a segmenti; JavaScript Racer: struttura del ciclo di gioco; Cannonball: solo numeri di gameplay come analisi; ZgzInfinity/OutRun: organizzazione moduli solo se GPL accettata — non è il caso, D1 = MIT; hack Sglavinated v87: personaggi, fumetti e ritmo degli show come dati, opere di Andrea, sola lettura, non si portano i limiti hardware della hack).
 
-Target: Raspberry Pi 400 e PC/Mac. Render software 320x224, 50 Hz (PAL), audio int16 stereo, input tipo RetroPad. Dati in file: livelli JSON, sprite PNG, musica .xm di riferimento (playlist sostituibile senza toccare il codice).
+Target: Raspberry Pi 400 e PC/Mac. Render software 320x224, 60 Hz, audio int16 stereo, input tipo RetroPad. Dati in file: livelli JSON, sprite PNG, musica .xm (tracce musicali sostituibile senza toccare il codice, con possibile 'visual' nel HUV).
 
 ---
 
@@ -103,7 +103,7 @@ Immagini: PNG. Audio: .xm (riferimento di Andrea, sostituibile via playlist).
 
 | Blocco | Contenuto | Dipende da | Stato (RICHIESTA.md) |
 |---|---|---|---|
-| C | nucleo (core, road, render, input, audio base), runner SDL2, core libretro (stub se non fattibile), strada con curve e salite, auto giocatore, 50 fps | B (questi documenti) | [x] (consegna @coder; build/fps da verificare su Pi 400, blocco H) |
+| C | nucleo (core, road, render, input, audio base), runner SDL2, core libretro (stub se non fattibile), strada con curve e salite, auto giocatore, 50 fps | B (questi documenti) | [x] (consegna @developer; build/fps da verificare su Pi 400, blocco H) |
 | D | personaggi/gameplay: Gianni, Gesu', UFO, fumetti, escalation, inattivita' | C | [x] |
 | K/L/M | 3 livelli di prova (dati/livelli), scenari (assets_originali/scenari), UI (font, menu, HUD) | B, D | [x] / [~] vedi RICHIESTA.md |
 | fx | razzo B (tasto B), sollevamento auto ad alta velocita', effetti colore crash | C | [ ] |
@@ -135,4 +135,4 @@ Ogni passo chiude con: build, test di replay, misura frame, review (PIANO_TURNI.
 
 ## 9. Nota di fine
 
-Questo documento specifica l'architettura; non contiene codice C++. Il codice è compito di @coder (blocco C) in `motore_nuovo/src/` e `motore_nuovo/CMakeLists.txt`.
+Questo documento specifica l'architettura; non contiene codice C++. Il codice è compito di @developer (blocco C) in `motore_nuovo/src/` e `motore_nuovo/CMakeLists.txt`.

@@ -14,7 +14,7 @@ Build di test; i nomi interni e alcuni comandi conservano la sigla V3. Lavoro pr
 Scrivi solo qui, oltre a `bacheche/<agente>/`, `out/<agente>/` e `BACHECA_PUBBLICA.md`. Leggere le cartelle altrui e' permesso, scriverci no.
 | Agente | Fa | Scrive in |
 |---|---|---|
-| capo | coordina, propone stati e deleghe | `out/capo/`, `DECISIONI_ANDREA.md`, `ASSEMBLEA.md`, `PER_CLAUDE.md`, `out/INDICE.md`, `libreria/INDICE.md`, `FINITO` |
+| capo | coordina, propone stati e deleghe | `out/capo/`, `PER_CLAUDE.md`, `out/INDICE.md`, `libreria/INDICE.md`, `FINITO` |
 | architetto | architettura, formati dati, build, licenze | `motore_nuovo/docs/` |
 | coder | nucleo C++ (strada, rendering, gioco, input, audio) | `motore_nuovo/src/`, `motore_nuovo/CMakeLists.txt`, `tools/patch_z.py` |
 | traduttore | porta nel motore regole gia' fatte (personaggi, fumetti, escalation) | `motore_nuovo/dati/personaggi/`, `motore_nuovo/dati/frasi.json`, `motore_nuovo/src/gameplay/`, `motore_nuovo/docs/` |
@@ -29,13 +29,13 @@ Scrivi solo qui, oltre a `bacheche/<agente>/`, `out/<agente>/` e `BACHECA_PUBBLI
 Sprite e vocabolari nuovi stanno nei dati della tua cartella e nel CATALOGO; la galleria li mostra.
 
 ## Regola 6 — reparti e catalogo
-Reparto grafico (@cercaasset, @asset, @testi, @scenografo, @tipografo) e tecnico (@architetto, @coder, @traduttore, @livelli, @debugger). Ogni funzione extra e' un modulo in `motore_nuovo/src/fx/<nome>/` con flag on/off e dati propri. Ogni personaggio/asset ha cartella + manifest + riga in `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`; prima di consegnare: `python3 motore_nuovo/strumenti_py/check_catalogo.py`. Dettagli: `motore_nuovo/docs/MODULI_E_REPARTI.md`.
+Reparto grafico (@grafico) e tecnico (@developer). Ogni funzione extra e' un modulo in `motore_nuovo/src/fx/<nome>/` con flag on/off e dati propri. Ogni personaggio/asset ha cartella + manifest + riga in `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`; prima di consegnare: `python3 motore_nuovo/strumenti_py/check_catalogo.py`. Dettagli: `motore_nuovo/docs/MODULI_E_REPARTI.md`.
 
 ## Regola 7 — conservazione e livelli
 Il lavoro della v87 non si butta: `motore_nuovo/docs/ARCHIVIO_V87.md` (sola lettura). Ogni livello ha il suo scenario e il suo `livello.json`; tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso.
 
 ## Regola 8 — UI e musica
-Font, titoli, menu, HUD: @tipografo. La musica del tracker di Andrea e' solo RIFERIMENTO: l'audio e' guidato da dati (`motore_nuovo/dati/audio/playlist.json`), nessun brano e' definitivo.
+Font, titoli, menu, HUD: @developer. La musica del tracker di Andrea e' solo RIFERIMENTO: l'audio e' guidato da dati (`motore_nuovo/dati/audio/playlist.json`), nessun brano e' definitivo.
 
 ## Regola 9 — versioni
 Il v3 si numera da v90 (v91, ...); ogni build/consegna riporta il numero nella voce. ROM Mega Drive originale (blocco N): facoltativa, solo dopo che il motore C funziona.
@@ -50,7 +50,7 @@ Non aspettare Andrea: scrivi la decisione (domanda, opzioni, DEFAULT, raccomanda
 Ogni 2 ore c'e' un CHECKPOINT automatico: @reviewer controlla i file modificati (max 3 rilievi) e salta se non ci sono modifiche pertinenti. Niente review per ogni consegna. Revisione umana dopo 6-8 ore.
 
 ## Regola 13 — difficolta' e passaggi
-Dopo 2 tentativi falliti sullo stesso problema, o a fine di un blocco importante: non insistere. Scrivi nella voce una riga `PASSAGGIO: <da> -> <a> | blocco <X> | motivo | cosa resta da fare` (esempio: @coder -> @debugger se e' un bug) o `RICHIESTA_CAMBIO_MODELLO: <agente>`, e passa a un altro punto (regola 28). Formato di `PER_CLAUDE.md` (lo scrive @capo):
+Dopo 2 tentativi falliti sullo stesso problema, o a fine di un blocco importante: non insistere. Scrivi nella voce una riga `PASSAGGIO: <da> -> <a> | blocco <X> | motivo | cosa resta da fare` (esempio: @developer -> @debugger se e' un bug) o `RICHIESTA_CAMBIO_MODELLO: <agente>`, e passa a un altro punto (regola 28). Formato di `PER_CLAUDE.md` (lo scrive @capo):
 ```
 AGENTE: <agente in difficolta' o ->
 PROBLEMA: <una riga>
@@ -85,7 +85,7 @@ Inizio turno: leggi `RIASSUNTO.md` e `DIARIO_RECENTE.md`. Bacheca max 300 MB (co
 Bozza (bacheca) -> consegna (cartella ufficiale e `out/<agente>/`) -> controllo @reviewer al checkpoint -> `libreria/` (materiale riusabile e approvato; scrittura per ruolo, tabella in `libreria/LEGGIMI.md`). Quota open e catalogo contano `out/` e `libreria/`.
 
 ## Regola 21 — perimetro
-Lavori SOLO dentro la cartella del progetto. Mai altre cartelle del Mac (soprattutto Outrun_OpenCode v2 e la vecchia v3), altre app, installazioni, comandi di sistema. cmake, make, g++/clang++ e `sh tools/gate_t1.sh` NON sono comandi di sistema: sono gli strumenti di build di @coder e @debugger (regola 26). Rete solo per @architetto e @cercaasset. Se un comando e' negato non aggirarlo: annotalo nella voce e continua (regola 28).
+Lavori SOLO dentro la cartella del progetto. Mai altre cartelle del Mac (soprattutto Outrun_OpenCode v2 e la vecchia v3), altre app, installazioni, comandi di sistema. cmake, make, g++/clang++ e `sh tools/gate_t1.sh` NON sono comandi di sistema: sono gli strumenti di build di @developer e @debugger (regola 26). Rete solo per @architetto e @cercaasset. Se un comando e' negato non aggirarlo: annotalo nella voce e continua (regola 28).
 
 ## Regola 22 — collegamento fra agenti
 Nessuno passa un parametro `model` quando delega: ogni agente usa il modello del proprio `.opencode/agents/<nome>.md`. Se una delega fallisce NON ritentare: il ciclo avvia comunque ogni agente direttamente a ogni turno ("giro diretto"), quindi il lavoro non dipende dal capo. Il canale reale sono i file: `RICHIESTA.md` (cosa), `SCAMBIO.md` (messaggi), `out/` e `libreria/` (risultati).
@@ -102,7 +102,7 @@ Il file principale e' `../README.md` (INIZIA QUI). `../ANDREA/` e' solo di Andre
 - Risposte corte: niente riepiloghi lunghi, niente copie di file, niente rilettura di file gia' letti nel turno.
 
 ## Regola 26 — build e test
-- cmake e il compilatore C++ funzionano e sono gia' permessi a @coder e @debugger. Un solo comando dalla radice: `sh tools/gate_t1.sh` (smoke 10 s sui 3 livelli + replay 2x) oppure `sh tools/gate_t1.sh soak` (in piu' 30000 frame). Senza pipe, `2>&1`, `;`, `&&`, `echo`, `which`: i permessi confrontano il comando INTERO. Dettaglio in `out/debugger/gate_t1.log`; exit 0 = OK.
+- cmake e il compilatore C++ funzionano e sono gia' permessi a @developer e @debugger. Un solo comando dalla radice: `sh tools/gate_t1.sh` (smoke 10 s sui 3 livelli + replay 2x) oppure `sh tools/gate_t1.sh soak` (in piu' 30000 frame). Senza pipe, `2>&1`, `;`, `&&`, `echo`, `which`: i permessi confrontano il comando INTERO. Dettaglio in `out/debugger/gate_t1.log`; exit 0 = OK.
 - Un solo passo: `cmake -S motore_nuovo -B build_gate`, poi `cmake --build build_gate --target prova_gate` (due comandi separati).
 - Scrivi "build non eseguibile" SOLO se `sh tools/gate_t1.sh` stesso e' negato, con il testo esatto dell'errore. Se un composto e' negato, rilancia la versione semplice.
 - Un esito vale solo con exit code e righe di riepilogo del log (`replay 2x`, `ms/frame`, `GATE OK`/`FALLITO`): mai "OK" dedotto dal codice.

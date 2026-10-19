@@ -4,7 +4,7 @@
 | Reparto | Agenti | Possiede | Non tocca |
 |---|---|---|---|
 | **Grafico** | @grafico | `assets_originali/`, `dati/personaggi/*/` (sprite, palette, fumetti, manifest), UI e font | codice C++ |
-| **Tecnico** | @architetto, @coder, @traduttore, @debugger | `src/`, `strumenti_py/`, test | sprite e testi (li legge soltanto) |
+| **Tecnico** | @architetto, @developer, @traduttore, @debugger | `src/`, `strumenti_py/`, test | sprite e testi (li legge soltanto) |
 Si parlano solo tramite il **manifest** di ogni personaggio/effetto e SCAMBIO.md.
 
 ## Linguaggi

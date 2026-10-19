@@ -31,7 +31,7 @@ if [ "$RC" -ne 0 ] || echo "$T" | grep -qi "not found"; then
   else echo "ERRORE: OpenCode non esegue l'agente 'capo'. Non parto."; echo "--- prova 1 ---"; echo "$T" | head -8; echo "--- prova 2 (--standalone) ---"; echo "$T2" | head -8; echo "Diagnosi: cd \"$P\" && opencode debug agents && opencode debug config"; echo "Mandami questo output."; exit 1; fi
 fi
 export OC_STANDALONE
-echo "OK      OpenCode esegue l'agente capo (standalone=$OC_STANDALONE)"
+echo "OK OpenCode esegue l'agente capo (standalone=$OC_STANDALONE)"
 sh "$BASE/strumenti/verifica.sh" | tail -15
 LOG="$BASE/sglavinated_src/notte.log"
 echo "[brains] avvio $(date)" >> "$LOG"

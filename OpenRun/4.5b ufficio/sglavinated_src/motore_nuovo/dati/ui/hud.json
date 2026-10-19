@@ -3,7 +3,7 @@
   "descrizione": "HUD di gioco come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con assets_originali/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: assets_originali/ui/font/varianteB/font.png (+ font.json). Elementi posizionati come riferimento strutturale all'originale (distanza in alto a sinistra, velocita in alto a destra), nessun asset Sega copiato. Dal 18 ott il motore disegna questo file in gioco (Renderer::drawHudDati): ogni 'id' e' legato a un dato vivo (distanza, giri, velocita, tempo, tappa, posizione, marcia, show).",
   "stato": "bozza",
   "licenza": "MIT",
-  "autore": "@tipografo (reparto grafico, progetto Sglavinated)",
+  "autore": "@grafico (Dipartimento Grafico)",
   "url": "interno al progetto: assets_originali/ui/ (disegnato da zero, nessun asset Sega)",
   "variante": "B",
   "asset_dir": "../../assets_originali/ui",
@@ -250,5 +250,5 @@
     }
   ],
   "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'cornice' = rettangolo con bordo di 'spessore' px; tipo 'testo' con label/valore = etichetta in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala'; tipo 'barra' = etichetta a label_pos, bordo rettangolo (barra_pos, barra_w, barra_h) di 'spessore_bordo' px in colore_bordo, riempimento pieno in colore_riempimento di 'riempimento_px' px di larghezza e barra_h-2*spessore_bordo di altezza, partendo da barra_pos+spessore_bordo. In gioco i testi hanno un'ombra nera di 1 px per restare leggibili sul cielo chiaro.",
-  "note_tema": "Tema bianco e nero (decisione D7): nessun colore cromatico, solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Testo primario bianco [255,255,255], etichette/secondario grigio [160,160,160], barra riempimento grigio [120,120,120], bordo barra bianco [255,255,255], cornice grigio [160,160,160]. Preview hud/varianteB/hud_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti."
+  "note_tema": "Tema bianco e nero (decisione D7): solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Testo primario bianco [255,255,255], etichette/secondario grigio [160,160,160], barra riempimento grigio [120,120,120], bordo barra bianco [255,255,255], cornice grigio [160,160,160]. Preview hud/varianteB/hud_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti."
 }

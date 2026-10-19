@@ -11,9 +11,9 @@ Due filoni nella stessa cartella:
 2. Ogni risorsa esterna in `assets_originali/CREDITI.md` (autore, licenza, URL).
 3. Lavora per blocchi di `RICHIESTA.md`. Un blocco = un risultato verificabile. A fine blocco: voce in `SCAMBIO.md` e Stato aggiornato.
 4. Resta nel tuo ruolo e nei tuoi permessi. Se serve un altro ruolo, scrivilo in SCAMBIO.md per `capo`.
-5. Pi 400, 50 fps, niente decorazioni non richieste. Leggi VISIONE.md (vincoli duri e architettura).
+5. Pi 400, 50 fps, niente decorazioni non richieste. Leggi VISIONE.md (vincoli duri).
 5b. Determinismo: tempo = contatore di frame, RNG con seed, nessun orologio di sistema; il nucleo non dipende da SDL (solo il runner di test).
-6. Non cancellare file. Non toccare `../` (la v2 e' di altri).
+6. Non cancellare file.
 
 ## Squadra
 | Agente | Fa | Scrive solo in |
@@ -39,16 +39,16 @@ DOMANDE: <max 5>
 FILE DA CONTROLLARE: <percorsi>
 ```
 ## Quando fermarsi
-Dopo 2 tentativi falliti sullo stesso problema, oppure a fine di un blocco importante: scrivi `PER_CLAUDE.md` e fermati (comando `/claude`).
+Dopo 2 tentativi falliti sullo stesso problema, oppure a fine di un blocco importante: scrivi `PER_CLAUDE.md` e fermati.
 
 ## Regola 6 — scomparti e catalogo
-Due reparti: grafico (@cercaasset, @asset, @testi) e tecnico (@architetto, @coder, @traduttore, @debugger). Ogni funzione extra e' un modulo in motore_nuovo/src/fx/<nome>/ con flag on/off e dati propri. Ogni personaggio/asset ha cartella + manifest + riga in motore_nuovo/docs/CATALOGO_PERSONAGGI.md; prima di consegnare esegui `python3 motore_nuovo/strumenti_py/check_catalogo.py`. Strumenti e build in Python 3. Dettagli: motore_nuovo/docs/MODULI_E_REPARTI.md.
+Ogni funzione extra e' un modulo in motore_nuovo/src/fx/<nome>/ con flag on/off e dati propri. Ogni personaggio/asset ha cartella + manifest + riga in motore_nuovo/docs/CATALOGO_PERSONAGGI.md; prima di consegnare esegui `python3 motore_nuovo/strumenti_py/check_catalogo.py`. Strumenti e build. Dettagli: motore_nuovo/docs/MODULI_E_REPARTI.md.
 
 ## Regola 7 — conservazione e livelli
 Il lavoro della v87 non si butta: vedi motore_nuovo/docs/ARCHIVIO_V87.md (sola lettura). Reparto grafico: aggiungi @scenografo (grafica dei livelli); reparto tecnico/design: @livelli (progetto dei livelli come dati JSON, motore_nuovo/dati/livelli/). Ogni livello ha il suo scenario e il suo livello.json.
 
 ## Regola 8 — UI e musica
-Font, titoli, menu, HUD: @tipografo (reparto grafico). La musica attuale (tracker di Andrea) e' solo RIFERIMENTO: l'audio e' guidato da dati (motore_nuovo/dati/audio/playlist.json: radio -> brani), cosi' i brani si cambiano senza toccare il codice. Nessun brano e' definitivo.
+Font, titoli, menu, HUD: @grafico (reparto grafico). La musica attuale (tracker di Andrea) e' solo RIFERIMENTO: l'audio e' guidato da dati (motore_nuovo/dati/audio/playlist.json: radio -> brani), cosi' i brani si cambiano senza toccare il codice.
 
 ## Regola 9 — versioni
 Il v3 si numera da v90 (v90, v91, ...). Ogni build/consegna riporta il numero in SCAMBIO.md. Uscita finale facoltativa: ROM Mega Drive originale (blocco N), solo dopo che il motore C funziona.
@@ -57,14 +57,14 @@ Il v3 si numera da v90 (v90, v91, ...). Ogni build/consegna riporta il numero in
 Almeno 50% open source: ogni file nuovo ha licenza dichiarata (LICENSE con SPDX o manifest.json 'licenza'). Prima di consegnare esegui `python3 motore_nuovo/strumenti_py/quota_open.py` e riporta il valore in SCAMBIO.md. La licenza da scegliere e' decisione di Andrea (vedi ../OPENSOURCE_PLAN.md).
 
 ## Regola 11 — notte e decisioni
-Di notte Andrea non risponde. Non fermarti ad aspettarlo: scrivi la decisione in DECISIONI_ANDREA.md (formato nel file, con DEFAULT e raccomandazione), usa il default e vai avanti sui blocchi indipendenti. I comandi Bash sono concessi per ruolo: build/test a coder e debugger, Python/Pillow nelle aree grafiche a asset/scenografo/tipografo, generatore frasi a testi; webfetch solo ad architetto e cercaasset. Se un comando e' negato, scrivilo in SCAMBIO.md invece di insistere. Attenzione: un comando COMPOSTO negato (pipe, `2>&1`, `;`, `&&`, `echo`, `which`) non significa che la shell sia negata: vedi regola 26.
+Di notte Andrea non risponde. Non fermarti ad aspettarlo: scrivi la decisione in ANDREA_REVIEW.md (formato nel file, con DEFAULT e raccomandazione), usa il default e vai avanti sui blocchi indipendenti. I comandi Bash sono concessi per ruolo: build/test a coder e debugger, Python/Pillow nelle aree grafiche a asset/scenografo/tipografo, generatore frasi a testi; webfetch solo ad architetto e cercaasset. Se un comando e' negato, scrivilo in SCAMBIO.md invece di insistere. Attenzione: un comando COMPOSTO negato (pipe, `2>&1`, `;`, `&&`, `echo`, `which`) non significa che la shell sia negata: vedi regola 26.
 
 ## Regola 12 — turni e controllo
 Segui PIANO_TURNI.md. Ogni 2 ore c'e' un CHECKPOINT automatico; @reviewer fa un solo controllo sui file modificati (massimo 3 rilievi) e salta la chiamata se non ci sono modifiche pertinenti. Niente review ripetute per ogni consegna. Claude CLI e' facoltativo e disattivato per default (`CHK_CLAUDE_OGNI=0`). Revisione umana solo dopo 6-8 ore.
 
 ## Regola 13 — cambio agente o modello (fra pari)
 Un agente in difficolta' (due tentativi falliti, risultati scadenti, contesto pieno, «stanco») NON insiste: lo scrive in SCAMBIO.md con una di queste righe e passa ad altro:
-- `PASSAGGIO: <da> -> <a> | blocco <X> | motivo | cosa resta da fare` (un altro agente prende il lavoro; @capo conferma e aggiorna RICHIESTA.md). Esempio: @coder -> @debugger se il problema e' un bug, @asset -> @scenografo per scenari.
+- `PASSAGGIO: <da> -> <a> | blocco <X> | motivo | cosa resta da fare` (un altro agente prende il lavoro; @capo conferma e aggiorna RICHIESTA.md). Esempio: @developer -> @debugger se il problema e' un bug, @asset -> @scenografo per scenari.
 - `RICHIESTA_CAMBIO_MODELLO: <agente>` (al prossimo checkpoint il ciclo porta l'agente al modello successivo di strumenti/panchina.txt).
 Gli agenti possono anche scambiarsi consigli in SCAMBIO.md; @capo decide in caso di disaccordo. Nessun passaggio cancella il lavoro fatto: si riparte dal file, non da zero.
 
@@ -92,10 +92,7 @@ Gli sprite e i vocabolari (elenchi di frasi, nomi, oggetti) nuovi stanno nei dat
 ## Regola 16 — fedelta' e contenuti
 Almeno 50% di somiglianza di struttura/sensazione con l'originale, misurata in motore_nuovo/docs/FEDELTA.md (solo meccaniche, mai asset). Stili e limiti di contenuto: assets_originali/DIREZIONE_ARTISTICA.md. Piste/livelli: tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso.
 
-## Regola 17 — spazio libero breve
-La `BACHECA_PUBBLICA.md` e' uno spazio facoltativo per note leggere, sfoghi non diretti contro persone, idee o messaggi informali. Massimo 3 righe per messaggio; nessun agente e' tenuto a rispondere. Non inserirvi decisioni, richieste di lavoro o dati personali: usare SCAMBIO.md, ASSEMBLEA.md o DECISIONI_ANDREA.md per il lavoro. Tono rispettoso; niente insulti, minacce o attacchi personali.
-
-## Regola 18 — bacheche personali: dove va cosa
+## Regola 17 — bacheche personali: dove va cosa
 Ogni informazione sta in UN posto; gli altri file la richiamano per nome, non la ripetono.
 | Cosa | Dove | Chi scrive |
 |---|---|---|
@@ -118,7 +115,7 @@ All'inizio del turno leggi `RIASSUNTO.md` e `DIARIO_RECENTE.md`. Max 500 MB per 
 `BACHECA_PUBBLICA.md` e' facoltativa e a basso volume: aggiungi in fondo, non modificare i messaggi altrui, massimo 3 righe per messaggio. Il ciclo passa a @capo solo le ultime 24 righe; @capo interviene solo se ci sono richieste operative pertinenti. Nessuna decisione vincolante: usare i canali di lavoro dedicati.
 
 ## Regola 21 — perimetro
-Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (OpenWay)). Mai altre cartelle del Mac (soprattutto Outrun_OpenCode v2 e la vecchia copia v3), mai altre app, mai installazioni, mai comandi di sistema (cmake, make, g++/clang++ e `sh tools/gate_t1.sh` NON sono comandi di sistema: sono gli strumenti di build, permessi a @coder e @debugger, vedi regola 26). Rete solo per @architetto e @cercaasset (lettura web). Se un comando e' negato non aggirarlo: scrivilo in SCAMBIO.md.
+Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (OpenWay)). Mai altre cartelle del Mac (soprattutto Outrun_OpenCode v2 e la vecchia copia v3), mai altre app, mai installazioni, mai comandi di sistema (cmake, make, g++/clang++ e `sh tools/gate_t1.sh` NON sono comandi di sistema: sono gli strumenti di build, permessi a @developer e @debugger, vedi regola 26). Rete solo per @architetto e @cercaasset (lettura web). Se un comando e' negato non aggirarlo: scrivilo in SCAMBIO.md.
 
 ## Regola 22 — collegamento fra agenti
 - Nessuno passa un parametro `model` quando delega: ogni agente usa il modello scritto nel proprio file `.opencode/agents/<nome>.md`.
@@ -143,7 +140,7 @@ Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (Open
 - Risposte corte: niente riepiloghi lunghi, niente copie di file.
 
 ## Regola 26 — build e test (verificata il 17 ott 2026: la build funziona)
-- cmake e il compilatore C++ FUNZIONANO e i permessi per usarli sono gia' concessi a @coder e @debugger. Il vecchio "shell negata (regola 21)" era un errore di diagnosi: i comandi provati erano composti (`which cmake; echo`, `cmake ... | head`, `ls ...; ls ...`), e i permessi confrontano il comando INTERO.
+- cmake e il compilatore C++ FUNZIONANO e i permessi per usarli sono gia' concessi a @developer e @debugger. Il vecchio "shell negata (regola 21)" era un errore di diagnosi: i comandi provati erano composti (`which cmake; echo`, `cmake ... | head`, `ls ...; ls ...`), e i permessi confrontano il comando INTERO.
 - Un solo comando, dalla radice del progetto: `sh tools/gate_t1.sh` (smoke 10 s sui 3 livelli + replay 2x) oppure `sh tools/gate_t1.sh soak` (in piu' 30000 frame = 10 min simulati). Senza pipe, senza `2>&1`, senza `;` `&&` `echo` `which`. Il dettaglio va in `out/debugger/gate_t1.log`, a video escono solo le righe utili; exit code 0 = tutto OK.
 - Per un solo passo: `cmake -S motore_nuovo -B build_gate` poi `cmake --build build_gate --target prova_gate` (due comandi separati, semplici).
 - Scrivi "build non eseguibile" SOLO se `sh tools/gate_t1.sh` stesso viene negato, e riporta il testo esatto dell'errore in SCAMBIO.md. Se un tuo comando composto viene negato, rilancia la versione semplice: non fermare il blocco.
@@ -156,6 +153,6 @@ Lavori SOLO dentro la cartella del progetto (Outrun Sglavinated Edition v4 (Open
   Esempio: `[17/10 14:05] H | [~] | sh tools/gate_t1.sh soak exit 0, replay 2x IDENTICO, 0,09 ms/frame | Pi 400 fps/temperatura (Andrea)`
 - «esito misurato» = comando + exit code + il numero letto dal log. Se non hai eseguito nulla scrivi `non eseguito`: mai un «OK» dedotto dal codice o da un altro file.
 - `stato` e' la tua PROPOSTA. Lo scrivono in RICHIESTA.md solo Andrea e Claude; @capo propone in `out/capo/STATI_PROPOSTI.md`. Per H e P1 serve anche il via di Andrea (T1-RUN punto 8).
-- SCAMBIO.md e RICHIESTA.md li scrivono solo Andrea e Claude (e il ciclo, per i CHECKPOINT): nessun agente OpenCode, @capo compreso. La voce pronta va in `VOCE_SCAMBIO_<n>.md` nella tua cartella (coder e debugger: `motore_nuovo/test/`) e la riga di diario chiude con `prossimo: Andrea/Claude incollano VOCE_SCAMBIO_<n>`. @capo usa i suoi canali: `out/capo/STATI_PROPOSTI.md`, DECISIONI_ANDREA.md, ASSEMBLEA.md, PER_CLAUDE.md, BACHECA_PUBBLICA.md.
+- SCAMBIO.md e RICHIESTA.md li scrivono solo Andrea e Claude (e il ciclo, per i CHECKPOINT): nessun agente OpenCode, @capo compreso. La voce pronta va in `VOCE_SCAMBIO_<n>.md` nella tua cartella (coder e debugger: `motore_nuovo/test/`) e la riga di diario chiude con `prossimo: Andrea/Claude incollano VOCE_SCAMBIO_<n>`. @capo usa i suoi canali: `out/capo/STATI_PROPOSTI.md`, DECISIONI_ANDREA.md, PER_CLAUDE.md.
 - Una pausa (regola 14) e' un ciclo senza lavoro: si annota con la stessa riga, non al Bar.
 - RICHIESTA.md e' in sola lettura per gli agenti, @capo compreso (e' il file che il ciclo legge per decidere chi lavora: una riscrittura sbagliata lo rompe). Le celle Stato restano di una riga (circa 200 caratteri) e c'e' un solo `## RIEPILOGO CORRENTE`, tenuti da Andrea e Claude. Storico: `out/capo/RICHIESTA_STORICO_17OTT.md`.

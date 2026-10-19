@@ -8,5 +8,5 @@ Numeri statici: SPDX MIT 25/25 file motore_nuovo/src/ (manifest.json "licenza": 
 Strumenti (ultima esecuzione, non ripetibile qui): check_catalogo.py exit 0 "catalogo: 11 righe, 2 cartelle"; quota_open.py 72.8% (107738 di 148033 byte, soglia 50.0%) -> sopra soglia, da riconfermare appena shell/python3 tornano disponibili.
 Determinismo: OK statico (FrameClock contatore frame, xorshift32 seme 20261015, dt=1/50; runner Game(20261015u)).
 Mancanti (richiedono toolchain + harness playback): replay "stesso file di input due volte -> stesso hash ogni 60 frame"; misura ms/frame (media/p99/max, target <=20 ms, obiettivo <=12 ms, 50 fps) e temperatura Pi 400. Piano: motore_nuovo/test/ARCHITETTURA_CHECK.md §5.
-BLOCCO H resta [~]: conferma @capo e build/fps reali spettano ad Andrea sul Pi 400. Nessun file di @coder modificato; output in motore_nuovo/test/ + out/debugger/.
+BLOCCO H resta [~]: conferma @capo e build/fps reali spettano ad Andrea sul Pi 400. Nessun file di @developer modificato; output in motore_nuovo/test/ + out/debugger/.
 ---

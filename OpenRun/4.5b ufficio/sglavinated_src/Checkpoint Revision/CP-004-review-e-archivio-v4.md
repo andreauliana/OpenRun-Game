@@ -14,9 +14,8 @@
 ## Sintesi
 
 - `ANDREA_REVIEW.md` è la fonte canonica 4.6 per feedback e decisioni. I contenuti sostanziali della precedente decisione D1-D11 e del feedback v90 sono conservati; le richieste T1 che collidono con D1-D4 sono rinominate T1-Q1–T1-Q4.
-- `FEEDBACK_ANDREA.md` e `DECISIONI_ANDREA.md` non contengono piu' decisioni autonome: sono rimandi compatibili. Manuale, promemoria, handoff del Capo e documentazione delle fonti ora indirizzano alla fonte canonica.
+- `FEEDBACK_ANDREA.md` non contiene piu' decisioni autonome di Andrea. Manuale, promemoria, handoff del @capo e documentazione delle fonti ora indirizzano alla fonte canonica.
 - D10 e D11 hanno risposte esplicite di Andrea. La risposta non chiude il checkpoint né sostituisce la prova tecnica: il Capo deve verificare il risultato nel dossier pertinente.
-- `DECISIONI_ANDREA.md` e `FEEDBACK_ANDREA.md` restano rimandi legacy. Il ciclo, il pannello e il recap attivi leggono la fonte canonica; il ciclo non copia più il feedback privato nell'area pubblica.
 - `archivio_v4/` contiene 126 file tra regole, profili di agenti, strumenti, bacheche, report, bozze e prove storiche. È congelato e non è stato cancellato o modificato.
 - I principi durevoli già pertinenti a 4.6 sono verificati nel progetto corrente: offroad calcolato prima del clamp in `player.cpp`, passaggio `ShowManager`→`DisegnoShow`→renderer in `game.cpp`, hash di frame/stato in `Game::frameHash()`. La guida `DISEGNO_SHOW.md` e il manifest gameplay sono stati aggiornati per riflettere l'implementazione corrente e le parti visive ancora mancanti.
 

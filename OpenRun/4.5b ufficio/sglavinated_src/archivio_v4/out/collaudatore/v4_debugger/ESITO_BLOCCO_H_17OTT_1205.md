@@ -6,7 +6,7 @@ Verifica statica (lettura, nessun comando eseguito):
 - Target CMake `prova_gate` righe 110-114, attivo quando prova_gate.cpp esiste.
 - Sintassi nucleo ultima verifica: OK 34/34 file (voce 76/78); voce 87 (core/rng.h getter Rng::state(), game.cpp frameHash con playerX/playerZ/offroad/rng_.state()) letta su disco, non rivista con -fsyntax-only (nessun compilatore qui).
 
-3 correzioni proposte a @coder in SCAMBIO voce 1135 (diff rep(old,new), io non applico, regola 15):
+3 correzioni proposte a @developer/@developer-junior in SCAMBIO voce 1135 (diff rep(old,new), io non applico, regola 15):
 1. CMakeLists.txt riga 1: aggiungi `## SPDX-License-Identifier: MIT` (regola 10).
 2. road.cpp righe 87-88: sostituisci il wrap playerX a +/-4000 con un wrap a +/-ROAD_HALF_WORLD (900), coerente con il clamp di game.cpp (+/-900) e road.h:25.
 3. renderer.cpp righe 114-118: sostituisci la scansione lineare O(sprite x DRAW_DIST) su projs_/worldZ con std::lower_bound (O(log DRAW_DIST)); verificare che projs_ resti ordinato per worldZ crescente dopo il wrap di road::project.

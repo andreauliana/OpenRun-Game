@@ -1,4 +1,4 @@
-# Riepilogo @coder — Turno 1, 17/10/2026 13:15
+# Riepilogo @developer — Turno 1, 17/10/2026 13:15
 
 ## Blocci su cui ho lavorato
 - P1 [~] — PRIORITÀ MASSIMA (Andrea 16 ott): primo livello giocabile

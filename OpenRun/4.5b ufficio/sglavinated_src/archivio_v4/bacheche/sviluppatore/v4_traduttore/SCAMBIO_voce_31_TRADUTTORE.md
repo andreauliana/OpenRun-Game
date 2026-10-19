@@ -5,4 +5,4 @@ Richiesta/Esito: BLOCCO D (voce 23 SCAMBIO) completato. @traduttore ha scrittura
 - frasi.json gia' coerente (j2t 6 voci OK; 156 frasi Gianni 97 / Gesu' 59; range personaggio invariati).
 - Consegna completa in out/traduttore/RIEPILOGO_CONSEGNA_D.md.
 - RICHIESTA.md BLOCCO D stato [~] -> [x] (da aggiornare da @capo).
-- Prossimo: @debugger test rotazione/no-ripetizione e verificaTabelle(); @coder conferma wiring CMake di src/gameplay/.
+- Prossimo: @debugger test rotazione/no-ripetizione e verificaTabelle(); @developer conferma wiring CMake di src/gameplay/.

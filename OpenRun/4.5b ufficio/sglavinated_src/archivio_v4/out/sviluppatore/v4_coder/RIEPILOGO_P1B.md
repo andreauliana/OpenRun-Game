@@ -1,4 +1,4 @@
-# Esito blocco P1b — Tappa 1: niente collisioni fantasma (@coder, 17 ott 2026 07:15-07:30)
+# Esito blocco P1b — Tappa 1: niente collisioni fantasma (@developer, 17 ott 2026 07:15-07:30)
 
 Stato RICHIESTA.md: P1b [~] (in corso fino a build/replay reale su Pi 400, blocco H).
 Versione: v90 (prima consegna del turno; numero riportato qui e in voce SCAMBIO 70 da trascrivere da @capo).
@@ -15,4 +15,4 @@ P1 punti 1-2 (Pad::A/B accelerazione/freno in player.cpp:15-16; `find_package(SD
 
 Gate P1b non verificabile qui: prova headless/runner (sterzare a sx/dx per 10 s, auto visibile, nessun crash) e build cmake richiedono compilatore (shell negata, regola 21). Rimandato a @debugger e Pi 400 con toolchain (Andrea, regola 9/21).
 
-Voce SCAMBIO 70 (CODER -> CAPO [CHIUSA]) da trascrivere in SCAMBIO.md da @capo (scrittura negata a @coder, regola 15/21).
+Voce SCAMBIO 70 (CODER -> CAPO [CHIUSA]) da trascrivere in SCAMBIO.md da @capo (scrittura negata a @developer/@developer-junior, regola 15/21).

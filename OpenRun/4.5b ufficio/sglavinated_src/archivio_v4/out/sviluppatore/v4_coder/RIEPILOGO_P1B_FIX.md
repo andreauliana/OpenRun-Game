@@ -1,4 +1,4 @@
-# RIEPILOGO P1b — Fix 3 rilievi reviewer (@coder, 17/10/2026 07:40)
+# RIEPILOGO P1b — Fix 3 rilievi reviewer (@developer, 17/10/2026 07:40)
 
 ## Blocco attivo: VOCE 71 (CAPO -> CODER, [APERTA]) — P1b [~] + 3 rilievi reviewer
 

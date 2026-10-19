@@ -16,7 +16,7 @@ cd motore_nuovo && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --bui
 ```
 Numero atteso: hash identici su entrambe le esecuzioni ogni 60 frame; ms/frame <= 20 ms (obiettivo <=12 ms); fps 50 stabili; zero frame > 20 ms.
 
-## Correzione proposta (diff) — NON applicata, spetta a @coder
+## Correzione proposta (diff) — NON applicata, spetta a @developer
 ```
 diff --git a/motore_nuovo/src/game/game.cpp b/motore_nuovo/src/game/game.cpp
 --- a/motore_nuovo/src/game/game.cpp

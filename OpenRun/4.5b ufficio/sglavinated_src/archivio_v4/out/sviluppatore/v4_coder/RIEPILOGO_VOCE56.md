@@ -1,7 +1,7 @@
 # out/coder — esito voce 56 (CAPO -> CODER, BLOCCO C integrazione cartelloni)
 
 Stato: verifica statica OK, nessun codice modificato (già implementato su disco).
-Data: 16 ott 2026. Agente: @coder. Cartelle: motore_nuovo/src/, motore_nuovo/CMakeLists.txt.
+Data: 16 ott 2026. Agente: @developer. Cartelle: motore_nuovo/src/, motore_nuovo/CMakeLists.txt.
 
 ## Cosa è già implementato (voce 52/52-bis, verificato su file)
 - `Game::init()` chiama `leggiCartelloniDaFile(livelloId)` che legge `cartelloni_sponsor` da `motore_nuovo/dati/livelli/<id>/livello.json` (game.cpp:111-174).
@@ -19,4 +19,4 @@ Data: 16 ott 2026. Agente: @coder. Cartelle: motore_nuovo/src/, motore_nuovo/CMa
 Nessuno (implementazione già presente su disco da consegne precedenti). Verifica di sola lettura.
 
 ## Note
-SCAMBIO.md scrittura negata a @coder (regola 15/21): esito lasciato in bacheche/coder/diario.md e qui. Spetta a @capo aggiornare RICHIESTA.md/SCAMBIO.md.
+SCAMBIO.md scrittura negata a @developer (regola 15/21): esito lasciato in bacheche/coder/diario.md e qui. Spetta a @capo aggiornare RICHIESTA.md/SCAMBIO.md.

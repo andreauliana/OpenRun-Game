@@ -62,7 +62,7 @@ Default di `ShowLayout`: personaggi a destra (x = 240), per non andare
 sull'HUD in alto a sinistra (`dati/ui/hud.json`); fumetto centrato sopra la
 testa; larghezza = max caratteri x `carattereLarghezza` + padding, con
 `larghezzaMin`/`larghezzaMax` in dati. La metrica del font
-(`carattereLarghezza`, `rigaAltezza`) va allineata al font di @tipografo
+(`carattereLarghezza`, `rigaAltezza`) va allineata al font di @grafico
 quando esiste: `disegnoShow_.setLayout(...)`.
 
 ## 3. Stato del collegamento nel progetto
