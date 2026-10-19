@@ -12,7 +12,7 @@ Ispirazione di genere: 'OutRun', 2YK, Road Race, Urban, Doom Engine, Cannonball 
 | Palette | max 16 colori per sprite; gradienti, spesso con toni neon fluo su fondi scuri, palette definite internamente |
 | Scenari | skyline sci-fi, insegne pubblicitarie create custom, vegetazione differente stilizzata, nebbia/gradienti, Pixel art, negozi di Cannabis, negozi di intimo femminile, gay bar, Disco, decorazioni divertenti |
 | Tracciati percorsi stradali | generati da zero (seed), temi per livello |
-| Musica | solo tracker di Andrea (.xm): lofi, brutta |
+| Musica | solo .xm file tracker di Andrea: lofi, brutta |
 | Nomi/loghi | inventati; nessun nome o marchio del gioco originale |
 
 ## Riferimento di metodo (non di contenuto)
