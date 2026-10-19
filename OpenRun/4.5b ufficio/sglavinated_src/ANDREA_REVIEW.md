@@ -11,7 +11,7 @@ Fonte canonica unica per feedback e decisioni di Andrea. Il Capo cita nel checkp
 
 ## Nuovo feedback o decisione
 
-**Nota nuova 2026-10-19 — frequenza di gioco: leggere `NOTA_ANDREA_2026-10-19_FREQUENZA.md` (decisione di Andrea: misure in secondi, 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2).**
+**Nota nuova 2026-10-19 — frequenza di gioco: leggere `NOTA_ANDREA_2026-10-19_FREQUENZA.md` (decisione di Andrea: misure in secondi, 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2). Parte 2 nello stesso file: SDL, compilazione e compatibilita' multipiattaforma.**
 
 Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il Capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
 
