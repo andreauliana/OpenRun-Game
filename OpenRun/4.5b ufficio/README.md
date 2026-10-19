@@ -29,7 +29,7 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 ### Le 3 regole d'oro
 1. Un foglio, uno scrittore.
 2. Solo Andrea e Claude promuovono a [x]; H e P1 vogliono l'ok di Andrea.
-3. Uno script rosso rimanda il passo allo @developer, senza chiamare altri modelli.
+3. Uno script rosso rimanda il passo al @developer, senza chiamare altri modelli.
 
 ## Dove sono le cose
 - `sglavinated_src/` — progetto degli agenti: `AGENTS.md`, `RICHIESTA.md`, `SCAMBIO.md`, `VISIONE.md`, `opencode.json`.
@@ -37,20 +37,20 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 - `sglavinated_src/motore_nuovo/` — motore C++17 (src, dati, docs, test, strumenti_py).
 - `sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` — asset originali e materiale usabile.
 - `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario) e consegne di ogni ruolo. Le regole sono in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
-- `sglavinated_src/out/collaudatore/` — log del gate e screenshot (prima in `out/debugger/`).
+- `sglavinated_src/UFFICIO/Officina/Test area/` — log del gate e screenshot (prima in `out/collaudatore/` e `out/debugger/`).
 
 ## Cosa non e' stato copiato
 - Filone Mega Drive, MD0, sospeso).
 - `outrun_src/`: ROM Sega.
 - Cartelle `build*`, `log_agenti/`, log in radice, la copia duplicata `.opencode/agent/`, `__pycache__`.
-- Dalle uscite del debugger: i file `.ppm` e le cartelle del soak (si rigenerano col gate).
+- Dalle uscite del vecchio debugger: i file `.ppm` e le cartelle del soak (si rigenerano col gate).
 
 ## Decisioni v4.5 (default scelti, cambiabili)
 1. Il lavoro dei agesnti ruoli precedenti e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
 2. La panchina modelli e' in `strumenti/panchina.txt`.
 3. Il @capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
-4. Grafico e ricercatore sono spenti nel ciclo base; il giro parallelo `strumenti/giro.sh` usa i 4 ruoli operativi.
-5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il grafico; il ricercatore propone in `libreria/ricerca/`.
+4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `bacheche/`, `out/` e negli script). Il ciclo base fa girare @developer e @developer-junior; @grafico parte solo con `AGENTI_ATTIVI="developer developer-junior grafico"`. Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
+5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il @grafico.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 
 ## Stato al passaggio (17 ott 2026)

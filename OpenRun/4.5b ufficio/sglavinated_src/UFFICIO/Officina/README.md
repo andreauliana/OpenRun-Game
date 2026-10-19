@@ -1,6 +1,6 @@
 # Officina
 
-Reparto del sviluppo motore grafico. Builder/Developer guida l'implementazione e la review del Junior; Developer/Builder Junior contribuisce a task delimitati e fa peer review quando assegnato.
+Reparto di sviluppo del motore. Il @developer guida l'implementazione e la review del @developer-junior; il @developer-junior contribuisce a task delimitati e fa peer review quando assegnato.
 
 Sorgenti attivi: `../../motore_nuovo/`. Strumenti di build attivi: `../../UFFICIO/OFFICINA/TOOL`. I sorgenti devono essere spostati in `ENGINE COMPILER/`; 
 

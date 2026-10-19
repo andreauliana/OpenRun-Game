@@ -14,10 +14,10 @@ import os, re, sys
 
 # Cartella -> ruolo che la scrive (come la tabella di AGENTS.md).
 PROPRIETARI = [
-    ("motore_nuovo/strumenti_py/", "sviluppatore"),
-    ("motore_nuovo/test/", "collaudatore"),
-    ("libreria/codice/", "sviluppatore"),
-    ("libreria/test/", "collaudatore"),
+    ("motore_nuovo/strumenti_py/", "developer"),
+    ("motore_nuovo/test/", "developer-junior"),
+    ("libreria/codice/", "developer"),
+    ("libreria/test/", "developer-junior"),
     ("assets_originali/", "grafico"),
     ("tools/", "Claude"),
 ]
