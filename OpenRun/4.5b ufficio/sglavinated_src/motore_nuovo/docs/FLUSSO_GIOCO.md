@@ -53,6 +53,6 @@ La scena cambia anche con la posizione d'arrivo (primo, sul podio, fuori dal pod
 ## Decisioni aperte per Andrea
 
 1. Avversari in gara (fatto ora, "gara con diversi altri guidatori") oppure traffico da sorpassare come l'OutRun originale, oppure entrambi?
-2. Tempo limite con game over: sì o no?
+2. Tempo limite con game over: sì o no? **Risposta Andrea 19 ott: sì, il gioco finisce quando finisce il tempo (blocco R2).**
 3. Tre finali (uno per arrivo) e varianti per posizione: va bene?
-4. Classifica: per tempo o per posizione + tempo?
+4. Classifica: per tempo o per posizione + tempo? **Risposta Andrea 19 ott: punteggio (score), con risultati fittizi di altri giocatori (blocco R2).**
