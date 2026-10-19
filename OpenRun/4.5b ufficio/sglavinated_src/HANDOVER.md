@@ -1,6 +1,6 @@
-# OutRun Sglavinated Edition — handover
+# OpenRun — handover
 
-Read order for an AI agent: **this file → BUILD.md → OPENCODE_REFERENCE_v74.json → SPEC_personaggi_v74.md → tools/patch_z.py**.
+Read order for an AI agent: **this file → BUILD.md → tools/patch_z.py**.
 `tools/h40z_v74.s` is the v74 reference snapshot (read it, never edit it).
 
 Build di lavoro corrente: **v77**, `OutRun_Sglavinated_v77.gen` =

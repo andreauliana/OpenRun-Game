@@ -47,7 +47,7 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 
 ## Decisioni v4.5 (default scelti, cambiabili)
 1. Il lavoro dei 12 ruoli v4 (diari, LEGGIMI, consegne) e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
-2. Modelli: sviluppatore e collaudatore `longcat-2.5-preview` (quello che faceva le build nella v4), capo `nemotron-3-ultra`, grafico `mimo-v2.6-flash`, ricercatore `nemotron-3.5-lightning`. La panchina in `strumenti/panchina.txt` non cambia.
+2. La panchina modelli e' in `strumenti/panchina.txt` non cambia.
 3. Il capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
 4. Grafico e ricercatore sono spenti nel ciclo base; il giro parallelo `strumenti/giro.sh` usa i 4 ruoli operativi.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il grafico; il ricercatore propone in `libreria/ricerca/`.

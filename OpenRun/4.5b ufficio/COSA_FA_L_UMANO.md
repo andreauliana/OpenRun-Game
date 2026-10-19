@@ -1,16 +1,12 @@
-# COSA DEVE FARE ANDREA (aggiornato 16 ott 2026)
+# COSA DEVE FARE ANDREA (16 ott 2026)
 
 Gli agenti e i comandi sono gia' dentro questa build di test. I nomi interni `V3` e `v3.sh` restano invariati.
-Cartella: `$HOME/Desktop/Outrun Sglavinated Edition v4 (OpenWay)`
+Cartella: `$HOME/Users/andreauliana/Documents/GitHub/OpenRun-Game/OpenRun/4.5b ufficio`
 
 ## A. UNA VOLTA SOLA
-Gli script `.sh` vengono eseguiti con `sh`, quindi non serve renderli eseguibili. I file `.command` di questa copia sono gia' eseguibili; se macOS non li apre con il doppio clic:
-```
-cd "$HOME/Desktop/Outrun Sglavinated Edition v4 (OpenWay)"
-chmod u+x comandi/*.command
-```
+Gli script `.sh` vengono eseguiti con `sh`, quindi non serve renderli eseguibili. I file `.command` di questa copia sono gia' eseguibili.
 
-La configurazione `sglavinated_src/opencode.json` e' gia' presente in questa build: build/test sono concessi a coder e debugger, gli script Python/Pillow grafici solo nelle aree grafiche dei rispettivi agenti, e l'accesso web ad architetto e cercaasset. La directory esterna punta alla cartella v4. Non sostituirla con quella della v3.
+La configurazione `sglavinated_src/opencode.json` e' gia' presente in questa build: build/test sono concessi a @developer e @developer-junior, gli script Python/Pillow grafici solo nelle aree grafiche di @grafico, e l'accesso web ad @grafico e @developer-junior.
 
 Controlla i modelli:
 ```
@@ -42,11 +38,10 @@ Anche il doppio clic su `V3 Avvia.command`, `V3 Stato.command`, `V3 Ferma.comman
 Note:
 - Il ciclo tiene sveglio il Mac con `caffeinate` (se disponibile) e si ferma dopo 12 ore (`MAX_ORE`) o 1000 cicli (`MAX_CICLI`).
 - In caso di limite richieste aspetta 15, 30, 60 o 120 minuti.
-- Checkpoint ogni 2 ore; il reviewer controlla solo i file cambiati, al massimo 3 rilievi, e salta il turno se non ci sono modifiche. Niente review a ogni consegna; Claude CLI resta disattivato (`CHK_CLAUDE_OGNI=0`).
-- Prima di ogni turno il ciclo prepara gli estratti di richieste, scambi, bacheca pubblica e assemblee aperte; la memoria breve conserva 12 righe di riepilogo e gli ultimi 20 appunti per agente.
-- Lascia il Mac collegato alla corrente.
+- Checkpoint ogni 2 ore; il reviewer controlla solo i file cambiati, al massimo 3 rilievi, e salta il turno se non ci sono modifiche. Niente review a ogni consegna.
+- Prima di ogni turno il ciclo prepara gli estratti di richieste, scambi, la memoria breve conserva 12 righe di riepilogo e gli ultimi 20 appunti per agente.
 
-## C. MODO MANUALE (per provare un singolo agente)
+## C. OpenCode MODO MANUALE (per provare un singolo agente)
 ```
 cd "$HOME/Desktop/Outrun Sglavinated Edition v4 (OpenWay)/sglavinated_src"
 opencode
@@ -59,21 +54,15 @@ Leggi ../TAPPE.md e lavora solo sul Gate della tappa attiva. Per la tappa 1, con
 ## D. COSE SOLO TUE
 | Quando | Cosa |
 |---|---|
-| Prototipo pronto | provalo sul Pi 400 o sul Mac; scrivi in SCAMBIO.md fps e temperatura |
-| Varianti di asset | scegli tu (scenografo: A/B/C per livello) |
-| Sprite principali (Gianni, Gesu', UFO) | li disegni tu |
+| Prototipo pronto | provalo sul sul Mac, e poi sul Pi 400 o ; scrivi in SCAMBIO.md fps e temperatura |
+| Sprite personaggi (Gianni, Gesu', UFO) | li disegni tu |
 | Scelte aperte | `sglavinated_src/ANDREA_REVIEW.md`; le vecchie `FEEDBACK_ANDREA.md` e `DECISIONI_ANDREA.md` rimandano alla fonte unica |
 | Build completa (`cmake --build`) | quando vuoi, sul Mac o sul Pi 400 |
-| Prima di distribuire qualcosa (sponsor compreso) | legale |
 
 ## E. NON FARE
-- Non lavorare in `Outrun_OpenCode v2` (e' degli altri).
-- Niente ROM Sega ne' file `.gen` in questa cartella.
 - Non cancellare voci di `SCAMBIO.md`.
 
 ## F. FILE OBSOLETI
-Non eseguire la vecchia riga `mv` verso il Cestino: si riferiva alla cartella v3 e poteva spostare file al di fuori di questa build. Prima di qualsiasi pulizia, controlla manualmente i file effettivamente presenti.
-
 Da controllare prima di spostarli, perche' li genera ancora qualche script:
 `PIANO_TURNI.md`, `PACCHETTO_PER_CLAUDE_APP.md`.
 

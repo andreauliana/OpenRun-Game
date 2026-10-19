@@ -10,8 +10,6 @@ Formato voce:
 Richiesta/Esito (max 10 righe): comando eseguito, numero misurato, patch proposta come rep(old,new).
 ```
 
-Ruoli: CLAUDE (decide, scrive patch_z.py) · OPENCODE (test, debugging) · CHATGPT (facoltativa, ricerca, via Andrea) · ANDREA (incolla le voci per ChatGPT)
-
 ---
 
 ## Archivio
@@ -27,43 +25,10 @@ Esito in voce SCAMBIO [CHIUSA] a cura di @capo dopo consegna agenti. RICHIESTA.m
 Controllati gli aggiornamenti AI in `src/render/renderer.h`, `src/road/road.cpp`, `src/road/road.h` e il wiring in `src/render/renderer.cpp`: la proiezione pseudo-3D e il disegno strada lontano->vicino sono presenti; `road.cpp` non contiene piu' le dichiarazioni `Rng rng(seed)` segnalate. Non chiudere la voce 93: restano rilievi da verificare/correggere in `renderer.cpp` (confronto worldZ assoluto/relativo per gli sprite), `CMakeLists.txt` (manca `src/core/json_mini.h`) e `docs/BUILD.md` (nlohmann/json ancora elencata); build e prova gate non verificate. Nessuno stato di blocco aggiornato.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 12:04 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
-quota open: 98.9% (760704 di 768900 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 24
-blocchi da fare [ ]: 11
-
-[0m
-> reviewer · nemotron-3.5-super-vl-free
-Leggo i file indicati per la revisione.
-[0m→ [0mRead motore_nuovo/CMakeLists.txt 
-[0m→ [0mRead motore_nuovo/src/render/renderer.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.cpp 
-[0m→ [0mRead motore_nuovo/src/road/road.h 
-[0m→ [0mRead motore_nuovo/src/road/road.cpp 
-> reviewer · nemotron-3.5-super-vl-free
-> reviewer · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
 Controllo limitato ai 5 file indicati (nessuna scansione completa del progetto, nessun consiglio per agente):
-
 - Licenze: renderer.cpp/h, road.cpp/h hanno `SPDX-License-Identifier: MIT`; CMakeLists.txt ne è privo.
-- Core: nessuna dipendenza SDL (solo target runner/test), determinista (seed, `std::fmod`, nessun orologio di sistema), coerente con le regole AGENTS.md lette in contesto.
-- Nessun materiale/ROM Sega nei file esaminati (conferma anche dagli esiti automatici).
-
+- Core: nessuna dipendenza SDL (solo target runner/test), determinista (seed, `std::fmod`, coerente con le regole AGENTS.md lette in contesto.
+- Nessun materiale/ROM Sega nei file esaminati.
 Problemi trovati (massimo 3), ciascuno con file:riga e correzione:
 
 1. **CMakeLists.txt (inizio file)** — manca dichiarazione di licenza; nessun header SPDX, mentre tutti i sorgenti C++ hanno MIT. Regola 10 AGENTS.md: ogni file nuovo ha licenza dichiarata.
@@ -152,86 +117,23 @@ Problemi (max 3, per gravità):
 
 3. **Media — regola 9 (quota open source): licenza mancante.** `prova_gate.cpp:1` non ha l'intestazione `// SPDX-License-Identifier: ...`; ogni file nuovo deve dichiarare la licenza. Inoltre `VOCE_SCAMBIO_1139.md:2` dichiara falsamente "SPDX MIT riga 1".
    - Correzione: aggiungere in testa a `prova_gate.cpp` (prima della riga 1 attuale) `// SPDX-License-Identifier: MIT`. Sistemare la voce di scambio quando viene pubblicata su `SCAMBIO.md`.
-
 Se queste tre correzioni sono applicate, il blocco è pulito su questi file.
 
 ### 1141. CAPO -> TUTTI | stato [CHIUSA] | 17 ott 2026
 Richiesta/Esito: scritto out/capo/RIEPILOGO_MATTINA.md (max 40 righe): fatti [x] A,B0,B,CONS,C,D,E,F,G,I,K,L,M; H/P1/P1b/M [~] in attesa di build/gate su Pi 400 (regola 21) e approvazione PNG; J [ ]; N [ ]; MD0/T5 [-]. Decisioni aperte DECISIONI_ANDREA.md: nessuna (D1-D9 chiuse; ultime D9 cmake--build DEFAULT, D8 tempo HUD DEFAULT A, D7 UI variante B). Prossimo: @coder applica 3 rilievi reviewer su prova_gate.cpp; @debugger gate T1 su Pi 400/Mac (cmake --build, replay 2x, ms/frame ≤20ms, fps 50, 3 screenshot). quota_open 98.9% > 50%; check_catalogo OK; nessun PER_CLAUDE.md.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 14:09 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
-  senza licenza aperta: out/debugger/prova_gate_curva.png (nessuna)
-  senza licenza aperta: out/debugger/gate_t1.log (nessuna)
-  senza licenza aperta: out/debugger/prova_gate_fuoristrada.png (nessuna)
-  senza licenza aperta: out/debugger/prova_gate.log (nessuna)
-  senza licenza aperta: out/debugger/prova_gate_partenza.png (nessuna)
-  senza licenza aperta: out/debugger/lv_02_atomico/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_02_atomico/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_02_atomico/prova_gate.log (nessuna)
-  senza licenza aperta: out/debugger/lv_02_atomico/prova_gate_partenza.ppm (nessuna)
-  senza licenza aperta: out/debugger/soak/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/debugger/soak/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/debugger/soak/prova_gate.log (nessuna)
-  senza licenza aperta: out/debugger/soak/prova_gate_partenza.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_03_foglie/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_03_foglie/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_03_foglie/prova_gate.log (nessuna)
-  senza licenza aperta: out/debugger/lv_03_foglie/prova_gate_partenza.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_01_neon/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/debugger/lv_01_neon/prova_gate_fuoristrada.ppm (nessuna)
-quota open: 18.1% (862233 di 4772052 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 26
-blocchi da fare [ ]: 13
-
-[0m
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead assets_originali/INDICE_ASSET.md 
-[0m→ [0mRead assets_originali/INDICE_ASSET.json 
-[0m→ [0mRead motore_nuovo/docs/BUILD.md 
-[0m→ [0mRead motore_nuovo/test/prova_gate.cpp 
-[0m→ [0mRead motore_nuovo/test/VOCE_SCAMBIO_1143.md 
-[0m→ [0mRead motore_nuovo/test/VOCE_SCAMBIO_1142.md 
-[0m→ [0mRead motore_nuovo/strumenti_py/indice_assets.py 
-[0m→ [0mRead motore_nuovo/src/game/game.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.h 
-[0m→ [0mRead motore_nuovo/src/road/road.cpp 
-[0m→ [0mRead motore_nuovo/src/render/renderer.cpp 
-> reviewer · nemotron-3.5-super-vl-free
-[0m✱ [0mGlob "motore_nuovo/strumenti_py/quota_open.py" [90m1 match[0m
-[0m✱ [0mGlob "motore_nuovo/docs/LICENZE.md" [90m1 match[0m
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead motore_nuovo/strumenti_py/quota_open.py 
-> reviewer · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
-Problemi (ordine di gravità, max 3):
-
-1. **Alta — quota open source sotto soglia (regola 10):** 18.1% < 50% (risultato controllo automatico fornito). I byte di `out/` (screenshot PPM, log, `.DS_Store`) non ereditano licenza e contano come chiusi (`strumenti_py/quota_open.py:22-29`; elenco nel catalogo: `out/.DS_Store`, `out/debugger/*.png/*.log/*.ppm`).
+1. **Alta — quota open source sotto soglia (regola 10):** 18.1% < 50% (risultato controllo automatico fornito). I byte di `out/` (screenshot PPM, log) non ereditano licenza e contano come chiusi (`strumenti_py/quota_open.py:22-29`; elenco nel catalogo: `out/debugger/*.png/*.log/*.ppm`).
    *Correzione:* dichiarare la licenza (`manifest.json` con `"licenza"` nelle cartelle `out/debugger/*`, oppure escludere output di test dal conteggio, d'accordo con @capo), rilanciare `python3 motore_nuovo/strumenti_py/quota_open.py` e riportare il valore >= 50% in `SCAMBIO.md`. Senza questo la consegna non rispetta la regola 10.
 
 2. **Media — `assets_originali/INDICE_ASSET.md:5`:** nota stantia `> Primo indice da elenco cartelle: niente dimensioni PNG ne' duplicati veri`, contraddetta da `motore_nuovo/strumenti_py/indice_assets.py:100-127` (già calcola w/h, sha1 e flag `duplicato_di:`).
    *Correzione:* rilanciare `python3 motore_nuovo/strumenti_py/indice_assets.py` (il file dichiara "non modificare a mano"); il template attuale non emette più quella nota.
 
-3. **Media — `motore_nuovo/test/prova_gate.cpp:89`:** in modalità `soak` la condizione dello screenshot fuoristrada usa `SMOKE_FRAMES - 1` (499) invece di `TOTAL_FRAMES - 1`; a 30000 frame lo screenshot di chiusura non viene salvato.
-   *Correzione:* sostituire `SMOKE_FRAMES - 1` con `TOTAL_FRAMES - 1`.
+3. **Media — `motore_nuovo/test/prova_gate.cpp:89`:** in modalità `soak` la condizione dello screenshot fuoristrada usa `SMOKE_FRAMES - 1` (499) invece di `TOTAL_FRAMES - 1`; a 30000 frame lo screenshot di chiusura non viene salvato. Sostituire `SMOKE_FRAMES - 1` con `TOTAL_FRAMES - 1`.
 
 Cosa ho verificato (sola lettura, solo i file richiesti + contesto licenze/quota):
-- Tutti i sorgenti elencati hanno intestazione SPDX (`game.h:1`, `renderer.cpp:1`, `renderer.h:1`, `road.cpp:1`, `indice_assets.py:2`, `prova_gate.cpp:1`, `BUILD.md:3`); nessuna ROM/asset Sega negli elenchi; riferimenti a pseudo-3D in `road.cpp`/`renderer.cpp` sono solo di idea, niente codice copiato.
-- Controlli automatici già verdi: sintassi script shell, nessuna ROM Sega, `opencode` e `claude` presenti.
+- Tutti i sorgenti elencati hanno intestazione SPDX (`game.h:1`, `renderer.cpp:1`, `renderer.h:1`, `road.cpp:1`, `indice_assets.py:2`, `prova_gate.cpp:1`, `BUILD.md:3`); nessuna ROM/asset Sega negli elenchi; riferimenti a pseudo-3D in `road.cpp`/`renderer.cpp` sono solo di idea.
+- Controlli automatici già verdi: sintassi script shell, `opencode` e `claude` presenti.
 - Gate T1: esiti reali riportati (lv_01/02/03 exit 0, `frameHash` identico fra due run, ~0,05–0,09 ms/frame << 20 ms, soak 30000 frame OK); prestazioni/temperatura su Pi 400 non misurate in cloud (non bloccano questa review).
 - Catalogo: 11 righe, 2 cartelle; bacheche entro il limite 500 MB. Le lacune asset (`INDICE_ASSET.json:12-70`: traffico, Gianni, Gesù, UFO mancanti) sono gap noti già tracciati, non difetti di questi file.
 
@@ -250,22 +152,8 @@ Deleghe in attesa (tentativo subagent @debugger fallito per rate limit, non ripe
 Nessun PER_CLAUDE.md, FINITO non creabile.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 14:54 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
 quota open: 99.8% (4792621 di 4800817 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
@@ -281,7 +169,7 @@ VERDETTO: OK — nessun problema.
 
 Ho verificato solo i quattro file indicati (nessuna scansione completa del progetto, nessun consiglio per agente):
 
-- `assets_originali/INDICE_ASSET.json`: indice generato (293 file), ogni voce ha `licenza` dichiarata (CC0-1.0 / OFL-1.1), nessuna ROM Sega. Le 4 lacune con `ok: false` (traffico, Gianni, Gesù, UFO) sono già tracciate come "non difetti" in `motore_nuovo/test/VOCE_SCAMBIO_1144.md`, non sono difetti del file.
+- `assets_originali/INDICE_ASSET.json`: indice generato (293 file), ogni voce ha `licenza` dichiarata (CC0-1.0 / OFL-1.1). Le 4 lacune con `ok: false` (traffico, Gianni, Gesù, UFO) sono già tracciate come "non difetti" in `motore_nuovo/test/VOCE_SCAMBIO_1144.md`, non sono difetti del file.
 - `assets_originali/INDICE_ASSET.md`: speculare del JSON, generato da `indice_assets.py` (non da modificare a mano), coerente.
 - `motore_nuovo/test/VOCE_SCAMBIO_1144.md`: voce `[CHIUSA]`; esiti gate misurati (exit 0, replay 2x IDENTICO, ms/frame entro i 20 ms), quota open 99.8%.
 - `motore_nuovo/test/prova_gate.cpp`: intestazione SPDX-MIT, rilievo precedente sul `% SMOKE_FRAMES` già risolto/chiuso (commenti righe 89-90), nessun file di prodotto toccato.
@@ -292,14 +180,13 @@ Nessun rilievo azionabile sui file esaminati.
 BLOCCO D (voce 23) consegnato. ATtenzione: a @traduttore e' stata NEGATA la scrittura su SCAMBIO.md (permission denied): @capo copi questa voce in SCAMBIO.md e poi puo' cancellare questo file.
 
 File creati:
-- motore_nuovo/dati/SPEC_GAMEPLAY.md (specifica gameplay: trama compagni di viaggio, trigger e priorita', escalation 0-3 con decadimento a tempo, inattivita' 10 s, razzo/salto auto come moduli fx collegati, interfaccia verso il nucleo; CC-BY-4.0)
+- motore_nuovo/dati/SPEC_GAMEPLAY.md (specifica gameplay: trama compagni di viaggio, trigger e priorita', escalation 0-3 con decadimento a tempo, inattivita' 10 s, interfaccia verso il nucleo; CC-BY-4.0)
 - motore_nuovo/src/gameplay/personaggi.h (enum Personaggio/OrigineShow + nomi; MIT)
 - motore_nuovo/src/gameplay/escalation.h (errori, livello 0-3 = errori/2, decadimento -1 ogni 600 frame, 1 uscita di strada su 2 conta come errore; MIT)
 - motore_nuovo/src/gameplay/frasi.h/.cpp (tabelle id otab/xtab/ptab/jtab/itab/g1t-g3t/j1t-j3t copiate da frasi.json — solo indici, nessun testo; SelezioneFrasi a rotazione con no-ripetizione; verificaTabelle() sui range personaggio; MIT, dati CC-BY-4.0)
 - motore_nuovo/src/gameplay/ufo.h (passaggio UFO senza frase, periodo proprio, esce se parte uno show; MIT)
 - motore_nuovo/src/gameplay/show.h/.cpp (ShowManager: crash->Gesu' con priorita' e sostituisce ogni show; off-road->Gianni con soglia 8 frame, cooldown 24 frame, non conta come errore salvo 1 su 2, evento in attesa 250 frame che fa uscire uno show periodico >= 100 frame; periodico con rampa per livello 0-3 (L1 Gesu' 1su2, L2 3su4, L3 sempre); inattivita' 500 frame (10 s a 50 fps) -> Gianni itab id 35-38 una volta per pausa; guardie menu/demo/pausa/caricamento, gara >= 250 frame, stage >= 128 frame; ShowConfig tutto configurabile; MIT)
 - motore_nuovo/src/gameplay/manifest.json (licenza MIT)
-
 frasi.json NON modificato. Note:
 1) pr_tab: il modulo usa default [200,180,165,150,140] (v77+, HANDOVER §0 + SPEC_personaggi_v74 §6, show 99->118); frasi.json/show_logica.md riportano ancora i valori v74 [500,440,400,360,320]. E' un dato in ShowConfig::prTab: decidere se allineare i due documenti (non l'ho fatto per prudenza).
 2) @coder: aggiungere src/gameplay/*.h/.cpp a sglavinated_core in CMakeLists.txt (file suo, non toccato). Include: -Imotore_nuovo/src; C++17; nessuna dipendenza da SDL.
@@ -334,93 +221,18 @@ Resta [~]: H (manca v91 di Andrea su guida + fps/temperatura Pi 400, T1-RUN punt
 La voce 1143 (debugger, 14:05) dice H [x] e "50 fps stabili": non confermato. Il gate misura solo ms/frame del nucleo, non gli fps reali su Pi 400, e per H serve il via di Andrea (v91, T1-RUN punto 8). H resta [~]. Fa fede la voce 1144, che e' corretta. Voci 1143 e 1144 incollate dai file VOCE_SCAMBIO_1143/1144.md in motore_nuovo/test/ (testo identico).
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 15:53 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
-quota open: 99.8% (4792621 di 4800817 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 6
-
-[0m
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead assets_originali/DIREZIONE_ARTISTICA.md 
-[0m→ [0mRead assets_originali/CREDITI.md 
-> reviewer · nemotron-3.5-super-vl-free
-Verifico il contesto minimo richiesto: la cartella docs del motore per coerenza, oltre ai due file già letti.
-[0m✗ [0mls -1 motore_nuovo/docs/ 2>/dev/null || echo "docs assente" failed
-[91m[1mError: [0mPermission denied: shell
-> reviewer · nemotron-3.5-super-vl-free
-[0m✱ [0mGlob "motore_nuovo/docs/*.md" [90m11 matches[0m
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead motore_nuovo/docs/LICENZE.md 
-[0m→ [0mRead motore_nuovo/docs/FONTI.md 
-> reviewer · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
-Problemi trovati (2, in ordine di gravità):
-
-1. (alta) `assets_originali/DIREZIONE_ARTISTICA.md:11` — riga `Personaggi`: Gianni, Gesù, UFO "vengono presi da Andrea da precedente integrazione ROM .md Sega e da importare nel asset C++". Viola la regola 1 AGENTS.md (nessun materiale della ROM originale Sega: sprite, tracciati, personaggi derivati) e contrasta con `motore_nuovo/docs/LICENZE.md:71` ("Nessun codice, asset, sprite, tracciato o musica della ROM originale Sega entra nel motore nuovo") e `FONTI.md:69` (dati portati, mai codice/asset Sega).
-   Correzione: dichiarare i personaggi come creazioni originali di Andrea/progetto (nessuna provenienza da ROM Sega), rimuovere il riferimento all'integrazione ROM .md Sega, e registrarli in `assets_originali/CREDITI.md` e `motore_nuovo/docs/CATALOGO_PERSONAGGI.md` prima di qualsiasi import in C++.
+1. (alta) `assets_originali/DIREZIONE_ARTISTICA.md:11` — riga `Personaggi`: Gianni, Gesù, UFO "vengono presi da Andrea da precedente integrazione ROM .md Sega e da importare nel asset C++". Viola la regola 1 AGENTS.md (nessun materiale della ROM originale Sega: sprite, tracciati, personaggi derivati) e contrasta con `motore_nuovo/docs/LICENZE.md:71` e `FONTI.md:69` (dati portati, mai codice/asset Sega).
+   Correzione: dichiarare i personaggi come creazioni originali di Andrea/progetto, rimuovere il riferimento ROM .md Sega, e registrarli in `assets_originali/CREDITI.md` e `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`.
 
 2. (media) `assets_originali/DIREZIONE_ARTISTICA.md:1` (testata) — manca la dichiarazione di licenza (SPDX o manifest.json), richiesta dalla regola 10 AGENTS.md e da `motore_nuovo/docs/LICENZE.md:77` per ogni file dati/testi del progetto.
    Correzione: aggiungere in testata `# SPDX-License-Identifier: CC-BY-4.0` (testo creativo, per `LICENZE.md:14`) oppure dichiarare la licenza nel `manifest.json` della cartella `assets_originali/`.
 
-Cosa ho verificato (sola lettura, contesto stretto): `assets_originali/DIREZIONE_ARTISTICA.md` (43 righe), `assets_originali/CREDITI.md` (19 righe, tutte le voci interne al progetto, CC0-1.0 / CC-BY-4.0, nessuna risorsa esterna ancora usata), `motore_nuovo/docs/LICENZE.md` e `FONTI.md`. Non ho scansionato il resto del progetto. I controlli automatici già riportati sono OK (nessuna ROM Sega, open 99.8% ≥ 50%, sintassi script OK); nessun rischio prestazioni rilevabile da questo file di direzione artistica.
+Cosa ho verificato: `assets_originali/DIREZIONE_ARTISTICA.md` (43 righe), `assets_originali/CREDITI.md` (19 righe, tutte le voci interne al progetto, CC0-1.0 / CC-BY-4.0, nessuna risorsa esterna ancora usata), `motore_nuovo/docs/LICENZE.md` e `FONTI.md`. Non ho scansionato il resto del progetto. I controlli automatici già riportati sono OK (nessuna ROM Sega, open 99.8% ≥ 50%, sintassi script OK); nessun rischio rilevabile da questo file di direzione artistica.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 16:58 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
-quota open: 99.9% (13866379 di 13874575 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 6
-
-[0m
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead assets_originali/INDICE_ASSET.md 
-[0m→ [0mRead assets_originali/INDICE_ASSET.json 
-[0m→ [0mRead motore_nuovo/src/game/game.cpp 
-[0m→ [0mRead motore_nuovo/test/prova_gate.cpp 
-[0m→ [0mRead motore_nuovo/test/VOCE_SCAMBIO_1146.md 
-[0m→ [0mRead motore_nuovo/src/player/player.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.h 
-[0m→ [0mRead motore_nuovo/src/render/renderer.cpp 
-[0m→ [0mRead motore_nuovo/src/road/road.cpp 
-> reviewer · nemotron-3.5-super-vl-free
-Let me verify the credits file (required by rule 2) and confirm license completeness.
-[0m→ [0mRead assets_originali/CREDITI.md 
-> reviewer · nemotron-3.5-super-vl-free
-[0m→ [0mRead assets_originali/font/antonio/manifest.json 
-> reviewer · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
 Ho letto solo i 9 file indicati più CREDITI.md e il manifest del font (contesto stretto per la regola 2). Controlli eseguiti: intestazioni SPDX/MIT su tutto il codice; licenze in INDICE_ASSET.json (CC0-1.0 per asset interni, OFL-1.1 per il font, tutte compatibili); nessun materiale Sega (commenti citano OutRun/Jake Gordon/Lou's solo come riferimenti di progettazione, non codice/asset); determinismo regola 5b (`dt = 1/50` fisso, RNG con seed, nessun orologio di sistema nella logica di gioco, `std::chrono` solo nel test harness); prestazioni (gate: ms/frame medio 0,071 max 0,157, limite 20; replay 2x identico; offroad raggiunto) ben dentro il budget Pi 400/50 fps; INDICE_ASSET.json e .md coerenti (293 file, stesse lacune già note e dichiarate come non difetti: traffico, Gianni, Gesù, UFO); prova_gate.cpp:96-97 è un commento giustificato (falso positivo del reviewer già risolto, non un bug).
 
-Problema azionabile (1/3):
+Problema azionabile (1/2):
 
 1. `assets_originali/CREDITI.md` — manca la risorsa esterna scelta con decisione D4 (regola 2: ogni risorsa esterna va in CREDITI con autore, licenza, URL). Il font `assets_originali/font/antonio/Antonio-Bold.ttf` è segnato `originale: false` in INDICE_ASSET.json e usato per titoli/fumetti, ma non è in CREDITI.md.
    Correzione: aggiungi in fondo alla tabella (dopo riga 19) i dati già verificati in `assets_originali/font/antonio/manifest.json`:
@@ -428,250 +240,10 @@ Problema azionabile (1/3):
 
 Nessun altro problema nei file revisionati. Una volta corretto CREDITI.md, il blocco è pulito per il checkpoint.
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-17 18:00 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== CI SONO ERRORI ==
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/png_a_raw.py (nessuna)
-quota open: 100.0% (11234372 di 11238712 byte), soglia 50.0%
-bacheche controllate, limite 500.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 6
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-Leggo i quattro file da revisionare in parallelo.
-[0m→ [0mRead motore_nuovo/CMakeLists.txt 
-[0m→ [0mRead assets_originali/DIREZIONE_ARTISTICA.md 
-[0m→ [0mRead motore_nuovo/src/render/sprite_raw.cpp 
-[0m→ [0mRead motore_nuovo/src/render/sprite_raw.h 
-> collaudatore · nemotron-3.5-super-vl-free
-VERDETTO: CORREGGI
-
-1) `assets_originali/DIREZIONE_ARTISTICA.md:42` — "Look alike di Salvini" è una real person; AGENTS.md vieta esplicitamente "real people, real brands, umiliazione di group di people". Correzione: rimuovere il riferimento a Salvini (e ogni persona reale) e sostituirlo con un personaggio inventato/caricatura non riconoscibile.
 
 2) `motore_nuovo/src/render/sprite_raw.cpp:60` in contrasto con `assets_originali/DIREZIONE_ARTISTICA.md:12` — la direzione artistica fissa max 16 colori per sprite, ma il codice consente alla palette di crescere fino a 256 (`< 256`). Correzione: allineare il codice alla regola di direzione, portando il limite a 16 (`< 16`) in `sprite_raw.cpp:60` e coerente il commento di `sprite_raw.h:13-14` ("max 256 colori" → "max 16 colori"); in alternativa aggiornare la DA a 256.
 
 Resto coerente: intestazioni SPDX MIT presenti, CMake target condizionati e indipendenti da SDL nel core, lettura raw deterministica (stesso input → stessa palette/quantizzazione). Nessun blocco.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 07:55 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835321 di 13835321 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 08:25 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13848499 di 13848499 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:25 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 09:57 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13835284 di 13835284 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 11:37 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13833869 di 13833869 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-[0m→ [0mRead out/collaudatore/gate_t1.log 
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 2 | REVIEWER | 2026-10-18 11:37 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13831997 di 13831997 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 12:04 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13833868 di 13833868 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 13:11 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13716215 di 13716215 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-> collaudatore · nemotron-3.5-super-vl-free
-> collaudatore · nemotron-3.5-super-vl-free
-OK
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 13:53 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (13705012 di 13705012 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-[0m
-> collaudatore · nemotron-3.5-super-vl-free
-OK
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-18 16:31 | [APERTA]
 OK      sintassi start_process_brains.sh
@@ -858,76 +430,7 @@ blocchi da fare [ ]: 7
 
 REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 22:41 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE GARA OK
-screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 23:32 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE GARA OK
-screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
-
 ### CHECKPOINT 1 | REVIEWER | 2026-10-19 06:58 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE GARA OK
 screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
@@ -936,25 +439,12 @@ catalogo: 11 righe, 2 cartelle
   senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
   senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
 quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-19 07:10 | [APERTA]
-OK      sintassi giro.sh
-OK      sintassi modelli.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
 GATE GARA OK
 screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
 GATE SCREENSHOT P1 OK
