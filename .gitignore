@@ -29,3 +29,13 @@ OpenRun/4.5b ufficio/sglavinated_src/out/collaudatore/*/*.ppm
 # Python cache
 __pycache__/
 *.pyc
+
+# ROM Sega e file derivati: mai nel repo (materiale protetto da copyright)
+OpenRun/**/outrun_src/*
+!OpenRun/**/outrun_src/LEGGIMI.txt
+*.gen
+*.smd
+*.bin
+
+# Copie zip dell'albero: tenerle fuori da git
+OpenRun/*.zip
