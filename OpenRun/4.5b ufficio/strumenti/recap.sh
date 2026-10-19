@@ -9,5 +9,5 @@ echo; echo "=== RIEPILOGO_MATTINA ==="; cat RIEPILOGO_MATTINA.md 2>/dev/null || 
 echo; echo "=== DECISIONI APERTE ==="; grep -nE '^## (D[0-9]+|A[0-9]+|T1-Q[0-9]+).*APERTA' ANDREA_REVIEW.md
 echo; echo "=== CHECKPOINT (verdetti) ==="; grep -n 'CHECKPOINT\|VERDETTO' SCAMBIO.md | tail -12
 echo; echo "=== QUOTE ==="; python3 motore_nuovo/strumenti_py/quota_open.py | tail -3; python3 motore_nuovo/strumenti_py/quota_bacheche.py | tail -3
-echo; echo "=== BACHECA PUBBLICA (ultime righe) ==="; tail -24 BACHECA_PUBBLICA.md; echo "Righe totali: $(wc -l < BACHECA_PUBBLICA.md | tr -d ' ')"
+echo; echo "=== BACHECA PUBBLICA (ultime righe) ==="; if [ -f BACHECA_PUBBLICA.md ]; then tail -24 BACHECA_PUBBLICA.md; echo "Righe totali: $(wc -l < BACHECA_PUBBLICA.md | tr -d ' ')"; else echo "(nessuna bacheca pubblica nella 4.5)"; fi
 echo; echo "Per Claude app: apri PACCHETTO_PER_CLAUDE_APP.md"

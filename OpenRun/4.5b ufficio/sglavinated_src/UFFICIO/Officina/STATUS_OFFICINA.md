@@ -1,15 +1,15 @@
 # STATUS OFFICINA — OpenRun 4.6
 
-Aggiornato: 2026-10-18 22:33 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
+Aggiornato: 2026-10-19 07:20 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
 
 ## Stato corrente
 
 | Voce | Stato / evidenza |
 |---|---|
 | Checkpoint tecnico | [CP-003](../../Checkpoint%20Revision/CP-003-status-officina-e-test.md) — aperto, review indipendente da assegnare |
-| Ultimo report sviluppatore | [VOCE_SCAMBIO_1155.md](../../out/sviluppatore/VOCE_SCAMBIO_1155.md), 2026-10-18 13:49 |
-| Gate registrato | Esito completo `GATE T1: TUTTO OK` nel [log Officina](./Test%20area/gate_t1.log), file aggiornato alle 15:29:30; il log non registra da solo l'exit code del processo |
-| Ultimo exit code dichiarato | 0 nel report 1155 per `sh tools/gate_t1.sh`; tre livelli, replay identico, accelerazione, crash/ripartenza, sterzo e continuità curve OK |
+| Ultimo report sviluppatore | [VOCE_SCAMBIO_1164.md](../../out/builder-developer/VOCE_SCAMBIO_1164.md), 2026-10-19 07:14 (builder-developer) |
+| Gate registrato | `GATE T1: TUTTO OK` nel [log Officina](./Test%20area/gate_t1.log), aggiornato alle 22:56 da `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak`, exit 0 dichiarato per entrambi; il log non registra da solo l'exit code del processo |
+| Ultimo exit code dichiarato | 0 per `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak` alle 22:56; 6 livelli + soak 30000 frame lv_01_neon, replay identico, accelerazione, ribaltamento/ripartenza, sterzo e continuità curve OK; T1-RUN [x] per DEFAULT T1-Q1. Nessun riesecuzione in questo turno (sessione senza esecuzione comandi); ultimo esito noto invariato. |
 | Build | Configurazione Release in `UFFICIO/Officina/build/`; CMake cache e output compilati presenti |
 | CTest | Sette test registrati nel build esistente. In questa verifica sono stati elencati ma non rieseguiti |
 | Runner SDL | SDL2 presente; il runner compila. CMake cerca SDL2_image via config package o pkg-config; non essendo installata/visibile qui, il caricamento PNG resta disabilitato |
@@ -68,8 +68,35 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-18_2233.md; questo status aggiornato.
 - Gate T1 di riferimento non rieseguito: ultimo esito noto da @collaudatore, sh tools/gate_t1.sh exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20 (DEFAULT T1-Q1 soddisfatto; risposta Andrea non registrata).
 
+## Report turno 22:52 — developer-builder-junior
+
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN @sviluppatore + @collaudatore; G1 @grafico; P1 @sviluppatore). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita in questo turno.
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-18_2252.md; questo status aggiornato.
+- Gate T1 di riferimento non rieseguito: ultimo esito noto da @collaudatore, sh tools/gate_t1.sh exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20 (DEFAULT T1-Q1 soddisfatto; risposta Andrea non registrata).
+
+## Report turno 22:56 — builder-developer
+
+- Eseguiti `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak`: exit 0 entrambi, `GATE T1: TUTTO OK` in `UFFICIO/Officina/Test area/gate_t1.log`.
+- 6 livelli (lv_01_neon..lv_06_desktop): prova_gate + percorso GATE PERCORSO OK, guida 0 frame fuori strada, giro guidato completato su tutti.
+- Soak lv_01_neon 30000 frame: ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO. Smoke: ms/frame medio 0.177-0.184 max 0.263-0.366.
+- speed@60=161.79, speed@1=9.90; accelerazione, ribaltamento/ripartenza, sterzo, continuita' curve OK; gara 4 bivi OK (arrivo, posizione, incidenti, replay IDENTICO); screenshot P1 OK (curva, sponsor, personaggio+fumetto).
+- T1-RUN chiuso [x] per DEFAULT T1-Q1 (ANDREA_REVIEW: soak exit 0, replay 2x IDENTICO, ms/frame <= 20; risposta Andrea non registrata).
+- Zero scritture in motore_nuovo/ e tools/; nessun test del Junior modificato.
+- Residuo: v91 Andrea su sglavinated_runner (Mac SDL2) e fps/temperatura Pi 400 (T1-Q3/T1-Q8); G1 [ ] fuori scope T1.
+- Consegne: bacheche/builder-developer/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1160.md; questo status aggiornato.
+
+## Report turno 06:53 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer (fuori scope T1 per DEFAULT T1-Q4); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (T1-Q3/T1-Q8).
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1.
+- Consegne scritte: bacheche/builder-developer/diario.md (1 riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1162.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.
+
 ## Sintesi dei report precedenti pertinenti
 
+- 22:52 — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
+- 06:53 (19/10) — builder-developer: turno senza scritture di codice né esecuzione gate; riconferma dello stato 22:56 (exit 0, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 soak, replay 2x IDENTICO; T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti).
+- 22:56 — builder-developer: gate smoke e soak exit 0, GATE T1 TUTTO OK, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 soak (limite 20), replay 2x IDENTICO; T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
 - 22:33 — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
 - 22:15 — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
 - 21:56 — developer-builder-junior: lettura fonti completata, nessuna modifica di codice, consegne scritte; gate T1 di riferimento exit 0, 3 livelli, replay 2x IDENTICO, ms/frame medio ~0.20 max 0.393 <= 20.
@@ -77,3 +104,33 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - 13:49 — report 1155: gate exit 0 sui tre livelli, media 0.19-0.20 ms/frame, massimo 0.393 ms/frame, replay doppio identico, off-road raggiunto, accelerazione/ribaltamento/sterzo/curve verificati.
 - 13:00 — report 1154: diradamento riferimenti cartelloni nei dati livello (Neon 444->56, Atomico 418->53, Foglie 481->61), gate positivo, massimo 0.277 ms/frame.
 - 21:15 — SCAMBIO_RECENTE checkpoint 1 review: TUTTO OK, quota open 99.5%, blocchi fatti 19 / da fare 7; 3 screenshot in out/sviluppatore/screenshot_p1/ senza licenza (fuori competenza del ruolo Junior).
+- 07:20 (19/10) — developer-builder-junior: lettura fonti obbligatoria completata (ordine richiesto, ANDREA_REVIEW.md precedenza assoluta); nessun blocco [ ]/[~] assegnato al ruolo; nessuna modifica di codice, nessun test, nessuna build/gate; consegne scritte (diario 1 riga, RIASSUNTO <=12 righe, report in out/developer-builder-junior/); ultimo esito gate T1 invariato (exit 0 da @collaudatore, 22:56).
+
+## Report turno 07:04 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer (DEFAULT T1-Q4: non attivare); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (ANDREA_REVIEW T1-Q3/T1-Q8).
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1.
+- Consegne scritte: bacheche/builder-developer/diario.md (1 riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1163.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.
+
+## Report turno 07:14 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer (DEFAULT T1-Q4: non attivare); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (ANDREA_REVIEW T1-Q3/T1-Q8).
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1.
+- Consegne scritte: bacheche/builder-developer/diario.md (1 riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1164.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.
+
+## Report turno 07:18 — developer-builder-junior
+
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN punti 1-4 @sviluppatore, 5-6 @collaudatore; G1 @grafico). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi).
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_0718.md; questo status aggiornato.
+- Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
+- In attesa: task dal Capo.
+
+## Report turno 07:20 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata nell'ordine richiesto: RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN @sviluppatore + @collaudatore; P1 @sviluppatore; G1 @grafico). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi).
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_0720.md; questo status aggiornato.
+- Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
+- In attesa: task dal Capo.

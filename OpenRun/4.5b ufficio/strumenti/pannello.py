@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pannello di progresso (sola lettura). Uso: python3 strumenti/pannello.py [--porta 8088] [--solo-locale]
 Il controller V4 usa la porta 8090; avvio manuale predefinito 8088. Solo libreria standard."""
-import json, os, re, subprocess, sys, time, argparse
+import json, os, re, subprocess, time, argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 BASE = os.environ.get("V3_BASE") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -54,7 +54,7 @@ def processi():
 def blocchi():
     out, cur = [], None
     for l in leggi("RICHIESTA.md").splitlines():
-        m = re.match(r"## BLOCCO (\S+)\s+[—-]\s+(@\w+)?", l)
+        m = re.match(r"## BLOCCO (\S+)\s+[—-]\s+(@[\w-]+)?", l)
         if m: cur = {"id": m.group(1), "agente": (m.group(2) or "").lstrip("@"), "stato": "?"}; out.append(cur); continue
         m = re.match(r"\|\s*Stato\s*\|\s*(\[.\])", l)
         if m and cur: cur["stato"] = m.group(1)

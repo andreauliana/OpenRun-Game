@@ -134,10 +134,10 @@ manutenzione() {
   for d in bacheche/*/; do
     [ -d "$d" ] || continue; ag=$(basename "$d")
     for x in "$d".* "$d"*; do
-      [ -e "$x" ] || continue; n=$(basename "$x")
-      case "$n" in .|..|diario.md|RIASSUNTO.md|DIARIO_RECENTE.md|diario_archivio.md) continue ;; esac
+      [ -e "$x" ] || continue; nome=$(basename "$x")
+      case "$nome" in .|..|diario.md|RIASSUNTO.md|DIARIO_RECENTE.md|diario_archivio.md) continue ;; esac
       q="archivio_v4/fuori_posto/$(date +%Y%m%d)/$ag"; mkdir -p "$q"
-      mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $n in $q/ (fuori posto)" | tee -a .fuori_posto.log
+      mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $nome in $q/ (fuori posto)" | tee -a .fuori_posto.log
     done
   done
   # Log: un file al giorno per agente; i giorni precedenti vanno in log_agenti/vecchi/ e restano 3 giorni (minimo 24 ore).
@@ -152,7 +152,7 @@ manutenzione() {
     echo; echo "## Modelli assegnati"
     for f in .opencode/agents/*.md; do
       ag=$(basename "$f" .md); m=$(grep -m1 '^model:' "$f" | sed 's/^model: *//')
-      if ! grep -qx "$m" "$PAN" 2>/dev/null; then n=$(head -1 "$PAN"); V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" "$ag" "$n" >/dev/null 2>&1; echo "- $ag: modello '$m' non in panchina -> riportato a $n"; m=$n; fi
+      if ! grep -qx "$m" "$PAN" 2>/dev/null; then nuovo=$(head -1 "$PAN"); V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" "$ag" "$nuovo" >/dev/null 2>&1; echo "- $ag: modello '$m' non in panchina -> riportato a $nuovo"; m=$nuovo; fi
       echo "- $ag: $m"
     done
     echo; echo "Distribuzione:"; for f in .opencode/agents/*.md; do grep -m1 '^model:' "$f" | sed 's/^model: *//'; done | sort | uniq -c | sort -rn | sed 's/^/  /'
@@ -220,8 +220,8 @@ estratti() {
   # Il "MODELLO" (blocchi di esempio dentro un recinto ```) non va passato agli agenti: ~3 KB inutili a ogni turno.
   awk '/^## MODELLO/{skip=1; f=0; next} skip{ if($0=="```"){f++; if(f==2) skip=0} next } {print}' RICHIESTA.md | awk '/^## BLOCCO/{if(b!="" && b!~/\| Stato \| \[x\]/) printf "%s", b; b=""} {b=b $0 "\n"} END{if(b!~/\| Stato \| \[x\]/) printf "%s", b}' > RICHIESTA_APERTA.md.tmp && mv RICHIESTA_APERTA.md.tmp RICHIESTA_APERTA.md
   awk -v k="${SCAMBIO_VOCI:-3}" -v m="${SCAMBIO_RIGHE:-30}" '/^### /{n++} {l[NR]=$0; v[NR]=n} END{for(i=1;i<=NR;i++) if(v[i]>n-k){ if(v[i]!=pv){c=0; pv=v[i]} c++; if(c<=m) print l[i]; else if(c==m+1) print "[... voce troncata dopo " m " righe: intera in SCAMBIO.md]" }}' SCAMBIO.md > SCAMBIO_RECENTE.md.tmp && mv SCAMBIO_RECENTE.md.tmp SCAMBIO_RECENTE.md
-  tail -n "${BACHECA_RIGHE:-24}" BACHECA_PUBBLICA.md > BACHECA_RECENTE.md.tmp && mv BACHECA_RECENTE.md.tmp BACHECA_RECENTE.md
-  awk '
+  [ -f BACHECA_PUBBLICA.md ] && tail -n "${BACHECA_RIGHE:-24}" BACHECA_PUBBLICA.md > BACHECA_RECENTE.md.tmp && mv BACHECA_RECENTE.md.tmp BACHECA_RECENTE.md
+  [ -f ASSEMBLEA.md ] && awk '
     /^## A[0-9]+/ {
       if (aperta && blocco != "") printf "%s", blocco
       aperta = ($0 ~ /\[APERTA\]/)

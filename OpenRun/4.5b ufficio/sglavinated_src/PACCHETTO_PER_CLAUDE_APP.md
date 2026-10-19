@@ -1,4 +1,4 @@
-# Pacchetto per Claude app (capo supremo) — 2026-10-18 22:43
+# Pacchetto per Claude app (capo supremo) — 2026-10-19 07:11
 Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -74,9 +74,9 @@ Incolla in Claude app (con accesso alla cartella): "Leggi questo pacchetto, RIEP
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
-OK (controlli automatici verdi: review del modello saltata, zero crediti)
+REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 22:28 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-19 06:58 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
@@ -104,7 +104,7 @@ blocchi da fare [ ]: 7
 
 REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-18 22:41 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-19 07:10 | [APERTA]
 OK      sintassi giro.sh
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
