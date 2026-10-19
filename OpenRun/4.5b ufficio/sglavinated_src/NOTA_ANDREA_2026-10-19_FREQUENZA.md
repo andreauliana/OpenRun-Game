@@ -23,6 +23,8 @@ Mac, Pi 400 (solo HDMI), monitor e TV moderni, anche in Europa, lavorano a 60 Hz
 
 Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso checkpoint o in uno a parte.
 
+**Piattaforme (Andrea, 19 ott), in quest'ordine:** 1) macOS, 2) Linux, 3) RetroPie su Raspberry Pi 400, 4) Windows XP in futuro. Ogni modifica deve compilare su 1-3; per 4 basta non introdurre dipendenze che lo escludano.
+
 ## Stato verificato (main 162dc5d)
 - Il core (`sglavinated_core`) e' C++17 puro, senza SDL e senza `std::filesystem`: bene, resta cosi'.
 - Solo il runner usa SDL2 (+ SDL2_image opzionale per i PNG sponsor). Funzioni usate: video/renderer, texture streaming, `SDL_QueueAudio`, GameController/Joystick, `SDL_RenderSetIntegerScale`. **Versione minima reale: SDL 2.0.5** (per `SDL_RenderSetIntegerScale`).
