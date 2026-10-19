@@ -73,6 +73,7 @@ Raccomandazione: A
 DEFAULT usato nel frattempo: A — builder-developer allinea i percorsi e rilancia `sh tools/gate_t1.sh soak`; developer-builder-junior esegue peer review indipendente del diff/log.
 Impatto se cambi idea: modificare soglie gate e parametri livello.json; rieseguire gate.
 RISPOSTA DI ANDREA (2026-10-19, via Claude): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per sviluppatori. Serve una logica di tracciato modificabile a mano per le 6 piste. Le soglie non si abbassano. Compito operativo: blocco R1 in RICHIESTA.md (tratti con nome, regole per pista, gate che indica il tratto da correggere). Ruoli confermati: il Designer verifica le risorse e ne crea di nuove; il Capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
+ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su RetroPie e Raspberry Pi 400. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Pi/RetroPie oltre a non rompere la build Linux. Note per allora: RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
