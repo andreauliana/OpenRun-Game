@@ -131,7 +131,7 @@ def stato():
         ag.append({"nome": a, "file": n1 + n2, "modello": modello(a), "in_corso": a in inc, "sec_corso": inc.get(a), "sec_ultimo": int(adesso - t) if t else None,
                    "attivo": a in squadra, "ruolo": "squadra" if a in squadra else ("coordina" if a == "capo" else "spento"),
                    "memoria": "\n".join(mem.splitlines()[:12]), "memoria_sec": tm})
-    nout, _ = conta("out"); nlib, _ = conta("libreria")
+    nout, _ = conta("out"); nlib, _ = conta(os.path.join("UFFICIO", "Dipartimento Grafico", "Libreria"))
     log_pulito = ANSI.sub("", leggi("notte.log", 400)); righe = log_pulito.splitlines()
     ciclo = [data_pannello(l) for l in righe if l.startswith("[ciclo]")][-14:]
     try: eta = int(adesso - os.path.getmtime(os.path.join(S, "notte.log")))
