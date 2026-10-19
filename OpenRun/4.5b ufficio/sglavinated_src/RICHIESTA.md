@@ -192,7 +192,19 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 ---
 
+## BLOCCO R2 — @builder-developer + @developer-builder-junior + @designer — ciclo di gioco completo (da Andrea 19 ott)
+| Campo | Valore |
+|---|---|
+| Richiesta di Andrea | La guida e la gara devono stare dentro un gioco a fasi: intro/splash (caricamento), menu gara (scelta e conferma corsa con Start/Invio), gameplay, fine gioco quando finisce il tempo, risultati con punteggio (score) insieme a risultati fittizi di altri giocatori, conclusione e ripartenza dal menu. |
+| Compito | 1) @builder-developer: macchina a stati in `src/game/` (nuovo `fasi.h/.cpp`): `Splash -> Menu -> Gara -> FineTempo -> Risultati -> Menu`. Ogni fase ha entra/aggiorna/disegna/esce; il runner chiama solo la fase corrente. Splash: logo e caricamento asset, poi menu da solo o con un tasto. Menu: scelta corsa (pista di partenza o gara a tappe da `percorso_gara.json`), conferma con Start/Invio, Indietro con B/Esc. FineTempo: quando `tempo_limite_s` arriva a 0 l'auto rallenta e compare "GAME OVER/TEMPO SCADUTO" per qualche secondo. Risultati: score = distanza + bonus checkpoint + bonus tempo residuo (formula in `dati/punteggio.json`, modificabile); classifica con 9 giocatori fittizi da `dati/classifica_finta.json` (nomi e punteggi), tuo punteggio inserito al suo posto e nome a 3 lettere; Start torna al menu. 2) @developer-builder-junior: gate headless `prova_gate ... ciclo` che attraversa tutte le fasi con input scriptati (Start, guida, tempo scaduto, risultati, ritorno al menu) e controlla l'ordine delle fasi e lo score deterministico; screenshot PPM di ogni fase. 3) @designer: grafica di splash, menu e schermata risultati con gli asset della Libreria (testi, font, HUD variante B); segnala nel catalogo cosa manca. |
+| Input | `motore_nuovo/docs/FLUSSO_GIOCO.md` (proposta del 18 ott: seguire quella dove non contraddice questa richiesta), `src/game/`, `src/runner/main.cpp`, `dati/percorso_gara.json`, `dati/ui/hud.json` |
+| Vincoli | Stessi controlli su tastiera e pad. Nessuna fase blocca il caricamento su Pi 400 (splash corto). Determinismo invariato. Arrivi e finali animati restano per dopo: per ora la gara finisce solo per tempo o all'ultima tappa, poi Risultati. |
+| Gate | `ctest` verde incluso il gate `ciclo`; screenshot delle 5 fasi in `UFFICIO/Officina/Test area/`. Review incrociata Builder/Junior, il Designer rivede le schermate. @capo apre CP-006 in `Checkpoint Revision/`. Dopo R1. |
+| Stato | [ ] |
+
+---
+
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
 Stati: C [x] · H [~] · P1 [~] · P1b [x] · P2 [x] · P3 [x] · M [~] · T1-RUN [~] · J [ ] · N [ ] · MD0 [-] · T5 [-].
-Tocca a: @builder-developer + @developer-builder-junior R1 (tracciati, priorita') · @sviluppatore T1-RUN 2-3 e densita' cartelloni · @collaudatore T1-RUN 5-7 · @grafico G1 (catalogo grafico, su richiesta) · Andrea 8. Nessuna decisione aperta (D1-D9 chiuse), nessun PER_CLAUDE.md, FINITO non creabile.
+Tocca a: @builder-developer + @developer-builder-junior R1 (tracciati, priorita') poi R2 (ciclo di gioco) · @sviluppatore T1-RUN 2-3 e densita' cartelloni · @collaudatore T1-RUN 5-7 · @grafico G1 (catalogo grafico, su richiesta) · Andrea 8. Nessuna decisione aperta (D1-D9 chiuse), nessun PER_CLAUDE.md, FINITO non creabile.
