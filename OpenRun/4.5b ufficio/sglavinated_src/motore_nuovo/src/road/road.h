@@ -43,6 +43,12 @@ public:
         f32 curva = 0.0f;
         f32 collina = 0.0f;
         i32 lunghezza = SEG_LEN;
+        // Raccordo in entrata/uscita del tratto (segmenti). -1 = automatico:
+        // min(lunghezza/3, 60). 0 disabilita il raccordo per quel lato.
+        // L'uscita di un tratto raccorda alla curva del tratto successivo
+        // (anello: l'ultimo torna al primo).
+        i32 entrata = -1;
+        i32 uscita = -1;
     };
 
     // Costruisce il tracciato da descrittori: ogni descrittore diventa

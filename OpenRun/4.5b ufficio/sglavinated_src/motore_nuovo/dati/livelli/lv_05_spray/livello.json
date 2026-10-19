@@ -11,20 +11,26 @@
     "segmenti": 4950,
     "durata_stimata_s": 35
   },
+  "tracciato": [
+    "rettilineo_corto", "curva_stretta_dx", "rettilineo_corto", "curva_stretta_sx",
+    "rettilineo_corto", "curva_stretta_dx", "rettilineo_corto", "curva_stretta_sx",
+    "rettilineo_lungo", "curva_stretta_dx", "rettilineo_corto", "curva_stretta_sx"
+  ],
   "segmenti": [
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 600},
+    {"curva": 0.3, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": 0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": -0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": 0.8, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": -0.8, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": -1.0, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": 0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 500}
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.1, "collina": 0.0, "lunghezza": 700},
+    {"curva": -0.5, "collina": 0.0, "lunghezza": 800},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 400},
+    {"curva": 0.9, "collina": 0.0, "lunghezza": 400},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 900},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 400},
+    {"curva": 0.4, "collina": 0.0, "lunghezza": 600},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 700}
   ],
   "seme": 8812,
   "tempo_limite_s": 50,

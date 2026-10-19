@@ -40,45 +40,74 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
 
     // "lunghezza" di un descrittore = numero di segmenti da SEG_LEN unita'
     // (i cartelloni di livello.json usano lo stesso indice di segmento).
-    // La curva entra con un raccordo su TUTTO il tratto partendo dal valore
-    // del tratto precedente (prima il raccordo durava solo il primo terzo e
-    // poi la curvatura restava costante: spigolo a meta' tratto e strada che
-    // "tirava" di colpo); la collina e' una quota assoluta
-    // (collina * HILL_HEIGHT) raggiunta in modo morbido lungo tutto il tratto.
-    // Il tracciato e' un anello: si parte dai valori dell'ultimo descrittore,
-    // cosi' il giunto di fine giro e' continuo come gli altri.
-    // Passata 1: curve raccordate.
-    f32 curvaPrima = descs.back().curva;
+    // La curva entra con un raccordo in `entrata`, resta costante, poi esce
+    // con un raccordo in `uscita` verso la curva del tratto successivo
+    // (anello: l'ultimo tratto torna al primo). Default raccordo:
+    // min(lunghezza/3, 60) segmenti per lato, mai sovrapposti. La collina e'
+    // una quota assoluta (collina * HILL_HEIGHT) raggiunta in modo morbido
+    // lungo tutto il tratto. Il tracciato e' un anello: il giunto di fine
+    // giro e' continuo come gli altri.
+    // Passata 1: curve raccordate con rampe di entrata/uscita a lunghezza
+    // propria e curva costante in mezzo.
+    auto raccordoAuto = [](const SegmentDesc& d) -> i32 {
+        i32 def = d.lunghezza > 0 ? d.lunghezza / 3 : 0;
+        if (def > 60) def = 60;
+        if (def < 0) def = 0;
+        return def;
+    };
+    f32 curvaPrima = descs.back().curva; // anello: prima del primo tratto c'e' l'ultimo
     i32 indice = 0;
-    for (const SegmentDesc& d : descs) {
-        const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
+    for (i32 d = 0; d < (i32)descs.size(); ++d) {
+        const SegmentDesc& desc = descs[d];
+        const i32 n = desc.lunghezza > 0 ? desc.lunghezza : 1;
+        i32 ee = desc.entrata >= 0 ? desc.entrata : raccordoAuto(desc);
+        i32 uu = desc.uscita >= 0 ? desc.uscita : raccordoAuto(desc);
+        if (ee < 0) ee = 0;
+        if (uu < 0) uu = 0;
+        if (ee + uu > n) { // i raccordi non si sovrappongono
+            const f32 scala = (f32)n / (f32)(ee + uu);
+            ee = (i32)((f32)ee * scala);
+            uu = (i32)((f32)uu * scala);
+        }
+        const f32 curvaDentro = desc.curva;
+        const f32 curvaFuori = descs[(d + 1) % (i32)descs.size()].curva; // anello
         for (i32 k = 1; k <= n; ++k) {
             RoadSegment seg;
             seg.index = indice;
             seg.length = SEG_LEN;
-            seg.curve = curvaPrima + (d.curva - curvaPrima) * raccordo((f32)k / (f32)n);
-            seg.hill = d.collina;
+            f32 c;
+            if (ee > 0 && k <= ee) {
+                c = curvaPrima + (curvaDentro - curvaPrima) * raccordo((f32)k / (f32)ee);
+            } else if (uu > 0 && k > n - uu) {
+                c = curvaDentro + (curvaFuori - curvaDentro) * raccordo((f32)(k - (n - uu)) / (f32)uu);
+            } else {
+                c = curvaDentro;
+            }
+            seg.curve = c;
+            seg.hill = desc.collina;
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
             segs_.push_back(seg);
             ++indice;
         }
-        curvaPrima = d.curva;
+        curvaPrima = curvaFuori; // a fine uscita si e' gia' alla curva del tratto seguente
     }
 
-    // Chiusura di direzione: la somma delle curve di livello.json non si
-    // bilancia mai esattamente, quindi la pendenza laterale accumulata restava
-    // anche nei tratti "dritti" (curva 0): la strada derivava di lato e il
-    // giocatore doveva correggere in continuazione (effetto zig-zag). Qui la
-    // residua e' distribuita in modo uniforme su tutti i segmenti: correzione
-    // impercettibile sul singolo segmento, ma a fine giro la direzione torna
-    // a zero e i rettilinei sono davvero dritti.
+    // Chiusura di direzione: la somma ponderata delle curve non si bilancia
+    // mai esattamente. La residua si distribuisce SOLO sui segmenti con curva
+    // diversa da zero (mai sui rettilinei), cosi' i dritti restano perfettamente
+    // dritti e a fine giro la direzione torna a zero.
     f32 residuo = 0.0f;
-    for (const RoadSegment& s : segs_)
-        residuo += s.curve * CURVE_SCALE * (f32)s.length;
+    i32 lunghezzaCurva = 0;
+    for (const RoadSegment& s : segs_) {
+        if (s.curve != 0.0f) {
+            residuo += s.curve * CURVE_SCALE * (f32)s.length;
+            lunghezzaCurva += s.length;
+        }
+    }
     const f32 correzione =
-        totalLen_ > 0 ? residuo / ((f32)totalLen_ * CURVE_SCALE) : 0.0f;
+        lunghezzaCurva > 0 ? residuo / ((f32)lunghezzaCurva * CURVE_SCALE) : 0.0f;
 
     // Passata 2: posizioni assolute del tracciato.
     f32 quotaPrima = descs.back().collina * HILL_HEIGHT;
@@ -90,7 +119,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         const f32 quota = d.collina * HILL_HEIGHT;
         for (i32 k = 1; k <= n; ++k) {
             RoadSegment& seg = segs_[at++];
-            seg.curve -= correzione;
+            if (seg.curve != 0.0f) seg.curve -= correzione;
             seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;

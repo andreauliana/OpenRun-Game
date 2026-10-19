@@ -5,14 +5,14 @@
 | Campo | Stato |
 |---|---|
 | Fase | 4.6, migrazione graduale |
-| Ultimo checkpoint | [CP-004](./CP-004-review-e-archivio-v4.md) — fonte Andrea e archivio v4, aperto |
-| Stato attività | CP-004 attende review indipendente; CP-003 attende review e prova CTest; CP-002 inventario grafico resta aperto in attesa di revisore |
+| Ultimo checkpoint | [CP-005](./CP-005-tracciati-percorsi.md) — blocco R1 tracciati per le 6 piste, aperto |
+| Stato attività | CP-005 aperto: builder-developer esegue tuning road.cpp/tratti.json/regole.json; developer-builder-junior completa gate/test/6 livello.json; review incrociata da eseguire dopo i diff. CP-004, CP-003 e CP-002 restano in attesa di review indipendente. |
 | Sorgenti attivi | `motore_nuovo/`, `assets_originali/`, `libreria/`, `tools/`. Dal 2026-10-19 `assets_originali/` e' un symlink a `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` (un solo originale, nella Libreria) |
 | Ruoli | Capo, Designer, Builder/Developer, Developer/Builder Junior |
 | Review | Peer review tra i due sviluppatori; autore distinto dal revisore |
 | Build/test | Consultare [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) per il report tecnico corrente; ultimo gate registrato: 3 livelli OK, replay identico, accelerazione/ribaltamento/sterzo/curve OK |
 | Limite della prova | Eseguito su macOS; prestazioni e compatibilità su Raspberry Pi 400 non verificate da questo gate |
-| Decisioni di Andrea | Non richiesta per la sola registrazione della baseline; nessuna approvazione di release registrata |
+| Decisioni di Andrea | T1-Q5 DEFAULT A registrato in `ANDREA_REVIEW.md` (allinea tutti i livelli al profilo lv_02_atomico, tuning un parametro alla volta, soglie non si abbassano); nessuna approvazione di release registrata |
 
 ## Handoff grafico
 

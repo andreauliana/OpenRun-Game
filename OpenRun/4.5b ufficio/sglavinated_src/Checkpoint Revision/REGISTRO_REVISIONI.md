@@ -9,6 +9,7 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-10-18 | CP-002 | Apertura inventario grafico, verifica strumenti e handoff unico al Capo | APERTO — review indipendente da assegnare | [Dossier CP-002](./CP-002-inventario-grafico.md) |
 | 2026-10-18 | CP-003 | Apertura handoff Officina, aggiornamento tool CMake/test e permessi | APERTO — review indipendente e test CTest da completare | [Dossier CP-003](./CP-003-status-officina-e-test.md) |
 | 2026-10-18 | CP-004 | Consolidamento fonte Andrea e classificazione archivio v4 | APERTO — review indipendente da assegnare | [Dossier CP-004](./CP-004-review-e-archivio-v4.md) |
+| 2026-10-19 | CP-005 | Apertura blocco R1 tracciati modificabili per le 6 piste (gate percorso 5/6 fallito) | APERTO — review indipendente da assegnare | [Dossier CP-005](./CP-005-tracciati-percorsi.md) |
 
 ## Regole di aggiornamento
 

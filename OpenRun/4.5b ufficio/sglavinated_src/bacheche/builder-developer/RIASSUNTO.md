@@ -1,7 +1,10 @@
-# Riassunto builder-developer — 19/10 09:30 (turno 1)
-P1 [x]: promosso per T1-Q2 sì di Andrea (prova screenshot differita, shell negata).
-T1-RUN [x]: DEFAULT T1-Q1 soddisfatto, risposta Andrea T1-Q1: sì (ANDREA_REVIEW.md). Nessun gate rieseguito (zero modifiche codice/dati).
-Misure (18/10 22:56): 6 percorsi GATE PERCORSO OK lv_01..lv_06; soak medio 0.185 max 0.518 ms/frame, smoke medio 0.177-0.184 max 0.263-0.366 (limite 20); speed@60=161.79.
-Log: UFFICIO/Officina/Test area/gate_t1.log (exit 0 smoke e soak).
-G1 [ ]: attivato da Andrea (T1-Q4), scrittura esclusiva @grafico, fuori mio scope.
-Residuo: v91 Andrea runner Mac SDL2 e fps/temperatura Pi 400 (T1-Q3/T1-Q8); zero scritture in motore_nuovo/ e tools/.
+# Riassunto builder-developer — 19/10 ~12:52 (turno 1)
+Blocco attivo: R1 (tracciati 6 piste), stato [~].
+Compito 1 road.cpp: fatto e dichiarato verificato (raccordo entrata/uscita, correzione deriva solo su curve != 0).
+Tutti e 6 i livello.json hanno campo tracciato; mancano dati/tracciati/tratti.json e regole.json (compiti 2-3).
+Scrittura nuovi file in dati/ negata: compiti 2-3 bloccati; prova_gate.cpp/docs/FORMATI_DATI.md non scrivibili.
+Shell negata: gate sh tools/gate_t1.sh soak NON eseguito questo turno ('gate non eseguito').
+Esito precedente 19/10 09:39: exit 13, giro guidato KO 5/6, solo lv_02_atomico OK (rettilineo 40%, curva max 0.86); core OK ms/frame ~0.19 max 0.94, replay IDENTICO.
+Azione T1-Q5 DEFAULT A: allineare percorsi al profilo lv_02_atomico e rilanciare soak — in attesa di sblocco scrittura.
+Compiti 4-5 -> Junior; Capo apre CP-005 a gate verde.
+Zero scritture in motore_nuovo/ e tools/ questo turno. Nessun REPORT_TURNO, nessuna VOCE_SCAMBIO.

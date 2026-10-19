@@ -147,6 +147,16 @@ DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/ga
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
 RISPOSTA DI ANDREA: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 
+## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
+
+Domanda:
+Dopo peer review incrociata su R1 e gate `sh tools/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
+Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B) no, si procede direttamente a Pi 400 dopo peer review
+Raccomandazione: A
+DEFAULT usato nel frattempo: A — builder-developer completa R1 e rilancia gate; developer-builder-junior esegue peer review indipendente; si attende il via di Andrea su Mac prima di ogni lavoro dedicato a Pi/RetroPie (salvo non rompere la build Linux).
+Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, oggi non compila per mancanza libretro.h).
+RISPOSTA DI ANDREA:
+
 ## Feedback storico v90 — 2026-10-17
 
 Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come contesto storico, non come specifica attiva per OpenRun 4.6. La decisione di progetto allora registrata privilegiava il motore C++ in `motore_nuovo/`, sospendeva ROM/export Mega Drive e chiedeva di concentrarsi sul primo gate giocabile. Le assegnazioni personali v4.5 non prevalgono sui ruoli 4.6.

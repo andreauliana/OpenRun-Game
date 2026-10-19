@@ -4,6 +4,7 @@
 #include <algorithm> // std::min/max
 #include <cmath> // std::fmod
 #include <cstdio> // std::fopen/fread/fclose
+#include <map> // std::map per la libreria di tratti
 #include <utility> // std::move
 
 namespace sgl {
@@ -25,6 +26,90 @@ std::string leggiFileTesto(const std::string& path) {
     while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
     std::fclose(f);
     return testo;
+}
+
+// Espande il campo "tracciato" di livello.json in descrittori di strada.
+// Ogni voce e' una stringa (nome tratto) oppure un oggetto
+// {"tratto": "nome", "lunghezza": 500, ...override...}; le definizioni base
+// sono in motore_nuovo/dati/tracciati/tratti.json.
+// Restituisce true se almeno un tratto e' espanso. Se manca il file, la
+// libreria e' illeggibile o una voce e' sconosciuta, quella voce e' saltata;
+// quando out resta vuoto il chiamante usa il campo "segmenti" (compatibile
+// con i tracciati gia' esistenti).
+bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
+    if (!jsonIsArray(campoTracciato)) return false;
+    const JsonArray& arr = jsonAsArray(campoTracciato);
+    if (arr.empty()) return false;
+
+    JsonReader tratti(leggiFileTesto("motore_nuovo/dati/tracciati/tratti.json"));
+    if (!tratti.parse()) return false;
+    const JsonValue* radice = &tratti.valore();
+    if (!radice || !jsonIsObject(*radice)) return false;
+    JsonValue campoLib;
+    if (!jsonGet(jsonAsObject(*radice), "tratti", campoLib) || !jsonIsObject(campoLib)) return false;
+    const JsonObject& lib = jsonAsObject(campoLib);
+
+    std::map<std::string, Road::SegmentDesc> libreria;
+    for (const auto& kv : lib) {
+        if (!jsonIsObject(kv.second)) continue;
+        const JsonObject& o = jsonAsObject(kv.second);
+        Road::SegmentDesc d;
+        JsonValue cv, hv, lv, ev, uv;
+        if (jsonGet(o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
+        if (jsonGet(o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
+        if (jsonGet(o, "lunghezza", lv) && jsonIsNumber(lv)) {
+            i32 l = (i32)jsonAsNumber(lv);
+            if (l > 0) d.lunghezza = l;
+        }
+        if (jsonGet(o, "entrata", ev) && jsonIsNumber(ev)) {
+            i32 e = (i32)jsonAsNumber(ev);
+            if (e >= 0) d.entrata = e;
+        }
+        if (jsonGet(o, "uscita", uv) && jsonIsNumber(uv)) {
+            i32 u = (i32)jsonAsNumber(uv);
+            if (u >= 0) d.uscita = u;
+        }
+        libreria.emplace(kv.first, d);
+    }
+
+    out.clear();
+    for (const JsonValue& v : arr) {
+        Road::SegmentDesc d;
+        const JsonObject* o = nullptr;
+        std::string nome;
+        if (jsonIsString(v)) {
+            nome = jsonAsString(v);
+        } else if (jsonIsObject(v)) {
+            o = &jsonAsObject(v);
+            JsonValue idv;
+            if (!jsonGet(*o, "tratto", idv) || !jsonIsString(idv)) continue;
+            nome = jsonAsString(idv);
+        } else {
+            continue;
+        }
+        auto it = libreria.find(nome);
+        if (it == libreria.end()) continue;
+        d = it->second;
+        if (o) {
+            JsonValue cv, hv, lv, ev, uv;
+            if (jsonGet(*o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
+            if (jsonGet(*o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
+            if (jsonGet(*o, "lunghezza", lv) && jsonIsNumber(lv)) {
+                i32 l = (i32)jsonAsNumber(lv);
+                if (l > 0) d.lunghezza = l;
+            }
+            if (jsonGet(*o, "entrata", ev) && jsonIsNumber(ev)) {
+                i32 e = (i32)jsonAsNumber(ev);
+                if (e >= 0) d.entrata = e;
+            }
+            if (jsonGet(*o, "uscita", uv) && jsonIsNumber(uv)) {
+                i32 u = (i32)jsonAsNumber(uv);
+                if (u >= 0) d.uscita = u;
+            }
+        }
+        if (d.lunghezza > 0) out.push_back(d);
+    }
+    return !out.empty();
 }
 }
 
@@ -52,7 +137,17 @@ void Game::caricaLivello(const std::string& livelloId) {
     leggiTemaDaFile(radiceLivello); // colori di ambiente e stile dei cartelloni
 
     std::vector<Road::SegmentDesc> descs;
-    const bool daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
+    bool daFile = false;
+    if (radiceLivello && jsonIsObject(*radiceLivello)) {
+        const JsonObject& rootLivello = jsonAsObject(*radiceLivello);
+        JsonValue campoTracciato;
+        if (jsonGet(rootLivello, "tracciato", campoTracciato) && jsonIsArray(campoTracciato)) {
+            daFile = leggiTracciato(campoTracciato, descs) && !descs.empty();
+        }
+    }
+    if (!daFile) {
+        daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
+    }
     if (daFile) {
         // Ripeti il pattern finche' il giro ha almeno 2*DRAW_DIST segmenti
         // ("lunghezza" conta segmenti): il tracciato e' un circuito; con troppo

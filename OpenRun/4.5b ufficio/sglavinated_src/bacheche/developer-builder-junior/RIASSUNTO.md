@@ -1,8 +1,11 @@
-# RIASSUNTO @developer-builder-junior — turno 19/10 10:56
-- Ruolo: Developer/Builder Junior (4.6); scrittura solo su percorsi del task.
-- Blocchi [ ]/[~]: nessuno assegnato (T1-RUN @sviluppatore + @collaudatore; P1 @sviluppatore; G1 @grafico; H @collaudatore + Andrea; J [ ] escalation; MD0/T5 [-] sospesi).
-- Nessuna modifica di codice, nessun test, nessuna build/gate in questo turno (sessione senza esecuzione comandi).
-- Fonti lette in ordine: RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
-- Consegne turno: diario 1 riga (10:56), RIASSUNTO <=12 righe, report 10:56 in out/developer-builder-junior/.
-- Stato gate T1 (riferimento, non rieseguito): 18/10 22:56 exit 0 soak OK; 19/10 Mac exit 13, giro guidato FALLITO 5/6 livelli (ANDREA_REVIEW T1-Q3); azione a @sviluppatore (tuning percorsi T1-Q5), Junior disponibile per peer review diff/log. H aperto, Pi 400 da fare.
-- Prossimo: in attesa di task dal Capo; nessun PER_CLAUDE.md necessario.
+# RIASSUNTO @developer-builder-junior — turno 19/10 peer review T1-RUN
+- Ruolo: Developer/Builder Junior (4.6); scrittura solo su percorsi del task (report out/ del Junior, STATUS_OFFICINA, bacheche del Junior).
+- Task: peer review indipendente del lavoro di builder-developer su T1-RUN (tuning percorsi), consegna VOCE_SCAMBIO_1175.
+- **ESITO: POSITIVO** su tutti e 6 i criteri; report: `out/developer-builder-junior/REVIEW_T1RUN_VOCE1175_2026-10-19.md`.
+- Verifica: `sh tools/gate_t1.sh soak` → exit 0, `GATE T1: TUTTO OK`; 6/6 GATE PERCORSO OK (rett 52-65%, curva max 0.37-0.88, giro finito 0 frame fuori strada); soak ms/frame medio 0.185 (autore 0.184 / max 0.480, limite 20); replay 2x IDENTICO su tutti i livelli e nelle 4 gare; speed@60=161.79.
+- Perimetro: tuning confinato ai soli `segmenti`/`lunghezza`/`durata_stimata_s` di lv_01, lv_03, lv_04, lv_05 (commit 4dd8f06/e3c1f7d + aggancio lv_05); lv_02/lv_06 dati invariati; nessun asset esterno; CC-BY-4.0; `motore_nuovo/test/` e `tools/` invariati (soglie non abbassate, richiesta T1-Q5 di Andrea).
+- Note non bloccanti al Capo: il working tree contiene anche le modifiche core del blocco R1 (road.h/road.cpp/game.cpp, campo `tracciato`) documentate in VOCE_SCAMBIO_1174 → da recensire col perimetro R1; il riferimento lv_02 40%/0.86 oggi si misura 63%/0.88 per il raccordo R1 (metrica, non dati di lv_02); log gate rigenerato dalla mia verifica (misure dell'autore registrate nel report).
+- Provenienza: nessun materiale esterno introdotto; livello.json già nel repo (CC-BY-4.0, autore @livelli, nessun materiale Sega).
+- Residui fuori scope: runner SDL Mac (v91), fps/temperatura Pi 400 (blocco H), `dati/tracciati/tratti.json` ancora assente, G1 grafico.
+- Consegne: report di review in out/developer-builder-junior/, diario 1 riga, RIASSUNTO <=12 righe, STATUS_OFFICINA.md aggiornato.
+- Nessuna approvazione di release (competenza Capo/Andrea); out/builder-developer/ non modificato.
