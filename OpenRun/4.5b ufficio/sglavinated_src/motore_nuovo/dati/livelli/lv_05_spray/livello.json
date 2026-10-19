@@ -12,18 +12,19 @@
     "durata_stimata_s": 35
   },
   "segmenti": [
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 700},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 450},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
     {"curva": -0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.05, "lunghezza": 600},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.8, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
     {"curva": -0.8, "collina": 0.0, "lunghezza": 250},
     {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
-    {"curva": -1.0, "collina": 0.0, "lunghezza": 300},
-    {"curva": 0.0, "collina": -0.05, "lunghezza": 750},
+    {"curva": -1.0, "collina": 0.0, "lunghezza": 250},
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.9, "collina": 0.0, "lunghezza": 250},
-    {"curva": 0.0, "collina": 0.0, "lunghezza": 600}
+    {"curva": 0.0, "collina": 0.0, "lunghezza": 500}
   ],
   "seme": 8812,
   "tempo_limite_s": 50,
