@@ -46,12 +46,12 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 - Dalle uscite del debugger: i file `.ppm` e le cartelle del soak (si rigenerano col gate).
 
 ## Decisioni v4.5 (default scelti, cambiabili)
-1. Il lavoro dei 12 ruoli v4 (diari, LEGGIMI, consegne) e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
-2. La panchina modelli e' in `strumenti/panchina.txt` non cambia.
-3. Il capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
+1. Il lavoro dei agesnti ruoli precedenti e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
+2. La panchina modelli e' in `strumenti/panchina.txt`.
+3. Il @capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
 4. Grafico e ricercatore sono spenti nel ciclo base; il giro parallelo `strumenti/giro.sh` usa i 4 ruoli operativi.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il grafico; il ricercatore propone in `libreria/ricerca/`.
-6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli (@coder -> @sviluppatore, @debugger -> @collaudatore, ecc.) e nei percorsi `out/collaudatore/`; stati e contenuti dei blocchi sono quelli della v4.
+6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli (@coder -> @sviluppatore, @debugger -> @developer-junior) e nei percorsi `out/collaudatore/`.
 
 ## Stato al passaggio (17 ott 2026)
 Tappa 1. Gate reale OK (3 livelli, replay 2x identico, 0,09 ms/frame, soak 30000 frame). Aperti: H, P1, T1-RUN (punto 4 sprite veri nel gate, punto 8 test di Andrea su Mac e Pi 400), M, J. MD0 e T5 in attesa.

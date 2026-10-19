@@ -24,7 +24,7 @@ RISPOSTA DI ANDREA:
 
 ## Tappa attiva: 1 — Gate T1 (blocco T1-RUN)
 
-Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non collidere con le decisioni storiche D1-D4. Sono richieste legacy senza risposta registrata in questa fonte.
+Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non collidere con le decisioni storiche D1-D4.
 
 ### T1-Q1 | Chiusura proposta del gate T1
 
@@ -38,9 +38,9 @@ Promozione storicamente subordinata a screenshot del gameplay e build CMake veri
 DEFAULT usato nel frattempo: sì — promuovi P1 a [x] (screenshot bloccati da shell negata, prova differita).
 Risposta di Andrea: sì.
 
-### T1-Q3 | Prova manuale su Mac e Pi 400/Linux
+### T1-Q3 | Prova manuale su Mac e Pi 400/RetroPie
 
-Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400.
+Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400/RetroPie.
 DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
 Esito/risposta di Andrea (2026-10-19, Mac): `sh tools/gate_t1.sh soak` eseguito su Mac. Risultato: **GATE T1: FALLITO (exit 13)**.
 
@@ -68,8 +68,8 @@ Azione richiesta a @developer (ANDREA_REVIEW T1-Q3): rivedere generazione/parame
 Domanda: confermare soglie giro guidato (rettilineo ~>=35-40%, curva max coerente 0.6-1.0, riferimento lv_02_atomico rettilineo 40% / curva max 0.86) e che builder-developer proceda col tuning un parametro alla volta con `sh tools/gate_t1.sh soak`?
 Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) no, ridefinire soglie e parametri
 Raccomandazione: A
-RISPOSTA DI ANDREA (2026-10-19, via Claude): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per sviluppatori. Serve una logica di tracciato per i tracciati. Compito operativo: blocco R1 in RICHIESTA.md (tratti con nome, regole per pista, gate che indica il tratto da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il Capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
-ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su RetroPie e Raspberry Pi 400. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Pi/RetroPie oltre a non rompere la build Linux. Note per allora: RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
+RISPOSTA DI ANDREA (2026-10-19): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per @developer. Serve una logica di tracciati consecutivi per la gara. Compito operativo: blocco R1 in RICHIESTA.md (tratti con tema, tracciati per percorsi, gate che indica il tratto del percorse da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il @capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
+ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su Raspberry Pi 400/RetroPie. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Raspberry Pi 400/RetroPie oltre a non rompere la build Linux. Note per allora: Raspberry Pi 400/RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
@@ -149,7 +149,7 @@ Domanda:
 Dopo peer review incrociata su R1 e gate `sh tools/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
 Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B) no, si procede direttamente a Pi 400 dopo peer review
 RISPOSTA DI ANDREA: A
-Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
+Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Raspberry Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
 
 
 
@@ -159,15 +159,14 @@ Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come 
 
 Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di guida convincente. Le priorita' indicate erano:
 
-1. Migliorare percorso stradale e feeling della velocita', elementi decorativi nei percorsi distribuiti, fluidita' e scorrevolezza del percorso, scorrimento del gioco, risposta ai controlli di gioco, Sterzo non reattivo da veicolo fermo, percezione di velocita' e fluidita' del movimento 'external world' rispetto a veicolo guidato piu scorrevole, con elementi grafici meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico, per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
-2. Migliorare principi di guida: accelerazione con limite, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento a bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della corsa).
+1. Migliorare percorso stradale e feeling della velocita', elementi decorativi nei percorsi distribuiti, fluidita' e scorrevolezza del percorso, scorrimento 60hz gioco, risposta ai controlli di gioco, Sterzo non reattivo da veicolo fermo, percezione di velocita' e fluidita' del movimento 'external world' rispetto a veicolo guidato, con elementi grafici meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico, per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
+2. Migliorare principi di guida: accelerazione con limite da migliorare, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento a bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della corsa).
 3. Rappresentare nel pannello velocita' (HUV) e risposta del motore simulato con cambio automatico animazioni brani audio radio interpretando segnali dei brani .mx Traker.
 
-Perfezionamento dei Personaggi animati sono rinviati a fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
+Perfezionamento e implementazione dei Personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
 
 
 ## Nuovo feedback o decisione (Andrea, 19 ott)
-
 **frequenza di gioco: 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2). Parte 2 nello stesso file: SDL, compilazione e compatibilita' multipiattaforma.**
 
 # Nota di Andrea per sviluppatori — frequenza di gioco (19 ott 2026)

@@ -23,7 +23,6 @@ sglavinated_src/UFFICIO/Officina/Test area/crash/
 sglavinated_src/UFFICIO/Officina/Test area/sterzo/
 sglavinated_src/UFFICIO/Officina/Test area/curve/
 sglavinated_src/.fuori_posto.log
-sglavinated_src/archivio_v4/fuori_posto/
 # Cartelle di build CMake (si rigenerano con cmake; contengono percorsi assoluti del Mac)
 build/
 build_*/

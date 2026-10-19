@@ -1,10 +1,10 @@
 # Tappe del progetto (una alla volta, ognuna con il suo controllo)
 
-Regola: si lavora solo sulla tappa attiva. Una tappa si chiude quando passa il suo **gate**; poi review, poi interventi di Andrea, poi la tappa dopo.
+Regola: si lavora solo sulla tappa del percorso di gara. Una tappa si chiude quando passa il suo **gate**; poi review, poi interventi di Andrea, poi la tappa dopo.
 
 | # | Tappa | Gate (quando è chiusa) | Debug |
 |---|---|---|---|
-| **1** | **La ROM parte, si vede qualcosa che si muove, si pilota** | ROM `.md` avviata su emulatore: strada che scorre, auto che accelera (A), frena (B), sterza (sinistra/destra) | build pulita, nessun crash in 5 minuti |
+| **1** | **Il gioco parte, si visualizza il payer che si muove, si pilota** | strada che scorre, auto che accelera (A), frena (B), sterza (sinistra/destra) | build pulita, nessun crash in 5 minuti |
 | 2 | Input completi | pad e tastiera rispondono a tutti i tasti; Start mette in pausa | test di ogni tasto |
 | 3 | Menu e interfaccia | logo → splash → menu (Start, Opzioni) → gara; HUD con velocità e tempo | navigazione avanti e indietro senza blocchi |
 | 4 | Auto e strada pseudo-3D | sprite dell'auto con 3 pose (dritta, sinistra, destra); curve e salite | fps stabili, nessun sprite che sparisce |

@@ -1,14 +1,5 @@
 # OpenRun — handover
 
-Read order for an AI agent: **this file → BUILD.md → tools/patch_z.py**.
-`tools/h40z_v74.s` is the v74 reference snapshot (read it, never edit it).
-
-Build di lavoro corrente: **v77**, `OutRun_Sglavinated_v77.gen` =
-`197866c5ff77d9d7784706472518bea8145f1dbc`. **Solo dati**: le metriche sono identiche alla
-v76 (left 36 show/leak 123, right 36/157, wild 41/129; wrong 0, repeat 0, vsbad 0).
-
-## 0. Stato v77 — fatto / da fare
-
 ### Fatto e verificato
 | Intervento | File | Esito misurato |
 |---|---|---|
@@ -41,23 +32,12 @@ v76 (left 36 show/leak 123, right 36/157, wild 41/129; wrong 0, repeat 0, vsbad 
   indicizzate a `(liv-1)*6` **sommato all'indirizzo**: indicizzando come un blocco unico
   da 32 si legge dentro la tabella successiva (era il `wrong` 3/3/8).
 
-### Consegnata: **v85** (`c7276aa46f94594bac86450dd9feb7b37753ea99`)
+### Consegnata: **v85**
 
 - **Escalation** con decadimento **a tempo** (20 s puliti → livello −1) e rampa del personaggio:
   livello 0 Gianni, 1 → 50% Gesù, 2 → 75%, 3 → sempre. Misurato: livello 3 in ogni seed, **Gesù 100% dal 4° errore**.
-- **Inattività** (task D): 10 s senza tasti in gara → Gianni dice una delle 4 frasi già esistenti (id 35-38,
-  `itab` dedicata). Nessun testo nuovo, si resta a 156.
+- **Inattività** (task D): 10 s senza tasti in gara → Gianni dice una delle 4 frasi già esistenti (id 35-38, `itab` dedicata). Si resta a 156.
 - Gate a 5 seed: `wrong`/`vsbad` 0 su 15 run, desync 0 su 15 run, leak entro soglia, `itab` 0 nei gate.
-
-**Ripristino: la v78** (`OutRun_Sglavinated_v78.gen`, `a07946b7`), non la v79 — la v79 scriveva
-`VAR196` dentro il buffer HUD e i controlli oggi la rifiutano. Il codice di ripristino è
-`tools/patch_z.py.bak` = v78, e ricostruisce senza opzioni speciali.
-
-### Fatto in v78b/v85
-- **Escalation**: crash → livello → frasi più dure **e** personaggio più aggressivo.
-  wild 5 seed: livello max 3, Gesù 89-97% dal 4° errore.
-- **Inattività (task D)**: 10 s senza tasti in gara → Gianni dice una delle 4 frasi
-  (id 35-38, già scritte nella v77). Nessun testo nuovo, si resta a 156.
 
 ### File fuori da `h40z.s` (l'assembly non è tutto in un posto)
 | cartella / file | contenuto | ruolo |
@@ -66,7 +46,6 @@ v76 (left 36 show/leak 123, right 36/157, wild 41/129; wrong 0, repeat 0, vsbad 
 | `smoke/` | fumetti di fumo e di schermata | dati grafici |
 | `hud/` | ricolorazione HUD e tile del punteggio | scrive in VRAM |
 | `gstatic/` | tabelle statiche (`gmask.s`, maschere) | dati |
-| `shots/*.s` | blob dei fumetti già convertiti | dati |
 
 `rst/` finisce nelle prove ROM ma **non** passa per `patch_z.py`: se lo modifichi va
 rigenerato `rst.bin`. Attenzione: `rststep` in `h40z.s` non c'entra niente, è la routine
@@ -80,28 +59,18 @@ nostra), o se `rst/rst.s` smette di coprire esattamente 0xFF5300+2304 e 0xFF8F00
 Scansiona `h40z.s` **e** `rst/rst.s`. Libero utile: **224-255**; 192-223 è il buffer
 HUD (`lea 0xFF8FC0`), e `VAR196` ci era finito per errore.
 
-### Provato e **riportato indietro**
-| Intervento | Perché |
-|---|---|
-| UFO annullato su crash/uscita di strada (`j_rest` su VAR168/VAR166) | i vincoli passavano ma gli show non cambiavano (35/36/44 vs 36/36/41); il caso da servire è rarissimo (3 eventi su 44) e per quelli il ritardo era **minore** senza UFO; `leak` saliva a 396 su wild. Codice commentato in `patch_z.py` con le misure |
-
 ### Da fare, in quest'ordine
-1. **Test su Pi** della build corrente.
-2. **Frasi**: rivedere i testi esistenti (137 originali, alcuni banali) e usare le ~34 frasi già scritte ma non inserite per il limite di 156.
-3. **Stabilità UFO**: la posizione è legata al contatore globale (`x = 128+340-(frame&0x7FF)`) invece di un tempo proprio. Serve un VAR dedicato, azzerato da `ufo_cancel`. Spegnimenti misurati: 7-8 per run (57-75% blocco VRAM rubato, 25-43% frame senza budget CPU).
-4. **Filtro velocità sugli show periodici**: gli show interrotti hanno velocità d'ingresso mediana 308 contro 93 dei normali. Sopra ~250 non partire. Misurare `short` prima/dopo.
-5. **Codici di ritorno di `salloc`** (0 ok, 1 riprova, 2 rinuncia): misurare se fallisce per budget CPU o per ricerca blocchi. Se è budget, non forzare.
-6. **Punto 3, da decidere**: oggi Gesù esce a **ogni** crash (`hk_after`: "any crash, even a spin or a bump") e l'uscita di strada fa uscire **Gianni**. Nel test: 21 Gesù / 16 Foglia.
+1. **Test** della build corrente.
+2. **Frasi**: rivedere i testi esistenti (137) e usare le ~34 frasi già scritte.
+3. **UFO**: la posizione è legata al contatore globale (`x = 128+340-(frame&0x7FF)`) invece di un tempo proprio. Serve un VAR dedicato, azzerato da `ufo_cancel`.
+6. **Gesù**: oggi esce a **ogni** crash (`hk_after`: "any crash, even a spin or a bump") mentre l'uscita di strada fa uscire **Gianni**.
 7. **Escalation**: dopo 3, 4 e 5 stabili. Slot liberi `VAR+180/182/184` (0xFF8FB4/B6/B8). Più errori → messaggio più forte e personaggi più frequenti.
 
 ### Idee accantonate
-- **UFO che "uccide"**: richiesta respinta nella cornice "uccide i tossici/le persone". Un effetto arcade sul traffico (un'auto che sparisce o va in testacoda) è una meccanica diversa ed è una decisione del progetto. Va in fondo alla lista.
-- Macchina che "vola" oltre una velocità estrema, bump con altre macchine, musica `.xm` distribuita nel gameplay: noti, non implementati.
+- **UFO che "uccide"**: Un effetto arcade sul traffico (un'auto che sparisce o va in testacoda).
+- Macchina che "vola" oltre una velocità estrema, bump con altre macchine.
 
-## 1. What the hack is
-Mega Drive OutRun (USA/Europe, 1 MB) + a 68000 VBlank hook at `0x3B0000` that adds characters, effects and new HUD, plus a Z80 PCM radio player. Output ROM 4 MB. Target: **PAL**, RetroPie Pi 400, lr-genesis-plus-gx. NTSC not a goal.
-
-## 2. Characters (cause → effect)
+## 1. Characters (cause → effect)
 | Character | Image | Trigger | Phrase source | Behaviour |
 |---|---|---|---|---|
 | **Gianni** (cannabis leaf, the tempter) | `grafica/gianni_8_pose.png` | off-road / road edge ≥8 frames (cooldown 24) → `otab`; also periodic (`pr_tab` interval) → `ph_tab` | Gianni ids | slides in from right, sway `sw_tab`, pose every 16 frames, smoking anim; exits with `xo_tab` (24 fr) |
@@ -109,13 +78,11 @@ Mega Drive OutRun (USA/Europe, 1 MB) + a 68000 VBlank hook at `0x3B0000` that ad
 | **UFO** | `grafica/ufo_2_frame.png` | random/periodic, `(frame&0x7FF)<420`, only if no show | none | crosses right→left, wobble `tw` |
 | Gianni alt frames ("daughter", pink) | `grafica/ds_frames.png` | alternate pose set (DS0/DS1, palette DPAL) | — | used by `gfr0` when VAR62 set |
 
-Phrase bubble: 96×24 px = 3 sprites 4×3 tiles, appears ~frame 30 (`bz_tab` bounce). 156 bubbles. Text list with id/character: `tools/gianni12.py` (`PHR` + `CHAR`) and JSON `phrases`.
-
 **Phrase id → character ranges (hard-coded in asm, keep consistent):**
 Gianni 0–26, 34–65, 85–104, 121–124, 134–136, 137–140, 142–146, 152–153 · Gesù 27–33, 66–84, 105–120, 125–133, 141, 147–151, 154–155.
 Fonte unica: `CHAR` in `tools/gianni12.py`, letta da `lr/phr.py` (usata da `final.py` e `chk.py`). Non modificare più gli insiemi a mano nei test.
 
-## 3. Customized elements (all non-original content)
+## 2. Customized elements (all non-original content)
 | Element | Where in code | Data / generator | Preview |
 |---|---|---|---|
 | Gianni sprite (8 static poses, 4 pieces 4×4) | `show_update`, `gm_do`, `gmask` | `shots/g_frames.bin` (from `tools/gianni12.py` art code) | `grafica/gianni_8_pose.png` |
@@ -134,7 +101,7 @@ Fonte unica: `CHAR` in `tools/gianni12.py`, letta da `lr/phr.py` (usata da `fina
 
 Regenerate all previews: `python3 grafica/render_assets.py` (run from root; writes to `grafica/`, palettes for title/UFO approximate).
 
-## 4. Rules (do not break)
+## 3. Rules (do not break)
 1. **Zero glitches**: VBlank hook must finish inside budget. Every VRAM/DMA write goes through `room()` (PAL budget `PBUDGET=58` lines). Test result must be `vsbad 0`.
 2. **VRAM**: characters borrow 16-tile blocks only from **28–87**, never 62–63, 74–77, never 0–27 (sky/HUD) or ≥88. Borrowed tiles are backed up in `BAKT` and restored. `hidemine` hides game sprites using borrowed blocks in the same frame.
 3. **Sprites**: our slots are 70–76 (characters/UFO/bubble), 73–76 title smoke. `sat_scan` chain 0→70..76→78.
@@ -144,29 +111,4 @@ Regenerate all previews: `python3 grafica/render_assets.py` (run from root; writ
 7. **Animations at game frame rate**, no jitter: pose changes on fixed frame counts, sway/bob tables only.
 8. Pause, menus, demo (attract mode) must stay untouched — no characters there.
 9. Edit only `tools/patch_z.py` (append `rep(old,new)` before the LAST `open('tools/h40z.s','w')`). Never hand-edit generated `.s`.
-10. Content: Gianni tempts with drug slang, Gesù answers with an anti-drug message. Bubble text: UPPERCASE, max 2 lines, each ≤88 px (~16 chars). No sexual content.
-11. Delivery: one `.gen` file for testing on the Pi.
-
-## 5. Free resources
-ROM free: 0x0EDCC2–0x0EFFF7 (8 KB), 0x0FE080–0x0FFFFF (7 KB), 0x390000–0x39FFFF (64 KB), 0x3A8E40–0x3AFFFF (28 KB), 0x3DA880–0x3DFFFF (21 KB).
-RAM: hook vars at `VAR` 0xFF8F00 (offsets in JSON), work buffers 0xFF4000–0xFF5BFF, DANGER map 0xFF8D00.
-
-## 6. Why things are the way they are (regression traps)
-| Symptom seen before | Cause | Fix kept in v74 |
-|---|---|---|
-| Characters rare in PAL | `room()` assumed NTSC | PAL VBLANK + line-wrap logic |
-| Blank bubbles | game rewrote palette mid-show | `palguard` |
-| Garbage in sky | plane scan covered half plane, blocks 0–27 | full 64-row scan + blacklist |
-| Same phrase repeated | reselection during loading | counter VAR178 increments at `ss_go` |
-| Jesus with Gianni phrase / vice versa | table picked without char check | guards in `ph_nx`, xtab needs VAR24 |
-| No Jesus after crash | alternation rule | removed; crash overrides retries |
-| Gianni vanishing abruptly / garbled | no exit anim; overwritten tiles | `xo_tab` exit; `gcheck` every frame when VAR46≥8 |
-| Billboards sharing character tiles | `sat_scan` never reached game sprites | jump 70→78 |
-| Hook overrun (stutter) | `hidemine` too long | re-check room every 8 entries |
-| Choppy Gianni | anim + reload every pose | static body art + `gmask` skip identical pieces |
-
-## 7. Ideas not done
-SEGA logo → Sglavinated splash · reaction to car-vs-car collision · characters in demo.
-
-## 8. Test
-`cd lr && python3 final.py ../out.gen 16000 left` (and `right`, `wild`). Accept: vsbad 0, wrong 0. v74 reference: ~30 shows/16000 frames, short 1–4, leak frames <200.
+10. Content: Gianni tempts with drug slang, Gesù answers with an anti-drug message. Bubble text: UPPERCASE, max 2 lines, each ≤88 px (~16 chars).
