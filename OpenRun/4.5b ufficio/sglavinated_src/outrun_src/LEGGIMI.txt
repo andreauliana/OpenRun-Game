@@ -1,3 +1,3 @@
-Qui va la ROM base (e' materiale Sega):
+Qui va la ROM base (materiale Sega):
 OutRun (USA, Europe).md   (1 MB, SHA1 95d2055ffd679ab19f0d4ca0af62a0d565bc258e)
-Per la versione libera questa cartella deve restare vuota.
+Questa cartella deve restare vuota.

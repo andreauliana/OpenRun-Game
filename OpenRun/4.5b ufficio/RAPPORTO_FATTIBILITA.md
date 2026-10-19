@@ -63,16 +63,12 @@ Scorciatoia B: solo se `Resources` di ZgzInfinity/OutRun risulta sostituibile e 
 ## 6. Rischi e mitigazioni
 | Rischio | Mitigazione |
 |---|---|
-| Modelli gratuiti deboli su C++ di 3-5 mila righe | piccoli passi, test a ogni passo, escalation a Claude (SCAMBIO.md) |
-| Troppo lavoro per una persona | partire dal prototipo di fase 1: se non e' soddisfacente, si chiude con poco speso |
-| Asset "troppo simili" all'originale | direzione artistica propria; revisione @reviewer |
-| Licenza | GPL/MIT scelta fin dall'inizio; crediti per ogni risorsa |
+| Modelli gratuiti deboli su C++ | piccoli passi, test a ogni passo, escalation a Claude (SCAMBIO.md) |
+| Licenza | GPL/MIT scelta fin dall'inizio |
 
 ## 7. Non verificato
-- Contenuto di `Resources` in ZgzInfinity/OutRun (GitHub ha bloccato la lettura della cartella) e data ultimo commit.
 - SFML su Pi 400; SDL2 nella versione di RetroPie.
 - Interpretazione legale della derivazione di Cannonball.
-- Ogni stima di tempo e di probabilita' e' qualitativa.
 
 ## Fonti
 - Cannonball (djyt): https://github.com/djyt/cannonball ; licenza: https://raw.githubusercontent.com/djyt/cannonball/master/docs/license.txt

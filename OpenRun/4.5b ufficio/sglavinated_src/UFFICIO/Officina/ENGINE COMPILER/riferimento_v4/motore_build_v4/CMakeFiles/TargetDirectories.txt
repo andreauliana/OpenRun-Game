@@ -1,0 +1,4 @@
+/Users/andreauliana/Desktop/Outrun Sglavinated Edition v3 (open)/sglavinated_src/motore_nuovo/build/CMakeFiles/sglavinated_core.dir
+/Users/andreauliana/Desktop/Outrun Sglavinated Edition v3 (open)/sglavinated_src/motore_nuovo/build/CMakeFiles/sglavinated_runner.dir
+/Users/andreauliana/Desktop/Outrun Sglavinated Edition v3 (open)/sglavinated_src/motore_nuovo/build/CMakeFiles/edit_cache.dir
+/Users/andreauliana/Desktop/Outrun Sglavinated Edition v3 (open)/sglavinated_src/motore_nuovo/build/CMakeFiles/rebuild_cache.dir

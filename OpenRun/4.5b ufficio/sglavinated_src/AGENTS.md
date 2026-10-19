@@ -1,16 +1,16 @@
 # OpenRun 4.6 — regole operative
 
-Queste regole si applicano agli agenti OpenCode avviati da `sglavinated_src/`. Le decisioni riservate ad Andrea restano ad Andrea. Gli agenti non leggono né modificano `../../OutRun/`, l'area personale `../`, l'area esterna a questa folder 'sglavinated_src', o i comandi dell'utente senza autorizzazione esplicita.
+Queste regole si applicano agli agenti OpenCode avviati da `sglavinated_src/`. Le decisioni riservate ad Andrea restano ad Andrea. Gli agenti non leggono né modificano `../../OutRun/`, l'area personale `../`, l'area esterna a questa folder 'sglavinated_src', o i comandi riservati al utente Andrea senza autorizzazione esplicita.
 
 ## Gerarchia
 
 ```text
 sglavinated_src/
 ├── UFFICIO/                         # coordinamento del Capo
-│   ├── Dipartimento Grafico/        # Designer / Art Director
-│   │   ├── TOOLS/                  # strumenti grafici
-│   │   └── Libreria/
-│   │       └── Shared asset/       # asset approvati per la produzione
+│   ├── Dipartimento Grafico/        # Area di lavoro per @grafico
+│   │   ├── TOOLS/                   # strumenti creativi @grafico
+│   │   └── Libreria/                # asset
+│   │       └── Shared asset/        # asset approvati per la produzione
 │   └── Officina/                    # @developer + @developer-junior
 │       ├── TOOL/                    # strumenti di sviluppo
 │       ├── ENGINE COMPILER/         # destinazione dei sorgenti di prodotto
