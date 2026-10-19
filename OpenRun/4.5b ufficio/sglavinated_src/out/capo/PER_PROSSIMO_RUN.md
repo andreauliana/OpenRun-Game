@@ -2,7 +2,7 @@
 
 ## Cosa è cambiato (verificato eseguendo, non solo leggendo)
 - `cmake --build build --target prova_gate` **compila e passa** (g++/cmake in cloud Linux, Release).
-- Il pacchetto del mattino diceva "mai compilato": non è più vero. I 3 rilievi del reviewer sono applicati e la build ha trovato 2 errori VERI, ora corretti:
+- Il pacchetto del mattino diceva "mai compilato": non è vero. I 3 rilievi del reviewer sono applicati e la build ha trovato 2 errori VERI, ora corretti:
   1. `src/game/game.h`: mancava `using gameplay::ShowLayout;` (game.cpp:99 non compilava).
   2. `test/prova_gate.cpp`: mancava `using namespace sgl;` (u32/i32/Framebuffer non risolti). Il file è stato riscritto.
 - Applicati i 3 rilievi: include `"game/game.h"` e `"render/framebuffer.h"`; guardia `if (segs_.empty() || totalLen_ <= 0) return;` in `Road::project()`; header SPDX MIT.
@@ -27,8 +27,8 @@
 ## Cosa NON è verificato
 - fps e temperatura sul Pi 400 (serve Andrea).
 - Il runner SDL2 (SDL2 assente in cloud: il target è escluso). Nessuno ha ancora guardato la guida in finestra dopo queste modifiche.
-- Giudizio di Andrea sulla guida: v90 diceva NON OK, e nessuna cifra qui lo smentisce o lo conferma.
-- Screenshot: la strada con strisce e curve è corretta, ma sprite e cartelloni sono ancora rettangoli segnaposto, niente traffico, niente personaggio/fumetto.
+- Giudizio di Andrea sulla guida: v90 diceva NON OK.
+- Screenshot: la strada con strisce e curve è corretta, ma sprite e cartelloni sono ancora rettangoli segnaposto, niente traffico, niente personaggio/fumetto rifiniti, solo 'box' rettangolari di blocchi Blu e Verdi che si muovono. Il personaggio Gianni (foglia) dovrebbe essere associato al box verde, Gesu dovrebbe essere associato al box azzurro se possibile.
 
 ## Problemi trovati da sistemare
 1. Fuoristrada: velocità da ~160 a ~6 quasi di colpo. Probabile eccesso, da tarare.
