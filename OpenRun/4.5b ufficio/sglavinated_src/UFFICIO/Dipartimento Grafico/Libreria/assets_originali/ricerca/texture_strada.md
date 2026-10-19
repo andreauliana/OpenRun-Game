@@ -11,4 +11,4 @@ Categoria: texture asfalto/strada (riferimento; il motore pseudo-3D usa soprattu
 | cc0-textures.com Road 001 | CC0 Textures | CC0 | https://cc0-textures.com/t/cc0t-road-001 | PARZIALE | PBR road CC0. Stesso discorso: foto-realistica, da adattare pesantemente se usata. |
 | City Kit (Roads) | Kenney | CC0 1.0 (verificata) | https://kenney.nl/assets/city-kit-roads | NO | Modelli 3D (strade, barriere, semafori), non texture 2D. Riferimento elementi strada, non usabile come texture. |
 
-Raccomandazione: nessuna texture strada e' pronta "as-is" per un pseudo-3D 320x224. La strada sara' disegnata a segmenti (codice/dati). Se serve una texture di superficie, usare Asphalt Road Texture Free (CC0 verificato) adattata alla palette e inserirla in CREDITI.md.
+Raccomandazione: nessuna texture strada e' pronta "as-is" per un pseudo-3D. La strada sara' disegnata a segmenti (codice/dati). Se serve una texture di superficie, usare Asphalt Road Texture Free (CC0 verificato) adattata alla palette e inserirla in CREDITI.md. Da integrare.

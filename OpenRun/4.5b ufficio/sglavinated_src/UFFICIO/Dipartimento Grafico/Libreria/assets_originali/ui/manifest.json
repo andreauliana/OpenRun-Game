@@ -1,7 +1,7 @@
 {
   "descrizione": "Cartella UI: script di rigenerazione e asset dell'interfaccia (font, titolo, menu, HUD) del progetto Sglavinated Edition.",
   "licenza": "MIT",
-  "autore": "@developer (reparto grafico, progetto Sglavinated)",
+  "autore": "@grafico (reparto grafico)",
   "originale": true,
   "riferimenti_sega": false,
   "copre": [
