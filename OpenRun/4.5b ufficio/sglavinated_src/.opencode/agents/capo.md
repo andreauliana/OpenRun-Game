@@ -4,7 +4,6 @@ model: opencode/nemotron-3.5-super-vl-free
 # fallback (cambia manualmente se il modello sopra non è disponibile): longcat-2.5-preview
 mode: primary
 permission:
-  execute: deny
   read:
     "../ANDREA/**": ask
     "out/grafico/STATUS_GRAFICO_PER_CAPO.md": allow

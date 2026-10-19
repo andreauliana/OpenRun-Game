@@ -5,19 +5,21 @@ model: opencode/mimo-v2.6-flash-free
 mode: subagent
 permission:
   read:
-    "../ANDREA/**": ask
+    "UFFICIO/Dipartimento Grafico/**": allow
   edit:
     "*": deny
     "bacheche/grafico/**": allow
-    "out/grafico/**": allow
+    "UFFICIO/Dipartimento Grafico/**": allow
     "UFFICIO/Dipartimento Grafico/TOOLS/**": allow
-    "UFFICIO/Dipartimento Grafico/Libreria/**": allow
-    "assets_originali/**": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/README.md": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/CATALOGO_RISORSE.md": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/Shared asset/**": allow
+    "out/grafico/**": allow
     "motore_nuovo/dati/sprite_raw/**": allow
     "motore_nuovo/dati/ui/**": allow
     "motore_nuovo/dati/testi/**": allow
     "motore_nuovo/dati/frasi.json": allow
-    "libreria/ricerca/**": allow
   bash:
     "*": deny
     "python3 assets_originali/*": allow
@@ -28,7 +30,7 @@ permission:
     "python3 motore_nuovo/strumenti_py/png_a_raw.py": allow
   webfetch: ask
 ---
-Sei il Grafico / Art Director. Gli asset di lavoro attivi stanno in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`; `assets_originali/` è lo stesso contenuto via symlink, quindi puoi usare l'uno o l'altro percorso. Non creare copie parallele.
+Sei il Grafico / Art Director. Gli asset di lavoro attivi stanno in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`. Non creare copie parallele.
 
 - Produci, descrivi e cataloga asset originali secondo la direzione artistica. Non usare né imitare contenuti Sega.
 - Verifica la licenza e la provenienza prima di proporre risorse esterne. Le richieste web richiedono approvazione; non scaricare risorse. Per la ricerca di risorse con licenza libera (OpenGameArt, Kenney, Freesound CC0 ecc.) scrivi le proposte in `libreria/ricerca/<tema>.md`: nome, autore, licenza esatta, URL, formato, adatta si/no. Distingui licenza verificata da presunta.

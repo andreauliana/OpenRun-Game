@@ -5,8 +5,6 @@ model: opencode/longcat-2.5-preview-free
 mode: subagent
 permission:
   read:
-    "../ANDREA/**": ask
-    "assets_originali/**": allow
     "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
   edit:
     "*": deny
@@ -32,9 +30,7 @@ permission:
     "sh tools/gate_t1.sh *": allow
     "sh tools/check_sdl_init.sh": allow
     "sh tools/check_sdl_init.sh *": allow
-    "make *": allow
     "ctest --test-dir UFFICIO/Officina/build*": allow
-    "./UFFICIO/Officina/build/prova_gate *": allow
     "UFFICIO/Officina/build/prova_gate *": allow
     "git status": allow
     "git status *": allow
@@ -43,7 +39,7 @@ permission:
     "git log *": allow
     "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
-    "python3 motore_nuovo/strumenti_py/*": allow
+    "python3 motore_nuovo/strumenti_py/png_a_raw.py": allow
     "ls *": allow
     "grep *": allow
     "head *": allow

@@ -5,8 +5,6 @@ model: opencode/longcat-2.5-preview-free
 mode: subagent
 permission:
   read:
-    "../ANDREA/**": ask
-    "assets_originali/**": allow
     "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
   edit:
     "*": deny
@@ -16,7 +14,6 @@ permission:
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
     "UFFICIO/Officina/Test area/strumenti/**": allow
-    "motore_nuovo/src/**": allow
     "motore_nuovo/test/**": allow
   bash:
     "*": deny
@@ -27,9 +24,7 @@ permission:
     "sh tools/gate_t1.sh *": allow
     "sh tools/check_sdl_init.sh": allow
     "sh tools/check_sdl_init.sh *": allow
-    "make *": allow
     "ctest --test-dir UFFICIO/Officina/build*": allow
-    "./UFFICIO/Officina/build/prova_gate *": allow
     "UFFICIO/Officina/build/prova_gate *": allow
     "git status": allow
     "git status *": allow
@@ -38,8 +33,6 @@ permission:
     "git log *": allow
     "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
-    "python3 motore_nuovo/test/*": allow
-    "python3 motore_nuovo/strumenti_py/*": allow
     "ls *": allow
     "grep *": allow
     "head *": allow
@@ -48,9 +41,9 @@ permission:
     "pwd": allow
   webfetch: deny
 ---
-Sei il Developer Junior. Lavora solo sul task e sui percorsi indicati dal Capo; in questa fase i test sorgente attivi restano in `motore_nuovo/test/`.
+Sei il Developer Junior. Lavora solo sui test e sui percorsi indicati dal Capo; in questa configurazione non hai permessi permanenti di scrittura su `motore_nuovo/src/`. Se serve contribuire al codice di prodotto, Andrea deve autorizzare un perimetro temporaneo e specifico prima del task.
 
-- Puoi contribuire a codice e test entro il perimetro assegnato. Non cambiare file di configurazione/build non assegnati e non modificare output generati.
+- Contribuisci ai test e alla diagnosi entro il perimetro assegnato; la modifica del codice di prodotto richiede un’autorizzazione temporanea esplicita. Non cambiare file di configurazione/build non assegnati e non modificare output generati.
 - Per test interni usa `sh tools/run_tests.sh` o `sh tools/gate_t1.sh`; per verificare il runner SDL usa `sh tools/check_sdl_init.sh` dopo averlo compilato. Questi wrapper scrivono gli output generati nell'area Officina autorizzata.
 - A fine task aggiorna `UFFICIO/Officina/STATUS_OFFICINA.md` con il report corrente e una breve sintesi dei report precedenti pertinenti; non copiare i log nel documento.
 - Quando sei autore, non approvare il tuo lavoro. Se il Capo ti assegna la review del @developer, verifica diff, requisiti, test, log e regressioni e restituisci rilievi o esito motivato.
