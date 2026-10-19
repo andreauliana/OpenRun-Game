@@ -7,7 +7,7 @@ Aggiornato: 2026-10-19 07:20 (ora locale). Questo è l'unico handoff operativo d
 | Voce | Stato / evidenza |
 |---|---|
 | Checkpoint tecnico | [CP-003](../../Checkpoint%20Revision/CP-003-status-officina-e-test.md) — aperto, review indipendente da assegnare |
-| Ultimo report sviluppatore | [VOCE_SCAMBIO_1164.md](../../out/builder-developer/VOCE_SCAMBIO_1164.md), 2026-10-19 07:14 (builder-developer) |
+| Ultimo report sviluppatore | [VOCE_SCAMBIO_1165.md](../../out/builder-developer/VOCE_SCAMBIO_1165.md), 2026-10-19 07:23 (builder-developer) |
 | Gate registrato | `GATE T1: TUTTO OK` nel [log Officina](./Test%20area/gate_t1.log), aggiornato alle 22:56 da `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak`, exit 0 dichiarato per entrambi; il log non registra da solo l'exit code del processo |
 | Ultimo exit code dichiarato | 0 per `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak` alle 22:56; 6 livelli + soak 30000 frame lv_01_neon, replay identico, accelerazione, ribaltamento/ripartenza, sterzo e continuità curve OK; T1-RUN [x] per DEFAULT T1-Q1. Nessun riesecuzione in questo turno (sessione senza esecuzione comandi); ultimo esito noto invariato. |
 | Build | Configurazione Release in `UFFICIO/Officina/build/`; CMake cache e output compilati presenti |
@@ -134,3 +134,10 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_0720.md; questo status aggiornato.
 - Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
 - In attesa: task dal Capo.
+
+## Report turno 07:23 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer (DEFAULT T1-Q4: non attivare); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (ANDREA_REVIEW T1-Q3/T1-Q8).
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
+- Consegne scritte: bacheche/builder-developer/diario.md (1 riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1165.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.

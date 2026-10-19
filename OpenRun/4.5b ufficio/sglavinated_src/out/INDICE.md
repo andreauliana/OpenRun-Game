@@ -2,12 +2,13 @@
 
 | Ruolo/sezione | File | Data | Byte |
 |---|---|---|---|
+| builder-developer | `out/builder-developer/VOCE_SCAMBIO_1165.md` | 19/10 07:25 | 1048 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1164.md` | 19/10 07:17 | 1048 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1163.md` | 19/10 07:06 | 1000 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1162.md` | 19/10 06:54 | 1000 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1161.md` | 18/10 23:27 | 908 |
 | builder-developer | `out/builder-developer/VOCE_SCAMBIO_1160.md` | 18/10 23:07 | 1775 |
-| capo | `out/capo/STATI_PROPOSTI.md` | 19/10 07:12 | 4960 |
+| capo | `out/capo/STATI_PROPOSTI.md` | 19/10 07:20 | 4724 |
 | capo | `out/capo/RIEPILOGO_MATTINA.md` | 18/10 16:32 | 1979 |
 | capo | `out/capo/RICHIESTA_STORICO_17OTT.md` | 17/10 13:12 | 12195 |
 | capo | `out/capo/SCAMBIO_ARCHIVIO_fino_92.md` | 17/10 13:12 | 125863 |
@@ -19,6 +20,7 @@
 | collaudatore | `out/collaudatore/manifest.json` | 17/10 13:13 | 23 |
 | collaudatore | `out/collaudatore/prova_gate_partenza.png` | 17/10 13:13 | 9721 |
 | designer | `out/designer/STATUS_GRAFICO_PER_CAPO.md` | 18/10 15:45 | 3297 |
+| developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0720.md` | 19/10 07:22 | 1767 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0718.md` | 19/10 07:19 | 1767 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0712.md` | 19/10 07:13 | 1465 |
 | developer-builder-junior | `out/developer-builder-junior/REPORT_TURNO_2026-10-19_0703.md` | 19/10 07:04 | 1493 |
