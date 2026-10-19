@@ -72,7 +72,7 @@ Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) 
 Raccomandazione: A
 DEFAULT usato nel frattempo: A — builder-developer allinea i percorsi e rilancia `sh tools/gate_t1.sh soak`; developer-builder-junior esegue peer review indipendente del diff/log.
 Impatto se cambi idea: modificare soglie gate e parametri livello.json; rieseguire gate.
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA (2026-10-19, via Claude): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per sviluppatori. Serve una logica di tracciato modificabile a mano per le 6 piste. Le soglie non si abbassano. Compito operativo: blocco R1 in RICHIESTA.md (tratti con nome, regole per pista, gate che indica il tratto da correggere). Ruoli confermati: il Designer verifica le risorse e ne crea di nuove; il Capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
