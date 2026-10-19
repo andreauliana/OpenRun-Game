@@ -33,10 +33,16 @@ Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso check
 2. **SDL2main solo se esiste:** in `CMakeLists.txt` collegare `SDL2::SDL2main` solo `if(TARGET SDL2::SDL2main)`; su alcune distribuzioni Linux il target non c'e' e CMake si ferma.
 3. **Versione minima dichiarata:** `find_package(SDL2 2.0.5)` e un messaggio chiaro se manca. Scrivere in `docs/SVILUPPATORI.md` come installarla: macOS `brew install sdl2 sdl2_image`; Raspberry Pi OS / Debian `sudo apt install libsdl2-dev libsdl2-image-dev`; Windows con vcpkg o i pacchetti MinGW ufficiali di SDL.
 4. **`libretro.h`:** aggiungere l'header ufficiale (licenza MIT) in `src/libretro/` cosi' il core RetroPie compila su Linux/Pi; la frequenza dichiarata segue la Parte 1.
-5. **Pi 400 senza desktop / RetroPie come porta:** il runner deve poter partire anche dalla console con il driver video KMSDRM di SDL (`SDL_VIDEODRIVER=kmsdrm`); documentarlo nella guida Pi.
+5. **Avvio del runner in RetroPie (Andrea, 19 ott):** il runner deve partire dal menu di RetroPie/EmulationStation come voce del sistema **Ports**, senza desktop. Da preparare:
+   - lo script `pi/retropie/OpenRun.sh` (da copiare in `~/RetroPie/roms/ports/`), che entra nella cartella del gioco, imposta `SDL_VIDEODRIVER=kmsdrm` e `SDL_AUDIODRIVER=alsa` e lancia `sglavinated_runner` a schermo intero;
+   - l'uscita pulita con Select+Start (pad) ed Esc (tastiera), che torna a EmulationStation;
+   - il pad configurato in RetroPie funzionante anche nel gioco (SDL GameController);
+   - le istruzioni passo passo nella guida Pi (`guide/BUILD_E_AVVIO_RASPBERRY_PI.md` del progetto e `docs/SVILUPPATORI.md`): compilare sul Pi, copiare lo script, riavviare EmulationStation.
+   Il core libretro (punto 4) resta la seconda strada, per giocarlo come "sistema" di RetroArch.
 6. **Windows XP (piu' avanti, dopo Mac e Pi):** verificare l'ultima versione di SDL2 che supporta ancora XP e un compilatore C++17 che produca eseguibili per XP. Nel runner `std::filesystem` puo' essere un problema su XP e sui macOS vecchi (serve 10.15+): sostituirlo con `SDL_GetBasePath` + funzioni C standard, dato che il runner usa gia' SDL. Non bloccare il lavoro attuale per XP: solo non introdurre nuove dipendenze che lo escludano.
 
 ## Gate
 - Build pulita del runner su macOS (Homebrew) e su Linux/Raspberry Pi OS con SDL di sistema; `ctest` verde.
 - Con `BUILD_LIBRETRO=ON` il core compila su Linux.
 - `docs/SVILUPPATORI.md` e la guida Pi riportano versioni e comandi di installazione.
+- Su Pi 400 con RetroPie: OpenRun compare in Ports, parte, si guida col pad e torna a EmulationStation (prova di Andrea, dopo l'ok su Mac).
