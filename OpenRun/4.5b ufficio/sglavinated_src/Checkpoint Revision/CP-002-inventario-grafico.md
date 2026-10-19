@@ -7,8 +7,8 @@
 | Ambito | Verificare contenuti grafici, tool del Designer, lacune richieste e handoff univoco |
 | Responsabile | Audit documentale per il Dipartimento Grafico (Copilot) |
 | Revisore indipendente | Da assegnare dal Capo; deve essere diverso dall'autore |
-| Percorsi aggiornati | `UFFICIO/Dipartimento Grafico/Libreria/`, `UFFICIO/Dipartimento Grafico/TOOLS/`, `out/designer/`, definizioni agenti e checkpoint |
-| Handoff Designer | [STATUS_GRAFICO_PER_CAPO.md](../out/designer/STATUS_GRAFICO_PER_CAPO.md) |
+| Percorsi aggiornati | `UFFICIO/Dipartimento Grafico/Libreria/`, `UFFICIO/Dipartimento Grafico/TOOLS/`, `out/grafico/`, definizioni agenti e checkpoint |
+| Handoff Designer | [STATUS_GRAFICO_PER_CAPO.md](../out/grafico/STATUS_GRAFICO_PER_CAPO.md) |
 | Inventario di dettaglio | [CATALOGO_RISORSE.md](../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md) |
 | Decisioni richieste ad Andrea | Nessuna approvazione richiesta per questo audit; completamento delle lacune resta da pianificare |
 

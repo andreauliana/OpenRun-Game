@@ -10,4 +10,4 @@ Gli asset di produzione e il catalogo stanno qui, in `assets_originali/`. Il vec
 - [Shared asset](./Shared%20asset/README.md): regola di approvazione e pubblicazione; non contiene ancora asset.
 - [Strumenti grafici](../TOOLS/README.md): comandi, percorsi sorgente, output e permessi dell'agente.
 
-Il Designer mantiene un unico rapporto aggiornato per il Capo in `../../../out/designer/STATUS_GRAFICO_PER_CAPO.md`. Il rapporto rinvia a questo inventario e al catalogo macchina, evitando copie concorrenti dello stato.
+Il Designer mantiene un unico rapporto aggiornato per il Capo in `../../../out/grafico/STATUS_GRAFICO_PER_CAPO.md`. Il rapporto rinvia a questo inventario e al catalogo macchina, evitando copie concorrenti dello stato.

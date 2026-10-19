@@ -11,7 +11,7 @@ sglavinated_src/
 │   │   ├── TOOLS/                  # strumenti grafici
 │   │   └── Libreria/
 │   │       └── Shared asset/       # asset approvati per la produzione
-│   └── Officina/                    # @builder-developer + Developer/Builder Junior
+│   └── Officina/                    # @developer + @developer-junior
 │       ├── TOOL/                    # strumenti di sviluppo
 │       ├── ENGINE COMPILER/         # destinazione dei sorgenti di prodotto
 │       ├── build/                   # output generato, mai modificato a mano
@@ -24,16 +24,16 @@ sglavinated_src/
 ## Migrazione graduale
 
 La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/` e `tools/`. 
-Dal 19 ottobre 2026 `assets_originali/` dedicata ai @builder-developer e' la copia di `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` riservata a Libreria asset in lavorazione del @grafico. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
+Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` riservata a Libreria asset in lavorazione del @grafico. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
 
 ## Ruoli
 
 | Ruolo | Responsabilità | Scrittura |
 |---|---|---|
 | Capo | Assegna task, responsabile, revisore, percorsi e criteri; aggrega esiti; gestisce checkpoint e documenti per Andrea. Non scrive codice/asset e non sostituisce la review tecnica. | `Checkpoint Revision/`, documenti di coordinamento assegnati |
-| Grafico/Designer | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `Shared asset/`. | Percorsi grafici assegnati; in fase 1 `assets_originali/`, `libreria/` e dati UI/testo assegnati |
-| Builder/Developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del Junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `tools/` |
-| Developer/Builder Junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del Builder quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
+| @grafico | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `Shared asset/`. | Percorsi grafici assegnati; in fase 1 `assets_originali/`, `libreria/` e dati UI/testo assegnati |
+| @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del Junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `tools/` |
+| @developer-junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del Builder quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
 
 Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo assegnato, non l'agente. Il perimetro statico OpenCode è una allowlist di base; il Capo specifica nel task i percorsi scrivibili. Nessun agente amplia autonomamente il proprio accesso.
 
@@ -41,23 +41,23 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 
 - Default: scrittura negata. Ogni task indica responsabile, revisore indipendente, percorsi scrivibili e criteri di completamento.
 - Capo scrive in `Checkpoint Revision/`; gli altri ruoli non modificano né cancellano checkpoint o revisioni aggregate.
-- Grafico/Designer è l'unico scrittore di `Shared asset/`. Gli @builder-developer lo leggono e lo usano senza copiarlo o alterarlo; le richieste di modifica tornano al Grafico.
+- @grafico è l'unico scrittore di `Shared asset/`. Gli @developer lo leggono e lo usano senza copiarlo o alterarlo; le richieste di modifica tornano al Grafico.
 - Gli sviluppatori scrivono solo il codice, i test e gli strumenti assegnati. Il Grafico e il Capo leggono i materiali pertinenti, ma non scrivono codice di prodotto.
-- `build/` e gli output in `Test area/` sono generati: nessuno li modifica manualmente. Gli @builder-developer possono eseguire build e test consentiti; il revisore legge diff, log ed esiti.
+- `build/` e gli output in `Test area/` sono generati: nessuno li modifica manualmente. Gli @developer possono eseguire build e test consentiti; il revisore legge diff, log ed esiti.
 - Nessun ruolo cancella file o modifica aree fuori dal proprio incarico. Le allowlist OpenCode negano le scritture fuori dai percorsi del ruolo.
 - L'accesso web del Grafico richiede approvazione della richiesta. Non scaricare né pubblicare risorse non verificate o non approvate.
 
 ## Review e checkpoint
 
 1. Ogni consegna registra file modificati, scopo, test e comando eseguito, esito misurabile, problemi residui e provenienza/licenza per materiale esterno.
-2. La review tecnica è peer review: @builder-developer rivede il Junior; il Junior rivede il Builder se assegnato. L'autore non è il proprio unico revisore e non approva la release.
+2. La review tecnica è peer review: @developer rivede il Junior; il Junior rivede il Builder se assegnato. L'autore non è il proprio unico revisore e non approva la release.
 3. Il Grafico verifica formato, catalogo, provenienza e licenza prima della pubblicazione in `Shared asset/`.
 4. Il Capo verifica completezza delle review, prove, esiti e decisioni di Andrea; non si autovaluta come revisore tecnico né dichiara una build verificata senza prova registrata.
 5. Review negativa o incompleta: il Capo registra i rilievi nel checkpoint, assegna la correzione all'autore e richiede una nuova review indipendente. Se il revisore autorizzato non è disponibile, il checkpoint resta in attesa.
-6. All'avvio il Capo usa `Checkpoint Revision/STATO_CORRENTE.md` come riferimento sintetico, quindi consulta il `REGISTRO_REVISIONI.md` e il solo dossier attivo necessario. Per i task grafici consulta `out/designer/STATUS_GRAFICO_PER_CAPO.md`; per codice/build/test consulta `UFFICIO/Officina/STATUS_OFFICINA.md`. Se il checkpoint coinvolge entrambi i reparti, legge entrambi gli status.
+6. All'avvio il Capo usa `Checkpoint Revision/STATO_CORRENTE.md` come riferimento sintetico, quindi consulta il `REGISTRO_REVISIONI.md` e il solo dossier attivo necessario. Per i task grafici consulta `out/grafico/STATUS_GRAFICO_PER_CAPO.md`; per codice/build/test consulta `UFFICIO/Officina/STATUS_OFFICINA.md`. Se il checkpoint coinvolge entrambi i reparti, legge entrambi gli status.
 7. Il Capo assegna ID progressivi `CP-NNN`, usa `Checkpoint Revision/TEMPLATE_CHECKPOINT.md` e aggiorna dossier, registro append-only e stato corrente nella stessa operazione. Le prove estese restano nei log originali: registrare comando, exit code, misure e link relativo, senza duplicarle.
 8. Gli stati e le condizioni di chiusura sono definiti in `Checkpoint Revision/README.md`. `PRONTO PER ANDREA` richiede review indipendenti positive; `CHIUSO` richiede la decisione di Andrea o una motivazione esplicita per cui non è necessaria.
-9. Per lavori grafici il Capo legge `out/designer/STATUS_GRAFICO_PER_CAPO.md`, lo cita nel dossier e assegna comunque una review indipendente. È l'unico handoff corrente del Grafico, non una prova di approvazione.
+9. Per lavori grafici il Capo legge `out/grafico/STATUS_GRAFICO_PER_CAPO.md`, lo cita nel dossier e assegna comunque una review indipendente. È l'unico handoff corrente del Grafico, non una prova di approvazione.
 10. Per lavori di sviluppo, build o test il Capo legge `UFFICIO/Officina/STATUS_OFFICINA.md`, cita data/report e log sorgente nel dossier e assegna comunque una review indipendente. È l'unico handoff tecnico corrente, non una peer review né una prova di approvazione.
 11. `ANDREA_REVIEW.md` è la fonte unica corrente per feedback e decisioni di Andrea. Il Capo cita nel checkpoint gli ID pertinenti senza duplicare il contenuto. `DECISIONI_ANDREA.md` e `FEEDBACK_ANDREA.md` sono rimandi legacy e non vanno aggiornati.
 
@@ -80,4 +80,4 @@ Il gate configura e compila il sorgente ancora in `motore_nuovo/`; build, log, s
 
 ## Memoria operativa
 
-I materiali v4.5 in `bacheche/collaudatore/`, `bacheche/ricercatore/`, `bacheche/sviluppatore/`, `bacheche/grafico/`, `out/collaudatore/`, `out/sviluppatore/`, `out/grafico/` e `out/ricercatore/` sono stati archiviati in `archivio_v4/bacheche/` e `archivio_v4/out/` il 19 ottobre 2026 (ristrutturazione 4.6 Studio). Questi percorsi sono storici e non assegnano permessi attuali. `archivio_v4/` è un archivio congelato: regole, task, log e output della v4 non attivano lavoro o permessi 4.6. Reimportare solo requisiti ancora validi e verificati nel codice/documentazione corrente; non cancellare o modificare i documenti storici. I nuovi ruoli usano i propri percorsi di consegna (`bacheche/<ruolo>/`, `out/<ruolo>/`): `capo`, `builder-developer`, `developer-builder-junior`, `designer`. `RICHIESTA.md` e `SCAMBIO.md` restano documenti gestiti da Andrea e Claude; gli agenti non li modificano.
+I materiali v4.5 in `bacheche/collaudatore/`, `bacheche/ricercatore/`, `bacheche/sviluppatore/`, `bacheche/grafico/`, `out/collaudatore/`, `out/sviluppatore/`, `out/grafico/` e `out/ricercatore/` sono stati archiviati in `archivio_v4/bacheche/` e `archivio_v4/out/` il 19 ottobre 2026 (ristrutturazione 4.6 Studio). Questi percorsi sono storici e non assegnano permessi attuali. `archivio_v4/` è un archivio congelato: regole, task, log e output della v4 non attivano lavoro o permessi 4.6. Reimportare solo requisiti ancora validi e verificati nel codice/documentazione corrente; non cancellare o modificare i documenti storici. I nuovi ruoli usano i propri percorsi di consegna (`bacheche/<ruolo>/`, `out/<ruolo>/`): `capo`, `developer`, `developer-junior`, `grafico`. `RICHIESTA.md` e `SCAMBIO.md` restano documenti gestiti da Andrea e Claude; gli agenti non li modificano.

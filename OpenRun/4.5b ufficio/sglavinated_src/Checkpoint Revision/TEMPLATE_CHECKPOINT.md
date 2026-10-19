@@ -9,7 +9,7 @@
 | Revisore indipendente | Ruolo assegnato, diverso dall'autore |
 | Percorsi autorizzati | ... |
 | Decisioni richieste ad Andrea | Nessuna / descrivere e indicare stato |
-| Handoff Designer (se grafica coinvolta) | [STATUS_GRAFICO_PER_CAPO.md](../out/designer/STATUS_GRAFICO_PER_CAPO.md) / non applicabile |
+| Handoff Designer (se grafica coinvolta) | [STATUS_GRAFICO_PER_CAPO.md](../out/grafico/STATUS_GRAFICO_PER_CAPO.md) / non applicabile |
 | Handoff Officina (se codice/build/test coinvolti) | [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) / non applicabile |
 
 ## Sintesi

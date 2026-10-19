@@ -13,12 +13,12 @@ while :; do
   [ -f STOP ] || [ -f FINITO ] && { echo "[giro] STOP/FINITO"; break; }
   [ $(( ($(date +%s) - t0) / 3600 )) -ge "$MAX_ORE" ] && { echo "[giro] limite ore"; break; }
   r=$((r+1)); echo "[giro] round $r $(date +%H:%M)" | tee -a "$LOG"
-  for ag in ${AGENTI_GIRO:-builder-developer developer-builder-junior designer}; do
+  for ag in ${AGENTI_GIRO:-developer developer-junior designer}; do
     [ -f STOP ] && break
     # Avvia l'agente solo se ha almeno un blocco [ ] o [~] in RICHIESTA.md (stessa regola di ciclo.sh):
     # un avvio a vuoto ricarica comunque le istruzioni e consuma crediti.
     # Tag v4.5 di RICHIESTA.md accettati come alias del ruolo 4.6.
-    case "$ag" in builder-developer) al=sviluppatore ;; developer-builder-junior) al=collaudatore ;; designer) al=grafico ;; *) al="$ag" ;; esac
+    case "$ag" in developer) al=sviluppatore ;; developer-junior) al=collaudatore ;; designer) al=grafico ;; *) al="$ag" ;; esac
     awk -v ag="$ag" -v al="$al" '/^## BLOCCO/ { a = ($0 ~ "@" ag "([^a-z-]|$)") || ($0 ~ "@" al "([^a-z-]|$)") } /^\| *Stato/ { if (a && ($0 ~ /\[ \]/ || $0 ~ /\[~\]/)) t = 1 } END { exit !t }' RICHIESTA.md || { echo "[giro] $ag: nessun blocco aperto, salto" | tee -a "$LOG"; continue; }
     echo "[giro] avvio $ag $(date +%H:%M)" | tee -a "$LOG"
     oc --agent "$ag" "Round $r. Sei @$ag. Leggi AGENTS.md (unica fonte di regole) e RICHIESTA_APERTA.md. Lavora SOLO sui blocchi con Stato [ ] o [~] assegnati a te (max 15 minuti), scrivi solo nei percorsi del tuo ruolo. RICHIESTA.md e SCAMBIO.md sono di sola lettura: la voce va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md e risultati in out/$ag/. Se non hai blocchi assegnati, fermati senza inventare lavoro. Non delegare, non cambiare modello." || echo "[giro] $ag in errore" | tee -a "$LOG"

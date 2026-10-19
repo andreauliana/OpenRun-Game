@@ -16,7 +16,7 @@
 
 ## Handoff grafico
 
-Leggere [STATUS_GRAFICO_PER_CAPO.md](../out/designer/STATUS_GRAFICO_PER_CAPO.md) come unico riepilogo aggiornato del Designer. Inventario dettagliato: [CATALOGO_RISORSE.md](../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md). I testi dei fumetti risultano completi; mancano asset grafici approvati per personaggi/concorrenti e le richieste sei percorsi/tre finali animati non sono presenti.
+Leggere [STATUS_GRAFICO_PER_CAPO.md](../out/grafico/STATUS_GRAFICO_PER_CAPO.md) come unico riepilogo aggiornato del Designer. Inventario dettagliato: [CATALOGO_RISORSE.md](../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md). I testi dei fumetti risultano completi; mancano asset grafici approvati per personaggi/concorrenti e le richieste sei percorsi/tre finali animati non sono presenti.
 
 ## Handoff Officina
 

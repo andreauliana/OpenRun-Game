@@ -56,7 +56,7 @@ Dettaglio misure (headless, Mac):
   - lv_05_spray: rettilineo 21%, curva max 0.90 — FALLITO
   - lv_06_desktop: rettilineo 12%, curva max 0.56 — FALLITO
 
-Azione richiesta a @builder-developer: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
+Azione richiesta a @developer: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
@@ -64,7 +64,7 @@ Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicat
 
 ### T1-Q5 | Soglie giro guidato e tuning percorsi (T1-RUN)
 
-Azione richiesta a @builder-developer (ANDREA_REVIEW T1-Q3): rivedere generazione/parametri percorsi per varietà (alternanza curve/rettilinei) così il giro guidato passa su tutti i 6 livelli.
+Azione richiesta a @developer (ANDREA_REVIEW T1-Q3): rivedere generazione/parametri percorsi per varietà (alternanza curve/rettilinei) così il giro guidato passa su tutti i 6 livelli.
 Domanda: confermare soglie giro guidato (rettilineo ~>=35-40%, curva max coerente 0.6-1.0, riferimento lv_02_atomico rettilineo 40% / curva max 0.86) e che builder-developer proceda col tuning un parametro alla volta con `sh tools/gate_t1.sh soak`?
 Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) no, ridefinire soglie e parametri
 Raccomandazione: A
@@ -79,8 +79,8 @@ Esito: confermata l'opzione A. Applicare: LICENSE, manifest, CREDITI.md.
 
 ## D2 | contenuti | capo | [CHIUSA 2026-10-15 da Andrea]
 Esito: Contenuti in Libreria indicizzati da @grafico secondo DIREZIONE_ARTISTICA.md.
-Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, come banner sponsor, ed altri, per lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop -> @grafico verifica ed aggiorna gli asset per essere utilizzati dal @builder-developer che verifica le implementazioni.
-DEFAULT: @builder-developer inserisce le risorse del @grafico.
+Da decidere (D2b, non urgente): Elementi decorativi dei 6 percorsi, come banner sponsor, ed altri, per lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop -> @grafico verifica ed aggiorna gli asset per essere utilizzati dal @developer che verifica le implementazioni.
+DEFAULT: @developer inserisce le risorse del @grafico.
 RISPOSTA DI ANDREA: sì
 
 ## D3 | struttura | architetto | [CHIUSA 2026-10-19 da Andrea]
@@ -104,7 +104,7 @@ RISPOSTA DI ANDREA: sì
 ## D2b | sponsor | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: nome e slogan degli Sponsor, dove compare (Banner stradali).
 RISPOSTA DI ANDREA: "Curve Pericolose" — slogan "appoggiati al peggio". Compare ai lati delle strade come cartelloni pubblicitari sparsi al 20% dei segmenti dei diversi livelli.
-Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), @builder-developer patore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
+Esito: @grafico ordina i Temi ai 6 Percorsi di gioco con Temi (lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop), @developer patore aggiungono punti cartellone al 20% dei segmenti nei livello.json.
 Sponsor 2: "Brinis Udine — Ricambi per motorini" — pubblicita locale. Cartelloni separati da Curve Pericolose, distribuiti indipendentemente al 10-15% dei segmenti. Totale cartelloni sponsor: ~20-30% dei percorsi di gara.
 
 ## D6 | scenari livelli | claude_app | [CHIUSA 2026-10-16 da Andrea]
@@ -115,7 +115,7 @@ Esito: lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_
 ## D7 | variante UI tipografo | claude_app | [CHIUSA 2026-10-16 da Andrea]
 Domanda: layout menu e HUD.
 RISPOSTA DI ANDREA: Lofi Jungle (B) per tema menu/HUD. Basato sulla posizione degli elementi della referenza del 'feeling' percepito dello standard gioco 'OutRun', con tema grafico in bianco e nero.
-Esito: @grafico conferma utilizzo dei menu/HUD creati, variante B, palette bianco/nero, layout ispirato al 'feeling' percepito dello standard gioco 'OutRun' (ad esempio: velocita, tempo, punteggio, visualizzatore accelerazione). Usare asset originali della Libreria del 'Dipartimento Grafico' @grafico che verifica la disposizione grafica. @builder-developer  integra il menu e HUD nel gioco allineandosi al @grafico.
+Esito: @grafico conferma utilizzo dei menu/HUD creati, variante B, palette bianco/nero, layout ispirato al 'feeling' percepito dello standard gioco 'OutRun' (ad esempio: velocita, tempo, punteggio, visualizzatore accelerazione). Usare asset originali della Libreria del 'Dipartimento Grafico' @grafico che verifica la disposizione grafica. @developer  integra il menu e HUD nel gioco allineandosi al @grafico.
 
 ## D8 | HUD elemento "tempo" | tipografo | [CHIUSA 2026-10-16 da @capo DEFAULT A]
 Domanda: hud.json (variante B) manca dell'elemento "tempo" citato da D7. Posizione e dato da definire.
@@ -123,13 +123,13 @@ Opzioni: A) tempo residuo (secondi contati all'indietro), sotto la velocità  B)
 Raccomandazione: A (coerente con arcade 'OutRun Style', D7 già cita "tempo" in HUD).
 DEFAULT usato nel frattempo: A (tempo residuo sotto velocità, a sinistra).
 Impatto se cambi idea: aggiornare hud.json e regenerare hud_preview.png con genera_ui_b.py.
-RISPOSTA DI ANDREA: A  @grafico aggiunge elementi grafici interfaccia di gioco (no menu) con elemento "tempo" (residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @builder-developer  espone i dati del 'cruscotto' nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
+RISPOSTA DI ANDREA: A  @grafico aggiunge elementi grafici interfaccia di gioco (no menu) con elemento "tempo" (residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra) a motore_nuovo/dati/ui/hud.json variante B e rigenera assets_originali/ui/hud/varianteB/hud_preview.png con genera_ui_b.py (script legge da JSON, preview coerente). Manifest resta "bozza" fino ad approvazione PNG; @developer  espone i dati del 'cruscotto' nel motore nel prossimo ciclo. Nessun blocco fermo in attesa.
 
 ## D9 | build | capo | [CHIUSA 2026-10-17 da Andrea]
 Domanda: quando clang++/make è negato (regola 21), come si compila il nucleo?
 Opzioni: utilizzare: 'cmake --build'.
 RISPOSTA DI ANDREA: OK, cmake --build.
-Esito: @@builder-developer esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
+Esito: @@developer esegue `cmake --build build --target prova_gate` su Pi 400/Mac/Linux con toolchain Andrea (regole 9/21). Build cmake e test reali (fps, replay, gaming feeling, temperatura, off road, gestione spirte e elementi decorativi livelli); in questo ambiente solo verifica statica e scrittura codice.
 
 ## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: sprite/cartelloni veri nel gate headless (prova_gate disegna ancora rettangoli): usare caricatore PNG minimo nel core oppure conversione PNG->raw offline in strumenti_py?
@@ -172,7 +172,7 @@ Perfezionamento dei Personaggi animati sono rinviati a fase successiva. La richi
 
 # Nota di Andrea per sviluppatori — frequenza di gioco (19 ott 2026)
 Decisione di Andrea. Vale come voce di ANDREA_REVIEW: precedenza sulle altre fonti.
-Destinatari: @builder-developer (autore), @developer-builder-junior (revisore). @capo apre un checkpoint dedicato.
+Destinatari: @developer (autore), @developer-junior (revisore). @capo apre un checkpoint dedicato.
 Ordine: dopo R1, prima di R2.
 
 ## Decisione

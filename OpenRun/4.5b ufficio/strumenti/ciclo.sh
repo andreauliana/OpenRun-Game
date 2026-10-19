@@ -1,6 +1,6 @@
 #!/bin/sh
 # Ciclo a turni: OpenCode lavora; ogni CHK_MIN minuti (default 120) c'e' un CHECKPOINT
-# (controlli automatici + @developer-builder-junior + Claude CLI se abilitato); poi @capo applica i consigli.
+# (controlli automatici + @developer-junior + Claude CLI se abilitato); poi @capo applica i consigli.
 # Dopo MAX_ORE (default 12) si ferma e prepara il pacchetto per Claude app (revisione umana).
 # Fermare: file STOP in sglavinated_src/ oppure Ctrl+C.
 BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -55,8 +55,8 @@ oc() {
 mkdir -p archivio_per_claude; [ -f .marker_review ] || touch .marker_review
 [ -f .marker_checkpoint ] || touch .marker_checkpoint
 # Ruoli 4.6 (file in .opencode/agents/). I tag v4.5 di RICHIESTA.md si traducono con ruolo_46().
-AGENTI_ATTIVI="${AGENTI_ATTIVI:-builder-developer developer-builder-junior}"
-REVISORE="${REVISORE:-developer-builder-junior}"
+AGENTI_ATTIVI="${AGENTI_ATTIVI:-developer developer-junior}"
+REVISORE="${REVISORE:-developer-junior}"
 echo "$AGENTI_ATTIVI" > .agenti_attivi   # letto dal pannello
 t0=$(date +%s); last=$t0; n=0; fail=0; chk=0
 
@@ -78,7 +78,7 @@ checkpoint() {
     R="OK (controlli automatici verdi: review del modello saltata, zero crediti)"
     touch .marker_checkpoint
   elif [ -n "$REVIEW_FILES" ]; then
-    REVIEW_OUTPUT="$(oc --agent "$REVISORE" "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di UFFICIO/Officina/Test area/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Controlli rossi: $ROSSI. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @builder-developer." 2>&1)"
+    REVIEW_OUTPUT="$(oc --agent "$REVISORE" "CHECKPOINT $chk. Officina: leggi SOLO gli esiti degli script qui sotto e le ultime righe di UFFICIO/Officina/Test area/gate_t1.log; non aprire il codice. File cambiati dall'ultimo checkpoint: $REVIEW_FILES. Controlli rossi: $ROSSI. Esiti: $AUTO. Rispondi con UNA riga: OK, oppure CORREGGI: <script rosso o numero fuori soglia> -> @developer." 2>&1)"
     REVIEW_RC=$?
     if [ "$REVIEW_RC" -eq 0 ]; then
       R="$REVIEW_OUTPUT"
@@ -93,7 +93,7 @@ checkpoint() {
   { echo; echo "### CHECKPOINT $chk | REVIEWER | $(date '+%F %H:%M') | [APERTA]"; echo "$AUTO"; echo; echo "$R"; } >> SCAMBIO.md
   C=""
   if [ "${CHK_CLAUDE_OGNI:-0}" -gt 0 ] && command -v claude >/dev/null 2>&1 && [ $(( chk % CHK_CLAUDE_OGNI )) -eq 1 ]; then
-    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto OpenRun 4.6. Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Ruoli attivi: capo, builder-developer, developer-builder-junior, designer. Se un agente rende poco: 'CAMBIA_MODELLO: <nome-agente-4.6>' (usa esattamente uno di questi nomi)." --allowedTools "Read,Grep,Glob" 2>&1)"
+    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto OpenRun 4.6. Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Ruoli attivi: capo, developer, developer-junior, designer. Se un agente rende poco: 'CAMBIA_MODELLO: <nome-agente-4.6>' (usa esattamente uno di questi nomi)." --allowedTools "Read,Grep,Glob" 2>&1)"
     { echo; echo "### CHECKPOINT $chk | CLAUDE CLI -> CAPO | $(date '+%F %H:%M') | [APERTA]"; echo "$C"; } >> SCAMBIO.md
   else
     echo "[ciclo] $(date '+%d/%m %H:%M') review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna"
@@ -101,7 +101,7 @@ checkpoint() {
   if [ -s PER_CLAUDE.md ]; then mv PER_CLAUDE.md "archivio_per_claude/$(date +%Y%m%d-%H%M).md"; fi
   RC="$(sed -n 's/^RICHIESTA_CAMBIO_MODELLO: *//p' SCAMBIO.md | tr -d ' ' | sort -u)"
   [ -n "$RC" ] && sed 's/^RICHIESTA_CAMBIO_MODELLO:/FATTO_CAMBIO_MODELLO:/' SCAMBIO.md > SCAMBIO.md.tmp && mv SCAMBIO.md.tmp SCAMBIO.md
-  # Nome agente dopo "CAMBIA_MODELLO:" — accetta lettere, cifre e trattini (es. builder-developer); ignora @, backtick, maiuscole.
+  # Nome agente dopo "CAMBIA_MODELLO:" — accetta lettere, cifre e trattini (es. developer); ignora @, backtick, maiuscole.
   for AG in $( { printf '%s\n%s\n' "$R" "$C" | sed -n 's/.*CAMBIA_MODELLO:[^A-Za-z]*\([A-Za-z][A-Za-z0-9-]*\).*/\1/p'; printf '%s\n' "$RC" | sed -n 's/^[^A-Za-z]*\([A-Za-z][A-Za-z0-9-]*\).*/\1/p'; } | tr 'A-Z' 'a-z' | grep -v '^$' | sort -u ); do
     [ -f ".opencode/agents/$AG.md" ] || { echo "[ciclo] $(date '+%d/%m %H:%M') CAMBIA_MODELLO ignorato: agente '$AG' inesistente"; continue; }
     V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$AG"
@@ -203,8 +203,8 @@ ok_limite() { rl_n=0; }
 agenti_liberi() {
   # agenti con almeno un blocco aperto ([ ] o [~]) in RICHIESTA.md, in ordine
   # RICHIESTA.md usa i nomi v4.5: si traducono nei ruoli 4.6
-  #   sviluppatore  -> builder-developer
-  #   collaudatore  -> developer-builder-junior
+  #   sviluppatore  -> developer
+  #   collaudatore  -> developer-junior
   #   grafico       -> designer
   #   ricercatore   -> (nessun agente attivo in 4.6)
   # Gestisce anche blocchi con più tag (es. @sviluppatore + @collaudatore): tutti vengono estratti.
@@ -213,8 +213,8 @@ agenti_liberi() {
     s = $0
     while (match(s, /@[a-z-]+/)) {
       tag = substr(s, RSTART+1, RLENGTH-1)
-      if (tag == "sviluppatore") tag = "builder-developer"
-      else if (tag == "collaudatore") tag = "developer-builder-junior"
+      if (tag == "sviluppatore") tag = "developer"
+      else if (tag == "collaudatore") tag = "developer-junior"
       else if (tag == "grafico") tag = "designer"
       else if (tag == "ricercatore") tag = ""
       else if (tag == "capo" || tag == "agente") tag = ""
@@ -231,8 +231,8 @@ agenti_liberi() {
   }' RICHIESTA.md | awk '!s[$0]++' \
     | awk -v att=" $AGENTI_ATTIVI " 'index(att, " " $0 " ")' \
     | while read -r ag; do [ -f ".opencode/agents/$ag.md" ] && echo "$ag"; done
-  # Default 4.6: builder-developer e developer-builder-junior; designer solo su richiesta
-  # (AGENTI_ATTIVI="builder-developer developer-builder-junior designer").
+  # Default 4.6: developer e developer-junior; designer solo su richiesta
+  # (AGENTI_ATTIVI="developer developer-junior designer").
 }
 
 # Estratti brevi (solo shell, zero crediti): gli agenti leggono questi invece dei file lunghi.
@@ -281,7 +281,7 @@ giro_diretto() {
     touch .marker_giro
     echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: avvio $ag ($(grep -m1 '^model:' ".opencode/agents/$ag.md" | sed 's/^model: *//'))"
     OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"
-    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore=@builder-developer, @collaudatore=@developer-builder-junior, @grafico=@designer. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, niente REPORT_TURNO ne' VOCE_SCAMBIO, e fermati. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
+    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore=@developer, @collaudatore=@developer-junior, @grafico=@designer. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, niente REPORT_TURNO ne' VOCE_SCAMBIO, e fermati. Non usare altri modelli e non delegare." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
@@ -307,7 +307,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"
-  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: builder-developer, developer-builder-junior, designer; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, designer; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi
   giro_diretto
