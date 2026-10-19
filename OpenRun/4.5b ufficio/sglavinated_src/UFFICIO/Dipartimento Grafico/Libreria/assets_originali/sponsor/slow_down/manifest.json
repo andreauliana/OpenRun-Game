@@ -1,0 +1,15 @@
+{
+  "nome": "slow_down",
+  "nome_display": "SLOW DOWN",
+  "slogan": "Pastiglie per freni molto rilassati",
+  "descrizione": "Pastiglie freno ironiche",
+  "autore": "genera_sponsor.py",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "file": [
+    "cartellone_neon.png",
+    "cartellone_atomico.png",
+    "cartellone_foglie.png"
+  ]
+}

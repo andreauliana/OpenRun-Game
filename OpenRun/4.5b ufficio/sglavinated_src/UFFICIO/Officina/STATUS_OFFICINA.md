@@ -1,19 +1,20 @@
 # STATUS OFFICINA — OpenRun 4.6
 
-Aggiornato: 2026-10-19 09:01 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
+Aggiornato: 2026-10-19 09:39 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
 
 ## Stato corrente
 
 | Voce | Stato / evidenza |
 |---|---|
 | Checkpoint tecnico | [CP-003](../../Checkpoint%20Revision/CP-003-status-officina-e-test.md) — aperto, review indipendente da assegnare |
-| Ultimo report sviluppatore | [VOCE_SCAMBIO_1171.md](../../out/builder-developer/VOCE_SCAMBIO_1171.md), 2026-10-19 08:56 (builder-developer) |
-| Gate registrato | `GATE T1: TUTTO OK` nel [log Officina](./Test%20area/gate_t1.log), aggiornato alle 22:56 da `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak`, exit 0 dichiarato per entrambi; il log non registra da solo l'exit code del processo |
-| Ultimo exit code dichiarato | 0 per `sh tools/gate_t1.sh` (smoke) e `sh tools/gate_t1.sh soak` alle 22:56; 6 livelli + soak 30000 frame lv_01_neon, replay identico, accelerazione, ribaltamento/ripartenza, sterzo e continuità curve OK; T1-RUN [x] per DEFAULT T1-Q1. Nessun riesecuzione in questo turno (sessione senza esecuzione comandi); ultimo esito noto invariato. |
+| Ultimo report sviluppatore | [VOCE_SCAMBIO_1173.md](../../out/builder-developer/VOCE_SCAMBIO_1173.md), 2026-10-19 09:21 (builder-developer) |
+| **Gate Andrea (09:39)** | **`GATE T1: FALLITO` (exit 13)** — `sh tools/gate_t1.sh soak` eseguito da Andrea su Mac, 2026-10-19 09:39. Gate core OK (smoke, soak 30000 frame, accelerazione, ribaltamento, sterzo, curve, gara 4 bivi, screenshot P1). **Giro guidato FALLITO su 5 livelli su 6**: lv_01_neon, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop — "percorso poco vario o non guidabile". Solo lv_02_atomico (rettilineo 40%) supera il giro guidato. Dettaglio in `ANDREA_REVIEW.md` T1-Q3. |
+| Ultimo exit code dichiarato (agenti) | 0 per `sh tools/gate_t1.sh soak` alle 22:56 (18/10) — superato dal test Andrea del 19/10 09:39 (exit 13). |
+| Performance Mac (09:39) | ms/frame medio ~0.19, max 0.94 (limite 20 — OK). speed@60=161.79, replay 2x IDENTICO su tutti i livelli. |
 | Build | Configurazione Release in `UFFICIO/Officina/build/`; CMake cache e output compilati presenti |
 | CTest | Sette test registrati nel build esistente. In questa verifica sono stati elencati ma non rieseguiti |
 | Runner SDL | SDL2 presente; il runner compila. CMake cerca SDL2_image via config package o pkg-config; non essendo installata/visibile qui, il caricamento PNG resta disabilitato |
-| Review/release | Nessuna approvazione di release dedotta dal gate; assegnare peer review indipendente per i checkpoint tecnici |
+| Review/release | Nessuna approvazione di release; gate fallito — blocco aperto per @sviluppatore (varietà percorsi) |
 
 ## Sintesi dei report precedenti
 
@@ -163,10 +164,38 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne scritte: bacheche/builder-developer/diario.md (una riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/VOCE_SCAMBIO_1173.md e RISULTATI_1910_0921.md; questo status aggiornato.
 - In attesa: v91 Andrea e sprite veri Designer/G1.
 
+## Report turno 09:25 — developer-builder-junior
+
+- Lettura fonti obbligatoria completata nell'ordine richiesto: RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Nessun blocco [ ]/[~] assegnato al ruolo in RICHIESTA_APERTA.md (T1-RUN @sviluppatore + @collaudatore; P1 @sviluppatore; G1 @grafico; H @collaudatore + Andrea; J [ ] escalation; MD0/T5 [-] sospesi). Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi).
+- Consegne scritte: bacheche/developer-builder-junior/diario.md (1 riga), RIASSUNTO.md (<=12 righe), out/developer-builder-junior/REPORT_TURNO_2026-10-19_0925.md; questo status aggiornato.
+- Ultimo esito gate T1 noto invariato: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 18/10 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1 (risposta Andrea T1-Q1: sì); zero scritture nei sorgenti. In attesa: task dal Capo.
+
+## Report turno 09:30 — builder-developer
+
+- Nessun blocco [ ]/[~] eseguibile in questo turno: P1 punto 4 (sprite veri) e G1 [ ] sono di Designer/@grafico (fuori scope T1); v91 Andrea (runner Mac SDL2) e misure fps/temperatura Pi 400 sono di Andrea (T1-Q3/T1-Q8). P1 promosso [x] per T1-Q2 sì di Andrea.
+- Nessuna modifica di codice, nessun test aggiunto, nessuna build/gate eseguita (sessione senza esecuzione comandi); ultimo esito noto: `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak` exit 0, 18/10 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, speed@60=161.79, T1-RUN [x] DEFAULT T1-Q1 (risposta Andrea T1-Q1: sì); zero scritture nei sorgenti.
+- Consegne scritte: bacheche/builder-developer/diario.md (una riga), bacheche/builder-developer/RIASSUNTO.md (<=12 righe), out/builder-developer/RISULTATI_1910_0930.md; questo status aggiornato.
+- In attesa: v91 Andrea e sprite veri Designer/G1.
+
+## Report Andrea — 2026-10-19 09:39 (prova manuale Mac)
+
+- Eseguito: `sh tools/gate_t1.sh soak` su Mac, 2026-10-19 09:39.
+- **Esito: GATE T1: FALLITO (exit 13).**
+- Gate core tutti OK: smoke, soak 30000 frame lv_01_neon, accelerazione, ribaltamento/ripartenza, sterzo, continuità curve, gara 4 combinazioni bivi (arrivo posizione 1/8, replay IDENTICO), screenshot P1 (curva, sponsor, personaggio+fumetto).
+- Performance: ms/frame medio ~0.19 (range 0.180–0.205 per livello), max 0.941 (limite 20 — ampiamente OK). speed@60=161.79, speed@1=9.90, replay 2x IDENTICO su tutti i livelli.
+- **Problema: giro guidato FALLITO su 5 livelli su 6** — "percorso poco vario o non guidabile":
+  - lv_01_neon: rettilineo 13%, curva max 0.62 — FALLITO (exit 13)
+  - lv_02_atomico: rettilineo 40%, curva max 0.86 — GATE OK (unico passato)
+  - lv_03_foglie: rettilineo 18%, curva max 1.02 — FALLITO (exit 13)
+  - lv_04_cromo: rettilineo 23%, curva max 0.41 — FALLITO (exit 13)
+  - lv_05_spray: rettilineo 21%, curva max 0.90 — FALLITO (exit 13)
+  - lv_06_desktop: rettilineo 12%, curva max 0.56 — FALLITO (exit 13)
+- **Azione: @sviluppatore deve rivedere la generazione/parametri dei percorsi** per aumentare varietà (alternanza curve/rettilinei). Il modello che funziona è lv_02_atomico (40% rettilineo, curve fino a 0.86). Riferimento completo: `ANDREA_REVIEW.md` T1-Q3.
+- Pi 400: ancora da eseguire (blocco H resta [~]).
+
 ## Sintesi dei report precedenti pertinenti
 
-- 09:17 (19/10) — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne di fine turno scritte; gate T1 riferimento invariato (exit 0 da @collaudatore, 22:56).
-- 09:06 (19/10) — builder-developer: nessun blocco eseguibile (P1 punto 4 sprite veri e G1 [ ] di Designer/@grafico); nessuna modifica di codice né gate; ultimo esito noto exit 0, 22:56, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1.
-- 09:01 (19/10) — developer-builder-junior: turno senza blocchi assegnati, nessuna modifica di codice, consegne scritte; gate T1 riferimento invariato (exit 0 da @collaudatore).
-- 22:56 (18/10) — builder-developer: gate smoke e soak exit 0, GATE T1 TUTTO OK, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 soak (limite 20), replay 2x IDENTICO; T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti.
+- **09:39 (19/10) — Andrea (prova Mac):** GATE T1: FALLITO (exit 13). Gate core OK, performance OK (ms/frame ~0.19 max 0.94, replay IDENTICO). Giro guidato FALLITO 5/6 livelli: solo lv_02_atomico (rettilineo 40%) supera. Causa: percorsi poco vari. Azione: @sviluppatore rivede parametri generazione percorsi.
+- 09:30 (19/10) — builder-developer: nessun blocco [ ]/[~] eseguibile (P1 punto 4 e G1 [ ] di Designer/@grafico, v91 di Andrea); nessuna modifica di codice né gate; stato riconfermato da report 18/10 22:56 (exit 0, 6 percorsi GATE PERCORSO OK, ms/frame medio 0.185 max 0.518 soak, replay 2x IDENTICO, T1-RUN [x] DEFAULT T1-Q1; zero scritture nei sorgenti).
 

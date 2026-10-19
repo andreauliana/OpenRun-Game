@@ -1,0 +1,41 @@
+{
+  "livello": "lv_02_atomico",
+  "variante": "C",
+  "scenario": "scenario_atomico_02",
+  "stile": "sci-fi anni '50",
+  "autore": "@scenografo (progetto Sglavinated, disegnato da zero, nessun materiale Sega)",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "palette_max_colori": 16,
+  "risoluzione_skyline": [
+    256,
+    128
+  ],
+  "oggetti_bordo_strada": [
+    "ufo_distanza",
+    "torre_razzo",
+    "panchina_cromata",
+    "bancone_drive_in",
+    "segnale_stop",
+    "freccia",
+    "cupola",
+    "segnale_atomico"
+  ],
+  "file": {
+    "skyline": "skyline.png",
+    "palette": "palette.png",
+    "palette_dati": "palette.json",
+    "oggetti": [
+      "oggetti/obj_ufo_distanza.png",
+      "oggetti/obj_torre_razzo.png",
+      "oggetti/obj_panchina_cromata.png",
+      "oggetti/obj_bancone_drive_in.png",
+      "oggetti/obj_segnale_stop.png",
+      "oggetti/obj_freccia.png",
+      "oggetti/obj_cupola.png",
+      "oggetti/obj_segnale_atomico.png"
+    ]
+  },
+  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico)."
+}

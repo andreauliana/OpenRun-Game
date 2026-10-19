@@ -1,6 +1,6 @@
 #!/bin/sh
 # Ciclo a turni: OpenCode lavora; ogni CHK_MIN minuti (default 120) c'e' un CHECKPOINT
-# (controlli automatici + @collaudatore + Claude CLI se abilitato); poi @capo applica i consigli.
+# (controlli automatici + @developer-builder-junior + Claude CLI se abilitato); poi @capo applica i consigli.
 # Dopo MAX_ORE (default 12) si ferma e prepara il pacchetto per Claude app (revisione umana).
 # Fermare: file STOP in sglavinated_src/ oppure Ctrl+C.
 BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -93,7 +93,7 @@ checkpoint() {
   { echo; echo "### CHECKPOINT $chk | REVIEWER | $(date '+%F %H:%M') | [APERTA]"; echo "$AUTO"; echo; echo "$R"; } >> SCAMBIO.md
   C=""
   if [ "${CHK_CLAUDE_OGNI:-0}" -gt 0 ] && command -v claude >/dev/null 2>&1 && [ $(( chk % CHK_CLAUDE_OGNI )) -eq 1 ]; then
-    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto V3 (open). Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Se un agente rende poco: 'CAMBIA_MODELLO: <agente>'." --allowedTools "Read,Grep,Glob" 2>&1)"
+    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto OpenRun 4.6. Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Ruoli attivi: capo, builder-developer, developer-builder-junior, designer. Se un agente rende poco: 'CAMBIA_MODELLO: <nome-agente-4.6>' (usa esattamente uno di questi nomi)." --allowedTools "Read,Grep,Glob" 2>&1)"
     { echo; echo "### CHECKPOINT $chk | CLAUDE CLI -> CAPO | $(date '+%F %H:%M') | [APERTA]"; echo "$C"; } >> SCAMBIO.md
   else
     echo "[ciclo] $(date '+%d/%m %H:%M') review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna"
@@ -101,8 +101,8 @@ checkpoint() {
   if [ -s PER_CLAUDE.md ]; then mv PER_CLAUDE.md "archivio_per_claude/$(date +%Y%m%d-%H%M).md"; fi
   RC="$(sed -n 's/^RICHIESTA_CAMBIO_MODELLO: *//p' SCAMBIO.md | tr -d ' ' | sort -u)"
   [ -n "$RC" ] && sed 's/^RICHIESTA_CAMBIO_MODELLO:/FATTO_CAMBIO_MODELLO:/' SCAMBIO.md > SCAMBIO.md.tmp && mv SCAMBIO.md.tmp SCAMBIO.md
-  # Solo il primo nome dopo "CAMBIA_MODELLO:" (accetta @, backtick, maiuscole); il resto della riga e' commento.
-  for AG in $( { printf '%s\n%s\n' "$R" "$C" | sed -n 's/.*CAMBIA_MODELLO:[^A-Za-z]*\([A-Za-z]*\).*/\1/p'; printf '%s\n' "$RC" | sed -n 's/^[^A-Za-z]*\([A-Za-z]*\).*/\1/p'; } | tr 'A-Z' 'a-z' | grep -v '^$' | sort -u ); do
+  # Nome agente dopo "CAMBIA_MODELLO:" — accetta lettere, cifre e trattini (es. builder-developer); ignora @, backtick, maiuscole.
+  for AG in $( { printf '%s\n%s\n' "$R" "$C" | sed -n 's/.*CAMBIA_MODELLO:[^A-Za-z]*\([A-Za-z][A-Za-z0-9-]*\).*/\1/p'; printf '%s\n' "$RC" | sed -n 's/^[^A-Za-z]*\([A-Za-z][A-Za-z0-9-]*\).*/\1/p'; } | tr 'A-Z' 'a-z' | grep -v '^$' | sort -u ); do
     [ -f ".opencode/agents/$AG.md" ] || { echo "[ciclo] $(date '+%d/%m %H:%M') CAMBIA_MODELLO ignorato: agente '$AG' inesistente"; continue; }
     V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$AG"
   done
@@ -202,12 +202,33 @@ ok_limite() { rl_n=0; }
 
 agenti_liberi() {
   # agenti con almeno un blocco aperto ([ ] o [~]) in RICHIESTA.md, in ordine
-  # RICHIESTA.md usa ancora i nomi v4.5: si traducono nei ruoli 4.6 (sviluppatore -> builder-developer,
-  # collaudatore -> developer-builder-junior, grafico -> designer; ricercatore non ha piu' un agente).
-  awk '/^## BLOCCO/ { ag=""; if (match($0, /@[a-z-]+/)) ag=substr($0, RSTART+1, RLENGTH-1)
-                      if (ag=="sviluppatore") ag="builder-developer"; else if (ag=="collaudatore") ag="developer-builder-junior"
-                      else if (ag=="grafico") ag="designer" }
-       /^\| Stato/ { if (ag!="" && ($0 ~ /\[ \]/ || $0 ~ /\[~\]/) && ag!="capo" && ag!="agente") print ag }' RICHIESTA.md | awk '!s[$0]++' \
+  # RICHIESTA.md usa i nomi v4.5: si traducono nei ruoli 4.6
+  #   sviluppatore  -> builder-developer
+  #   collaudatore  -> developer-builder-junior
+  #   grafico       -> designer
+  #   ricercatore   -> (nessun agente attivo in 4.6)
+  # Gestisce anche blocchi con più tag (es. @sviluppatore + @collaudatore): tutti vengono estratti.
+  awk '/^## BLOCCO/ {
+    ags = ""
+    s = $0
+    while (match(s, /@[a-z-]+/)) {
+      tag = substr(s, RSTART+1, RLENGTH-1)
+      if (tag == "sviluppatore") tag = "builder-developer"
+      else if (tag == "collaudatore") tag = "developer-builder-junior"
+      else if (tag == "grafico") tag = "designer"
+      else if (tag == "ricercatore") tag = ""
+      else if (tag == "capo" || tag == "agente") tag = ""
+      if (tag != "") ags = ags " " tag
+      s = substr(s, RSTART + RLENGTH)
+    }
+    cur_ags = ags
+  }
+  /^\| Stato/ {
+    if (cur_ags != "" && ($0 ~ /\[ \]/ || $0 ~ /\[~\]/)) {
+      n = split(cur_ags, arr)
+      for (i = 1; i <= n; i++) if (arr[i] != "") print arr[i]
+    }
+  }' RICHIESTA.md | awk '!s[$0]++' \
     | awk -v att=" $AGENTI_ATTIVI " 'index(att, " " $0 " ")' \
     | while read -r ag; do [ -f ".opencode/agents/$ag.md" ] && echo "$ag"; done
   # Default 4.6: builder-developer e developer-builder-junior; designer solo su richiesta
@@ -220,7 +241,7 @@ estratti() {
   # Il "MODELLO" (blocchi di esempio dentro un recinto ```) non va passato agli agenti: ~3 KB inutili a ogni turno.
   awk '/^## MODELLO/{skip=1; f=0; next} skip{ if($0=="```"){f++; if(f==2) skip=0} next } {print}' RICHIESTA.md | awk '/^## BLOCCO/{if(b!="" && b!~/\| Stato \| \[x\]/) printf "%s", b; b=""} {b=b $0 "\n"} END{if(b!~/\| Stato \| \[x\]/) printf "%s", b}' > RICHIESTA_APERTA.md.tmp && mv RICHIESTA_APERTA.md.tmp RICHIESTA_APERTA.md
   awk -v k="${SCAMBIO_VOCI:-3}" -v m="${SCAMBIO_RIGHE:-30}" '/^### /{n++} {l[NR]=$0; v[NR]=n} END{for(i=1;i<=NR;i++) if(v[i]>n-k){ if(v[i]!=pv){c=0; pv=v[i]} c++; if(c<=m) print l[i]; else if(c==m+1) print "[... voce troncata dopo " m " righe: intera in SCAMBIO.md]" }}' SCAMBIO.md > SCAMBIO_RECENTE.md.tmp && mv SCAMBIO_RECENTE.md.tmp SCAMBIO_RECENTE.md
-  [ -f BACHECA_PUBBLICA.md ] && tail -n "${BACHECA_RIGHE:-24}" BACHECA_PUBBLICA.md > BACHECA_RECENTE.md.tmp && mv BACHECA_RECENTE.md.tmp BACHECA_RECENTE.md
+  [ -f BACHECA_PUBBLICA.md ] && tail -n "${BACHECA_RIGHE:-24}" BACHECA_PUBBLICA.md > BACHECA_RECENTE.md.tmp && mv BACHECA_RECENTE.md.tmp BACHECA_RECENTE.md || rm -f BACHECA_RECENTE.md
   [ -f ASSEMBLEA.md ] && awk '
     /^## A[0-9]+/ {
       if (aperta && blocco != "") printf "%s", blocco
@@ -230,7 +251,7 @@ estratti() {
     }
     aperta { blocco = blocco $0 "\n" }
     END { if (aperta && blocco != "") printf "%s", blocco }
-  ' ASSEMBLEA.md > ASSEMBLEE_APERTE.md.tmp && mv ASSEMBLEE_APERTE.md.tmp ASSEMBLEE_APERTE.md
+  ' ASSEMBLEA.md > ASSEMBLEE_APERTE.md.tmp && mv ASSEMBLEE_APERTE.md.tmp ASSEMBLEE_APERTE.md || rm -f ASSEMBLEE_APERTE.md
 }
 
 review_versione() {

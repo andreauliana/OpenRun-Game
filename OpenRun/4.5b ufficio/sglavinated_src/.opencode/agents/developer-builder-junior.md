@@ -5,6 +5,8 @@ mode: subagent
 permission:
   read:
     "../ANDREA/**": ask
+    "assets_originali/**": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
   edit:
     "*": deny
     "bacheche/developer-builder-junior/**": allow

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Controllo completo della cartella V3 (open). Uso: sh strumenti/verifica.sh
+# Controllo completo OpenRun 4.6. Uso: sh strumenti/verifica.sh
 BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
 P="$BASE/sglavinated_src"; E=0
 ok(){ echo "OK      $1"; }; ko(){ echo "ERRORE  $1"; E=1; }
@@ -16,7 +16,7 @@ else echo "SALTATO python3 non trovato (controllo JSON)"; fi
 for r in AGENTS.md VISIONE.md RICHIESTA.md SCAMBIO.md opencode.json assets_originali/DIREZIONE_ARTISTICA.md assets_originali/CREDITI.md .opencode/command/claude.md; do
   [ -f "$P/$r" ] && ok "file $r" || ko "manca $r"
 done
-for r in PIANO_V3.md SCALETTA.md COSA_FA_L_UMANO.md RAPPORTO_FATTIBILITA.md RISORSE_TECNICHE.md; do
+for r in SCALETTA.md COSA_FA_L_UMANO.md RAPPORTO_FATTIBILITA.md RISORSE_TECNICHE.md; do
   [ -f "$BASE/$r" ] && ok "file $r" || ko "manca $r"
 done
 [ -f "$BASE/TAPPE.md" ] && ok "file TAPPE.md (roadmap)" || ko "manca TAPPE.md (roadmap)"

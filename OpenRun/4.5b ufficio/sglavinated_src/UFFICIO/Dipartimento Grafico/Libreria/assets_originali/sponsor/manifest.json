@@ -1,0 +1,13 @@
+{
+  "descrizione": "Cartella sponsor: asset sponsor fittizi originali (cartelloni, loghi, personaggi in posa stilizzata) per la parodia pubblicitaria del gioco. Nessun marchio reale, nessun materiale Sega.",
+  "licenza": "CC0-1.0",
+  "autore": "@asset (progetto Sglavinated, generato da zero con script Python/Pillow)",
+  "originale": true,
+  "riferimenti_sega": false,
+  "copre": [
+    "CATALOGO_SPONSOR.json",
+    "genera_sponsor.py",
+    "tutti i file nella cartella sponsor/ (sottocartelle incluse, ciascuna con proprio manifest)"
+  ],
+  "note": "Sponsor di intimo e droga come parodia: consentito perche' inventati e parte della satira. Vietati marchi reali e persone reali. Licenza CC0-1.0 scelta da Andrea (vedi OPENSOURCE_PLAN.md)."
+}

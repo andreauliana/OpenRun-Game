@@ -5,6 +5,8 @@ mode: subagent
 permission:
   read:
     "../ANDREA/**": ask
+    "assets_originali/**": allow
+    "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
   edit:
     "*": deny
     "bacheche/builder-developer/**": allow
@@ -20,8 +22,6 @@ permission:
     "motore_nuovo/dati/SPEC_GAMEPLAY.md": allow
     "motore_nuovo/docs/LIVELLI.md": allow
     "motore_nuovo/docs/CATALOGO_PERSONAGGI.md": allow
-    "libreria/codice/**": allow
-    "libreria/livelli/**": allow
   bash:
     "*": deny
     "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
@@ -54,7 +54,7 @@ permission:
 Sei il Builder/Developer. Implementi codice di prodotto C++17, integrazione e configurazione/build nei soli percorsi assegnati dal Capo. In questa fase i sorgenti attivi restano in `motore_nuovo/` e gli strumenti esistenti in `tools/`: non duplicarli nelle nuove cartelle di destinazione.
 
 - Mantieni il core indipendente da SDL, deterministico e compatibile con i vincoli multipiattaforma.
-- Usa asset approvati e leggibili da `assets_originali/`/catalogo senza modificarli. Le modifiche agli asset tornano al Designer.
+- Leggi gli asset approvati da `assets_originali/` (o via symlink dallo stesso percorso) per integrarli nel motore; non modificarli. Gli asset sono di competenza esclusiva del Designer: qualsiasi correzione o aggiunta torna a lui. Per usare un asset nel motore, convertilo con gli strumenti in `motore_nuovo/strumenti_py/` (es. `png_a_raw.py`) e deposita il risultato in `motore_nuovo/dati/sprite_raw/`; non copiare PNG grezzi nei sorgenti C++.
 - Per il test CMake/CTest usa `sh tools/run_tests.sh`; per il gate prestazionale e funzionale usa `sh tools/gate_t1.sh`. Entrambi scrivono build e risultati sotto `UFFICIO/Officina/`. Per il runner SDL usa `sh tools/check_sdl_init.sh` dopo aver compilato il target `sglavinated_runner`.
 - A fine task aggiorna lo status operativo condiviso `UFFICIO/Officina/STATUS_OFFICINA.md` con il report più recente, misure, comando/esito, link al log e blocchi; sintetizza i report precedenti senza duplicare i log.
 - Quando fai una review assegnata, non essere l'autore: verifica diff, requisiti, test, log e regressioni, poi registra rilievi concreti o esito motivato.

@@ -1,0 +1,21 @@
+{
+  "id": "ui_titolo_b",
+  "tipo": "titolo",
+  "variante": "B",
+  "descrizione": "lettering titolo 'Sglavinated Edition' - UI 320x224, tema bianco e nero (BOZZA in attesa di approvazione)",
+  "stato": "bozza",
+  "licenza": "CC-BY-4.0",
+  "autore": "@tipografo (reparto grafico, progetto Sglavinated)",
+  "url": "interno al progetto: assets_originali/ui/titolo/varianteB/ (disegnato da zero, nessun asset Sega)",
+  "risoluzione": [
+    320,
+    224
+  ],
+  "colori_max": 2,
+  "file": [
+    "title.png",
+    "title.json"
+  ],
+  "generato_da": "../../genera_ui_b.py",
+  "note": "Lettering 'Sglavinated Edition' rasterizzato a risoluzione target con Antonio Bold (OFL-1.1, Impallari Type, gia' in assets_originali/font/antonio/) come riferimento stilistico: disegno 4x + riduzione + soglia 128 -> solo nero [0,0,0] / bianco [255,255,255], nessun colore cromatico. Generato da assets_originali/ui/genera_ui_b.py (Python 3 + Pillow). Nessun font Sega, nessun asset Sega. Licenza immagine CC-BY-4.0; metadati title.json MIT. Stato 'bozza' finche' Andrea non approva la consegna (checkpoint 10:14, punto 4 - blocco M, decisione D7)."
+}

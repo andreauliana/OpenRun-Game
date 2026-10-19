@@ -44,11 +44,35 @@ Risposta di Andrea: sì.
 
 Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400.
 DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
-Esito/risposta di Andrea: sì.
+Esito/risposta di Andrea (2026-10-19, Mac): `sh tools/gate_t1.sh soak` eseguito su Mac. Risultato: **GATE T1: FALLITO (exit 13)**.
+
+Dettaglio misure (headless, Mac):
+- ms/frame medio ~0.19, max 0.94 — ampiamente sotto il limite 20. Prestazioni OK.
+- Replay 2x: IDENTICO su tutti i 6 livelli. Determinismo OK.
+- Gate smoke, soak (30000 frame), accelerazione, ribaltamento, sterzo, curve continue, gara a tappe (4 combinazioni), screenshot P1: tutti GATE OK.
+- **Problema: giro guidato FALLITO su 5 livelli su 6** ("percorso poco vario o non guidabile"):
+  - lv_01_neon: rettilineo 13%, curva max 0.62 — FALLITO
+  - lv_02_atomico: rettilineo 40%, curva max 0.86 — **GATE OK** (unico passato)
+  - lv_03_foglie: rettilineo 18%, curva max 1.02 — FALLITO
+  - lv_04_cromo: rettilineo 23%, curva max 0.41 — FALLITO
+  - lv_05_spray: rettilineo 21%, curva max 0.90 — FALLITO
+  - lv_06_desktop: rettilineo 12%, curva max 0.56 — FALLITO
+
+Azione richiesta a @sviluppatore: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
 Richiesta storica: catalogo grafico e controllo catalogo. DEFAULT allora indicato: non attivare, fuori scope T1. Risposta di Andrea: attivare.
+
+### T1-Q5 | Soglie giro guidato e tuning percorsi (T1-RUN)
+
+Azione richiesta a @sviluppatore (ANDREA_REVIEW T1-Q3): rivedere generazione/parametri percorsi per varietà (alternanza curve/rettilinei) così il giro guidato passa su tutti i 6 livelli.
+Domanda: confermare soglie giro guidato (rettilineo ~>=35-40%, curva max coerente 0.6-1.0, riferimento lv_02_atomico rettilineo 40% / curva max 0.86) e che builder-developer proceda col tuning un parametro alla volta con `sh tools/gate_t1.sh soak`?
+Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) no, ridefinire soglie e parametri
+Raccomandazione: A
+DEFAULT usato nel frattempo: A — builder-developer allinea i percorsi e rilancia `sh tools/gate_t1.sh soak`; developer-builder-junior esegue peer review indipendente del diff/log.
+Impatto se cambi idea: modificare soglie gate e parametri livello.json; rieseguire gate.
+RISPOSTA DI ANDREA:
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).

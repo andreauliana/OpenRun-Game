@@ -1,0 +1,142 @@
+{
+  "autore": "@asset (progetto Sglavinated)",
+  "licenza": "CC0-1.0",
+  "descrizione": "Palette livello 1 stile punk (colori sporchi): 16 colori pronti per il motore (render/palette). Originale, disegnata da zero.",
+  "files": [
+    "palette.png",
+    "palette.json"
+  ],
+  "originale": true,
+  "riferimenti_sega": false,
+  "n_colori": 16,
+  "colori": [
+    {
+      "nome": "nero",
+      "rgb": [
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "nome": "grigio",
+      "rgb": [
+        70,
+        70,
+        70
+      ]
+    },
+    {
+      "nome": "bianco",
+      "rgb": [
+        230,
+        230,
+        230
+      ]
+    },
+    {
+      "nome": "rosso",
+      "rgb": [
+        220,
+        30,
+        30
+      ]
+    },
+    {
+      "nome": "giallo",
+      "rgb": [
+        240,
+        200,
+        0
+      ]
+    },
+    {
+      "nome": "verde",
+      "rgb": [
+        30,
+        180,
+        60
+      ]
+    },
+    {
+      "nome": "blu",
+      "rgb": [
+        30,
+        80,
+        200
+      ]
+    },
+    {
+      "nome": "arancio",
+      "rgb": [
+        230,
+        100,
+        0
+      ]
+    },
+    {
+      "nome": "rosa",
+      "rgb": [
+        220,
+        60,
+        120
+      ]
+    },
+    {
+      "nome": "viola",
+      "rgb": [
+        120,
+        40,
+        180
+      ]
+    },
+    {
+      "nome": "ciano",
+      "rgb": [
+        0,
+        180,
+        200
+      ]
+    },
+    {
+      "nome": "marrone",
+      "rgb": [
+        50,
+        25,
+        10
+      ]
+    },
+    {
+      "nome": "grigio_chiaro",
+      "rgb": [
+        150,
+        150,
+        150
+      ]
+    },
+    {
+      "nome": "verde_scuro",
+      "rgb": [
+        0,
+        60,
+        30
+      ]
+    },
+    {
+      "nome": "blu_scuro",
+      "rgb": [
+        10,
+        20,
+        60
+      ]
+    },
+    {
+      "nome": "giallo_scuro",
+      "rgb": [
+        160,
+        120,
+        0
+      ]
+    }
+  ]
+}

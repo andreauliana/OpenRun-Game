@@ -1,0 +1,18 @@
+{
+  "autore": "@scenografo (progetto Sglavinated)",
+  "licenza": "CC0-1.0",
+  "descrizione": "Scenario lv_01_neon variante 3",
+  "files": [
+    "sfondo.png",
+    "palette.png"
+  ],
+  "originale": true,
+  "riferimenti_sega": false,
+  "elementi": [
+    "skyline notturno a griglia",
+    "insegne al neon inventate",
+    "griglia stradale luminosa"
+  ],
+  "oggetti_bordo_strada": [],
+  "palette_usata": "palette_lv_01_neon_3"
+}

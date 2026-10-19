@@ -21,12 +21,20 @@ fi
 echo "  squadra del ciclo: ${sq:-nessuna}"
 echo "== blocchi aperti (> in turno, * in squadra)"
 awk -v cur="$cur" -v sq="$sq" '
-BEGIN { n = split(sq, A, " "); for (i = 1; i <= n; i++) SQ[A[i]] = 1 }
+BEGIN {
+  n = split(sq, A, " "); for (i = 1; i <= n; i++) SQ[A[i]] = 1
+  # Traduzione nomi v4.5 -> ruoli 4.6
+  MAP["sviluppatore"]    = "builder-developer"
+  MAP["collaudatore"]    = "developer-builder-junior"
+  MAP["grafico"]         = "designer"
+  MAP["ricercatore"]     = "(spento)"
+}
 /^## BLOCCO/ {
   s = $0; sub(/^## BLOCCO +/, "", s); id = s; sub(/[ \t].*/, "", id)
   r = ""; t = s; mark = " "
-  while (match(t, /@[a-z]+/)) {
-    a = substr(t, RSTART + 1, RLENGTH - 1)
+  while (match(t, /@[a-z-]+/)) {
+    raw = substr(t, RSTART + 1, RLENGTH - 1)
+    a = (raw in MAP) ? MAP[raw] : raw
     r = r (r == "" ? "" : "+") "@" a
     if (a == cur) mark = ">"; else if ((a in SQ) && mark != ">") mark = "*"
     t = substr(t, RSTART + RLENGTH)
@@ -37,6 +45,6 @@ BEGIN { n = split(sq, A, " "); for (i = 1; i <= n; i++) SQ[A[i]] = 1 }
 /^\| *Stato *\|/ {
   if (match($0, /\[.\]/)) {
     m = substr($0, RSTART, 3)
-    if (m != "[x]" && id != "0" && id != "X") printf "  %s %-8s %-20s %s\n", mark, id, r, m
+    if (m != "[x]" && id != "0" && id != "X") printf "  %s %-8s %-28s %s\n", mark, id, r, m
   }
 }' "$S/RICHIESTA.md"

@@ -1,0 +1,4 @@
+Qui va la ROM base (NON copiata, e' materiale Sega):
+  OutRun (USA, Europe).md   (1 MB, SHA1 95d2055ffd679ab19f0d4ca0af62a0d565bc258e)
+Copiala a mano da "Outrun_OpenCode v2/sglavinated_src/outrun_src/" solo se vuoi ricostruire la hack.
+Per la versione libera questa cartella deve restare vuota.
