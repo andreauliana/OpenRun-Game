@@ -4,7 +4,7 @@ Destinazione 4.6 degli asset prodotti e in lavorazione, con catalogo, manifest e
 
 ## Stato effettivo
 
-La cartella non contiene ancora gli asset di produzione: in questa fase graduale il catalogo e gli asset attivi restano in `../../../assets_originali/`; testi e dati dei personaggi/livelli restano in `../../../motore_nuovo/dati/`. Non copiare o spostare i file finché CMake, loader, cataloghi e script non sono migrati insieme.
+Gli asset di produzione e il catalogo stanno qui, in `assets_originali/`. Il vecchio percorso `../../../assets_originali/` è un symlink a questa cartella, così motore, loader e script continuano a funzionare senza modifiche. Testi e dati dei personaggi/livelli restano in `../../../motore_nuovo/dati/`. Non creare copie: c'è un solo originale.
 
 - [Inventario grafico verificato](./CATALOGO_RISORSE.md): temi, auto, sponsor, fumetti, elementi di livello e lacune.
 - [Shared asset](./Shared%20asset/README.md): regola di approvazione e pubblicazione; non contiene ancora asset.

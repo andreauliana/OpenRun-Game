@@ -23,7 +23,7 @@ sglavinated_src/
 
 ## Migrazione graduale
 
-La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/` e `tools/`. Questi sono gli unici percorsi sorgente attivi fino alla migrazione dei riferimenti. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
+La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/` e `tools/`. Dal 19 ottobre 2026 `assets_originali/` è un collegamento (symlink) a `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`: è una sola cartella con due nomi, e la copia vera sta nella Libreria. Questi sono gli unici percorsi sorgente attivi fino alla migrazione dei riferimenti. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
 
 ## Ruoli
 
