@@ -15,4 +15,4 @@ UFFICIO/
     └── Test area/
 ```
 
-La migrazione graduale: sorgenti e asset attivi restano nei percorsi v4.5 descritti in `../AGENTS.md` fino all'aggiornamento coordinato dei riferimenti di build e catalogo. Non creare copie parallele. Le cartelle nuove definiscono ruoli e destinazioni, non sostituiscono ancora le fonti attive.
+La migrazione graduale: sorgenti e asset attivi restano nei percorsi v4.5 descritti in `../AGENTS.md`. Non creare copie. Le cartelle nuove definiscono ruoli e destinazioni, non sostituiscono ancora le fonti attive.

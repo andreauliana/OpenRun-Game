@@ -5,6 +5,7 @@
 //         modo = smoke (500 frame, default) | soak (30000 frame) |
 //                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti) |
 //                percorso (profilo del tracciato + un giro intero con guida automatica) |
+//                espansione (verifica espansione tracciato su tutti i 6 livelli) |
 //                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
@@ -15,11 +16,12 @@
 // Scrive: <out>/prova_gate*.log, screenshot PPM.
 // Esegui dalla radice progetto (sglavinated_src): i dati sono letti con percorsi relativi.
 // Exit code: 0 OK | 1 niente partenza | 2 replay non deterministico | 3 troppo lento |
-//            4 cwd errata | 5 caso di prova non superato | 13 percorso poco vario o non guidabile
-//            14 gara a tappe non completa
+//            4 cwd errata | 5 caso di prova non superato | 11 espansione tracciato non coerente |
+//            13 percorso poco vario o non guidabile | 14 gara a tappe non completa
 #include "game/game.h"
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
+#include "core/json_mini.h"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -27,6 +29,8 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -487,11 +491,77 @@ bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
     return frameCurva > 0 && frameSponsor > 0 && framePers > 0;
 }
 
+// --- Regole di guidabilita' per pista, lette da dati/tracciati/regole.json ---
+// Soglie per livello (con default condiviso). Non sono hardcodate qui: provengono
+// dal JSON, cosi' Andrea puo' ritoccarle editando solo il file dati.
+struct RegolePercorso {
+    f32 rettilineo_min = 0.25f;
+    f32 rettilineo_max = 0.75f;
+    i32 rettilineo_piu_lungo_min = 300;
+    f32 curva_max = 1.0f;      // max |curva| ammessa nel giro
+    f32 curva_dx_min = 0.3f;   // forza minima curve a destra (varieta')
+    f32 curva_sx_min = 0.3f;   // forza minima curve a sinistra (varieta')
+    f32 fuori_strada_max = 0.01f;
+};
+
+static bool leggiNumeroJson(const sgl::JsonObject& obj, const std::string& chiave, f32& out) {
+    sgl::JsonValue v;
+    if (!sgl::jsonGet(obj, chiave, v) || !sgl::jsonIsNumber(v)) return false;
+    out = (f32)sgl::jsonAsNumber(v);
+    return true;
+}
+
+static bool leggiIntJson(const sgl::JsonObject& obj, const std::string& chiave, i32& out) {
+    sgl::JsonValue v;
+    if (!sgl::jsonGet(obj, chiave, v) || !sgl::jsonIsNumber(v)) return false;
+    out = (i32)sgl::jsonAsNumber(v);
+    return true;
+}
+
+// Legge regole.json e restituisce le regole per `livello`, oppure le "default"
+// se il livello non ha una voce propria (o il file manca / e' illeggibile).
+RegolePercorso leggiRegolePercorso(const std::string& livello) {
+    RegolePercorso r; // valori default già sopra
+    std::ifstream f("motore_nuovo/dati/tracciati/regole.json");
+    if (!f.is_open()) return r;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return r;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return r;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue regoleVal;
+    if (!sgl::jsonGet(root, "regole", regoleVal) || !sgl::jsonIsObject(regoleVal)) return r;
+    const auto& regole = sgl::jsonAsObject(regoleVal);
+    const sgl::JsonObject* sorgente = nullptr;
+    auto it = regole.find(livello);
+    if (it != regole.end() && sgl::jsonIsObject(it->second)) {
+        sorgente = &sgl::jsonAsObject(it->second);
+    } else {
+        sgl::JsonValue defVal;
+        if (sgl::jsonGet(root, "default", defVal) && sgl::jsonIsObject(defVal))
+            sorgente = &sgl::jsonAsObject(defVal);
+    }
+    if (!sorgente) return r;
+    leggiNumeroJson(*sorgente, "rettilineo_min", r.rettilineo_min);
+    leggiNumeroJson(*sorgente, "rettilineo_max", r.rettilineo_max);
+    leggiIntJson(*sorgente, "rettilineo_piu_lungo_min", r.rettilineo_piu_lungo_min);
+    leggiNumeroJson(*sorgente, "curva_max", r.curva_max);
+    leggiNumeroJson(*sorgente, "curva_dx_min", r.curva_dx_min);
+    leggiNumeroJson(*sorgente, "curva_sx_min", r.curva_sx_min);
+    leggiNumeroJson(*sorgente, "fuori_strada_max", r.fuori_strada_max);
+    return r;
+}
+
 // --- Percorso: il tracciato del livello e' vario e si guida da capo a fondo ---
-// Profilo: rettilinei fra 25% e 75% del giro, curve forti (|curva| >= 0.3) a destra
-// e a sinistra, almeno un rettilineo lungo 300 segmenti. Guida: gas pieno e uno
+// Profilo: rettilinei fra rettilineo_min e rettilineo_max del giro, curve forti
+// (|curva| >= curva_dx_min / curva_sx_min) a destra e a sinistra, almeno un
+// rettilineo lungo rettilineo_piu_lungo_min segmenti. Guida: gas pieno e uno
 // sterzo semplice che riporta l'auto verso il centro; il giro deve finire senza
-// uscire di strada per piu' dell'1% dei frame.
+// uscire di strada per piu' di fuori_strada_max dei frame.
+// Soglie lette da dati/tracciati/regole.json (non hardcodate).
 bool verificaPercorso(const std::string& livello) {
     Game game(12345u);
     game.init(livello);
@@ -506,6 +576,7 @@ bool verificaPercorso(const std::string& livello) {
         sinistraMax = std::max(sinistraMax, -seg.curve);
     }
     const f32 quotaDritti = n > 0 ? (f32)dritti / (f32)n : 0.0f;
+    const RegolePercorso r = leggiRegolePercorso(livello);
 
     const f32 giro = (f32)game.road().totalLength();
     f32 percorso = 0.0f, zPrima = 0.0f;
@@ -529,12 +600,45 @@ bool verificaPercorso(const std::string& livello) {
     }
     const bool giroFinito = percorso >= giro;
     const f32 quotaFuori = frame > 0 ? (f32)fuori / (f32)frame : 1.0f;
-    std::printf("percorso %s: segmenti=%d rettilineo=%.0f%% (piu' lungo %d) curva max destra=%.2f sinistra=%.2f\n",
-                livello.c_str(), n, quotaDritti * 100.0f, rettilineoMax, destraMax, sinistraMax);
-    std::printf("giro guidato: %s in %d frame (%.1f s), fuori strada %d frame (%.1f%%)\n",
-                giroFinito ? "finito" : "NON finito", frame, frame / 50.0f, fuori, quotaFuori * 100.0f);
-    return quotaDritti >= 0.25f && quotaDritti <= 0.75f && rettilineoMax >= 300 &&
-           destraMax >= 0.3f && sinistraMax >= 0.3f && giroFinito && quotaFuori <= 0.01f;
+    std::printf("percorso %s: segmenti=%d rettilineo=%.0f%% (limiti %.0f%%-%.0f%%) (piu' lungo %d, min %d) curva max destra=%.2f (min %.2f) sinistra=%.2f (min %.2f, max %.2f)\n",
+                livello.c_str(), n, quotaDritti * 100.0f, r.rettilineo_min * 100.0f, r.rettilineo_max * 100.0f,
+                rettilineoMax, r.rettilineo_piu_lungo_min, destraMax, r.curva_dx_min, sinistraMax, r.curva_sx_min, r.curva_max);
+    std::printf("giro guidato: %s in %d frame (%.1f s), fuori strada %d frame (%.1f%%, max %.0f%%)\n",
+                giroFinito ? "finito" : "NON finito", frame, frame / 50.0f, fuori, quotaFuori * 100.0f, r.fuori_strada_max * 100.0f);
+
+    bool ok = true;
+    if (quotaDritti < r.rettilineo_min || quotaDritti > r.rettilineo_max) {
+        std::printf("  VIOLAZIONE: %% rettilineo %.0f fuori da [%.0f, %.0f]\n",
+                    quotaDritti * 100.0f, r.rettilineo_min * 100.0f, r.rettilineo_max * 100.0f);
+        ok = false;
+    }
+    if (rettilineoMax < r.rettilineo_piu_lungo_min) {
+        std::printf("  VIOLAZIONE: rettilineo piu' lungo %d < min %d\n", rettilineoMax, r.rettilineo_piu_lungo_min);
+        ok = false;
+    }
+    if (destraMax < r.curva_dx_min) {
+        std::printf("  VIOLAZIONE: curva max destra %.2f < min %.2f\n", destraMax, r.curva_dx_min);
+        ok = false;
+    }
+    if (sinistraMax < r.curva_sx_min) {
+        std::printf("  VIOLAZIONE: curva max sinistra %.2f < min %.2f\n", sinistraMax, r.curva_sx_min);
+        ok = false;
+    }
+    if (destraMax > r.curva_max || sinistraMax > r.curva_max) {
+        std::printf("  VIOLAZIONE: curva massima %.2f > limite %.2f\n",
+                    std::max(destraMax, sinistraMax), r.curva_max);
+        ok = false;
+    }
+    if (!giroFinito) {
+        std::printf("  VIOLAZIONE: giro non completato\n");
+        ok = false;
+    }
+    if (quotaFuori > r.fuori_strada_max) {
+        std::printf("  VIOLAZIONE: fuori strada %.1f%% > max %.0f%%\n",
+                    quotaFuori * 100.0f, r.fuori_strada_max * 100.0f);
+        ok = false;
+    }
+    return ok;
 }
 
 // --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
@@ -608,6 +712,90 @@ bool verificaGara() {
         // Una tappa dura circa un minuto: la gara intera resta sotto i 5 minuti.
         ok = ok && tappeOk && a.arrivo && uguali && a.frame < 15000u && a.posizione >= 1 && a.posizione <= 8;
     }
+    return ok;
+}
+
+// --- Test espansione tracciato: carica ogni livello, legge il campo "tracciato"
+// --- di livello.json, somma le lunghezze dei tratti da tratti.json e verifica
+// --- che l'espansione (road().segments()) sia un multiplo esatto di quella somma
+// --- (pattern ripetuto per intero, nessun segmento perso).
+bool verificaEspansioneTracciato() {
+    const char* livelli[] = {"lv_01_neon", "lv_02_atomico", "lv_03_foglie",
+                             "lv_04_cromo", "lv_05_spray", "lv_06_desktop"};
+    // Leggi tratti.json: mappa nome tratto -> lunghezza (segmenti).
+    std::ifstream f("motore_nuovo/dati/tracciati/tratti.json");
+    if (!f.is_open()) { std::printf("FALLITO: tratti.json non trovato\n"); return false; }
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) { std::printf("FALLITO: tratti.json illeggibile\n"); return false; }
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) { std::printf("FALLITO: tratti.json non e' un oggetto\n"); return false; }
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue trattiVal;
+    if (!sgl::jsonGet(root, "tratti", trattiVal) || !sgl::jsonIsObject(trattiVal)) {
+        std::printf("FALLITO: campo 'tratti' mancante in tratti.json\n"); return false;
+    }
+    const auto& tratti = sgl::jsonAsObject(trattiVal);
+    std::map<std::string, i32> lunghezzaTratto;
+    for (const auto& kv : tratti) {
+        const auto& obj = sgl::jsonAsObject(kv.second);
+        sgl::JsonValue lenVal;
+        i32 len = 0;
+        if (sgl::jsonGet(obj, "lunghezza", lenVal) && sgl::jsonIsNumber(lenVal))
+            len = (i32)sgl::jsonAsNumber(lenVal);
+        lunghezzaTratto[kv.first] = len;
+    }
+
+    bool ok = true;
+    for (const char* lv : livelli) {
+        Game game(12345u);
+        game.init(lv);
+        const auto& segs = game.road().segments();
+        i32 n = (i32)segs.size();
+
+        std::string lvPath = "motore_nuovo/dati/livelli/" + std::string(lv) + "/livello.json";
+        std::ifstream lf(lvPath);
+        if (!lf.is_open()) { std::printf("%s: FALLITO livello.json non trovato\n", lv); ok = false; continue; }
+        std::stringstream lss;
+        lss << lf.rdbuf();
+        lf.close();
+        sgl::JsonReader lreader(lss.str());
+        if (!lreader.parse()) { std::printf("%s: FALLITO livello.json illeggibile\n", lv); ok = false; continue; }
+        const auto& lval = lreader.valore();
+        if (!sgl::jsonIsObject(lval)) { std::printf("%s: FALLITO livello.json non oggetto\n", lv); ok = false; continue; }
+        const auto& lroot = sgl::jsonAsObject(lval);
+        sgl::JsonValue trav;
+        bool haTracciato = sgl::jsonGet(lroot, "tracciato", trav) && sgl::jsonIsArray(trav);
+        if (!haTracciato) {
+            std::printf("%s: FALLITO campo 'tracciato' mancante\n", lv);
+            ok = false;
+            continue;
+        }
+        const auto& arr = sgl::jsonAsArray(trav);
+        i32 sommaLunghezze = 0;
+        bool trattiOk = true;
+        for (const auto& t : arr) {
+            if (!sgl::jsonIsString(t)) { trattiOk = false; break; }
+            const std::string& nome = sgl::jsonAsString(t);
+            auto it = lunghezzaTratto.find(nome);
+            if (it == lunghezzaTratto.end()) { trattiOk = false; break; }
+            sommaLunghezze += it->second;
+        }
+        if (!trattiOk) {
+            std::printf("%s: FALLITO tracciato contiene tratto sconosciuto\n", lv);
+            ok = false;
+            continue;
+        }
+        // Il loader ripete il pattern per intero finché segTotali >= minSeg:
+        // segmenti deve essere >= somma e multiplo esatto di somma.
+        bool espansioneOk = (sommaLunghezze > 0 && n >= sommaLunghezze && (n % sommaLunghezze) == 0);
+        std::printf("%s: tracciato=%zu tratti somma=%d segmenti=%d espansione=%s\n",
+                    lv, arr.size(), sommaLunghezze, n, espansioneOk ? "OK" : "FALLITO");
+        if (!espansioneOk) ok = false;
+    }
+    std::printf("%s\n", ok ? "GATE ESPANSIONE OK" : "FALLITO: espansione tracciato non coerente");
     return ok;
 }
 
@@ -742,6 +930,11 @@ int main(int argc, char** argv) {
         const bool ok = verificaCosta();
         std::printf("%s\n", ok ? "GATE COSTA OK" : "FALLITO: gas rilasciato non decelera");
         return ok ? 0 : 10;
+    }
+
+    if (modo == "espansione") {
+        const bool ok = verificaEspansioneTracciato();
+        return ok ? 0 : 11;
     }
 
     // --- modo smoke (default) ---
