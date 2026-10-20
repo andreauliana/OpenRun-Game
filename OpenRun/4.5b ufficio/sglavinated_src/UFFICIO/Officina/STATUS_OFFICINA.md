@@ -235,4 +235,20 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Compito 3 (prova_gate legge regole.json al posto delle hardcoded, return riga 536): BLOCCATO (edit negato su motore_nuovo/test/prova_gate.cpp); serve sblocco edit + CP-005 al Capo.
 - Scritture: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_GATE_T1_20OTT_1300.md; questo status. Zero scritture nuove in motore_nuovo/ e tools/ oltre ai dati R1 gia' presenti.
 
+## Report turno 20/10 17:01 — developer
+- Nessun blocco eseguibile: shell negata (permission.rejected), `sh UFFICIO/Officina/TOOL/gate_t1.sh` non avviato ('gate non eseguito'); nessun build/test eseguito in questo turno.
+- Blocco R1 lato @developer concluso e verificato su file: `motore_nuovo/src/road/road.cpp` raccordo entrata/uscita (default min(n/3,60), deriva solo su curve != 0), `motore_nuovo/dati/tracciati/tratti.json` (8 tratti) e `regole.json` (6 livelli + default), `prova_gate` legge `regole.json`, 6 `livello.json` con campo `tracciato`. Zero scritture nuove in `motore_nuovo/` e `tools/`.
+- Ultimo gate verde noto: 20/10 14:53, `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, 6/6 GATE PERCORSO OK, ms/frame medio ~0.17 max 0.26, replay 2x IDENTICO, GATE T1 TUTTO OK (log `UFFICIO/Officina/Test area/gate_t1.log`; esito in `out/developer/ESITO_TURNO_20OTT_1453.md`).
+- CP-005 APERTO: review sviluppatore su Junior punti 4-5 registrata (`out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md`, positiva con rilievo non bloccante su compito 4); in attesa review Junior punti 1-3 e chiusura CP-005 da parte del Capo; in attesa ri-verifica runner Mac di Andrea (D12 = A) prima di R2.
+- Prossimo per Andrea dopo R1 prima di R2: conversione 60 Hz (dt in secondi, default 60 Hz, opzione 50 Hz, ctest verde a 60 Hz; ANDREA_REVIEW 19/10).
+- Consegne: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_TURNO_20OTT_1700.md.
+
+## Report turno 20/10 19:23 — developer
+
+- Blocco R1 [~] (tracciati 6 piste): compiti @developer 1-3 conclusi e verificati su file (`motore_nuovo/src/road/road.cpp` raccordo entrata/uscita default `min(n/3,60)`, deriva solo su segmenti con `curva != 0`; `dati/tracciati/tratti.json` 8 tratti CC-BY-4.0; `dati/tracciati/regole.json` 6 livelli + default lette da `test/prova_gate.cpp`; 6 `dati/livelli/*/livello.json` con campo `tracciato`). Zero scritture nuove in `motore_nuovo/` e `tools/` questo turno.
+- T1-RUN [~]: punti 2 colline e 3 sprite-wrap gia' nel codice (renderer.cpp `zRel` con `fmod` su `totalLen`); punto 4 sprite veri bloccato su G1 @grafico.
+- Gate eseguito questo turno: `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, `GATE T1: TUTTO OK`, 6/6 `GATE PERCORSO OK` (rettilineo 55-71%, curva max 0.72-0.98, giro guidato finito su tutti e 6, fuori strada 0%), ms/frame medio 0.171 max 0.323 (limite 20), replay 2x IDENTICO, accelerazione/ribaltamento/sterzo/curve continue/gara a tappe (4 bivi)/screenshot P1 OK. Log: `UFFICIO/Officina/Test area/gate_t1.log`; esito in `out/developer/ESITO_GATE_20OTT_1923.md`.
+- CP-005 APERTO: review Junior punti 4-5 positiva con rilievo non bloccante (compito 4 stampa tratto+segmento iniziale mancante, `out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md`); in attesa review Junior punti 1-3 e chiusura CP-005 da parte del Capo; in attesa ri-verifica runner Mac di Andrea (D12 = A) prima di R2.
+- Prossimo dopo R1 prima di R2: 60 Hz (dt in secondi, default 60 Hz, opzione 50 Hz, ctest verde a 60 Hz; ANDREA_REVIEW 19/10).
+- Consegne: `bacheche/developer/diario.md` (1 riga), `bacheche/developer/RIASSUNTO.md` (<=12 righe), `out/developer/ESITO_GATE_20OTT_1923.md`, questo status.
 

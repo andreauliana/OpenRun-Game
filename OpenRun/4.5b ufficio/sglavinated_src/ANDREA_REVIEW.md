@@ -224,7 +224,7 @@ Opzioni: A) sì, chiudi T1-RUN [x] dopo review CP-005 + ctest  B) no, attendere 
 Raccomandazione: A
 DEFAULT usato nel frattempo: sì (T1-Q1 risposta Andrea: sì; gate verde registrato in `STATUS_OFFICINA.md` e `STATO_CORRENTE.md`)
 Impatto se cambi idea: T1-RUN resta [~] e si attende nuova prova di Andrea prima della tappa 2.
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: B
 
 ---
 
