@@ -1,17 +1,13 @@
 # V4 (OpenWay) — regole per tutti gli agenti
 
-Questa e' una build di test; i nomi interni e alcuni comandi conservano la sigla V3.
-
-Due filoni nella stessa cartella:
-- **Hack Mega Drive v87** (`tools/`, `lr/`, `shots/`...): leggi HANDOVER.md -> BUILD.md. Solo manutenzione.
-- **Motore nuovo (versione libera)** in `motore_nuovo/`: pista C di `../PIANO_V3.md`. E' il lavoro principale.
+Questa e' una build iniziale del progetto.
 
 ## Regole generali
 1. Nessun materiale Sega: niente ROM, `.gen`, sprite, tracciati o musiche del gioco originale, nemmeno "simili". Codice di altri solo con licenza libera e fonte nel commento.
 2. Ogni risorsa esterna in `assets_originali/CREDITI.md` (autore, licenza, URL).
 3. Lavora per blocchi di `RICHIESTA.md`. Un blocco = un risultato verificabile. A fine blocco: voce in `SCAMBIO.md` e Stato aggiornato.
 4. Resta nel tuo ruolo e nei tuoi permessi. Se serve un altro ruolo, scrivilo in SCAMBIO.md per `capo`.
-5. Pi 400, 50 fps, niente decorazioni non richieste. Leggi VISIONE.md (vincoli duri).
+5. Pi 400, 50 fps, niente decorazioni non richieste. Leggi VISIONE.md.
 5b. Determinismo: tempo = contatore di frame, RNG con seed, nessun orologio di sistema; il nucleo non dipende da SDL (solo il runner di test).
 6. Non cancellare file.
 
