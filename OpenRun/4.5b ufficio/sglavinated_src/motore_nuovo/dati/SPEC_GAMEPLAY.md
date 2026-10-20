@@ -25,8 +25,8 @@ un po', il livello scende da solo.
 
 Novita' del motore nuovo (moduli fx, fuori da questo modulo ma collegati):
 
-- **Razzo** (tasto B): modulo `src/fx/razzo_b/`, accessoria di guida. Non genera show.
-- **Salto auto** (alta velocita'): modulo `src/fx/sollevamento/`. Un salto non e' un
+- **Razzo** (tasto B): modulo `src/fx/razzo_b/`, accessoria alla guida. Non genera show.
+- **Salto auto** (ad massima velocita'): modulo `src/fx/sollevamento/`. Un salto non e' un
   crash: solo una collisione o un capottamento lo e'.
 - **Effetti colore post-crash**: leggono `livello_escalation()` (0-3) per dosare
   l'effetto, senza toccare le regole dei fumetti.
