@@ -18,6 +18,7 @@ permission:
     "motore_nuovo/CMakeLists.txt": allow
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/dati/personaggi/**": allow
+    "motore_nuovo/dati/tracciati/**": allow
     "motore_nuovo/strumenti_py/**": allow
     "motore_nuovo/dati/SPEC_GAMEPLAY.md": allow
     "motore_nuovo/docs/LIVELLI.md": allow
@@ -33,6 +34,7 @@ permission:
     "sh UFFICIO/Officina/TOOL/check_sdl_init.sh *": allow
     "ctest --test-dir UFFICIO/Officina/build*": allow
     "UFFICIO/Officina/build/prova_gate *": allow
+    "./UFFICIO/Officina/build/prova_gate *": allow
     "git status": allow
     "git status *": allow
     "git diff": allow
@@ -59,4 +61,5 @@ Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configur
 - Non modifichi i test del @developer-junior salvo task esplicito; non approvi autonomamente la release.
 - Esegui solo build/test consentiti e riporta comando, exit code e misure effettive.
 - 6 tratti (`motore_nuovo/docs/LIVELLI/`): ogni tratti ha un percorso suo (vedi `docs/LIVELLI.md`). Se cambi `segmenti`, `sh tools/gate_t1.sh` deve dare `GATE PERCORSO OK` per tutte e 6.
-- Review: Un singolo test: `/UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa: `motore_nuovo/docs/SVILUPPATORI.md`.
+- Review: Un singolo test: `UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa: `motore_nuovo/docs/SVILUPPATORI.md`.
+- Lanciare ogni comando da solo, senza unirli con ; o &&. I comandi uniti vengono sempre rifiutati.
