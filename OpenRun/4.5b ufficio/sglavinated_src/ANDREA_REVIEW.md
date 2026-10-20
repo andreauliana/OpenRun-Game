@@ -151,8 +151,6 @@ Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B
 RISPOSTA DI ANDREA: A
 Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Raspberry Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
 
-
-
 ## Feedback storico v90 — 2026-10-17
 
 Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come contesto storico. La decisione di progetto privilegiava il motore C++ in `motore_nuovo/`, sospendeva ROM/export Mega Drive e chiedeva di concentrarsi sul primo gate giocabile.
@@ -180,7 +178,7 @@ Ordine: dopo R1, prima di R2.
 3. **Opzione 50 Hz** in configurazione (per TV a tubo PAL o RetroPie impostato in PAL), es. `dati/config.json` `"frequenza_hz": 60` oppure opzione del runner `--hz 50`. Il core libretro dichiara la frequenza scelta (60 -> NTSC).
 
 ## Perche'
-Mac, Pi 400 (solo HDMI), monitor e TV moderni, anche in Europa, lavorano a 60 Hz; anche Windows XP gira su monitor da 60 Hz in su. A 50 Hz logici su uno schermo a 60 il runner ripete un'immagine ogni 6: la strada che scorre fa un piccolo scatto continuo. Una possibile versione per Windows XP (dopo Mac e Pi) non cambia questa scelta.
+Mac, Pi 400 (solo HDMI), monitor e TV moderni, lavorano a 60 Hz; anche Windows XP gira su monitor da 60 Hz in su. A 50 Hz logici su uno schermo a 60 il runner ripete un'immagine ogni 6: la strada che scorre fa un piccolo scatto continuo. Una possibile versione per Windows XP (dopo Mac e Pi) non cambia questa scelta.
 
 ## Gate
 - `ctest` verde a 60 Hz; il giro guidato dura gli stessi secondi (+/- 1%) con le due frequenze.
