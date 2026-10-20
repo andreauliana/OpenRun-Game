@@ -1,24 +1,22 @@
-# RIEPILOGO MATTINA — OpenRun 4.6
-Data: 2026-10-20. Fonte: STATO_CURRENTE.md, REGISTRO_REVISIONI.md, ANDREA_REVIEW.md, STATUS_OFFICINA.md, STATUS_GRAFICO_PER_CAPO.md.
+# RIEPILOGO_MATTINA — OpenRun 4.6 (2026-10-20)
 
 ## Fatto per blocco/agente
-- Capo: STATO_CURRENTE.md e REGISTRO_REVISIONI.md aggiornati; ANDREA_REVIEW.md fonte unica; CP-001 chiuso; CP-002/003/004/005 aperti, in attesa di review indipendente; archivio v4 classificato (126 file, nessuno rimosso).
-- Builder/Developer: gate T1 smoke+soak exit 0 (18/10 22:56); 6 livelli OK, replay 2x IDENTICO, ms/frame medio 0.185 max 0.518 (<=20), speed@60=161.79. cmake --build exit 0, runner SDL compila, PNG disabilitato; CTest 7 test scoperti non eseguiti.
-- R1 (19/10 11:45): road.h/road.cpp/game.cpp (campo tracciato in 6 livello.json); gate soak exit 0, GATE T1 TUTTO OK, 6/6 percorsi OK (rettilineo 52-65%, curva max 0.37-0.88, fuori strada 0). tratti.json/regole.json pronti ma non scritti in dati/tracciati/.
-- Developer/Builder Junior: letture obbligatorie fatte; peer review T1-RUN (VOCE_SCAMBIO_1175) POSITIVA su 6 criteri; nessun codice/test/build proprio.
-- Designer/Grafico: catalogo 52 voci (30 approvate, 16 pronte, 2 costruzione, 4 mancanti), 100 PNG non catalogati; 3 livelli presenti, 6 percorsi/3 finali/sprite concorrente e personaggi mancanti; nulla migrato in Shared asset/.
+- Sviluppo/Builder-developer (R1 + T1-RUN): road.h/road.cpp (raccordo entrata/uscita, curva costante), game.cpp campo `tracciato` su 6 livello.json. `sh tools/gate_t1.sh soak` exit 0, 6/6 GATE PERCORSO OK (rettilineo 52–65%, curva max 0.37–0.88, fuori strada 0), ms/frame medio 0.185 max 0.518 (limite 20), replay 2x IDENTICO. Peer review Junior POSITIVA (out/developer-junior/REVIEW_T1RUN_VOCE1175_2026-10-19.md).
+- Junior: peer review indipendente su VOCE_SCAMBIO_1175; nessun blocco assegnato; in attesa task Capo.
+- Grafico: check catalogo exit 0 (52 voci: 30 approvate, 16 pronte, 2 costruzione, 4 mancanti; 100 PNG non catalogati). CP-002 aperto, review indipendente da assegnare. Mancano personaggi/concorrenti, 6 percorsi, 3 finali animati.
+- Officina: CMake Release configurato, runner compila (PNG off), 7 test CTest scoperti non eseguiti; SDL2_image non installabile (brew bloccato libtool); VS Code CMake senza progetto attivo.
 
 ## Non funziona / blocchi
-- CP-002/003/004/005: review indipendente non assegnata (autore distinto dal revisore).
-- Andrea 09:39: GATE T1 FALLITO exit 13 (giro guidato KO 5/6); fix builder-developer 11:45, ma ri-verifica Mac (D12) ancora in attesa; v91 e fps/temperatura Pi 400 non registrati.
-- Pi 400/RetroPie (blocco H): non testato; libretro.h manca, BUILD_LIBRETRO=ON non compila. Solo dopo ok Mac di Andrea.
-- SDL2_image non installabile: PNG disabilitato, prova_gate disegna rettangoli (risposta D10: conversione PNG->raw in strumenti_py da verificare).
-- CTest 7 test non eseguiti; CMake Tools VS Code senza progetto attivo.
+- Blocco H: v91 Andrea runner Mac SDL2 + fps/temp Pi 400 non fatti (T1-Q3/T1-Q8); Pi 400 dopo ok Mac (ordine Andrea).
+- libretro.h manca → BUILD_LIBRETRO=ON non compila.
+- P1 punto 4 (sprite veri) e G1 [ ] di Designer, fuori scope T1.
+- dati/tracciati/tratti.json e regole.json non ancora scritti (contenuto pronto in out/developer/VOCE_SCAMBIO_1174.md).
+- CP-002/CP-003/CP-004 in attesa di review indipendente.
 
-## Decisioni aperte in ANDREA_REVIEW.md (3 piu' importanti)
-1. D12 [APERTA]: Andrea ri-verifica runner su Mac (v91, SDL2) dopo R1 + gate verde, prima di Pi 400/RetroPie (risposta A sì, esecuzione pendente; blocca H).
-2. Blocco H/T1-Q3: prove Pi 400/RetroPie FPS/temperatura/throttling — solo dopo ok Mac Andrea; libretro.h mancante blocca core libretro.
-3. D10/D11 [risposta registrata, verifica tecnica da checkpoint]: conversione PNG->raw zero dipendenze; rallentamento off-road graduale ~0.85 in player.cpp.
+## Decisioni aperte ANDREA_REVIEW.md (3 più importanti)
+1. D12 [APERTA, risposta A = sì]: dopo peer review R1 e gate verde 6/6, Andrea ri-verifica runner su Mac (v91) prima di Pi 400.
+2. Frequenza di gioco (19 ott): 60 Hz default, opzione 50 Hz; tutte le misure in secondi (non frame) — da checkpoint dopo R1, prima di R2.
+3. SDL/multipiattaforma (19 ott): include `<SDL.h>` portabile, SDL2main condizionale, find_package(SDL2 2.0.5), libretro.h, script RetroPie Ports; ordine Mac → Linux → Pi 400 → Windows XP.
 
 ## Prossimo passo consigliato
-Capo assegna revisori indipendenti a CP-002/003/004/005 (diversi dagli autori); esegue `sh tools/run_tests.sh` registrando comando, exit code e misure CTest; sollecita ad Andrea la ri-verifica Mac (D12) prima di ogni lavoro Pi 400; poi scrittura di dati/tracciati/tratti.json e regole.json.
+Scrivere dati/tracciati/tratti.json e regole.json (contenuto in out/developer/VOCE_SCAMBIO_1174.md), completare peer review incrociata Junior su R1, poi attivare ri-verifica Mac di Andrea (D12 = A) prima di ogni lavoro Pi 400.

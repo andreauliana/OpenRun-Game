@@ -26,11 +26,11 @@ permission:
     "*": deny
     "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
     "cmake --build UFFICIO/Officina/build*": allow
-    "sh tools/run_tests.sh": allow
-    "sh tools/gate_t1.sh": allow
-    "sh tools/gate_t1.sh *": allow
-    "sh tools/check_sdl_init.sh": allow
-    "sh tools/check_sdl_init.sh *": allow
+    "sh UFFICIO/Officina/TOOL/run_tests.sh": allow
+    "sh UFFICIO/Officina/TOOL/gate_t1.sh": allow
+    "sh UFFICIO/Officina/TOOL/gate_t1.sh *": allow
+    "sh UFFICIO/Officina/TOOL/check_sdl_init.sh": allow
+    "sh UFFICIO/Officina/TOOL/check_sdl_init.sh *": allow
     "ctest --test-dir UFFICIO/Officina/build*": allow
     "UFFICIO/Officina/build/prova_gate *": allow
     "git status": allow
