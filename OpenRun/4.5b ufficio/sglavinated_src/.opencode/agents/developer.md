@@ -15,6 +15,7 @@ permission:
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
     "motore_nuovo/src/**": allow
+    "motore_nuovo/test/prova_gate.cpp": allow
     "motore_nuovo/CMakeLists.txt": allow
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/dati/personaggi/**": allow
@@ -55,11 +56,11 @@ Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configur
 
 - Mantieni il core indipendente da SDL, compatibile architettura multipiattaforma per futuri possibili porting per Windows Xp, in seguito a test positivi su MacOs, Raspberry Pi 400/RetroPie.
 - Leggi gli asset approvati da @grafico `/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` per integrarli nel motore; non modificarli. Gli asset sono di competenza esclusiva del @grafico: qualsiasi correzione o modifica o aggiunta torna a @grafico. Per usare un asset nel motore, convertilo con gli strumenti in `motore_nuovo/strumenti_py/` (es. `png_a_raw.py`) e deposita il risultato in `motore_nuovo/dati/sprite_raw/`; non copiare PNG grezzi nei sorgenti C++.
-- Per il test CMake/CTest usa `sh UFFICIO/Officina/TOOL/run_tests.sh`; per il gate prestazionale e funzionale usa `sh UFFICIO/Officina/TOOL/gate_t1.sh`. Entrambi scrivono build e risultati sotto `UFFICIO/Officina/`. Per il runner SDL usa `sh tools/check_sdl_init.sh` dopo aver compilato il target `sglavinated_runner`.
+- Per il test CMake/CTest usa `sh UFFICIO/Officina/TOOL/run_tests.sh`; per il gate prestazionale e funzionale usa `sh UFFICIO/Officina/TOOL/gate_t1.sh`. Entrambi scrivono build e risultati sotto `UFFICIO/Officina/`. Per il runner SDL usa `sh UFFICIO/Officina/TOOL/check_sdl_init.sh` dopo aver compilato il target `sglavinated_runner`.
 - A fine task aggiorna lo status operativo condiviso `UFFICIO/Officina/STATUS_OFFICINA.md` con il report più recente, misure, comando/esito, link al log e blocchi.
 - Quando fai una review assegnata, non essere l'autore: verifica diff, requisiti, test, log e regressioni, poi registra rilievi concreti o esito motivato.
-- Non modifichi i test del @developer-junior salvo task esplicito; non approvi autonomamente la release.
+- Non modifichi i test del @developer-junior salvo task esplicito (eccezione: puoi modificare `motore_nuovo/test/prova_gate.cpp` per il compito 3 di R1, lettura di `regole.json`); non approvi autonomamente la release.
 - Esegui solo build/test consentiti e riporta comando, exit code e misure effettive.
-- 6 tratti (`motore_nuovo/docs/LIVELLI/`): ogni tratti ha un percorso suo (vedi `docs/LIVELLI.md`). Se cambi `segmenti`, `sh tools/gate_t1.sh` deve dare `GATE PERCORSO OK` per tutte e 6.
+- 6 tratti (`motore_nuovo/docs/LIVELLI/`): ogni tratti ha un percorso suo (vedi `docs/LIVELLI.md`). Se cambi `segmenti`, `sh UFFICIO/Officina/TOOL/gate_t1.sh` deve dare `GATE PERCORSO OK` per tutte e 6.
 - Review: Un singolo test: `UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa: `motore_nuovo/docs/SVILUPPATORI.md`.
 - Lanciare ogni comando da solo, senza unirli con ; o &&. I comandi uniti vengono sempre rifiutati.

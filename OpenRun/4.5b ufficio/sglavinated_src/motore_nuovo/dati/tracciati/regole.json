@@ -1,0 +1,76 @@
+{
+  "licenza": "CC-BY-4.0",
+  "autore": "@developer (blocco R1, regole originali, nessun materiale Sega)",
+  "nota": "Regole di guidabilita' per pista, lette da prova_gate al posto delle soglie hardcodate. rettilineo_min/max: quota del giro con |curva| < 0.05. rettilineo_piu_lungo_min: segmenti consecutivi dritti. curva_max: max |curva| ammessa nel giro. curva_dx_min / curva_sx_min: forza minima richiesta delle curve forti per senso (varieta'). fuori_strada_max: quota massima di frame fuori strada nel giro guidato. Valori coerenti con lv_02_atomico (rettilineo ~40-75%, curva max 0.85), riferimento ANDREA_REVIEW T1-Q5.",
+  "default": {
+    "rettilineo_min": 0.25,
+    "rettilineo_max": 0.75,
+    "rettilineo_piu_lungo_min": 300,
+    "curva_max": 1.0,
+    "curva_dx_min": 0.3,
+    "curva_sx_min": 0.3,
+    "fuori_strada_max": 0.01
+  },
+  "regole": {
+    "lv_01_neon": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "tema neon: rettilinei di respiro, curve alternate"
+    },
+    "lv_02_atomico": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "riferimento guida: rettilineo e curva max coerenti"
+    },
+    "lv_03_foglie": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "tema foglie: alternanza fitta rettilineo/curva"
+    },
+    "lv_04_cromo": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "tema cromo: rettilinei lunghi, poche curve forti"
+    },
+    "lv_05_spray": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "tema spray: curve frequenti, rettilinei corti"
+    },
+    "lv_06_desktop": {
+      "rettilineo_min": 0.25,
+      "rettilineo_max": 0.75,
+      "rettilineo_piu_lungo_min": 300,
+      "curva_max": 1.0,
+      "curva_dx_min": 0.3,
+      "curva_sx_min": 0.3,
+      "fuori_strada_max": 0.01,
+      "note": "tema desktop: misto rettilinei e colline"
+    }
+  }
+}

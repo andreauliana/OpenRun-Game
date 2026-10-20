@@ -32,9 +32,9 @@ La configurazione attiva è [CMakeLists.txt](../../motore_nuovo/CMakeLists.txt);
 - `sglavinated_runner`: runner SDL2, creato quando SDL2 è disponibile.
 - `sglavinated_libretro`: modulo stub opzionale (`BUILD_LIBRETRO=ON`).
 - `prova_gate`: eseguibile di test senza SDL; abilita sette test CTest se è presente `motore_nuovo/test/prova_gate.cpp`.
-- `sh tools/run_tests.sh`: percorso standard CMake/CTest in Release, ora riusa `UFFICIO/Officina/build/`.
-- `sh tools/gate_t1.sh` e `sh tools/gate_t1.sh soak`: prove integrate e soak; il wrapper gestisce la build e scrive i log in `Test area/`.
-- `sh tools/check_sdl_init.sh`: controllo del runner SDL compilato.
+- `sh UFFICIO/Officina/TOOL/run_tests.sh`: percorso standard CMake/CTest in Release, ora riusa `UFFICIO/Officina/build/`.
+- `sh UFFICIO/Officina/TOOL/gate_t1.sh` e `sh UFFICIO/Officina/TOOL/gate_t1.sh soak`: prove integrate e soak; il wrapper gestisce la build e scrive i log in `Test area/`.
+- `sh UFFICIO/Officina/TOOL/check_sdl_init.sh`: controllo del runner SDL compilato.
 - SDL2_image è documentata come dipendenza opzionale del solo runner nella [scheda TOOL](./TOOL/README.md) e nella guida [BUILD.md](../../motore_nuovo/docs/BUILD.md), con istruzioni Homebrew e Raspberry Pi OS/RetroPie.
 
 Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrapper di test e la scrittura di questo solo status, non la modifica manuale degli output generati. Il Capo ha accesso in lettura allo status; il Designer non scrive nell'Officina.
@@ -46,7 +46,7 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - `brew install sdl2_image`: non completato. Homebrew si è fermato durante il link dell'upgrade di `libtool` per conflitti con symlink preesistenti (`/usr/local/include/libltdl` e `/usr/local/share/libtool`); la pulizia ha inoltre segnalato un diniego su `/usr/local/lib/docker/cli-plugins`. Nessun link è stato sovrascritto o rimosso.
 - `ctest --test-dir UFFICIO/Officina/build -N`: sette test scoperti; non eseguiti da questo comando.
 - CMake Tools in VS Code non ha un progetto CMake attivo selezionato e non è riuscito a configurarlo; il pannello diagnostica non mostra errori. Non conteggiare questa operazione come build o test passati.
-- Prossimo test eseguibile dal ruolo di sviluppo: `sh tools/run_tests.sh`; riportare comando, exit code e risultati CTest in questo status, mantenendo il log originale in Officina.
+- Prossimo test eseguibile dal ruolo di sviluppo: `sh UFFICIO/Officina/TOOL/run_tests.sh`; riportare comando, exit code e risultati CTest in questo status, mantenendo il log originale in Officina.
 
 ## Report turno 21:56 — developer-builder-junior
 
@@ -226,4 +226,13 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - **VOCE_SCAMBIO_1175 (autore, 19/10):** tuning percorsi dei 4 livelli, `sh tools/gate_t1.sh soak` exit 0, misure come sopra, nessun materiale esterno.
 - **VOCE_SCAMBIO_1174 (autore, 19/10 11:45):** blocco R1 — `road.h` (`entrata`/`uscita`), `road.cpp` (raccordo), `game.cpp` (campo `tracciato`), gate exit 0; è la fonte delle modifiche core non imputabili a T1-RUN.
 - **Report Andrea 09:39 (19/10):** `GATE T1: FALLITO` (exit 13), giro guidato KO su 5/6, solo `lv_02_atomico` (40%/0.86) passava; con il tuning attuale tutti e 6 passano. Richiesta T1-Q5: soglie non abbassate e logica tracciato modificabile (R1).
+
+## Report turno 20/10 ~13:00 — developer
+
+- Blocco R1 (tracciati 6 piste), stato [~]. road.cpp compito 1 FATTO (raccordo entrata/uscita min(n/3,60), deriva solo segmenti curva != 0). motore_nuovo/dati/tracciati/tratti.json (8 tratti) e regole.json CREATI; 6 livello.json con campo tracciato (loader espande da tratti.json, fallback su segmenti).
+- Eseguito `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` (20/10 ~13:00): build exit 0. lv_01_neon GATE PERCORSO OK (rettilineo 63%, rett max 659, curva 0.85/0.85, giro finito, fuori 0%, ms/frame medio 0.638 max 64.082 outlier); lv_02_atomico GATE PERCORSO OK (rettilineo 65%, rett max 1440, curva 0.72/0.98, ms/frame medio 0.363 max 9.072); lv_03_foglie GATE PERCORSO OK (rettilineo 57%, rett max 590, curva 0.75/0.95, ms/frame medio 0.489 max 12.995). Replay 2x IDENTICO. Comando interrotto dal timeout dello strumento (240 s) durante lv_04_cromo, prima del riepilogo finale — non un errore di codice.
+- Ultimo esito completo noto: 6/6 percorsi GATE PERCORSO OK, soak 6/6 OK, replay 2x IDENTICO, ms/frame medio ~0.46 (19/10 11:45 e 20/10 pomeriggio; log `UFFICIO/Officina/Test area/gate_t1.log`).
+- Compito 3 (prova_gate legge regole.json al posto delle hardcoded, return riga 536): BLOCCATO (edit negato su motore_nuovo/test/prova_gate.cpp); serve sblocco edit + CP-005 al Capo.
+- Scritture: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_GATE_T1_20OTT_1300.md; questo status. Zero scritture nuove in motore_nuovo/ e tools/ oltre ai dati R1 gia' presenti.
+
 

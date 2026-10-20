@@ -23,7 +23,7 @@ sglavinated_src/
 
 ## Migrazione graduale
 
-La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/` e `tools/`. 
+La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
 Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` riservata a Libreria asset in lavorazione del @grafico. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
 
 ## Ruoli
@@ -32,7 +32,7 @@ Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `U
 |---|---|---|
 | @capo | Assegna task, responsabile, revisore, percorsi e criteri; aggrega esiti; gestisce checkpoint e documenti per Andrea. Non scrive codice/asset e non sostituisce la review tecnica. | `Checkpoint Revision/`, documenti di coordinamento assegnati |
 | @grafico | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `Shared asset/`. | Percorsi grafici assegnati; in fase 1 `assets_originali/`, `libreria/` e dati UI/testo assegnati |
-| @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del Junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `tools/` |
+| @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del Junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `UFFICIO/Officina/TOOL/` |
 | @developer-junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del Builder quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
 
 Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo assegnato, non l'agente. Il perimetro statico OpenCode è una allowlist di base; il Capo specifica nel task i percorsi scrivibili. Nessun agente amplia autonomamente il proprio accesso.
@@ -73,8 +73,8 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 
 Dalla radice `sglavinated_src/`, usare un comando semplice:
 
-- `sh tools/gate_t1.sh` — smoke test e replay deterministico sui tre livelli.
-- `sh tools/gate_t1.sh soak` — smoke test più 30.000 frame.
+- `sh UFFICIO/Officina/TOOL/gate_t1.sh` — smoke test e replay deterministico sui tre livelli.
+- `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` — smoke test più 30.000 frame.
 
 Il gate configura e compila il sorgente ancora in `motore_nuovo/`; build, log, screenshot e altri output sono collocati in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`. Riportare l'exit code e le righe misurate del log; non dedurre il successo dal codice o dal solo avvio della build. Un errore torna all'autore per la correzione.
 

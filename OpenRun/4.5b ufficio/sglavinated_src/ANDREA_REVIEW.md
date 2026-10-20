@@ -29,7 +29,7 @@ Le quattro domande T1 sottostanti sono rinominate `T1-Q1`–`T1-Q4` per non coll
 ### T1-Q1 | Chiusura proposta del gate T1
 
 Gate soak dichiarato nella registrazione v4.5: `sh tools/gate_t1.sh soak`, exit 0, replay identico su tre livelli, soglie di frame rispettate e screenshot registrati. La prova non basta da sola a chiudere il checkpoint 4.6.
-DEFAULT usato nel frattempo: sì — chiudi T1-RUN a [x] se `sh tools/gate_t1.sh soak` exit 0, replay 2x IDENTICO, ms/frame <= 20.
+DEFAULT usato nel frattempo: sì — chiudi T1-RUN a [x] se `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, replay 2x IDENTICO, ms/frame <= 20.
 Risposta di Andrea: sì.
 
 ### T1-Q2 | Promozione P1
@@ -139,14 +139,14 @@ RISPOSTA DI ANDREA: B (zero nuove dipendenze, core resta senza SDL, licenza MIT/
 ## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 Domanda: fuoristrada: velocità crolla da ~160 a ~6 in pochi frame (troppo brusco). Come tarare il rallentamento fuori strada in player.cpp?
 Opzioni: A) fattore graduale ~0.85 al frame fino a velocità minima  B) decelerazione secca a ~6  C) nessun rallentamento (velocità invariata fuori strada) 
-DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh tools/gate_t1.sh` (replay 2x IDENTICO).
+DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh UFFICIO/Officina/TOOL/gate_t1.sh` (replay 2x IDENTICO).
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
 RISPOSTA DI ANDREA: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 
 ## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
 
 Domanda:
-Dopo peer review incrociata su R1 e gate `sh tools/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
+Dopo peer review incrociata su R1 e gate `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
 Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B) no, si procede direttamente a Pi 400 dopo peer review
 RISPOSTA DI ANDREA: A
 Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Raspberry Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
