@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-20 09:09
+# Pacchetto per Claude — 2026-10-20 10:20
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -76,38 +76,6 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 146:## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-### CHECKPOINT 1 | REVIEWER | 2026-10-19 06:58 | [APERTA]
-screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-19 07:10 | [APERTA]
-GATE GARA OK
-screenshot P1: curva frame 2596 (scarto 127 px), sponsor frame 884 (3629 px), personaggio+fumetto frame 372
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/sviluppatore/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.5% (4695501 di 4718263 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 7
-
-REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-20 09:08 | [APERTA]
-OK      sintassi modelli.sh
 OK      sintassi recap.sh
 OK      sintassi set_model.sh
 OK      sintassi start_process_brains.sh
@@ -136,3 +104,35 @@ blocchi da fare [ ]: 9
 [0m
 > developer-junior · nemotron-3.5-super-vl-free
 CORREGGI: verifica.sh gate_t1.sh -> @developer
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-20 10:18 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+ERRORE  grafico.md: chiave duplicata nel frontmatter
+== CI SONO ERRORI ==
+sh: tools/gate_t1.sh: No such file or directory
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/.DS_Store (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+  senza licenza aperta: out/grafico/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_testi/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_asset/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_scenografo/.DS_Store (nessuna)
+quota open: 98.8% (4283829 di 4337331 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 9
+
+[0m
+> developer-junior · nemotron-3.5-super-vl-free
+CORREGGI: gate_t1.sh (mancante) e verifica.sh -> @developer

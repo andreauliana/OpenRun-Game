@@ -11,10 +11,10 @@ La configurazione CMake attiva è `../../../motore_nuovo/CMakeLists.txt`; tutti 
 | Core C++17 | `cmake --build UFFICIO/Officina/build` | `sglavinated_core`, libreria indipendente da SDL |
 | Runner desktop + decoder immagini SDL2_image | `cmake --build UFFICIO/Officina/build --target sglavinated_runner` | Toolchain SDL2 per test visivi e lavoro sugli sprite; SDL2_image abilita la decodifica PNG nel runner |
 | Core libretro stub | Configurare con `-DBUILD_LIBRETRO=ON`, poi `cmake --build UFFICIO/Officina/build --target sglavinated_libretro` | Modulo opzionale; richiede che l'opzione sia attivata |
-| Prove CTest | `sh tools/run_tests.sh` | Configura Release, compila `prova_gate` e lancia i sette test registrati quando `motore_nuovo/test/prova_gate.cpp` è presente |
-| Gate integrato | `sh tools/gate_t1.sh` | Configura/compila in Release e verifica i tre livelli, replay, accelerazione, crash, sterzo e curve; log in `UFFICIO/Officina/Test area/gate_t1.log` |
-| Soak gate | `sh tools/gate_t1.sh soak` | Aggiunge la prova da 30.000 frame |
-| Inizializzazione SDL | `sh tools/check_sdl_init.sh` | Controlla `SDL_Init` del runner già compilato |
+| Prove CTest | `sh UFFICIO/Officina/TOOL/run_tests.sh` | Configura Release, compila `prova_gate` e lancia i sette test registrati quando `motore_nuovo/test/prova_gate.cpp` è presente |
+| Gate integrato | `sh UFFICIO/Officina/TOOL/gate_t1.sh` | Configura/compila in Release e verifica i tre livelli, replay, accelerazione, crash, sterzo e curve; log in `UFFICIO/Officina/Test area/gate_t1.log` |
+| Soak gate | `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` | Aggiunge la prova da 30.000 frame |
+| Inizializzazione SDL | `sh UFFICIO/Officina/TOOL/check_sdl_init.sh` | Controlla `SDL_Init` del runner già compilato |
 
 ## SDL2_image — tool immagini per i developer
 

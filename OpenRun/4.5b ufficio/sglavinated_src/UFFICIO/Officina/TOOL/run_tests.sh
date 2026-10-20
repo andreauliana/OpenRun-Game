@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: MIT
 # CMake/CTest entry point for agents and local test runs.
-cd "$(dirname "$0")/.." || exit 9
+cd "$(dirname "$0")/../../.." || exit 9  # TOOL -> Officina -> UFFICIO -> radice
 
 BUILD_DIR="${BUILD_DIR:-UFFICIO/Officina/build}"
 mkdir -p "$(dirname "$BUILD_DIR")" || exit 12

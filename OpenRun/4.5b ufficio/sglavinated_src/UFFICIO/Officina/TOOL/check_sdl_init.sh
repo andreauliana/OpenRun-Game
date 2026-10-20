@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: MIT
 # Verifica SDL_Init tramite il runner reale, senza CTest o finestra di gioco.
-cd "$(dirname "$0")/.." || exit 9
+cd "$(dirname "$0")/../../.." || exit 9  # TOOL -> Officina -> UFFICIO -> radice
 
 RUNNER=${1:-UFFICIO/Officina/build/sglavinated_runner}
 if [ ! -x "$RUNNER" ]; then

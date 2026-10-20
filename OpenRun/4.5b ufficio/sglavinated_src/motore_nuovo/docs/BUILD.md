@@ -101,7 +101,7 @@ Per verificare separatamente l'inizializzazione SDL usata dal runner, senza apri
 finestra del gioco, dalla radice `sglavinated_src/` eseguire:
 
 ```bash
-sh tools/check_sdl_init.sh
+sh UFFICIO/Officina/TOOL/check_sdl_init.sh
 ```
 
 Lo script controlla l'exit code e la riga `SDL_Init: OK`. Per un eseguibile in un
@@ -113,14 +113,14 @@ di VS Code/Copilot. Per compilare ed eseguire la suite tramite l'entry point
 del repository, dalla radice `sglavinated_src/` eseguire:
 
 ```bash
-sh tools/run_tests.sh
+sh UFFICIO/Officina/TOOL/run_tests.sh
 ```
 
 Lo script configura la build isolata `build/tests/`, compila `prova_gate` e
 lancia i test registrati con CTest. La directory e' distinta da `build/current/`
 e da `build_gate/`; quest'ultima e' usata da `gate_t1.sh`. Lo script rifiuta percorsi `BUILD_DIR` che si sovrappongono a `build_gate/`.
 Per scegliere un'altra directory indipendente:
-`BUILD_DIR=/percorso/build sh tools/run_tests.sh`.
+`BUILD_DIR=/percorso/build sh UFFICIO/Officina/TOOL/run_tests.sh`.
 
 ### Raspberry Pi 400 (Raspberry Pi OS / RetroPie, dalla cartella `sglavinated_src/`)
 
@@ -173,7 +173,7 @@ watch -n1 'vcgencmd measure_temp; vcgencmd get_throttled'
 Programma senza finestra, solo core. **Si lancia dalla radice `sglavinated_src/`** (i dati sono letti con
 percorsi relativi `motore_nuovo/dati/...`; da un'altra cartella esce con codice 4).
 
-Comando unico per gli agenti (nessuna pipe, nessun `;`): `sh tools/gate_t1.sh` oppure `sh tools/gate_t1.sh soak`.
+Comando unico per gli agenti (nessuna pipe, nessun `;`): `sh UFFICIO/Officina/TOOL/gate_t1.sh` oppure `sh UFFICIO/Officina/TOOL/gate_t1.sh soak`.
 Passo per passo:
 
 ```bash
