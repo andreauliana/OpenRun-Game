@@ -1,9 +1,9 @@
-# LIVELLI — tappe e livelli di prova (v3 open)
+# LIVELLI — Percorsi e test di prova
 
-Progetto dati per i livelli del motore nuovo. Ogni livello vive in
+Progetto dati per livelli del motore nuovo. Ogni livello vive in
 `motore_nuovo/dati/livelli/<id>/livello.json` (dati leggibili da Python 3, nessun
-codice C++). Ogni livello ha il suo scenario, curato da @scenografo dopo questo
-blocco (regola 7: ogni livello ha il suo scenario e il suo livello.json).
+codice C++). Ogni livello ha il suo tema, curato da @grafico dopo questo
+blocco (regola 7: ogni livello ha il suo livello.json).
 
 ## Schema di livello.json
 
@@ -34,12 +34,12 @@ Trigger show (da dati/show_logica.md): crash -> Gesu' (priorita'), uscita di str
 
 | id | tema | stile | carattere del percorso | segmenti (giro a gas pieno) | seme | traffico | scenario |
 |---|---|---|---|---|---|---|---|
-| lv_01_neon | autostrada di neon di notte | synthwave / C-wave | rettilinei lunghi, curvoni larghi, colline dolci | 7650 (~53 s) | 4211 | bassa, 5/km | scenario_neon_01 |
+| lv_01_neon | autostrada con luci a neon tramonto/nottura tra megastrutture | synthwave | rettilinei lunghi, curve larghe e dolci | 7650 (~53 s) | 4211 | bassa, 5/km | scenario_neon_01 |
 | lv_02_atomico | strada atomica anni '50 | sci-fi anni '50 | dossi forti, chicane sinistra-destra-sinistra, un tornante | 7250 (~51 s) | 7731 | bassa, 6/km | scenario_atomico_02 |
-| lv_03_foglie | viale delle foglie, parodia | psichedelico / cannabinoidi | tortuoso: esse continue, tornanti, rettilinei corti | 5900 (~42 s) | 2098 | media, 7/km | scenario_foglie_03 |
-| lv_04_cromo | tangenziale sopraelevata tra megastrutture | futurista | veloce: curvoni lunghi in salita, grande discesa | 7500 (~52 s) | 5309 | media, 7/km | scenario_cromo_04 (da fare) |
-| lv_05_spray | periferia industriale con muri a spray | punk | cittadino: curve secche quasi a 90 gradi, rettilinei corti | 4950 (~35 s) | 8812 | alta, 9/km | scenario_spray_05 (da fare) |
-| lv_06_desktop | prato e nuvole da sfondo del desktop | Windows 95 vibe | saliscendi continui con curve medie | 5450 (~39 s) | 9595 | bassa, 5/km | scenario_desktop_06 (da fare) |
+| lv_03_foglie | viale delle foglie, parodia | psichedelico / cannabinoidi | tortuoso: percorso con tratti ad esse continue, tornanti, rettilinei corti | 5900 (~42 s) | 2098 | media, 7/km | scenario_foglie_03 |
+| lv_04_cromo | tangenziale stradale sopraelevata tra megastrutture | futurista | sopraelevato: tragitto in salita, percorso sopraelevato, scenario urbano percepito dall'alto, discesa graduale | 7500 (~52 s) | 5309 | media, 7/km | scenario_cromo_04 (da fare) |
+| lv_05_spray | periferia industriale con muri a spray | punk | urbano: grigio, curve piu strette, maggiore traffico, popolazione, rettilinei corti | 4950 (~35 s) | 8812 | alta, 9/km | scenario_spray_05 (da fare) |
+| lv_06_desktop | prati ed animali ai lati, sfondo cielo azzurro e delicate nuvole bianche sparse | Windows 95 vibe | variazione con colline continue con curve medie | 5450 (~39 s) | 9595 | bassa, 5/km | scenario_desktop_06 (da fare) |
 
 Il formato di `segmenti` (curva, collina, lunghezza in segmenti da 200 unita') e' in
 `FORMATI_DATI.md`. Ogni pista passa il gate `prova_gate <out> <id> percorso`: rettilinei
@@ -62,3 +62,27 @@ tappa con rami, quindi quelle tappe devono finire con un rettilineo. Il gate
 - Determinismo: seme fisso, tempo = contatore di frame, nessun orologio di sistema.
 - Ogni file: licenza dichiarata (CC-BY-4.0), autore indicato.
 - Passaggio a @scenografo (BLOCCO L): 3 varianti di sfondo + oggetti bordo strada + palette per scenario_neon_01, scenario_atomico_02, scenario_foglie_03.
+
+
+---
+
+description: Level designer. Progetta i livelli/tappe (tracciato, ritmo, difficolta', traffico, dove appaiono Gianni/Gesu' UFO e gli extra) come dati, non come codice.
+mode: subagent
+model: opencode/longcat-2.5-preview-free
+temperature: 0.5
+permission:
+  execute: deny
+  edit:
+    "*": deny
+    "bacheche/livelli/**": allow
+    "BACHECA_PUBBLICA.md": allow
+    "out/livelli/**": allow
+    "libreria/livelli/**": allow
+    "motore_nuovo/dati/livelli/**": allow
+    "motore_nuovo/docs/LIVELLI.md": allow
+  webfetch: deny
+---
+Progetti i livelli in motore_nuovo/dati/livelli/<id>/livello.json (+ riga in motore_nuovo/docs/LIVELLI.md).
+Ogni livello: tema (sci-fi lofi / foglie / ...), lunghezza, sequenza di segmenti (curve, colline) generata da seme, densita' traffico, difficolta' (piu' facili dell'originale, voluto da Andrea), punti degli show di Gianni/Gesu'/UFO, moduli fx abilitati (razzo, sollevamento), musica/radio, scenario richiesto (nome per @scenografo).
+Percorsi NUOVI da zero, mai copiati dal gioco Sega. Ritmo: respiro sui rettilinei, intensita' in curva. Niente elementi che distraggono senza scopo.
+Output sempre dati leggibili da Python 3 (JSON); nessun codice C++. Chiedi i grafici a @scenografo via SCAMBIO.md.

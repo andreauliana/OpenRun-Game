@@ -459,3 +459,34 @@ blocchi fatti [x]: 19
 blocchi da fare [ ]: 7
 
 REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-20 09:08 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+ERRORE  grafico.md: chiave duplicata nel frontmatter
+== CI SONO ERRORI ==
+sh: tools/gate_t1.sh: No such file or directory
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+  senza licenza aperta: out/grafico/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_testi/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_asset/.DS_Store (nessuna)
+  senza licenza aperta: out/grafico/v4_scenografo/.DS_Store (nessuna)
+quota open: 98.9% (4283829 di 4331183 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 9
+
+[0m
+> developer-junior · nemotron-3.5-super-vl-free
+CORREGGI: verifica.sh gate_t1.sh -> @developer
