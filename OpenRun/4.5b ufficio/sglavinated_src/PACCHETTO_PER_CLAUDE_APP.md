@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-20 15:38
+# Pacchetto per Claude — 2026-10-20 16:58
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -74,38 +74,11 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 134:## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 139:## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 146:## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
+219:## D13 | Chiusura T1-RUN (Tappa 1) | capo | [APERTA]
+231:## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [APERTA]
+243:## D15 | Attivazione G1 e delega @designer | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-ERRORE  grafico.md: chiave duplicata nel frontmatter
-== CI SONO ERRORI ==
-GATE GARA OK
-screenshot P1: curva frame 2012 (scarto 148 px), sponsor frame 884 (3464 px), personaggio+fumetto frame 372
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/.DS_Store (nessuna)
-  senza licenza aperta: out/developer/.DS_Store (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-  senza licenza aperta: out/grafico/.DS_Store (nessuna)
-quota open: 99.0% (4277681 di 4318887 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 19
-blocchi da fare [ ]: 9
-
-[0m
-> developer-junior · nemotron-3.5-super-vl-free
-CORREGGI: verifica.sh -> @developer
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-20 15:36 | [APERTA]
 OK      sintassi modelli.sh
@@ -136,3 +109,33 @@ blocchi da fare [ ]: 9
 [0m
 > developer-junior · nemotron-3.5-super-vl-free
 CORREGGI: verifica.sh -> @developer
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-20 16:55 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+ERRORE  grafico.md: chiave duplicata nel frontmatter
+== CI SONO ERRORI ==
+GATE GARA OK
+screenshot P1: curva frame 1232 (scarto 182 px), sponsor frame 1353 (3463 px), personaggio+fumetto frame 372
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.5% (4267295 di 4290057 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 19
+blocchi da fare [ ]: 9
+
+[0m
+> developer-junior · nemotron-3.5-super-vl-free
+CORREGGI: verifica.sh -> @developer.
