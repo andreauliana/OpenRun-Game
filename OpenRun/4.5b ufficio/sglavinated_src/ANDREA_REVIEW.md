@@ -213,3 +213,39 @@ Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso check
 - Con `BUILD_LIBRETRO=ON` il core compila su Linux.
 - `docs/SVILUPPATORI.md` e la guida Pi riportano versioni e comandi di installazione.
 - Su Pi 400 con RetroPie: OpenRun compare in Ports, parte, si guida col pad e torna a EmulationStation (prova di Andrea, dopo l'ok su Mac).
+
+---
+
+## D13 | Chiusura T1-RUN (Tappa 1) | capo | [APERTA]
+
+Domanda:
+Confermare passaggio di T1-RUN a [x] non appena registrata la review incrociata indipendente su CP-005 e rieseguito ctest verde, dato che il gate `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` e' gia' verde (2026-10-20 ~14:05, exit 0, 6/6 percorsi OK, replay 2x IDENTICO, ms/frame <= 20)?
+Opzioni: A) sì, chiudi T1-RUN [x] dopo review CP-005 + ctest  B) no, attendere ulteriore prova/decisione di Andrea
+Raccomandazione: A
+DEFAULT usato nel frattempo: sì (T1-Q1 risposta Andrea: sì; gate verde registrato in `STATUS_OFFICINA.md` e `STATO_CORRENTE.md`)
+Impatto se cambi idea: T1-RUN resta [~] e si attende nuova prova di Andrea prima della tappa 2.
+RISPOSTA DI ANDREA:
+
+---
+
+## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [APERTA]
+
+Domanda:
+Dopo T1-RUN [x] e CP-005 chiuso, Andrea ri-verifica il runner su Mac (v91, SDL2) prima di ogni lavoro dedicato a Pi 400/RetroPie, come da D12 (risposta A registrata) e ordine test T1-Q5?
+Opzioni: A) sì, ri-verifica Mac prima di Pi 400  B) no, si procede direttamente a Pi 400 dopo review
+Raccomandazione: A
+DEFAULT usato nel frattempo: sì — nessun lavoro dedicato a Pi 400/RetroPie finché Andrea non dà ok su Mac; non rompere la build Linux (core libretro manca `libretro.h`, `BUILD_LIBRETRO=ON` non compila oggi).
+Impatto se cambi idea: saltare ri-verifica Mac e passare direttamente a Raspberry Pi 400/RetroPie (serve `libretro.h` in `src/libretro/`).
+RISPOSTA DI ANDREA: — (D12 A già registrato; conferma richiesta)
+
+---
+
+## D15 | Attivazione G1 e delega @designer | capo | [APERTA]
+
+Domanda:
+Confermare attivazione G1 (catalogo grafico) con delega al @designer (= @grafico): catalogare i 100 PNG fuori elenco, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", motore/test usano solo `pronto` e `approvato`?
+Opzioni: A) sì, attiva G1 su @designer  B) no, tieni G1 fuori scope T1
+Raccomandazione: A
+DEFAULT usato nel frattempo: sì (Andrea T1-Q4: attivare)
+Impatto se cambi idea: G1 resta [ ]; sprite veri (P1 punto 4, traffico, personaggi, UFO) restano bloccati.
+RISPOSTA DI ANDREA: — (T1-Q4 già risposto: attivare; conferma richiesta)
