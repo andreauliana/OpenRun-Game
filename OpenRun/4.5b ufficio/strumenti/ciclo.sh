@@ -247,7 +247,16 @@ review_versione() {
   echo $((v+1)) > .versione; touch .marker_review
   echo "[ciclo] $(date '+%d/%m %H:%M') nessun lavoro aperto: versione v$v pronta per la review -> sglavinated_src/$f. Ciclo fermo in attesa del tuo feedback."
 }
-
+estratti() {
+  if [ -f SCAMBIO.md ] && { [ ! -f SCAMBIO_RECENTE.md ] || [ SCAMBIO.md -nt SCAMBIO_RECENTE.md ]; }; then
+    awk '/^### [0-9C]/{n++} {r[NR]=$0; v[NR]=n} END{for(i=1;i<=NR;i++) if(v[i]>0 && v[i]>n-3) print r[i]}' SCAMBIO.md > SCAMBIO_RECENTE.md.tmp \
+      && [ -s SCAMBIO_RECENTE.md.tmp ] && mv SCAMBIO_RECENTE.md.tmp SCAMBIO_RECENTE.md || rm -f SCAMBIO_RECENTE.md.tmp
+  fi
+  if [ -f RICHIESTA.md ] && [ -f RICHIESTA_APERTA.md ] && [ RICHIESTA.md -nt RICHIESTA_APERTA.md ] && [ ! RICHIESTA.md -ot .avviso_aperta ]; then
+    echo "[ciclo] $(date '+%d/%m %H:%M') attenzione: RICHIESTA.md e' cambiata dopo RICHIESTA_APERTA.md, aggiornare a mano l'estratto"; touch .avviso_aperta
+  fi
+  return 0
+}
 giro_diretto() {
   estratti
   # Rotazione: al massimo GIRO_MAX (3) agenti con lavoro aperto per ciclo, a turno, uno alla volta (niente richieste in parallelo).
