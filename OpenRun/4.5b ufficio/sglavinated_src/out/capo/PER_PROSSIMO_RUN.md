@@ -1,4 +1,4 @@
-# Per il prossimo run — 17 ott 2026 (Claude)
+# Per il prossimo run — 17 ott 2026 
 
 ## Cosa è cambiato (verificato eseguendo, non solo leggendo)
 - `cmake --build build --target prova_gate` **compila e passa** (g++/cmake).
@@ -25,10 +25,10 @@
 - **Bar**: non toccato. AGENTS.md regola 25 lo vieta; BAR.md invariato dal 17 ott 10:12.
 
 ## Cosa NON è verificato
-- fps e temperatura sul Pi 400 (serve Andrea).
+- fps e temperatura sul Pi 400/RetroPie.
 - Il runner SDL2 (SDL2 assente in cloud: il target è escluso). Nessuno ha ancora guardato la guida in finestra dopo queste modifiche.
 - Giudizio di Andrea sulla guida: v90 diceva NON OK.
-- Screenshot: la strada con strisce e curve è corretta, ma sprite e cartelloni sono ancora rettangoli segnaposto, niente traffico, niente personaggio/fumetto rifiniti, solo 'box' rettangolari di blocchi Blu e Verdi che si muovono. Il personaggio Gianni (foglia) dovrebbe essere associato al box verde, Gesu dovrebbe essere associato al box azzurro se possibile.
+- Screenshot: la strada con strisce e curve è grezza, sprite e cartelloni mancano, niente traffico, niente personaggio/fumetto rifiniti, solo 'box' rettangolari di blocchi Blu e Verdi che si muovono. Il personaggio Gianni (foglia) dovrebbe essere associato al box verde, Gesu dovrebbe essere associato al box azzurro. Affinare animazioni dei personaggi ed finalizzare esperienza di gameplay della gara e sviluppo del percorso di gara con tratti collegati.
 
 ## Problemi trovati da sistemare
 1. Fuoristrada: velocità da ~160 a ~6 quasi di colpo. Probabile eccesso, da tarare.
