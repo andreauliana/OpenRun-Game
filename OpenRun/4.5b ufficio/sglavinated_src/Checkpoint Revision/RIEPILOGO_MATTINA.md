@@ -15,8 +15,8 @@ Aggiornamento: 2026-10-20 | Fonti: STATO_CORRENTE.md, REGISTRO_REVISIONI.md, AND
 
 ## Decisioni aperte in ANDREA_REVIEW.md (top 3)
 1. D12 / T1-Q3: Andrea ri-verifica runner su Mac (v91, SDL2) dopo R1 verde, prima dei test Pi 400/RetroPie (risposta A: sì).
-2. Feedback 19 ott: 60 Hz predefinito + opzione 50 Hz, misure in secondi (non frame); checkpoint dedicato da aprire dopo R1, prima di R2 (developer autore, junior revisore).
+2. Feedback 19 ott: 60 Hz predefinito + opzione 50 Hz, misure in secondi (non frame); checkpoint dedicato da aprire dopo R1, prima di R2 (@developer autore, @developer-junior revisore).
 3. T1-Q5 / R1: logica tracciati consecutivi per la gara, soglie giro guidato non abbassate, tuning un parametro alla volta; chiudere CP-005 con review indipendente.
 
 ## Prossimo passo consigliato
-Assegnare al developer-junior la review indipendente di CP-005 (diff road.cpp/tratti.json/regole.json + gate soak exit 0); se positiva, chiudere CP-005 e aprire il checkpoint 60 Hz. Poi attendere v91 di Andrea su Mac prima di qualsiasi lavoro Pi 400.
+Assegnare al developer-junior la review indipendente di CP-005 (diff road.cpp/tratti.json/regole.json + gate soak exit 0); se positiva, chiudere CP-005 e aprire il checkpoint 60 Hz. Poi attendere v91 di Andrea su Mac prima di qualsiasi test su Pi 400.

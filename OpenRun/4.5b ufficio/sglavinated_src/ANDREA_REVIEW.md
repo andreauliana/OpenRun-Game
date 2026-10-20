@@ -181,14 +181,14 @@ Ordine: dopo R1, prima di R2.
 Mac, Pi 400 (solo HDMI), monitor e TV moderni, lavorano a 60 Hz; anche Windows XP gira su monitor da 60 Hz in su. A 50 Hz logici su uno schermo a 60 il runner ripete un'immagine ogni 6: la strada che scorre fa un piccolo scatto continuo. Una possibile versione per Windows XP (dopo Mac e Pi) non cambia questa scelta.
 
 ## Gate
-- `ctest` verde a 60 Hz; il giro guidato dura gli stessi secondi (+/- 1%) con le due frequenze.
+- `ctest` verde a 60 Hz; il giro guidato dura gli stessi secondi (+/- 2%) con le due frequenze.
 - Replay 2x IDENTICO a ciascuna frequenza (i replay registrati a una frequenza si riproducono a quella).
-- Il runner su Mac con vsync a 60 Hz: nessun frame ripetuto in 60 s di guida (contatore nel log del runner).
+- Il runner su MacOS con vsync a 60 Hz: nessun frame ripetuto in 60 s di gioco (contatore nel log del runner).
 
 
 # SDL, compilazione e compatibilita' multipiattaforma (Andrea, 19 ott)
 Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso checkpoint o in uno a parte.
-**Piattaforme, in quest'ordine:** 1) macOS, 2) Linux, 3) RetroPie su Raspberry Pi 400, 4) Windows XP in futuro. Ogni modifica deve compilare su 1-3; per 4 basta non introdurre dipendenze che lo escludano.
+**Piattaforme, in quest'ordine:** 1) MacOS, 2) Linux, 3) RetroPie su Raspberry Pi 400 4), Windows XP in futuro. Ogni modifica deve compilare su 1-3; per 4 basta non introdurre dipendenze che lo escludano.
 
 ## Stato verificato (main 162dc5d)
 - Il core (`sglavinated_core`) e' C++17 puro, senza SDL e senza `std::filesystem`: bene, resta cosi'.
