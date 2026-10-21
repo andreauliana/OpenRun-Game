@@ -23,8 +23,8 @@ permission:
     "motore_nuovo/dati/livelli/**": allow    
   bash:
     "*": deny
-    "python3 assets_originali/*": allow
-    "python3 assets_originali/**": allow
+    "python3 UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
+    "python3 \"UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
     "python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py": allow
     "python3 motore_nuovo/strumenti_py/indice_assets.py": allow
     "python3 motore_nuovo/strumenti_py/galleria.py": allow
