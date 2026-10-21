@@ -71,7 +71,7 @@ checkpoint() {
              for s in check_catalogo quota_open quota_bacheche; do python3 "motore_nuovo/strumenti_py/$s.py" || echo "$s" >> .auto_rosso; done
              grep -c '\[x\]' RICHIESTA.md | sed 's/^/blocchi fatti [x]: /'; grep -c '\[ \]' RICHIESTA.md | sed 's/^/blocchi da fare [ ]: /'; } 2>&1 )"
   ROSSI="$(cat .auto_rosso 2>/dev/null | tr '\n' ' ')"; rm -f .auto_rosso
-  REVIEW_FILES="$(find -H motore_nuovo assets_originali -type f -newer .marker_checkpoint \( -name '*.cpp' -o -name '*.h' -o -name '*.json' -o -name '*.md' -o -name '*.py' -o -name 'CMakeLists.txt' -o -name '*.cmake' \) ! -path '*/.git/*' ! -path '*/__pycache__/*' ! -name '.DS_Store' 2>/dev/null | sort)"
+  REVIEW_FILES="$(find -H motore_nuovo "UFFICIO/Dipartimento Grafico/Libreria/assets_originali" -type f -newer .marker_checkpoint \( -name '*.cpp' -o -name '*.h' -o -name '*.json' -o -name '*.md' -o -name '*.py' -o -name 'CMakeLists.txt' -o -name '*.cmake' \) ! -path '*/.git/*' ! -path '*/__pycache__/*' ! -name '.DS_Store' 2>/dev/null | sort)"
   if [ -n "$REVIEW_FILES" ] && [ -z "$ROSSI" ] && [ "${CHK_LLM_SEMPRE:-0}" != 1 ]; then
     # Tutti i controlli automatici sono verdi: il revisore risponderebbe solo "OK".
     # Si risparmia la chiamata al modello (CHK_LLM_SEMPRE=1 per chiamarlo comunque).

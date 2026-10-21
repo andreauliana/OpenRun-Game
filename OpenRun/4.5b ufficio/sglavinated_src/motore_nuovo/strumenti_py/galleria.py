@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Genera assets_originali/galleria/galleria.html: foto di tutti i PNG per cartella (ogni team vede il lavoro degli altri)."""
+"""Genera UFFICIO/Dipartimento Grafico/Libreria/assets_originali/galleria/galleria.html: foto di tutti i PNG per cartella (ogni team vede il lavoro degli altri)."""
 import pathlib, html
 proj = pathlib.Path(__file__).resolve().parent.parent.parent
-base = proj/"assets_originali"
+base = proj/"UFFICIO"/"Dipartimento Grafico"/"Libreria"/"assets_originali"
 out = base/"galleria"/"galleria.html"; out.parent.mkdir(exist_ok=True)
 groups = {}
 for f in sorted(base.rglob("*.png")):

@@ -12,7 +12,8 @@ Solo libreria standard. Rilanciare dopo ogni generazione di asset.
 """
 import hashlib, json, os, re, struct, sys, time
 
-RADICE = "assets_originali"
+LIBRERIA = "UFFICIO/Dipartimento Grafico/Libreria"
+RADICE = LIBRERIA + "/assets_originali"
 SALTA = {".DS_Store", "__pycache__", "INDICE_ASSET.json", "INDICE_ASSET.md"}
 
 # Scelte gia' prese da Andrea (ANDREA_REVIEW.md).
@@ -70,7 +71,7 @@ def manifest_vicino(rel, cache):
 
 def main():
     if not os.path.isdir(RADICE):
-        print("assets_originali/ non trovata: lanciare dalla radice progetto (sglavinated_src)")
+        print(RADICE + "/ non trovata: lanciare dalla radice progetto (sglavinated_src)")
         return 4
     cache, record, generatori = {}, [], {}
     for cartella, dirs, files in os.walk(RADICE):

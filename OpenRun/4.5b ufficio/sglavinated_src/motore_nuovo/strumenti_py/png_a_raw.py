@@ -13,7 +13,7 @@ import zlib
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent.parent
-ASSETS = PROJECT / "assets_originali" / "sponsor"
+ASSETS = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sponsor"
 OUTDIR = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "sponsor"
 
 SPONSOR_STILI = [
