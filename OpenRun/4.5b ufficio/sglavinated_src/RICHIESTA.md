@@ -214,6 +214,17 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 ---
 
+## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2)
+| Campo | Valore |
+|---|---|
+| Richiesta di Andrea | Corsa a bivi: partenza, bivio 1, scelta A o B, e cosi' via fino alla fine corsa, poi animazione di reward. I bivi ci sono gia' (`dati/percorso_gara.json`, `Game::fineTappa`, gate `gara` 4 combinazioni); oggi all'arrivo compare solo la bandiera a scacchi e l'auto va per inerzia. |
+| Compito | 1) @developer: fase `Finale` tra arrivo e `Risultati` (nella macchina a stati di R2, in `src/game/`), durata in secondi, scena scelta dalla pista d'arrivo e dalla posizione (primo / podio / fuori podio) letta da nuovo `dati/finali.json`; con tempo scaduto si salta il finale. 2) @grafico: una scena per arrivo (lv_04_cromo, lv_05_spray, lv_06_desktop, proposte in `docs/FLUSSO_GIOCO.md` sezione 4) con le varianti per posizione; finche' mancano, voci `mancante` nel catalogo e il motore usa un segnaposto. 3) @developer-junior: il gate `gara` arriva fino al finale per tutte le combinazioni di bivi e salva uno screenshot per arrivo. |
+| Vincoli | Non toccare `src/runner/` (revisione di Andrea in corso). Determinismo invariato. Aggiungere tappe alla piramide resta possibile solo modificando `percorso_gara.json`. |
+| Gate | `ctest` verde; screenshot dei 3 finali in `UFFICIO/Officina/Test area/`; review incrociata, @grafico rivede le scene. @capo apre il checkpoint. |
+| Stato | [ ] |
+
+---
+
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
 Stati: C [x] · H [~] · P1 [~] · P1b [x] · P2 [x] · P3 [x] · M [~] · T1-RUN [~] · J [ ] · N [ ] · MD0 [-] · T5 [-].
