@@ -254,8 +254,11 @@ estratti() {
     awk '/^### [0-9C]/{n++} {r[NR]=$0; v[NR]=n} END{for(i=1;i<=NR;i++) if(v[i]>0 && v[i]>n-3) print r[i]}' SCAMBIO.md > SCAMBIO_RECENTE.md.tmp \
       && [ -s SCAMBIO_RECENTE.md.tmp ] && mv SCAMBIO_RECENTE.md.tmp SCAMBIO_RECENTE.md || rm -f SCAMBIO_RECENTE.md.tmp
   fi
-  if [ -f RICHIESTA.md ] && [ -f RICHIESTA_APERTA.md ] && [ RICHIESTA.md -nt RICHIESTA_APERTA.md ] && [ ! RICHIESTA.md -ot .avviso_aperta ]; then
-    echo "[ciclo] $(date '+%d/%m %H:%M') attenzione: RICHIESTA.md e' cambiata dopo RICHIESTA_APERTA.md, aggiornare a mano l'estratto"; touch .avviso_aperta
+  # Estratto per gli agenti: solo blocchi [ ]/[~] e riepilogo, rigenerato quando RICHIESTA.md cambia.
+  if [ -f RICHIESTA.md ] && { [ ! -f RICHIESTA_APERTA.md ] || [ RICHIESTA.md -nt RICHIESTA_APERTA.md ]; }; then
+    awk '/^## /{flush(); buf=""; tieni=($0 ~ /^## RIEPILOGO/)} {buf=buf $0 "\n"} /^\| Stato/ && ($0 ~ /\[ \]/ || $0 ~ /\[~\]/){tieni=1}
+      function flush(){ if (tieni) printf "%s", buf } END{flush()}' RICHIESTA.md > RICHIESTA_APERTA.md.tmp \
+      && [ -s RICHIESTA_APERTA.md.tmp ] && mv RICHIESTA_APERTA.md.tmp RICHIESTA_APERTA.md || rm -f RICHIESTA_APERTA.md.tmp
   fi
   return 0
 }
@@ -299,7 +302,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"
-  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi
   giro_diretto

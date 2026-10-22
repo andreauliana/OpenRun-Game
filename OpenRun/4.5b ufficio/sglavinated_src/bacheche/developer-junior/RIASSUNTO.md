@@ -1,7 +1,9 @@
-# RIASSUNTO @developer-junior — turno 20/10 20:48
-- Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/prova_gate.cpp, motore_nuovo/dati/livelli/*/livello.json, bacheche/developer-junior/, out/developer-junior/.
-- R1 [ ] tecnicamente completo: gate verde 20/10 17:36 exit 0, 6/6 percorsi OK, espansione 6/6, ms/frame ~0.17 max 0.37, replay 2x IDENTICO; peer review CP-005 punti 1-3 POSITIVA (out/developer-junior/REVIEW_CP005_PUNTI1-3_DEVELOPER_2026-10-20_1714.md). In attesa chiusura formale CP-005 @capo; poi R2 [ ].
-- H [~] bloccato (Pi 400 dopo ok Andrea runner Mac, D12=A; gate Mac 19/10 09:39 FALLITO exit 13, giro guidato 5/6 livelli; ordine Andrea prima Mac OK R1+R2 poi Pi 400).
-- Risposte Andrea D13/D14/D15 vuote in ANDREA_REVIEW.md (D12=A registrato).
-- Gate non eseguito in questo turno (ultimo verde 20/10 17:36); nessuna modifica di codice, nessun test aggiunto, nessuna build/gate.
-- Consegne: diario 1 riga, RIASSUNTO <=12 righe, report in out/developer-junior/.
+# RIASSUNTO @developer-junior — turno 21/10 13:04
+- Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior/.
+- Letture obbligatorie effettuate (ANDREA_REVIEW.md precedenza assoluta, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md).
+- R1 [ ] tecnicamente completo: compiti Junior 3 regole.json, 4 stampa tratto, 5 tracciato su 6 livello.json fatti (21/10 07:44); gate soak 21/10 08:12 exit 0, 6/6 percorsi OK. Attesa CP-005 @capo e Andrea (D13=B: T1-RUN non chiuso, attende ulteriore prova/decisione Andrea; D14=A: Andrea ri-verifica runner Mac v91 prima di Pi 400; D16 in corso).
+- R2 [ ] dopo CP-005.
+- H [~] bloccato: ordine test T1-Q5, prima Mac di Andrea poi Pi 400/RetroPie; nessun lavoro dedicato a Pi prima dell'ok Mac.
+- Nessun blocco [ ]/[~] actionable questo turno: attesa @capo (CP-005) e Andrea (D13, D14).
+- Gate non eseguito in questo turno; nessuna modifica di codice/test.
+- Consegne: diario 1 riga, RIASSUNTO <=12 righe, nessun risultato nuovo in out/developer-junior/.

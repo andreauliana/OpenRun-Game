@@ -2,14 +2,14 @@
 
 Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
 
-## Uso nel ciclo 4.6
+## Uso nel ciclo v4.6
 
 - Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
 - Assegnazioni, criteri, prove e review indipendenti restano nel dossier `Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
 - Le voci legacy sotto sono contesto storico: il @capo ne conferma la pertinenza nel checkpoint prima di riaprirle.
 - Una risposta registrata non equivale a verifica tecnica o chiusura del checkpoint. L'autore non approva il proprio lavoro.
 
-Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il Capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
+Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il @capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
 
 Formato (copiare per ogni voce):
 ```
@@ -56,7 +56,7 @@ Dettaglio misure (headless, Mac):
   - lv_05_spray: rettilineo 21%, curva max 0.90 — FALLITO
   - lv_06_desktop: rettilineo 12%, curva max 0.56 — FALLITO
 
-Azione richiesta a @developer: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto; Pi 400 da fare.
+Azione richiesta a @developer: rivedere la generazione/parametri dei percorsi per aumentare varietà (alternanza curve/rettilinei, soglie gate). Il blocco H resta aperto.
 
 ### T1-Q4 | Attivazione del lavoro grafico G1
 
@@ -164,11 +164,20 @@ Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di gui
 Perfezionamento e implementazione dei Personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
 
 
+## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [APERTA]
+
+Domanda:
+Confermare stati proposti in `out/capo/STATI_PROPOSTI.md` per Tappa 1 / Gate T1-RUN e deleghe 4.6 (developer, developer-junior, designer = @grafico; consegne `out/developer/`, `out/developer-junior/`, `out/designer/`)?
+Opzioni: A) sì, procedo con questi stati e DEFAULT  B) no, revisionare stati prima di proseguire
+Raccomandazione: A
+DEFAULT usato nel frattempo: A — proseguo senza aspettare; T1-RUN resta [~] fino a CP-005 chiuso + `ctest` verde + prova runner su Mac di Andrea (D13: B, D14: A); nessun lavoro dedicato a Pi 400/RetroPie prima dell'ok Mac; G1 attivo su designer; 60 Hz entra dopo R1, prima di R2.
+Impatto se cambi idea: aggiornare `out/capo/STATI_PROPOSTI.md`, ridelegare i blocchi interessati e rieseguire review indipendente se cambia l'autore.
+RISPOSTA DI ANDREA: A
+
 ## Nuovo feedback o decisione (Andrea, 19 ott)
 **frequenza di gioco: 60 Hz predefinito, opzione 50 Hz; dopo R1, prima di R2). Parte 2 nello stesso file: SDL, compilazione e compatibilita' multipiattaforma.**
 
 # Nota di Andrea per sviluppatori — frequenza di gioco (19 ott 2026)
-Decisione di Andrea. Vale come voce di ANDREA_REVIEW: precedenza sulle altre fonti.
 Destinatari: @developer (autore), @developer-junior (revisore). @capo apre un checkpoint dedicato.
 Ordine: dopo R1, prima di R2.
 
@@ -200,11 +209,11 @@ Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso check
 2. **SDL2main solo se esiste:** in `CMakeLists.txt` collegare `SDL2::SDL2main` solo `if(TARGET SDL2::SDL2main)`; su alcune distribuzioni Linux il target non c'e' e CMake si ferma.
 3. **Versione minima dichiarata:** `find_package(SDL2 2.0.5)` e un messaggio chiaro se manca. Scrivere in `docs/SVILUPPATORI.md` come installarla: macOS `brew install sdl2 sdl2_image`; Raspberry Pi OS / Debian `sudo apt install libsdl2-dev libsdl2-image-dev`; Windows con vcpkg o i pacchetti MinGW ufficiali di SDL.
 4. **`libretro.h`:** aggiungere l'header ufficiale (licenza MIT) in `src/libretro/` cosi' il core RetroPie compila su Linux/Pi; la frequenza dichiarata segue la Parte 1.
-5. **Avvio del runner in RetroPie (Andrea, 19 ott):** il runner deve partire dal menu di RetroPie/EmulationStation come voce del sistema **Ports**, senza desktop. Da preparare:
+5. **Avvio del runner in RetroPie (Andrea, 19 ott):** il runner deve partire da RetroPie come voce del sistema **Ports**, senza desktop. Da preparare:
    - lo script `pi/retropie/OpenRun.sh` (da copiare in `~/RetroPie/roms/ports/`), che entra nella cartella del gioco, imposta `SDL_VIDEODRIVER=kmsdrm` e `SDL_AUDIODRIVER=alsa` e lancia `sglavinated_runner` a schermo intero;
    - l'uscita pulita con Select+Start (pad) ed Esc (tastiera), che torna a EmulationStation;
    - il pad configurato in RetroPie funzionante anche nel gioco (SDL GameController);
-   - le istruzioni passo passo nella guida Pi (`guide/BUILD_E_AVVIO_RASPBERRY_PI.md` del progetto e `docs/SVILUPPATORI.md`): compilare sul Pi, copiare lo script, riavviare EmulationStation.
+   - le istruzioni passo passo nella guida Pi (`guide/BUILD_E_AVVIO_RASPBERRY_PI.md` del progetto e `docs/SVILUPPATORI.md`): compilare su Pi, copiare lo script, riavviare EmulationStation.
    Il core libretro (punto 4) resta la seconda strada, per giocarlo come "sistema" di RetroArch.
 6. **Windows XP (piu' avanti, dopo Mac e Pi):** verificare l'ultima versione di SDL2 che supporta ancora XP e un compilatore C++17 che produca eseguibili per XP. Nel runner `std::filesystem` puo' essere un problema su XP e sui macOS vecchi (serve 10.15+): sostituirlo con `SDL_GetBasePath` + funzioni C standard, dato che il runner usa gia' SDL. Non bloccare il lavoro attuale per XP: solo non introdurre nuove dipendenze che lo escludano.
 
@@ -258,3 +267,17 @@ In the meantime, continue working autonomously on the C++ game project.
 **Important:** Do not mark Andrea's manual Mac/SDL2 review as passed. Keep it explicitly pending until Andrea confirms that he has tested the correct build.
 
 Do not wait for Andrea unless a decision, permission or manual intervention is genuinely required.
+
+## D18 | Chiusura T1-RUN e avvio R2 | capo | [APERTA]
+
+Domanda: dopo chiusura formale CP-005 (review incrociata registrata) e `ctest` verde su tutte le 6 piste, confermare T1-RUN [x] e avvio R2, subordinato alla prova runner Mac di Andrea su build corretta (ordine test T1-Q5: prima Mac, poi Pi 400/RetroPie; nessun lavoro dedicato Pi prima dell'ok Mac)?
+
+Opzioni: A) sì, chiudi T1-RUN [x] e avvia R2 dopo CP-005 + ctest + ok Andrea Mac  B) no, attendere ulteriore prova/decisione di Andrea prima di R2
+
+Raccomandazione: A
+
+DEFAULT usato nel frattempo: A — CP-005 + `ctest` verde, poi T1-RUN resta [~] fino a ok Andrea Mac (D16); nessun lavoro Pi 400/RetroPie dedicato prima dell'ok.
+
+Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non conferma.
+
+RISPOSTA DI ANDREA:

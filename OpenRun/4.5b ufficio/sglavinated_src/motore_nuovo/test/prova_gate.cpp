@@ -555,6 +555,92 @@ RegolePercorso leggiRegolePercorso(const std::string& livello) {
     return r;
 }
 
+// Legge i nomi dei tratti del campo "tracciato" di livello.json, in ordine.
+static std::vector<std::string> leggiNomiTratti(const std::string& livello) {
+    std::vector<std::string> out;
+    std::string lvPath = "motore_nuovo/dati/livelli/" + livello + "/livello.json";
+    std::ifstream f(lvPath);
+    if (!f.is_open()) return out;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return out;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return out;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue trav;
+    if (!sgl::jsonGet(root, "tracciato", trav) || !sgl::jsonIsArray(trav)) return out;
+    const auto& arr = sgl::jsonAsArray(trav);
+    for (const auto& t : arr) {
+        if (sgl::jsonIsString(t)) out.push_back(sgl::jsonAsString(t));
+    }
+    return out;
+}
+
+// Lunghezze in segmenti di ogni tratto da tratti.json (chiave = nome tratto).
+static std::map<std::string, i32> leggiLunghezzeTratti() {
+    std::map<std::string, i32> out;
+    std::ifstream f("motore_nuovo/dati/tracciati/tratti.json");
+    if (!f.is_open()) return out;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return out;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return out;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue trattiVal;
+    if (!sgl::jsonGet(root, "tratti", trattiVal) || !sgl::jsonIsObject(trattiVal)) return out;
+    const auto& tratti = sgl::jsonAsObject(trattiVal);
+    for (const auto& kv : tratti) {
+        const auto& obj = sgl::jsonAsObject(kv.second);
+        sgl::JsonValue lenVal;
+        i32 len = 0;
+        if (sgl::jsonGet(obj, "lunghezza", lenVal) && sgl::jsonIsNumber(lenVal))
+            len = (i32)sgl::jsonAsNumber(lenVal);
+        if (len <= 0) len = 1;
+        out[kv.first] = len;
+    }
+    return out;
+}
+
+// Dato un indice di segmento del tracciato costruito ripetendo il pattern
+// "tracciato" di livello.json, restituisce il nome del tratto che lo contiene
+// e l'indice del primo segmento di quell'occorrenza del tratto.
+// Il loader ripete il pattern per intero (n e' multiplo di sommaLunghezze:
+// verificaEspansioneTracciato), quindi segmento i -> pattern position i % somma.
+static bool trattoDiSegmento(i32 i, const std::vector<std::string>& nomi,
+                             const std::map<std::string, i32>& lunghezze,
+                             std::string& nomeOut, i32& inizioOut) {
+    nomeOut.clear();
+    inizioOut = -1;
+    if (nomi.empty()) return false;
+    std::vector<i32> lenPat;
+    lenPat.reserve(nomi.size());
+    i32 somma = 0;
+    for (const auto& nome : nomi) {
+        auto it = lunghezze.find(nome);
+        i32 L = (it != lunghezze.end()) ? it->second : 1;
+        lenPat.push_back(L);
+        somma += L;
+    }
+    if (somma <= 0) return false;
+    const i32 p = i % somma;   // posizione dentro il pattern
+    const i32 rep = i / somma; // ripetizione del pattern
+    i32 acc = 0;
+    for (size_t t = 0; t < nomi.size(); ++t) {
+        if (p < acc + lenPat[t]) {
+            nomeOut = nomi[t];
+            inizioOut = rep * somma + acc;
+            return true;
+        }
+        acc += lenPat[t];
+    }
+    return false;
+}
+
 // --- Percorso: il tracciato del livello e' vario e si guida da capo a fondo ---
 // Profilo: rettilinei fra rettilineo_min e rettilineo_max del giro, curve forti
 // (|curva| >= curva_dx_min / curva_sx_min) a destra e a sinistra, almeno un
@@ -568,15 +654,35 @@ bool verificaPercorso(const std::string& livello) {
     const auto& segs = game.road().segments();
     const i32 n = (i32)segs.size();
     i32 dritti = 0, rettilineoMax = 0, corsa = 0;
+    i32 corsaStart = 0, idxRettMax = -1;
     f32 destraMax = 0.0f, sinistraMax = 0.0f;
+    i32 idxDestra = -1, idxSinistra = -1;
+    i32 idx = 0;
     for (const RoadSegment& seg : segs) {
-        if (std::abs(seg.curve) < 0.05f) { ++dritti; rettilineoMax = std::max(rettilineoMax, ++corsa); }
-        else corsa = 0;
-        destraMax = std::max(destraMax, seg.curve);
-        sinistraMax = std::max(sinistraMax, -seg.curve);
+        const f32 c = seg.curve;
+        if (std::abs(c) < 0.05f) {
+            if (corsa == 0) corsaStart = idx;
+            ++corsa;
+            ++dritti;
+            if (corsa > rettilineoMax) { rettilineoMax = corsa; idxRettMax = corsaStart; }
+        } else {
+            corsa = 0;
+        }
+        if (c > destraMax) { destraMax = c; idxDestra = idx; }
+        if (-c > sinistraMax) { sinistraMax = -c; idxSinistra = idx; }
+        ++idx;
     }
     const f32 quotaDritti = n > 0 ? (f32)dritti / (f32)n : 0.0f;
     const RegolePercorso r = leggiRegolePercorso(livello);
+    const std::vector<std::string> nomiTratti = leggiNomiTratti(livello);
+    const std::map<std::string, i32> lunghezzeTratti = leggiLunghezzeTratti();
+    auto trattoSuffisso = [&](i32 idxSeg) -> std::string {
+        std::string nome;
+        i32 inizio = -1;
+        if (idxSeg < 0 || !trattoDiSegmento(idxSeg, nomiTratti, lunghezzeTratti, nome, inizio))
+            return "";
+        return " [tratto " + nome + " da segmento " + std::to_string(inizio) + "]";
+    };
 
     const f32 giro = (f32)game.road().totalLength();
     f32 percorso = 0.0f, zPrima = 0.0f;
@@ -613,15 +719,18 @@ bool verificaPercorso(const std::string& livello) {
         ok = false;
     }
     if (rettilineoMax < r.rettilineo_piu_lungo_min) {
-        std::printf("  VIOLAZIONE: rettilineo piu' lungo %d < min %d\n", rettilineoMax, r.rettilineo_piu_lungo_min);
+        std::printf("  VIOLAZIONE: rettilineo piu' lungo %d < min %d%s\n",
+                    rettilineoMax, r.rettilineo_piu_lungo_min, trattoSuffisso(idxRettMax).c_str());
         ok = false;
     }
     if (destraMax < r.curva_dx_min) {
-        std::printf("  VIOLAZIONE: curva max destra %.2f < min %.2f\n", destraMax, r.curva_dx_min);
+        std::printf("  VIOLAZIONE: curva max destra %.2f < min %.2f%s\n",
+                    destraMax, r.curva_dx_min, trattoSuffisso(idxDestra).c_str());
         ok = false;
     }
     if (sinistraMax < r.curva_sx_min) {
-        std::printf("  VIOLAZIONE: curva max sinistra %.2f < min %.2f\n", sinistraMax, r.curva_sx_min);
+        std::printf("  VIOLAZIONE: curva max sinistra %.2f < min %.2f%s\n",
+                    sinistraMax, r.curva_sx_min, trattoSuffisso(idxSinistra).c_str());
         ok = false;
     }
     if (destraMax > r.curva_max || sinistraMax > r.curva_max) {
