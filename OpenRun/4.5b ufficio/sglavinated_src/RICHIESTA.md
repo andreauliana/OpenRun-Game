@@ -200,7 +200,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Input | `motore_nuovo/docs/FLUSSO_GIOCO.md` (proposta del 18 ott: seguire quella dove non contraddice questa richiesta), `src/game/`, `src/runner/main.cpp`, `dati/percorso_gara.json`, `dati/ui/hud.json` |
 | Vincoli | Stessi controlli su tastiera e pad. Nessuna fase blocca il caricamento su Pi 400 (splash corto). Determinismo invariato. Arrivi e finali animati restano per dopo: per ora la gara finisce solo per tempo o all'ultima tappa, poi Risultati. |
 | Gate | `ctest` verde incluso il gate `ciclo`; screenshot delle 5 fasi in `UFFICIO/Officina/Test area/`. Review incrociata @developer/@developer-junior, @grafico rivede le schermate. @capo apre CP-006 in `Checkpoint Revision/`. Dopo R1. |
-| Stato | [ ] | (dopo F60) |
+| Stato | [ ] | (dopo F60 e RIV) |
 
 ---
 
@@ -210,6 +210,29 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Compito | Parte 1 della nota di Andrea "frequenza di gioco" in `ANDREA_REVIEW.md` (punti 1-3): tutte le misure in secondi con `dt`, 60 Hz predefinito, opzione 50 Hz in `dati/config.json` (`"frequenza_hz"`), core libretro che dichiara la frequenza scelta. @developer scrive, @developer-junior rivede e aggiunge al gate la prova a 50 e a 60 Hz. |
 | Vincoli | Non toccare `src/runner/` finche' Andrea non chiude la sua prova del runner su Mac: l'opzione `--hz` e il contatore dei frame ripetuti nel runner vengono dopo. Soglie del gate invariate, determinismo invariato. |
 | Gate | `ctest` verde a 60 Hz e a 50 Hz; giro guidato con gli stessi secondi (+/- 2%) alle due frequenze; replay 2x IDENTICO a ciascuna. @capo apre il checkpoint. |
+| Stato | [ ] | (si parte ora: R1 e CP-005 chiusi. F60 NON aspetta la prova runner di Andrea su Mac, che riguarda solo T1-RUN/H; basta non toccare `src/runner/`) |
+
+---
+
+## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
+| Campo | Valore |
+|---|---|
+| Decisione di Andrea | Scelta B (variazione rispetto all'OutRun originale): gli stessi 7 rivali corrono tutta la gara, ognuno sceglie i propri bivi e arriva al proprio finale; la classifica finale e' sul tempo totale di tutti. |
+| Oggi | `game.cpp`: i rivali hanno un `progresso` globale e, dopo il bivio, ricompaiono tutti sulla tappa scelta dal giocatore (`ramo` serve solo a disegnarli sul bivio); la posizione e' per distanza. Sono rettangoli 26x18 (`renderer.cpp:177`). Un urto con un rivale fa come un incidente: ribaltamento e `speed = 0` (`game.cpp:743`). |
+| Compito | 1) @developer: ogni rivale ha la sua sequenza di tappe da `percorso_gara.json` (scelta deterministica dal `seme`); nella tappa del giocatore si vedono solo i rivali che sono sulla stessa tappa; ogni rivale registra il tempo d'arrivo; la classifica finale ordina tutti per tempo totale (chi non arriva prima del tempo limite esce dalla classifica). 2) @developer: urto con un rivale = sbandata, non incidente: perdita di velocita' (es. -40%), spinta laterale e breve rotazione/scodata dell'auto (circa 1 s, in secondi), poi i controlli tornano al giocatore; il ribaltamento resta solo per ostacoli fissi e fuori strada prolungato. Anche il rivale urtato perde un po' di velocita'. 3) @grafico: sprite delle auto rivali (almeno 4 modelli/colori, viste da dietro e di lato per le curve, piu' un fotogramma di sbandata per l'auto del giocatore), registrate nel catalogo; il motore le usa al posto dei rettangoli. 4) @developer-junior: gate `gara` con classifica a tempo deterministica e gate `urto` (dopo l'urto: niente ribaltamento, velocita' > 0, controlli di nuovo attivi entro 1,5 s). |
+| Vincoli | Non toccare `src/runner/`. Determinismo invariato (replay 2x IDENTICO). Niente grafica SEGA. |
+| Gate | `ctest` verde con `gara` e `urto`; screenshot dei rivali e della sbandata in `UFFICIO/Officina/Test area/`; review incrociata, @grafico rivede gli sprite. @capo apre il checkpoint. |
+| Stato | [ ] |
+
+---
+
+## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
+| Campo | Valore |
+|---|---|
+| Richiesta di Andrea | Corsa a bivi: partenza, bivio 1, scelta A o B, e cosi' via fino alla fine corsa, poi animazione di reward. I bivi ci sono gia' (`dati/percorso_gara.json`, `Game::fineTappa`, gate `gara` 4 combinazioni); oggi all'arrivo compare solo la bandiera a scacchi e l'auto va per inerzia. |
+| Compito | 1) @developer: fase `Finale` tra arrivo e `Risultati` (nella macchina a stati di R2, in `src/game/`), durata in secondi, scena scelta dalla pista d'arrivo e dalla posizione nella classifica a tempo di RIV (primo / podio / fuori podio) letta da nuovo `dati/finali.json`; con tempo scaduto si salta il finale. 2) @grafico: una scena per arrivo (lv_04_cromo, lv_05_spray, lv_06_desktop, proposte in `docs/FLUSSO_GIOCO.md` sezione 4) con le varianti per posizione; finche' mancano, voci `mancante` nel catalogo e il motore usa un segnaposto. 3) @developer-junior: il gate `gara` arriva fino al finale per tutte le combinazioni di bivi e salva uno screenshot per arrivo. |
+| Vincoli | Non toccare `src/runner/` (revisione di Andrea in corso). Determinismo invariato. Aggiungere tappe alla piramide resta possibile solo modificando `percorso_gara.json`. |
+| Gate | `ctest` verde; screenshot dei 3 finali in `UFFICIO/Officina/Test area/`; review incrociata, @grafico rivede le scene. @capo apre il checkpoint. |
 | Stato | [ ] |
 
 ---
