@@ -5,6 +5,7 @@
 // palette RGBA di proprieta'. Il core C++ non decodifica immagini: resta privo
 // di SDL e di qualsiasi dipendenza da piattaforma.
 #include "sponsor_loader.h"
+#include "render/sprite_raw.h"
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -74,28 +75,43 @@ Sprite convertiSprite(SDL_Surface* surf) {
 
 std::vector<std::pair<std::string, Sprite>> caricaSponsorSprite(const std::string& radice) {
     std::vector<std::pair<std::string, Sprite>> out;
-#ifdef SGL_HAVE_SDL2_IMAGE
+    i32 daPng = 0, daRaw = 0;
     for (i32 si = 0; si < 7; ++si) {
         for (i32 ti = 0; ti < 3; ++ti) {
-            std::string path = radice + "/" + kSponsorId[si] + "/cartellone_" + kStile[ti] + ".png";
-            SDL_Surface* surf = IMG_Load(path.c_str());
-            if (!surf) {
-                std::printf("sponsor_loader: non caricato %s (%s)\n", path.c_str(), IMG_GetError());
-                continue;
+            const std::string chiave = std::string(kSponsorId[si]) + "/" + kStile[ti];
+            bool ok = false;
+#ifdef SGL_HAVE_SDL2_IMAGE
+            const std::string path = radice + "/" + kSponsorId[si] + "/cartellone_" + kStile[ti] + ".png";
+            if (SDL_Surface* surf = IMG_Load(path.c_str())) {
+                SDL_Surface* conv = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA8888, 0);
+                SDL_FreeSurface(surf);
+                if (conv) {
+                    out.push_back({chiave, convertiSprite(conv)});
+                    SDL_FreeSurface(conv);
+                    ok = true;
+                    ++daPng;
+                }
             }
-            SDL_Surface* conv = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA8888, 0);
-            SDL_FreeSurface(surf);
-            if (!conv) continue;
-            out.push_back({std::string(kSponsorId[si]) + "/" + kStile[ti], convertiSprite(conv)});
-            SDL_FreeSurface(conv);
-            std::printf("sponsor_loader: caricato %s (%d x %d, %zu colori)\n",
-                        path.c_str(), out.back().second.width, out.back().second.height,
-                        out.back().second.palette.size());
+#else
+            (void)radice;
+#endif
+            if (!ok) {
+                // Ripiego senza SDL2_image: stessi cartelloni gia' convertiti in raw
+                // (dati/sprite_raw/sponsor/, stesso formato usato da prova_gate).
+                const std::string raw = std::string("motore_nuovo/dati/sprite_raw/sponsor/") +
+                                        kSponsorId[si] + "_" + kStile[ti] + ".sglraw";
+                Sprite s = caricaSpriteRaw(raw);
+                if (s.width > 0) {
+                    out.push_back({chiave, std::move(s)});
+                    ++daRaw;
+                } else {
+                    std::printf("sponsor_loader: cartellone mancante %s\n", chiave.c_str());
+                }
+            }
         }
     }
-#else
-    std::printf("sponsor_loader: SDL2_image non disponibile; cartelloni sponsor disabilitati.\n");
-#endif
+    std::printf("sponsor_loader: %zu/21 cartelloni caricati (%d da PNG, %d da raw)\n",
+                out.size(), daPng, daRaw);
     return out;
 }
 

@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.10)
 project(sglavinated LANGUAGES C CXX)
 include(CTest)
 
+# Default Release: il gioco e i test girano a piena velocita'.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Tipo di build" FORCE)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -92,7 +97,7 @@ if(SDL2_FOUND)
         message(STATUS "SDL2_image trovata via pkg-config: caricamento PNG degli sponsor abilitato.")
     else()
         message(STATUS "SDL2_image non trovata: target runner compilato senza decodifica PNG "
-                       "(cartelloni sponsor disabilitati, gioco comunque funzionante).")
+                       "(cartelloni sponsor caricati dai file raw in dati/sprite_raw/sponsor).")
     endif()
 else()
     message(STATUS "SDL2 non trovata: target sglavinated_runner escluso. "

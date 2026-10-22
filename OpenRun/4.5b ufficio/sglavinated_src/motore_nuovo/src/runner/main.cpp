@@ -255,6 +255,7 @@ int main(int argc, char** argv) {
     // una sola pista che gira in tondo, per provarla.
     if (!opz.livello.empty()) game.init(opz.livello);
     else if (!game.avviaGara()) game.init();
+    std::printf("cartelloni sponsor sulla pista: %zu\n", game.numeroCartelloni());
 
     Controller ctrl;
     ctrl.apri();

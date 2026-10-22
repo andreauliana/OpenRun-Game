@@ -63,6 +63,8 @@ public:
     // Ogni sprite e' accompagnato dal suo sponsor_id (catalogo: v. sponsor_loader.h);
     // init() abbina lo sponsor_id di livello.json allo sprite corrispondente.
     void setSponsorSprites(std::vector<std::pair<std::string, Sprite>> sprites);
+    // Numero di cartelloni posizionati bordo strada nella pista corrente.
+    size_t numeroCartelloni() const { return cartelloni_.size(); }
 
     // Radio: passa al brano successivo (input del runner: tasto R o Start+B).
     void nextBranoRadio() { mixer_.nextBrano(); }
