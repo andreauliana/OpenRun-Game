@@ -6,7 +6,7 @@ Inventario sintetico basato sul catalogo macchina `../../../assets_originali/CAT
 
 `UFFICIO/Dipartimento Grafico/Libreria/` contiene al momento solo documentazione; `Shared asset/` non contiene asset pubblicati. Gli asset elencati sotto sono disponibili nei percorsi v4.5 attivi indicati in ogni sezione. La migrazione fisica è sospesa fino all'aggiornamento coordinato dei riferimenti di produzione.
 
-Il controllo `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py`, eseguito dalla radice `sglavinated_src/`, ha riportato (18 ott, dopo le 6 piste): **58 elementi catalogati** (30 approvati, 17 pronti, 2 in costruzione, 9 mancanti) e **100 PNG non catalogati**, segnalati come varianti o doppioni da valutare.
+Il controllo `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py`, eseguito dalla radice `sglavinated_src/`, ha riportato (22 ott): **159 elementi catalogati** (30 approvati, 17 pronti, 2 in costruzione, 9 mancanti, 101 scartato) e **0 PNG non catalogati** (i 101 varianti/doppioni sono classificati `scartato`, file conservati, non cancellati). Errore residuo sanato: l'elemento scartato `oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_insegna_fumosa` riferiva un file inesistente (`obj_insegna_fumosa`, lv_03_foglie variante B); ora ha `file: []` (storico conservato, non cancellato). Controllo: exit 0.
 
 ## Temi e livelli
 

@@ -39,7 +39,7 @@ try:  # Pillow >= 9.1
 except AttributeError:  # pragma: no cover
     LANCZOS = Image.LANCZOS
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]  # sglavinated_src
+ROOT = pathlib.Path(__file__).resolve().parents[5]  # sglavinated_src
 UI = ROOT / "assets_originali" / "ui"
 DATI_UI = ROOT / "motore_nuovo" / "dati" / "ui"
 ANTONIO = ROOT / "assets_originali" / "font" / "antonio" / "Antonio-Bold.ttf"
