@@ -210,7 +210,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Compito | Parte 1 della nota di Andrea "frequenza di gioco" in `ANDREA_REVIEW.md` (punti 1-3): tutte le misure in secondi con `dt`, 60 Hz predefinito, opzione 50 Hz in `dati/config.json` (`"frequenza_hz"`), core libretro che dichiara la frequenza scelta. @developer scrive, @developer-junior rivede e aggiunge al gate la prova a 50 e a 60 Hz. |
 | Vincoli | Non toccare `src/runner/` finche' Andrea non chiude la sua prova del runner su Mac: l'opzione `--hz` e il contatore dei frame ripetuti nel runner vengono dopo. Soglie del gate invariate, determinismo invariato. |
 | Gate | `ctest` verde a 60 Hz e a 50 Hz; giro guidato con gli stessi secondi (+/- 2%) alle due frequenze; replay 2x IDENTICO a ciascuna. @capo apre il checkpoint. |
-| Stato | [ ] |
+| Stato | [ ] | (si parte ora: R1 e CP-005 chiusi. F60 NON aspetta la prova runner di Andrea su Mac, che riguarda solo T1-RUN/H; basta non toccare `src/runner/`) |
 
 ---
 
