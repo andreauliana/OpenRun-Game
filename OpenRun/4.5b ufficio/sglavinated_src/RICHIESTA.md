@@ -162,7 +162,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | 8 Andrea | Provare `sglavinated_runner` sul Mac (SDL2) e registrare in `ANDREA_REVIEW.md` l'esito della guida; misurare fps/temperatura su Pi 400 (`vcgencmd measure_temp`, `get_throttled`). Questo chiude H solo dopo aver registrato la prova. |
 | Fuori scope | MD0, T5 (traffico/collisioni/razzo), N, M (finche' Andrea non approva i PNG). Non promuovere H/P1 senza i punti 4 e 8. |
 | Gate | `sh tools/gate_t1.sh soak` exit 0; screenshot con cartelloni veri e strada con bande allineate. |
-| Stato | [~] | (gate FALLITO 19/10 09:39 da Andrea su Mac, exit 13: giro guidato FALLITO su 5/6 livelli — "percorso poco vario o non guidabile"; solo lv_02_atomico OK. Gate core OK: soak, accelerazione, ribaltamento, sterzo, curve, gara, screenshot P1, ms/frame ~0.19 max 0.94. **Prossimo: @sviluppatore punto 2b — rivedere parametri percorsi**. v91 Andrea su runner SDL2 ancora da fare. Dettaglio: ANDREA_REVIEW.md T1-Q3, STATUS_OFFICINA.md report 09:39)
+| Stato | [~] | (gate FALLITO 19/10 09:39 da Andrea su Mac, exit 13: giro guidato FALLITO su 5/6 livelli — "percorso poco vario o non guidabile"; solo lv_02_atomico OK. Gate core OK: soak, accelerazione, ribaltamento, sterzo, curve, gara, screenshot P1, ms/frame ~0.19 max 0.94. Percorsi risolti con R1 (gate 6/6 verde 21/10 10:44). Resta solo la v91 di Andrea sul runner SDL2 (revisione in corso: non toccare `src/runner/`). Dettaglio: ANDREA_REVIEW.md T1-Q3, STATUS_OFFICINA.md report 09:39)
 
 ## BLOCCO G1 — @grafico — catalogo unico delle risorse grafiche (da Andrea e Claude 17 ott)
 | Compito | Tenere `assets_originali/CATALOGO_GRAFICO.json` come unico elenco delle risorse grafiche: un elemento per riga con `id`, `tipo`, `stato` (mancante, bozza, in_costruzione, pronto, approvato, scartato), `file`, `raw` (versione per il motore) e `livelli`. Claude ha creato la prima versione (52 elementi: 21 cartelloni, 3 auto, skyline e oggetti di variante A per i 3 livelli, UI variante B, font; mancano traffico, Gianni, Gesu', UFO). 1) Catalogare i 100 PNG oggi fuori elenco (varianti B/C, scenari doppi `scenario_<n>_01_*` e `scenario_lv_*`): per ognuno `scartato` o un elemento nuovo, senza cancellare file. 2) Ogni sprite nuovo entra nel catalogo con il suo stato prima di essere usato. 3) Dopo ogni modifica: `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` (exit 0). |
@@ -188,7 +188,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Input | `motore_nuovo/src/road/road.cpp`, `motore_nuovo/src/game/game.cpp` (loader livello), `motore_nuovo/dati/livelli/*/livello.json`, `motore_nuovo/test/prova_gate.cpp`, `motore_nuovo/docs/FORMATI_DATI.md` |
 | Vincoli | Non abbassare le soglie per far passare il gate: si correggono i tracciati. Determinismo invariato (replay 2x IDENTICO). Formato documentato in `docs/FORMATI_DATI.md` con un esempio, perche' Andrea deve poter modificare una pista solo editando il JSON. |
 | Gate | `sh tools/gate_t1.sh soak` verde su tutte e 6 le piste, `ctest` 17/17. Review incrociata: Builder rivede 4-5, Junior rivede 1-3. @capo apre CP-005 in `Checkpoint Revision/` (template, registro, STATO_CORRENTE) e lo chiude solo con gate verde e entrambe le review registrate. |
-| Stato | [ ] |
+| Stato | [x] | (Claude 22/10: gate 6/6 verde 21/10 10:44 `out/developer/ESITO_GATE_21OTT_1044.md`, `ctest` 17/17 ricontrollato su main ae16132; review registrate: `out/developer-junior/REVIEW_CP005_PUNTI1-3_DEVELOPER_2026-10-20_1714.md` POSITIVA, `out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md` POSITIVA. Resta solo a @capo: chiudere CP-005 nel registro. Prossimo: F60) |
 
 ---
 
@@ -200,6 +200,16 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | Input | `motore_nuovo/docs/FLUSSO_GIOCO.md` (proposta del 18 ott: seguire quella dove non contraddice questa richiesta), `src/game/`, `src/runner/main.cpp`, `dati/percorso_gara.json`, `dati/ui/hud.json` |
 | Vincoli | Stessi controlli su tastiera e pad. Nessuna fase blocca il caricamento su Pi 400 (splash corto). Determinismo invariato. Arrivi e finali animati restano per dopo: per ora la gara finisce solo per tempo o all'ultima tappa, poi Risultati. |
 | Gate | `ctest` verde incluso il gate `ciclo`; screenshot delle 5 fasi in `UFFICIO/Officina/Test area/`. Review incrociata Builder/Junior, il Designer rivede le schermate. @capo apre CP-006 in `Checkpoint Revision/`. Dopo R1. |
+| Stato | [ ] | (dopo F60) |
+
+---
+
+## BLOCCO F60 — @developer + @developer-junior — gioco a 60 Hz, tempi in secondi (Andrea 19 ott; dopo R1, prima di R2)
+| Campo | Valore |
+|---|---|
+| Compito | Parte 1 della nota di Andrea "frequenza di gioco" in `ANDREA_REVIEW.md` (punti 1-3): tutte le misure in secondi con `dt`, 60 Hz predefinito, opzione 50 Hz in `dati/config.json` (`"frequenza_hz"`), core libretro che dichiara la frequenza scelta. @developer scrive, @developer-junior rivede e aggiunge al gate la prova a 50 e a 60 Hz. |
+| Vincoli | Non toccare `src/runner/` finche' Andrea non chiude la sua prova del runner su Mac: l'opzione `--hz` e il contatore dei frame ripetuti nel runner vengono dopo. Soglie del gate invariate, determinismo invariato. |
+| Gate | `ctest` verde a 60 Hz e a 50 Hz; giro guidato con gli stessi secondi (+/- 2%) alle due frequenze; replay 2x IDENTICO a ciascuna. @capo apre il checkpoint. |
 | Stato | [ ] |
 
 ---
@@ -207,4 +217,4 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
 Stati: C [x] · H [~] · P1 [~] · P1b [x] · P2 [x] · P3 [x] · M [~] · T1-RUN [~] · J [ ] · N [ ] · MD0 [-] · T5 [-].
-Tocca a: @developer + @developer-junior R1 (tracciati, priorita') poi R2 (ciclo di gioco) (ordine test: prima Mac di Andrea, poi RetroPie/Pi 400; v. ANDREA_REVIEW T1-Q5) · @sviluppatore T1-RUN 2-3 e densita' cartelloni · @collaudatore T1-RUN 5-7 · @grafico G1 (catalogo grafico, su richiesta) · Andrea 8. Nessuna decisione aperta (D1-D9 chiuse), nessun PER_CLAUDE.md, FINITO non creabile.
+Tocca a: @capo chiusura CP-005 (R1 fatto) · @developer + @developer-junior F60 (60 Hz, priorita') poi R2 (ciclo di gioco) (ordine test: prima Mac di Andrea, poi RetroPie/Pi 400; v. ANDREA_REVIEW T1-Q5) · @sviluppatore T1-RUN 2-3 e densita' cartelloni · @collaudatore T1-RUN 5-7 · @grafico G1 (catalogo grafico, su richiesta) · Andrea 8. Nessuna decisione aperta (D1-D9 chiuse), nessun PER_CLAUDE.md, FINITO non creabile.
