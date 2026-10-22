@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-20 16:58
+# Pacchetto per Claude — 2026-10-21 14:41
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -74,13 +74,18 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 134:## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 139:## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 146:## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
-219:## D13 | Chiusura T1-RUN (Tappa 1) | capo | [APERTA]
-231:## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [APERTA]
-243:## D15 | Attivazione G1 e delega @designer | capo | [APERTA]
+167:## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [APERTA]
+228:## D13 | Chiusura T1-RUN (Tappa 1) | capo | [APERTA]
+240:## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [APERTA]
+250:## D15 | Attivazione G1 e delega @designer | capo | [APERTA]
+258:## D16 | Attivazione G1 e delega @designer | Andrea | [APERTA]
+271:## D18 | Chiusura T1-RUN e avvio R2 | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-20 15:36 | [APERTA]
+REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
+
+### CHECKPOINT 3 | REVIEWER | 2026-10-21 13:14 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
 OK      sintassi set_model.sh
@@ -106,11 +111,9 @@ bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 9
 
-[0m
-> developer-junior · nemotron-3.5-super-vl-free
-CORREGGI: verifica.sh -> @developer
+REVIEW SALTATA: nessun file di codice, dati o asset testuale modificato dall'ultimo checkpoint.
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-20 16:55 | [APERTA]
+### CHECKPOINT 4 | REVIEWER | 2026-10-21 14:41 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi recap.sh
 OK      sintassi set_model.sh
@@ -136,6 +139,6 @@ bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 19
 blocchi da fare [ ]: 9
 
-[0m
+REVIEW FALLITA (exit 1): [0m
 > developer-junior · nemotron-3.5-super-vl-free
-CORREGGI: verifica.sh -> @developer.
+[91m[1mError: [0mRate limit exceeded. Please try again later.

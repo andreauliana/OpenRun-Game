@@ -252,3 +252,14 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Prossimo dopo R1 prima di R2: 60 Hz (dt in secondi, default 60 Hz, opzione 50 Hz, ctest verde a 60 Hz; ANDREA_REVIEW 19/10).
 - Consegne: `bacheche/developer/diario.md` (1 riga), `bacheche/developer/RIASSUNTO.md` (<=12 righe), `out/developer/ESITO_GATE_20OTT_1923.md`, questo status.
 
+## Report turno 21/10 ~09:00 — developer
+
+- Eseguito `sh UFFICIO/Officina/TOOL/gate_t1.sh` (smoke, senza soak per limite tempo turno): **exit 0, `GATE T1: TUTTO OK`**. Build cmake e `cmake --build --target prova_gate` exit 0.
+- 6/6 percorsi `GATE PERCORSO OK` — lv_01_neon rettilineo 63% curva 0.85/0.85; lv_02_atomico 65% 0.72/0.98; lv_03_foglie 57% 0.75/0.95; lv_04_cromo 71% 0.85/0.85; lv_05_spray 55% 0.86/0.84; lv_06_desktop 68% 0.85/0.85 (rettilineo in [25%,75%], curva max <= 1.0, dx/sx >= 0.3, soglie non abbassate). Giro guidato finito su tutti e 6, fuori strada 0%.
+- ms/frame medio=0.291 max=16.094 (limite 20); replay 2x IDENTICO; speed@60=161.79, speed@1=9.90.
+- accelerazione, ribaltamento/ripartenza, sterzo, continuita' curve, gara 4 bivi (arrivo, posizione, incidenti, replay IDENTICO), screenshot P1: OK.
+- Risolve ANDREA_REVIEW T1-Q3: giro guidato ora OK su tutti e 6 i livelli (era fallito 5/6 su Mac 19/10 exit 13).
+- Codice invariato in questo turno (zero scritture in motore_nuovo/ e tools/); R1 compiti @developer 1-3 gia' conclusi e verificati su file.
+- Bloccato/attesa: ri-verifica runner Mac Andrea (D12=A, D14=A) prima di 60 Hz/R2; chiusura CP-005 Capo; G1/P1 punto 4 sprite @grafico. Nessun lavoro Pi prima ok Mac.
+- Consegne: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_GATE_21OTT_0900.md; questo status aggiornato. Log: UFFICIO/Officina/Test area/gate_t1.log.
+

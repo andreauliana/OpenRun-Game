@@ -1,0 +1,4 @@
+21/10 06:58 developer: turno R1 [~]/T1-RUN [~] — gate non eseguito in questo turno (attesa terzi: review Junior punti 1-3, chiusura CP-005 Capo, G1/@grafico sprite veri P1 p.4, ri-verifica runner Mac Andrea D12/D14 prima di 60 Hz/R2).
+Ultimo verde 21/10 06:41 gate_t1.sh soak exit 0, GATE T1 TUTTO OK, 6/6 GATE PERCORSO OK, ms/frame medio ~0.19 max 59.284 (spike lv_03_foglie, limite 20), soak 6/6 30000 frame, replay 2x IDENTICO, P1 OK (log UFFICIO/Officina/Test area/gate_t1.log; esito out/developer/ESITO_GATE_21OTT_0641.md).
+R1 compiti @developer 1-3 conclusi. Prossimo dopo R1 prima di R2: 60 Hz (dt in secondi, default 60 Hz, opzione 50 Hz, ctest verde a 60 Hz; ANDREA_REVIEW 19 ott Parte 1-2).
+Scritture: bacheche/developer/diario.md, bacheche/developer/RIASSUNTO.md, out/developer/ESITO_TURNO_21OTT_0658.md.
