@@ -49,7 +49,7 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 1. Il lavoro dei agesnti ruoli precedenti e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
 2. La panchina modelli e' in `strumenti/panchina.txt`.
 3. Il @capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
-4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `bacheche/`, `out/` e negli script). Il ciclo base fa girare @developer e @developer-junior; @grafico parte solo con `AGENTI_ATTIVI="developer developer-junior grafico"`. Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
+4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `bacheche/`, `out/` e negli script). Il ciclo base fa girare @developer, @developer-junior e @grafico (per escludere il grafico: `AGENTI_ATTIVI="developer developer-junior"`). Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il @grafico.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 

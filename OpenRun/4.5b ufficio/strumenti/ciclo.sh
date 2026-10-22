@@ -55,7 +55,7 @@ oc() {
 mkdir -p archivio_per_claude; [ -f .marker_review ] || touch .marker_review
 [ -f .marker_checkpoint ] || touch .marker_checkpoint
 # Ruoli 4.6 (file in .opencode/agents/). I tag v4.5 di RICHIESTA.md si traducono con ruolo_46().
-AGENTI_ATTIVI="${AGENTI_ATTIVI:-developer developer-junior}"
+AGENTI_ATTIVI="${AGENTI_ATTIVI:-developer developer-junior grafico}"
 REVISORE="${REVISORE:-developer-junior}"
 echo "$AGENTI_ATTIVI" > .agenti_attivi   # letto dal pannello
 t0=$(date +%s); last=$t0; n=0; fail=0; chk=0
@@ -233,8 +233,8 @@ agenti_liberi() {
   }' RICHIESTA.md | awk '!s[$0]++' \
     | awk -v att=" $AGENTI_ATTIVI " 'index(att, " " $0 " ")' \
     | while read -r ag; do [ -f ".opencode/agents/$ag.md" ] && echo "$ag"; done
-  # Default 4.6: developer e developer-junior; grafico solo su richiesta
-  # (AGENTI_ATTIVI="developer developer-junior grafico").
+  # Default 4.6: developer, developer-junior e grafico
+  # (per escludere il grafico: AGENTI_ATTIVI="developer developer-junior").
 }
 
 review_versione() {
