@@ -2,7 +2,7 @@
   "id": "lv_04_cromo",
   "versione": 1,
   "licenza": "CC-BY-4.0",
-  "autore": "Claude (solo percorso; scenario da fare a cura del designer)",
+  "autore": "Claude (solo percorso; scenario da fare a cura del grafico)",
   "tema": "tangenziale sopraelevata tra megastrutture cromate: curvoni lunghi e veloci, una grande discesa",
   "stile": "futurista",
   "parte_di_albero": true,
@@ -134,7 +134,7 @@
       "oggetto.lv_02_atomico.cupola"
     ],
     "stile_cartellone": "neon",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
   },
   "cartelloni_sponsor": [
     {

@@ -13,7 +13,7 @@ done
 if command -v python3 >/dev/null 2>&1; then
   python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$P/opencode.json" 2>/dev/null && ok "opencode.json valido" || ko "opencode.json non valido"
 else echo "SALTATO python3 non trovato (controllo JSON)"; fi
-for r in AGENTS.md VISIONE.md RICHIESTA.md SCAMBIO.md opencode.json assets_originali/DIREZIONE_ARTISTICA.md assets_originali/CREDITI.md .opencode/command/claude.md; do
+for r in AGENTS.md VISIONE.md RICHIESTA.md SCAMBIO.md opencode.json "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/DIREZIONE_ARTISTICA.md" "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CREDITI.md"; do
   [ -f "$P/$r" ] && ok "file $r" || ko "manca $r"
 done
 for r in SCALETTA.md COSA_FA_L_UMANO.md RAPPORTO_FATTIBILITA.md RISORSE_TECNICHE.md; do
@@ -30,13 +30,18 @@ for f in "$P"/.opencode/agents/*.md; do
 done
 command -v opencode >/dev/null 2>&1 && ok "opencode installato" || echo "NOTA    opencode non trovato nel PATH"
 command -v claude >/dev/null 2>&1 && ok "comando claude presente (review automatica possibile)" || echo "NOTA    comando claude assente: review a mano"
-# chiavi duplicate nel frontmatter degli agenti
+# chiavi duplicate nel frontmatter degli agenti (dentro la stessa sezione: read, edit, bash)
 for f in "$BASE"/sglavinated_src/.opencode/agents/*.md; do
   python3 - "$f" <<'PY' || ko "$(basename "$f"): chiave duplicata nel frontmatter"
 import re,sys,collections
 fm=open(sys.argv[1]).read().split('---')[1]
-c=collections.Counter(re.findall(r'^\s+"([^"]+)":',fm,re.M))
-sys.exit(1 if [k for k,v in c.items() if v>1 and k!='*'] else 0)
+c=collections.Counter(); sez=""
+for l in fm.splitlines():
+    m=re.match(r'^  (\w+):\s*$',l)
+    if m: sez=m.group(1); continue
+    m=re.match(r'^\s+"([^"]+)":',l)
+    if m: c[(sez,m.group(1))]+=1
+sys.exit(1 if [k for k,v in c.items() if v>1 and k[1]!='*'] else 0)
 PY
 done
 if [ $E -eq 0 ]; then echo "== TUTTO OK =="; else echo "== CI SONO ERRORI =="; fi

@@ -10,7 +10,15 @@ cartelloni, sprite, oggetti e skyline che non compaiono nel catalogo.
 """
 import glob, json, os, sys
 
-CATALOGO = "assets_originali/CATALOGO_GRAFICO.json"
+# La Libreria del Dipartimento Grafico e' l'unica copia degli asset. Nel catalogo i "file"
+# iniziano con assets_originali/ (relativi alla Libreria), i "raw" con motore_nuovo/.
+LIBRERIA = "UFFICIO/Dipartimento Grafico/Libreria"
+CATALOGO = LIBRERIA + "/assets_originali/CATALOGO_GRAFICO.json"
+
+
+def percorso(f):
+    return os.path.join(LIBRERIA, f) if f.startswith("assets_originali/") else f
+
 if not os.path.exists(CATALOGO):
     print(f"FALLITO: {CATALOGO} non trovato. Lanciare dalla radice progetto (sglavinated_src).")
     sys.exit(4)
@@ -27,11 +35,12 @@ for e in cat["elementi"]:
     files = [files] if isinstance(files, str) else files
     for f in files + ([e["raw"]] if e.get("raw") else []):
         usati.add(f)
-        if e.get("stato") != "mancante" and not os.path.exists(f): err.append(f"{i}: file inesistente {f}")
+        if e.get("stato") != "mancante" and not os.path.exists(percorso(f)): err.append(f"{i}: file inesistente {f}")
 
 fuori = [f for pat in ("assets_originali/sponsor/*/*.png", "assets_originali/sprite/**/*.png",
                        "assets_originali/scenari/*/*/oggetti/*.png", "assets_originali/scenari/*/*/skyline.png")
-         for f in glob.glob(pat, recursive=True) if f not in usati]
+         for f in (os.path.relpath(g, LIBRERIA) for g in glob.glob(os.path.join(glob.escape(LIBRERIA), pat), recursive=True))
+         if f not in usati]
 
 conta = {}
 for e in cat["elementi"]: conta[e.get("stato")] = conta.get(e.get("stato"), 0) + 1

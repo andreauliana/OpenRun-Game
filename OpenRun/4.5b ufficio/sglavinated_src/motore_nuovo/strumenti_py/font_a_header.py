@@ -9,13 +9,14 @@ import json
 import sys
 from PIL import Image
 
-META = "assets_originali/ui/font/varianteB/font.json"
+UI = "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui/"
+META = UI + "font/varianteB/font.json"
 OUT = "motore_nuovo/src/render/font_hud.h"
 
 
 def main():
     meta = json.load(open(META, encoding="utf-8"))
-    img = Image.open("assets_originali/ui/" + meta["sheet"].split("ui/")[-1] if "ui/" in meta["sheet"] else "assets_originali/ui/" + meta["sheet"]).convert("RGBA")
+    img = Image.open(UI + meta["sheet"].split("ui/")[-1] if "ui/" in meta["sheet"] else UI + meta["sheet"]).convert("RGBA")
     cw, ch = meta["cell_w"], meta["cell_h"]
     righe = []
     for code in range(32, 127):

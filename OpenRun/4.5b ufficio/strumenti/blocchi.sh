@@ -24,10 +24,13 @@ awk -v cur="$cur" -v sq="$sq" '
 BEGIN {
   n = split(sq, A, " "); for (i = 1; i <= n; i++) SQ[A[i]] = 1
   # Traduzione nomi v4.5 -> ruoli 4.6
-  MAP["sviluppatore"]    = "builder-developer"
-  MAP["collaudatore"]    = "developer-builder-junior"
-  MAP["grafico"]         = "designer"
-  MAP["ricercatore"]     = "(spento)"
+  MAP["sviluppatore"]             = "developer"
+  MAP["builder-developer"]        = "developer"
+  MAP["collaudatore"]             = "developer-junior"
+  MAP["developer-builder-junior"] = "developer-junior"
+  MAP["builder-developer-junior"] = "developer-junior"
+  MAP["designer"]                 = "grafico"
+  MAP["ricercatore"]              = "(spento)"
 }
 /^## BLOCCO/ {
   s = $0; sub(/^## BLOCCO +/, "", s); id = s; sub(/[ \t].*/, "", id)

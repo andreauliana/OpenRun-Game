@@ -32,8 +32,8 @@ Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `U
 |---|---|---|
 | @capo | Assegna task, responsabile, revisore, percorsi e criteri; aggrega esiti; gestisce checkpoint e documenti per Andrea. Non scrive codice/asset e non sostituisce la review tecnica. | `Checkpoint Revision/`, documenti di coordinamento assegnati |
 | @grafico | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `Shared asset/`. | Percorsi grafici assegnati; in fase 1 `assets_originali/`, `libreria/` e dati UI/testo assegnati |
-| @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del Junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `UFFICIO/Officina/TOOL/` |
-| @developer-junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del Builder quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
+| @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del @developer-junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `UFFICIO/Officina/TOOL/` |
+| @developer-junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del @developer quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
 
 Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo assegnato, non l'agente. Il perimetro statico OpenCode è una allowlist di base; il Capo specifica nel task i percorsi scrivibili. Nessun agente amplia autonomamente il proprio accesso.
 
@@ -50,7 +50,7 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 ## Review e checkpoint
 
 1. Ogni consegna registra file modificati, scopo, test e comando eseguito, esito misurabile, problemi residui e provenienza/licenza per materiale esterno.
-2. La review tecnica è peer review: @developer rivede il Junior; il Junior rivede il Builder se assegnato. L'autore non è il proprio unico revisore e non approva la release.
+2. La review tecnica è peer review: @developer rivede il @developer-junior; il @developer-junior rivede il @developer se assegnato. L'autore non è il proprio unico revisore e non approva la release.
 3. Il Grafico verifica formato, catalogo, provenienza e licenza prima della pubblicazione in `Shared asset/`.
 4. Il Capo verifica completezza delle review, prove, esiti e decisioni di Andrea; non si autovaluta come revisore tecnico né dichiara una build verificata senza prova registrata.
 5. Review negativa o incompleta: il Capo registra i rilievi nel checkpoint, assegna la correzione all'autore e richiede una nuova review indipendente. Se il revisore autorizzato non è disponibile, il checkpoint resta in attesa.

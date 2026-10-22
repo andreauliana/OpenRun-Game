@@ -2,7 +2,7 @@
   "id": "lv_06_desktop",
   "versione": 1,
   "licenza": "CC-BY-4.0",
-  "autore": "Claude (solo percorso; scenario da fare a cura del designer)",
+  "autore": "Claude (solo percorso; scenario da fare a cura del grafico)",
   "tema": "prato verde e cielo con nuvole da sfondo del desktop: colline continue, saliscendi e curve medie",
   "stile": "Windows 95 vibe",
   "parte_di_albero": true,
@@ -135,7 +135,7 @@
       "oggetto.lv_03_foglie.panchina_curva"
     ],
     "stile_cartellone": "foglie",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
   },
   "cartelloni_sponsor": [
     {

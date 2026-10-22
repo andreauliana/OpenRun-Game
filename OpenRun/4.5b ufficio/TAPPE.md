@@ -15,7 +15,7 @@ Regola: si lavora solo sulla tappa attiva. Una tappa si chiude quando passa il s
 **Tappa attiva: 1.**
 
 Dopo ogni gate:
-1. Review (collaudatore o Claude, breve).
+1. Review (@developer-junior o Claude, breve).
 2. Andrea prova e corregge a mano, se serve.
 3. Si passa alla tappa successiva in `RICHIESTA.md`.
 

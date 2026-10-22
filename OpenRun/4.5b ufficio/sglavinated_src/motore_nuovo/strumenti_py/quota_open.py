@@ -19,7 +19,7 @@ def lic_of(d):
     return ""
 tot = {"aperto":0,"chiuso/sconosciuto":0}
 righe = []
-for base in (root/"src", root/"dati", proj/"assets_originali", proj/"out", proj/"libreria"):
+for base in (root/"src", root/"dati", proj/"UFFICIO"/"Dipartimento Grafico"/"Libreria"/"assets_originali", proj/"out", proj/"libreria"):
     if not base.exists(): continue
     for f in base.rglob("*"):
         if f.is_file() and "galleria" not in f.parts and f.suffix not in (".md",) and f.name != "INDICE.md" and f.name not in ("manifest.json",):

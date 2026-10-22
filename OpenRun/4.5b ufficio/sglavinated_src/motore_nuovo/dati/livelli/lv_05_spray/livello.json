@@ -2,7 +2,7 @@
   "id": "lv_05_spray",
   "versione": 1,
   "licenza": "CC-BY-4.0",
-  "autore": "Claude (solo percorso; scenario da fare a cura del designer)",
+  "autore": "Claude (solo percorso; scenario da fare a cura del grafico)",
   "tema": "periferia industriale con muri a spray: incroci a 90 gradi, rettilinei corti, frenate",
   "stile": "punk",
   "parte_di_albero": true,
@@ -138,7 +138,7 @@
       "oggetto.lv_02_atomico.segnale_atomico"
     ],
     "stile_cartellone": "atomico",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il designer non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
   },
   "cartelloni_sponsor": [
     {
