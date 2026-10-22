@@ -1,7 +1,7 @@
 # Verifica architettura + runtime su Raspberry Pi 400
 Pi 400: 4 core Cortex-A72 a 1,8 GHz, 4 GB RAM, uscita 1080p. Target: 60 Hz fluido.
 
-## Criteri per scegliere il motore (compila con @architetto (licenze, motori) e @cercaasset (risorse))
+## Criteri per scegliere il motore (compila con @developer (licenze, motori) e @grafico (risorse))
 | Criterio | Soglia |
 |---|---|
 | Licenza | libera (MIT/BSD/GPL), nessun asset originale richiesto |
