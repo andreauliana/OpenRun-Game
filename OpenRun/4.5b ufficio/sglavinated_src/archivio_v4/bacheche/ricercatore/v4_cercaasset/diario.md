@@ -1,1 +1,0 @@
-Checkpoint reviewer CC-BY-4.0: riga motore_nuovo/dati/frasi.json gia' presente in assets_originali/CREDITI.md (linea 19). Tabella crediti sanata - Gate Tappa 1 non bloccato.
