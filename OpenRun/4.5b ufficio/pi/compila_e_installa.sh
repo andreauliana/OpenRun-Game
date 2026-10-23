@@ -6,7 +6,7 @@ DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$DIR/sglavinated_src"
 B="$SRC/motore_nuovo/build_pi"
 echo "1/4 pacchetti necessari (chiede la password del Pi)"
-sudo apt-get install -y cmake g++ libsdl2-dev libsdl2-image-dev
+sudo apt-get install -y cmake g++ pkg-config libsdl2-dev libsdl2-image-dev
 echo "2/4 compilazione (qualche minuto; -j2 per non scaldare il Pi)"
 cmake -S "$SRC/motore_nuovo" -B "$B" -DCMAKE_BUILD_TYPE=Release
 cmake --build "$B" -j2
