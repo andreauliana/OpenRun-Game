@@ -11,6 +11,7 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-10-18 | CP-004 | Consolidamento fonte Andrea e classificazione archivio v4 | APERTO — review indipendente da assegnare | [Dossier CP-004](./CP-004-review-e-archivio-v4.md) |
 | 2026-10-19 | CP-005 | Apertura blocco R1 tracciati modificabili per le 6 piste (gate percorso 5/6 fallito) | APERTO — review indipendente da assegnare | [Dossier CP-005](./CP-005-tracciati-percorsi.md) |
 | 2026-10-22 | CP-005 | Chiusura formale del blocco R1 tracciati per le 6 piste: review incrociata indipendente completa (developer-junior → developer punti 1-3 POSITIVA; developer → developer-junior punti 4-5 POSITIVA) e ctest 17/17 verde (exit 0); gate soak verde già registrato (6/6 piste, replay 2x IDENTICO, ms/frame <= 20) | CHIUSO | [Dossier CP-005](./CP-005-tracciati-percorsi.md) |
+| 2026-10-23 | — | T1-RUN: gate verde (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde 22/10), CP-005 chiusa con review incrociata indipendente positiva, prova runner Mac Andrea 23/10 ok (ctest 17/17, runner ok); T1-RUN proposto [x] (DEFAULT D19=A), decisione Andrea in attesa (PRONTO PER ANDREA, regola 8) | APERTO (in attesa decisione Andrea) | STATO_CORRENTE.md, out/capo/STATI_PROPOSTI.md, ANDREA_REVIEW.md (D19 [APERTA]) |
 
 ## Regole di aggiornamento
 

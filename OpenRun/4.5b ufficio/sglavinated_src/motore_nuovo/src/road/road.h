@@ -99,6 +99,23 @@ public:
     f32 playerX = 0.0f;   // offset laterale dell'auto (input del frame)
     f32 playerZ = 0.0f;   // posizione assoluta sul tracciato
     f32 cameraY = CAM_HEIGHT;
+
+    // Tempo (secondi) trascorso dalla scelta del ramo al bivio. Serve a far
+    // tornare gradualmente il fattore del ramo scelto a 1.0 (circa 1 secondo)
+    // cosi' il cambio tappa non scatta in larghezza.
+    f32 secondiDaSceltaBivio_ = 0.0f;
+    void setSecondiDaSceltaBivio(f32 secondi) { secondiDaSceltaBivio_ = secondi; }
+
+    // Curva/collina di inizio tappa: se impostate, build() le usa come punto di
+    // partenza del raccordo della prima curva/collina, raccordando il nuovo
+    // tracciato con la tappa che finisce (nessuno scatto di prospettiva).
+    f32 curvaInizioTappa_ = 0.0f;
+    bool curvaInizioTappaSet_ = false;
+    f32 collinaInizioTappa_ = 0.0f;
+    bool collinaInizioTappaSet_ = false;
+    void setCurvaInizioTappa(f32 c) { curvaInizioTappa_ = c; curvaInizioTappaSet_ = true; }
+    void setCollinaInizioTappa(f32 c) { collinaInizioTappa_ = c; collinaInizioTappaSet_ = true; }
+
 private:
     std::vector<RoadSegment> segs_;
     i32 totalLen_ = 0;

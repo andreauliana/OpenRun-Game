@@ -190,6 +190,7 @@ private:
     u32 frameGara_ = 0;
     f32 progressoTappePrecedenti_ = 0.0f;
     f32 passoGiocatore_ = 0.0f; // strada percorsa dal giocatore nell'ultimo frame
+    f32 secondiDaSceltaBivio_ = 0.0f; // secondi dalla scelta del ramo al bivio (fattore ramp)
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
 };

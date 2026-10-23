@@ -784,6 +784,209 @@ bool verificaPercorso(const std::string& livello) {
     return ok;
 }
 
+// --- Soglie cambio tappa (FORK1 punto 4), lette da dati/tracciati/regole.json ("bivio") ---
+struct BivioRegole {
+    i32 finestra = 60;          // frame registrati prima e dopo il cambio tappa
+    f32 delta_larghezza_max = 400.0f;   // carreggiata (fattore*ROAD_WIDTH) per frame
+    f32 delta_centro_max = 400.0f;      // centro corsia del ramo per frame
+    f32 delta_x_rel_max = 40.0f;        // playerX rispetto al centro corsia, per frame
+    f32 delta_curva_max = 0.05f;        // curva del segmento sotto l'auto per frame
+    f32 delta_collina_max = 0.05f;      // collina del segmento sotto l'auto per frame
+};
+
+static BivioRegole leggiRegoleBivio() {
+    BivioRegole r;
+    std::ifstream f("motore_nuovo/dati/tracciati/regole.json");
+    if (!f.is_open()) return r;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return r;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return r;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue bivioVal;
+    if (!sgl::jsonGet(root, "bivio", bivioVal) || !sgl::jsonIsObject(bivioVal)) return r;
+    const auto& b = sgl::jsonAsObject(bivioVal);
+    leggiIntJson(b, "finestra_frame", r.finestra);
+    leggiNumeroJson(b, "delta_larghezza_max", r.delta_larghezza_max);
+    leggiNumeroJson(b, "delta_centro_max", r.delta_centro_max);
+    leggiNumeroJson(b, "delta_x_rel_max", r.delta_x_rel_max);
+    leggiNumeroJson(b, "delta_curva_max", r.delta_curva_max);
+    leggiNumeroJson(b, "delta_collina_max", r.delta_collina_max);
+    return r;
+}
+
+struct CampioneBivio {
+    i32 frame = 0;
+    f32 larghezza = 0.0f; // fattore*ROAD_WIDTH della carreggiata in questo frame
+    f32 centro = 0.0f;    // centro corsia del ramo del giocatore (0 in scelta aperta)
+    f32 x = 0.0f;         // player.x assoluto
+    f32 xRel = 0.0f;      // player.x rispetto al centro della corsia
+    f32 curva = 0.0f;     // curva del segmento sotto l'auto
+    f32 collina = 0.0f;   // collina del segmento sotto l'auto
+};
+
+static f32 collinaAt(const Road& road, f32 z) {
+    if (road.segments().empty() || road.totalLength() <= 0) return 0.0f;
+    z = std::fmod(z, (f32)road.totalLength());
+    if (z < 0.0f) z += (f32)road.totalLength();
+    f32 acc = 0.0f;
+    for (const RoadSegment& seg : road.segments()) {
+        if (acc + seg.length > z) return seg.hill;
+        acc += (f32)seg.length;
+    }
+    return 0.0f;
+}
+
+static CampioneBivio campionaBivio(const Game& game) {
+    const GameState& s = game.state();
+    const Road& road = game.road();
+    const f32 z = road.playerZ;
+    const Road::Carreggiate c = road.carreggiate(z, s.latoBivio);
+    f32 centro = 0.0f;
+    if (s.latoBivio != 0 && c.doppia) {
+        const i32 vicino =
+            std::abs(s.playerX - c.centro[0]) <= std::abs(s.playerX - c.centro[1]) ? 0 : 1;
+        centro = c.centro[vicino];
+    }
+    CampioneBivio cp;
+    cp.frame = (i32)s.frame;
+    cp.larghezza = c.fattore * Road::ROAD_WIDTH;
+    cp.centro = centro;
+    cp.x = s.playerX;
+    cp.xRel = s.playerX - centro;
+    cp.curva = road.curvaAt(z);
+    cp.collina = collinaAt(road, z);
+    return cp;
+}
+
+// Guida automatica verso il ramo scelto al bivio (come verificaGara), gas pieno.
+static Pad guidaBivio(const Game& game, const char* scelte) {
+    Pad pad{}; pad.held = Pad::A;
+    const GameState& s = game.state();
+    const Road& road = game.road();
+    f32 obiettivo = 0.0f;
+    if (road.bivioAttivo() && s.latoBivio == 0 && s.playerZ > road.bivioInizioZ()) {
+        const i32 lato = (scelte[0] == 'S') ? -1 : 1;
+        obiettivo = (f32)lato * Road::BIVIO_DIST;
+    }
+    for (const SpriteInstance& t : game.traffico()) {
+        const f32 dz = t.worldZ - s.playerZ;
+        if (dz > 0.0f && dz < 5000.0f && std::abs(t.worldX - s.playerX) < 380.0f)
+            obiettivo = t.worldX + (t.worldX > obiettivo ? -650.0f : 650.0f);
+    }
+    if (s.playerX > obiettivo + 120.0f) pad.held |= (u64)Pad::Left;
+    else if (s.playerX < obiettivo - 120.0f) pad.held |= (u64)Pad::Right;
+    return pad;
+}
+
+// --- Gate FORK1 punto 4: cambio tappa / uscita dal bivio ---
+// Per ciascuna delle 4 combinazioni di bivi guida la gara fino al primo cambio
+// tappa (fineTappa carica la tappa successiva) e registra la finestra +-finestra
+// attorno al cambio: larghezza strada, centro corsia, x dell'auto (relativa alla
+// corsia), curva e collina. Fallisce se uno scarto tra due frame consecutivi
+// supera le soglie di regole.json. Salva screenshot PPM (5 frame prima, cambio,
+// 5 frame dopo).
+bool verificaBivioUscita(const std::string& outDir) {
+    const char* scelte[] = { "SS", "SD", "DS", "DD" };
+    const BivioRegole r = leggiRegoleBivio();
+    const i32 finestra = r.finestra > 0 ? r.finestra : 60;
+    bool ok = true;
+    for (const char* s : scelte) {
+        // Passo 1: trova il blocco della scelta al bivio (teleport sul ramo) e
+        // il primo cambio tappa (fineTappa carica la tappa successiva).
+        i32 bloccoFrame = -1, cambioFrame = -1, tappaIniziale = 1, tappaDopo = 1;
+        i32 latoPrecedente = 0;
+        {
+            Game game(12345u);
+            caricaSponsor(game);
+            if (!game.avviaGara()) { ok = false; continue; }
+            tappaIniziale = game.state().tappa;
+            for (i32 frame = 0; frame < 400000 && !game.state().arrivo; ++frame) {
+                game.setInput(guidaBivio(game, s));
+                game.update();
+                game.render();
+                if (bloccoFrame < 0 && game.state().latoBivio != 0 && latoPrecedente == 0) bloccoFrame = frame;
+                latoPrecedente = game.state().latoBivio;
+                if (game.state().tappa != tappaIniziale) {
+                    cambioFrame = frame;
+                    tappaDopo = game.state().tappa;
+                    break;
+                }
+            }
+        }
+        if (cambioFrame < 0) {
+            std::printf("bivio_uscita %s: FALLITO (cambio tappa non raggiunto)\n", s);
+            ok = false;
+            continue;
+        }
+        // Passo 2: rigioca deterministicamente e registra [blocco-finestra, cambio+finestra].
+        const i32 inizio = bloccoFrame > finestra ? bloccoFrame - finestra : 0;
+        const i32 fine = cambioFrame + finestra;
+        std::vector<CampioneBivio> campioni;
+        std::vector<std::vector<u32>> fotogrammi;
+        {
+            Game game(12345u);
+            caricaSponsor(game);
+            game.avviaGara();
+            for (i32 frame = 0; frame <= fine && !game.state().arrivo; ++frame) {
+                game.setInput(guidaBivio(game, s));
+                game.update();
+                game.render();
+                if (frame >= inizio) {
+                    campioni.push_back(campionaBivio(game));
+                    const u32* d = game.fb().data();
+                    fotogrammi.push_back(std::vector<u32>(d, d + (size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT));
+                }
+            }
+        }
+        const i32 idxCambio = cambioFrame - inizio;
+        // Scarti massimi tra frame consecutivi nella finestra.
+        f32 maxLarghezza = 0.0f, maxCentro = 0.0f, maxXRel = 0.0f, maxCurva = 0.0f, maxCollina = 0.0f;
+        for (size_t i = 1; i < campioni.size(); ++i) {
+            const f32 dl = std::abs(campioni[i].larghezza - campioni[i - 1].larghezza);
+            const f32 dc = std::abs(campioni[i].centro - campioni[i - 1].centro);
+            const f32 dx = std::abs(campioni[i].xRel - campioni[i - 1].xRel);
+            const f32 dcv = std::abs(campioni[i].curva - campioni[i - 1].curva);
+            const f32 dh = std::abs(campioni[i].collina - campioni[i - 1].collina);
+            if (dl > maxLarghezza) maxLarghezza = dl;
+            if (dc > maxCentro) maxCentro = dc;
+            if (dx > maxXRel) maxXRel = dx;
+            if (dcv > maxCurva) maxCurva = dcv;
+            if (dh > maxCollina) maxCollina = dh;
+        }
+        // Screenshot: blocco della scelta + cambio tappa, con 5 frame prima/dopo il cambio.
+        const std::string base = outDir + "/p_bivio_uscita_" + std::string(s);
+        auto salvaFrame = [&](i32 frameGlobale, const std::string& sufix) {
+            const i32 idx = frameGlobale - inizio;
+            if (idx >= 0 && idx < (i32)fotogrammi.size())
+                salvaPPM(base + sufix, fotogrammi[(size_t)idx].data(),
+                         Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        };
+        if (bloccoFrame >= 0) salvaFrame(bloccoFrame, "_blocco.ppm");
+        salvaFrame(cambioFrame, "_cambio.ppm");
+        for (i32 k = 1; k <= 5; ++k) {
+            salvaFrame(cambioFrame - k, "_prima" + std::to_string(k) + ".ppm");
+            salvaFrame(cambioFrame + k, "_dopo" + std::to_string(k) + ".ppm");
+        }
+        bool comboOk = true;
+        if (maxLarghezza > r.delta_larghezza_max) { std::printf("  VIOLAZIONE larghezza max=%.1f > soglia %.1f\n", maxLarghezza, r.delta_larghezza_max); comboOk = false; }
+        if (maxCentro > r.delta_centro_max) { std::printf("  VIOLAZIONE centro max=%.1f > soglia %.1f\n", maxCentro, r.delta_centro_max); comboOk = false; }
+        if (maxXRel > r.delta_x_rel_max) { std::printf("  VIOLAZIONE x_rel max=%.1f > soglia %.1f (blocco scelta al frame %d)\n", maxXRel, r.delta_x_rel_max, bloccoFrame); comboOk = false; }
+        if (maxCurva > r.delta_curva_max) { std::printf("  VIOLAZIONE curva max=%.2f > soglia %.2f\n", maxCurva, r.delta_curva_max); comboOk = false; }
+        if (maxCollina > r.delta_collina_max) { std::printf("  VIOLAZIONE collina max=%.2f > soglia %.2f\n", maxCollina, r.delta_collina_max); comboOk = false; }
+        std::printf("bivio_uscita %s: blocco scelta frame %d, cambio tappa %d -> %d al frame %d | maxDelta larghezza=%.1f centro=%.1f x_rel=%.1f curva=%.2f collina=%.2f | %s\n",
+                    s, bloccoFrame, tappaIniziale, tappaDopo, cambioFrame,
+                    maxLarghezza, maxCentro, maxXRel, maxCurva, maxCollina,
+                    comboOk ? "OK" : "FALLITO");
+        ok = ok && comboOk;
+    }
+    std::printf("%s\n", ok ? "GATE BIVIO USCITA OK" : "FALLITO: cambio tappa/bivio non fluido");
+    return ok;
+}
+
 // --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
 // Guida automatica: gas pieno, schiva gli avversari davanti, al bivio va sul
 // ramo voluto. Per ogni combinazione di scelte controlla le tappe attraversate,
@@ -1151,6 +1354,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaCosta();
         std::printf("%s\n", ok ? "GATE COSTA OK" : "FALLITO: gas rilasciato non decelera");
         return ok ? 0 : 10;
+    }
+
+    if (modo == "bivio_uscita") {
+        const bool ok = verificaBivioUscita(outDir);
+        std::printf("%s\n", ok ? "GATE BIVIO USCITA OK" : "FALLITO: cambio tappa/bivio non fluido");
+        return ok ? 0 : 16;
     }
 
     if (modo == "espansione") {

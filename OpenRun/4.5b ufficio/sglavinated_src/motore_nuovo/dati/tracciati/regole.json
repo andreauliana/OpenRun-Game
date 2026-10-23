@@ -72,5 +72,14 @@
       "fuori_strada_max": 0.01,
       "note": "tema desktop: misto rettilinei e colline"
     }
+  },
+  "bivio": {
+    "finestra_frame": 60,
+    "delta_larghezza_max": 400.0,
+    "delta_centro_max": 400.0,
+    "delta_x_rel_max": 40.0,
+    "delta_curva_max": 0.05,
+    "delta_collina_max": 0.05,
+    "nota": "Proposta FORK1 punto 4 (@developer-junior): scarto massimo ammesso tra due frame consecutivi nella finestra (+-60 frame) attorno al cambio tappa. larghezza = fattore*ROAD_WIDTH della carreggiata; centro = centro corsia del ramo del giocatore (0 in scelta aperta); x_rel = playerX rispetto al centro della corsia; curva/collina del segmento sotto l'auto. Al blocco della scelta l'auto viene ricentrata sul ramo scelto (teleport BIVIO_DIST atteso): si misura la continuita' rispetto alla corsia, non la x assoluta. Valori proposti da validare con il @developer durante il tuning FORK1."
   }
 }

@@ -55,7 +55,10 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         if (def < 0) def = 0;
         return def;
     };
-    f32 curvaPrima = descs.back().curva; // anello: prima del primo tratto c'e' l'ultimo
+    // Raccordo con la tappa precedente: se impostato, la prima curva parte dal
+    // valore finale della tappa precedente invece che dall'ultimo tratto del
+    // tracciato corrente (cambio tappa senza scatto di prospettiva).
+    f32 curvaPrima = curvaInizioTappaSet_ ? curvaInizioTappa_ : descs.back().curva;
     i32 indice = 0;
     for (i32 d = 0; d < (i32)descs.size(); ++d) {
         const SegmentDesc& desc = descs[d];
@@ -110,7 +113,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         lunghezzaCurva > 0 ? residuo / ((f32)lunghezzaCurva * CURVE_SCALE) : 0.0f;
 
     // Passata 2: posizioni assolute del tracciato.
-    f32 quotaPrima = descs.back().collina * HILL_HEIGHT;
+    f32 quotaPrima = collinaInizioTappaSet_ ? collinaInizioTappa_ * HILL_HEIGHT : descs.back().collina * HILL_HEIGHT;
     f32 direzione = 0.0f; // pendenza laterale del mondo (solo per p1x/p2x)
     curY = quotaPrima;
     size_t at = 0;
@@ -132,6 +135,9 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         }
         quotaPrima = quota;
     }
+    // I valori di inizio tappa vengono consumati una sola volta.
+    curvaInizioTappaSet_ = false;
+    collinaInizioTappaSet_ = false;
 }
 
 void Road::advance(f32 dt) {
@@ -164,17 +170,21 @@ Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
     if (zAbs <= inizio) return c;
     const f32 apertura = zAbs >= blocco ? 1.0f : raccordo((zAbs - inizio) / (blocco - inizio));
     const f32 d = apertura * BIVIO_DIST;
-    c.fattore = 1.0f - 0.4f * apertura; // ogni ramo e' piu' stretto della strada intera
     c.doppia = true;
     if (lato == 0) {
         c.centro[0] = -d;
         c.centro[1] = d;
+        c.fattore = 1.0f - 0.4f * apertura; // strada intera in scelta aperta
     } else {
         // Il giocatore e' stato ricentrato sul ramo scelto al blocco della scelta.
         const f32 oltre = zAbs > blocco ? zAbs - blocco : 0.0f;
         const f32 l = (f32)lato;
         c.centro[0] = l * (d - BIVIO_DIST);
         c.centro[1] = -l * (d + BIVIO_DIST) - l * BIVIO_SVOLTA * oltre * oltre;
+        // Subito dopo la scelta il ramo e' stretto (fattore 0.6); torna a 1.0 in
+        // circa 1 secondo cosi' il cambio tappa non scatta in larghezza.
+        const f32 ramp = secondiDaSceltaBivio_ >= 1.0f ? 1.0f : secondiDaSceltaBivio_;
+        c.fattore = 1.0f - 0.4f * apertura * (1.0f - ramp);
     }
     return c;
 }

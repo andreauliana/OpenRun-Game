@@ -48,6 +48,10 @@ constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
 // Forza centrifuga in curva (dimensionless, si applica a speed*dt = unità/frame).
 constexpr f32 CURVA_SPINTA = 0.015f;
+// Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
+// fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
+// senza essere contrastato dalla spinta centrifuga.
+constexpr f32 CURVA_SPINTA_OFFROAD_FACTOR = 0.25f;
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
 // Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' al secondo.
 // speed e' gia' in unita'/secondo, quindi questa costante e' indipendente dalla frequenza.
@@ -564,6 +568,15 @@ void Game::fineTappa(f32 avanzo) {
         }
         return;
     }
+    // Raccordo curva/collina con la tappa che finisce: il nuovo tracciato
+    // parte dalla quota/curvatura dell'ultimo segmento della tappa precedente
+    // (cambio tappa senza scatto di prospettiva).
+    const auto& segsFine = road_.segments();
+    if (!segsFine.empty()) {
+        const RoadSegment& last = segsFine.back();
+        road_.setCurvaInizioTappa(last.curve);
+        road_.setCollinaInizioTappa(last.hill);
+    }
     progressoTappePrecedenti_ += (f32)road_.totalLength();
     caricaLivello(prossima);
     tappaId_ = prossima;
@@ -744,9 +757,17 @@ void Game::update() {
     } else {
         // Corsia dell'auto: al bivio e' il ramo piu' vicino.
         const Road::Carreggiate carr = road_.carreggiate(player_.z, latoBivio_);
-        const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
-        player_.centroCorsia = carr.centro[vicino];
-        player_.larghezzaCorsia = carr.fattore;
+        if (latoBivio_ == 0) {
+            // Scelta ancora aperta: l'auto sta sulla strada intera.
+            // centroCorsia resta fisso a 0: niente salto laterale quando l'auto
+            // passa da x<0 a x>0 (continuità) e il ramo non scelto non spinge.
+            player_.centroCorsia = 0.0f;
+            player_.larghezzaCorsia = 1.0f;
+        } else {
+            const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
+            player_.centroCorsia = carr.centro[vicino];
+            player_.larghezzaCorsia = carr.fattore;
+        }
         Pad comandi = input_;
         if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
         player_.input(comandi, dt);
@@ -763,19 +784,27 @@ void Game::update() {
         player_.z = road_.playerZ;
         // Bivio: oltre il punto di blocco la scelta e' fatta; l'auto viene
         // ricentrata sul ramo scelto (stessa immagine, nessuno scatto).
+        bool sceltaFattaOra = false;
         if (road_.bivioAttivo() && latoBivio_ == 0 && player_.z >= road_.bivioBloccoZ()) {
             latoBivio_ = player_.x < 0.0f ? -1 : 1;
             player_.x -= (f32)latoBivio_ * Road::BIVIO_DIST;
             player_.centroCorsia = 0.0f;
             road_.playerX = player_.x;
+            secondiDaSceltaBivio_ = 0.0f;
+            sceltaFattaOra = true;
         }
+        if (!sceltaFattaOra && latoBivio_ != 0) {
+            secondiDaSceltaBivio_ += dt;
+        }
+        road_.setSecondiDaSceltaBivio(secondiDaSceltaBivio_);
 
         // Le curve spingono l'auto verso l'esterno, con intensita' crescente alla velocita'.
         // Le curve ora durano centinaia di metri: la spinta resta sotto lo sterzo
         // (a curva 0.8 e velocita' massima circa 7 unita'/frame contro 11 di sterzo),
         // cosi' la curva si tiene sterzando.
         const f32 curvaQui = road_.curvaAt(player_.z);
-        player_.x += curvaQui * player_.speed * CURVA_SPINTA * dt * roadScrollScale;
+        const f32 spinta = player_.offroad ? CURVA_SPINTA * CURVA_SPINTA_OFFROAD_FACTOR : CURVA_SPINTA;
+        player_.x += curvaQui * player_.speed * spinta * dt * roadScrollScale;
         player_.vincolaAllaCorsia();
 
         if (player_.offroad) ++offroadFrames_;
