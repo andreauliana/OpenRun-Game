@@ -247,7 +247,7 @@ RISPOSTA DI ANDREA: A — (D12 A già registrato; conferma richiesta)
 
 ---
 
-## D15 | Attivazione G1 e delega @designer | capo | [APERTA]
+## D15 | Attivazione G1 e delega @grafico | capo | [APERTA]
 
 Domanda:
 Confermare attivazione G1 (catalogo grafico) con delega al @designer (= @grafico): catalogare i 100 PNG fuori elenco, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", motore/test usano solo `pronto` e `approvato`?
@@ -255,18 +255,15 @@ Opzioni: A) sì, attiva G1 su @designer  B) no, tieni G1 fuori scope T1
 RISPOSTA DI ANDREA: A — (T1-Q4 già risposto: attivare; conferma richiesta)
 Impatto se cambi idea: G1 resta [ ]; sprite veri (P1 punto 4, traffico, personaggi, UFO) restano bloccati.
 
-## D16 | Attivazione G1 e delega @designer | Andrea | [APERTA]
+## D16 | Attivazione G1 e delega @grafico | Andrea | [APERTA]
 Andrea is currently testing the review of the Mac runner (v91, SDL2).
-In the meantime, continue working autonomously on the C++ game project.
+In the meantime, continue working autonomously on the game development and design.
 **Priorities:**
-1. @developer Run and improve automated tests across all 6 themed tracks with correct related theme elements. @developer-junior make sure the tracks has each own themed design element provided by @designer.
-2. @developer improve vehicle physics, improve the steering (feels weird to go against the steer while in the middle of the curve, not really sure about it yet), overall animation render of 'external world' and driver prospective, parts of the tracks as hill, highway option, collisions with other player, and forks in the road race that takes the driver to the next themed path. The other players (automated competitors) are small, and have not defined design: @designer, @developer please improve a little.
-3. Check build consistency and overall visual identify which executable corresponds to the latest source code and @designer and v91.
-4. Test for regressions, crashes, performance issues and missing assets, and game feeling as the reference game 'OutRun'.
+1. @developer Run and improve automated tests across all 6 themed percorsi with correct related theme elements. @developer-junior make sure the percorsi has each own themed design element provided by @grafico.
+2. @developer improve vehicle physics, improve the steering (feels weird to go against the steer while in the middle of the curve, Andrea is not really sure about it yet), overall animation render of 'external world' and driver prospective, parts of the percorsi as hill, highway option, engaging collisions with other player, and forks in the road race that takes the driver to the next themed path. The other players (automated competitors) looks way too small from latest test, improve design using internal Library if possible: @designer works together @developer to improve a little.
+3. Test for regressions, crashes, performance issues and missing assets, and game feeling as the reference game 'OutRun'.
 
 **Important:** Do not mark Andrea's manual Mac/SDL2 review as passed. Keep it explicitly pending until Andrea confirms that he has tested the correct build.
-
-Do not wait for Andrea unless a decision, permission or manual intervention is genuinely required.
 
 ## D18 | Chiusura T1-RUN e avvio R2 | capo | [APERTA]
 
@@ -280,4 +277,4 @@ DEFAULT usato nel frattempo: A — CP-005 + `ctest` verde, poi T1-RUN resta [~] 
 
 Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non conferma.
 
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: B

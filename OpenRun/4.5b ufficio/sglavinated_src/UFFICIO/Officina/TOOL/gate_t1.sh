@@ -82,6 +82,16 @@ R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
+echo "== frequenza 60 Hz e 50 Hz (giro guidato: stessi secondi, replay IDENTICO a ciascuna)"
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_60" lv_01_neon frequenza 60 >> "$LOG" 2>&1
+R=$?
+echo "   exit $R"
+[ "$R" -ne 0 ] && RC=$R
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_50" lv_01_neon frequenza 50 >> "$LOG" 2>&1
+R=$?
+echo "   exit $R"
+[ "$R" -ne 0 ] && RC=$R
+
 echo "== screenshot P1 (curva, cartelloni sponsor, personaggio con fumetto)"
 ./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
 R=$?

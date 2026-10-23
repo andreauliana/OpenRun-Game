@@ -18,6 +18,7 @@ permission:
     "UFFICIO/Officina/TOOL/**": allow
     "UFFICIO/Officina/Test area/strumenti/**": allow    
     "motore_nuovo/test/**": allow
+    "motore_nuovo/dati/tracciati/regole.json": allow
   bash:
     "*": deny
     "cmake -S motore_nuovo -B UFFICIO/Officina/build*": allow
@@ -56,3 +57,5 @@ Sei il Developer Junior. Lavora solo sui test e sui percorsi indicati dal @capo;
 - Riporta file, scopo, comando, exit code, misure, problemi residui e provenienza quando pertinente.
 - Review: guarda le modifiche con `git status` e `git diff` (sola lettura, mai commit/push). Un singolo test: `UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa: `motore_nuovo/docs/SVILUPPATORI.md`.
 - Lanciare ogni comando da solo, senza unirli con ; o &&. I comandi uniti vengono sempre rifiutati.
+- PRODUZIONE PRIMA: ogni turno su un blocco di codice, test o dati deve modificare almeno un file di quel blocco (percorsi consentiti) e riportare il comando di verifica con exit code. Diario = UNA riga e RIASSUNTO breve: nessun altro documento (niente nuovi report) se non richiesto dal blocco. Se sei bloccato, scrivi il blocco in una riga nel diario e passa al blocco successivo.
+- Ogni comando shell va lanciato da solo: niente `;`, `&&`, `||`, `|`, `echo`, redirezioni. Riporta l'esito come lo mostra lo strumento; non scrivere file con la shell, usa Write/Edit.

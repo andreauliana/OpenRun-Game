@@ -1,10 +1,6 @@
-# RIASSUNTO @developer-junior — turno 22/10 16:12
+# RIASSUNTO @developer-junior — turno 22/10 sera (23:20)
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior/.
-- Letture obbligatorie effettuate (ANDREA_REVIEW.md precedenza assoluta, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md).
-- R1 [x] tecnicamente completo (CP-005 chiuso 22/10, ctest 17/17 verde, gate soak 6/6 OK).
-- R2 [ ] dopo F60.
-- H [~] bloccato (Andrea punto 8: ok Mac runner v91 prima di Pi 400; D13=B, D14=A, D16 in corso).
-- T1-RUN [~] punti 5-7 junior in attesa ok Andrea runner Mac v91 (non toccare src/runner/).
-- F60 [ ] dopo R1 prima di R2 in attesa core @developer (game.cpp tempi in secondi).
-- Gate non eseguito in questo turno; nessuna modifica di codice/test.
-- Consegne: diario 1 riga, RIASSUNTO <=12 righe, nessun risultato nuovo in out/developer-junior/.
+- F60 [x] completato e verificato: gate 22/10 20:06 exit 0, 60/50 Hz OK, 6/6 percorsi OK, ms/frame <= 20, T1-RUN punti 5-6 [x].
+- H [~] bloccato: ok runner Mac v91 di Andrea (D16/D18 senza risposta in ANDREA_REVIEW.md); non toccare src/runner/.
+- R2 [ ], FORK1 [ ], DECO1 [ ], RIV [ ] bloccati in attesa ok Andrea su Mac (prima Mac, poi Pi 400/RetroPie).
+- Nessun blocco [ ]/[~] eseguibile in questo turno; nessun file src/ toccato; gate non eseguito.

@@ -7,13 +7,50 @@
 #include <map> // std::map per la libreria di tratti
 #include <utility> // std::move
 
+// ---------------------------------------------------------------------------
+// Funzioni nello spazio globale usate da prova_gate.cpp (dichiarate in game.h
+// prima di namespace sgl). Evitano ambiguità con le definizioni locali statiche
+// di prova_gate.cpp (usando namespace sgl + definizione in sgl creerebbe
+// simboli duplicati visibili).
+// ---------------------------------------------------------------------------
+sgl::i32 leggiFrequenzaDaConfig() {
+    std::FILE* f = std::fopen("motore_nuovo/dati/config.json", "rb");
+    if (!f) return 60;
+    char buf[4096];
+    std::string testo;
+    size_t n;
+    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
+    std::fclose(f);
+    sgl::JsonReader cfg(testo);
+    if (cfg.parse() && sgl::jsonIsObject(cfg.valore())) {
+        sgl::JsonValue v;
+        if (sgl::jsonGet(sgl::jsonAsObject(cfg.valore()), "frequenza_hz", v) && sgl::jsonIsNumber(v)) {
+            sgl::i32 hz = (sgl::i32)sgl::jsonAsNumber(v);
+            if (hz > 0) return hz;
+        }
+    }
+    return 60;
+}
+
+sgl::i32 impostaFrequenzaDaConfig(sgl::i32 hz) {
+    sgl::i32 precedente = leggiFrequenzaDaConfig();
+    std::FILE* f = std::fopen("motore_nuovo/dati/config.json", "wb");
+    if (f) {
+        std::fprintf(f, "{\n  \"frequenza_hz\": %d\n}\n", hz);
+        std::fclose(f);
+    }
+    return precedente;
+}
+
 namespace sgl {
 namespace {
 constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
-constexpr f32 CURVA_SPINTA = 0.015f; // forza centrifuga in curva (vedi update)
+// Forza centrifuga in curva (dimensionless, si applica a speed*dt = unità/frame).
+constexpr f32 CURVA_SPINTA = 0.015f;
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
-// Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' per frame a 50 Hz.
+// Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' al secondo.
+// speed e' gia' in unita'/secondo, quindi questa costante e' indipendente dalla frequenza.
 constexpr f32 UNITA_PER_KM = 590.0f * 50.0f * 3600.0f / 293.0f;
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
@@ -213,6 +250,18 @@ void Game::caricaLivello(const std::string& livelloId) {
 }
 
 void Game::init(const std::string& livelloId) {
+    // Legge la frequenza logica da dati/config.json (default 60 Hz).
+    // Tutto il core usa dt in secondi: stesso comportamento a 50 e 60 Hz.
+    frequenzaHz_ = 60;
+    JsonReader cfg(leggiFileTesto("motore_nuovo/dati/config.json"));
+    if (cfg.parse() && jsonIsObject(cfg.valore())) {
+        JsonValue v;
+        if (jsonGet(jsonAsObject(cfg.valore()), "frequenza_hz", v) && jsonIsNumber(v)) {
+            i32 hz = (i32)jsonAsNumber(v);
+            if (hz > 0) frequenzaHz_ = hz;
+        }
+    }
+
     gara_ = false;
     road_.impostaBivio(false);
     latoBivio_ = 0;
@@ -226,6 +275,7 @@ void Game::init(const std::string& livelloId) {
     player_.z = 0.0f;
     player_.x = 0.0f;
     player_.speed = 0.0f;
+    tempoGiocoS_ = 0; // secondo contatore di gioco riparte con la partita
     playerFlipping_ = false;
     playerFlipFrame_ = 0;
     offroadFrames_ = 0;
@@ -404,7 +454,7 @@ bool Game::avviaGara(const std::string& fileTappe) {
     progressoTappePrecedenti_ = 0.0f;
     frameGara_ = 0;
     arrivo_ = false;
-    tempoResiduoFrame_ = (u32)tempoLimiteTappaS_ * 50u; // tempo della prima tappa
+    tempoResiduoS_ = (f32)tempoLimiteTappaS_; // tempo della prima tappa (secondi)
     preparaBivio();
     inizializzaRivali();
     aggiornaStatoGara();
@@ -518,7 +568,7 @@ void Game::fineTappa(f32 avanzo) {
     caricaLivello(prossima);
     tappaId_ = prossima;
     ++numeroTappa_;
-    if (!tempoScaduto_) tempoResiduoFrame_ += (u32)tempoLimiteTappaS_ * 50u; // checkpoint: tempo extra
+    if (!tempoScaduto_) tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
     preparaBivio();
     road_.playerZ = avanzo;
     player_.z = avanzo;
@@ -541,7 +591,7 @@ void Game::aggiornaStatoGara() {
     state_.posizione = arrivo_ ? posizioneArrivo_ : posizioneGiocatore();
     state_.arrivo = arrivo_;
     state_.frameGara = frameGara_;
-    state_.tempoResiduoFrame = tempoResiduoFrame_;
+    state_.tempoResiduoFrame = (u32)tempoResiduoS_;
     state_.tempoScaduto = tempoScaduto_;
 }
 
@@ -568,6 +618,7 @@ i32 Game::risolviSponsorSprite(const std::string& sponsorId) const {
 
 void Game::setSponsorSprites(std::vector<std::pair<std::string, Sprite>> sprites) {
     sponsorSpriteIdx_.clear();
+    ren_.clearSponsorSprites(); // non accumulare sprite sponsor tra test/esegui
     sponsorId_.clear();
     sponsorSpriteIdx_.reserve(sprites.size());
     sponsorId_.reserve(sprites.size());
@@ -675,12 +726,12 @@ bool Game::leggiCartelloniDaFile(const JsonValue* radice) {
 
 void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
-    f32 dt = 1.0f / 50.0f; // un frame di gioco a 50 Hz
+    f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
 
     if (playerFlipping_) {
         passoGiocatore_ = 0.0f;
         ++playerFlipFrame_;
-        if (playerFlipFrame_ >= FLIP_ANIMATION_FRAMES) {
+        if (playerFlipFrame_ >= (u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)) {
             playerFlipping_ = false;
             playerFlipFrame_ = 0;
             offroadFrames_ = 0;
@@ -740,7 +791,7 @@ void Game::update() {
             inCollision_ = false;
         }
 
-        if (collisione || offroadFrames_ >= OFFROAD_CRASH_FRAMES) {
+        if (collisione || offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_)) {
             if (!collisione) showManager_.crash();
             playerFlipping_ = true;
             playerFlipFrame_ = 0;
@@ -754,12 +805,14 @@ void Game::update() {
     //    da renderer, HUD e moduli fx; il modulo gameplay non dipende da SDL né da orologi.
     StatoGameplayInput gi;
     gi.frame = clock_.frame;
+    gi.dt = dt;            // secondi dal frame precedente (1/frequenzaHz_)
+    tempoGiocoS_ += dt;    // contatore secondi di gioco (frequenza indipendente)
     gi.stage = 0;          // prototipo: stage 0 (prTab[0]); multi-stage in blocco D/K
     gi.inGara = true;      // no menu/demo in questo prototipo
     gi.inputAttivo = (input_.held != 0ull);
     gi.offRoad = player_.offroad;
     showManager_.aggiorna(gi); // risultato letto da showDati() / disegnoShow_
-    disegnoShow_.aggiorna(clock_.frame, showManager_); // stesso frame!
+    disegnoShow_.aggiorna(tempoGiocoS_, showManager_); // stesso tempo (secondi)!
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
@@ -779,8 +832,8 @@ void Game::update() {
     if (gara_) {
         if (!arrivo_ && !tempoScaduto_) {
             ++frameGara_;
-            if (tempoResiduoFrame_ > 0) --tempoResiduoFrame_;
-            if (tempoResiduoFrame_ == 0) tempoScaduto_ = true; // game over
+            if (tempoResiduoS_ > 0.0f) tempoResiduoS_ -= dt;
+            if (tempoResiduoS_ <= 0.0f) tempoScaduto_ = true; // game over
         }
         aggiornaStatoGara();
     }
@@ -801,7 +854,7 @@ void Game::render() {
     const f32 steeringLean = steeringLeft == steeringRight
         ? 0.0f : (steeringLeft ? -0.32f : 0.32f);
     const f32 rollAngle = playerFlipping_
-        ? 6.2831853f * (f32)playerFlipFrame_ / (f32)FLIP_ANIMATION_FRAMES
+        ? 6.2831853f * (f32)playerFlipFrame_ / (f32)(u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)
         : steeringLean * 1.5f +
           (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle);
@@ -828,7 +881,7 @@ void Game::render() {
         h.giri = player_.gear <= 1 ? v / CAMBIO : 0.45f + 0.55f * (v - CAMBIO) / (1.0f - CAMBIO);
         h.marciaAlta = player_.gear >= 2;
         h.gara = gara_;
-        h.tempoS = (i32)((tempoResiduoFrame_ + 49u) / 50u);
+        h.tempoS = (i32)(tempoResiduoS_ + 0.5f);
         h.tappa = numeroTappa_;
         h.posizione = state_.posizione;
         h.concorrenti = state_.concorrenti;

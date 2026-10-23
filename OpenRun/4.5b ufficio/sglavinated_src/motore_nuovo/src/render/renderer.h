@@ -100,6 +100,10 @@ public:
     const Sprite* sponsorSprite(i32 indice) const {
         return indice >= 0 && indice < (i32)sponsorSprites_.size() ? &sponsorSprites_[indice] : nullptr;
     }
+    // Resetta i cartelloni sponsor: va invocato prima di una nuova registrazione
+    // (es. test ripetuti nello stesso processo) per non accumulare sprite e non
+    // lasciare puntatori appesi dopo riallocazioni del vettore.
+    void clearSponsorSprites() { sponsorSprites_.clear(); }
 
 private:
     Framebuffer& fb_;

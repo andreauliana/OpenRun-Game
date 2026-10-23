@@ -21,22 +21,20 @@ void Player::update(f32 dt) {
     // Sterzo: influenza x in proporzione alla velocita' (piu' veloci = piu' reattivi).
     x += steer_ * STEER_INC * dt * (1.0f + speed / MAX_SPEED);
     vincolaAllaCorsia();
-    // Accelerazione / freno.
+    // Accelerazione / freno (valori al secondo * dt = incremento al frame).
     if (accel_ > 0.0f) {
-        // La spinta extra e' piu' forte a bassa velocita' e cala gradualmente;
-        // il fattore finale mantiene una crescita progressiva verso MAX_SPEED.
         const f32 acceleration =
             ACCEL_BASE + ACCEL_BOOST * std::exp(-speed / ACCEL_BOOST_SPEED);
         speed += acceleration * dt * (1.0f - speed / MAX_SPEED);
     } else if (accel_ < 0.0f) speed -= BRAKE * dt;
-    else speed *= COAST; // attrito naturale (gas rilasciato)
+    else speed *= std::pow(COAST_PER_SEC, dt); // attrito naturale (gas rilasciato)
     // Rallentamento fuori strada: l'erba/terra frena l'auto.
-    if (offroad) speed *= OFFROAD_SLOW;
+    if (offroad) speed *= std::pow(OFFROAD_SLOW_PER_SEC, dt);
     if (speed < 0.0f) speed = 0.0f;
     if (speed > MAX_SPEED) speed = MAX_SPEED;
     // Avanzamento sulla strada (gestito anche da Game, qui si tiene la z locale).
     z += speed * dt;
-    // Marcia: semplice per HUD.
+    // Marcia: semplice per HUD (soglia in unita'/secondo, come speed).
     gear = (speed > 110.0f) ? 2 : 1;
 }
 

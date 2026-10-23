@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
+#include <limits>
 #include "gameplay/show.h"
 
 // Motore degli show — vedi SPEC_GAMEPLAY.md §1 (trigger e priorita'):
 //   crash > off-road in attesa > periodico > inattivita'; UFO senza frase.
 // Nessun vincolo hardware della v87 (156 fumetti, VRAM, 88 px): qui servono
 // solo regole di comportamento e dati deterministici.
-
 namespace sgl::gameplay {
 
 void ShowManager::reset(u32 seed) {
@@ -14,14 +14,14 @@ void ShowManager::reset(u32 seed) {
     sel_.reset(seed);
     ufo_.reset();
     show_ = DatiShow{};
-    frame_ = 0;
-    frameGaraInizio_ = 0;
-    frameStage_ = 0;
-    ultimoShow_ = 0;
-    offRoadFrames_ = 0;
-    idleFrames_ = 0;
+    tempoS_ = 0;
+    tempoGaraInizioS_ = 0;
+    tempoStageS_ = 0;
+    tempoUltimoShowS_ = 0;
+    tempoOffRoadS_ = 0;
+    tempoIdleS_ = 0;
     offRoadPending_ = false;
-    frameOffRoadAttesa_ = 0;
+    tempoOffRoadAttesaS_ = 0;
     crashPending_ = false;
     inattivitaArmata_ = false;
     garaVista_ = false;
@@ -31,36 +31,36 @@ void ShowManager::reset(u32 seed) {
 void ShowManager::cambiaStage() {
     esc_.reset();
     chiudiShow();
-    offRoadFrames_ = 0;
-    idleFrames_ = 0;
+    tempoOffRoadS_ = 0;
+    tempoIdleS_ = 0;
     offRoadPending_ = false;
-    frameOffRoadAttesa_ = 0;
+    tempoOffRoadAttesaS_ = 0;
     crashPending_ = false;
     inattivitaArmata_ = false;
     rotRampa_ = 0;
-    frameStage_ = frame_;
-    ultimoShow_ = frame_;
+    tempoStageS_ = tempoS_;
+    tempoUltimoShowS_ = tempoS_;
 }
 
 void ShowManager::crash() { crashPending_ = true; }
 
-void ShowManager::avviaShow(u64 frame, Personaggio p, OrigineShow o, u32 idFrase) {
+void ShowManager::avviaShow(f32 tempoS, Personaggio p, OrigineShow o, u32 idFrase) {
     show_.attivo = true;
     show_.personaggio = p;
     show_.origine = o;
     show_.idFrase = idFrase;
-    show_.frameInizio = frame;
+    show_.tempoInizio = tempoS;
     show_.durata = cfg_.durataShow;
-    ultimoShow_ = frame;
+    tempoUltimoShowS_ = tempoS;
 }
 
 void ShowManager::chiudiShow() { show_ = DatiShow{}; }
 
 bool ShowManager::bollaVisibile() const {
     if (!show_.attivo) return false;
-    if (frame_ - show_.frameInizio < cfg_.bollaAppare) return false;
-    const u32 rimasti = show_.frameRimasti(frame_);
-    const u32 nascondi = (show_.personaggio == Personaggio::Gesu)
+    if (tempoS_ - show_.tempoInizio < cfg_.bollaAppare) return false;
+    const f32 rimasti = show_.tempoRimasto(tempoS_);
+    const f32 nascondi = (show_.personaggio == Personaggio::Gesu)
                              ? cfg_.bollaNascondiGesu
                              : cfg_.bollaNascondiGianni;
     return rimasti >= nascondi;
@@ -109,54 +109,54 @@ void ShowManager::frasePeriodica(i32 livello, Personaggio& p, TabId& tab,
 }
 
 const DatiShow& ShowManager::aggiorna(const StatoGameplayInput& in) {
-    frame_ = in.frame;
+    tempoS_ += in.dt;
 
     // 1) Decadimento escalation (20 s puliti -> -1 errore).
     esc_.aggiorna(in.frame, cfg_.decadimentoErrori);
 
-    // 2) Inizio gara: ci serve per la guardia minGaraFrame.
+    // 2) Inizio gara: ci serve per la guardia minGaraS.
     if (in.inGara && !garaVista_) {
-        frameGaraInizio_ = in.frame;
+        tempoGaraInizioS_ = tempoS_;
         garaVista_ = true;
     } else if (!in.inGara) {
         garaVista_ = false;
     }
 
     // 3) Fine show per durata.
-    if (show_.attivo && in.frame - show_.frameInizio >= show_.durata) chiudiShow();
+    if (show_.attivo && tempoS_ - show_.tempoInizio >= show_.durata) chiudiShow();
 
     // 4) SBORDATA (v85c): off-road in attesa fa chiudere uno show periodico
     //    che ha gia' fatto leggere il fumetto; gli show reattivi non si tagliano.
     if (offRoadPending_ && show_.attivo &&
         show_.origine == OrigineShow::Periodico &&
-        in.frame - show_.frameInizio >= cfg_.offRoadTagliaPeriodico) {
+        tempoS_ - show_.tempoInizio >= cfg_.offRoadTagliaPeriodico) {
         chiudiShow();
     }
 
-    // 5) Rilevamento off-road: >= soglia frame di fila scatta una volta l'evento.
+    // 5) Rilevamento off-road: >= soglia secondi di fila scatta una volta l'evento.
     //    Ignorato se un crash e' pendente (v87). Non conta come errore subito:
     //    lo decide Escalation (una uscita su due).
     if (in.inGara && in.offRoad && !crashPending_) {
-        if (offRoadFrames_ < 0xFFFFFFFFu) offRoadFrames_++;
-        if (offRoadFrames_ == cfg_.offRoadSoglia) {
+        tempoOffRoadS_ += in.dt;
+        if (tempoOffRoadS_ >= cfg_.offRoadSoglia) {
             offRoadPending_ = true;
-            frameOffRoadAttesa_ = in.frame; // attesa 250 frame prima di servire (v85c SBORDATA)
+            tempoOffRoadAttesaS_ = tempoS_; // attesa 5 s prima di servire (v85c SBORDATA)
             esc_.notificaUscitaStrada(in.frame);
-            idleFrames_ = 0; // "nessun off-road" vale anche per l'inattivita'
+            tempoIdleS_ = 0; // "nessun off-road" vale anche per l'inattivita'
         }
     } else if (!in.offRoad) {
-        offRoadFrames_ = 0;
+        tempoOffRoadS_ = 0;
     }
 
     // 6) Inattivita': 10 s senza tasti in gara; una volta per pausa (si riarma
     //    solo con un input). Il fuoco avviene sotto, con tutte le guardie.
     if (!in.inGara) {
-        idleFrames_ = 0;
+        tempoIdleS_ = 0;
     } else if (in.inputAttivo) {
-        idleFrames_ = 0;
+        tempoIdleS_ = 0;
         inattivitaArmata_ = true;
-    } else if (idleFrames_ < 0xFFFFFFFFu) {
-        idleFrames_++;
+    } else if (tempoIdleS_ < std::numeric_limits<f32>::max()) {
+        tempoIdleS_ += in.dt;
     }
 
     // 7) Crash: priorita' massima, sostituisce qualsiasi show (Gesu' interrompe
@@ -165,42 +165,42 @@ const DatiShow& ShowManager::aggiorna(const StatoGameplayInput& in) {
         crashPending_ = false;
         if (in.inGara) {
             offRoadPending_ = false;
-            offRoadFrames_ = 0;
-            avviaShow(in.frame, Personaggio::Gesu, OrigineShow::Crash, fraseCrash());
+            tempoOffRoadS_ = 0;
+            avviaShow(tempoS_, Personaggio::Gesu, OrigineShow::Crash, fraseCrash());
         }
-        ufo_.aggiorna(in.frame, show_.attivo);
+        ufo_.aggiorna(tempoS_, show_.attivo);
         return show_;
     }
 
     // 8) Nessun show a schermo, gara in corso, guardie di partenza OK.
-    if (!show_.attivo && in.inGara && prontoPerShow(in.frame) && !ufo_.attivo()) {
-        // Con un evento off-road in attesa il cooldown di 24 frame non vale (v87).
-        const bool cooldownOk = (in.frame - ultimoShow_) >= cfg_.cooldownShow;
+    if (!show_.attivo && in.inGara && prontoPerShow(tempoS_) && !ufo_.attivo()) {
+        // Con un evento off-road in attesa il cooldown di 0.48 s non vale (v87).
+        const bool cooldownOk = (tempoS_ - tempoUltimoShowS_) >= cfg_.cooldownShow;
         if (offRoadPending_ &&
-            in.frame - frameOffRoadAttesa_ >= cfg_.offRoadAttesa) {
+            tempoS_ - tempoOffRoadAttesaS_ >= cfg_.offRoadAttesa) {
             offRoadPending_ = false;
-            frameOffRoadAttesa_ = 0;
-            avviaShow(in.frame, Personaggio::Gianni, OrigineShow::UscitaStrada,
+            tempoOffRoadAttesaS_ = 0;
+            avviaShow(tempoS_, Personaggio::Gianni, OrigineShow::UscitaStrada,
                       fraseOffRoad());
         } else if (cooldownOk &&
-                   in.frame - ultimoShow_ >= prTab(in.stage)) {
+                   tempoS_ - tempoUltimoShowS_ >= prTab(in.stage)) {
             Personaggio p = Personaggio::Nessuno;
             TabId tab = TabId::Ph;
             const u32* ids = tabelle::ptab;
             u32 n = 32;
             frasePeriodica(esc_.livello(), p, tab, ids, n);
-            avviaShow(in.frame, p, OrigineShow::Periodico, sel_.scegli(tab, ids, n));
+            avviaShow(tempoS_, p, OrigineShow::Periodico, sel_.scegli(tab, ids, n));
         } else if (cooldownOk && inattivitaArmata_ &&
-                   idleFrames_ >= cfg_.inattivitaSoglia) {
+                   tempoIdleS_ >= cfg_.inattivitaSoglia) {
             inattivitaArmata_ = false;
-            idleFrames_ = 0;
-            avviaShow(in.frame, Personaggio::Gianni, OrigineShow::Inattivita,
+            tempoIdleS_ = 0;
+            avviaShow(tempoS_, Personaggio::Gianni, OrigineShow::Inattivita,
                       fraseInattivita());
         }
     }
 
     // 9) UFO: passaggio senza frase; se parte uno show esce in pochi frame.
-    ufo_.aggiorna(in.frame, show_.attivo);
+    ufo_.aggiorna(tempoS_, show_.attivo);
     return show_;
 }
 

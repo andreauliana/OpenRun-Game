@@ -1,6 +1,6 @@
 # OpenRun v4.6 — Sglavinated Edition
 
-Progetto in elaborazione v4.6 con schema concettuale 4.6 Ufficio con la struttura semplificata: 4 ruoli, meno file.
+Progetto sperimentale di AU in progresso v4.6 con nuova architettura 'Ufficio' con struttura semplificata: 4 ruoli.
 
 ```text
 UFFICIO/
@@ -38,6 +38,9 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 - `sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` — asset originali e materiale usabile.
 - `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario) e consegne di ogni ruolo. Le regole sono in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
 - `sglavinated_src/UFFICIO/Officina/Test area/` — log del gate e screenshot (prima in `out/collaudatore/` e `out/debugger/`).
+
+
+
 
 ## Cosa non e' stato copiato
 - Filone Mega Drive, MD0, sospeso).

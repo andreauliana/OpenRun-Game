@@ -787,3 +787,59 @@ blocchi fatti [x]: 20
 blocchi da fare [ ]: 9
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-22 20:30 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1481 (scarto 184 px), sponsor frame 1665 (4614 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.5% (4749665 di 4772427 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 21
+blocchi da fare [ ]: 13
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 2 | REVIEWER | 2026-10-22 23:00 | [APERTA]
+OK      sintassi giro.sh
+OK      sintassi modelli.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1481 (scarto 184 px), sponsor frame 1665 (4614 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.5% (4749741 di 4772503 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 21
+blocchi da fare [ ]: 13
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

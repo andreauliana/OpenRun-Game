@@ -11,7 +11,7 @@
 // in ShowLayout: nessun vincolo 88 px / 156 fumetti / VRAM della v87.
 // Nessun codice 68000, nessun asset/audio Sega, nessun libm (tabelle intere:
 // identico su ogni piattaforma, serve per il determinismo dei test replay).
-
+//
 namespace sgl::gameplay {
 namespace {
 
@@ -54,25 +54,25 @@ void scivola(const PersonaggioLayout& L, DirezioneShow d, f32 k,
 
 } // namespace
 
-void DisegnoShow::calcolaPersonaggio(const DatiShow& s, u64 frame) {
+void DisegnoShow::calcolaPersonaggio(const DatiShow& s, f32 tempoS) {
     const PersonaggioLayout& L = lay_.per(s.personaggio);
-    const u32 durata = s.durata;
-    const u64 t = (frame > s.frameInizio) ? (frame - s.frameInizio) : 0;
+    const f32 durata = s.durata;
+    const f32 t = (tempoS > s.tempoInizio) ? (tempoS - s.tempoInizio) : 0;
 
     sc_.personaggioVisibile = true;
     sc_.personaggio = s.personaggio;
     sc_.origine = s.origine;
     sc_.idFrase = s.idFrase;
-    sc_.frameShow = (t > 0xFFFFFFFFull) ? 0xFFFFFFFFu : static_cast<u32>(t);
-    sc_.frameRimasti = s.frameRimasti(frame);
+    sc_.tempoShowS = t;
+    sc_.tempoRimastoS = s.tempoRimasto(tempoS);
 
-    const u32 posePasso = L.posePasso ? L.posePasso : 1u;
+    const f32 posePasso = L.posePassoS > 0 ? L.posePassoS : 1.0f;
     const u32 poseNum = L.poseNumero ? L.poseNumero : 1u;
-    sc_.pose = (static_cast<u32>(t) / posePasso) % poseNum;
+    sc_.pose = (static_cast<u32>(t / posePasso) % poseNum);
 
     // Fasi: entra -> tenuta -> esce (durate in dati; show brevi: dimezzate).
-    u32 entra = L.entraFrame;
-    u32 esce = L.esceFrame;
+    f32 entra = L.entraS;
+    f32 esce = L.esceS;
     if (entra + esce > durata) {
         entra = durata / 2;
         esce = durata - entra;
@@ -80,9 +80,9 @@ void DisegnoShow::calcolaPersonaggio(const DatiShow& s, u64 frame) {
     f32 kEntra = 0.0f; // 1 = fuori schermo, 0 = a riposo
     f32 kEsce = 0.0f;
     if (entra > 0 && t < entra) {
-        kEntra = 1.0f - static_cast<f32>(t) / static_cast<f32>(entra);
+        kEntra = 1.0f - t / entra;
     } else if (esce > 0 && durata > esce && t >= durata - esce) {
-        kEsce = static_cast<f32>(t - (durata - esce)) / static_cast<f32>(esce);
+        kEsce = (t - (durata - esce)) / esce;
     }
 
     i32 dx = 0, dy = 0;
@@ -94,10 +94,10 @@ void DisegnoShow::calcolaPersonaggio(const DatiShow& s, u64 frame) {
                 lay_.schermoW, lay_.schermoH, dx, dy);
     } else {
         // Tenuta: deriva da tabelle (sway/bob), nessun seno.
-        const u32 swayPasso = L.swayPasso ? L.swayPasso : 1u;
-        const u32 bobPasso = L.bobPasso ? L.bobPasso : 1u;
-        dx = static_cast<i32>(SWAY[(static_cast<u32>(t) / swayPasso) & 3u]) * L.swayAmp;
-        dy = static_cast<i32>(BOB[(static_cast<u32>(t) / bobPasso) & 15u]) * L.bobAmp;
+        const f32 swayPasso = L.swayPassoS > 0 ? L.swayPassoS : 1.0f;
+        const f32 bobPasso = L.bobPassoS > 0 ? L.bobPassoS : 1.0f;
+        dx = static_cast<i32>(SWAY[(static_cast<u32>(t / swayPasso) & 3u)]) * L.swayAmp;
+        dy = static_cast<i32>(BOB[(static_cast<u32>(t / bobPasso) & 15u)]) * L.bobAmp;
     }
 
     sc_.persX = L.x - L.larghezza / 2 + dx;
@@ -107,7 +107,7 @@ void DisegnoShow::calcolaPersonaggio(const DatiShow& s, u64 frame) {
 }
 
 void DisegnoShow::calcolaBolla(const DatiShow& s, const ShowManager& sm) {
-    // I tempi (appare al ~30, sparisce prima dell'uscita) sono gia' decisi da
+    // I tempi (appare al ~0.6s, sparisce prima dell'uscita) sono gia' decisi da
     // ShowManager::bollaVisibile(): qui non si ricalcola nulla.
     if (!sm.bollaVisibile()) return;
     sc_.bollaVisibile = true;
@@ -153,7 +153,7 @@ void DisegnoShow::calcolaBolla(const DatiShow& s, const ShowManager& sm) {
 
 void DisegnoShow::calcolaUfo(const ShowManager& sm) {
     // Con uno show a schermo l'UFO e' gia' in fuga (ufo.h): non si disegna,
-    // evita il salto di posa della fuga a 24 frame.
+    // evita il salto di posa della fuga a 0.48 s.
     if (sm.showAttivo()) return;
     const DatiUfo& u = sm.ufo().dati();
     if (!u.attivo) return;
@@ -166,11 +166,11 @@ void DisegnoShow::calcolaUfo(const ShowManager& sm) {
     sc_.ufoY = L.y + static_cast<i32>(u.yOffset); // ondulazione y (tabella tw)
 }
 
-const ScenaShow& DisegnoShow::aggiorna(u64 frame, const ShowManager& sm) {
+const ScenaShow& DisegnoShow::aggiorna(f32 tempoS, const ShowManager& sm) {
     sc_ = ScenaShow{}; // default: tutto spento (nessun residuo del frame prima)
     const DatiShow& s = sm.datiShow();
     if (s.attivo) {
-        calcolaPersonaggio(s, frame);
+        calcolaPersonaggio(s, tempoS);
         calcolaBolla(s, sm);
     }
     calcolaUfo(sm);

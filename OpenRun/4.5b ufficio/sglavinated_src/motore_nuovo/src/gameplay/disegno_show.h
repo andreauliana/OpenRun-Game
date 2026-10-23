@@ -15,13 +15,13 @@
 // consuma. Le misure della hack v87 (bolla 96x24, 88 px di riga, 8 pose x 4
 // pezzi) sono qui solo riferimento diventato dato configurabile, non vincolo.
 //
-// Uso per frame (dopo ShowManager::aggiorna, con lo stesso contatore di frame):
-//   disegnoShow_.aggiorna(frame, showManager_);
+// Uso per frame (dopo ShowManager::aggiorna, con lo stesso contatore di secondi):
+//   disegnoShow_.aggiorna(tempoS, showManager_);
 //   const ScenaShow& sc = disegnoShow_.scena();
 //   -> disegna in ordine: UFO, personaggio, fumetto (scatola + testo).
-// Deterministico: tempo = contatore di frame, tabelle fisse, nessun RNG
+// Deterministico: tempo in secondi (dt), tabelle fisse, nessun RNG
 // nell'interfaccia di disegno, nessun orologio di sistema.
-
+//
 namespace sgl::gameplay {
 
 class TestiFrasi;
@@ -36,16 +36,16 @@ struct PersonaggioLayout {
     i32 larghezza = 72;    // ingombro di riferimento: il renderer scala lo
     i32 altezza = 88;      // sprite su questo box (persW x persH)
     u32 poseNumero = 8;    // quante pose ha il personaggio (Gianni 8, Gesu' 4)
-    u32 posePasso = 16;    // frame fra una pose e l'altra (v87: pose a 16 frame)
-    u32 entraFrame = 24;   // durata entrata (v87 ez_tab: 24)
-    u32 esceFrame = 24;    // durata uscita  (v87 xo_tab: 24)
+    f32 posePassoS = 0.32f;  // secondi fra una posa e l'altra (v87: 16 frame a 50 Hz)
+    f32 entraS = 0.48f;        // durata entrata (v87 ez_tab: 24 frame a 50 Hz)
+    f32 esceS = 0.48f;         // durata uscita  (v87 xo_tab: 24 frame a 50 Hz)
     DirezioneShow entraDa = DirezioneShow::Sinistra;
     DirezioneShow esceVerso = DirezioneShow::Sinistra;
     // Deriva "viva" durante la tenuta: sway orizzontale e bob verticale,
     // passi della tavola (nessun seno: tabelle intere = identico ovunque).
-    u32 swayPasso = 2;
+    f32 swayPassoS = 0.04f;    // 2 frame a 50 Hz di riferimento
     i32 swayAmp = 2;       // px
-    u32 bobPasso = 2;
+    f32 bobPassoS = 0.04f;     // 2 frame a 50 Hz di riferimento
     i32 bobAmp = 4;        // px
 };
 
@@ -80,9 +80,9 @@ struct ShowLayout {
     // Gesu' "cade dall'alto e risale" (dati/personaggi/gesu/manifest.json):
     // entrata e uscita dal alto, 4 pose piu' lente, niente sway/bob propri.
     PersonaggioLayout gesu{
-        240, 212, 72, 96, 4, 32, 24, 24,
+        240, 212, 72, 96, 4, 0.32f, 0.48f, 0.48f,
         DirezioneShow::Alto, DirezioneShow::Alto,
-        2, 0, 2, 0
+        0.04f, 0, 0.04f, 0
     };
     BollaLayout bolla{};
     UfoLayout ufo{};
@@ -107,8 +107,8 @@ struct ScenaShow {
     u32 pose = 0;                // indice pose (chiave asset: chiaveSprite)
     i32 persX = 0, persY = 0;    // angolo alto-sx dell'ingombro
     i32 persW = 0, persH = 0;    // box da coprire (scala dello sprite)
-    u32 frameShow = 0;           // frame vissuti dello show
-    u32 frameRimasti = 0;
+    f32 tempoShowS = 0;          // secondi vissuti dello show
+    f32 tempoRimastoS = 0;       // secondi rimasti dello show
 
     // -- Fumetto --
     bool bollaVisibile = false;  // gia' calcolato da ShowManager::bollaVisibile()
@@ -139,8 +139,8 @@ public:
     void reset() { sc_ = ScenaShow{}; }
 
     // Calcola la scena del frame. Chiamare DOPO ShowManager::aggiorna() con lo
-    // stesso frame, altrimenti bolla/posa arrivano di un frame indietro.
-    const ScenaShow& aggiorna(u64 frame, const ShowManager& sm);
+    // stesso contatore di secondi, altrimenti bolla/posa arrivano di un frame indietro.
+    const ScenaShow& aggiorna(f32 tempoS, const ShowManager& sm);
 
     const ScenaShow& scena() const { return sc_; }
 
@@ -154,7 +154,7 @@ private:
     const TestiFrasi* testi_ = nullptr;
     ScenaShow sc_{};
 
-    void calcolaPersonaggio(const DatiShow& s, u64 frame);
+    void calcolaPersonaggio(const DatiShow& s, f32 tempoS);
     void calcolaBolla(const DatiShow& s, const ShowManager& sm);
     void calcolaUfo(const ShowManager& sm);
 };

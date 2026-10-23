@@ -17,3 +17,7 @@
 | assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB | @scenografo (progetto Sglavinated, disegnato da zero, nessun materiale Sega) | CC0-1.0 | interno al progetto |
 | assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC | @scenografo (progetto Sglavinated, disegnato da zero, nessun materiale Sega) | CC0-1.0 | interno al progetto |
 | motore_nuovo/dati/frasi.json | @testi (progetto Sglavinated, originale) | CC-BY-4.0 | interno al progetto |
+| assets_originali/ui/font/varianteB/font.png (+ font.json) | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 (immagine) / MIT (metadati) | interno al progetto |
+| assets_originali/ui/titolo/varianteB/title.png (+ title.json) | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |
+| assets_originali/ui/menu/varianteB/menu_preview.png | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |
+| assets_originali/ui/hud/varianteB/hud_preview.png | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |

@@ -20,6 +20,14 @@ permission:
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/dati/personaggi/**": allow
     "motore_nuovo/dati/tracciati/**": allow
+    "motore_nuovo/dati/config.json": allow
+    "motore_nuovo/dati/percorso_gara.json": allow
+    "motore_nuovo/dati/punteggio.json": allow
+    "motore_nuovo/dati/classifica_finta.json": allow
+    "motore_nuovo/dati/finali.json": allow
+    "motore_nuovo/docs/FORMATI_DATI.md": allow
+    "motore_nuovo/docs/SVILUPPATORI.md": allow
+    "motore_nuovo/docs/FLUSSO_GIOCO.md": allow
     "motore_nuovo/strumenti_py/**": allow
     "motore_nuovo/dati/SPEC_GAMEPLAY.md": allow
     "motore_nuovo/docs/LIVELLI.md": allow
@@ -44,6 +52,7 @@ permission:
     "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
     "python3 motore_nuovo/strumenti_py/png_a_raw.py": allow
+    "python3 motore_nuovo/strumenti_py/png_a_raw.py *": allow
     "ls *": allow
     "grep *": allow
     "head *": allow
@@ -64,3 +73,5 @@ Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configur
 - 6 tratti (`motore_nuovo/docs/LIVELLI/`): ogni tratti ha un percorso suo (vedi `docs/LIVELLI.md`). Se cambi `segmenti`, `sh UFFICIO/Officina/TOOL/gate_t1.sh` deve dare `GATE PERCORSO OK` per tutte e 6.
 - Review: Un singolo test: `UFFICIO/Officina/build/prova_gate <cartella_out> <livello> <modo>` (modi: smoke, percorso, gara, curve, sterzo, crash, accelerazione, screenshot). Guida completa: `motore_nuovo/docs/SVILUPPATORI.md`.
 - Lanciare ogni comando da solo, senza unirli con ; o &&. I comandi uniti vengono sempre rifiutati.
+- PRODUZIONE PRIMA: ogni turno su un blocco di codice, test o dati deve modificare almeno un file di quel blocco (percorsi consentiti) e riportare il comando di verifica con exit code. Diario = UNA riga e RIASSUNTO breve: nessun altro documento (niente nuovi report) se non richiesto dal blocco. Se sei bloccato, scrivi il blocco in una riga nel diario e passa al blocco successivo.
+- Ogni comando shell va lanciato da solo: niente `;`, `&&`, `||`, `|`, `echo`, redirezioni. Riporta l'esito come lo mostra lo strumento; non scrivere file con la shell, usa Write/Edit.

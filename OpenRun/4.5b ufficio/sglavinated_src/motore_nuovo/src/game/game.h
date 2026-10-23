@@ -18,6 +18,11 @@
 #include <utility>
 #include <vector>
 
+// Dichiarazioni anticipate per prova_gate.cpp (definizioni locali statiche
+// in prova_gate.cpp; queste dichiarazioni servono solo prima della riga 256).
+sgl::i32 leggiFrequenzaHz();
+sgl::i32 impostaFrequenzaHzTemporanea(sgl::i32 hz);
+
 namespace sgl {
 struct JsonValue; // core/json_mini.h (usato solo in game.cpp)
 using gameplay::ShowManager;
@@ -34,7 +39,7 @@ using gameplay::ShowLayout;
 // Deterministico: nessun orologio di sistema, tutto deriva da frame + seed.
 class Game {
 public:
-    static constexpr i32 AUDIO_FRAME_SAMPLES = 44100 / 50; // campioni per frame a 50 Hz
+    static constexpr i32 AUDIO_FRAME_SAMPLES = 44100 / 60; // campioni per frame a 60 Hz (frequenza di default)
 
     Game();
     explicit Game(u32 seed);
@@ -121,8 +126,8 @@ private:
     bool playerFlipping_ = false;
     u32 playerFlipFrame_ = 0;
     u32 offroadFrames_ = 0;
-    static constexpr u32 FLIP_ANIMATION_FRAMES = 75; // 1.5 s a 50 Hz
-    static constexpr u32 OFFROAD_CRASH_FRAMES = 100; // sbanda a lungo prima del ribaltamento
+    static constexpr f32 FLIP_ANIMATION_S = 1.5f;    // durata ribaltamento in secondi (indipendente dalla frequenza)
+    static constexpr f32 OFFROAD_CRASH_S = 2.0f;     // secondi fuori strada prima del ribaltamento
 
     // Dati cartelloni da livello.json (letto una volta in init).
     // radice: livello.json gia' analizzato (nullptr se il file manca o non e' valido).
@@ -149,9 +154,11 @@ private:
     void leggiTemaDaFile(const JsonValue* radice);
     void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
-    u32 tempoResiduoFrame_ = 0;  // tempo rimasto in gara (frame a 50 Hz)
+    f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
+    i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
+    f32 tempoGiocoS_ = 0;        // secondi di gioco accumulati (frequenza indipendente)
     std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
 
     // --- Gara a tappe ---
@@ -186,5 +193,10 @@ private:
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
 };
+
+// Dichiarazioni anticipate per prova_gate.cpp (definizioni locali statiche
+// in prova_gate.cpp; servono prima della definizione locale alla riga 256).
+sgl::i32 leggiFrequenzaDaConfig();
+sgl::i32 impostaFrequenzaDaConfig(sgl::i32 hz);
 
 } // namespace sgl

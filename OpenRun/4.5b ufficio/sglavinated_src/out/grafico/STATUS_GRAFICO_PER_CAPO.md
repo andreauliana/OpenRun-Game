@@ -1,7 +1,7 @@
 # Status grafico per il Capo — OpenRun 4.6
 
-**Aggiornato:** 2026-10-22 10:56  
-**Stato:** G1 [x] check_catalogo_grafico.py eseguito in turno: exit 0, 159 elementi (approvato 30, pronto 17, in_costruzione 2, mancante 9, scartato 101), PNG non catalogati: 0. Errore residuo sanato: elemento scartato `obj_insegna_fumosa` lv_03_foglie variante B ora ha `file: []` (file inesistente, storico conservato). M [~] UI/HUD D8 "tempo" in attesa approvazione PNG B/N da Andrea (manifest bozza).  
+**Aggiornato:** 2026-10-22 19:50  
+**Stato:** G1 [x] check_catalogo_grafico.py eseguito in turno 22/10/2026 21:33: exit 0, 159 elementi (approvato 30, pronto 19, in_costruzione 0, mancante 9, scartato 101), PNG non catalogati: 0; nessun asset modificato. Errore residuo sanato: elemento scartato `obj_insegna_fumosa` lv_03_foglie variante B ora ha `file: []` (file inesistente, storico conservato). M [~] UI/HUD D8 "tempo" in hud.json variante B (risposta A); produzione completa: 4 PNG variante B rigenerati in bianco e nero (font.png, title.png, menu_preview.png, hud_preview.png con elemento "tempo"), audit OK 4 colori acromatici; catalogo ui.hud e ui.menu passate a "pronto" (verifica exit 0, PNG non catalogati 0); CREDITI.md aggiornato con i 4 asset UI (CC-BY-4.0); manifest resta "bozza" in attesa ok Andrea PNG B/N, nessun blocco in attesa (D8). Gate T1 non eseguito (compito sviluppatore).  
 **Checkpoint:** [CP-002 — inventario grafico](../../Checkpoint%20Revision/CP-002-inventario-grafico.md)  
 **Inventario:** [CATALOGO_RISORSE.md](../../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md)
 

@@ -15,7 +15,7 @@ public:
     void input(const Pad& pad, f32 dt);
     void update(f32 dt);
 
-    f32 speed = 0.0f;         // unita' per frame (0..maxSpeed)
+    f32 speed = 0.0f;         // unita' al secondo (0..maxSpeed)
     f32 x = 0.0f;             // offset laterale dal centro strada
     f32 z = 0.0f;             // posizione assoluta sul tracciato
     bool offroad = false;     // fuori dalla carreggiata
@@ -35,22 +35,21 @@ public:
 private:
     f32 steer_ = 0.0f;
     f32 accel_ = 0.0f;
-    static constexpr f32 MAX_SPEED = 250.0f; // velocita' di gioco, resa come alta velocita'
+    // Tutti i valori sono "al secondo": moltiplicati per dt (secondi) in update().
+    // speed e' di fatto unita' al secondo (già cosi' prima: speed*dt dava unità/frame).
+    static constexpr f32 MAX_SPEED = 250.0f; // 250 unita'/secondo
     // Spinta iniziale piu' forte, che cala con la velocita': resta progressiva
-    // e si avvicina a MAX_SPEED in circa 10 s a 50 Hz.
-    static constexpr f32 ACCEL_BASE = 45.0f;
-    static constexpr f32 ACCEL_BOOST = 450.0f;
-    static constexpr f32 ACCEL_BOOST_SPEED = 100.0f;
-    // Freno: ~1.8 s da MAX_SPEED a 0 (prima 10 = ~22 s, frenava meno di quanto accelera).
-    static constexpr f32 BRAKE = 120.0f;
-    // Gas rilasciato: moltiplicatore per frame. 0.995 = perde ~22% al secondo a 50 Hz
-    // (prima 0.98 = ~63% al secondo: l'auto si fermava appena si mollava il gas).
-    static constexpr f32 COAST = 0.995f;
-    static constexpr f32 STEER_INC = 280.0f; // sterzo arcade diretto e reattivo
-    // Rallentamento fuori strada: moltiplicatore per frame quando offroad.
-    // 0.99 = perde ~1% della velocita' per frame a 50 Hz: rallentamento percepibile
-    // ma non brusco (prima 0.85 crollava da ~160 a ~6 in pochi frame).
-    static constexpr f32 OFFROAD_SLOW = 0.99f;
+    // e si avvicina a MAX_SPEED in circa 10 s.
+    static constexpr f32 ACCEL_BASE = 56.0f;   // 56 unita'/secondo^2 (tarato per 60 Hz: distanza >= 12000 entro il frame 59)
+    static constexpr f32 ACCEL_BOOST = 450.0f; // 450 unita'/secondo^2
+    static constexpr f32 ACCEL_BOOST_SPEED = 100.0f; // 100 unita'/secondo
+    // Freno: ~1.8 s da MAX_SPEED a 0.
+    static constexpr f32 BRAKE = 120.0f;       // 120 unita'/secondo^2
+    // Gas rilasciato: decadimento al secondo. pow(0.995,50) ~ 0.778 = perde ~22% al secondo.
+    static constexpr f32 COAST_PER_SEC = 0.7782f;
+    static constexpr f32 STEER_INC = 320.0f;   // 320 unita'/secondo^2 (tarato per 60 Hz: sterzo >= +/-200 in 30 frame)
+    // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
+    static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
 };
 
 } // namespace sgl

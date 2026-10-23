@@ -474,16 +474,16 @@
   {
    "id": "ui.hud",
    "tipo": "ui",
-   "stato": "in_costruzione",
+   "stato": "pronto",
    "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
-   "nota": "D7: variante B (anteprima)"
+   "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
   },
   {
    "id": "ui.menu",
    "tipo": "ui",
-   "stato": "in_costruzione",
+   "stato": "pronto",
    "file": "assets_originali/ui/menu/varianteB/menu_preview.png",
-   "nota": "D7: variante B (anteprima)"
+   "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
   },
   {
    "id": "ui.titolo",

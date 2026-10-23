@@ -18,6 +18,8 @@
 // Exit code: 0 OK | 1 niente partenza | 2 replay non deterministico | 3 troppo lento |
 //            4 cwd errata | 5 caso di prova non superato | 11 espansione tracciato non coerente |
 //            13 percorso poco vario o non guidabile | 14 gara a tappe non completa
+#include <cstdint>
+using i32 = std::int32_t;
 #include "game/game.h"
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
@@ -35,6 +37,12 @@
 #include <vector>
 
 using namespace sgl;
+
+// Frequenza logica da dati/config.json: definizioni in src/game/game.cpp
+// (spazio globale). Dichiarate qui per evitare ambiguità con la dichiarazione
+// sgl::* visibile tramite using namespace sgl.
+sgl::i32 leggiFrequenzaDaConfig();
+sgl::i32 impostaFrequenzaDaConfig(sgl::i32 hz);
 
 namespace {
 
@@ -162,6 +170,20 @@ bool verificaRibaltamento(const std::string& livello) {
     if (!haRibaltato) return false;
 
     const f32 posizioneIncidente = game.state().playerZ;
+    // Aspetta che l'animazione di ribaltamento (FLIP_ANIMATION_S = 1.5 s in game.h)
+    // sia finita: durante il ribaltamento l'auto resta ferma. Durata in secondi ->
+    // frame alla frequenza corrente, cosi' il test e' identico a 50 e 60 Hz.
+    i32 frameFlip = (i32)(1.5f * (f32)::leggiFrequenzaDaConfig());
+    bool flipFinito = false;
+    for (i32 frame = 0; frame < frameFlip; ++frame) {
+        game.setInput(Pad{});
+        game.update();
+        game.render();
+        if (!game.state().playerFlipping) { flipFinito = true; break; }
+    }
+    if (!flipFinito) return false;
+
+    // L'auto deve restare ferma al punto dell'incidente.
     for (i32 frame = 0; frame < 75; ++frame) {
         game.setInput(Pad{});
         game.update();
@@ -188,20 +210,24 @@ bool verificaAccelerazione(const std::string& livello) {
     Pad gas{};
     gas.held = Pad::A;
 
+    f32 dt = 1.0f / (f32)::leggiFrequenzaDaConfig();
+    i32 framesTotali = (i32)(10.0f / dt);   // 10 s alla frequenza corrente
+    i32 frameDopo1s2 = (i32)(1.2f / dt);    // checkpoint a 1.2 s
+
     f32 speedPrecedente = 0.0f;
     f32 speedPrimoFrame = 0.0f;
-    f32 speedDopo60 = 0.0f;
-    f32 avanzamentoPrimi60 = 0.0f;
+    f32 speedDopo1s2 = 0.0f;
+    f32 avanzamentoPrimi1s2 = 0.0f;
     f32 avanzamentoStrada = 0.0f;
-    for (i32 frame = 0; frame < 500; ++frame) {
+    for (i32 frame = 0; frame < framesTotali; ++frame) {
         game.setInput(gas);
         game.update();
         game.render();
         const f32 speed = game.state().playerSpeed;
         if (frame == 0) speedPrimoFrame = speed;
-        if (frame == 59) {
-            speedDopo60 = speed;
-            avanzamentoPrimi60 = game.state().playerZ;
+        if (frame == frameDopo1s2 - 1) {
+            speedDopo1s2 = speed;
+            avanzamentoPrimi1s2 = game.state().playerZ;
         }
         if (speed + 0.001f < speedPrecedente) return false;
         speedPrecedente = speed;
@@ -209,11 +235,11 @@ bool verificaAccelerazione(const std::string& livello) {
     }
 
     std::printf("accelerazione 0-10s: primo frame=%.2f, 1.2s=%.2f, 10s=%.2f; "
-                "strada 1.2s=%.1f, posizione finale=%.1f\n",
-                speedPrimoFrame, speedDopo60, speedPrecedente, avanzamentoPrimi60, avanzamentoStrada);
+                "strada 1.2s=%.1f, posizione finale=%.1f (dt=%.4f)\n",
+                speedPrimoFrame, speedDopo1s2, speedPrecedente, avanzamentoPrimi1s2, avanzamentoStrada, dt);
     return speedPrimoFrame >= MIN_SPEED_FIRST_FRAME &&
-           speedDopo60 >= MIN_SPEED_FRAME_60 &&
-           avanzamentoPrimi60 >= MIN_ROAD_TRAVEL_FRAME_60 &&
+           speedDopo1s2 >= MIN_SPEED_FRAME_60 &&
+           avanzamentoPrimi1s2 >= MIN_ROAD_TRAVEL_FRAME_60 &&
            speedPrecedente >= 240.0f && speedPrecedente <= 250.0f;
 }
 
@@ -247,53 +273,60 @@ bool verificaContinuitaCurve() {
 }
 
 bool verificaSterzo() {
-    auto prova = [](u64 direzione) {
+    f32 dt = 1.0f / (f32)::leggiFrequenzaDaConfig();
+    i32 framesSterzo = (i32)(0.6f / dt);   // 0.6 s alla frequenza corrente
+    auto prova = [dt, framesSterzo](u64 direzione) {
         Player player;
         Pad gasSterzo{};
         gasSterzo.held = Pad::A | direzione;
-        for (i32 frame = 0; frame < 30; ++frame) {
-            player.input(gasSterzo, 1.0f / 50.0f);
-            player.update(1.0f / 50.0f);
+        for (i32 frame = 0; frame < framesSterzo; ++frame) {
+            player.input(gasSterzo, dt);
+            player.update(dt);
         }
         return player.x;
     };
 
     const f32 sinistra = prova(Pad::Left);
     const f32 destra = prova(Pad::Right);
-    std::printf("sterzo 30 frame: sinistra=%.1f destra=%.1f\n", sinistra, destra);
+    std::printf("sterzo %.1f s: sinistra=%.1f destra=%.1f (dt=%.4f)\n", framesSterzo * dt, sinistra, destra, dt);
     return sinistra <= -200.0f && destra >= 200.0f &&
            std::abs(sinistra + destra) <= 0.1f;
 }
 
 // --- Caso nuovo: freno (Pad::B / Down) riduce la velocita' ---
 bool verificaFrenata() {
+    f32 dt = 1.0f / (f32)::leggiFrequenzaDaConfig();
+    i32 framesFase = (i32)(2.0f / dt);   // 2 s per fase alla frequenza corrente
     Player player;
     Pad gas{}; gas.held = Pad::A;
-    for (i32 frame = 0; frame < 100; ++frame) { player.input(gas, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    for (i32 frame = 0; frame < framesFase; ++frame) { player.input(gas, dt); player.update(dt); }
     const f32 speedPrima = player.speed;
     Pad freno{}; freno.held = Pad::B;
-    for (i32 frame = 0; frame < 100; ++frame) { player.input(freno, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    for (i32 frame = 0; frame < framesFase; ++frame) { player.input(freno, dt); player.update(dt); }
     const f32 speedDopo = player.speed;
-    std::printf("frenata: prima=%.2f dopo=%.2f (BRAKE=120, dt=0.02)\n", speedPrima, speedDopo);
+    std::printf("frenata: prima=%.2f dopo=%.2f (BRAKE=120, dt=%.4f, fase=%.1f s)\n", speedPrima, speedDopo, dt, framesFase * dt);
     return speedPrima > 60.0f && speedDopo <= speedPrima * 0.3f && speedDopo >= 0.0f;
 }
 
 // --- Caso nuovo: gas rilasciato -> coast (COAST=0.995), decadimento graduale e monotono ---
 bool verificaCosta() {
+    f32 dt = 1.0f / (f32)::leggiFrequenzaDaConfig();
+    i32 framesAccel = (i32)(3.0f / dt);    // 3 s di accelerazione
+    i32 framesCosta = (i32)(5.0f / dt);    // 5 s di inerzia
     Player player;
     Pad gas{}; gas.held = Pad::A;
-    for (i32 frame = 0; frame < 150; ++frame) { player.input(gas, 1.0f / 50.0f); player.update(1.0f / 50.0f); }
+    for (i32 frame = 0; frame < framesAccel; ++frame) { player.input(gas, dt); player.update(dt); }
     const f32 speedPrima = player.speed;
     Pad nullo{};
     f32 speedPre = speedPrima;
     bool decrescente = true;
-    for (i32 frame = 0; frame < 250; ++frame) {  // 5 s di inerzia
-        player.input(nullo, 1.0f / 50.0f);
-        player.update(1.0f / 50.0f);
+    for (i32 frame = 0; frame < framesCosta; ++frame) {
+        player.input(nullo, dt);
+        player.update(dt);
         if (player.speed > speedPre + 0.001f) decrescente = false;
         speedPre = player.speed;
     }
-    std::printf("costa: prima=%.2f dopo5s=%.2f decrescente=%d\n", speedPrima, player.speed, decrescente);
+    std::printf("costa: prima=%.2f dopo5s=%.2f decrescente=%d (dt=%.4f)\n", speedPrima, player.speed, decrescente, dt);
     return speedPrima > 100.0f && player.speed < speedPrima * 0.45f && decrescente;
 }
 
@@ -709,8 +742,9 @@ bool verificaPercorso(const std::string& livello) {
     std::printf("percorso %s: segmenti=%d rettilineo=%.0f%% (limiti %.0f%%-%.0f%%) (piu' lungo %d, min %d) curva max destra=%.2f (min %.2f) sinistra=%.2f (min %.2f, max %.2f)\n",
                 livello.c_str(), n, quotaDritti * 100.0f, r.rettilineo_min * 100.0f, r.rettilineo_max * 100.0f,
                 rettilineoMax, r.rettilineo_piu_lungo_min, destraMax, r.curva_dx_min, sinistraMax, r.curva_sx_min, r.curva_max);
-    std::printf("giro guidato: %s in %d frame (%.1f s), fuori strada %d frame (%.1f%%, max %.0f%%)\n",
-                giroFinito ? "finito" : "NON finito", frame, frame / 50.0f, fuori, quotaFuori * 100.0f, r.fuori_strada_max * 100.0f);
+    std::printf("giro guidato: %s in %d frame (%.1f s @ %d Hz), fuori strada %d frame (%.1f%%, max %.0f%%)\n",
+                giroFinito ? "finito" : "NON finito", frame, frame / (f32)::leggiFrequenzaDaConfig(), ::leggiFrequenzaDaConfig(),
+                fuori, quotaFuori * 100.0f, r.fuori_strada_max * 100.0f);
 
     bool ok = true;
     if (quotaDritti < r.rettilineo_min || quotaDritti > r.rettilineo_max) {
@@ -908,6 +942,84 @@ bool verificaEspansioneTracciato() {
     return ok;
 }
 
+// --- Frequenza: verifica determinismo e tempi di giro a 50/60 Hz ---
+// Esegue un giro guidato alla frequenza indicata, due run identici,
+// verifica replay IDENTICO, ms/frame <= 20 e riporta i secondi di giro.
+// La frequenza viene impostata temporaneamente in config.json e ripristinata.
+bool verificaFrequenza(const std::string& outDir, const std::string& livello, i32 frequenza) {
+    i32 frequenzaPrecedente = ::impostaFrequenzaDaConfig(frequenza);
+    f32 dt = 1.0f / (f32)frequenza;
+    bool ok = true;
+    f32 secondiA = 0.0f, secondiB = 0.0f;
+    double msMaxA = 0.0, msMaxB = 0.0;
+    std::vector<u32> hashA, hashB;
+
+    for (int run = 0; run < 2 && ok; ++run) {
+        Game game(12345u);
+        game.init(livello);
+        f32 giro = (f32)game.road().totalLength();
+        f32 percorso = 0.0f, zPrima = 0.0f;
+        i32 frame = 0;
+        double msTot = 0.0, msMax = 0.0;
+        const i32 FRAME_MAX = 60000;
+        std::vector<u32>& hash = (run == 0) ? hashA : hashB;
+
+        while (percorso < giro && frame < FRAME_MAX) {
+            Pad pad;
+            pad.held = (u64)Pad::A;
+            const f32 x = game.state().playerX;
+            if (x > 120.0f) pad.held |= (u64)Pad::Left;
+            else if (x < -120.0f) pad.held |= (u64)Pad::Right;
+            game.setInput(pad);
+            auto t0 = std::chrono::steady_clock::now();
+            game.update();
+            game.render();
+            double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+            msTot += ms;
+            if (ms > msMax) msMax = ms;
+
+            const f32 z = game.state().playerZ;
+            f32 dz = z - zPrima;
+            if (dz < 0.0f) dz += giro;
+            percorso += dz;
+            zPrima = z;
+            hash.push_back(game.frameHash());
+            ++frame;
+        }
+
+        f32 secondi = frame / (f32)frequenza;
+        if (run == 0) { secondiA = secondi; msMaxA = msMax; }
+        else { secondiB = secondi; msMaxB = msMax; }
+
+        if (frame >= FRAME_MAX) {
+            std::printf("%d Hz: run %d - giro NON completato in %d frame\n", frequenza, run + 1, frame);
+            ok = false;
+        }
+    }
+
+    bool deterministico = (hashA == hashB);
+    double diffSecondi = (secondiA > 0.0f && secondiB > 0.0f)
+        ? std::abs(secondiA - secondiB) / std::max(secondiA, secondiB) * 100.0
+        : 0.0;
+
+    // Ripristina configurazione originale prima di restituire.
+    ::impostaFrequenzaDaConfig(frequenzaPrecedente);
+
+    std::printf("frequenza %d Hz: runA=%.2f s (ms/frame max=%.2f) runB=%.2f s (ms/frame max=%.2f) "
+                "replay %s diff=%.2f%%\n",
+                frequenza, secondiA, msMaxA, secondiB, msMaxB,
+                deterministico ? "IDENTICO" : "DIVERSO", diffSecondi);
+
+    if (!ok) { std::printf("FALLITO: giro non completato\n"); return false; }
+    if (!deterministico) { std::printf("FALLITO: non deterministico\n"); return false; }
+    if (msMaxA > MAX_MS_FRAME || msMaxB > MAX_MS_FRAME) {
+        std::printf("FALLITO: troppo lento\n");
+        return false;
+    }
+    std::printf("GATE FREQUENZA %d Hz OK\n", frequenza);
+    return true;
+}
+
 int main(int argc, char** argv) {
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
@@ -1044,6 +1156,12 @@ int main(int argc, char** argv) {
     if (modo == "espansione") {
         const bool ok = verificaEspansioneTracciato();
         return ok ? 0 : 11;
+    }
+
+    if (modo == "frequenza") {
+        const i32 frequenza = argc > 4 ? std::atoi(argv[4]) : 60;
+        const bool ok = verificaFrequenza(outDir, livello, frequenza);
+        return ok ? 0 : 15;
     }
 
     // --- modo smoke (default) ---

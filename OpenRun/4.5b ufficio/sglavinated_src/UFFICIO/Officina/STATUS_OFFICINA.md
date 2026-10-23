@@ -263,3 +263,14 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Bloccato/attesa: ri-verifica runner Mac Andrea (D12=A, D14=A) prima di 60 Hz/R2; chiusura CP-005 Capo; G1/P1 punto 4 sprite @grafico. Nessun lavoro Pi prima ok Mac.
 - Consegne: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_GATE_21OTT_0900.md; questo status aggiornato. Log: UFFICIO/Officina/Test area/gate_t1.log.
 
+## Report turno 22/10 20:06 — developer-junior
+
+- Lettura fonti obbligatoria completata (ordine richiesto): RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- Blocco F60 [ ] -> [x]: completato e verificato. Eseguito `sh UFFICIO/Officina/TOOL/gate_t1.sh` (default, non soak): **exit 0, `GATE T1: TUTTO OK`**. Build cmake e `cmake --build --target prova_gate` exit 0.
+- Frequenza (F60): `GATE FREQUENZA 60 Hz OK` e `GATE FREQUENZA 50 Hz OK`; giro guidato stessi secondi alle due frequenze; replay 2x IDENTICO a ciascuna; ms/frame medio 0.16-0.275 (limite 20).
+- 6/6 percorsi `GATE PERCORSO OK` (rettilineo 52-71%, curva max <= 1.0, dx/sx >= 0.3, fuori strada 0%). Giro guidato finito su tutti e 6 i livelli.
+- Accelerazione, ribaltamento/ripartenza, sterzo, continuita' curve, gara 4 bivi (arrivo, posizione, incidenti, replay IDENTICO), screenshot P1: OK.
+- Nessun file src/ modificato in questo turno (percorso @developer); prove già presenti in prova_gate.cpp e gate_t1.sh (modifiche precedenti).
+- Consegne: bacheche/developer-junior/diario.md (1 riga), bacheche/developer-junior/RIASSUNTO.md (<=12 righe), out/developer-junior/ESITO_F60_22OTT_2006.md; questo status aggiornato. Log: UFFICIO/Officina/Test area/gate_t1.log.
+- Bloccato/attesa: H [~] (ok Andrea runner Mac v91 prima di Pi 400/RetroPie, non toccare src/runner/); R2 [ ] dopo F60.
+
