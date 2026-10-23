@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-# Riepilogo consegna BLOCCO L — @scenografo
+# Riepilogo consegna BLOCCO L — @grafico
 
 Data: 16 ott 2026 | Blocco: L (dopo K [x]) | Stato: varianti consegnate, in attesa scelta definitiva di Andrea
 

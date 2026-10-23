@@ -1,10 +1,10 @@
-# Riepilogo consegna BLOCCO F — @asset
+# Riepilogo consegna BLOCCO F — @grafico
 # SPDX-License-Identifier: CC0-1.0 (file di riepilogo del catalogo consegne)
-# Agente: @asset | Data: 16 ott 2026 | Blocco: F | Stato: consegnato [x]
+# Agente: @grafico | Data: 16 ott 2026 | Blocco: F | Stato: consegnato [x]
 
 ## Blocco
 3 varianti per: (a) sagoma auto del giocatore, (b) skyline notturno sci-fi, (c) palette livello 1.
-Input: assets_originali/DIREZIONE_ARTISTICA.md (max 16 colori per sprite, originale, nessun riferimento Sega).
+Input: assets_originali/DIREZIONE_ARTISTICA.md (max 16 colori per sprite, originale, no riferimenti Sega).
 Produzione: assets_originali/genera_bloccoF.py (Python 3 + Pillow, eseguito e verificato).
 
 ## Asset consegnati (9)
