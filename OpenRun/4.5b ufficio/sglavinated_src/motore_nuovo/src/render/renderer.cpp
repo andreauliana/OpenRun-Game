@@ -8,8 +8,10 @@
 
 namespace sgl {
 namespace {
-constexpr f32 LANE_DASH_CYCLE = 800.0f;
-constexpr f32 LANE_DASH_LENGTH = 400.0f;
+// Ciclo lungo (10 segmenti): a velocita' massima la pista avanza ~500 unita' a
+// frame, con un ciclo di 800 le strisce sembravano ferme o all'indietro.
+constexpr f32 LANE_DASH_CYCLE = 2000.0f;
+constexpr f32 LANE_DASH_LENGTH = 1000.0f;
 constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
 }
 
@@ -49,14 +51,14 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         // Salta se il segmento vicino non e' sotto il lontano (degenero/contigui).
         if (lontano.screenY >= vicino.screenY) continue;
         // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
-        drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0);
+        drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
     }
     drawRoadsideMarkers(playerZ);
 }
 
 void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                                     const Road::ProjectedSeg& next,
-                                    bool band) {
+                                    bool band, f32 playerZ) {
     // cur = bordo VICINO (y maggiore), next = bordo LONTANO (y minore).
     // Riferimento tecnico: bande alternate di colore per segmento come nei racer
     // pseudo-3D (Lou's Pseudo 3d Page, Cannonball come riferimento di resa) — solo idea.
@@ -90,7 +92,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         if (rw < 1) rw = 1;
         const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distance = invZ > 0.0f ? 1.0f / invZ : next.worldZ;
-        f32 dashPhase = std::fmod(distance, LANE_DASH_CYCLE);
+        // Fase ancorata alla pista (playerZ + distanza), come i paletti: le
+        // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
+        f32 dashPhase = std::fmod(playerZ + distance, LANE_DASH_CYCLE);
         if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
         for (i32 r = 0; r < rami; ++r) {
             const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
@@ -118,6 +122,9 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         if (phase >= 50.0f || p.screenY < HORIZON_Y ||
             p.screenY >= (f32)Framebuffer::HEIGHT)
             continue;
+        // Al bivio i paletti apparirebbero su un solo ramo: niente paletti finche'
+        // le carreggiate sono due (feedback Andrea 23/10).
+        if (p.carr.doppia) continue;
 
         const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
         const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
@@ -137,23 +144,27 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
 
 void Renderer::iniziaTransizioneTema(const TemaColori& da, f32 durataSecondi) {
     temaDa_ = da;                       // tema della tappa che finisce
+    // temaA_ e' il tema di destinazione (impostato da impostaTema) e resta fisso:
+    // aggiornaTransizioneTema porta tema_ da temaDa_ a temaA_. Prima si
+    // interpolava verso tema_ stesso, sovrascritto a ogni frame, e la tappa
+    // nuova restava con i colori della precedente.
     transizioneDurataS_ = durataSecondi;
     transizioneT_ = 0.0f;
-    // tema_ e' gia' il tema di destinazione (impostato da impostaTema);
-    // aggiornaTransizioneTema lo riporta gradualmente da temaDa_ a tema_.
+    tema_ = da;
 }
 
 bool Renderer::aggiornaTransizioneTema(f32 dt) {
     if (transizioneT_ >= 1.0f || transizioneDurataS_ <= 0.0f) {
         transizioneT_ = 1.0f;
+        tema_ = temaA_;
         return false;
     }
     transizioneT_ += dt / transizioneDurataS_;
     if (transizioneT_ > 1.0f) transizioneT_ = 1.0f;
-    tema_.cielo = lerpColore(temaDa_.cielo, tema_.cielo, transizioneT_);
-    tema_.erba = lerpColore(temaDa_.erba, tema_.erba, transizioneT_);
-    tema_.erbaAlt = lerpColore(temaDa_.erbaAlt, tema_.erbaAlt, transizioneT_);
-    tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, tema_.rumbleAlt, transizioneT_);
+    tema_.cielo = lerpColore(temaDa_.cielo, temaA_.cielo, transizioneT_);
+    tema_.erba = lerpColore(temaDa_.erba, temaA_.erba, transizioneT_);
+    tema_.erbaAlt = lerpColore(temaDa_.erbaAlt, temaA_.erbaAlt, transizioneT_);
+    tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, temaA_.rumbleAlt, transizioneT_);
     return transizioneT_ < 1.0f;
 }
 
@@ -255,7 +266,7 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
-void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle) {
+void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx) {
     // Auto del giocatore: sagoma sintetica (nessun asset Sega).
     // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
     // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
@@ -266,7 +277,11 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     u32 cabin = pal_[10];
     // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
     i32 cx = 160 + (i32)(offsetX * 0.035f);
-    i32 cy = 200;
+    // Sollevamento alle velocita' piu' alte: l'ombra resta a terra, la
+    // carrozzeria sale di sollevamentoPx (moduli_fx.sollevamento_auto_alta_velocita).
+    const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
+    if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]);
+    i32 cy = 200 - sollevamento;
     i32 w = 34, h = 18;
     auto drawRotatedRect = [this, rollAngle](i32 centerX, i32 centerY, i32 rw, i32 rh, u32 color) {
         const f32 c = std::cos(rollAngle);

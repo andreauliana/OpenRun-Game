@@ -84,6 +84,8 @@ public:
 
     // Esporta lo stato (per HUD, moduli fx, replay, test).
     const GameState& state() const { return state_; }
+    // Frequenza logica (Hz) di dati/config.json: il runner fa un tick ogni 1/frequenza s.
+    i32 frequenzaHz() const { return frequenzaHz_; }
     const Road& road() const { return road_; } // tracciato (per i test di percorso)
     const std::vector<SpriteInstance>& traffico() const { return sprites_; } // avversari/traffico del frame
     const Pad& input() const { return input_; }
@@ -124,6 +126,15 @@ private:
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;
+    // Sollevamento dell'auto vicino alla velocita' massima, sui rettilinei
+    // (livello.json moduli_fx.sollevamento_auto_alta_velocita).
+    // Passaggio assistito al bivio: 0 = guida normale, 1 = assistenza piena.
+    // Sale entrando nel bivio e cala piano a inizio tappa nuova.
+    f32 assistenzaBivio_ = 0.0f;
+    f32 playerXIncidente_ = 0.0f; // x al momento del ribaltamento (ramo su cui ripartire al bivio)
+    bool sollevamentoAttivo_ = false;
+    f32 sollevamento_ = 0.0f;      // 0..1, segue l'obiettivo con un ritardo
+    f32 sollevamentoFaseS_ = 0.0f; // tempo per l'ondeggio mentre l'auto e' sollevata
     u32 playerFlipFrame_ = 0;
     u32 offroadFrames_ = 0;
     static constexpr f32 FLIP_ANIMATION_S = 1.5f;    // durata ribaltamento in secondi (indipendente dalla frequenza)
@@ -179,7 +190,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     struct Rivale {
         f32 progresso = 0.0f; // distanza percorsa dalla partenza (tutte le tappe)
         f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
-        f32 passo = 0.0f, passoMax = 0.0f; // unita' di strada per frame
+        f32 passo = 0.0f, passoMax = 0.0f; // velocita' in unita' di strada al secondo
         i32 ramo = 1;   // ramo preso ai bivi (-1 sinistra, +1 destra)
         i32 colore = 9; // indice di palette della sagoma
     };

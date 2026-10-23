@@ -13,7 +13,6 @@ using namespace sgl; // runner: puo' usare i tipi del nucleo senza prefisso
 namespace {
 
 constexpr i32 WINDOW_SCALE = 2; // finestra 640x448 per comodita' sul desktop
-constexpr i32 TARGET_FPS = 50;  // frequenza della logica (il core e' a passo fisso 1/50 s)
 constexpr i32 MAX_TICK_PER_FRAME = 5; // recupero massimo dopo un intoppo (evita la "spirale")
 // Coda audio: si tengono in coda al massimo questi frame di gioco (~80 ms a 50 Hz).
 // Oltre, il frame si scarta: la latenza resta bassa anche se il video rallenta.
@@ -260,10 +259,12 @@ int main(int argc, char** argv) {
     Controller ctrl;
     ctrl.apri();
 
-    // Passo fisso: la logica avanza sempre di 1/50 s (determinismo), il video si
-    // presenta a ogni refresh. L'accumulatore decide quanti tick servono.
+    // Passo fisso: la logica avanza di 1/frequenza s (config.json, 60 Hz di
+    // default), il video si presenta a ogni refresh. L'accumulatore decide
+    // quanti tick servono. Prima qui c'era 50 fisso mentre il core usa dt=1/60:
+    // il gioco andava all'83% e l'audio (735 campioni a tick) restava a corto.
     const u64 freq = SDL_GetPerformanceFrequency();
-    const u64 tickLen = freq / TARGET_FPS;
+    const u64 tickLen = freq / (u64)game.frequenzaHz();
     u64 prev = SDL_GetPerformanceCounter();
     u64 acc = tickLen; // primo frame: un tick subito
     u64 heldPrev = 0;

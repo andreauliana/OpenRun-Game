@@ -47,7 +47,14 @@ private:
     static constexpr f32 BRAKE = 120.0f;       // 120 unita'/secondo^2
     // Gas rilasciato: decadimento al secondo. pow(0.995,50) ~ 0.778 = perde ~22% al secondo.
     static constexpr f32 COAST_PER_SEC = 0.7782f;
-    static constexpr f32 STEER_INC = 320.0f;   // 320 unita'/secondo^2 (tarato per 60 Hz: sterzo >= +/-200 in 30 frame)
+    // Sterzo: spostamento laterale massimo 600 unita'/secondo, zero da fermi,
+    // pieno a STEER_V_PIENA * MAX_SPEED, -15% alla punta (510 > spinta curva 0.8
+    // a velocita' massima, ~356). Gate: >= +/-200 in 0.6 s partendo da fermi.
+    static constexpr f32 STEER_MAX = 600.0f;
+    static constexpr f32 STEER_V_PIENA = 0.25f;
+    static constexpr f32 STEER_CALO_PUNTA = 0.15f;
+    static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
+    static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
     static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
 };
