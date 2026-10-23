@@ -160,7 +160,7 @@ manutenzione() {
     tot=0
     for l in log_agenti/*.log; do
       [ -f "$l" ] || continue; ag=$(basename "$l" .log); t=$(tail -n 300 "$l" | sed "s/${ESC}\[[0-9;]*[A-Za-z]//g")
-      rl=$(printf '%s\n' "$t" | grep -c 'Rate limit'); pd=$(printf '%s\n' "$t" | grep -c 'Permission denied'); nf=$(printf '%s\n' "$t" | grep -c 'File not found\|does not exist'); tot=$((tot+rl+pd+nf))
+      rl=$(printf '%s\n' "$t" | grep -ciE 'rate limit|usage limit'); pd=$(printf '%s\n' "$t" | grep -c 'Permission denied'); nf=$(printf '%s\n' "$t" | grep -c 'File not found\|does not exist'); tot=$((tot+rl+pd+nf))
       [ $((rl+pd+nf)) -gt 0 ] && echo "- $ag: rate limit $rl, permessi negati $pd, file/cartella inesistente $nf"
       [ "$pd" -ge 3 ] && echo "  -> $ag: usa solo percorsi relativi e solo le tue cartelle (AGENTS.md); non provare shell/cd."
       [ "$nf" -ge 3 ] && echo "  -> $ag: controlla il percorso con 'ls' prima di leggere; niente percorsi assoluti."
@@ -282,7 +282,7 @@ giro_diretto() {
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
     if [ "$rc" -eq 0 ]; then ok_limite; echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag ok, $nf file toccati"
     elif [ "$rc" -ge 128 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag fermato dal timeout, $nf file toccati (modello invariato)"
-    elif tail -n 40 "log_agenti/$ag.log" | grep -q "Rate limit"; then pausa_limite; break
+    elif tail -n 40 "log_agenti/$ag.log" | grep -qiE "rate limit|usage limit"; then pausa_limite; break
     else echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag in errore ($rc), $nf file toccati: passo al modello successivo della panchina"; V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1; fi
     sleep "${GIRO_SLEEP:-10}"
   done
