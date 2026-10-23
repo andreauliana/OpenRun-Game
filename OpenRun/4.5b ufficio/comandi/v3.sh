@@ -70,6 +70,8 @@ case "${1:-stato}" in
   stop-subito) ferma_tutto || exit 1; echo "Ciclo e richiesta OpenCode corrente fermati." ;;
   aggiorna)
     ferma_tutto || exit 1
+    # Anche il pannello si riavvia: Python legge pannello.py solo all'avvio.
+    if pannello_attivo; then kill "$(cat "$PANNELLO_PID")" 2>/dev/null; fi; rm -f "$PANNELLO_PID"
     rm -f "$S/STOP"; apri_pannello || exit 1; cd "$T" && exec sh start_process_brains.sh ;;
   stato)
     echo "== ciclo"; if ciclo_attivo; then ps -p "$(cat "$S/.ciclo.pid")" -o pid,etime,command; echo "ciclo: ATTIVO"; else echo "ciclo: fermo"; fi
