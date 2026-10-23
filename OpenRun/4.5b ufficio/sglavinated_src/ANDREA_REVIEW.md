@@ -278,3 +278,7 @@ DEFAULT usato nel frattempo: A — CP-005 + `ctest` verde, poi T1-RUN resta [~] 
 Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non conferma.
 
 RISPOSTA DI ANDREA: B
+
+
+
+23/10 test Mac: ctest 17/17, runner ok, bivio e cambio tappa ancora come in FORK1
