@@ -20,6 +20,7 @@ fi
 T=""; RC=1
 for i in $(seq 1 24); do
   T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC=$?
+  if echo "$T" | grep -qi "usage limit"; then echo "LIMITE RAGGIUNTO: i crediti gratuiti di OpenCode sono finiti per oggi. Non parto: riprova piu' tardi (o domani)." >&2; exit 1; fi
   if ! echo "$T" | grep -qi "rate limit"; then break; fi
   if [ "$i" -eq 24 ]; then echo "ERRORE: rate limit persistente; non avvio il ciclo." >&2; exit 1; fi
   echo "[brains] limite di richieste raggiunto, attendo 5 minuti ($i/24) - $(date +%H:%M)"; sleep 300
