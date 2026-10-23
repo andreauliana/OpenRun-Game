@@ -65,6 +65,16 @@ public:
     void drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio = 0);
     void impostaTema(const TemaColori& t) { tema_ = t; }
     const TemaColori& tema() const { return tema_; }
+    // Avvia la transizione graduale del tema: da `da` (tema della tappa che
+    // finisce) al tema attuale (impostato con impostaTema, tema della tappa
+    // che comincia) in durataSecondi secondi (FORK1 punto 6). Durante la
+    // transizione drawRoad disegna con i colori interpolati canale per canale.
+    void iniziaTransizioneTema(const TemaColori& da, f32 durataSecondi);
+    // Avanza la transizione di dt secondi (Game::update, frequenza indipendente).
+    // Ritorna true mentre la transizione e' in corso.
+    bool aggiornaTransizioneTema(f32 dt);
+    // Interpolazione lineare di due colori 0xAARRGGBB, canale per canale.
+    static u32 lerpColore(u32 da, u32 a, f32 t);
 
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
@@ -120,6 +130,10 @@ private:
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
     TemaColori tema_;                       // colori di ambiente della tappa
+    // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).
+    TemaColori temaDa_;                     // tema di partenza (tappa che finisce)
+    f32 transizioneT_ = 1.0f;               // 1.0 = transizione finita (tema_ e' il tema attuale)
+    f32 transizioneDurataS_ = 0.0f;         // durata in secondi (0 = scatto immediato)
     std::vector<HudElemento> hud_;          // elementi di hud.json (caricati una volta)
 };
 

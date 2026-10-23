@@ -157,9 +157,20 @@ private:
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
     i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
+f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (secondi, dati/config.json)
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
     f32 tempoGiocoS_ = 0;        // secondi di gioco accumulati (frequenza indipendente)
     std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
+
+    // Tema grafico della tappa (tema_grafico di livello.json): id del catalogo
+    // dello skyline sopra l'orizzonte e degli oggetti a bordo strada. Letto una
+    // volta in leggiTemaDaFile(); i sprite veri si disegnano quando @grafico
+    // consegna le conversioni raw e il renderer le aggancia (DECO1 punto 1/2).
+    std::string skylineId_;               // tema_grafico.skyline
+    std::vector<std::string> oggettiBordoStrada_; // tema_grafico.oggetti_bordo_strada
+
+    const std::string& skylineId() const { return skylineId_; }
+    const std::vector<std::string>& oggettiBordoStrada() const { return oggettiBordoStrada_; }
 
     // --- Gara a tappe ---
     struct Tappa {

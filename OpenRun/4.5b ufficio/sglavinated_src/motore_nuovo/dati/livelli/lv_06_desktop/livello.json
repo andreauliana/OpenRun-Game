@@ -130,12 +130,13 @@
   "tema_grafico": {
     "skyline": "scenario.lv_06_desktop.skyline",
     "oggetti_bordo_strada": [
-      "oggetto.lv_01_neon.palina",
-      "oggetto.lv_02_atomico.panchina_cromata",
-      "oggetto.lv_03_foglie.panchina_curva"
+      "oggetto.lv_06_desktop.pali_cavi",
+      "oggetto.lv_06_desktop.case_computer",
+      "oggetto.lv_06_desktop.delfino_cartone",
+      "oggetto.lv_06_desktop.icona_cartella"
     ],
     "stile_cartellone": "foglie",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): pali con cavi, case-computer, delfini di cartone, icona cartella. Skyline e PNG/raw da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
   "cartelloni_sponsor": [
     {

@@ -135,6 +135,39 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
     }
 }
 
+void Renderer::iniziaTransizioneTema(const TemaColori& da, f32 durataSecondi) {
+    temaDa_ = da;                       // tema della tappa che finisce
+    transizioneDurataS_ = durataSecondi;
+    transizioneT_ = 0.0f;
+    // tema_ e' gia' il tema di destinazione (impostato da impostaTema);
+    // aggiornaTransizioneTema lo riporta gradualmente da temaDa_ a tema_.
+}
+
+bool Renderer::aggiornaTransizioneTema(f32 dt) {
+    if (transizioneT_ >= 1.0f || transizioneDurataS_ <= 0.0f) {
+        transizioneT_ = 1.0f;
+        return false;
+    }
+    transizioneT_ += dt / transizioneDurataS_;
+    if (transizioneT_ > 1.0f) transizioneT_ = 1.0f;
+    tema_.cielo = lerpColore(temaDa_.cielo, tema_.cielo, transizioneT_);
+    tema_.erba = lerpColore(temaDa_.erba, tema_.erba, transizioneT_);
+    tema_.erbaAlt = lerpColore(temaDa_.erbaAlt, tema_.erbaAlt, transizioneT_);
+    tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, tema_.rumbleAlt, transizioneT_);
+    return transizioneT_ < 1.0f;
+}
+
+u32 Renderer::lerpColore(u32 da, u32 a, f32 t) {
+    const auto canale = [](u32 c, i32 shift) { return (i32)((c >> shift) & 0xFF); };
+    const auto mix = [](i32 x, i32 y, f32 t) { return (i32)(x + (y - x) * t); };
+    const i32 ra = canale(da, 16), ga = canale(da, 8), ba = canale(da, 0);
+    const i32 rb = canale(a, 16), gb = canale(a, 8), bb = canale(a, 0);
+    return 0xFF000000u |
+           ((u32)(mix(ra, rb, t) & 0xFF) << 16) |
+           ((u32)(mix(ga, gb, t) & 0xFF) << 8) |
+           ((u32)(mix(ba, bb, t) & 0xFF));
+}
+
 void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen) {
     if (projs_.empty()) return; // drawRoad deve girare prima (stessa proiezione)
     // Ordina per distanza decrescente (dietro prima).

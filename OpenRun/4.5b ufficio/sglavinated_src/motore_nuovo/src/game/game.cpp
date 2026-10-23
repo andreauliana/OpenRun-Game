@@ -264,6 +264,11 @@ void Game::init(const std::string& livelloId) {
             i32 hz = (i32)jsonAsNumber(v);
             if (hz > 0) frequenzaHz_ = hz;
         }
+        JsonValue vt;
+        if (jsonGet(jsonAsObject(cfg.valore()), "transizione_tema_s", vt) && jsonIsNumber(vt)) {
+            f32 val = (f32)jsonAsNumber(vt);
+            if (val >= 0.0f) transizioneTemaS_ = val;
+        }
     }
 
     gara_ = false;
@@ -417,10 +422,17 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "rumble", tema.rumbleAlt);
         }
         tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
-        JsonValue grafica, stile;
+        JsonValue grafica, stile, skyline, oggetti;
         if (jsonGet(root, "tema_grafico", grafica) && jsonIsObject(grafica) &&
             jsonGet(jsonAsObject(grafica), "stile_cartellone", stile) && jsonIsString(stile))
             stileCartellone_ = jsonAsString(stile);
+        if (jsonGet(jsonAsObject(grafica), "skyline", skyline) && jsonIsString(skyline))
+            skylineId_ = jsonAsString(skyline);
+        if (jsonGet(jsonAsObject(grafica), "oggetti_bordo_strada", oggetti) && jsonIsArray(oggetti)) {
+            oggettiBordoStrada_.clear();
+            for (const JsonValue& o : jsonAsArray(oggetti))
+                if (jsonIsString(o)) oggettiBordoStrada_.push_back(jsonAsString(o));
+        }
     }
     ren_.impostaTema(tema);
 }
@@ -577,8 +589,12 @@ void Game::fineTappa(f32 avanzo) {
         road_.setCurvaInizioTappa(last.curve);
         road_.setCollinaInizioTappa(last.hill);
     }
+    const TemaColori temaPrima = ren_.tema(); // tema della tappa che finisce (ancora corrente)
     progressoTappePrecedenti_ += (f32)road_.totalLength();
-    caricaLivello(prossima);
+    caricaLivello(prossima); // imposta subito il tema della tappa nuova (impostaTema)
+    // Transizione graduale verso il tema di arrivo (FORK1 punto 6): i colori di
+    // ambiente si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
+    ren_.iniziaTransizioneTema(temaPrima, transizioneTemaS_);
     tappaId_ = prossima;
     ++numeroTappa_;
     if (!tempoScaduto_) tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
@@ -740,6 +756,7 @@ bool Game::leggiCartelloniDaFile(const JsonValue* radice) {
 void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
     f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
+    ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
 
     if (playerFlipping_) {
         passoGiocatore_ = 0.0f;

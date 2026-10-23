@@ -28,7 +28,7 @@ public:
     // Bivio a fine tappa (solo in gara): la strada si apre in due rami.
     static constexpr i32 BIVIO_SEG = 800;          // segmenti finali occupati dal bivio
     static constexpr f32 BIVIO_DIST = 1900.0f;     // centro di ogni ramo a bivio aperto (unita' mondo)
-    static constexpr f32 BIVIO_SVOLTA = 1.5e-4f;   // quanto il ramo non scelto si allontana (curva via)
+    static constexpr f32 BIVIO_SVOLTA = 3.0e-4f;   // quanto il ramo non scelto si allontana (curva via). Aumentato di nuovo (feedback Andrea 23/10, FORK1: prova runner Mac): i due rami del bivio divergono di piu' cosi' l'auto sul ramo scelto non tocca i bordi della parte centrale al bivio.
 
     Road();
     explicit Road(u32 seed);

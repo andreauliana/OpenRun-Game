@@ -128,13 +128,13 @@
   "tema_grafico": {
     "skyline": "skyline.futurista",
     "oggetti_bordo_strada": [
-      "oggetto.lv_01_neon.lampione",
-      "oggetto.lv_01_neon.palo_neon",
-      "oggetto.lv_02_atomico.torre_razzo",
-      "oggetto.lv_02_atomico.cupola"
+      "oggetto.lv_04_cromo.guard_rail_cromo",
+      "oggetto.lv_04_cromo.lampione_lama",
+      "oggetto.lv_04_cromo.robot_servizio",
+      "oggetto.lv_04_cromo.pilone_cromo"
     ],
     "stile_cartellone": "neon",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): guard-rail cromati, lampioni a lama, robot di servizio, pilone cromo. Skyline skyline.futurista gia' presente (pronto, ok Andrea pendente). PNG e raw degli oggetti da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
   "cartelloni_sponsor": [
     {

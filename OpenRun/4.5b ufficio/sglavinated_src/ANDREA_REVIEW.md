@@ -157,9 +157,9 @@ Migrato dalla precedente versione di `FEEDBACK_ANDREA.md`; si conserva qui come 
 
 Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di guida convincente. Le priorita' indicate erano:
 
-1. Migliorare percorso stradale e feeling della velocita', elementi decorativi nei percorsi distribuiti, fluidita' e scorrevolezza del percorso, scorrimento 60hz gioco, risposta ai controlli di gioco, Sterzo non reattivo da veicolo fermo, percezione di velocita' e fluidita' del movimento 'external world' rispetto a veicolo guidato, con elementi grafici meno grezzi; collegare al gioco gli asset creati e indicizzati dal @grafico, per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
-2. Migliorare principi di guida: accelerazione con limite da migliorare, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', spinta in curva, rallentamento a bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della corsa).
-3. Rappresentare nel pannello velocita' (HUV) e risposta del motore simulato con cambio automatico animazioni brani audio radio interpretando segnali dei brani .mx Traker.
+1. Migliorare percorso stradale e overall feeling della velocita', elementi decorativi nei percorsi distribuiti assieme a Banner pubblicitari che si visualizzano correttamente dal 23 Ottobre, fluidita' di gioco e scorrevolezza del percorso, con variazioni come ponti, colline, curve e 'chicane', come un vero circuito sportivo, aggiornamento a 60hz, risposta reattiva e dinamica ai controlli di gioco, sterzo non reattivo da veicolo fermo, percezione di velocita' e fluidita' del movimento 'external world' rispetto a veicolo guidato, con elementi grafici piu affinati basati sulla documentazione DIREZIONE_ARTISTICA.md @grafico; collegare al gioco gli asset creati e indicizzati dal @grafico, per @collaudatore sviluppa conversione PNG->raw in strumenti_py, prova_gate legge raw.
+2. Migliorare principi di guida: accelerazione con limite da migliorare, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', reazione alla curva, rallentamento toccando il bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della tragitto).
+3. Rappresentare nel pannello velocita' (HUV) e risposta del motore animazioni brani audio radio interpretando segnali dei brani .mx Traker.
 
 Perfezionamento e implementazione dei Personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
 
@@ -260,8 +260,8 @@ Andrea is currently testing the review of the Mac runner (v91, SDL2).
 In the meantime, continue working autonomously on the game development and design.
 **Priorities:**
 1. @developer Run and improve automated tests across all 6 themed percorsi with correct related theme elements. @developer-junior make sure the percorsi has each own themed design element provided by @grafico.
-2. @developer improve vehicle physics, improve the steering (feels weird to go against the steer while in the middle of the curve, Andrea is not really sure about it yet), overall animation render of 'external world' and driver prospective, parts of the percorsi as hill, highway option, engaging collisions with other player, and forks in the road race that takes the driver to the next themed path. The other players (automated competitors) looks way too small from latest test, improve design using internal Library if possible: @designer works together @developer to improve a little.
-3. Test for regressions, crashes, performance issues and missing assets, and game feeling as the reference game 'OutRun'.
+2. @developer improve vehicle physics, improve the steering (feels weird to go against the steer while in the middle of the curve, Andrea is not really sure about it yet), overall animation render of 'external world' and driver prospective, parts of the percorsi as hill, highway option, wider road where's needed, engaging collisions with other player, and nice road forks that takes the driver to the next themed percorso. The other players (automated competitors) looks way too small from latest test, improve design using internal Library if possible: @designer works together @developer to improve a little.
+3. Test for regressions, crashes, performance issues and missing decorative assets, and game feeling.
 
 **Important:** Do not mark Andrea's manual Mac/SDL2 review as passed. Keep it explicitly pending until Andrea confirms that he has tested the correct build.
 
@@ -280,8 +280,7 @@ Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non confer
 RISPOSTA DI ANDREA: B
 
 
-
-23/10 test Mac: ctest 17/17, runner ok, bivio e cambio tappa ancora come in FORK1
+**Important:** 23/10 test Mac: ctest 17/17, runner ok, al bivio, in alcuni livelli, glitch di ricalcolo e la tappa dopo parte con posizionamento percorso sbagliato, senza un transizione graduale, incrementare leggermente la curvatura dei due Fork, perche la macchina puo andare in crush toccando i bordi della parte centrale (FORK1). The other players are going a bit too fast and far, they should act a bit more realistically, as in a race.
 
 ## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
 

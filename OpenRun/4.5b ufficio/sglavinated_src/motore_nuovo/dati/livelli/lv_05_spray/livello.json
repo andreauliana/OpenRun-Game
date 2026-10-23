@@ -132,13 +132,13 @@
   "tema_grafico": {
     "skyline": "scenario.lv_05_spray.skyline",
     "oggetti_bordo_strada": [
-      "oggetto.lv_01_neon.bidone",
-      "oggetto.lv_01_neon.cassetta",
-      "oggetto.lv_02_atomico.freccia",
-      "oggetto.lv_02_atomico.segnale_atomico"
+      "oggetto.lv_05_spray.bidone",
+      "oggetto.lv_05_spray.transenna",
+      "oggetto.lv_05_spray.cassonetto",
+      "oggetto.lv_05_spray.serranda_spray"
     ],
     "stile_cartellone": "atomico",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti presi in prestito da altri temi finche' il grafico non disegna quelli propri"
+    "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): bidoni, transenne, cassonetti, serranda spray. Skyline e PNG/raw da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
   "cartelloni_sponsor": [
     {

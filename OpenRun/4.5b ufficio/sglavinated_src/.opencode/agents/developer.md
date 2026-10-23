@@ -1,6 +1,6 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
-model: opencode/mimo-v2.6-flash-free
+model: opencode/nemotron-3.5-lightning-free
 # fallback (cambia manualmente se il modello sopra non è disponibile): nemotron-3.5-super-vl-free
 mode: subagent
 permission:
