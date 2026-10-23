@@ -52,6 +52,35 @@ constexpr f32 CURVA_SPINTA = 0.015f;
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
 // senza essere contrastato dalla spinta centrifuga.
 constexpr f32 CURVA_SPINTA_OFFROAD_FACTOR = 0.25f;
+// Avversari: velocita' di punta in frazione di quella del giocatore (unita' di
+// strada al secondo). Prima il passo era in unita' per frame tarato a 50 Hz:
+// a 60 Hz superavano il giocatore. Punta 0.94..1.04: i piu' veloci restano
+// davanti a chi guida perfetto. Elastico continuo sul distacco (Andrea 23/10:
+// "tutti scappano"): chi e' davanti rallenta, chi e' dietro recupera, cosi' il
+// gruppo resta a pochi secondi dal giocatore e si riprende dopo un incidente.
+constexpr f32 RIVALE_PUNTA_MIN = 0.94f;
+constexpr f32 RIVALE_PUNTA_PASSO = 0.017f; // + 0..6 passi: 0.94..1.04
+constexpr f32 RIVALE_ACCEL_TAU_S = 2.0f;   // ~63% della punta in 2 s
+constexpr f32 RIVALE_ELASTICO_DISTANZA = 40000.0f; // a questo distacco l'elastico vale -/+25%
+constexpr f32 RIVALE_ELASTICO_MIN = 0.80f;
+constexpr f32 RIVALE_ELASTICO_MAX = 1.15f;
+constexpr f32 RIVALE_LATERALE_PER_S = 400.0f;
+// Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
+// nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
+// in ~0.3 s appena si frena, si curva o si esce di strada.
+constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
+constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
+constexpr f32 SOLLEVAMENTO_MAX_PX = 7.0f;
+constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
+constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
+// Passaggio assistito al bivio (feedback Andrea 23/10): niente spinta delle
+// curve, niente crash, l'auto e' accompagnata verso il centro del ramo piu'
+// vicino (lo sterzo vince sempre, cosi' si sceglie ancora il ramo). Entra in
+// mezzo secondo e a inizio tappa nuova si spegne in 2.5 s.
+constexpr f32 ASSIST_ENTRATA_S = 0.5f;
+constexpr f32 ASSIST_USCITA_S = 2.5f;
+constexpr f32 ASSIST_RICHIAMO_TAU_S = 0.6f;
+constexpr f32 ASSIST_RICHIAMO_MAX = 250.0f; // unita'/s, sotto lo sterzo (>= 510 in alto)
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
 // Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' al secondo.
 // speed e' gia' in unita'/secondo, quindi questa costante e' indipendente dalla frequenza.
@@ -286,6 +315,9 @@ void Game::init(const std::string& livelloId) {
     player_.speed = 0.0f;
     tempoGiocoS_ = 0; // secondo contatore di gioco riparte con la partita
     playerFlipping_ = false;
+    sollevamento_ = 0.0f;
+    sollevamentoFaseS_ = 0.0f;
+    assistenzaBivio_ = 0.0f;
     playerFlipFrame_ = 0;
     offroadFrames_ = 0;
     showManager_.reset(seed_); // stesso seed = stessi show (determinismo)
@@ -422,6 +454,12 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "rumble", tema.rumbleAlt);
         }
         tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
+        sollevamentoAttivo_ = false;
+        JsonValue fx, solleva;
+        if (jsonGet(root, "moduli_fx", fx) && jsonIsObject(fx) &&
+            jsonGet(jsonAsObject(fx), "sollevamento_auto_alta_velocita", solleva) &&
+            std::holds_alternative<bool>(solleva.v))
+            sollevamentoAttivo_ = std::get<bool>(solleva.v);
         JsonValue grafica, stile, skyline, oggetti;
         if (jsonGet(root, "tema_grafico", grafica) && jsonIsObject(grafica) &&
             jsonGet(jsonAsObject(grafica), "stile_cartellone", stile) && jsonIsString(stile))
@@ -522,7 +560,8 @@ void Game::inizializzaRivali() {
         r.x = (i % 2 == 0) ? -450.0f : 450.0f;
         r.xObiettivo = r.x;
         r.passo = 0.0f;
-        r.passoMax = 540.0f + (f32)rnd.next(55); // 540..594: alcuni quasi alla pari del giocatore (~590)
+        const f32 puntaGiocatore = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
+        r.passoMax = puntaGiocatore * (RIVALE_PUNTA_MIN + RIVALE_PUNTA_PASSO * (f32)rnd.next(7));
         r.ramo = (i % 2 == 0) ? -1 : 1;
         r.colore = 9 + (i % 4); // arancio, ciano, giallo, rosso
     }
@@ -533,25 +572,30 @@ void Game::inizializzaRivali() {
 
 void Game::aggiornaRivali() {
     const f32 giro = (f32)road_.totalLength();
+    const f32 dt = 1.0f / (f32)frequenzaHz_;
+    const f32 avvicina = 1.0f - std::exp(-dt / RIVALE_ACCEL_TAU_S);
+    const f32 velocitaGiocatore = passoGiocatore_ / dt; // unita' al secondo
     sprites_.clear();
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
-        // Elastico come nei giochi arcade: chi e' molto avanti rallenta un po',
-        // chi e' molto dietro spinge. Cosi' anche dopo un incidente la gara resta aperta.
+        // Elastico come nei giochi arcade: chi e' avanti rallenta, chi e' dietro
+        // spinge, in proporzione al distacco. Cosi' anche dopo un incidente la gara resta aperta.
         const f32 distacco = r.progresso - (progressoTappePrecedenti_ + player_.z);
-        const f32 elastico = distacco > 15000.0f ? 0.85f : (distacco < -15000.0f ? 1.05f : 1.0f);
-        r.passo += (r.passoMax * elastico - r.passo) * 0.02f;
+        const f32 elastico = std::clamp(1.0f - 0.25f * distacco / RIVALE_ELASTICO_DISTANZA,
+                                        RIVALE_ELASTICO_MIN, RIVALE_ELASTICO_MAX);
+        r.passo += (r.passoMax * elastico - r.passo) * avvicina;
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e, finche'
         // e' allineato, resta alla sua velocita'.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
         if (distacco < 0.0f && distacco > -3000.0f && std::abs(dxGiocatore) < 400.0f) {
             r.xObiettivo = (player_.x - player_.centroCorsia) > 0.0f ? -450.0f : 450.0f;
-            if (distacco > -600.0f) r.passo = std::min(r.passo, passoGiocatore_);
+            if (distacco > -600.0f) r.passo = std::min(r.passo, velocitaGiocatore);
         }
-        r.progresso += r.passo;
-        if (rndRivali_.next(200) == 0) r.xObiettivo = -450.0f + 450.0f * (f32)rndRivali_.next(3);
-        if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + 8.0f);
-        if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - 8.0f);
+        r.progresso += r.passo * dt;
+        if (rndRivali_.next((u32)(4 * frequenzaHz_)) == 0) r.xObiettivo = -450.0f + 450.0f * (f32)rndRivali_.next(3);
+        const f32 laterale = RIVALE_LATERALE_PER_S * dt;
+        if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
+        if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
 
         const f32 zLocale = r.progresso - progressoTappePrecedenti_;
         const f32 zRel = zLocale - road_.playerZ;
@@ -761,11 +805,26 @@ void Game::update() {
     if (playerFlipping_) {
         passoGiocatore_ = 0.0f;
         ++playerFlipFrame_;
-        if (playerFlipFrame_ >= (u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)) {
+        const u32 frameFlip = (u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_);
+        // Si riparte dal punto dell'incidente, al centro della propria corsia.
+        // Al bivio con la scelta ancora aperta centroCorsia e' 0, cioe' lo
+        // spartitraffico: si ripartiva in mezzo ai rami e si ribaltava per
+        // sempre (prova di Andrea 23/10). Si riparte sul ramo piu' vicino.
+        f32 xRipartenza = player_.centroCorsia;
+        const Road::Carreggiate cr = road_.carreggiate(player_.z, latoBivio_);
+        if (cr.doppia && latoBivio_ == 0)
+            xRipartenza = playerXIncidente_ < 0.0f ? cr.centro[0] : cr.centro[1];
+        // Rientro animato: nella seconda meta' del ribaltamento l'auto scivola
+        // dolcemente verso il centro invece di comparirci di colpo.
+        const f32 t = std::clamp(2.0f * (f32)playerFlipFrame_ / (f32)frameFlip - 1.0f, 0.0f, 1.0f);
+        const f32 morbido = t * t * (3.0f - 2.0f * t);
+        player_.x = playerXIncidente_ + (xRipartenza - playerXIncidente_) * morbido;
+        road_.playerX = player_.x;
+        if (playerFlipFrame_ >= frameFlip) {
             playerFlipping_ = false;
             playerFlipFrame_ = 0;
             offroadFrames_ = 0;
-            player_.x = player_.centroCorsia; // si riparte al centro della propria corsia
+            player_.x = xRipartenza;
             player_.speed = 0.0f;
             player_.offroad = false;
             road_.playerX = player_.x;
@@ -819,17 +878,40 @@ void Game::update() {
         // Le curve ora durano centinaia di metri: la spinta resta sotto lo sterzo
         // (a curva 0.8 e velocita' massima circa 7 unita'/frame contro 11 di sterzo),
         // cosi' la curva si tiene sterzando.
+        const bool nelBivio = road_.bivioAttivo() && player_.z >= road_.bivioInizioZ();
+        assistenzaBivio_ = nelBivio ? std::min(1.0f, assistenzaBivio_ + dt / ASSIST_ENTRATA_S)
+                                    : std::max(0.0f, assistenzaBivio_ - dt / ASSIST_USCITA_S);
         const f32 curvaQui = road_.curvaAt(player_.z);
         const f32 spinta = player_.offroad ? CURVA_SPINTA * CURVA_SPINTA_OFFROAD_FACTOR : CURVA_SPINTA;
-        player_.x += curvaQui * player_.speed * spinta * dt * roadScrollScale;
+        player_.x += curvaQui * player_.speed * spinta * dt * roadScrollScale * (1.0f - assistenzaBivio_);
+        if (assistenzaBivio_ > 0.0f) {
+            // Richiamo morbido verso il centro del ramo piu' vicino.
+            const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
+            f32 centro = player_.centroCorsia;
+            if (c.doppia && latoBivio_ == 0) centro = player_.x < 0.0f ? c.centro[0] : c.centro[1];
+            f32 richiamo = (centro - player_.x) * (1.0f - std::exp(-dt / ASSIST_RICHIAMO_TAU_S));
+            const f32 maxPasso = ASSIST_RICHIAMO_MAX * dt;
+            richiamo = std::clamp(richiamo, -maxPasso, maxPasso);
+            player_.x += richiamo * assistenzaBivio_;
+        }
         player_.vincolaAllaCorsia();
 
-        if (player_.offroad) ++offroadFrames_;
+        const bool inVolo = sollevamentoAttivo_ && !player_.offroad &&
+            player_.speed >= SOLLEVAMENTO_SOGLIA_V * player_.maxSpeed() &&
+            std::abs(curvaQui) <= SOLLEVAMENTO_CURVA_MAX;
+        const f32 obiettivo = inVolo ? 1.0f : 0.0f;
+        const f32 passoSoll = dt / (inVolo ? SOLLEVAMENTO_SALITA_S : SOLLEVAMENTO_DISCESA_S);
+        sollevamento_ = sollevamento_ < obiettivo ? std::min(obiettivo, sollevamento_ + passoSoll)
+                                                  : std::max(obiettivo, sollevamento_ - passoSoll);
+        sollevamentoFaseS_ = sollevamento_ > 0.0f ? sollevamentoFaseS_ + dt : 0.0f;
+
+        if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
         else offroadFrames_ = 0;
 
         if (gara_) aggiornaRivali();
         else if (trafficoAttivo_) spawnTraffic();
-        const bool collisione = collisioneOggettiVicini();
+        // Nel passaggio assistito i contatti non ribaltano l'auto.
+        const bool collisione = assistenzaBivio_ <= 0.0f && collisioneOggettiVicini();
         if (collisione && !inCollision_) {
             showManager_.crash();
             inCollision_ = true;
@@ -841,6 +923,7 @@ void Game::update() {
             if (!collisione) showManager_.crash();
             playerFlipping_ = true;
             playerFlipFrame_ = 0;
+            playerXIncidente_ = player_.x;
             player_.speed = 0.0f;
             offroadFrames_ = 0;
         }
@@ -903,7 +986,9 @@ void Game::render() {
         ? 6.2831853f * (f32)playerFlipFrame_ / (f32)(u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)
         : steeringLean * 1.5f +
           (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle);
+    const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
+    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX;
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle, sollevamentoPx);
     // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
     // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.
     const gameplay::ScenaShow& sc = disegnoShow_.scena();

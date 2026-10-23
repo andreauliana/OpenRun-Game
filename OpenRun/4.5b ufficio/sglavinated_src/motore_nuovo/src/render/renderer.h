@@ -63,7 +63,7 @@ public:
     // Disegna la strada (segmenti proiettati) con rumble laterali e fondo cielo.
     // latoBivio: ramo scelto al bivio di fine tappa (0 = ancora da scegliere).
     void drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio = 0);
-    void impostaTema(const TemaColori& t) { tema_ = t; }
+    void impostaTema(const TemaColori& t) { tema_ = t; temaA_ = t; transizioneT_ = 1.0f; }
     const TemaColori& tema() const { return tema_; }
     // Avvia la transizione graduale del tema: da `da` (tema della tappa che
     // finisce) al tema attuale (impostato con impostaTema, tema della tappa
@@ -82,7 +82,7 @@ public:
     void drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen);
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
-    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f);
+    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -122,7 +122,7 @@ private:
     // Bande alternate (asfalto, erba, rumble) ancorate al segmento del mondo.
     static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
-    void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band);
+    void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
     void drawRoadsideMarkers(f32 playerZ);
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
 
@@ -132,6 +132,7 @@ private:
     TemaColori tema_;                       // colori di ambiente della tappa
     // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).
     TemaColori temaDa_;                     // tema di partenza (tappa che finisce)
+    TemaColori temaA_;                      // tema di arrivo (tappa che comincia), fisso durante la transizione
     f32 transizioneT_ = 1.0f;               // 1.0 = transizione finita (tema_ e' il tema attuale)
     f32 transizioneDurataS_ = 0.0f;         // durata in secondi (0 = scatto immediato)
     std::vector<HudElemento> hud_;          // elementi di hud.json (caricati una volta)
