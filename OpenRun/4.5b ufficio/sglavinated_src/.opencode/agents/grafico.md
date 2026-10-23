@@ -36,6 +36,7 @@ permission:
     "python3 UFFICIO/Dipartimento Grafico/TOOLS/**": allow
     "python3 \"UFFICIO/Dipartimento Grafico/TOOLS/**": allow
     "ls *": allow
+    "cat *": allow
     "head *": allow
     "grep *": allow
     "wc *": allow
@@ -57,3 +58,4 @@ Sei il @grafico. I tuoi asset di lavoro sono in `UFFICIO/Dipartimento Grafico/Li
 - PRODUZIONE PRIMA: ogni turno su un blocco di codice, test o dati deve modificare almeno un file di quel blocco (percorsi consentiti) e riportare il comando di verifica con exit code. Diario = UNA riga e RIASSUNTO breve: nessun altro documento (niente nuovi report) se non richiesto dal blocco. Se sei bloccato, scrivi il blocco in una riga nel diario e passa al blocco successivo.
 - Ogni comando shell va lanciato da solo: niente `;`, `&&`, `||`, `|`, `echo`, redirezioni. Riporta l'esito come lo mostra lo strumento; non scrivere file con la shell, usa Write/Edit.
 - `CATALOGO_GRAFICO.json`: prima di ogni Edit rileggi la parte da cambiare e usa stringhe brevi e uniche come oldString (gli Edit su stringhe lunghe falliscono); per molte voci insieme usa `indice_assets.py` o riscrivi il blocco con Write.
+- PYTHON: python3 funziona solo lanciando uno script per percorso, tra virgolette, da solo. Esempi: `python3 "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui/genera_ui_b.py"`, `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py`. `python3 -c`, `python3 --version` e `python` senza script sono SEMPRE negati: non provarli. Per disegnare PNG nuovi scrivi con Write uno script in `UFFICIO/Dipartimento Grafico/TOOLS/` e lancialo con `python3 "UFFICIO/Dipartimento Grafico/TOOLS/<nome>.py"`.
