@@ -105,19 +105,31 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
-# Target: sglavinated_libretro — core libretro (stub documentato, BLOCCO C).
-# Da attivare quando i header libretro saranno disponibili nella cartella
-# del progetto (es. libreria/libretro/ o submodule).
+# Target: sglavinated_libretro — core libretro per RetroArch/RetroPie.
+# Header ufficiale in src/libretro/libretro.h (libretro-common, licenza MIT).
+# cmake -DBUILD_LIBRETRO=ON .. && make sglavinated_libretro
 # ---------------------------------------------------------------------------
-option(BUILD_LIBRETRO "Compila il core libretro (stub)" OFF)
+option(BUILD_LIBRETRO "Compila il core libretro" OFF)
 if(BUILD_LIBRETRO)
+    # Il core e' una libreria condivisa: il nucleo statico va compilato con -fPIC.
+    set_target_properties(sglavinated_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
     add_library(sglavinated_libretro MODULE
+        src/libretro/libretro.h
         src/libretro/sglavinated_libretro.cpp
     )
     target_include_directories(sglavinated_libretro PRIVATE src)
+    target_link_libraries(sglavinated_libretro PRIVATE sglavinated_core)
+    if(APPLE)
+        set(SGL_LIBRETRO_SUFFIX "_libretro.dylib")
+    elseif(WIN32)
+        set(SGL_LIBRETRO_SUFFIX "_libretro.dll")
+    else()
+        set(SGL_LIBRETRO_SUFFIX "_libretro.so")
+    endif()
+    # Nome file: sglavinated_libretro.so (Linux/Pi), .dylib (Mac).
     set_target_properties(sglavinated_libretro PROPERTIES
-        PREFIX "" SUFFIX "_libretro.so")
-    message(STATUS "Core libretro costruito come stub (vedi src/libretro/sglavinated_libretro.cpp).")
+        PREFIX "" OUTPUT_NAME "sglavinated" SUFFIX "${SGL_LIBRETRO_SUFFIX}")
+    message(STATUS "Core libretro abilitato: sglavinated${SGL_LIBRETRO_SUFFIX}")
 endif()
 
 # ---------------------------------------------------------------------------
