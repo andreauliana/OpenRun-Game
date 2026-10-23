@@ -121,8 +121,12 @@ def stato():
         try: t3 = os.path.getmtime(os.path.join(S, "log_agenti", a + ".log"))
         except OSError: t3 = 0
         t = max(t1, t2, t3)
+        mem = leggi(f"bacheche/{a}/RIASSUNTO.md")
+        try: tm = int(adesso - os.path.getmtime(os.path.join(S, "bacheche", a, "RIASSUNTO.md")))
+        except OSError: tm = None
         ag.append({"nome": a, "file": n1 + n2, "modello": modello(a), "in_corso": a in inc, "sec_corso": inc.get(a), "sec_ultimo": int(adesso - t) if t else None,
-                   "attivo": a in squadra, "ruolo": "squadra" if a in squadra else ("coordina" if a == "capo" else "spento")})
+                   "attivo": a in squadra, "ruolo": "squadra" if a in squadra else ("coordina" if a == "capo" else "spento"),
+                   "memoria": "\n".join(mem.splitlines()[:12]), "memoria_sec": tm})
     nout, _ = conta("out"); nlib, _ = conta(os.path.join("UFFICIO", "Dipartimento Grafico", "Libreria"))
     log_pulito = ANSI.sub("", leggi("notte.log", 400)); righe = log_pulito.splitlines()
     ciclo = [data_pannello(l) for l in righe if l.startswith("[ciclo]")][-14:]
@@ -153,6 +157,7 @@ h1{font-size:18px;margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-
 h2{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px}
 .g{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr))}.tw{overflow-x:auto}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.tabs button{background:var(--line);color:var(--fg);border:0;border-radius:99px;padding:3px 10px;font:12px system-ui;cursor:pointer}.tabs button.on{background:var(--ok);color:#fff}
+details{border-bottom:1px solid var(--line);padding:4px 0}summary{cursor:pointer}details pre{max-height:180px;margin-top:4px}
 .md{max-height:520px;overflow:auto}.md table{font-size:13px}.md h1,.md h2,.md h3{color:var(--fg);text-transform:none;letter-spacing:0;font-size:15px;margin:12px 0 6px}.md code{font:12px ui-monospace,monospace;background:var(--line);padding:0 4px;border-radius:4px}.md ul{margin:4px 0;padding-left:20px}
 .big.review{background:#5b8def;animation:pulse2 2.4s infinite}tr.spento td{opacity:.45}.c{background:var(--card);border-radius:10px;padding:12px;overflow:hidden}
 .w{grid-column:1/-1}
@@ -180,12 +185,13 @@ svg{width:100%;height:60px;display:block}.run{animation:pulse2 1.1s infinite}
 <div class=c><h2>Attivit&agrave; file (ultime 2 ore, ogni 10 min)</h2><svg id=spark viewBox="0 0 240 60" preserveAspectRatio=none></svg><div class="feed" id=feed style="margin-top:8px"></div></div>
 <div class=c><h2>Cosa fa il ciclo</h2><pre id=ciclo></pre></div>
 <div class=c><h2>Log</h2><div class=tabs id=tabs></div><pre id=log></pre></div>
+<div class=c><h2>Cosa pensa ogni agente (RIASSUNTO.md)</h2><div id=mem></div></div>
 <div class="c w"><h2>Documenti (sola lettura)</h2><div class=tabs id=dtabs></div><div id=doc class=md></div></div></div>
 <script>
 const e=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const fa=s=>s==null?'-':s<60?s+' s':s<3600?Math.floor(s/60)+' min':Math.floor(s/3600)+' h '+Math.floor(s%3600/60)+' min';
 const T={lavora:'Stanno lavorando',attivo:'Attivo (file scritti da poco)',pausa:'In pausa (limite di richieste)',attesa:'Ciclo in attesa',review:'Versione pronta: aspetta il tuo feedback',fermo:'Fermo'};
-let logAg='ciclo';
+let logAg='ciclo',chiusi=new Set();
 const formatoOra=new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZoneName:'short'});
 function aggiornaOra(){const parti=Object.fromEntries(formatoOra.formatToParts(new Date()).map(p=>[p.type,p.value]));document.getElementById('ora').textContent=`${parti.weekday} ${parti.day} ${parti.hour}:${parti.minute}:${parti.second} ${parti.timeZoneName}`}
 aggiornaOra();setInterval(aggiornaOra,1000);
@@ -217,6 +223,7 @@ document.getElementById('bl').innerHTML=`<tr><th colspan=3>${aperti_b.length} ap
 const tb=['ciclo',...d.squadra,'capo'];
 document.getElementById('tabs').innerHTML=tb.map(x=>`<button class="${x==logAg?'on':''}" onclick="logAg='${x}';carLog();document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.textContent=='${x}'))">${x}</button>`).join('');
 carLog();
+document.getElementById('mem').innerHTML=d.agenti.filter(a=>a.ruolo=='squadra').map(a=>`<details data-a="${a.nome}" ${chiusi.has(a.nome)?'':'open'} ontoggle="this.open?chiusi.delete('${a.nome}'):chiusi.add('${a.nome}')"><summary>${a.nome} <span class=mut>${a.memoria_sec==null?'nessuna memoria':'aggiornata '+fa(a.memoria_sec)+' fa'}</span></summary><pre>${e(a.memoria||'(vuota: la scrive al prossimo turno)')}</pre></details>`).join('');
 }catch(x){document.getElementById('titolo').textContent='Pannello non raggiungibile';document.getElementById('big').className='big fermo'}}
 setInterval(()=>{document.querySelectorAll('.tk').forEach(el=>{el.textContent=fa(+el.dataset.s+Math.floor((Date.now()-tf)/1000))})},10000);
 const DOCN={richiesta:'Blocchi aperti',feedback:'Il mio feedback',stato:'Stato corrente',officina:'Status Officina',tappe:'Tappe'};let docK='richiesta';
