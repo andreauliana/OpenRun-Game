@@ -53,11 +53,17 @@ constexpr f32 CURVA_SPINTA = 0.015f;
 // senza essere contrastato dalla spinta centrifuga.
 constexpr f32 CURVA_SPINTA_OFFROAD_FACTOR = 0.25f;
 // Avversari: velocita' di punta in frazione di quella del giocatore (unita' di
-// strada al secondo) e tempo di avvicinamento alla punta. Prima il passo era
-// in unita' per frame tarato a 50 Hz: a 60 Hz superavano il giocatore del 20%.
-constexpr f32 RIVALE_PUNTA_MIN = 0.86f;
-constexpr f32 RIVALE_PUNTA_PASSO = 0.01f; // + 0..8 passi: 0.86..0.94
-constexpr f32 RIVALE_ACCEL_TAU_S = 3.5f;  // ~63% della punta in 3.5 s (il giocatore ci mette ~10 s per la punta)
+// strada al secondo). Prima il passo era in unita' per frame tarato a 50 Hz:
+// a 60 Hz superavano il giocatore. Punta 0.94..1.04: i piu' veloci restano
+// davanti a chi guida perfetto. Elastico continuo sul distacco (Andrea 23/10:
+// "tutti scappano"): chi e' davanti rallenta, chi e' dietro recupera, cosi' il
+// gruppo resta a pochi secondi dal giocatore e si riprende dopo un incidente.
+constexpr f32 RIVALE_PUNTA_MIN = 0.94f;
+constexpr f32 RIVALE_PUNTA_PASSO = 0.017f; // + 0..6 passi: 0.94..1.04
+constexpr f32 RIVALE_ACCEL_TAU_S = 2.0f;   // ~63% della punta in 2 s
+constexpr f32 RIVALE_ELASTICO_DISTANZA = 40000.0f; // a questo distacco l'elastico vale -/+25%
+constexpr f32 RIVALE_ELASTICO_MIN = 0.80f;
+constexpr f32 RIVALE_ELASTICO_MAX = 1.15f;
 constexpr f32 RIVALE_LATERALE_PER_S = 400.0f;
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
 // nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
@@ -555,7 +561,7 @@ void Game::inizializzaRivali() {
         r.xObiettivo = r.x;
         r.passo = 0.0f;
         const f32 puntaGiocatore = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
-        r.passoMax = puntaGiocatore * (RIVALE_PUNTA_MIN + RIVALE_PUNTA_PASSO * (f32)rnd.next(9));
+        r.passoMax = puntaGiocatore * (RIVALE_PUNTA_MIN + RIVALE_PUNTA_PASSO * (f32)rnd.next(7));
         r.ramo = (i % 2 == 0) ? -1 : 1;
         r.colore = 9 + (i % 4); // arancio, ciano, giallo, rosso
     }
@@ -572,10 +578,11 @@ void Game::aggiornaRivali() {
     sprites_.clear();
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
-        // Elastico come nei giochi arcade: chi e' molto avanti rallenta un po',
-        // chi e' molto dietro spinge. Cosi' anche dopo un incidente la gara resta aperta.
+        // Elastico come nei giochi arcade: chi e' avanti rallenta, chi e' dietro
+        // spinge, in proporzione al distacco. Cosi' anche dopo un incidente la gara resta aperta.
         const f32 distacco = r.progresso - (progressoTappePrecedenti_ + player_.z);
-        const f32 elastico = distacco > 15000.0f ? 0.85f : (distacco < -15000.0f ? 1.05f : 1.0f);
+        const f32 elastico = std::clamp(1.0f - 0.25f * distacco / RIVALE_ELASTICO_DISTANZA,
+                                        RIVALE_ELASTICO_MIN, RIVALE_ELASTICO_MAX);
         r.passo += (r.passoMax * elastico - r.passo) * avvicina;
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e, finche'
         // e' allineato, resta alla sua velocita'.
@@ -798,17 +805,26 @@ void Game::update() {
     if (playerFlipping_) {
         passoGiocatore_ = 0.0f;
         ++playerFlipFrame_;
-        if (playerFlipFrame_ >= (u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)) {
+        const u32 frameFlip = (u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_);
+        // Si riparte dal punto dell'incidente, al centro della propria corsia.
+        // Al bivio con la scelta ancora aperta centroCorsia e' 0, cioe' lo
+        // spartitraffico: si ripartiva in mezzo ai rami e si ribaltava per
+        // sempre (prova di Andrea 23/10). Si riparte sul ramo piu' vicino.
+        f32 xRipartenza = player_.centroCorsia;
+        const Road::Carreggiate cr = road_.carreggiate(player_.z, latoBivio_);
+        if (cr.doppia && latoBivio_ == 0)
+            xRipartenza = playerXIncidente_ < 0.0f ? cr.centro[0] : cr.centro[1];
+        // Rientro animato: nella seconda meta' del ribaltamento l'auto scivola
+        // dolcemente verso il centro invece di comparirci di colpo.
+        const f32 t = std::clamp(2.0f * (f32)playerFlipFrame_ / (f32)frameFlip - 1.0f, 0.0f, 1.0f);
+        const f32 morbido = t * t * (3.0f - 2.0f * t);
+        player_.x = playerXIncidente_ + (xRipartenza - playerXIncidente_) * morbido;
+        road_.playerX = player_.x;
+        if (playerFlipFrame_ >= frameFlip) {
             playerFlipping_ = false;
             playerFlipFrame_ = 0;
             offroadFrames_ = 0;
-            player_.x = player_.centroCorsia; // si riparte al centro della propria corsia
-            // Al bivio con la scelta ancora aperta centroCorsia e' 0, cioe' lo
-            // spartitraffico: si ripartiva in mezzo ai rami e si ribaltava per
-            // sempre (prova di Andrea 23/10). Si riparte sul ramo piu' vicino.
-            const Road::Carreggiate cr = road_.carreggiate(player_.z, latoBivio_);
-            if (cr.doppia && latoBivio_ == 0)
-                player_.x = playerXIncidente_ < 0.0f ? cr.centro[0] : cr.centro[1];
+            player_.x = xRipartenza;
             player_.speed = 0.0f;
             player_.offroad = false;
             road_.playerX = player_.x;

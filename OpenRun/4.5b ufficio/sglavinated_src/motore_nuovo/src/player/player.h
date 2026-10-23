@@ -19,6 +19,7 @@ public:
     f32 x = 0.0f;             // offset laterale dal centro strada
     f32 z = 0.0f;             // posizione assoluta sul tracciato
     bool offroad = false;     // fuori dalla carreggiata
+    bool sulBordo = false;    // ancora in strada ma sul bordo (rumble): frena appena
     i32 gear = 1;             // marcia (1 o 2) - per HUD e feeling
 
     f32 maxSpeed() const { return MAX_SPEED; }
@@ -57,6 +58,12 @@ private:
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
     static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
+    // Bordo: ultimo 15% prima del fuori strada (feedback Andrea 23/10). Spinta
+    // dimezzata, punta all'88%; a gas rilasciato perde un 15% in piu' al secondo.
+    static constexpr f32 BORDO_INIZIO = 0.85f;
+    static constexpr f32 BORDO_SPINTA = 0.5f;
+    static constexpr f32 BORDO_PUNTA = 0.88f;
+    static constexpr f32 BORDO_SLOW_PER_SEC = 0.85f;
 };
 
 } // namespace sgl
