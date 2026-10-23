@@ -143,7 +143,7 @@ DEFAULT usato nel frattempo: A, tuning un parametro alla volta, poi `sh UFFICIO/
 Impatto se cambi idea: modificare la costante OFFROAD in player.cpp e rieseguire gate.
 RISPOSTA DI ANDREA: A (dinamica OutRun: rallentamento fuori strada controllato, non blocco).
 
-## D12 | R1 completamento e ri-verifica Mac | builder-developer | [APERTA]
+## D12 | R1 completamento e ri-verifica Mac | builder-developer | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
 Dopo peer review incrociata su R1 e gate `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
@@ -164,7 +164,7 @@ Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di gui
 Perfezionamento e implementazione dei Personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
 
 
-## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [APERTA]
+## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
 Confermare stati proposti in `out/capo/STATI_PROPOSTI.md` per Tappa 1 / Gate T1-RUN e deleghe 4.6 (developer, developer-junior, designer = @grafico; consegne `out/developer/`, `out/developer-junior/`, `out/designer/`)?
@@ -225,7 +225,7 @@ Andrea: punto importante. Destinatari come sopra; puo' andare nello stesso check
 
 ---
 
-## D13 | Chiusura T1-RUN (Tappa 1) | capo | [APERTA]
+## D13 | Chiusura T1-RUN (Tappa 1) | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
 Confermare passaggio di T1-RUN a [x] non appena registrata la review incrociata indipendente su CP-005 e rieseguito ctest verde, dato che il gate `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` e' gia' verde (2026-10-20 ~14:05, exit 0, 6/6 percorsi OK, replay 2x IDENTICO, ms/frame <= 20)?
@@ -237,7 +237,7 @@ RISPOSTA DI ANDREA: B
 
 ---
 
-## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [APERTA]
+## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
 Dopo T1-RUN [x] e CP-005 chiuso, Andrea ri-verifica il runner su Mac (v91, SDL2) prima di ogni lavoro dedicato a Pi 400/RetroPie, come da D12 (risposta A registrata) e ordine test T1-Q5?
@@ -247,7 +247,7 @@ RISPOSTA DI ANDREA: A — (D12 A già registrato; conferma richiesta)
 
 ---
 
-## D15 | Attivazione G1 e delega @grafico | capo | [APERTA]
+## D15 | Attivazione G1 e delega @grafico | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
 Confermare attivazione G1 (catalogo grafico) con delega al @designer (= @grafico): catalogare i 100 PNG fuori elenco, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", motore/test usano solo `pronto` e `approvato`?
@@ -255,7 +255,7 @@ Opzioni: A) sì, attiva G1 su @designer  B) no, tieni G1 fuori scope T1
 RISPOSTA DI ANDREA: A — (T1-Q4 già risposto: attivare; conferma richiesta)
 Impatto se cambi idea: G1 resta [ ]; sprite veri (P1 punto 4, traffico, personaggi, UFO) restano bloccati.
 
-## D16 | Attivazione G1 e delega @grafico | Andrea | [APERTA]
+## D16 | Attivazione G1 e delega @grafico | Andrea | [CHIUSA 2026-10-23 da Andrea]
 Andrea is currently testing the review of the Mac runner (v91, SDL2).
 In the meantime, continue working autonomously on the game development and design.
 **Priorities:**
@@ -265,7 +265,7 @@ In the meantime, continue working autonomously on the game development and desig
 
 **Important:** Do not mark Andrea's manual Mac/SDL2 review as passed. Keep it explicitly pending until Andrea confirms that he has tested the correct build.
 
-## D18 | Chiusura T1-RUN e avvio R2 | capo | [APERTA]
+## D18 | Chiusura T1-RUN e avvio R2 | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda: dopo chiusura formale CP-005 (review incrociata registrata) e `ctest` verde su tutte le 6 piste, confermare T1-RUN [x] e avvio R2, subordinato alla prova runner Mac di Andrea su build corretta (ordine test T1-Q5: prima Mac, poi Pi 400/RetroPie; nessun lavoro dedicato Pi prima dell'ok Mac)?
 
