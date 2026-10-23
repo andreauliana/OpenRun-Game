@@ -53,8 +53,8 @@ def processi():
 def blocchi():
     out, cur = [], None
     for l in leggi("RICHIESTA.md").splitlines():
-        m = re.match(r"## BLOCCO (\S+)\s+[—-]\s+(@[\w-]+)?", l)
-        if m: cur = {"id": m.group(1), "agente": (m.group(2) or "").lstrip("@"), "stato": "?"}; out.append(cur); continue
+        m = re.match(r"## BLOCCO (\S+)\s+[—-]\s+(.*)", l)
+        if m: cur = {"id": m.group(1), "agente": " ".join(re.findall(r"@([\w-]+)", m.group(2).split("(")[0])), "stato": "?"}; out.append(cur); continue
         m = re.match(r"\|\s*Stato\s*\|\s*(\[.\])", l)
         if m and cur: cur["stato"] = m.group(1)
     return [b for b in out if b["id"] not in ("0", "X")]
@@ -76,7 +76,7 @@ def recenti(n=16, finestra=7200, bin_s=600):
     lista.sort(reverse=True)
     out = []
     for mt, rel in lista[:n]:
-        parti = rel.split(os.sep); ag = parti[1] if parts_ok(parti) else ""
+        parti = rel.split(os.sep); ag = parti[1] if parts_ok(parti) else ("grafico" if parti[:2] == ["UFFICIO", "Dipartimento Grafico"] else "")
         out.append({"rel": rel, "sec": int(adesso - mt), "agente": ag})
     return out, bins[::-1]
 
@@ -88,22 +88,18 @@ def attivi():
     return t or ["developer", "developer-junior"]
 
 def versione():
-    v = leggi(".versione").strip() or "90"
+    v = leggi(".versione").strip()
     fb = leggi("ANDREA_REVIEW.md")
     m = re.search(r"Tappa attiva:\s*(\S+)", fb)
     d = os.path.join(S, "out", "review")
     rv = sorted(os.listdir(d), key=lambda f: int(re.sub(r"\D", "", f) or 0)) if os.path.isdir(d) else []
-    return {"versione": "v" + v, "tappa": m.group(1) if m else "?", "ultima_review": rv[-1] if rv else ""}
+    return {"versione": "v" + v if v else "", "tappa": m.group(1) if m else "?", "ultima_review": rv[-1] if rv else ""}
 
-DOCS = {"tappe": "TAPPE.md", "feedback": "sglavinated_src/ANDREA_REVIEW.md", "readme": "README.md",
-        "officina": "sglavinated_src/UFFICIO/Officina/STATUS_OFFICINA.md"}
+DOCS = {"richiesta": "sglavinated_src/RICHIESTA_APERTA.md", "feedback": "sglavinated_src/ANDREA_REVIEW.md",
+        "stato": "sglavinated_src/Checkpoint Revision/STATO_CORRENTE.md",
+        "officina": "sglavinated_src/UFFICIO/Officina/STATUS_OFFICINA.md", "tappe": "sglavinated_src/TAPPE.md"}
 def documento(k):
-    if k == "review":
-        d = os.path.join(S, "out", "review")
-        rv = sorted(os.listdir(d), key=lambda f: int(re.sub(r"\D", "", f) or 0)) if os.path.isdir(d) else []
-        p = os.path.join(d, rv[-1]) if rv else ""
-    else:
-        p = os.path.join(BASE, DOCS.get(k, "TAPPE.md"))
+    p = os.path.join(BASE, DOCS.get(k, DOCS["richiesta"]))
     try: return open(p, encoding="utf-8", errors="replace").read()
     except OSError: return "(file non ancora presente)"
 
@@ -113,7 +109,7 @@ def log_agente(a):
     return data_pannello(ANSI.sub("", leggi(f"log_agenti/{a}.log", 120)))
 
 def modello(a):
-    t = leggi(f".opencode/agents/{a}.md", 12)
+    t = leggi(f".opencode/agents/{a}.md")
     m = re.search(r"^model:\s*(\S+)", t, re.M)
     return m.group(1).replace("opencode/", "").replace("-free", "") if m else "?"
 
@@ -150,8 +146,7 @@ def stato():
     return {"ora": time.strftime("%a %d %H:%M"), "generale": gen, "processi": pr, "log_sec": eta, "ultima_modifica_sec": ultima_modifica,
             "ciclo": ciclo, "log": "\n".join(righe[-25:]), "attivita": att, "bins": bins,
             "agenti": ag, "blocchi": blocchi(), "out": nout, "libreria": nlib, "squadra": squadra, "ver": versione(),
-            "decisioni_aperte": len(re.findall(r"^## (?:D\d+|A\d+|T1-Q\d+)[^\n]*\[APERTA\]", leggi("ANDREA_REVIEW.md"), re.M)),
-            "anomalie": leggi("../../NOTE_ANOMALIE_NOTTE.md", 6)}
+            "decisioni_aperte": len(re.findall(r"^## (?:D\d+|A\d+|T1-Q\d+)[^\n]*\[APERTA\]", leggi("ANDREA_REVIEW.md"), re.M))}
 
 PAGINA = r"""<!doctype html><html lang=it><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Pannello OpenRun 4.6</title><style>
@@ -185,7 +180,7 @@ svg{width:100%;height:60px;display:block}.run{animation:pulse2 1.1s infinite}
 <h1>OpenRun 4.6 Studio · pannello <span id=ver class="b ok"></span> <span id=ora class=mut></span></h1>
 <div class=g><div class="c w"><div class=hero><div class=big id=big></div><div><div id=titolo style="font-size:20px;font-weight:600">...</div><div id=sotto class=mut></div></div></div>
 <div class=bar><i id=prog style="width:0"></i></div><div id=progt class=mut></div></div>
-<div class=c><h2>Blocchi</h2><div class=tw><table id=bl></table></div></div>
+<div class=c><h2>Blocchi aperti</h2><div class=tw><table id=bl></table></div></div>
 <div class=c><h2>Agenti</h2><div class=tw><table id=ag></table></div></div>
 <div class=c><h2>Attivit&agrave; file (ultime 2 ore, ogni 10 min)</h2><svg id=spark viewBox="0 0 240 60" preserveAspectRatio=none></svg><div class="feed" id=feed style="margin-top:8px"></div></div>
 <div class=c><h2>Cosa fa il ciclo</h2><pre id=ciclo></pre></div>
@@ -203,7 +198,7 @@ aggiornaOra();setInterval(aggiornaOra,1000);
 async function carLog(){try{const tx=await (await fetch('/log?ag='+logAg)).text();const lg=document.getElementById('log'),bas=lg.scrollTop+lg.clientHeight>=lg.scrollHeight-5;lg.textContent=tx||'(log vuoto)';if(bas)lg.scrollTop=lg.scrollHeight}catch(x){}}
 let tf=Date.now(),visti=new Set(),primo=true,ultimoOk=0;
 async function t(){try{const d=await (await fetch('/api')).json();tf=Date.now();ultimoOk=tf;
-document.getElementById('ver').textContent=d.ver.versione+' · tappa '+d.ver.tappa+(d.ver.ultima_review?' · review '+d.ver.ultima_review:'');
+document.getElementById('ver').textContent=[d.ver.versione,'tappa '+d.ver.tappa,d.ver.ultima_review?'review '+d.ver.ultima_review:''].filter(Boolean).join(' · ');
 document.getElementById('big').className='big '+d.generale;
 const n=d.processi.in_corso.map(x=>x.nome);
 document.getElementById('titolo').textContent=T[d.generale]+(n.length?': '+n.join(', '):'');
@@ -223,14 +218,15 @@ primo=false;
 const b=d.bins,mx=Math.max(1,...b),w=240/b.length;
 document.getElementById('spark').innerHTML=b.map((v,i)=>`<rect x="${i*w+1}" width="${w-2}" y="${60-55*v/mx}" height="${55*v/mx||1}" rx="2" fill="${i==b.length-1?'#4caf7d':'#4caf7d88'}"/>`).join('');
 document.getElementById('ciclo').textContent=d.ciclo.join('\n');
-document.getElementById('bl').innerHTML=d.blocchi.map(b=>`<tr><td>${e(b.id)}</td><td class=mut>${e(b.agente)}</td><td><span class="b ${b.stato==='[x]'?'ok':b.stato==='[~]'?'wait':'mut'}">${e(b.stato)}</span></td></tr>`).join('');
+const aperti_b=d.blocchi.filter(b=>b.stato!=='[x]'&&b.stato!=='[-]');
+document.getElementById('bl').innerHTML=`<tr><th colspan=3>${aperti_b.length} aperti · ${done} chiusi</tr>`+aperti_b.map(b=>`<tr><td>${e(b.id)}</td><td class=mut>${e(b.agente)}</td><td><span class="b ${b.stato==='[x]'?'ok':b.stato==='[~]'?'wait':'mut'}">${e(b.stato)}</span></td></tr>`).join('');
 const tb=['ciclo',...d.squadra,'capo'];
 document.getElementById('tabs').innerHTML=tb.map(x=>`<button class="${x==logAg?'on':''}" onclick="logAg='${x}';carLog();document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.textContent=='${x}'))">${x}</button>`).join('');
 carLog();
 document.getElementById('mem').innerHTML=d.agenti.filter(a=>a.ruolo!='spento').map(a=>`<details data-a="${a.nome}" ${aperti.has(a.nome)?'open':''} ontoggle="this.open?aperti.add('${a.nome}'):aperti.delete('${a.nome}')"><summary>${a.nome} <span class=mut>${a.memoria_sec==null?'nessuna memoria':'aggiornata '+fa(a.memoria_sec)+' fa'}</span></summary><pre>${e(a.memoria||'(vuota: la scrive al prossimo turno)')}</pre></details>`).join('');
 }catch(x){document.getElementById('titolo').textContent='Pannello non raggiungibile';document.getElementById('big').className='big fermo'}}
 setInterval(()=>{document.querySelectorAll('.tk').forEach(el=>{el.textContent=fa(+el.dataset.s+Math.floor((Date.now()-tf)/1000))})},10000);
-const DOCN={tappe:'Tappe e funzioni',feedback:'Il mio feedback',review:'Ultima review',readme:'README',officina:'Status Officina'};let docK='tappe';
+const DOCN={richiesta:'Blocchi aperti',feedback:'Il mio feedback',stato:'Stato corrente',officina:'Status Officina',tappe:'Tappe'};let docK='richiesta';
 function inl(x){return e(x).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>')}
 function md(t){const L=t.split('\n');let h='',i=0;while(i<L.length){const l=L[i];
  if(/^\|/.test(l)){const rows=[];while(i<L.length&&/^\|/.test(L[i])){if(!/^\|[\s|:-]+\|$/.test(L[i]))rows.push(L[i].replace(/^\||\|$/g,'').split('|'));i++}
