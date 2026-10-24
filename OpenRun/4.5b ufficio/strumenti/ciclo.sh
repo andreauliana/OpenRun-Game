@@ -190,7 +190,7 @@ manutenzione() {
 
 # Pausa adattiva per limite di richieste (vale per tutti i modelli free): 15, 30, 60, 120 min (max RL_MAX, default 7200 s).
 # Si azzera appena una richiesta riesce. Nessun registro su file: solo a video.
-rl_n=0
+rl_n=0; cambi_limite=0
 pausa_limite() {
   d=$(( ${RL_BASE:-900} * (1 << rl_n) )); [ "$d" -gt "${RL_MAX:-7200}" ] && d="${RL_MAX:-7200}"
   rl_n=$((rl_n+1)); [ "$rl_n" -gt 4 ] && rl_n=4
@@ -198,7 +198,7 @@ pausa_limite() {
   fine=$(( $(date +%s) + d )); manutenzione
   while [ "$(date +%s)" -lt "$fine" ]; do [ -f STOP ] && break; r=$(( fine - $(date +%s) )); [ "$r" -gt "${CHK_PAUSA:-600}" ] && r="${CHK_PAUSA:-600}"; sleep "$r"; manutenzione; done
 }
-ok_limite() { rl_n=0; }
+ok_limite() { rl_n=0; cambi_limite=0; }
 
 agenti_liberi() {
   # agenti con almeno un blocco aperto ([ ] o [~]) in RICHIESTA.md, in ordine
@@ -282,7 +282,13 @@ giro_diretto() {
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
     if [ "$rc" -eq 0 ]; then ok_limite; echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag ok, $nf file toccati"
     elif [ "$rc" -ge 128 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag fermato dal timeout, $nf file toccati (modello invariato)"
-    elif tail -n 40 "log_agenti/$ag.log" | grep -qiE "rate limit|usage limit"; then pausa_limite; break
+    elif tail -n 40 "log_agenti/$ag.log" | grep -qi "usage limit"; then
+      # Limite gratuito di OpenCode: prima provo gli altri modelli della panchina; pausa solo quando li ho provati tutti.
+      cambi_limite=$((cambi_limite+1))
+      if [ "$cambi_limite" -ge "$(grep -c . "$BASE/strumenti/panchina.txt")" ]; then cambi_limite=0; pausa_limite; break; fi
+      echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag al limite gratuito del modello: passo al modello successivo della panchina ($cambi_limite)"
+      V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1
+    elif tail -n 40 "log_agenti/$ag.log" | grep -qi "rate limit"; then pausa_limite; break
     else echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag in errore ($rc), $nf file toccati: passo al modello successivo della panchina"; V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1; fi
     sleep "${GIRO_SLEEP:-10}"
   done
