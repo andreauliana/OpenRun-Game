@@ -47,3 +47,4 @@ Tasti: frecce o WASD per guidare, Z (o Ctrl) per accelerare, X (o Alt) per il ra
 - `SDL2 non trovata`: rilancia `brew install sdl2` e poi rifai il passo 2.
 - `SDL2_image non trovata` durante cmake: manca `sdl2_image` (`brew install sdl2_image`). Il gioco parte comunque, con i cartelloni presi dai file raw.
 - Dopo un `git pull` basta rifare il passo 2: si ricompila solo quello che è cambiato.
+- `CMakeCache.txt directory ... is different` al passo 2 (cartella spostata o build fatta altrove): lancia prima `sh UFFICIO/Officina/TOOL/run_tests.sh`, che mette da parte la build vecchia in `UFFICIO/Officina/build_vecchia_<data>`, poi rifai il passo 2.

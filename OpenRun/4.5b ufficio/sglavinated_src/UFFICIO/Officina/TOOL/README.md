@@ -14,6 +14,7 @@ La configurazione CMake attiva è `../../../motore_nuovo/CMakeLists.txt`; tutti 
 | Prove CTest | `sh UFFICIO/Officina/TOOL/run_tests.sh` | Configura Release, compila `prova_gate` e lancia i sette test registrati quando `motore_nuovo/test/prova_gate.cpp` è presente |
 | Gate integrato | `sh UFFICIO/Officina/TOOL/gate_t1.sh` | Configura/compila in Release e verifica i tre livelli, replay, accelerazione, crash, sterzo e curve; log in `UFFICIO/Officina/Test area/gate_t1.log` |
 | Soak gate | `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` | Aggiunge la prova da 30.000 frame |
+| Cartella di build | `TOOL/prepara_build.sh` (incluso da `run_tests.sh` e `gate_t1.sh`) | Usa sempre `UFFICIO/Officina/build`; se la cache CMake viene da un altro percorso la sposta in `build_vecchia_<data>` e ne crea una nuova |
 | Inizializzazione SDL | `sh UFFICIO/Officina/TOOL/check_sdl_init.sh` | Controlla `SDL_Init` del runner già compilato |
 
 ## SDL2_image — tool immagini per i developer

@@ -15,13 +15,11 @@ sglavinated_src/build/
 sglavinated_src/build_gate/
 sglavinated_src/UFFICIO/Officina/build*/
 !sglavinated_src/UFFICIO/Officina/build/README.md
-sglavinated_src/UFFICIO/Officina/Test area/gate_t1.log
-sglavinated_src/UFFICIO/Officina/Test area/lv_*/
-sglavinated_src/UFFICIO/Officina/Test area/soak/
-sglavinated_src/UFFICIO/Officina/Test area/accelerazione/
-sglavinated_src/UFFICIO/Officina/Test area/crash/
-sglavinated_src/UFFICIO/Officina/Test area/sterzo/
-sglavinated_src/UFFICIO/Officina/Test area/curve/
+# Risultati dei test (si rigenerano con gate_t1.sh): in git resta solo il README
+sglavinated_src/UFFICIO/Officina/Test area/*/
+sglavinated_src/UFFICIO/Officina/Test area/*.log
+sglavinated_src/UFFICIO/Officina/Test area/*.ppm
+!sglavinated_src/UFFICIO/Officina/Test area/strumenti/
 sglavinated_src/.fuori_posto.log
 # Cartelle di build CMake (si rigenerano con cmake; contengono percorsi assoluti del Mac)
 build/
@@ -32,5 +30,4 @@ sglavinated_src/out/collaudatore/**/prova_gate*.log
 # File temporanei del checkpoint automatico (ciclo.sh)
 sglavinated_src/.auto_rosso
 sglavinated_src/.auto_verifica.tmp
-sglavinated_src/UFFICIO/Officina/Test area/screenshot_p1/
 sglavinated_src/.auto_*.tmp
