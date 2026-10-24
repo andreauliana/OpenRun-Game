@@ -12,17 +12,8 @@ LOG="UFFICIO/Officina/Test area/gate_t1.log"
 mkdir -p "UFFICIO/Officina/Test area"
 : > "$LOG"
 
-# Non cancellare mai la build esistente: gli ZIP possono essere spostati su un'altra
-# macchina e contenere una CMakeCache con percorsi assoluti non piu' validi.
 BUILD_DIR="UFFICIO/Officina/build"
-EXPECTED_SOURCE=$(cd motore_nuovo && pwd -P) || exit 9
-if [ -f "$BUILD_DIR/CMakeCache.txt" ]; then
-  CACHED_SOURCE=$(sed -n 's/^CMAKE_HOME_DIRECTORY:INTERNAL=//p' "$BUILD_DIR/CMakeCache.txt" | head -n 1)
-  if [ -n "$CACHED_SOURCE" ] && [ "$CACHED_SOURCE" != "$EXPECTED_SOURCE" ]; then
-    BUILD_DIR="UFFICIO/Officina/build_relocated_$(printf '%s' "$EXPECTED_SOURCE" | cksum | awk '{print $1}')"
-    echo "Cache CMake non portabile: uso $BUILD_DIR senza cancellare la build precedente." >> "$LOG"
-  fi
-fi
+. ./UFFICIO/Officina/TOOL/prepara_build.sh 2>> "$LOG"
 
 echo "== configurazione (cmake)"
 cmake -S motore_nuovo -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release >> "$LOG" 2>&1 || {

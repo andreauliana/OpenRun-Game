@@ -21,6 +21,8 @@ case "$GATE_DIR/" in
     ;;
 esac
 
+. ./UFFICIO/Officina/TOOL/prepara_build.sh
+
 cmake -S motore_nuovo -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release || exit 10
 cmake --build "$BUILD_DIR" --target prova_gate || exit 11
 ctest --test-dir "$BUILD_DIR" --output-on-failure
