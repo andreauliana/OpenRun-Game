@@ -2,6 +2,20 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "opencode/nemotron-3.5-super-vl-free",
   "default_agent": "capo",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (locale, riserva)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "openrun-locale": {
+          "name": "openrun-locale (qwen3.5:4b, contesto 16k)"
+        }
+      }
+    }
+  },
   "permission": {
     "bash": {
       "*": "deny",
