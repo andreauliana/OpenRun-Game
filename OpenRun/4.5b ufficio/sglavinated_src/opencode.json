@@ -3,6 +3,18 @@
   "model": "opencode/nemotron-3.5-super-vl-free",
   "default_agent": "capo",
   "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (locale, riserva)",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
+      },
+      "models": {
+        "openrun-locale": {
+          "name": "openrun-locale (Qwen3.5 4B, contesto 16k)"
+        }
+      }
+    },
     "locale": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "llama.cpp (locale, riserva)",
