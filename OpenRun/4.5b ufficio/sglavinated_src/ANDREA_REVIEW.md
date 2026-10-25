@@ -286,8 +286,6 @@ RISPOSTA DI ANDREA: B
 
 Domanda:
 Confermare chiusura di T1-RUN a [x] ora che il gate e' verde (`sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame <= 20, ctest 17/17 verde 22/10), CP-005 chiusa con review incrociata indipendente positiva registrata, e Andrea ha provato il runner Mac il 23/10 (ctest 17/17, runner ok, registrato in ANDREA_REVIEW.md)?
-Opzioni: A) sì, T1-RUN [x] proposto e PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato Pi 400/RetroPie prima di ok Mac)  B) no, T1-RUN resta [~] in attesa di ulteriore prova/decisione di Andrea
-Raccomandazione: A
-DEFAULT usato nel frattempo: A — T1-RUN [x] proposto, si procede senza aspettare; PRONTO PER ANDREA per la chiusura formale e per R2 (regola 8: CHIUSO richiede decisione di Andrea).
+Opzioni: A) sì, T1-RUN [x] proposto e PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato Pi 400/RetroPie prima di ok Mac)  B) no, T1-RUN resta [~] in attesa di ulteriore prova/decisione di Andrea.
 Impatto se cambi idea: T1-RUN resta [~], R2 non parte, si attende nuova prova di Andrea prima del lavoro dedicato a Pi 400/RetroPie.
-RISPOSTA DI ANDREA:
+RISPOSTA DI ANDREA: B
