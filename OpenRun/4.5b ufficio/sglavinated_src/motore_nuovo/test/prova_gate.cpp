@@ -7,6 +7,8 @@
 //                percorso (profilo del tracciato + un giro intero con guida automatica) |
 //                espansione (verifica espansione tracciato su tutti i 6 livelli) |
 //                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste)
+//                bivio_bordi (bordo strada attraverso il bivio sul livello piu' curvo:
+//                           nessun ribaltamento, offroad consecutivi <= N)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
 //   2. determinismo: frameHash identico ogni 60 frame fra run A e run B
@@ -987,6 +989,360 @@ bool verificaBivioUscita(const std::string& outDir) {
     return ok;
 }
 
+// --- Gate FORK1 punto 7: transizione graduale di tema al cambio tappa ---
+// Alla fineTappa il Renderer deve interpolare TemaColori dal tema della tappa
+// che finisce al tema della tappa nuova in transizione_tema_s secondi
+// (dati/config.json, default 1.0 s), NON in un singolo frame.
+// Guida la gara su lv_01_neon fino al primo cambio tappa e campiona il
+// colore del cielo (framebuffer riga 8 < HORIZON_Y 112, colonna centrale)
+// a ogni frame. Verifica: cambio raggiunto, variazione per canale tra due
+// frame consecutivi <= soglia (graduale, niente scatto), cielo finale
+// diverso da quello iniziale, transizione completata entro transizione_tema_s
+// con tolleranza e in piu' di un frame. Soglie da dati/tracciati/regole.json
+// ("tema_transizione"); durata e frequenza da dati/config.json.
+struct TemaRegole {
+    f32 delta_canale_max_per_frame = 12.0f;
+};
+
+static TemaRegole leggiRegoleTemaTransizione() {
+    TemaRegole r;
+    std::ifstream f("motore_nuovo/dati/tracciati/regole.json");
+    if (!f.is_open()) return r;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return r;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return r;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue temaVal;
+    if (!sgl::jsonGet(root, "tema_transizione", temaVal) || !sgl::jsonIsObject(temaVal)) return r;
+    const auto& t = sgl::jsonAsObject(temaVal);
+    leggiNumeroJson(t, "delta_canale_max_per_frame", r.delta_canale_max_per_frame);
+    return r;
+}
+
+// Legge frequenza_hz e transizione_tema_s da dati/config.json.
+// Ritorna durata (secondi) e frequenza (Hz): default 1.0 s e 60 Hz.
+static void leggiTransizioneDaConfig(f32& durataS, i32& hz) {
+    durataS = 1.0f;
+    hz = 60;
+    std::ifstream f("motore_nuovo/dati/config.json");
+    if (!f.is_open()) return;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue v;
+    if (sgl::jsonGet(root, "frequenza_hz", v) && sgl::jsonIsNumber(v)) {
+        i32 vhz = (i32)sgl::jsonAsNumber(v);
+        if (vhz > 0) hz = vhz;
+    }
+    if (sgl::jsonGet(root, "transizione_tema_s", v) && sgl::jsonIsNumber(v)) {
+        f32 vs = (f32)sgl::jsonAsNumber(v);
+        if (vs > 0.0f) durataS = vs;
+    }
+}
+
+static u32 cieloPixel(Game& game) {
+    const u32* d = game.fb().data();
+    return d[8 * Framebuffer::WIDTH + Framebuffer::WIDTH / 2]; // riga 8 < HORIZON_Y (112): cielo
+}
+
+static i32 deltaCanaleMax(u32 a, u32 b) {
+    i32 da = std::abs((i32)(((a >> 16) & 0xFF) - ((b >> 16) & 0xFF)));
+    i32 dg = std::abs((i32)(((a >> 8) & 0xFF) - ((b >> 8) & 0xFF)));
+    i32 db = std::abs((i32)((a & 0xFF) - (b & 0xFF)));
+    return std::max(da, std::max(dg, db));
+}
+
+bool verificaTemaTransizione(const std::string& outDir) {
+    const TemaRegole r = leggiRegoleTemaTransizione();
+    f32 durataS = 0.0f;
+    i32 hz = 0;
+    leggiTransizioneDaConfig(durataS, hz);
+    const f32 frameAttesi = durataS * (f32)hz;
+    const i32 FRAME_MAX = 40000;   // tetto di sicurezza: molto oltre un giro
+    const i32 FRAME_STABILI = 30;  // tema nuovo considerato raggiunto dopo N frame uguali
+    const i32 RING = 16;           // ring buffer fotogrammi attorno al cambio
+
+    Game game(12345u);
+    caricaSponsor(game);
+    game.init("lv_01_neon"); // tema default (nessun "colori": cielo 0x202040)
+    if (!game.avviaGara()) {
+        std::printf("tema_transizione: FALLITO (gara non avviata)\n");
+        return false;
+    }
+    const std::string tappaInizioId = game.tappaCorrente();
+    const i32 tappaInizio = game.state().tappa;
+
+    bool cambioAvvenuto = false;
+    i32 cambioFrame = -1, frameFine = -1;
+    u32 cieloInizio = 0, cieloFine = 0;
+    f32 maxDelta = 0.0f;
+    i32 stabili = 0;
+    u32 cieloPrec = 0;
+    bool ok = true;
+    std::vector<std::vector<u32>> ring(RING);
+    std::string tappaDopoId;
+
+    for (i32 frame = 0; frame < FRAME_MAX && !game.state().arrivo; ++frame) {
+        Pad pad{}; pad.held = Pad::A;
+        const GameState& s = game.state();
+        const Road& road = game.road();
+        f32 obiettivo = 0.0f;
+        if (road.bivioAttivo() && s.latoBivio == 0 && s.playerZ > road.bivioInizioZ())
+            obiettivo = -(f32)Road::BIVIO_DIST; // a sinistra: lv_02_atomico (cielo diverso)
+        if (s.playerX > obiettivo + 120.0f) pad.held |= (u64)Pad::Left;
+        else if (s.playerX < obiettivo - 120.0f) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        game.update();
+        game.render();
+        const u32 cielo = cieloPixel(game);
+        ring[(size_t)(frame & (RING - 1))].assign(game.fb().data(),
+            game.fb().data() + (size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT);
+
+        if (!cambioAvvenuto) {
+            if (s.tappa != tappaInizio) {
+                cambioAvvenuto = true;
+                cambioFrame = frame;
+                cieloInizio = cieloPrec;   // al cambio il tema e' ancora quello vecchio
+                tappaDopoId = game.tappaCorrente();
+                // screenshot: 2 frame prima, 1 frame prima, cambio
+                if (cambioFrame >= 2)
+                    salvaPPM(outDir + "/p_tema_transizione_prima2.ppm",
+                             ring[(size_t)((cambioFrame - 2) & (RING - 1))].data(),
+                             Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                if (cambioFrame >= 1)
+                    salvaPPM(outDir + "/p_tema_transizione_prima1.ppm",
+                             ring[(size_t)((cambioFrame - 1) & (RING - 1))].data(),
+                             Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                salvaPPM(outDir + "/p_tema_transizione_cambio.ppm",
+                         ring[(size_t)(cambioFrame & (RING - 1))].data(),
+                         Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                // primo frame della tappa nuova: il cielo non deve aver giA' saltato al nuovo tema
+                if (deltaCanaleMax(cielo, cieloInizio) > r.delta_canale_max_per_frame) {
+                    ok = false;
+                    std::printf("  VIOLAZIONE: scatto di tema al cambio tappa (frame %d, delta %d > soglia %.0f)\n",
+                                frame, deltaCanaleMax(cielo, cieloInizio), r.delta_canale_max_per_frame);
+                }
+            } else {
+                cieloPrec = cielo;
+            }
+        } else {
+            const i32 d = deltaCanaleMax(cielo, cieloPrec);
+            if ((f32)d > maxDelta) maxDelta = (f32)d;
+            if (frame == cambioFrame + 1 || frame == cambioFrame + 2 || frame == cambioFrame + 10)
+                salvaPPM(outDir + "/p_tema_transizione_dopo" + std::to_string(frame - cambioFrame) + ".ppm",
+                         game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+            if (cielo == cieloPrec) {
+                if (++stabili >= FRAME_STABILI) {
+                    cieloFine = cielo;
+                    frameFine = frame;
+                    break;
+                }
+            } else {
+                stabili = 0;
+                cieloPrec = cielo;
+            }
+        }
+    }
+
+    const i32 transFrame = (frameFine >= 0 && cambioFrame >= 0) ? frameFine - cambioFrame : -1;
+    const f32 transS = transFrame > 0 ? (f32)transFrame / (f32)hz : -1.0f;
+    const i32 frameLimite = (i32)(frameAttesi * 2.0f) + 10;
+    salvaPPM(outDir + "/p_tema_transizione_fine.ppm", game.fb().data(),
+             Framebuffer::WIDTH, Framebuffer::HEIGHT);
+
+    if (!cambioAvvenuto) {
+        std::printf("  FALLITO: cambio tappa non raggiunto entro %d frame\n", FRAME_MAX);
+        ok = false;
+    }
+    if (cambioAvvenuto) {
+        if (cieloFine == cieloInizio) {
+            std::printf("  FALLITO: nessun cambio di tema osservato (%s -> %s)\n",
+                        tappaInizioId.c_str(), tappaDopoId.c_str());
+            ok = false;
+        }
+        if (maxDelta > r.delta_canale_max_per_frame) {
+            std::printf("  FALLITO: tema non graduale (maxDeltaCanale=%.1f > soglia %.0f)\n",
+                        maxDelta, r.delta_canale_max_per_frame);
+            ok = false;
+        }
+        if (transFrame <= 1) {
+            std::printf("  FALLITO: transizione istantanea (1 frame)\n");
+            ok = false;
+        }
+        if (transFrame > frameLimite) {
+            std::printf("  FALLITO: transizione troppo lunga (%d frame > %d)\n",
+                        transFrame, frameLimite);
+            ok = false;
+        }
+        std::printf("tema_transizione %s -> %s: cambio frame %d | cielo 0x%06X -> 0x%06X | "
+                    "maxDeltaCanale=%.1f (soglia %.0f) | transizione %d frame (%.2f s, attesi ~%.1f, limite %d) | %s\n",
+                    tappaInizioId.c_str(), tappaDopoId.c_str(), cambioFrame,
+                    cieloInizio & 0xFFFFFF, cieloFine & 0xFFFFFF, maxDelta,
+                    r.delta_canale_max_per_frame, transFrame, transS, frameAttesi, frameLimite,
+                    ok ? "OK" : "FALLITO");
+    }
+    std::printf("%s\n", ok ? "GATE TEMA TRANSIZIONE OK" : "FALLITO: tema transizione non graduale");
+    return ok;
+}
+
+// --- Gate FORK1 punto 5: bordo strada attraverso il bivio sul livello piu' curvo ---
+// Guida scriptata (gas pieno, sterzo verso il ramo scelto) che attraversa due bivi:
+// lv_01_neon -> lv_03_foglie (il piu' curvo: curva max 1.02) -> cambio tappa.
+// Verifica: arrivo al cambio tappa, nessun ribaltamento (show di crash mai attivo)
+// e offroad consecutivi <= N (regole.json "bivio_bordi", N=60 frame = 1 s @ 60 Hz;
+// il ribaltamento del motore scatta a OFFROAD_CRASH_S=2.0 s = 120 frame @ 60 Hz,
+// soglia di allarme a meta' per individuare l'auto intrappolata prima del ribaltamento).
+// Sterzo normale verso il ramo scelto sia dentro che fuori dal bivio; il ramo non
+// scelto non deve spingere l'auto. Salva screenshot PPM attorno al cambio tappa.
+struct BordoRegole {
+    i32 offroadMaxConsecutivi = 60;
+};
+
+static BordoRegole leggiRegoleBordoBivio() {
+    BordoRegole r;
+    std::ifstream f("motore_nuovo/dati/tracciati/regole.json");
+    if (!f.is_open()) return r;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return r;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return r;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue bVal;
+    if (!sgl::jsonGet(root, "bivio_bordi", bVal) || !sgl::jsonIsObject(bVal)) return r;
+    const auto& b = sgl::jsonAsObject(bVal);
+    leggiIntJson(b, "offroad_max_consecutivi", r.offroadMaxConsecutivi);
+    return r;
+}
+
+static const char* kScelteBordi[] = { "DS", "DD" }; // lv_01 -> destra (lv_03, piu' curvo), poi uscita sinistra/destra
+
+static Pad guidaVersoRamo(const Game& game, const char* scelte, i32& sceltaIdx, bool& sceltaPresa) {
+    Pad pad{}; pad.held = Pad::A;
+    const GameState& s = game.state();
+    const Road& road = game.road();
+    f32 obiettivo = 0.0f;
+    if (road.bivioAttivo()) {
+        if (s.latoBivio != 0) {
+            // Ramo già scelto: resta sul ramo; il ramo non scelto non spinge.
+            obiettivo = (f32)s.latoBivio * Road::BIVIO_DIST;
+        } else if (!sceltaPresa && s.playerZ > road.bivioInizioZ() && sceltaIdx < (i32)std::strlen(scelte)) {
+            // Scelta al primo ingresso nel bivio: punta al ramo dello script.
+            const i32 lato = (scelte[sceltaIdx] == 'S') ? -1 : +1;
+            obiettivo = (f32)lato * Road::BIVIO_DIST;
+            sceltaPresa = true;
+            sceltaIdx++;
+        }
+    } else {
+        sceltaPresa = false; // nuova tappa: nuova scelta al prossimo bivio
+    }
+    if (s.playerX > obiettivo + 120.0f) pad.held |= (u64)Pad::Left;
+    else if (s.playerX < obiettivo - 120.0f) pad.held |= (u64)Pad::Right;
+    return pad;
+}
+
+bool verificaBivioBordi(const std::string& outDir) {
+    const BordoRegole r = leggiRegoleBordoBivio();
+    const i32 N = r.offroadMaxConsecutivi > 0 ? r.offroadMaxConsecutivi : 60;
+    const i32 RING = 120;
+    bool ok = true;
+    for (const char* scelte : kScelteBordi) {
+        i32 cambi = 0, sceltaIdx = 0, offRun = 0, maxOffRun = 0, cambioFrame = -1, stopRun = 0;
+        i32 stopRunPre = 0;
+        f32 maxXRel = 0.0f;
+        i32 maxXRelFrame = -1;
+        bool crash = false, crashPre = false, sceltaPresa = false, inBivio = false;
+        i32 tappaPrev = 0, latoPrev = 0;
+        std::string tappaDopo;
+        std::vector<std::vector<u32>> ring(RING);
+        {
+            Game game(12345u);
+            caricaSponsor(game);
+            if (!game.avviaGara()) { ok = false; continue; }
+            tappaPrev = game.state().tappa;
+            for (i32 frame = 0; frame < 300000 && !game.state().arrivo; ++frame) {
+                game.setInput(guidaVersoRamo(game, scelte, sceltaIdx, sceltaPresa));
+                game.update();
+                game.render();
+                const GameState& s = game.state();
+                const Road& road = game.road();
+                f32 centro = 0.0f;
+                if (s.latoBivio != 0) centro = (f32)s.latoBivio * Road::BIVIO_DIST;
+                const f32 xRel = s.playerX - centro;
+                if (std::abs(xRel) > maxXRel) { maxXRel = std::abs(xRel); maxXRelFrame = frame; }
+                if (s.tappa != tappaPrev) {
+                    ++cambi;
+                    if (cambi == 2) {
+                        cambioFrame = frame;
+                        tappaDopo = game.tappaCorrente(); // pubblico su Game
+                        break; // cambio tappa raggiunto uscendo dal bivio sul livello piu' curvo
+                    }
+                    tappaPrev = s.tappa;
+                }
+                if (s.latoBivio != 0 && latoPrev == 0) sceltaPresa = true; // blocco scelta: lo script ha gia' scelto all'ingresso
+                latoPrev = s.latoBivio;
+                if (!inBivio && road.bivioAttivo() && s.playerZ > road.bivioInizioZ()) inBivio = true; // entrato in zona bivio
+                if (s.playerOffroad) {
+                    if (++offRun > maxOffRun) maxOffRun = offRun;
+                } else offRun = 0;
+                if (inBivio) {
+                    // Dentro il bivio l'auto non deve fermarsi (ribaltamento) e non deve restare offroad.
+                    if (s.playerSpeed < 1.0f) {
+                        if (++stopRun > 60 && !crash) {
+                            crash = true;
+                            std::printf("  CRASH nel bivio al frame %d: speed=%.1f x=%.1f z=%.1f lato=%d offroad=%d xRel=%.1f tappa=%d\n",
+                                        frame, s.playerSpeed, s.playerX, s.playerZ, s.latoBivio, s.playerOffroad ? 1 : 0, xRel, s.tappa);
+                        }
+                    } else stopRun = 0;
+                } else {
+                    // Prima del bivio uno stop e' problema di traffico/rivali (blocco RIV), non di bordo stradale: solo segnalo.
+                    if (frame > 60 && s.playerSpeed < 1.0f) {
+                        if (++stopRunPre > 60 && !crashPre) {
+                            crashPre = true;
+                            std::printf("  STOP pre-bivio al frame %d (ignorato per questo gate, materia RIV): speed=%.1f x=%.1f z=%.1f tappa=%d\n",
+                                        frame, s.playerSpeed, s.playerX, s.playerZ, s.tappa);
+                        }
+                    } else stopRunPre = 0;
+                }
+                ring[(size_t)(frame % RING)].assign(game.fb().data(),
+                    game.fb().data() + (size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT);
+            }
+        }
+        const std::string base = outDir + "/p_bivio_bordi_" + std::string(scelte);
+        auto salvaFrame = [&](i32 frameGlobale, const std::string& suf) {
+            if (cambioFrame >= 0)
+                salvaPPM(base + suf, ring[(size_t)(frameGlobale % RING)].data(),
+                         Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        };
+        bool comboOk = true;
+        if (cambi < 2) { std::printf("  VIOLAZIONE: cambio tappa sul livello piu' curvo non raggiunto (cambi=%d)\n", cambi); comboOk = false; }
+        if (crash) { std::printf("  VIOLAZIONE: ribaltamento/crash rilevato durante l'attraversamento del bivio\n"); comboOk = false; }
+        if (maxOffRun > N) { std::printf("  VIOLAZIONE: offroad consecutivi max=%d > N=%d\n", maxOffRun, N); comboOk = false; }
+        salvaFrame(cambioFrame, "_cambio.ppm");
+        for (i32 k = 1; k <= 5; ++k) {
+            salvaFrame(cambioFrame - k, "_prima" + std::to_string(k) + ".ppm");
+            salvaFrame(cambioFrame + k, "_dopo" + std::to_string(k) + ".ppm");
+        }
+        std::printf("bivio_bordi %s: cambi=%d cambio=%d (%s) maxOffroad=%d (N=%d) crash=%s stopPreBivio=%s max|xRel|=%.1f@%d | %s\n",
+                    scelte, cambi, cambioFrame, tappaDopo.c_str(), maxOffRun, N, crash ? "sì" : "no", crashPre ? "sì" : "no", maxXRel, maxXRelFrame,
+                    comboOk ? "OK" : "FALLITO");
+        ok = ok && comboOk;
+    }
+    std::printf("%s\n", ok ? "GATE BIVIO BORDI OK" : "FALLITO: bordo bivio non sicuro o ribaltamento");
+    return ok;
+}
+
 // --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
 // Guida automatica: gas pieno, schiva gli avversari davanti, al bivio va sul
 // ramo voluto. Per ogni combinazione di scelte controlla le tappe attraversate,
@@ -1360,6 +1716,18 @@ int main(int argc, char** argv) {
         const bool ok = verificaBivioUscita(outDir);
         std::printf("%s\n", ok ? "GATE BIVIO USCITA OK" : "FALLITO: cambio tappa/bivio non fluido");
         return ok ? 0 : 16;
+    }
+
+    if (modo == "tema_transizione") {
+        const bool ok = verificaTemaTransizione(outDir);
+        std::printf("%s\n", ok ? "GATE TEMA TRANSIZIONE OK" : "FALLITO: tema transizione non graduale");
+        return ok ? 0 : 17;
+    }
+
+    if (modo == "bivio_bordi") {
+        const bool ok = verificaBivioBordi(outDir);
+        std::printf("%s\n", ok ? "GATE BIVIO BORDI OK" : "FALLITO: bordo bivio non sicuro o ribaltamento");
+        return ok ? 0 : 18;
     }
 
     if (modo == "espansione") {

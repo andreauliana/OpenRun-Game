@@ -1,6 +1,6 @@
-# OpenRun v4.6 — Sglavinated Edition
+# OpenRun v4.6 — Alpha Edition
 
-Progetto sperimentale di AU in progresso v4.6 con nuova architettura 'Ufficio' con struttura semplificata: 4 ruoli.
+Progetto di ricerca grafica e sviluppo tramite AI di andreauliana.com in progresso v4.6 con nuova architettura 'Ufficio' con 4 ruoli.
 
 ```text
 UFFICIO/
@@ -22,7 +22,7 @@ sh comandi/v3.sh start
 ```
 
 Stato e stop: `sh comandi/v3.sh stato` e `sh comandi/v3.sh stop`. Pannello su http://localhost:8090 (la v4 usa la 8089).
-I nomi interni `V3` (`comandi/v3.sh`, `V3_BASE`) restano per compatibilita': i comandi funzionano come nella v4.
+I nomi interni `V3` (`comandi/v3.sh`, `V3_BASE`) restano per compatibilita': i comandi come v4.
 Il motore va ricompilato al primo avvio (le cartelle `build*` non sono state copiate): `cd sglavinated_src && sh UFFICIO/Officina/tools/gate_t1.sh`.
 Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 
@@ -33,17 +33,13 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 
 ## Dove sono le cose
 - `sglavinated_src/` — progetto degli agenti: `AGENTS.md`, `RICHIESTA.md`, `SCAMBIO.md`, `VISIONE.md`, `opencode.json`.
-- `sglavinated_src/.opencode/agents/` — le 4 definizioni dei ruoli (modelli e permessi).
+- `sglavinated_src/.opencode/agents/` — definizioni ruoli.
 - `sglavinated_src/motore_nuovo/` — motore C++17 (src, dati, docs, test, strumenti_py).
-- `sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` — asset originali e materiale usabile.
+- `sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` — asset originali in uso.
 - `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario) e consegne di ogni ruolo. Le regole sono in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
 - `sglavinated_src/UFFICIO/Officina/Test area/` — log del gate e screenshot (prima in `out/collaudatore/` e `out/debugger/`).
 
-
-
-
 ## Cosa non e' stato copiato
-- Filone Mega Drive, MD0, sospeso).
 - `outrun_src/`: ROM Sega.
 - Cartelle `build*`, `log_agenti/`, log in radice, la copia duplicata `.opencode/agent/`, `__pycache__`.
 - Dalle uscite del vecchio debugger: i file `.ppm` e le cartelle del soak (si rigenerano col gate).

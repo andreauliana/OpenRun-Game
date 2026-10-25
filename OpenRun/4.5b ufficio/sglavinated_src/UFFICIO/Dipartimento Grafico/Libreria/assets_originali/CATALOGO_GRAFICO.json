@@ -278,7 +278,8 @@
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/skyline.sglraw"
       },
       {
          "id": "oggetto.lv_01_neon.bidone",
@@ -289,7 +290,8 @@
             "lv_01_neon",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/bidone.sglraw"
       },
       {
          "id": "oggetto.lv_01_neon.cassetta",
@@ -300,7 +302,8 @@
             "lv_01_neon",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/cassetta.sglraw"
       },
       {
          "id": "oggetto.lv_01_neon.lampione",
@@ -311,7 +314,8 @@
             "lv_01_neon",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/lampione.sglraw"
       },
       {
          "id": "oggetto.lv_01_neon.palina",
@@ -322,7 +326,8 @@
             "lv_01_neon",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palina.sglraw"
       },
       {
          "id": "oggetto.lv_01_neon.palo_neon",
@@ -333,7 +338,8 @@
             "lv_01_neon",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palo_neon.sglraw"
       },
       {
          "id": "scenario.lv_02_atomico.skyline",
@@ -343,7 +349,8 @@
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/skyline.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.bancone_drive_in",
@@ -353,7 +360,8 @@
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/bancone_drive_in.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.cupola",
@@ -364,7 +372,8 @@
             "lv_02_atomico",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/cupola.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.freccia",
@@ -375,7 +384,8 @@
             "lv_02_atomico",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/freccia.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.panchina_cromata",
@@ -386,7 +396,8 @@
             "lv_02_atomico",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/panchina_cromata.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.segnale_atomico",
@@ -397,7 +408,8 @@
             "lv_02_atomico",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/segnale_atomico.sglraw"
       },
       {
          "id": "oggetto.lv_02_atomico.torre_razzo",
@@ -408,7 +420,8 @@
             "lv_02_atomico",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/torre_razzo.sglraw"
       },
       {
          "id": "scenario.lv_03_foglie.skyline",
@@ -418,7 +431,8 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/skyline.sglraw"
       },
       {
          "id": "oggetto.lv_03_foglie.foglia_gigante",
@@ -428,7 +442,8 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/foglia_gigante.sglraw"
       },
       {
          "id": "oggetto.lv_03_foglie.fungo_psico",
@@ -438,7 +453,8 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/fungo_psico.sglraw"
       },
       {
          "id": "oggetto.lv_03_foglie.insegna_fumosa",
@@ -448,7 +464,8 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/insegna_fumosa.sglraw"
       },
       {
          "id": "oggetto.lv_03_foglie.panchina_curva",
@@ -459,7 +476,8 @@
             "lv_03_foglie",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_curva.sglraw"
       },
       {
          "id": "oggetto.lv_03_foglie.panchina_fumo",
@@ -469,7 +487,8 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A"
+         "nota": "D6: variante A",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_fumo.sglraw"
       },
       {
          "id": "ui.hud",
@@ -542,7 +561,8 @@
          "livelli": [
             "lv_04_cromo"
          ],
-         "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea"
+         "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/skyline.sglraw"
       },
       {
          "id": "scenario.lv_05_spray.skyline",
@@ -1743,6 +1763,133 @@
             "lv_03_foglie"
          ],
          "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "auto.rivale.rosso",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_rosso_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, modello rosso corsa. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.azzurro",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_azzurro_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, modello azzurro. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.giallo",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_giallo_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, modello giallo. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.verde",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_verde_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, modello verde. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.rosso.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_rosso_lato.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista di lato (curve), modello rosso. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.azzurro.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_azzurro_lato.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista di lato (curve), modello azzurro. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.sbandata",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_giocatore_sbandata.png",
+         "nota": "RIV: fotogramma di sbandata auto giocatore (urto rivale), disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "scena.arrivo.lv_04_cromo",
+         "tipo": "scena_arrivo",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/finale/finale.png",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "FIN: scena di arrivo lv_04_cromo - citta futurista, robot che premiano l'auto (FLUSSO_GIOCO.md sezione 4). Varianti per posizione (primo/podio/fuori podio) da definire con Andrea. Disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "scena.arrivo.lv_05_spray",
+         "tipo": "scena_arrivo",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/finale/finale.png",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "FIN: scena di arrivo lv_05_spray - festa punk tra i muri a spray (FLUSSO_GIOCO.md sezione 4). Varianti per posizione (primo/podio/fuori podio) da definire con Andrea. Disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "scena.arrivo.lv_06_desktop",
+         "tipo": "scena_arrivo",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/finale/finale.png",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "FIN: scena di arrivo lv_06_desktop - desktop si spegne e riparte con l'auto vincitrice (FLUSSO_GIOCO.md sezione 4). Varianti per posizione (primo/podio/fuori podio) da definire con Andrea. Disegnata da zero, nessun materiale Sega."
       }
    ]
 }

@@ -274,3 +274,15 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne: bacheche/developer-junior/diario.md (1 riga), bacheche/developer-junior/RIASSUNTO.md (<=12 righe), out/developer-junior/ESITO_F60_22OTT_2006.md; questo status aggiornato. Log: UFFICIO/Officina/Test area/gate_t1.log.
 - Bloccato/attesa: H [~] (ok Andrea runner Mac v91 prima di Pi 400/RetroPie, non toccare src/runner/); R2 [ ] dopo F60.
 
+## Report turno 25/10 08:46 — developer-junior
+
+- Lettura fonti obbligatoria completata nell'ordine richiesto: bacheche/developer-junior/RIASSUNTO.md, DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md.
+- FORK1 [ ] punto 5 `bivio_bordi`: eseguito e scritto (era bloccato da punti 1-3 di @developer su game.cpp; ora la verifica del bordo strada attraverso il bivio è coperta da gate senza toccare src/).
+- Aggiunto gate `bivio_bordi` a `motore_nuovo/test/prova_gate.cpp` (modo `bivio_bordi`, exit 18 su fallimento) con soglie in `motore_nuovo/dati/tracciati/regole.json` ("bivio_bordi": offroad_max_consecutivi 60 frame = 1 s @ 60 Hz, soglia di allarme a metà del ribaltamento OFFROAD_CRASH_S=2.0 s).
+- Build `cmake --build UFFICIO/Officina/build --target prova_gate`: exit 0.
+- Gate `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/bivio_bordi" lv_01_neon bivio_bordi`: **exit 0, `GATE BIVIO BORDI OK`** su entrambe le combinazioni DS e DD: cambi=2 (lv_01_neon -> lv_03_foglie -> lv_05_spray), cambio tappa frame 4027, maxOffroad=33 <= N=60, crash=no (nessuno ribaltamento dentro il bivio), max|xRel|=2800 (escursione reportata, non condizione di fallimento). Screenshot PPM in UFFICIO/Officina/Test area/bivio_bordi/.
+- FORK1 [ ] punto 4 `bivio_uscita` [x]: exit 16 atteso, resta fallito atteso fino al fix game.cpp (teleport al blocco scelta game.cpp:790).
+- FORK1 [ ] punto 7 `tema_transizione` [x]: OK exit 0 (07:47 turno precedente), invariato.
+- Gate eseguito in questo turno: sì (`bivio_bordi`, exit 0, 25/10 08:46).
+- Nessun file src/ toccato (solo motore_nuovo/test/prova_gate.cpp e motore_nuovo/dati/tracciati/regole.json, percorsi assegnati al ruolo).
+

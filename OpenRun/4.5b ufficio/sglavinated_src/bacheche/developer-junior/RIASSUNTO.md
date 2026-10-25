@@ -1,8 +1,9 @@
-# RIASSUNTO @developer-junior — turno 23/10 (11:10)
+# RIASSUNTO @developer-junior — turno 25/10 (08:46)
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, dati/tracciati/, bacheche/developer-junior/, out/developer-junior/.
-- F60 [x] chiuso (gate 22/10 20:06 exit 0); T1-RUN punti 5-6 [x]; chiusura formale T1-RUN in attesa Andrea (D19 senza risposta).
-- H [~]: prova runner Mac v91 eseguita da Andrea 23/10 (ctest 17/17, runner ok); src/runner/ non toccato; chiusura formale D13/D19 spetta ad Andrea/@capo.
-- FORK1 [ ] punto 4 (@developer-junior): gate `bivio_uscita` in prova_gate.cpp + soglie proposte in dati/tracciati/regole.json ("bivio").
-- Gate `bivio_uscita` lv_01_neon (4 combinazioni): exit 16 (fallito atteso) — salto x_rel 1190-1800 al blocco scelta (teleport BIVIO_DIST, game.cpp:790) sopra soglia 40; larghezza rampe 16.0/frame <= 400 OK; 48 PPM in Test area/bivio_uscita/.
-- gate_t1.sh smoke exit 0: 6/6 percorsi OK, gara 4 combinazioni OK, frequenza 60/50 Hz OK; nessuna regressione da prova_gate.cpp.
-- Consegna condivisa: out/developer-junior/ESITO_FORK1_BIVIO_USCITA_23OTT.md. Residuo: @developer smussa teleport x al blocco scelta (FORK1 punti 1-3); poi punto 5 `bivio_bordi`.
+- FORK1 [ ] punto 7 [x]: gate `tema_transizione` OK exit 0 (07:47); lv_01_neon -> lv_02_atomico, cambio frame 2232, cielo 0x202040 -> 0xF2B8C6, maxDeltaCanale 4.0 <= 12, 91 frame (~1.52 s).
+- FORK1 [ ] punto 4 [x]: `bivio_uscita` exit 16 atteso fino al fix game.cpp (esito out/developer-junior/ESITO_FORK1_BIVIO_USCITA_23OTT.md).
+- FORK1 [ ] punto 5 `bivio_bordi` [x]: gate aggiunto a motore_nuovo/test/prova_gate.cpp con soglie in motore_nuovo/dati/tracciati/regole.json ("bivio_bordi", offroad_max_consecutivi 60 frame); build `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0; gate `bivio_bordi` lv_01_neon exit 0, GATE OK su DS e DD (cambi=2, cambio frame 4027, maxOffroad=33 <= N=60, crash=no).
+- T1-RUN [~]: punti 5-6 [x]; D19 [APERTA] senza risposta Andrea in ANDREA_REVIEW.md.
+- H [~] chiuso da Andrea 23/10 (runner Mac v91, ctest 17/17).
+- DECO1 [ ], RIV [ ], R2 [ ] in coda dietro FORK1.
+- Gate eseguito questo turno: sì (`bivio_bordi`, exit 0, 25/10 08:46); nessun file src/ toccato.

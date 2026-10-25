@@ -26,7 +26,7 @@ public:
     // collina di livello.json -> quota assoluta della strada (unita' mondo).
     static constexpr f32 HILL_HEIGHT = 6000.0f;
     // Bivio a fine tappa (solo in gara): la strada si apre in due rami.
-    static constexpr i32 BIVIO_SEG = 800;          // segmenti finali occupati dal bivio
+    static constexpr i32 BIVIO_SEG = 1200;         // segmenti finali occupati dal bivio. Aumentato (FORK1 @developer, 25/10: raggio piu' ampio nell'apertura del bivio, i due rami si separano piu' dolcemente su piu' segmenti, senza scatti di prospettiva; alla scelta bloccata d == BIVIO_DIST e centro del ramo scelto == 0, coerente con il ricentramento in game.cpp).
     static constexpr f32 BIVIO_DIST = 1900.0f;     // centro di ogni ramo a bivio aperto (unita' mondo)
     static constexpr f32 BIVIO_SVOLTA = 4.0e-4f;   // quanto il ramo non scelto si allontana (curva via). Aumentato (feedback Andrea 23/10, FORK1: prova runner Mac): i due rami del bivio divergono di piu' cosi' l'auto sul ramo scelto non tocca i bordi della parte centrale al bivio.
 

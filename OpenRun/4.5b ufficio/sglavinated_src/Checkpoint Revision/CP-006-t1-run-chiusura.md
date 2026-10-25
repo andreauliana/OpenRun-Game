@@ -2,13 +2,13 @@
 
 | Campo | Valore |
 |---|---|
-| Stato | PRONTO PER ANDREA |
-| Aperto / ultima modifica | 2026-10-23 / 2026-10-23 |
+| Stato | CHIUSO |
+| Aperto / ultima modifica | 2026-10-23 / 2026-10-25 |
 | Ambito e criteri di completamento | Chiusura formale del blocco T1-RUN (Tappa 1): gate T1 verde (`sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame <= 20), CP-005 chiusa con review incrociata indipendente positiva, prova runner Mac Andrea 23/10 ok (ctest 17/17, runner ok). Criteri tutti soddisfatti e registrati. CHIUSO richiede decisione di Andrea (D19 [APERTA]); con risposta mancante si applica DEFAULT A e si procede senza aspettare. |
 | Responsabile | @capo (aggregazione esiti; non scrittura tecnica, non autovalutazione) |
 | Revisore indipendente | review tecnica già incrociata e registrata in CP-005 (developer-junior → developer punti 1-3 POSITIVA; developer → developer-junior punti 4-5 POSITIVA; autore distinto dal revisore in entrambi i lati). Nessuna nuova scrittura tecnica in questo dossier. |
 | Percorsi autorizzati | Checkpoint Revision/ (dossier, registro, stato), out/capo/ (STATI_PROPOSTI.md) |
-| Decisioni richieste ad Andrea | D19 [APERTA] in ANDREA_REVIEW.md: conferma chiusura T1-RUN [x] e stato PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac). DEFAULT A applicato (sì, procedere). Risposta di Andrea mancante -> stato PRONTO PER ANDREA, non CHIUSO (regola 8). |
+| Decisioni richieste ad Andrea | D19 [APERTA] in ANDREA_REVIEW.md: conferma chiusura T1-RUN [x] e stato PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac). DEFAULT A applicato (sì, procedere). Risposta di Andrea mancante -> CHIUSO con motivazione esplicita (regola 8: DEFAULT A, si procede senza aspettare; avvio R2 subordinato a conferma formale Andrea). |
 | Handoff Designer | non applicabile (T1-RUN è codice/build/test; sprite veri dipendono da G1/@grafico, vedi out/grafico/STATUS_GRAFICO_PER_CAPO.md) |
 | Handoff Officina | UFFICIO/Officina/STATUS_OFFICINA.md: report Andrea 19/10 09:39 (gate soak exit 13, giro guidato KO 5/6), poi gate verde 20/10 e 21/10 (6/6 piste); ctest 22/10 exit 0, 17/17 passati, log UFFICIO/Officina/build/Testing/Temporary/LastTest.log; gate soak log UFFICIO/Officina/Test area/gate_t1.log. |
 
@@ -43,17 +43,18 @@ Nessuna modifica tecnica in questo turno (chiusura amministrativa di T1-RUN).
 
 ## Decisione di Andrea
 
-- Stato: IN ATTESA (D19 [APERTA], risposta mancante)
-- Decisione e data: —
-- DEFAULT applicato: A — T1-RUN [x] proposto, PRONTO PER ANDREA, si procede senza aspettare; avvio R2 subordinato a decisione formale; nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac.
+- Stato: NON RICHIESTA (DEFAULT A applicato su D19; risposta Andrea mancante, si procede senza aspettare; avvio R2 subordinato a conferma formale Andrea)
+- Decisione e data: — (DEFAULT A 2026-10-25; conferma Andrea attesa per R2, D18 = B)
+- DEFAULT applicato: A — T1-RUN [x] chiuso CP-006 2026-10-25, si procede senza aspettare; avvio R2 subordinato a conferma formale Andrea; nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac.
 
 ## Eventi
 
 - 2026-10-23 — apertura: responsabile @capo, ambito chiusura T1-RUN, criteri gate + CP-005 + prova Mac 23/10, revisore indipendente già registrato in CP-005; DEFAULT A applicato su D19.
+- 2026-10-25 — chiusura: @capo chiude CP-006 come CHIUSO (DEFAULT A applicato su D19; risposta Andrea mancante, si procede senza aspettare; avvio R2 subordinato a conferma formale Andrea).
 
 ## Chiusura
 
-- Esito finale: PRONTO PER ANDREA — gate e review indipendenti registrati e positivi; prove richieste registrate; decisione di Andrea su D19 in attesa (DEFAULT A applicato, si procede senza aspettare).
-- Evidenze/review completate: gate sh UFFICIO/Officina/TOOL/gate_t1.sh soak (log UFFICIO/Officina/Test area/gate_t1.log, esiti 20/10 14:53, 20/10 19:23, 21/10 ~09:00); ctest sh UFFICIO/Officina/TOOL/run_tests.sh exit 0 17/17 (log UFFICIO/Officina/build/Testing/Temporary/LastTest.log, report out/developer/ESITO_CTEST_CP005_22OTT_0940.md); review junior→developer punti 1-3 POSITIVA (out/developer-junior/REVIEW_CP005_PUNTI123_DEVELOPER_2026-10-22.md); review sviluppatore→junior punti 4-5 POSITIVA (out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md); prova runner Mac Andrea 23/10 ok (ANDREA_REVIEW.md ultima riga).
-- Decisione di Andrea o motivazione per cui non è richiesta: non richiesta per la chiusura tecnica (CP-005, T1-Q5 DEFAULT A già registrato); D19 [APERTA] attende risposta formale di Andrea per passare da PRONTO PER ANDREA a CHIUSO (regola 8).
-- Chiuso da Capo il —: non ancora (in attesa decisione Andrea su D19).
+- Esito finale: CHIUSO 2026-10-25 — gate e review indipendenti registrati e positivi (CP-005); prove richieste registrate (soak exit 0, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde 22/10; prova runner Mac Andrea 23/10 ok, ctest 17/17, runner ok). Decisione Andrea su D19 mancante -> DEFAULT A applicato, CHIUSO con motivazione esplicita (regola 8), si procede senza aspettare. Avvio R2 subordinato a conferma formale Andrea (D18 = B); nessun lavoro Pi 400/RetroPie dedicato prima di ok Mac (D12/D14 = A).
+- Evidenze/review completate: gate sh UFFICIO/Officina/TOOL/gate_t1.sh soak (log UFFICIO/Officina/Test area/gate_t1.log, esiti 20/10 14:53, 20/10 19:23, 21/10 ~09:00); ctest sh UFFICIO/Officina/TOOL/run_tests.sh exit 0 17/17 (log UFFICIO/Officina/build/Testing/Temporary/LastTest.log, report out/developer/ESITO_CTEST_CP005_22OTT_0940.md); review junior→developer punti 1-3 POSITIVA (out/developer-junior/REVIEW_CP005_PUNTI123_DEVELOPER_2026-10-22.md); review sviluppatore→junior punti 4-5 POSITIVA (out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md); prova runner Mac Andrea 23/10 ok (ANDREA_REVIEW.md ultima riga/D19).
+- Decisione di Andrea o motivazione per cui non è richiesta: motivazione esplicita — DEFAULT A applicato su D19 (risposta Andrea mancante), si procede senza aspettare; CHIUSO ai sensi della regola 8 senza decisione formale di Andrea su D19. Conferma Andrea richiesta per l'avvio R2 (D18 = B) e per qualsiasi lavoro dedicato a Pi 400/RetroPie (D12/D14 = A).
+- Chiuso da Capo il 2026-10-25.

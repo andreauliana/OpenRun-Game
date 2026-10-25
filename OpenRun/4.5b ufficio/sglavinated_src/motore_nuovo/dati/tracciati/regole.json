@@ -81,5 +81,13 @@
     "delta_curva_max": 0.05,
     "delta_collina_max": 0.05,
     "nota": "Proposta FORK1 punto 4 (@developer-junior): scarto massimo ammesso tra due frame consecutivi nella finestra (+-60 frame) attorno al cambio tappa. larghezza = fattore*ROAD_WIDTH della carreggiata; centro = centro corsia del ramo del giocatore (0 in scelta aperta); x_rel = playerX rispetto al centro della corsia; curva/collina del segmento sotto l'auto. Al blocco della scelta l'auto viene ricentrata sul ramo scelto (teleport BIVIO_DIST atteso): si misura la continuita' rispetto alla corsia, non la x assoluta. Valori proposti da validare con il @developer durante il tuning FORK1."
+  },
+  "tema_transizione": {
+    "delta_canale_max_per_frame": 12,
+    "nota": "FORK1 punto 7 (@developer-junior): al cambio tappa il Renderer deve interpolare TemaColori gradualmente canale per canale in transizione_tema_s secondi (dati/config.json, default 1.0 s), senza salto in un singolo frame. Soglia massima di variazione per canale tra due frame consecutivi durante la transizione. Il gate guida lv_01_neon (tema default) fino al primo cambio tappa e campiona il cielo sopra l'orizzonte."
+  },
+  "bivio_bordi": {
+    "offroad_max_consecutivi": 60,
+    "nota": "FORK1 punto 5 (@developer-junior): guida scriptata attraverso il bivio sul livello piu' curvo (lv_03_foglie, curva max 1.02, raggiunto da lv_01_neon scegliendo destra al primo bivio) fino al cambio tappa successivo. L'auto deve arrivare al cambio tappa senza ribaltamento (show di crash mai attivo durante l'attraversamento) e senza più di 60 frame consecutivi fuori strada (N; il ribaltamento del motore scatta a OFFROAD_CRASH_S=2.0 s = 120 frame @ 60 Hz, soglia di allarme a meta' per individuare l'auto intrappolata prima del ribaltamento). Sterzo normale verso il ramo scelto sia dentro che fuori dal bivio; il ramo non scelto non deve spingere l'auto. Soglie da validare con il @developer durante il tuning FORK1; non abbassare le soglie del motore per far passare il gate."
   }
 }
