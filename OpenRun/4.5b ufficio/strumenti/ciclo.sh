@@ -148,11 +148,14 @@ manutenzione() {
   fi
   echo "$oggi" > log_agenti/.giorno
   ESC=$(printf '\033'); PAN="$BASE/strumenti/panchina.txt"; C=CONTROLLO.md; mkdir -p log_agenti
+  # Riserva locale (Ollama): dopo RISERVA_ORE si torna ai modelli free; se il limite e' ancora attivo si rientra da soli.
+  if ML scaduto; then echo "[ciclo] $(date '+%d/%m %H:%M') riserva locale: $(ML esci)"; fi
+  ML attivo && LOC="ollama/openrun-locale" || LOC=""
   { echo "# Controllo automatico — $(date '+%F %H:%M') (generato dallo script, non modificare)"
     echo; echo "## Modelli assegnati"
     for f in .opencode/agents/*.md; do
       ag=$(basename "$f" .md); m=$(grep -m1 '^model:' "$f" | sed 's/^model: *//')
-      if ! grep -qx "$m" "$PAN" 2>/dev/null; then nuovo=$(head -1 "$PAN"); V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" "$ag" "$nuovo" >/dev/null 2>&1; echo "- $ag: modello '$m' non in panchina -> riportato a $nuovo"; m=$nuovo; fi
+      if [ "$m" != "$LOC" ] && ! grep -qx "$m" "$PAN" 2>/dev/null; then nuovo=$(head -1 "$PAN"); V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" "$ag" "$nuovo" >/dev/null 2>&1; echo "- $ag: modello '$m' non in panchina -> riportato a $nuovo"; m=$nuovo; fi
       echo "- $ag: $m"
     done
     echo; echo "Distribuzione:"; for f in .opencode/agents/*.md; do grep -m1 '^model:' "$f" | sed 's/^model: *//'; done | sort | uniq -c | sort -rn | sed 's/^/  /'
@@ -191,6 +194,7 @@ manutenzione() {
 # Pausa adattiva per limite di richieste (vale per tutti i modelli free): 15, 30, 60, 120 min (max RL_MAX, default 7200 s).
 # Si azzera appena una richiesta riesce. Nessun registro su file: solo a video.
 rl_n=0; cambi_limite=0
+ML() { V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" "$@"; }
 pausa_limite() {
   d=$(( ${RL_BASE:-900} * (1 << rl_n) )); [ "$d" -gt "${RL_MAX:-7200}" ] && d="${RL_MAX:-7200}"
   rl_n=$((rl_n+1)); [ "$rl_n" -gt 4 ] && rl_n=4
@@ -267,7 +271,7 @@ giro_diretto() {
   # Rotazione: al massimo GIRO_MAX (3) agenti con lavoro aperto per ciclo, a turno, uno alla volta (niente richieste in parallelo).
   lista="$(agenti_liberi)"; tot=$(echo "$lista" | grep -c .)
   [ "$tot" -eq 0 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: nessun agente con blocchi aperti"; return 0; }
-  max="${GIRO_MAX:-3}"; off=$(( ${rot:-0} % tot )); c=0
+  max="${GIRO_MAX:-3}"; ML attivo && max=1; off=$(( ${rot:-0} % tot )); c=0
   ordine="$(echo "$lista" | awk -v o="$off" '{a[NR]=$0} END{for(i=0;i<NR;i++) print a[(i+o)%NR+1]}')"
   mkdir -p log_agenti
   for ag in $ordine; do
@@ -275,7 +279,7 @@ giro_diretto() {
     [ -f STOP ] && break
     touch .marker_giro
     echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: avvio $ag ($(grep -m1 '^model:' ".opencode/agents/$ag.md" | sed 's/^model: *//'))"
-    OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"
+    OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
     oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore e @builder-developer=@developer, @collaudatore=@developer-junior, @designer=@grafico. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, niente REPORT_TURNO ne' VOCE_SCAMBIO, e fermati. Non usare altri modelli e non delegare. PRODUZIONE PRIMA: se il tuo blocco chiede codice, test o dati, il turno deve modificarne almeno uno e riportare comando ed exit code; niente nuovi documenti oltre alla riga di diario e al RIASSUNTO. Ogni comando shell da solo (niente ; && || | echo)." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
@@ -285,12 +289,20 @@ giro_diretto() {
     elif tail -n 40 "log_agenti/$ag.log" | grep -qi "usage limit"; then
       # Limite gratuito di OpenCode: prima provo gli altri modelli della panchina; pausa solo quando li ho provati tutti.
       cambi_limite=$((cambi_limite+1))
-      if [ "$cambi_limite" -ge "$(grep -c . "$BASE/strumenti/panchina.txt")" ]; then cambi_limite=0; pausa_limite; break; fi
+      if [ "$cambi_limite" -ge "$(grep -c . "$BASE/strumenti/panchina.txt")" ]; then
+        cambi_limite=0
+        # Crediti finiti su tutta la panchina: se Ollama e' pronto si continua in locale invece di fermarsi.
+        if [ "${RISERVA_LOCALE:-1}" = 1 ] && ! ML attivo && ML disponibile; then
+          ML entra >/dev/null; echo "[ciclo] $(date '+%d/%m %H:%M') LIMITE RAGGIUNTO su tutta la panchina: passo alla riserva locale Ollama per ${RISERVA_ORE:-6} ore"; continue
+        fi
+        pausa_limite; break
+      fi
       echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag al limite gratuito del modello: passo al modello successivo della panchina ($cambi_limite)"
       V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1
     elif tail -n 40 "log_agenti/$ag.log" | grep -qi "rate limit"; then pausa_limite; break
     else echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag in errore ($rc), $nf file toccati: passo al modello successivo della panchina"; V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1; fi
-    sleep "${GIRO_SLEEP:-10}"
+    if ML attivo; then echo "[ciclo] $(date '+%d/%m %H:%M') riserva locale: riposo $(( ${RIPOSO_LOCALE:-600} / 60 )) min per non scaldare il Mac"; sleep "${RIPOSO_LOCALE:-600}"
+    else sleep "${GIRO_SLEEP:-10}"; fi
   done
   rot=$(( ${rot:-0} + c ))
 }
