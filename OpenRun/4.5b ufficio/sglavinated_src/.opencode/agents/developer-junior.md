@@ -1,7 +1,7 @@
 ---
 description: "Developer Junior del progetto: contribuisce a codice, test e diagnosi in task delimitati e svolge peer review quando assegnato da @capo."
 model: opencode/deepseek-v4.1-flash-free
-# fallback (cambia manualmente se il modello sopra non è disponibile): mimo-v2.6-flash-free
+# fallback (cambia manualmente se modello sopra non disponibile): mimo-v2.6-flash-free
 mode: subagent
 permission:
   read:

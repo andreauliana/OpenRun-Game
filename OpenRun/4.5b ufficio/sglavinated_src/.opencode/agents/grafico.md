@@ -1,7 +1,7 @@
 ---
 description: "Grafico e Creativo del progetto: crea e cataloga asset, verifica licenze e provenienza, integra ricerca risorse libere e approva gli asset condivisi."
 model: opencode/longcat-2.5-preview-free
-# fallback (cambia manualmente se il modello sopra non è disponibile): nemotron-3.5-super-vl-free
+# fallback (cambia manualmente se modello sopra non disponibile): nemotron-3.5-super-vl-free
 mode: subagent
 permission:
   read:

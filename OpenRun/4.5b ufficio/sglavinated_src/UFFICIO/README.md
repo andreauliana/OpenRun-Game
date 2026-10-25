@@ -1,6 +1,6 @@
 # UFFICIO — OpenRun 4.6
 
-Area operativa coordinata dal Capo. Il Capo assegna i task e i revisori, raccoglie prove e prepara le revisioni per Andrea; non scrive codice né asset.
+Area operativa coordinata da @capo. Capo assegna task e revisori, raccoglie prove e prepara le revisioni per Andrea; non scrive codice né asset.
 
 ```text
 UFFICIO/
@@ -15,4 +15,4 @@ UFFICIO/
     └── Test area/
 ```
 
-La migrazione graduale: sorgenti e asset attivi restano nei percorsi v4.5 descritti in `../AGENTS.md`. Non creare copie. 
+La migrazione graduale: sorgenti e asset attivi restano nei percorsi v4.6 descritti in `../AGENTS.md`. Non creare copie. 

@@ -13,7 +13,7 @@ ROOT = "assets_originali/scenari"
 LEVELS = {
     "lv_01_neon": {
         "scenario": "scenario_neon_01",
-        "stile": "synthwave / C-wave",
+        "stile": "synthwave",
         "seme": 4211,
         "palette": [
             ("fondo_scuro", (10, 10, 26)),

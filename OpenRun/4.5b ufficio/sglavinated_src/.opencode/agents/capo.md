@@ -1,7 +1,7 @@
 ---
-description: Coordina il progetto di produzione, assegna task e revisioni indipendenti, verifica completezza e gestisce checkpoint e documenti per Andrea.
+description: Coordina progetto di produzione, assegna task e revisioni indipendenti, verifica completezza e gestisce checkpoint e documenti per Andrea.
 model: opencode/nemotron-3.5-super-vl-free
-# fallback (cambia manualmente se il modello sopra non è disponibile): longcat-2.5-preview
+# fallback (cambia manualmente se modello sopra non disponibile): longcat-2.5-preview
 mode: primary
 permission:
   read:
