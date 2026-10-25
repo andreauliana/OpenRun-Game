@@ -15,9 +15,9 @@ P="$BASE/sglavinated_src"; HERE="$BASE/strumenti"
 STATO="$P/.modo_locale"
 URL="${OLLAMA_URL:-http://localhost:11434}"
 NOME="openrun-locale"; MODELLO="ollama/$NOME"
-# Mac 16 GB, carico leggero: qwen3:4b (circa 2,5 GB) con contesto 16k e 4 thread.
-# Piu' qualita' ma piu' calore: OLLAMA_BASE=qwen3:8b OLLAMA_CTX=32768 sh strumenti/modo_locale.sh prepara
-BASE_OLLAMA="${OLLAMA_BASE:-qwen3:4b}"; CTX="${OLLAMA_CTX:-16384}"; THREAD="${OLLAMA_THREAD:-4}"
+# Mac 16 GB, carico leggero: qwen3.5:4b (circa 3,5 GB, supporta tools) con contesto 16k e 4 thread.
+# Piu' qualita' ma piu' calore: OLLAMA_BASE=qwen3.5:9b OLLAMA_CTX=32768 sh strumenti/modo_locale.sh prepara
+BASE_OLLAMA="${OLLAMA_BASE:-qwen3.5:4b}"; CTX="${OLLAMA_CTX:-16384}"; THREAD="${OLLAMA_THREAD:-4}"
 case "${1:-stato}" in
   prepara)
     command -v ollama >/dev/null 2>&1 || { echo "ERRORE: ollama non installato. Scaricalo da https://ollama.com/download e aprilo."; exit 1; }
