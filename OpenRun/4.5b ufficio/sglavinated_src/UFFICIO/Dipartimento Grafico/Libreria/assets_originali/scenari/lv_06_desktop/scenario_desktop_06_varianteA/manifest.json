@@ -1,0 +1,33 @@
+{
+  "livello": "lv_06_desktop",
+  "variante": "A",
+  "scenario": "scenario_desktop_06",
+  "stile": "desktop Windows 95 vibe",
+  "autore": "@grafico (disegnato da zero, nessun materiale Sega)",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "palette_max_colori": 16,
+  "risoluzione_skyline": [
+    256,
+    128
+  ],
+  "oggetti_bordo_strada": [
+    "pali_cavi",
+    "case_computer",
+    "delfino_cartone",
+    "icona_cartella"
+  ],
+  "file": {
+    "skyline": "skyline.png",
+    "palette": "palette.png",
+    "palette_dati": "palette.json",
+    "oggetti": [
+      "oggetti/obj_pali_cavi.png",
+      "oggetti/obj_case_computer.png",
+      "oggetti/obj_delfino_cartone.png",
+      "oggetti/obj_icona_cartella.png"
+    ]
+  },
+  "note": "Variante A (D6). Disegnato da zero con Pillow, seme fisso, deterministico."
+}

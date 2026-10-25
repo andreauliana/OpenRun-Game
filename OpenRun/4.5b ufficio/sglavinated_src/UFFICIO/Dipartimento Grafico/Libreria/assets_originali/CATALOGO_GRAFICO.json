@@ -1,1599 +1,1748 @@
 {
- "_meta": {
-  "descrizione": "Catalogo unico delle risorse grafiche: un elemento per riga, con stato. Lo scrive solo @grafico; gli altri lo leggono.",
-  "licenza": "CC0-1.0",
-  "stati": {
-   "mancante": "serve ma non esiste",
-   "bozza": "prima prova, non usare nel gioco",
-   "in_costruzione": "in lavorazione, usabile solo nei test",
-   "pronto": "finito, in attesa dell'ok di Andrea",
-   "approvato": "scelto da Andrea (ANDREA_REVIEW.md)",
-   "scartato": "da non usare; il file resta come storico"
-  },
-  "regole": [
-   "Il motore e i test usano solo elementi pronto o approvato (in_costruzione solo nei test).",
-   "Ogni file nuovo di assets_originali/ entra qui con il suo id prima di essere usato.",
-   "Percorsi relativi a sglavinated_src/. 'raw' e' la versione per il motore (png_a_raw.py).",
-   "Controllo: python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py"
-  ]
- },
- "elementi": [
-  {
-   "id": "sponsor.brinis_udine.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/brinis_udine/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.brinis_udine.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/brinis_udine/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.brinis_udine.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/brinis_udine/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.canna_bis.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/canna_bis/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.canna_bis.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/canna_bis/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.canna_bis.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/canna_bis/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.curve_pericolose.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/curve_pericolose/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.curve_pericolose.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/curve_pericolose/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.curve_pericolose.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/curve_pericolose/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.erba_medica.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/erba_medica/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.erba_medica.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/erba_medica/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.erba_medica.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/erba_medica/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.green_box.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/green_box/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.green_box.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/green_box/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.green_box.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/green_box/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.piston_high.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/piston_high/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.piston_high.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/piston_high/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.piston_high.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/piston_high/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.slow_down.neon",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/slow_down/cartellone_neon.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_neon.sglraw",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.slow_down.atomico",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/slow_down/cartellone_atomico.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_atomico.sglraw",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "sponsor.slow_down.foglie",
-   "tipo": "cartellone",
-   "stato": "approvato",
-   "file": "assets_originali/sponsor/slow_down/cartellone_foglie.png",
-   "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_foglie.sglraw",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D2/D2b"
-  },
-  {
-   "id": "auto.argento_lunare",
-   "tipo": "auto_giocatore",
-   "stato": "approvato",
-   "file": "assets_originali/sprite/auto_gt/auto_argento_lunare.png",
-   "nota": "D5"
-  },
-  {
-   "id": "auto.neon_cyan",
-   "tipo": "auto_giocatore",
-   "stato": "approvato",
-   "file": "assets_originali/sprite/auto_gt/auto_neon_cyan.png",
-   "nota": "D5"
-  },
-  {
-   "id": "auto.rosso_corsa",
-   "tipo": "auto_giocatore",
-   "stato": "approvato",
-   "file": "assets_originali/sprite/auto_gt/auto_rosso_corsa.png",
-   "nota": "D5"
-  },
-  {
-   "id": "scenario.lv_01_neon.skyline",
-   "tipo": "skyline",
-   "stato": "approvato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_01_neon.bidone",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png",
-   "livelli": [
-    "lv_01_neon",
-    "lv_05_spray"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_01_neon.cassetta",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png",
-   "livelli": [
-    "lv_01_neon",
-    "lv_05_spray"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_01_neon.lampione",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png",
-   "livelli": [
-    "lv_01_neon",
-    "lv_04_cromo"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_01_neon.palina",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palina.png",
-   "livelli": [
-    "lv_01_neon",
-    "lv_06_desktop"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_01_neon.palo_neon",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png",
-   "livelli": [
-    "lv_01_neon",
-    "lv_04_cromo"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "scenario.lv_02_atomico.skyline",
-   "tipo": "skyline",
-   "stato": "approvato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.bancone_drive_in",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.cupola",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png",
-   "livelli": [
-    "lv_02_atomico",
-    "lv_04_cromo"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.freccia",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png",
-   "livelli": [
-    "lv_02_atomico",
-    "lv_05_spray"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.panchina_cromata",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png",
-   "livelli": [
-    "lv_02_atomico",
-    "lv_06_desktop"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.segnale_atomico",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png",
-   "livelli": [
-    "lv_02_atomico",
-    "lv_05_spray"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.torre_razzo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png",
-   "livelli": [
-    "lv_02_atomico",
-    "lv_04_cromo"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "scenario.lv_03_foglie.skyline",
-   "tipo": "skyline",
-   "stato": "approvato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.foglia_gigante",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_foglia_gigante.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.fungo_psico",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_fungo_psico.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.insegna_fumosa",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_insegna_fumosa.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.panchina_curva",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_curva.png",
-   "livelli": [
-    "lv_03_foglie",
-    "lv_06_desktop"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.panchina_fumo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "pronto",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_fumo.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "D6: variante A"
-  },
-  {
-   "id": "ui.hud",
-   "tipo": "ui",
-   "stato": "pronto",
-   "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
-   "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
-  },
-  {
-   "id": "ui.menu",
-   "tipo": "ui",
-   "stato": "pronto",
-   "file": "assets_originali/ui/menu/varianteB/menu_preview.png",
-   "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
-  },
-  {
-   "id": "ui.titolo",
-   "tipo": "ui",
-   "stato": "approvato",
-   "file": "assets_originali/ui/titolo/varianteB/title.png",
-   "nota": "D7: variante B"
-  },
-  {
-   "id": "ui.font",
-   "tipo": "ui",
-   "stato": "approvato",
-   "file": "assets_originali/ui/font/varianteB/font.png",
-   "nota": "D7: variante B"
-  },
-  {
-   "id": "font.antonio",
-   "tipo": "font",
-   "stato": "approvato",
-   "file": "assets_originali/font/antonio/Antonio-Bold.ttf",
-   "nota": "D4"
-  },
-  {
-   "id": "auto.traffico",
-   "tipo": "auto_traffico",
-   "stato": "mancante",
-   "file": [],
-   "nota": "auto avversarie (stessi modelli dell'auto giocatore nella prima fase, VISIONE); disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
-  },
-  {
-   "id": "personaggio.gianni",
-   "tipo": "personaggio",
-   "stato": "mancante",
-   "file": [],
-   "nota": "Gianni la foglia, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
-  },
-  {
-   "id": "personaggio.gesu",
-   "tipo": "personaggio",
-   "stato": "mancante",
-   "file": [],
-   "nota": "Gesu', animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
-  },
-  {
-   "id": "personaggio.ufo",
-   "tipo": "personaggio",
-   "stato": "mancante",
-   "file": [],
-   "nota": "UFO, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
-  },
-  {
-   "id": "skyline.futurista",
-   "tipo": "skyline",
-   "stato": "pronto",
-   "file": "assets_originali/skyline/varianteA_futurista/skyline.png",
-   "livelli": [
-    "lv_04_cromo"
-   ],
-   "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea"
-  },
-  {
-   "id": "scenario.lv_05_spray.skyline",
-   "tipo": "skyline",
-   "stato": "mancante",
-   "file": [],
-   "livelli": [
-    "lv_05_spray"
-   ],
-   "nota": "da disegnare: capannoni, ciminiere, muri a spray (stile punk)"
-  },
-  {
-   "id": "scenario.lv_06_desktop.skyline",
-   "tipo": "skyline",
-   "stato": "mancante",
-   "file": [],
-   "livelli": [
-    "lv_06_desktop"
-   ],
-   "nota": "da disegnare: prato e cielo con nuvole da desktop (Windows 95 vibe)"
-  },
-  {
-   "id": "scenario.lv_04_cromo.oggetti",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "mancante",
-   "file": [],
-   "livelli": [
-    "lv_04_cromo"
-   ],
-   "nota": "da disegnare: guard-rail cromati, lampioni a lama, robot (ora in prestito da neon/atomico)"
-  },
-  {
-   "id": "scenario.lv_05_spray.oggetti",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "mancante",
-   "file": [],
-   "livelli": [
-    "lv_05_spray"
-   ],
-   "nota": "da disegnare: bidoni, transenne, cassonetti (ora in prestito da neon/atomico)"
-  },
-  {
-   "id": "scenario.lv_06_desktop.oggetti",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "mancante",
-   "file": [],
-   "livelli": [
-    "lv_06_desktop"
-   ],
-   "nota": "da disegnare: pali con cavi, case-computer, delfini di cartone (ora in prestito)"
+   "_meta": {
+      "descrizione": "Catalogo unico delle risorse grafiche: un elemento per riga, con stato. Lo scrive solo @grafico; gli altri lo leggono.",
+      "licenza": "CC0-1.0",
+      "stati": {
+         "mancante": "serve ma non esiste",
+         "bozza": "prima prova, non usare nel gioco",
+         "in_costruzione": "in lavorazione, usabile solo nei test",
+         "pronto": "finito, in attesa dell'ok di Andrea",
+         "approvato": "scelto da Andrea (ANDREA_REVIEW.md)",
+         "scartato": "da non usare; il file resta come storico"
+      },
+      "regole": [
+         "Il motore e i test usano solo elementi pronto o approvato (in_costruzione solo nei test).",
+         "Ogni file nuovo di assets_originali/ entra qui con il suo id prima di essere usato.",
+         "Percorsi relativi a sglavinated_src/. 'raw' e' la versione per il motore (png_a_raw.py).",
+         "Controllo: python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py"
+      ]
    },
-  {
-   "id": "sprite.auto.varianteA_anni50",
-   "tipo": "auto_giocatore",
-   "stato": "scartato",
-   "file": "assets_originali/sprite/auto/varianteA_anni50/auto.png",
-   "nota": "variante auto anni '50 non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "sprite.auto.varianteB_futurista",
-   "tipo": "auto_giocatore",
-   "stato": "scartato",
-   "file": "assets_originali/sprite/auto/varianteB_futurista/auto.png",
-   "nota": "variante auto futurista non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "sprite.auto.varianteC_punk",
-   "tipo": "auto_giocatore",
-   "stato": "scartato",
-   "file": "assets_originali/sprite/auto/varianteC_punk/auto.png",
-   "nota": "variante auto punk non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_01_neon.scenario_01_01_varianteA.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_01_neon.scenario_01_01_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_01_neon.scenario_01_01_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_01_neon.scenario_neon_01_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_01_neon.scenario_neon_01_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/skyline.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_02_atomico.scenario_02_01_varianteA.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_02_atomico.scenario_02_01_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_02_atomico.scenario_02_01_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_02_atomico.scenario_atomico_02_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_02_atomico.scenario_atomico_02_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/skyline.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_03_foglie.scenario_03_01_varianteA.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_03_foglie.scenario_03_01_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_03_foglie.scenario_03_01_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_03_foglie.scenario_foglie_03_varianteB.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "scenario.lv_03_foglie.scenario_foglie_03_varianteC.skyline",
-   "tipo": "skyline",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/skyline.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_00.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_01.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_02.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_03.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_00.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_01.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_02.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_03.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_00.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_01.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_02.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_03.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_04",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_04.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_05",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_05.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "copia/backup oggetto (non cancellare per regola G1); storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_insegna_neon.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_lampione",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_palo_neon",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_segnale",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_bidone",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_cassetta",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_cassetta.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_palo_neon",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_segnale",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png",
-   "livelli": [
-    "lv_01_neon"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_00.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_01.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_02.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_03.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_04",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_04.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_00.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_01.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_02.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_03.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_04",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_04.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_00.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_01.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_02.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_03.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_04",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_04.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_bancone_drive_in",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_bancone_drive_in.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_cupola",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_cupola.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_freccia",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_freccia.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_panchina_cromata",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_panchina_cromata.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_segnale_stop",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_segnale_stop.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_ufo_distanza",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_bancone_drive_in",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_bancone_drive_in.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_segnale_atomico",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_torre_razzo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_torre_razzo.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_panchina_cromata",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_panchina_cromata.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_cupola",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_cupola.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_ufo_distanza",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_segnale_stop",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_stop.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_freccia",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_freccia.png",
-   "livelli": [
-    "lv_02_atomico"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_00.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_01.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_02.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_03.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_00.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_01.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_02.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_03.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_04",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_04.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_05",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_05.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_06",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_06.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_07",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_07.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_00",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_00.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_01",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_01.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_02",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_02.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_03",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_03.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_albero_mini",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_albero_mini.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_fungo_psico",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_fungo_psico.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_insegna_fumosa",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": [],
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_panchina_curva",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_curva.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_panchina_fumo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_fumo.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_segnale_foglia",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_segnale_foglia.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_albero_mini",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_albero_mini.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_fumo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fumo.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_foglia_gigante",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_foglia_gigante.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_fungo_psico",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fungo_psico.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_insegna_fumosa",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_insegna_fumosa.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_panchina_curva",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_curva.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_panchina_fumo",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_fumo.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  },
-  {
-   "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_segnale_foglia",
-   "tipo": "oggetto_bordo_strada",
-   "stato": "scartato",
-   "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_segnale_foglia.png",
-   "livelli": [
-    "lv_03_foglie"
-   ],
-   "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
-  }
- ]
+   "elementi": [
+      {
+         "id": "sponsor.brinis_udine.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/brinis_udine/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.brinis_udine.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/brinis_udine/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.brinis_udine.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/brinis_udine/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.canna_bis.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/canna_bis/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.canna_bis.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/canna_bis/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.canna_bis.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/canna_bis/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.curve_pericolose.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/curve_pericolose/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.curve_pericolose.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/curve_pericolose/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.curve_pericolose.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/curve_pericolose/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.erba_medica.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/erba_medica/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.erba_medica.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/erba_medica/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.erba_medica.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/erba_medica/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.green_box.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/green_box/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.green_box.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/green_box/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.green_box.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/green_box/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.piston_high.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/piston_high/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.piston_high.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/piston_high/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.piston_high.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/piston_high/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.slow_down.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/slow_down/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.slow_down.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/slow_down/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "sponsor.slow_down.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "assets_originali/sponsor/slow_down/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b"
+      },
+      {
+         "id": "auto.argento_lunare",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "assets_originali/sprite/auto_gt/auto_argento_lunare.png",
+         "nota": "D5"
+      },
+      {
+         "id": "auto.neon_cyan",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "assets_originali/sprite/auto_gt/auto_neon_cyan.png",
+         "nota": "D5"
+      },
+      {
+         "id": "auto.rosso_corsa",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "assets_originali/sprite/auto_gt/auto_rosso_corsa.png",
+         "nota": "D5"
+      },
+      {
+         "id": "scenario.lv_01_neon.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_01_neon.bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_01_neon.cassetta",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_01_neon.lampione",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_01_neon.palina",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palina.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_01_neon.palo_neon",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "scenario.lv_02_atomico.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.bancone_drive_in",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.cupola",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.freccia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.panchina_cromata",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.segnale_atomico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.torre_razzo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "scenario.lv_03_foglie.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.foglia_gigante",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_foglia_gigante.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.fungo_psico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_fungo_psico.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.insegna_fumosa",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_insegna_fumosa.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.panchina_curva",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_curva.png",
+         "livelli": [
+            "lv_03_foglie",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.panchina_fumo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_fumo.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A"
+      },
+      {
+         "id": "ui.hud",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
+         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
+      },
+      {
+         "id": "ui.menu",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/menu/varianteB/menu_preview.png",
+         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
+      },
+      {
+         "id": "ui.titolo",
+         "tipo": "ui",
+         "stato": "approvato",
+         "file": "assets_originali/ui/titolo/varianteB/title.png",
+         "nota": "D7: variante B"
+      },
+      {
+         "id": "ui.font",
+         "tipo": "ui",
+         "stato": "approvato",
+         "file": "assets_originali/ui/font/varianteB/font.png",
+         "nota": "D7: variante B"
+      },
+      {
+         "id": "font.antonio",
+         "tipo": "font",
+         "stato": "approvato",
+         "file": "assets_originali/font/antonio/Antonio-Bold.ttf",
+         "nota": "D4"
+      },
+      {
+         "id": "auto.traffico",
+         "tipo": "auto_traffico",
+         "stato": "mancante",
+         "file": [],
+         "nota": "auto avversarie (stessi modelli dell'auto giocatore nella prima fase, VISIONE); disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "personaggio.gianni",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "Gianni la foglia, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "personaggio.gesu",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "Gesu', animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "personaggio.ufo",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "UFO, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "skyline.futurista",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "assets_originali/skyline/varianteA_futurista/skyline.png",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea"
+      },
+      {
+         "id": "scenario.lv_05_spray.skyline",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/skyline.png",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). Skyline punk: capannoni, ciminiere, muri a spray. Disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/skyline.sglraw"
+      },
+      {
+         "id": "scenario.lv_06_desktop.skyline",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline.png",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). Skyline desktop: prato, cielo con nuvole, finestre bevel. Disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/skyline.sglraw"
+      },
+      {
+         "id": "scenario.lv_04_cromo.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_guard_rail_cromo.png",
+            "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_lampione_lama.png",
+            "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_robot_servizio.png",
+            "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_pilone_cromo.png"
+         ],
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: guard-rail cromati, lampioni a lama, robot di servizio, pilone cromo. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "scenario.lv_05_spray.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_bidone.png",
+            "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_transenna.png",
+            "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_cassonetto.png",
+            "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_serranda_spray.png"
+         ],
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: bidoni, transenne, cassonetti, serranda spray. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "scenario.lv_06_desktop.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png",
+            "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_case_computer.png",
+            "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_delfino_cartone.png",
+            "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_icona_cartella.png"
+         ],
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: pali con cavi, case-computer, delfini di cartone, icona cartella. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.guard_rail_cromo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_guard_rail_cromo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/guard_rail_cromo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). guard-rail cromato, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.lampione_lama",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_lampione_lama.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/lampione_lama.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). lampione a lama, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.robot_servizio",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_robot_servizio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/robot_servizio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). robot di servizio, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.pilone_cromo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_pilone_cromo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/pilone_cromo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). pilone cromo, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_bidone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/bidone.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). bidone industriale, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.transenna",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_transenna.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/transenna.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). transenna da cantiere, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.cassonetto",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_cassonetto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/cassonetto.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). cassonetto rifiuti, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.serranda_spray",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_serranda_spray.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/serranda_spray.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). serranda con scritte spray, stile punk. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.pali_cavi",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/pali_cavi.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). pali con cavi, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.case_computer",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_case_computer.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/case_computer.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). case computer, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.delfino_cartone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_delfino_cartone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/delfino_cartone.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). delfino di cartone, stile desktop. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.icona_cartella",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_icona_cartella.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/icona_cartella.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). icona cartella, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.auto.varianteA_anni50",
+         "tipo": "auto_giocatore",
+         "stato": "scartato",
+         "file": "assets_originali/sprite/auto/varianteA_anni50/auto.png",
+         "nota": "variante auto anni '50 non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "sprite.auto.varianteB_futurista",
+         "tipo": "auto_giocatore",
+         "stato": "scartato",
+         "file": "assets_originali/sprite/auto/varianteB_futurista/auto.png",
+         "nota": "variante auto futurista non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "sprite.auto.varianteC_punk",
+         "tipo": "auto_giocatore",
+         "stato": "scartato",
+         "file": "assets_originali/sprite/auto/varianteC_punk/auto.png",
+         "nota": "variante auto punk non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_01_neon.scenario_01_01_varianteA.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_01_neon.scenario_01_01_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_01_neon.scenario_01_01_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_01_neon.scenario_neon_01_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_01_neon.scenario_neon_01_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_02_atomico.scenario_02_01_varianteA.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_02_atomico.scenario_02_01_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_02_atomico.scenario_02_01_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_02_atomico.scenario_atomico_02_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_02_atomico.scenario_atomico_02_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_03_foglie.scenario_03_01_varianteA.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_03_foglie.scenario_03_01_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_03_foglie.scenario_03_01_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_03_foglie.scenario_foglie_03_varianteB.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "scenario.lv_03_foglie.scenario_foglie_03_varianteC.skyline",
+         "tipo": "skyline",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "variante skyline non scelta (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_00.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_01.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_02.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteA.obj_01_A_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_03.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_00.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_01.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_02.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteB.obj_01_B_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_03.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_00.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_01.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_02.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_03.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_04",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_04.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_01_01_varianteC.obj_01_C_05",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_05.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "copia/backup oggetto (non cancellare per regola G1); storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_insegna_neon.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_lampione",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_palo_neon",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_segnale",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_cassetta",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_cassetta.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_palo_neon",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteC.obj_segnale",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_00.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_01.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_02.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_03.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteA.obj_02_A_04",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_04.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_00.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_01.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_02.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_03.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteB.obj_02_B_04",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_04.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_00.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_01.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_02.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_03.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_02_01_varianteC.obj_02_C_04",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_04.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_bancone_drive_in",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_bancone_drive_in.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_cupola",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_cupola.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_freccia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_freccia.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_panchina_cromata",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_panchina_cromata.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_segnale_stop",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_segnale_stop.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteB.obj_ufo_distanza",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_bancone_drive_in",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_bancone_drive_in.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_segnale_atomico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_torre_razzo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_torre_razzo.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_panchina_cromata",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_panchina_cromata.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_cupola",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_cupola.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_ufo_distanza",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_segnale_stop",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_stop.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.scenario_atomico_02_varianteC.obj_freccia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_freccia.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_00.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_01.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_02.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteA.obj_03_A_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_03.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteA non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_00.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_01.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_02.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_03.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_04",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_04.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_05",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_05.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_06",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_06.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteB.obj_03_B_07",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_07.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_00",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_00.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_01",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_01.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_02",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_02.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_03_01_varianteC.obj_03_C_03",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_03.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_albero_mini",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_albero_mini.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_fungo_psico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_fungo_psico.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_insegna_fumosa",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": [],
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_panchina_curva",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_curva.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_panchina_fumo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_fumo.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_segnale_foglia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_segnale_foglia.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_albero_mini",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_albero_mini.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_fumo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fumo.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_foglia_gigante",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_foglia_gigante.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_fungo_psico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fungo_psico.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_insegna_fumosa",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_insegna_fumosa.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_panchina_curva",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_curva.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_panchina_fumo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_fumo.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteC.obj_segnale_foglia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_segnale_foglia.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteC non scelto (D6 variante A); file storico, non usare"
+      }
+   ]
 }
