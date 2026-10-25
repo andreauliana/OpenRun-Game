@@ -1,6 +1,6 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
-model: opencode/deepseek-v4.1-flash-free
+model: ollama/openrun-locale
 # fallback (cambia manualmente se modello sopra non disponibile): nemotron-3.5-super-vl-free
 mode: subagent
 permission:
