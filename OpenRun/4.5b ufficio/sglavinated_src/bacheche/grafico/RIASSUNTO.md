@@ -1,5 +1,5 @@
 # RIEPILOGO — @grafico
-Ruolo: Grafico. Turno 25/10/2026 11:01.
+Ruolo: Grafico. Turno 25/10/2026 11:35.
 Blocco G1 [x]: chiuso (181 elementi, PNG non catalogati 0).
 Blocco M [~]: D8 "tempo" eseguito — hud_preview.png rigenerato con genera_ui_b.py (exit 0, audit B/N OK), coerente con hud.json; manifest "bozza" in attesa ok Andrea PNG B/N.
 Blocco DECO1 [ ]: punto 1 completo per tutti i 6 livelli; integrazione motore in attesa @developer.
