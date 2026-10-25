@@ -11,7 +11,7 @@
       },
       "models": {
         "openrun-locale": {
-          "name": "openrun-locale (Qwen3.5 4B, contesto 16k)"
+          "name": "openrun-locale (Qwen3 4B Instruct, contesto 16k)"
         }
       }
     },
@@ -23,7 +23,7 @@
       },
       "models": {
         "openrun-locale": {
-          "name": "openrun-locale (Qwen3.5 4B, contesto 16k)"
+          "name": "openrun-locale (Qwen3 4B Instruct, contesto 16k)"
         }
       }
     }

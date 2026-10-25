@@ -53,13 +53,13 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 
 ## Riserva locale con Ollama o llama.cpp (lavoro minimo, zero crediti)
-Quando i crediti gratuiti di OpenCode finiscono su tutta la panchina, il ciclo non si ferma: tutti i ruoli passano al modello locale Qwen3.5 4B (contesto 16k, 4 thread). In locale gira **un agente alla volta** e dopo ogni turno c'e' una **pausa di 10 minuti**, cosi' il Mac non va a mille. Dopo 6 ore si riprova con i modelli free e il server locale si spegne.
+Quando i crediti gratuiti di OpenCode finiscono su tutta la panchina, il ciclo non si ferma: tutti i ruoli passano al modello locale Qwen3 4B Instruct (contesto 16k, 4 thread). E' la versione senza "ragionamento": su CPU Intel Qwen3.5 pensava per minuti anche per rispondere una parola. In locale gira **un agente alla volta** e dopo ogni turno c'e' una **pausa di 10 minuti**, cosi' il Mac non va a mille. Dopo 6 ore si riprova con i modelli free e il server locale si spegne.
 
 Motore: **Ollama** se e' installato (modello `ollama/openrun-locale`), altrimenti **llama.cpp** (`locale/openrun-locale`). Per scegliere: `LOCALE_MOTORE=ollama` oppure `LOCALE_MOTORE=llamacpp`.
 
 Preparazione (una volta sola):
 1. Ollama: `curl -fsSL https://ollama.com/install.sh | sh` (funziona anche su macOS 12 Intel, senza l'app). Oppure llama.cpp: `brew install llama.cpp`, o compilato a mano (sotto).
-2. `sh strumenti/modo_locale.sh prepara` (scarica circa 3 GB; accende da solo `ollama serve` se non e' gia' acceso; log in `sglavinated_src/locale.log`).
+2. `sh strumenti/modo_locale.sh prepara` (scarica circa 2,5 GB; accende da solo `ollama serve` se non e' gia' acceso; log in `sglavinated_src/locale.log`).
 3. `sh strumenti/modo_locale.sh stato` deve dire "riserva locale: pronta".
 
 Comandi utili:

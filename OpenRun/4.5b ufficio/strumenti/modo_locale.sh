@@ -5,7 +5,7 @@
 # Il server locale gira solo mentre il modo locale e' acceso: "esci" lo spegne (se l'ha acceso lo script) e libera la RAM.
 # Motore: LOCALE_MOTORE=ollama|llamacpp (default: ollama se installato, altrimenti llama.cpp).
 # Uso: sh strumenti/modo_locale.sh <prepara|disponibile|avvia|ferma|entra [fisso]|esci|attivo|scaduto|modello|stato>
-#   prepara     scarica il modello (una volta sola, circa 3 GB) e prova che il server risponde
+#   prepara     scarica il modello (una volta sola, circa 2,5 GB) e prova che il server risponde
 #   disponibile exit 0 se il motore e' installato e il modello e' gia' stato scaricato con prepara
 #   avvia/ferma accende o spegne il server locale
 #   entra       accende il server, salva i modelli attuali degli agenti e li passa tutti al modello locale
@@ -18,10 +18,12 @@ BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
 P="$BASE/sglavinated_src"; HERE="$BASE/strumenti"
 STATO="$P/.modo_locale"; PID="$P/.locale.pid"; LOG="$P/locale.log"
 NOME="openrun-locale"
-# Mac 16 GB, carico leggero: Qwen3.5 4B (circa 3 GB, supporta tools) con contesto 16k e 4 thread.
+# Mac 16 GB, carico leggero: Qwen3 4B Instruct 2507 (circa 2,5 GB, supporta tools) con contesto 16k e 4 thread.
+# Versione "instruct" = senza ragionamento: su CPU Intel (circa 5 token/s) Qwen3.5 pensava per centinaia di token
+# anche per una parola, e da opencode.json il ragionamento non si spegne.
 # Piu' qualita' ma piu' calore: LOCALE_CTX=32768 e, per Ollama, LOCALE_OLLAMA=qwen3.5:9b; per llama.cpp, LOCALE_HF=unsloth/Qwen3.5-9B-GGUF:Q4_K_M
 CTX="${LOCALE_CTX:-16384}"; THREAD="${LOCALE_THREAD:-4}"
-OLLAMA_BASE="${LOCALE_OLLAMA:-qwen3.5:4b}"; HF="${LOCALE_HF:-unsloth/Qwen3.5-4B-GGUF:Q4_K_M}"
+OLLAMA_BASE="${LOCALE_OLLAMA:-qwen3:4b-instruct}"; HF="${LOCALE_HF:-unsloth/Qwen3-4B-Instruct-2507-GGUF:Q4_K_M}"
 # llama-server: da brew (nel PATH), da LLAMA_SERVER, o compilato in ~/Documents/llama.cpp (Mac vecchi: vedi README).
 LLAMA_BIN="${LLAMA_SERVER:-$(command -v llama-server 2>/dev/null)}"
 [ -n "$LLAMA_BIN" ] || LLAMA_BIN="$HOME/Documents/llama.cpp/build/bin/llama-server"
@@ -61,7 +63,7 @@ ferma() {
 case "${1:-stato}" in
   prepara)
     avvia || exit 1
-    echo "Motore $MOTORE: scarico e carico Qwen3.5 (la prima volta puo' richiedere vari minuti; dettagli in sglavinated_src/locale.log)..."
+    echo "Motore $MOTORE: scarico e carico il modello locale (la prima volta puo' richiedere vari minuti; dettagli in sglavinated_src/locale.log)..."
     aspetta_server 3600 || { echo "ERRORE: il server non e' partito. Ultime righe di sglavinated_src/locale.log:"; tail -15 "$LOG"; ferma; exit 1; }
     if [ "$MOTORE" = ollama ]; then
       ollama pull "$OLLAMA_BASE" || { ferma; exit 1; }
