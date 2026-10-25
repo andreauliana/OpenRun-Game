@@ -1,3 +1,4 @@
 {
-  "frequenza_hz": 60
+  "frequenza_hz": 60,
+  "transizione_tema_s": 2.0
 }

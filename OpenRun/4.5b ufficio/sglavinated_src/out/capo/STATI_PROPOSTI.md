@@ -1,5 +1,8 @@
 # STATI PROPOSTI — Turno 3 (ora 4 di 12) — @capo
 
+> **Correzione Claude 25/10 (precede il resto di questa pagina):** D19 ha RISPOSTA DI ANDREA: B, quindi T1-RUN resta [~] e CP-006 e' APERTO (non CHIUSO). FORK1: codice e gate fatti da Claude, ctest 20/20; restano le due review incrociate e CP-007 (@capo). Poi DECO1 a passi piccoli 2a-2e (RICHIESTA.md).
+
+
 Aggiornato: 2026-10-25. Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md, UFFICIO/Officina/STATUS_OFFICINA.md.
 Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**, CHIUSO CP-006 2026-10-25. Regola: una tappa si chiude quando passa il suo gate; poi review, poi Andrea, poi la tappa dopo.
 Ruoli 4.6: **developer, developer-junior, grafico**. Consegne: `out/developer/`, `out/developer-junior/`, `out/grafico/`.
