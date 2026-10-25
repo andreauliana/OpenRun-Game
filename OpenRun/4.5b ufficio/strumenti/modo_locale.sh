@@ -20,6 +20,9 @@ NOME="openrun-locale"; MODELLO="locale/$NOME"
 # Mac 16 GB, carico leggero: Qwen3.5 4B Q4_K_M (circa 2,7 GB, supporta tools) con contesto 16k e 4 thread.
 # Piu' qualita' ma piu' calore: LOCALE_HF=unsloth/Qwen3.5-9B-GGUF:Q4_K_M LOCALE_CTX=32768 sh strumenti/modo_locale.sh prepara
 HF="${LOCALE_HF:-unsloth/Qwen3.5-4B-GGUF:Q4_K_M}"; CTX="${LOCALE_CTX:-16384}"; THREAD="${LOCALE_THREAD:-4}"
+# llama-server: da brew (nel PATH), da LLAMA_SERVER, o compilato in ~/Documents/llama.cpp (Mac vecchi: vedi README).
+LLAMA_BIN="${LLAMA_SERVER:-$(command -v llama-server 2>/dev/null)}"
+[ -n "$LLAMA_BIN" ] || LLAMA_BIN="$HOME/Documents/llama.cpp/build/bin/llama-server"
 server_vivo() { curl -fsS "$URL/health" >/dev/null 2>&1; }
 aspetta_server() {  # $1 = secondi massimi
   i=0; while [ "$i" -lt "$1" ]; do server_vivo && return 0
@@ -28,9 +31,9 @@ aspetta_server() {  # $1 = secondi massimi
 }
 avvia() {
   server_vivo && return 0
-  command -v llama-server >/dev/null 2>&1 || { echo "ERRORE: llama-server non trovato. Installa con: brew install llama.cpp"; return 1; }
+  [ -x "$LLAMA_BIN" ] || { echo "ERRORE: llama-server non trovato. Installa con: brew install llama.cpp (oppure compilalo, vedi README)"; return 1; }
   # --jinja serve per le chiamate ai tools; -np 1 = una richiesta alla volta con tutto il contesto; --no-mmproj = niente parte immagini.
-  nohup llama-server -hf "$HF" --alias "$NOME" --jinja --no-mmproj -c "$CTX" -t "$THREAD" -np 1 \
+  nohup "$LLAMA_BIN" -hf "$HF" --alias "$NOME" --jinja --no-mmproj -c "$CTX" -t "$THREAD" -np 1 \
     --host 127.0.0.1 --port "$PORTA" > "$LOG" 2>&1 &
   echo "$!" > "$PID"
 }
@@ -51,7 +54,7 @@ case "${1:-stato}" in
     echo "Pronto: $MODELLO ($HF, contesto $CTX). Il server si accende da solo quando serve." ;;
   disponibile)
     server_vivo && exit 0
-    command -v llama-server >/dev/null 2>&1 && [ -f "$PRONTO" ] ;;
+    [ -x "$LLAMA_BIN" ] && [ -f "$PRONTO" ] ;;
   avvia) avvia || exit 1; aspetta_server 300 && echo "server locale acceso su $URL" || { echo "ERRORE: server non pronto, vedi sglavinated_src/llama.log"; exit 1; } ;;
   ferma) ferma; echo "server locale spento" ;;
   entra)

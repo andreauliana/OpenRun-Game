@@ -60,6 +60,13 @@ Preparazione (una volta sola):
 2. `sh strumenti/modo_locale.sh prepara` (scarica circa 2,7 GB da Hugging Face; log in `sglavinated_src/llama.log`).
 3. `sh strumenti/modo_locale.sh stato` deve dire "riserva locale: pronta".
 
+Mac vecchi (macOS 12, Intel) dove `brew install llama.cpp` fallisce: compila solo llama.cpp (serve cmake e gli strumenti Xcode, gli stessi del gioco):
+```
+cd ~/Documents && git clone --depth 1 https://github.com/ggml-org/llama.cpp
+cd llama.cpp && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j 4 --target llama-server
+```
+Lo script trova da solo `~/Documents/llama.cpp/build/bin/llama-server` (altrimenti `LLAMA_SERVER=/percorso/llama-server`). Su Intel il modello gira sul processore: e' piu' lento, per questo restano la pausa e un solo agente alla volta.
+
 Comandi utili:
 - `sh strumenti/modo_locale.sh entra fisso`: solo locale, finche' non lanci `esci`.
 - `sh strumenti/modo_locale.sh esci`: torna ai modelli free di prima e spegne il server.
