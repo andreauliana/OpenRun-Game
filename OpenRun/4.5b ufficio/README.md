@@ -52,19 +52,19 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il @grafico.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 
-## Riserva locale con Ollama (lavoro minimo, zero crediti)
-Quando i crediti gratuiti di OpenCode finiscono su tutta la panchina, il ciclo non si ferma: tutti i ruoli passano al modello locale `ollama/openrun-locale` (qwen3.5:4b, contesto 16k, 4 thread). In locale gira **un agente alla volta** e dopo ogni turno c'e' una **pausa di 10 minuti**, cosi' il Mac non va a mille. Dopo 6 ore si riprova con i modelli free.
+## Riserva locale con llama.cpp (lavoro minimo, zero crediti)
+Quando i crediti gratuiti di OpenCode finiscono su tutta la panchina, il ciclo non si ferma: tutti i ruoli passano al modello locale `locale/openrun-locale` (Qwen3.5 4B Q4_K_M via llama.cpp, contesto 16k, 4 thread). In locale gira **un agente alla volta** e dopo ogni turno c'e' una **pausa di 10 minuti**, cosi' il Mac non va a mille. Dopo 6 ore si riprova con i modelli free e il server locale si spegne.
 
 Preparazione (una volta sola):
-1. Installa Ollama da https://ollama.com/download e aprilo.
-2. `sh strumenti/modo_locale.sh prepara` (scarica circa 3,5 GB e crea `openrun-locale`).
-3. `sh strumenti/modo_locale.sh stato` deve dire "Ollama: pronto".
+1. `brew install llama.cpp`
+2. `sh strumenti/modo_locale.sh prepara` (scarica circa 2,7 GB da Hugging Face; log in `sglavinated_src/llama.log`).
+3. `sh strumenti/modo_locale.sh stato` deve dire "riserva locale: pronta".
 
 Comandi utili:
-- `sh strumenti/modo_locale.sh entra fisso` — solo locale, finche' non lanci `esci`.
-- `sh strumenti/modo_locale.sh esci` — torna ai modelli free di prima.
-- Variabili: `RIPOSO_LOCALE` (secondi di pausa, default 600), `RISERVA_ORE` (default 6), `RISERVA_LOCALE=0` per disattivare la riserva.
-- Piu' qualita' (e piu' calore): `OLLAMA_BASE=qwen3.5:9b OLLAMA_CTX=32768 sh strumenti/modo_locale.sh prepara`.
+- `sh strumenti/modo_locale.sh entra fisso`: solo locale, finche' non lanci `esci`.
+- `sh strumenti/modo_locale.sh esci`: torna ai modelli free di prima e spegne il server.
+- Variabili: `RIPOSO_LOCALE` (secondi di pausa, default 600), `RISERVA_ORE` (default 6), `RISERVA_LOCALE=0` per disattivare la riserva, `LOCALE_PORTA` (default 8080; se la cambi, cambia anche `baseURL` in `opencode.json`).
+- Piu' qualita' (e piu' calore): `LOCALE_HF=unsloth/Qwen3.5-9B-GGUF:Q4_K_M LOCALE_CTX=32768 sh strumenti/modo_locale.sh prepara` (le stesse variabili valgono poi quando il ciclo accende il server).
 
 Il modello locale e' molto piu' debole dei free: va bene per passi piccoli, diario, test e documenti, non per modifiche C++ grandi.
 

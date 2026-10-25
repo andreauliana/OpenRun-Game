@@ -31,11 +31,10 @@ for i in $(seq 1 24); do
     done < "$BASE/strumenti/panchina.txt"
     [ "$OK_PAN" -eq 1 ] && break
     V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$CUR" >/dev/null
-    # Riserva locale: se Ollama e' pronto si parte in locale (nessun credito) invece di rinunciare.
-    if [ "${RISERVA_LOCALE:-1}" = 1 ] && V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" disponibile; then
-      V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" entra
+    # Riserva locale: se llama.cpp e' pronto si parte in locale (nessun credito) invece di rinunciare.
+    if [ "${RISERVA_LOCALE:-1}" = 1 ] && V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" disponibile && V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" entra; then
       T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
-      echo "[brains] LIMITE RAGGIUNTO sui modelli free: parto con la riserva locale Ollama (torno ai free dopo ${RISERVA_ORE:-6} ore)"; break
+      echo "[brains] LIMITE RAGGIUNTO sui modelli free: parto con la riserva locale llama.cpp (torno ai free dopo ${RISERVA_ORE:-6} ore)"; break
     fi
     echo "LIMITE RAGGIUNTO: i crediti gratuiti di OpenCode sono finiti su tutti i modelli della panchina (strumenti/panchina.txt). Non parto: riprova piu' tardi (o domani), oppure prepara la riserva locale: sh strumenti/modo_locale.sh prepara" >&2; exit 1
   fi

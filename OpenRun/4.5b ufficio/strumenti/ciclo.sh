@@ -148,9 +148,9 @@ manutenzione() {
   fi
   echo "$oggi" > log_agenti/.giorno
   ESC=$(printf '\033'); PAN="$BASE/strumenti/panchina.txt"; C=CONTROLLO.md; mkdir -p log_agenti
-  # Riserva locale (Ollama): dopo RISERVA_ORE si torna ai modelli free; se il limite e' ancora attivo si rientra da soli.
+  # Riserva locale (llama.cpp): dopo RISERVA_ORE si torna ai modelli free; se il limite e' ancora attivo si rientra da soli.
   if ML scaduto; then echo "[ciclo] $(date '+%d/%m %H:%M') riserva locale: $(ML esci)"; fi
-  ML attivo && LOC="ollama/openrun-locale" || LOC=""
+  ML attivo && LOC="locale/openrun-locale" || LOC=""
   { echo "# Controllo automatico — $(date '+%F %H:%M') (generato dallo script, non modificare)"
     echo; echo "## Modelli assegnati"
     for f in .opencode/agents/*.md; do
@@ -291,9 +291,9 @@ giro_diretto() {
       cambi_limite=$((cambi_limite+1))
       if [ "$cambi_limite" -ge "$(grep -c . "$BASE/strumenti/panchina.txt")" ]; then
         cambi_limite=0
-        # Crediti finiti su tutta la panchina: se Ollama e' pronto si continua in locale invece di fermarsi.
-        if [ "${RISERVA_LOCALE:-1}" = 1 ] && ! ML attivo && ML disponibile; then
-          ML entra >/dev/null; echo "[ciclo] $(date '+%d/%m %H:%M') LIMITE RAGGIUNTO su tutta la panchina: passo alla riserva locale Ollama per ${RISERVA_ORE:-6} ore"; continue
+        # Crediti finiti su tutta la panchina: se la riserva locale e' pronta si continua in locale invece di fermarsi.
+        if [ "${RISERVA_LOCALE:-1}" = 1 ] && ! ML attivo && ML disponibile && ML entra >/dev/null; then
+          echo "[ciclo] $(date '+%d/%m %H:%M') LIMITE RAGGIUNTO su tutta la panchina: passo alla riserva locale llama.cpp per ${RISERVA_ORE:-6} ore"; continue
         fi
         pausa_limite; break
       fi
