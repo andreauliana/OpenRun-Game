@@ -2,6 +2,7 @@
 #include "game/game.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
 #include <algorithm> // std::min/max
+#include <cctype> // std::isdigit
 #include <cmath> // std::fmod
 #include <cstdio> // std::fopen/fread/fclose
 #include <map> // std::map per la libreria di tratti
@@ -34,9 +35,31 @@ sgl::i32 leggiFrequenzaDaConfig() {
 
 sgl::i32 impostaFrequenzaDaConfig(sgl::i32 hz) {
     sgl::i32 precedente = leggiFrequenzaDaConfig();
+    // Cambia solo il valore di frequenza_hz: prima il file veniva riscritto
+    // da zero e il gate frequenza cancellava le altre chiavi (es.
+    // transizione_tema_s, persa a ogni gate_t1.sh).
+    std::string testo;
+    if (std::FILE* in = std::fopen("motore_nuovo/dati/config.json", "rb")) {
+        char buf[4096];
+        size_t n;
+        while ((n = std::fread(buf, 1, sizeof(buf), in)) > 0) testo.append(buf, n);
+        std::fclose(in);
+    }
+    const std::string valore = std::to_string(hz);
+    const size_t chiave = testo.find("\"frequenza_hz\"");
+    const size_t duepunti = chiave == std::string::npos ? chiave : testo.find(':', chiave);
+    if (duepunti != std::string::npos) {
+        size_t inizio = duepunti + 1;
+        while (inizio < testo.size() && (testo[inizio] == ' ' || testo[inizio] == '\t')) ++inizio;
+        size_t fine = inizio;
+        while (fine < testo.size() && (std::isdigit((unsigned char)testo[fine]) || testo[fine] == '.')) ++fine;
+        testo.replace(inizio, fine - inizio, valore);
+    } else {
+        testo = "{\n  \"frequenza_hz\": " + valore + "\n}\n";
+    }
     std::FILE* f = std::fopen("motore_nuovo/dati/config.json", "wb");
     if (f) {
-        std::fprintf(f, "{\n  \"frequenza_hz\": %d\n}\n", hz);
+        std::fwrite(testo.data(), 1, testo.size(), f);
         std::fclose(f);
     }
     return precedente;
@@ -833,12 +856,19 @@ void Game::update() {
     } else {
         // Corsia dell'auto: al bivio e' il ramo piu' vicino.
         const Road::Carreggiate carr = road_.carreggiate(player_.z, latoBivio_);
-        if (latoBivio_ == 0) {
-            // Scelta ancora aperta: l'auto sta sulla strada intera.
-            // centroCorsia resta fisso a 0: niente salto laterale quando l'auto
-            // passa da x<0 a x>0 (continuità) e il ramo non scelto non spinge.
+        if (latoBivio_ == 0 && !carr.doppia) {
             player_.centroCorsia = 0.0f;
             player_.larghezzaCorsia = 1.0f;
+        } else if (latoBivio_ == 0) {
+            // Scelta ancora aperta: corsia = ramo piu' vicino, cosi' l'auto
+            // segue il ramo mentre si apre fino a BIVIO_DIST. Con il centro
+            // fisso a 0 il clamp X_LIMIT (900) la teneva sullo spartitraffico,
+            // fuori strada, e al blocco scattava di 100 unita' (gate
+            // bivio_uscita, 25/10). Il clamp agisce ogni frame mentre il ramo
+            // si apre, quindi la spinta verso il proprio lato resta continua.
+            const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
+            player_.centroCorsia = carr.centro[vicino];
+            player_.larghezzaCorsia = carr.fattore;
         } else {
             const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
             player_.centroCorsia = carr.centro[vicino];

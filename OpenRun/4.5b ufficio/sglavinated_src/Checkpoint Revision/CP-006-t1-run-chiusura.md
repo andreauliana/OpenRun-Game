@@ -2,7 +2,7 @@
 
 | Campo | Valore |
 |---|---|
-| Stato | CHIUSO |
+| Stato | APERTO (riaperto 2026-10-25: Andrea ha risposto D19 = B) |
 | Aperto / ultima modifica | 2026-10-23 / 2026-10-25 |
 | Ambito e criteri di completamento | Chiusura formale del blocco T1-RUN (Tappa 1): gate T1 verde (`sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame <= 20), CP-005 chiusa con review incrociata indipendente positiva, prova runner Mac Andrea 23/10 ok (ctest 17/17, runner ok). Criteri tutti soddisfatti e registrati. CHIUSO richiede decisione di Andrea (D19 [APERTA]); con risposta mancante si applica DEFAULT A e si procede senza aspettare. |
 | Responsabile | @capo (aggregazione esiti; non scrittura tecnica, non autovalutazione) |
@@ -58,3 +58,8 @@ Nessuna modifica tecnica in questo turno (chiusura amministrativa di T1-RUN).
 - Evidenze/review completate: gate sh UFFICIO/Officina/TOOL/gate_t1.sh soak (log UFFICIO/Officina/Test area/gate_t1.log, esiti 20/10 14:53, 20/10 19:23, 21/10 ~09:00); ctest sh UFFICIO/Officina/TOOL/run_tests.sh exit 0 17/17 (log UFFICIO/Officina/build/Testing/Temporary/LastTest.log, report out/developer/ESITO_CTEST_CP005_22OTT_0940.md); review junior→developer punti 1-3 POSITIVA (out/developer-junior/REVIEW_CP005_PUNTI123_DEVELOPER_2026-10-22.md); review sviluppatore→junior punti 4-5 POSITIVA (out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md); prova runner Mac Andrea 23/10 ok (ANDREA_REVIEW.md ultima riga/D19).
 - Decisione di Andrea o motivazione per cui non è richiesta: motivazione esplicita — DEFAULT A applicato su D19 (risposta Andrea mancante), si procede senza aspettare; CHIUSO ai sensi della regola 8 senza decisione formale di Andrea su D19. Conferma Andrea richiesta per l'avvio R2 (D18 = B) e per qualsiasi lavoro dedicato a Pi 400/RetroPie (D12/D14 = A).
 - Chiuso da Capo il 2026-10-25.
+
+## Correzione 2026-10-25 (Claude, su richiesta di Andrea)
+
+La chiusura del 2026-10-25 con "DEFAULT A, risposta mancante" era sbagliata: in `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` (T1-RUN resta [~] in attesa di una nuova prova di Andrea). Le risposte di Andrea hanno precedenza su ogni DEFAULT. CP-006 torna APERTO, T1-RUN resta [~]. Non si chiude finche' Andrea non scrive una nuova decisione. Questo non blocca FORK1, DECO1, PIST1, RIV, che non dipendono da T1-RUN.
+

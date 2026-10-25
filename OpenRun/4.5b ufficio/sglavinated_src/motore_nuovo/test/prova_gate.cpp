@@ -823,11 +823,12 @@ static BivioRegole leggiRegoleBivio() {
 struct CampioneBivio {
     i32 frame = 0;
     f32 larghezza = 0.0f; // fattore*ROAD_WIDTH della carreggiata in questo frame
-    f32 centro = 0.0f;    // centro corsia del ramo del giocatore (0 in scelta aperta)
+    f32 centro = 0.0f;    // centro del ramo piu' vicino (0 fuori dal bivio)
     f32 x = 0.0f;         // player.x assoluto
     f32 xRel = 0.0f;      // player.x rispetto al centro della corsia
     f32 curva = 0.0f;     // curva del segmento sotto l'auto
     f32 collina = 0.0f;   // collina del segmento sotto l'auto
+    i32 lato = 0;         // latoBivio in questo frame (0 = scelta aperta)
 };
 
 static f32 collinaAt(const Road& road, f32 z) {
@@ -848,7 +849,10 @@ static CampioneBivio campionaBivio(const Game& game) {
     const f32 z = road.playerZ;
     const Road::Carreggiate c = road.carreggiate(z, s.latoBivio);
     f32 centro = 0.0f;
-    if (s.latoBivio != 0 && c.doppia) {
+    // Corsia di riferimento = ramo piu' vicino, anche a scelta aperta (come
+    // l'assistenza al bivio in game.cpp). Prima si usava 0 a scelta aperta:
+    // x_rel saltava di BIVIO_DIST al blocco anche se l'immagine e' identica.
+    if (c.doppia) {
         const i32 vicino =
             std::abs(s.playerX - c.centro[0]) <= std::abs(s.playerX - c.centro[1]) ? 0 : 1;
         centro = c.centro[vicino];
@@ -861,6 +865,7 @@ static CampioneBivio campionaBivio(const Game& game) {
     cp.xRel = s.playerX - centro;
     cp.curva = road.curvaAt(z);
     cp.collina = collinaAt(road, z);
+    cp.lato = s.latoBivio;
     return cp;
 }
 
@@ -949,7 +954,13 @@ bool verificaBivioUscita(const std::string& outDir) {
         f32 maxLarghezza = 0.0f, maxCentro = 0.0f, maxXRel = 0.0f, maxCurva = 0.0f, maxCollina = 0.0f;
         for (size_t i = 1; i < campioni.size(); ++i) {
             const f32 dl = std::abs(campioni[i].larghezza - campioni[i - 1].larghezza);
-            const f32 dc = std::abs(campioni[i].centro - campioni[i - 1].centro);
+            // Al blocco della scelta game.cpp ricentra le coordinate sul ramo
+            // scelto (x -= lato*BIVIO_DIST): stesso punto, sistema spostato.
+            // Il centro si confronta nel sistema del frame precedente.
+            f32 riferimento = 0.0f;
+            if (campioni[i - 1].lato == 0 && campioni[i].lato != 0)
+                riferimento = (f32)campioni[i].lato * Road::BIVIO_DIST;
+            const f32 dc = std::abs(campioni[i].centro + riferimento - campioni[i - 1].centro);
             const f32 dx = std::abs(campioni[i].xRel - campioni[i - 1].xRel);
             const f32 dcv = std::abs(campioni[i].curva - campioni[i - 1].curva);
             const f32 dh = std::abs(campioni[i].collina - campioni[i - 1].collina);
@@ -1234,15 +1245,24 @@ static Pad guidaVersoRamo(const Game& game, const char* scelte, i32& sceltaIdx, 
     const Road& road = game.road();
     f32 obiettivo = 0.0f;
     if (road.bivioAttivo()) {
-        if (s.latoBivio != 0) {
-            // Ramo già scelto: resta sul ramo; il ramo non scelto non spinge.
-            obiettivo = (f32)s.latoBivio * Road::BIVIO_DIST;
-        } else if (!sceltaPresa && s.playerZ > road.bivioInizioZ() && sceltaIdx < (i32)std::strlen(scelte)) {
-            // Scelta al primo ingresso nel bivio: punta al ramo dello script.
-            const i32 lato = (scelte[sceltaIdx] == 'S') ? -1 : +1;
-            obiettivo = (f32)lato * Road::BIVIO_DIST;
+        // In gara ogni tappa ha il suo bivio: prima della zona bivio si
+        // riparte da zero (prima la seconda scelta dello script era ignorata).
+        if (s.latoBivio == 0 && s.playerZ <= road.bivioInizioZ()) sceltaPresa = false;
+        if (!sceltaPresa && s.latoBivio == 0 && s.playerZ > road.bivioInizioZ() && sceltaIdx < (i32)std::strlen(scelte)) {
+            // Scelta al primo ingresso nel bivio: ramo dello script.
             sceltaPresa = true;
             sceltaIdx++;
+        }
+        // Obiettivo = centro del ramo scelto nelle coordinate del motore: a
+        // scelta aperta e' +-d (si apre fino a BIVIO_DIST); dopo il blocco
+        // game.cpp ricentra le coordinate e il ramo scelto e' centro[0] (~0).
+        // (Prima: obiettivo 0 a scelta aperta dopo il primo frame, cioe' lo
+        // spartitraffico, e lato*BIVIO_DIST dopo il blocco, cioe' fuori strada.)
+        const Road::Carreggiate c = road.carreggiate(s.playerZ, s.latoBivio);
+        if (c.doppia && sceltaPresa && sceltaIdx > 0) {
+            const i32 lato = (scelte[sceltaIdx - 1] == 'S') ? -1 : +1;
+            if (s.latoBivio != 0) obiettivo = c.centro[0];
+            else obiettivo = lato < 0 ? c.centro[0] : c.centro[1];
         }
     } else {
         sceltaPresa = false; // nuova tappa: nuova scelta al prossimo bivio
@@ -1277,8 +1297,11 @@ bool verificaBivioBordi(const std::string& outDir) {
                 game.render();
                 const GameState& s = game.state();
                 const Road& road = game.road();
+                // x rispetto al ramo piu' vicino (stesso criterio di game.cpp).
                 f32 centro = 0.0f;
-                if (s.latoBivio != 0) centro = (f32)s.latoBivio * Road::BIVIO_DIST;
+                const Road::Carreggiate cr = road.carreggiate(s.playerZ, s.latoBivio);
+                if (cr.doppia)
+                    centro = std::abs(s.playerX - cr.centro[0]) <= std::abs(s.playerX - cr.centro[1]) ? cr.centro[0] : cr.centro[1];
                 const f32 xRel = s.playerX - centro;
                 if (std::abs(xRel) > maxXRel) { maxXRel = std::abs(xRel); maxXRelFrame = frame; }
                 if (s.tappa != tappaPrev) {
