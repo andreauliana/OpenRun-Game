@@ -1,5 +1,8 @@
 # Stato corrente — OpenRun 4.6
 
+> **Correzione Claude 25/10 (precede il resto di questa pagina):** D19 ha RISPOSTA DI ANDREA: B, quindi T1-RUN resta [~] e CP-006 e' APERTO (non CHIUSO). FORK1: codice e gate fatti da Claude, ctest 20/20; restano le due review incrociate e CP-007 (@capo). Poi DECO1 a passi piccoli 2a-2e (RICHIESTA.md).
+
+
 > Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-10-25 (Turno 3, ora 4 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], `out/capo/STATI_PROPOSTI.md` (riscritto Turno 2, ora 3 di 12), `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
 
 | Campo | Stato |
