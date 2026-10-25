@@ -7,7 +7,9 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (locale, riserva)",
       "options": {
-        "baseURL": "http://127.0.0.1:11434/v1"
+        "baseURL": "http://127.0.0.1:11434/v1",
+        "timeout": 3600000,
+        "chunkTimeout": 3600000
       },
       "models": {
         "openrun-locale": {
@@ -19,7 +21,9 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "llama.cpp (locale, riserva)",
       "options": {
-        "baseURL": "http://127.0.0.1:8080/v1"
+        "baseURL": "http://127.0.0.1:8080/v1",
+        "timeout": 3600000,
+        "chunkTimeout": 3600000
       },
       "models": {
         "openrun-locale": {
