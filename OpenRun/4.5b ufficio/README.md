@@ -75,7 +75,7 @@ cd llama.cpp && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
 ```
 Lo script trova da solo `~/Documents/llama.cpp/build/bin/llama-server` (altrimenti `LLAMA_SERVER=/percorso/llama-server`).
 
-In `opencode.json` i provider locali hanno `timeout` e `chunkTimeout` a 1 ora: su CPU il modello legge il prompt di OpenCode (circa 10.000 token) in 5-6 minuti senza mandare niente, e il timeout normale lo interrompeva a 3 minuti. Su un Mac Intel il modello gira sul processore: e' lento, per questo restano la pausa e un solo agente alla volta. Il modello locale e' molto piu' debole dei free: va bene per passi piccoli, diario, test e documenti, non per modifiche C++ grandi.
+In `opencode.json` i provider locali hanno `timeout`, `headerTimeout` e `chunkTimeout` a 1 ora: su CPU il modello legge il prompt di OpenCode (circa 10.000 token) in 5-6 minuti senza mandare niente, e il timeout normale lo interrompeva a 3 minuti. Su un Mac Intel il modello gira sul processore: e' lento, per questo restano la pausa e un solo agente alla volta. Il modello locale e' molto piu' debole dei free: va bene per passi piccoli, diario, test e documenti, non per modifiche C++ grandi.
 
 ## Stato al passaggio (17 ott 2026)
 Tappa 1. Gate reale OK (3 livelli, replay 2x identico, 0,09 ms/frame, soak 30000 frame). Aperti: H, P1, T1-RUN (punto 4 sprite veri nel gate, punto 8 test di Andrea su Mac e Pi 400), M, J. MD0 e T5 in attesa.
