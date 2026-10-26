@@ -51,7 +51,10 @@ ferma_tutto() {
       *)
         if pid_del_progetto "$pid" "$T/ciclo.sh"; then
           kill -TERM "$pid" 2>/dev/null || { echo "ERRORE: impossibile fermare il ciclo $pid." >&2; return 1; }
-          sleep 2
+          # La shell gestisce il TERM solo quando finisce il comando in corso (sleep della pausa o
+          # opencode): fermo anche i figli diretti del ciclo, cosi' l'uscita e' immediata.
+          pkill -TERM -P "$pid" 2>/dev/null
+          for _ in 1 2 3 4 5; do kill -0 "$pid" 2>/dev/null || break; sleep 1; done
           if kill -0 "$pid" 2>/dev/null; then
             echo "ERRORE: il ciclo non si e' fermato; nessun processo esterno e' stato terminato." >&2
             return 1
