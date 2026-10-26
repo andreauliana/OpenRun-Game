@@ -51,6 +51,8 @@ permission:
     "git log *": allow
     "git show *": allow
     "clang++ -std=c++17 -fsyntax-only *": allow
+    "python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py": allow
+    "python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py *": allow
     "python3 motore_nuovo/strumenti_py/png_a_raw.py": allow
     "python3 motore_nuovo/strumenti_py/png_a_raw.py *": allow
     "ls *": allow
