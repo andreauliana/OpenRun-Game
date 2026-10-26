@@ -1,6 +1,6 @@
 ---
 description: "Grafico e Creativo del progetto: crea e cataloga asset, verifica licenze e provenienza, integra ricerca risorse libere e approva gli asset condivisi."
-model: opencode/nemotron-3-ultra-free
+model: opencode/deepseek-v4.1-flash-free
 # fallback (cambia manualmente se modello sopra non disponibile): nemotron-3.5-super-vl-free
 mode: subagent
 permission:
