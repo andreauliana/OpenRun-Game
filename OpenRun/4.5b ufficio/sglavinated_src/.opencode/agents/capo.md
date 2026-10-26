@@ -1,6 +1,6 @@
 ---
 description: Coordina progetto di produzione, assegna task e revisioni indipendenti, verifica completezza e gestisce checkpoint e documenti per Andrea.
-model: ollama/openrun-locale
+model: opencode/nemotron-3-ultra-free
 # fallback (cambia manualmente se modello sopra non disponibile): longcat-2.5-preview
 mode: primary
 permission:
