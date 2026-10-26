@@ -325,8 +325,9 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   manutenzione
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
-  else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"
+  else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
   if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare; se una domanda ha gia' RISPOSTA DI ANDREA, vale quella e mai il DEFAULT. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  elif ML attivo; then echo "[ciclo] $(date '+%d/%m %H:%M') capo in errore in locale: niente pausa per limite (in locale non ci sono crediti), riprova al prossimo giro"
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi
   giro_diretto
