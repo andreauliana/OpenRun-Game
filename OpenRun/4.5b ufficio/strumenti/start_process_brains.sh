@@ -20,14 +20,16 @@ fi
 T=""; RC=1
 for i in $(seq 1 24); do
   T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC=$?
-  if echo "$T" | grep -qi "usage limit"; then
-    # Limite gratuito sul modello del capo: provo gli altri modelli della panchina (come fa il ciclo).
+  if echo "$T" | grep -qiE "usage limit|unavailable"; then
+    # Limite gratuito (o modello non disponibile) sul modello del capo: provo gli altri modelli della panchina (come fa il ciclo).
     CUR="$(grep -m1 '^model:' "$P/.opencode/agents/capo.md" | sed 's/^model: *//')"; OK_PAN=0
     while read -r m; do
       [ -n "$m" ] && [ "$m" != "$CUR" ] || continue
       V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$m" >/dev/null
       T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
-      if ! echo "$T" | grep -qiE "usage limit|rate limit"; then echo "[brains] limite gratuito su $CUR: il capo passa a $m"; OK_PAN=1; break; fi
+      # Buono solo se risponde senza errori: "Model is unavailable" o "not found" fanno provare il modello dopo.
+      if [ "$RC" -eq 0 ] && ! echo "$T" | grep -qiE "usage limit|rate limit|unavailable|not found|^Error"; then echo "[brains] $CUR non disponibile: il capo passa a $m"; OK_PAN=1; break; fi
+      echo "[brains] anche $m non risponde ($(echo "$T" | grep -m1 -i error | cut -c1-80)), provo il successivo"
     done < "$BASE/strumenti/panchina.txt"
     [ "$OK_PAN" -eq 1 ] && break
     V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$CUR" >/dev/null
