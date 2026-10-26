@@ -9,6 +9,8 @@
 //                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste)
 //                bivio_bordi (bordo strada attraverso il bivio sul livello piu' curvo:
 //                           nessun ribaltamento, offroad consecutivi <= N)
+//                decorazioni (DECO1: catalogo skyline/oggetti per livello, cartelloni,
+//                           ms/frame, screenshot PPM per livello)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
 //   2. determinismo: frameHash identico ogni 60 frame fra run A e run B
@@ -550,6 +552,13 @@ static bool leggiIntJson(const sgl::JsonObject& obj, const std::string& chiave, 
     sgl::JsonValue v;
     if (!sgl::jsonGet(obj, chiave, v) || !sgl::jsonIsNumber(v)) return false;
     out = (i32)sgl::jsonAsNumber(v);
+    return true;
+}
+
+static bool leggiStringJson(const sgl::JsonObject& obj, const std::string& chiave, std::string& out) {
+    sgl::JsonValue v;
+    if (!sgl::jsonGet(obj, chiave, v) || !sgl::jsonIsString(v)) return false;
+    out = sgl::jsonAsString(v);
     return true;
 }
 
@@ -1366,6 +1375,156 @@ bool verificaBivioBordi(const std::string& outDir) {
     return ok;
 }
 
+// --- DECO1 punto 3 (@developer-junior): gate `decorazioni`.
+// Per ognuno dei 6 livelli verifica:
+//   - skyline e oggetti_bordo_strada di tema_grafico (livello.json) risolti in
+//     CATALOGO_GRAFICO.json: id presente, stato in {pronto, approvato}, file e raw
+//     esistenti, non "mancante", e l'elemento dichiara il livello tra i suoi "livelli"
+//     (nessun id preso in prestito da un altro livello).
+//   - almeno un cartellone posizionato (densita' riporta; il vincolo 20-30% si
+//     consolida con @developer passo 2d).
+//   - ms/frame della simulazione smoke (500 frame) entro il limite 20.
+//   - screenshot PPM salvato per livello.
+// Nota: il motore non disegna ancora skyline/oggetti (DECO1 passo 2a-2e di
+// @developer); il gate misura lo stato attuale e passa quando @grafico chiude G1
+// e @developer aggancia le conversioni raw. Scrive da solo, non dipende dal codice
+// di @developer.
+struct CatalogoEntry {
+    std::string stato;
+    std::string file;
+    std::string raw;
+    std::vector<std::string> livelli;
+};
+
+static bool leggiStringArray(const sgl::JsonValue& val, std::vector<std::string>& out) {
+    if (!sgl::jsonIsArray(val)) return false;
+    const auto& arr = sgl::jsonAsArray(val);
+    for (const auto& e : arr) {
+        if (!sgl::jsonIsString(e)) return false;
+        out.push_back(sgl::jsonAsString(e));
+    }
+    return true;
+}
+
+static std::map<std::string, CatalogoEntry> caricaCatalogo() {
+    std::map<std::string, CatalogoEntry> m;
+    std::ifstream f("UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CATALOGO_GRAFICO.json");
+    if (!f.is_open()) return m;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return m;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return m;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue elVal;
+    if (!sgl::jsonGet(root, "elementi", elVal) || !sgl::jsonIsArray(elVal)) return m;
+    const auto& elementi = sgl::jsonAsArray(elVal);
+    for (const auto& e : elementi) {
+        if (!sgl::jsonIsObject(e)) continue;
+        const auto& o = sgl::jsonAsObject(e);
+        std::string id, stato, file, raw;
+        if (!leggiStringJson(o, "id", id) || id.empty()) continue;
+        leggiStringJson(o, "stato", stato);
+        sgl::JsonValue fVal;
+        if (sgl::jsonGet(o, "file", fVal) && sgl::jsonIsString(fVal)) file = sgl::jsonAsString(fVal);
+        sgl::JsonValue rVal;
+        if (sgl::jsonGet(o, "raw", rVal) && sgl::jsonIsString(rVal)) raw = sgl::jsonAsString(rVal);
+        std::vector<std::string> livelli;
+        sgl::JsonValue lvVal;
+        if (sgl::jsonGet(o, "livelli", lvVal)) leggiStringArray(lvVal, livelli);
+        CatalogoEntry ce{stato, file, raw, std::move(livelli)};
+        m.emplace(std::move(id), std::move(ce));
+    }
+    return m;
+}
+
+static bool catalogoHa(const std::map<std::string, CatalogoEntry>& cat, const std::string& id,
+                       const std::string& livello, std::string& motivo) {
+    auto it = cat.find(id);
+    if (it == cat.end()) { motivo = "id assente"; return false; }
+    const auto& ce = it->second;
+    if (ce.stato != "pronto" && ce.stato != "approvato") { motivo = "stato '" + ce.stato + "'"; return false; }
+    if (ce.stato == "mancante") { motivo = "mancante"; return false; }
+    bool perLivello = ce.livelli.empty();
+    for (const auto& lv : ce.livelli) if (lv == livello) { perLivello = true; break; }
+    if (!perLivello) { motivo = "id preso in prestito da altro livello"; return false; }
+    std::string filePath = "UFFICIO/Dipartimento Grafico/Libreria/" + ce.file;
+    std::string rawPath = ce.raw;
+    if (!std::filesystem::exists(filePath)) { motivo = "file inesistente " + ce.file; return false; }
+    if (!std::filesystem::exists(rawPath)) { motivo = "raw inesistente " + ce.raw; return false; }
+    return true;
+}
+
+static bool verificaDecorazioni(const std::string& outDir) {
+    static const char* kLivelli[6] = {
+        "lv_01_neon", "lv_02_atomico", "lv_03_foglie",
+        "lv_04_cromo", "lv_05_spray", "lv_06_desktop"};
+    const auto cat = caricaCatalogo();
+    bool ok = true;
+    for (const char* livello : kLivelli) {
+        std::string lvPath = "motore_nuovo/dati/livelli/" + std::string(livello) + "/livello.json";
+        std::ifstream lf(lvPath);
+        if (!lf.is_open()) { std::printf("decorazioni %s: FALLITO livello.json illeggibile\n", livello); ok = false; continue; }
+        std::stringstream ls;
+        ls << lf.rdbuf();
+        lf.close();
+        sgl::JsonReader lreader(ls.str());
+        if (!lreader.parse() || !sgl::jsonIsObject(lreader.valore())) {
+            std::printf("decorazioni %s: FALLITO JSON livello non valido\n", livello); ok = false; continue;
+        }
+        const auto& lroot = sgl::jsonAsObject(lreader.valore());
+        // tema_grafico: skyline + oggetti_bordo_strada (id del catalogo).
+        std::string skylineId;
+        std::vector<std::string> oggetti;
+        sgl::JsonValue tgVal;
+        if (sgl::jsonGet(lroot, "tema_grafico", tgVal) && sgl::jsonIsObject(tgVal)) {
+            const auto& tg = sgl::jsonAsObject(tgVal);
+            leggiStringJson(tg, "skyline", skylineId);
+            sgl::JsonValue obVal;
+            if (sgl::jsonGet(tg, "oggetti_bordo_strada", obVal)) leggiStringArray(obVal, oggetti);
+        }
+        // cartelloni_sponsor posizionati e lunghezza totale per densita'.
+        i32 cartelloni = 0;
+        sgl::JsonValue csVal;
+        if (sgl::jsonGet(lroot, "cartelloni_sponsor", csVal) && sgl::jsonIsArray(csVal))
+            cartelloni = (i32)sgl::jsonAsArray(csVal).size();
+        f32 segmentoLen = 0.0f;
+        sgl::JsonValue luVal;
+        if (sgl::jsonGet(lroot, "lunghezza", luVal) && sgl::jsonIsObject(luVal)) {
+            const auto& lu = sgl::jsonAsObject(luVal);
+            leggiNumeroJson(lu, "segmenti", segmentoLen);
+        }
+        // Catalogo: ogni id deve essere pronto/approvato, file+raw esistenti e dichiarato per questo livello.
+        std::vector<std::string> ids;
+        ids.push_back(skylineId);
+        for (const auto& o : oggetti) ids.push_back(o);
+        i32 risolti = 0;
+        for (const auto& id : ids) {
+            if (id.empty()) continue;
+            std::string motivo;
+            if (catalogoHa(cat, id, livello, motivo)) ++risolti;
+            else std::printf("  %s: id '%s' non risolto (%s)\n", livello, id.c_str(), motivo.c_str());
+        }
+        // ms/frame con simulazione smoke (decorazioni non ancora disegnate: valore di base).
+        std::filesystem::create_directories(outDir + "/decorazioni_" + std::string(livello));
+        Esito e = esegui(outDir + "/decorazioni_" + std::string(livello), livello, true, SMOKE_FRAMES);
+        double msMed = e.msTot / SMOKE_FRAMES;
+        double densita = (segmentoLen > 0.0f) ? (double)cartelloni / segmentoLen : 0.0;
+        bool msOk = msMed <= MAX_MS_FRAME;
+        bool cartOk = cartelloni > 0;
+        bool catalogoOk = (risolti == (i32)ids.size()) && !ids.empty();
+        std::printf("decorazioni %s: catalogo %d/%d id risolti, cartelloni=%d (densita %.4f/unit), ms/frame medio=%.3f max=%.3f | %s\n",
+                    livello, risolti, (i32)ids.size(), cartelloni, densita, msMed, e.msMax,
+                    (catalogoOk && cartOk && msOk) ? "OK" : "FALLITO");
+        ok = ok && catalogoOk && cartOk && msOk;
+        if (!msOk) std::printf("  %s: VIOLAZIONE ms/frame medio=%.3f > %.0f\n", livello, msMed, MAX_MS_FRAME);
+    }
+    std::printf("%s\n", ok ? "GATE DECORAZIONI OK" : "FALLITO: decorazioni non risolte o oltre soglia");
+    return ok;
+}
+
 // --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
 // Guida automatica: gas pieno, schiva gli avversari davanti, al bivio va sul
 // ramo voluto. Per ogni combinazione di scelte controlla le tappe attraversate,
@@ -1762,6 +1921,12 @@ int main(int argc, char** argv) {
         const i32 frequenza = argc > 4 ? std::atoi(argv[4]) : 60;
         const bool ok = verificaFrequenza(outDir, livello, frequenza);
         return ok ? 0 : 15;
+    }
+
+    if (modo == "decorazioni") {
+        const bool ok = verificaDecorazioni(outDir);
+        std::printf("%s\n", ok ? "GATE DECORAZIONI OK" : "FALLITO: decorazioni non risolte o oltre soglia");
+        return ok ? 0 : 19;
     }
 
     // --- modo smoke (default) ---

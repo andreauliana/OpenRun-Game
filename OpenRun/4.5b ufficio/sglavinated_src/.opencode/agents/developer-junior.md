@@ -1,6 +1,6 @@
 ---
 description: "Developer Junior del progetto: contribuisce a codice, test e diagnosi in task delimitati e svolge peer review quando assegnato da @capo."
-model: ollama/openrun-locale
+model: opencode/longcat-2.5-preview-free
 # fallback (cambia manualmente se modello sopra non disponibile): mimo-v2.6-flash-free
 mode: subagent
 permission:
