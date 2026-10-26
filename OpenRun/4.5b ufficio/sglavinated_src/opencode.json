@@ -9,7 +9,8 @@
       "options": {
         "baseURL": "http://127.0.0.1:11434/v1",
         "timeout": 3600000,
-        "chunkTimeout": 3600000
+        "chunkTimeout": 3600000,
+        "headerTimeout": 3600000
       },
       "models": {
         "openrun-locale": {
@@ -23,7 +24,8 @@
       "options": {
         "baseURL": "http://127.0.0.1:8080/v1",
         "timeout": 3600000,
-        "chunkTimeout": 3600000
+        "chunkTimeout": 3600000,
+        "headerTimeout": 3600000
       },
       "models": {
         "openrun-locale": {

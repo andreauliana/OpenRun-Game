@@ -280,13 +280,19 @@ giro_diretto() {
     touch .marker_giro
     echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: avvio $ag ($(grep -m1 '^model:' ".opencode/agents/$ag.md" | sed 's/^model: *//'))"
     OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
+    # Solo le righe di questo turno contano per capire l'errore (non quelle vecchie del log).
+    pre=$(wc -c < "log_agenti/$ag.log" 2>/dev/null | tr -d ' '); [ -n "$pre" ] || pre=0
     oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore e @builder-developer=@developer, @collaudatore=@developer-junior, @designer=@grafico. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: una voce da pubblicare va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, risultati condivisi in out/$ag/. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, niente REPORT_TURNO ne' VOCE_SCAMBIO, e fermati. Non usare altri modelli e non delegare. PRODUZIONE PRIMA: se il tuo blocco chiede codice, test o dati, il turno deve modificarne almeno uno e riportare comando ed exit code; niente nuovi documenti oltre alla riga di diario e al RIASSUNTO. Ogni comando shell da solo (niente ; && || | echo)." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
+    nuovo="$(tail -c +$((pre+1)) "log_agenti/$ag.log" 2>/dev/null)"
     nf=$(find . -newer .marker_giro -type f ! -path './.opencode/*' ! -path './log_agenti/*' ! -name 'notte.log' ! -name '.marker_giro' ! -path './.registro_bar/*' 2>/dev/null | wc -l | tr -d ' ')
     if [ "$rc" -eq 0 ]; then ok_limite; echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag ok, $nf file toccati"
     elif [ "$rc" -ge 128 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag fermato dal timeout, $nf file toccati (modello invariato)"
-    elif tail -n 40 "log_agenti/$ag.log" | grep -qi "usage limit"; then
+    elif ML attivo; then
+      # In locale non ci sono crediti da cambiare: si tiene il modello locale e si riprova al prossimo giro.
+      echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag in errore in locale ($rc), $nf file toccati (modello locale invariato): $(printf '%s\n' "$nuovo" | grep -m1 -i 'error' | cut -c1-120)"
+    elif printf '%s\n' "$nuovo" | grep -qi "usage limit"; then
       # Limite gratuito di OpenCode: prima provo gli altri modelli della panchina; pausa solo quando li ho provati tutti.
       cambi_limite=$((cambi_limite+1))
       if [ "$cambi_limite" -ge "$(grep -c . "$BASE/strumenti/panchina.txt")" ]; then
@@ -299,7 +305,7 @@ giro_diretto() {
       fi
       echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag al limite gratuito del modello: passo al modello successivo della panchina ($cambi_limite)"
       V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1
-    elif tail -n 40 "log_agenti/$ag.log" | grep -qi "rate limit"; then pausa_limite; break
+    elif printf '%s\n' "$nuovo" | grep -qi "rate limit"; then pausa_limite; break
     else echo "[ciclo] $(date '+%d/%m %H:%M') giro diretto: $ag in errore ($rc), $nf file toccati: passo al modello successivo della panchina"; V3_BASE="$BASE" sh "$BASE/strumenti/cambia_modello_auto.sh" "$ag" >/dev/null 2>&1; fi
     if ML attivo; then echo "[ciclo] $(date '+%d/%m %H:%M') riserva locale: riposo $(( ${RIPOSO_LOCALE:-600} / 60 )) min per non scaldare il Mac"; sleep "${RIPOSO_LOCALE:-600}"
     else sleep "${GIRO_SLEEP:-10}"; fi

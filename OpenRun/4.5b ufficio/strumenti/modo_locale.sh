@@ -34,7 +34,10 @@ if [ "$MOTORE" = ollama ]; then
   URL="http://127.0.0.1:11434"; MODELLO="ollama/$NOME"
   server_vivo() { curl -fsS "$URL/api/tags" >/dev/null 2>&1; }
   installato() { command -v ollama >/dev/null 2>&1; }
-  lancia() { OLLAMA_NUM_PARALLEL=1 nohup ollama serve > "$LOG" 2>&1 & echo "$!" > "$PID"; }
+  # KV cache q8_0 (con flash attention) dimezza la memoria del contesto: con 16k e circa 5 GB liberi
+  # il modello senza questo finiva in swap e scriveva 1 token/s.
+  lancia() { OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=1 OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 \
+    nohup ollama serve > "$LOG" 2>&1 & echo "$!" > "$PID"; }
 else
   PORTA="${LOCALE_PORTA:-8080}"; URL="http://127.0.0.1:$PORTA"; MODELLO="locale/$NOME"
   server_vivo() { curl -fsS "$URL/health" >/dev/null 2>&1; }
