@@ -32,6 +32,7 @@ public:
     void vincolaAllaCorsia();
     static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
     static constexpr f32 X_LIMIT = 900.0f; // clamp laterale: |x| oltre questo valore l'auto esce dallo schermo
+    static constexpr f32 MEZZA_STRADA = 1200.0f; // = Road::ROAD_HALF_WORLD: bordo che si sposta quando la strada si allarga
 
 private:
     f32 steer_ = 0.0f;

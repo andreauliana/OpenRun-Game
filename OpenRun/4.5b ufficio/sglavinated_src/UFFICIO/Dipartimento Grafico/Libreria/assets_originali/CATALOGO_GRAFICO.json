@@ -528,9 +528,14 @@
       {
          "id": "auto.traffico",
          "tipo": "auto_traffico",
-         "stato": "mancante",
-         "file": [],
-         "nota": "auto avversarie (stessi modelli dell'auto giocatore nella prima fase, VISIONE); disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+         "stato": "pronto",
+         "file": [
+            "assets_originali/sprite/traffico/traffico_utilitaria_bianca_retro.png",
+            "assets_originali/sprite/traffico/traffico_furgone_grigio_retro.png",
+            "assets_originali/sprite/traffico/traffico_berlina_blu_retro.png",
+            "assets_originali/sprite/traffico/traffico_camioncino_beige_retro.png"
+         ],
+         "nota": "Traffico comune in gara (Andrea 27/10): 4 veicoli civili vista dietro, disegnati da zero con TOOLS/disegna_traffico.py (Claude), raw in motore_nuovo/dati/sprite_raw/traffico/ via png_a_raw.py. Disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/: stesso nome e misura."
       },
       {
          "id": "personaggio.gianni",

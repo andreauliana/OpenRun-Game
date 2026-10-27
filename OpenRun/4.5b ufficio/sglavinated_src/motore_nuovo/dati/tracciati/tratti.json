@@ -1,15 +1,20 @@
 {
   "licenza": "CC-BY-4.0",
   "autore": "@developer (blocco R1, tracce originali, nessun materiale Sega)",
-  "nota": "Libreria di tratti riutilizzabili dai 6 livello.json (campo 'tracciato'). 'lunghezza' conta segmenti da 200 unita'. entrata/uscita: -1 = raccordo automatico min(lunghezza/3, 60) gestito da road.cpp; 0 disabilita il raccordo per quel lato. La correzione della deriva di road.cpp si applica solo ai segmenti con curva != 0.",
+  "nota": "Libreria di tratti riutilizzabili dai 6 livello.json (campo 'tracciato'). 'lunghezza' conta segmenti da 200 unita'. entrata/uscita: -1 = raccordo automatico min(lunghezza/3, 60) gestito da road.cpp; 0 disabilita il raccordo per quel lato. La correzione della deriva di road.cpp si applica solo ai segmenti con curva != 0. 27/10 (Andrea: livelli piu' corti, dune, strada piu' larga): lunghezze ridotte di circa un quarto; 'larghezza' 2 = strada a 4 corsie (1 = 2 corsie, raccordo di 80 segmenti, sempre 1 al bivio); 'dune' + 'onde' = dossi sopra la quota del tratto (onde 1 = dosso singolo con cresta cieca).",
   "tratti": {
-    "rettilineo_corto": { "curva": 0.0, "collina": 0.0, "lunghezza": 450, "entrata": -1, "uscita": -1 },
-    "rettilineo_lungo": { "curva": 0.0, "collina": 0.0, "lunghezza": 650, "entrata": -1, "uscita": -1 },
-    "curva_dolce_dx": { "curva": 0.5, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1 },
-    "curva_dolce_sx": { "curva": -0.5, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1 },
-    "curva_stretta_dx": { "curva": 0.85, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1 },
-    "curva_stretta_sx": { "curva": -0.85, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1 },
-    "collina_su": { "curva": 0.0, "collina": 0.2, "lunghezza": 400, "entrata": -1, "uscita": -1 },
-    "collina_giu": { "curva": 0.0, "collina": -0.2, "lunghezza": 400, "entrata": -1, "uscita": -1 }
+    "rettilineo_corto": {"curva": 0.0, "collina": 0.0, "lunghezza": 340, "entrata": -1, "uscita": -1},
+    "rettilineo_lungo": {"curva": 0.0, "collina": 0.0, "lunghezza": 480, "entrata": -1, "uscita": -1},
+    "curva_dolce_dx": {"curva": 0.5, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1},
+    "curva_dolce_sx": {"curva": -0.5, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1},
+    "curva_stretta_dx": {"curva": 0.85, "collina": 0.0, "lunghezza": 230, "entrata": -1, "uscita": -1},
+    "curva_stretta_sx": {"curva": -0.85, "collina": 0.0, "lunghezza": 230, "entrata": -1, "uscita": -1},
+    "collina_su": {"curva": 0.0, "collina": 0.2, "lunghezza": 300, "entrata": -1, "uscita": -1},
+    "collina_giu": {"curva": 0.0, "collina": -0.2, "lunghezza": 300, "entrata": -1, "uscita": -1},
+    "rettilineo_largo": {"curva": 0.0, "collina": 0.0, "lunghezza": 480, "entrata": -1, "uscita": -1, "larghezza": 2.0},
+    "curva_larga_dx": {"curva": 0.45, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1, "larghezza": 2.0},
+    "curva_larga_sx": {"curva": -0.45, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1, "larghezza": 2.0},
+    "dune": {"curva": 0.0, "collina": 0.0, "lunghezza": 360, "entrata": -1, "uscita": -1, "dune": 0.06, "onde": 4},
+    "dosso": {"curva": 0.0, "collina": 0.0, "lunghezza": 160, "entrata": -1, "uscita": -1, "dune": 0.1, "onde": 1}
   }
 }

@@ -54,7 +54,12 @@ public:
     // gli avversari in griglia; a fine tappa un bivio porta, a sinistra o a
     // destra, alla tappa seguente; una tappa senza rami e' l'arrivo.
     // Senza avviaGara() il livello di init() gira in tondo (test, prove).
-    bool avviaGara(const std::string& fileTappe = "motore_nuovo/dati/percorso_gara.json");
+    // soloPrimaTappa (corsa singola del menu, Andrea 27/10): stessa partenza,
+    // stessi tracciati, rivali e tempo limite della gara, ma senza bivio: la
+    // prima tappa finisce con l'arrivo.
+    bool avviaGara(const std::string& fileTappe = "motore_nuovo/dati/percorso_gara.json",
+                   bool soloPrimaTappa = false);
+    bool corsaSingola() const { return corsaSingola_; }
     const std::string& tappaCorrente() const { return tappaId_; }
 
     // Cartella dati (sglavinated_src) da usare al posto della cartella corrente:
@@ -75,8 +80,31 @@ public:
     // RIV punto b: consegna gli sprite delle auto rivali (decodati dal runner/test
     // dai raw di png_a_raw.py) prima di init()/avviaGara().
     void setRivaliSprites(std::vector<Sprite> sprites);
+    // Traffico comune (Andrea 27/10): sprite dei veicoli civili, prima di avviaGara().
+    void setTrafficoSprites(std::vector<Sprite> sprites);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
     size_t numeroCartelloni() const { return cartelloni_.size(); }
+    // Oggetti decorativi della tappa (posizioni fisse; per i gate).
+    const std::vector<SpriteInstance>& oggettiStrada() const { return oggettiStrada_; }
+
+    // Traffico comune in gara (Andrea 27/10): pochi veicoli civili lenti nelle
+    // corsie, deterministici (seme fisso). x e' laterale in unita' mondo dal
+    // centro della carreggiata; al bivio ogni veicolo segue il suo ramo.
+    struct Veicolo {
+        f32 z = 0.0f;     // posizione nella tappa corrente
+        f32 x = 0.0f;     // laterale (unita' mondo)
+        f32 passo = 0.0f; // unita' di strada al secondo
+        i32 corsia = 1;   // -2, -1 = corsie a sinistra; 1, 2 = a destra (2 solo su strada larga)
+        i32 ramo = 1;     // ramo preso al bivio (-1 / +1)
+        i32 spriteIdx = -1;
+        bool attivo = false;
+    };
+    static constexpr i32 TRAFFICO = 4;
+    const Veicolo& veicolo(i32 i) const { return traffico_[i]; }
+    // Il giocatore tocca un'auto (avversario o traffico): stesso test del bump.
+    bool collisioneConAuto() const { return collisioneRivaleVicino(); }
+    // Centro della corsia di un veicolo alla posizione z (unita' mondo).
+    f32 xCorsia(i32 corsia, f32 z) const;
 
     // --- Blocco R2: macchina a stati di gioco ---
     FaseId faseCorrente() const { return fasi_.attuale(); }
@@ -144,6 +172,10 @@ private:
     std::vector<std::string> sponsorId_;  // sponsorId_[i] e' l'id di sponsorSpriteIdx_[i] (per abbinare livello.json)
     Sprite skylineSprite_;                // skyline della tappa in corso (DECO1 2a), svuotato dopo caricaLivello
     std::vector<SpriteInstance> cartelloni_;   // posizioni bordo strada fissate in init(), nessun alloc dopo
+    // Ordina cartelloni e oggetti per worldZ (dopo ogni caricamento) e prenota scenaSprites_.
+    void ordinaSpriteFissi();
+    // Aggiunge a scenaSprites_ gli sprite fissi nel tratto visibile davanti all'auto.
+    void aggiungiVisibili(const std::vector<SpriteInstance>& fissi);
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     std::vector<SpriteInstance> oggettiStrada_; // oggetti bordo strada (DECO1 2c), posizioni fisse
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
@@ -154,6 +186,15 @@ private:
     // Passaggio assistito al bivio: 0 = guida normale, 1 = assistenza piena.
     // Sale entrando nel bivio e cala piano a inizio tappa nuova.
     f32 assistenzaBivio_ = 0.0f;
+    // Ramo seguito a scelta aperta (-1/+1, 0 = nessuno) con isteresi: cambia
+    // solo se l'auto e' chiaramente piu' vicina all'altro ramo (prova Andrea 27/10).
+    i32 ramoProvvisorio_ = 0;
+    // Sterzo del giocatore al bivio: -1 sinistra, +1 destra, 0 nessuno o entrambi.
+    i32 sterzoBivio() const {
+        const bool sx = (input_.held & Pad::Left) != 0, dx = (input_.held & Pad::Right) != 0;
+        return sx == dx ? 0 : (sx ? -1 : 1);
+    }
+    f32 centroRamoPrec_ = 0.0f; // centro del ramo seguito al frame prima (l'auto si muove con lui)
     f32 playerXIncidente_ = 0.0f; // x al momento del ribaltamento (ramo su cui ripartire al bivio)
     bool sollevamentoAttivo_ = false;
     f32 sollevamento_ = 0.0f;      // 0..1, segue l'obiettivo con un ritardo
@@ -246,6 +287,9 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     std::vector<Tappa> tappe_;
     std::string tappaId_;
     bool gara_ = false;
+    bool corsaSingola_ = false; // avviaGara(..., true): una tappa, niente bivio
+    // La tappa id finisce con un bivio (gara a tappe, non corsa singola).
+    bool tappaConBivio(const std::string& id) const;
     bool arrivo_ = false;
     i32 numeroTappa_ = 1;
     i32 latoBivio_ = 0; // 0 = scelta aperta, -1 sinistra, +1 destra
@@ -257,6 +301,16 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
     i32 nSpriteRivali_ = 0; // sprite rivali caricati (RIV punto b)
+    Veicolo traffico_[TRAFFICO];
+    Rng rndTraffico_{1u};
+    i32 nSpriteTraffico_ = 0;
+    void inizializzaTraffico();
+    void aggiornaTraffico(f32 dt);
+    // Mette il veicolo davanti, oltre la vista e dopo il veicolo piu' avanti;
+    // nessun veicolo nuovo nella zona del bivio.
+    void piazzaVeicolo(Veicolo& v, f32 zMin);
+    // Aggiunge a sprites_ i veicoli visibili (dopo i rivali).
+    void aggiungiSpriteTraffico();
     bool uscitaRichiesta_ = false; // voce ESCI del menu (blocco R2)
     GestoreFasi fasi_; // blocco R2: Splash -> Menu -> Gara -> FineTempo -> Risultati
 };

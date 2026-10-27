@@ -58,11 +58,18 @@ void Player::vincolaAllaCorsia() {
     // Offroad: troppo lontano dal centro della corsia. Calcolato PRIMA del clamp a
     // X_LIMIT: OFFROAD_LIMIT=700 < X_LIMIT=900, quindi il clamp non nasconde mai
     // l'offroad. Il clamp tiene l'auto sullo schermo (cx resta in [25, 295] su 320 px).
+    // Strada piu' larga (larghezzaCorsia > 1, piu' corsie): i limiti si
+    // spostano di quanto si sposta il bordo (MEZZA_STRADA per unita' di
+    // larghezza), cosi' l'auto puo' usare tutte le corsie. Rami del bivio
+    // (larghezzaCorsia < 1): scala proporzionale come prima.
+    const f32 extra = larghezzaCorsia > 1.0f ? (larghezzaCorsia - 1.0f) * MEZZA_STRADA : 0.0f;
+    const f32 limite = larghezzaCorsia > 1.0f ? OFFROAD_LIMIT + extra : OFFROAD_LIMIT * larghezzaCorsia;
+    const f32 limiteX = X_LIMIT + extra;
     const f32 rel = x - centroCorsia;
-    offroad = (rel < -OFFROAD_LIMIT * larghezzaCorsia) || (rel > OFFROAD_LIMIT * larghezzaCorsia);
-    sulBordo = !offroad && std::abs(rel) > BORDO_INIZIO * OFFROAD_LIMIT * larghezzaCorsia;
-    if (rel > X_LIMIT)  x = centroCorsia + X_LIMIT;
-    if (rel < -X_LIMIT) x = centroCorsia - X_LIMIT;
+    offroad = (rel < -limite) || (rel > limite);
+    sulBordo = !offroad && std::abs(rel) > limite - (1.0f - BORDO_INIZIO) * OFFROAD_LIMIT * std::min(1.0f, larghezzaCorsia);
+    if (rel > limiteX)  x = centroCorsia + limiteX;
+    if (rel < -limiteX) x = centroCorsia - limiteX;
 }
 
 } // namespace sgl

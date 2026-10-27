@@ -11,11 +11,7 @@
     "segmenti": 7800,
     "durata_stimata_s": 56
   },
-  "tracciato": [
-    "rettilineo_lungo", "curva_dolce_dx", "rettilineo_corto", "curva_dolce_sx",
-    "rettilineo_lungo", "curva_stretta_dx", "rettilineo_corto", "curva_stretta_sx",
-    "rettilineo_lungo"
-  ],
+  "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "dosso", "curva_stretta_dx", "rettilineo_corto", "curva_stretta_sx", "curva_dolce_sx", "rettilineo_lungo"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.0, "lunghezza": 900},
     {"curva": 0.4, "collina": 0.05, "lunghezza": 500},

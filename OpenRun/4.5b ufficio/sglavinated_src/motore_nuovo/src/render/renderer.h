@@ -125,6 +125,15 @@ public:
         return indice >= 0 && indice < (i32)rivaleSprites_.size() ? &rivaleSprites_[indice] : nullptr;
     }
     void clearRivaliSprites() { rivaleSprites_.clear(); }
+    // Traffico comune (Andrea 27/10): veicoli civili, caricati una volta.
+    i32 aggiungiTrafficoSprite(Sprite sprite) {
+        trafficoSprites_.push_back(std::move(sprite));
+        return (i32)trafficoSprites_.size() - 1;
+    }
+    const Sprite* trafficoSprite(i32 indice) const {
+        return indice >= 0 && indice < (i32)trafficoSprites_.size() ? &trafficoSprites_[indice] : nullptr;
+    }
+    void clearTrafficoSprites() { trafficoSprites_.clear(); }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
     i32 aggiungiOggettoSprite(Sprite sprite);
@@ -171,6 +180,7 @@ private:
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
+    std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
     Sprite skylineDa_;                      // skyline all'inizio della transizione di tema
     Sprite skylineA_;                       // skyline a fine transizione di tema
