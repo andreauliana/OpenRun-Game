@@ -10,6 +10,7 @@ permission:
   edit:
     "*": deny
     "bacheche/developer/**": allow
+    "PER_CLAUDE.md": allow
     "out/developer/**": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow

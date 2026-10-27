@@ -12,6 +12,7 @@ permission:
   edit:
     "*": deny
     "bacheche/developer-junior/**": allow
+    "PER_CLAUDE.md": allow
     "out/developer-junior/**": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow

@@ -9,6 +9,7 @@ permission:
   edit:
     "*": deny
     "bacheche/grafico/**": allow
+    "PER_CLAUDE.md": allow
     "UFFICIO/Dipartimento Grafico/**": allow
     "UFFICIO/Dipartimento Grafico/TOOLS/**": allow
     "UFFICIO/Dipartimento Grafico/Libreria/README.md": allow
