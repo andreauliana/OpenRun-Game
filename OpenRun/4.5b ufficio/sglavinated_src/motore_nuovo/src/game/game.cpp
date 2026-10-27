@@ -711,26 +711,45 @@ void Game::aggiornaRivali() {
     sprites_.clear();
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
+        const f32 zLocale = r.progresso - progressoTappePrecedenti_;
+        // Rallenta in curva in base alla curvatura del segmento (piu' curva = piu' lento),
+        // attenuato dalla bravura: i rivali piu' bravi soffrono meno la curva.
+        const f32 curvaQui = std::abs(road_.curvaAt(zLocale));
+        const f32 lentaCurva = 1.0f - std::clamp(curvaQui * RIVALE_CURVA_SCALE * r.bravura,
+                                                  0.0f, RIVALE_CURVA_SLOW_MAX);
         // Elastico come nei giochi arcade: chi e' avanti rallenta, chi e' dietro
         // spinge, in proporzione al distacco. Cosi' anche dopo un incidente la gara resta aperta.
         const f32 distacco = r.progresso - (progressoTappePrecedenti_ + player_.z);
         const f32 elastico = std::clamp(1.0f - 0.25f * distacco / RIVALE_ELASTICO_DISTANZA,
                                         RIVALE_ELASTICO_MIN, RIVALE_ELASTICO_MAX);
-        r.passo += (r.passoMax * elastico - r.passo) * avvicina;
+        r.passo += (r.passoMax * elastico * lentaCurva - r.passo) * avvicina;
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e, finche'
-        // e' allineato, resta alla sua velocita'.
+        // e' allineato, resta alla sua velocita' (sorpasso/evita, mai cambi casuali di corsia).
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
         if (distacco < 0.0f && distacco > -3000.0f && std::abs(dxGiocatore) < 400.0f) {
             r.xObiettivo = (player_.x - player_.centroCorsia) > 0.0f ? -450.0f : 450.0f;
             if (distacco > -600.0f) r.passo = std::min(r.passo, velocitaGiocatore);
         }
+        // Distanza minima tra rivali: chi raggiunge un altro rivale rallenta e,
+        // se molto vicino, si sposta di lato per superarlo (corsia libera).
+        for (i32 j = 0; j < RIVALI; ++j) {
+            if (j == i) continue;
+            const Rivale& q = rivali_[j];
+            const f32 dz = r.progresso - q.progresso;
+            if (dz > 0.0f && dz < RIVALE_DISTANZA_MIN && std::abs(r.x - q.x) < RIVALE_LATERALE_MIN) {
+                r.passo = std::min(r.passo, q.passo * 0.95f);
+                if (dz < RIVALE_DISTANZA_MIN * 0.5f) {
+                    r.xObiettivo = r.x > q.x
+                        ? std::min(r.xObiettivo + RIVALE_SPOSTAMENTO, 650.0f)
+                        : std::max(r.xObiettivo - RIVALE_SPOSTAMENTO, -650.0f);
+                }
+            }
+        }
         r.progresso += r.passo * dt;
-        if (rndRivali_.next((u32)(4 * frequenzaHz_)) == 0) r.xObiettivo = -450.0f + 450.0f * (f32)rndRivali_.next(3);
         const f32 laterale = RIVALE_LATERALE_PER_S * dt;
         if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
         if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
 
-        const f32 zLocale = r.progresso - progressoTappePrecedenti_;
         const f32 zRel = zLocale - road_.playerZ;
         if (zRel <= 0.0f || zRel > 60000.0f || zLocale >= giro + 60000.0f) continue;
         // Sul bivio ogni avversario segue il suo ramo.
@@ -739,7 +758,7 @@ void Game::aggiornaRivali() {
         SpriteInstance s;
         s.worldZ = road_.playerZ + zRel;
         s.worldX = c.centro[indice] + r.x * c.fattore;
-        s.sprite = nullptr; // sagoma d'auto disegnata dal renderer
+        s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
         sprites_.push_back(s);
     }
