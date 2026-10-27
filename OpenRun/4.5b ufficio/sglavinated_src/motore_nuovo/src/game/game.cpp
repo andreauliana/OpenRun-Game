@@ -971,6 +971,10 @@ void Game::update() {
         road_.advance(passoGiocatore_);
         if (gara_ && road_.playerZ < zPrima) fineTappa(road_.playerZ); // fine del tracciato
         player_.z = road_.playerZ;
+        // DECO1 2e: parallasse leggero in curva dello skyline, opposto alla curva
+        // e proporzionale allo scorrere avanti della strada (zero alloc, deterministico).
+        const f32 curva = road_.curvaAt(player_.z);
+        ren_.scorrereSkyline(-curva * passoGiocatore_ * 0.10f);
         // Bivio: oltre il punto di blocco la scelta e' fatta; l'auto viene
         // ricentrata sul ramo scelto (stessa immagine, nessuno scatto).
         bool sceltaFattaOra = false;

@@ -125,6 +125,9 @@ public:
     // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
     // init()/fineTappa(), mai nel ciclo di gioco.
     void impostaSkyline(Sprite sprite);
+    // Avanza lo scorrere orizzontale dello skyline (unita' schermo per frame,
+    // chiamato da Game ogni frame: parallasse leggero in curva, DECO1 2e).
+    void scorrereSkyline(f32 dx);
     // Skyline della tappa corrente fuori transizione: usato per fotografare lo
     // skyline della tappa che finisce prima del cambio tappa (FORK1 punto 6).
     const Sprite& skylineCorrente() const { return skylineSprite_; }
@@ -159,6 +162,7 @@ private:
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
     Sprite skylineDa_;                      // skyline all'inizio della transizione di tema
     Sprite skylineA_;                       // skyline a fine transizione di tema
+    f32 skylineScrollX_ = 0.0f;             // scorrere orizzontale skyline, parallasse in curva (DECO1 2e)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
     TemaColori tema_;                       // colori di ambiente della tappa
     // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).

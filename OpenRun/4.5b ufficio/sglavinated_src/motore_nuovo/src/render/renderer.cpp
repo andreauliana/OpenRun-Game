@@ -42,6 +42,10 @@ void Renderer::impostaSkyline(Sprite sprite) {
     skylineSprite_ = skylineA_;
 }
 
+void Renderer::scorrereSkyline(f32 dx) {
+    skylineScrollX_ += dx; // accumulato, il wrap avviene in drawSkyline (zero alloc)
+}
+
 void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio) {
     const auto& segs = road.segments();
     if (segs.empty()) return;
@@ -177,7 +181,11 @@ void Renderer::drawSkyline(const Sprite& s) {
         const u8* src = s.pixels.data() + (size_t)ty * (size_t)s.width;
         u32* dst = fb_.data() + (size_t)(y0 + sy) * (size_t)Framebuffer::WIDTH;
         for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
-            const i32 tx = (i32)((f32)x / (f32)Framebuffer::WIDTH * (f32)s.width);
+            // Parallasse in curva (DECO1 2e): skyline scorre orizzontalmente
+            // rispetto alla strada, con wrap sulla larghezza della fonte.
+            const f32 txf = ((f32)x + skylineScrollX_) / (f32)Framebuffer::WIDTH * (f32)s.width;
+            i32 tx = (i32)std::fmod(txf, (f32)s.width);
+            if (tx < 0) tx += (i32)s.width;
             u8 idx = src[tx];
             if (idx == 0) continue; // trasparente
             u32 col = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
