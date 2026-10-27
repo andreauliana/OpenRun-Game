@@ -1,7 +1,8 @@
-# RIASSUNTO @developer-junior — turno 27/10 (09:30)
+# RIASSUNTO @developer-junior — turno 27/10 (19:34)
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior/.
-- R2 [~]: @developer passo 1 fatto (fasi.h/fasi.cpp, game.h/game.cpp, CMakeLists, punteggio/classifica; build exit 0, ctest 10/10 verde, DECO1 lv_06 verificato 08:42). Mio gate `ciclo` aggiunto a motore_nuovo/test/prova_gate.cpp: build exit 0, gate exit 0, GATE CICLO OK (Menu->Gara, guida, determinismo 2x IDENTICO, screenshot PPM in Test area/ciclo/).
-- DECO1 [ ]: passi 2a-2e di @developer conclusi; resta G1 @grafico. Mio gate decorazioni gia' passato (screenshot PPM condivisi in out/developer-junior/).
-- FORK1 [~]: mia parte conclusa (review + gate bivio_uscita exit 0, 26/10 07:14). Restano: review @developer gate 4/5/7 su prova_gate.cpp e CP-007 di @capo.
+- DECO1 [ ]: review incrociata punto 2 (developer) -> REVIEW_DECO1_P2_27OTT.md POSITIVO; build prova_gate exit 0; gate decorazioni mio exit 0 (6/6 livelli, cartelloni ~26.6-27.0%, ms/frame medio 0.546-0.860 max 1.120 <= 20, screenshot PPM per livello). Resta G1 @grafico + checkpoint @capo.
+- RIV [~]: gate urto (mio) in attesa bump urto-rivale di @developer (RIV 2a, non ancora fatto); gate decorazioni ok non blocca.
+- R2 [~]: 1d e DECO1 2f di @developer fatti (build exit 0, gate_t1.sh smoke exit 0 TUTTO OK); mia review fasi.cpp POSITIVO (REVIEW_R2_FASI_27OTT.md); gate ciclo verde.
+- FORK1 [~]: mia parte conclusa (review + gate bivio_uscita exit 0, 26/10 07:14); attende CP-007 di @capo.
 - T1-RUN [~] (D19 = B: attende decisione/prova Andrea su Mac; niente Pi 400/RetroPie).
-- File modificato: motore_nuovo/test/prova_gate.cpp.
+- File modificato: nessuno (sola lettura src/); nuovo: out/developer-junior/REVIEW_DECO1_P2_27OTT.md.

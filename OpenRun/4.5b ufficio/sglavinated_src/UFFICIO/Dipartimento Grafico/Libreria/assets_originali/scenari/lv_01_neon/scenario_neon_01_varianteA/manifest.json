@@ -29,7 +29,11 @@
       "oggetti/obj_bidone.png",
       "oggetti/obj_cassetta.png",
       "oggetti/obj_palo_neon.png"
-    ]
+    ],
+    "misure_oggetti": {
+      "oggetti/obj_lampione.png": [48, 128],
+      "oggetti/obj_palo_neon.png": [32, 128]
+    }
   },
-  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico)."
+  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico). Misure oggetti alti aggiornate (passo DECO1 2f)."
 }

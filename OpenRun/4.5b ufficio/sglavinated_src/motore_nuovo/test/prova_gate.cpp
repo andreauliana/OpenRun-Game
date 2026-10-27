@@ -13,6 +13,8 @@
 //                           nessun ribaltamento, offroad consecutivi <= N)
 //                decorazioni (DECO1: catalogo skyline/oggetti per livello, cartelloni,
 //                           ms/frame, screenshot PPM per livello)
+//                urto (RIV punto a: urto con un avversario, nessun ribaltamento,
+//                      velocita' > 0 dopo l'urto, controlli attivi entro 1.5 s)
 // Esegue la stessa simulazione 2 volte (seed e input fissi) e verifica:
 //   1. partenza: playerSpeed > 0 al frame 60 (smoke/soak)
 //   2. determinismo: frameHash identico ogni 60 frame fra run A e run B
@@ -24,6 +26,7 @@
 // Exit code: 0 OK | 1 niente partenza | 2 replay non deterministico | 3 troppo lento |
 //            4 cwd errata | 5 caso di prova non superato | 11 espansione tracciato non coerente |
 //            13 percorso poco vario o non guidabile | 14 gara a tappe non completa
+//            19 urto con avversario non superato
 #include <cstdint>
 using i32 = std::int32_t;
 #include "game/game.h"
@@ -107,6 +110,18 @@ void caricaSponsor(Game& game) {
     game.setSponsorSprites(std::move(sprites));
 }
 
+// Auto rivali (RIV punto b): sprite veri dal catalogo, stesso percorso del runner.
+void caricaRivali(Game& game) {
+    static const char* kRivale[4] = { "rosso", "azzurro", "giallo", "verde" };
+    std::vector<Sprite> sprites;
+    for (const char* colore : kRivale) {
+        Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");
+        if (s.width > 0) sprites.push_back(std::move(s));
+        else std::printf("prova_gate: sprite rivale %s non trovato\n", colore);
+    }
+    game.setRivaliSprites(std::move(sprites));
+}
+
 // Skyline della tappa (DECO1 2b): stesso formato raw degli sponsor, caricato
 // per ogni livello prima di init(); il core lo ricarica in caricaLivello a
 // ogni cambio tappa, quindi il primo livello e' coerente col runner.
@@ -126,7 +141,7 @@ u64 padPerFrame(i32 frameAssoluto) {
 Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     Esito e;
     Game game(12345u);
-    caricaSponsor(game); caricaSkyline(game, livello); game.init(livello);
+    caricaSponsor(game); caricaRivali(game); caricaSkyline(game, livello); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate.log");
     bool sc0 = false, sc1 = false, sc2 = false;
@@ -167,7 +182,7 @@ Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi,
 
 bool verificaRibaltamento(const std::string& livello) {
     Game game(12345u);
-    caricaSponsor(game);
+    caricaSponsor(game); caricaRivali(game);
     game.init(livello);
 
     bool haRibaltato = false;
@@ -217,6 +232,144 @@ bool verificaRibaltamento(const std::string& livello) {
         game.render();
     }
     return game.state().playerSpeed >= MIN_SPEED_FRAME_60;
+}
+
+// --- Blocco RIV punto a (@developer-junior): gate `urto`.
+// Avvia una gara, guida verso il primo avversario davanti e provoca un urto.
+// Verifica: nessun ribaltamento (playerFlipping sempre falso), velocita' > 0
+// dopo l'urto (auto non bloccata), controlli di nuovo attivi entro 1,5 s
+// (sterzo risponde). Il contatto usa la stessa soglia di
+// Game::collisioneRivaleVicino (dz < 120, |dx| < 180, fuori dal bivio attivo).
+// Deterministico: seed fissa, input scriptati, replay 2x IDENTICO.
+bool verificaUrto(const std::string& livello) {
+    const i32 FREQ = ::leggiFrequenzaDaConfig();
+    const i32 BUMP_FRAMES = (i32)(1.0f * (f32)FREQ);     // durata bump (config.json: 1.0 s)
+    const i32 CONTROLLI_FRAMES = (i32)(1.5f * (f32)FREQ); // controlli attivi entro 1.5 s
+    const i32 MAX_FRAME = 1000; // tempo massimo per cercare un contatto (evita giri infiniti)
+
+    struct Run {
+        std::vector<u32> hash;
+        bool contatto = false;
+        i32 frameContatto = -1;
+        bool ribaltatoDuranteBump = true; // nessun ribaltamento entro BUMP_FRAMES dopo il contatto
+        bool speedSemprePositiva = true;
+        bool controlliAttivi = false;
+        double msMax = 0.0;
+    };
+
+    auto esegui = [&](Run& r) -> bool {
+        Game game(12345u);
+        caricaSponsor(game); caricaRivali(game);
+        if (!game.avviaGara()) return false;
+        i32 frame = 0;
+        bool contatto = false;
+        i32 frameContatto = -1;
+        bool inControlli = false;
+        f32 xPrimaControlli = 0.0f;
+        i32 frameDopoContatto = 0;
+        while (frame < MAX_FRAME) {
+            const GameState& s = game.state();
+            const Road& road = game.road();
+            Pad pad;
+            if (!contatto) {
+                // Gas sempre pieno: serve velocita' sufficiente per che lo sterzo
+                // risponda (risposta e' proporzionale a speed/MAX_SPEED, zero da fermi).
+                pad.held = (u64)Pad::A;
+                // Sterzo verso l'avversario piu' vicino davanti per allinearsi alla
+                // sua corsia e provocare il contatto (soglia: dz < 120, |dx| < 180).
+                f32 obiettivo = s.playerX;
+                f32 dzMigliore = 1e9f;
+                for (const SpriteInstance& t : game.traffico()) {
+                    const f32 dz = t.worldZ - s.playerZ;
+                    if (dz > 0.0f && dz < 2000.0f && dz < dzMigliore) {
+                        dzMigliore = dz;
+                        obiettivo = t.worldX;
+                    }
+                }
+                const f32 margine = 100.0f;
+                if (s.playerX > obiettivo + margine) pad.held |= (u64)Pad::Left;
+                else if (s.playerX < obiettivo - margine) pad.held |= (u64)Pad::Right;
+            } else if (!inControlli) {
+                pad.held = (u64)Pad::A;
+                frameDopoContatto++;
+                if (frameDopoContatto >= BUMP_FRAMES) {
+                    inControlli = true;
+                    xPrimaControlli = s.playerX;
+                }
+            } else {
+                pad.held = (u64)(Pad::A | Pad::Left);
+                frameDopoContatto++;
+                if (frameDopoContatto >= BUMP_FRAMES + CONTROLLI_FRAMES) {
+                    r.controlliAttivi = (s.playerX < xPrimaControlli - 60.0f);
+                    break;
+                }
+            }
+            game.setInput(pad);
+            auto t0 = std::chrono::steady_clock::now();
+            game.update();
+            game.render();
+            double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+            if (ms > r.msMax) r.msMax = ms;
+            const GameState& dopo = game.state();
+            if (contatto) {
+                // Durante il bump: nessun ribaltamento (il contatto con un rivale
+                // non deve mai ribaltare l'auto), velocita' sempre > 0.
+                if (dopo.playerFlipping) r.ribaltatoDuranteBump = false;
+                if (dopo.playerSpeed <= 0.0f) r.speedSemprePositiva = false;
+            } else {
+                // Rilevamento contatto: stessa soglia di Game::collisioneRivaleVicino.
+                for (const SpriteInstance& t : game.traffico()) {
+                    const f32 dz = t.worldZ - dopo.playerZ;
+                    if (dz > 0.0f && dz < 120.0f && std::abs(t.worldX - dopo.playerX) < 180.0f &&
+                        !dopo.playerOffroad) {
+                        contatto = true;
+                        frameContatto = frame;
+                        frameDopoContatto = 0;
+                        break;
+                    }
+                }
+            }
+            r.hash.push_back(game.frameHash());
+            ++frame;
+        }
+        r.contatto = contatto;
+        r.frameContatto = frameContatto;
+        return contatto;
+    };
+
+    Run a, b;
+    if (!esegui(a)) {
+        std::printf("urto %s: FALLITO (nessun contatto con avversario entro %d frame)\n",
+                    livello.c_str(), MAX_FRAME);
+        return false;
+    }
+    if (!esegui(b)) {
+        std::printf("urto %s: FALLITO (secondo run senza contatto)\n", livello.c_str());
+        return false;
+    }
+
+    bool deterministico = (a.hash == b.hash);
+    i32 primaDivergenza = -1;
+    for (size_t i = 0; i < a.hash.size() && i < b.hash.size(); ++i)
+        if (a.hash[i] != b.hash[i]) { primaDivergenza = (i32)i; break; }
+
+    std::printf("modo: urto, livello: %s, contatto frame %d / %d, replay 2x: %s\n",
+                livello.c_str(), a.frameContatto, b.frameContatto,
+                deterministico ? "IDENTICO" : "DIVERSO");
+    if (!deterministico) std::printf("  prima divergenza al frame %d\n", primaDivergenza);
+    std::printf("  ribaltamento dopo urto: %s | velocita' sempre > 0 dopo urto: %s | "
+                "controlli attivi entro 1.5 s: %s | ms/frame max A=%.2f B=%.2f (limite %.0f)\n",
+                (a.ribaltatoDuranteBump && b.ribaltatoDuranteBump) ? "nessuno (OK)" : "RILEVATO (KO)",
+                (a.speedSemprePositiva && b.speedSemprePositiva) ? "sì (OK)" : "no (KO)",
+                (a.controlliAttivi && b.controlliAttivi) ? "sì (OK)" : "no (KO)",
+                a.msMax, b.msMax, MAX_MS_FRAME);
+
+    bool ok = deterministico && a.ribaltatoDuranteBump && b.ribaltatoDuranteBump &&
+              a.speedSemprePositiva && b.speedSemprePositiva &&
+              a.controlliAttivi && b.controlliAttivi &&
+              a.msMax <= MAX_MS_FRAME && b.msMax <= MAX_MS_FRAME;
+    std::printf("%s\n", ok ? "GATE URTO OK" : "FALLITO: urto con avversario non conforme");
+    return ok;
 }
 
 bool verificaAccelerazione(const std::string& livello) {
@@ -365,7 +518,7 @@ struct EsitoAvvolgimento {
 EsitoAvvolgimento eseguiAvvolgimento(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     EsitoAvvolgimento e;
     Game game(12345u);
-    caricaSponsor(game); game.init(livello);
+    caricaSponsor(game); caricaRivali(game); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate_avvolgimento.log");
     f32 zMax = 0.0f;
@@ -432,7 +585,7 @@ struct EsitoInattivita {
 EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     EsitoInattivita e;
     Game game(12345u);
-    caricaSponsor(game); game.init(livello);
+    caricaSponsor(game); caricaRivali(game); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate_inattivita.log");
     for (i32 frame = 0; frame < totalFrames; ++frame) {
@@ -495,7 +648,7 @@ f32 centroStrada(const u32* d, i32 y) {
 
 bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
     Game game(12345u);
-    caricaSponsor(game);
+    caricaSponsor(game); caricaRivali(game);
     game.init(livello);
     std::vector<u32> curva(Framebuffer::WIDTH * Framebuffer::HEIGHT), sponsor(curva.size());
     f32 curvaMax = 0.0f;
@@ -928,7 +1081,7 @@ bool verificaBivioUscita(const std::string& outDir) {
         i32 latoPrecedente = 0;
         {
             Game game(12345u);
-            caricaSponsor(game);
+            caricaSponsor(game); caricaRivali(game);
             if (!game.avviaGara()) { ok = false; continue; }
             tappaIniziale = game.state().tappa;
             for (i32 frame = 0; frame < 400000 && !game.state().arrivo; ++frame) {
@@ -956,7 +1109,7 @@ bool verificaBivioUscita(const std::string& outDir) {
         std::vector<std::vector<u32>> fotogrammi;
         {
             Game game(12345u);
-            caricaSponsor(game);
+            caricaSponsor(game); caricaRivali(game);
             game.avviaGara();
             for (i32 frame = 0; frame <= fine && !game.state().arrivo; ++frame) {
                 game.setInput(guidaBivio(game, s));
@@ -1103,7 +1256,7 @@ bool verificaTemaTransizione(const std::string& outDir) {
     const i32 RING = 16;           // ring buffer fotogrammi attorno al cambio
 
     Game game(12345u);
-    caricaSponsor(game);
+    caricaSponsor(game); caricaRivali(game);
     game.init("lv_01_neon"); // tema default (nessun "colori": cielo 0x202040)
     if (!game.avviaGara()) {
         std::printf("tema_transizione: FALLITO (gara non avviata)\n");
@@ -1308,7 +1461,7 @@ bool verificaBivioBordi(const std::string& outDir) {
         std::vector<std::vector<u32>> ring(RING);
         {
             Game game(12345u);
-            caricaSponsor(game);
+            caricaSponsor(game); caricaRivali(game);
             if (!game.avviaGara()) { ok = false; continue; }
             tappaPrev = game.state().tappa;
             for (i32 frame = 0; frame < 300000 && !game.state().arrivo; ++frame) {
@@ -1652,7 +1805,7 @@ static bool verificaCiclo(const std::string& outDir) {
     for (int run = 0; run < 2; ++run) {
         CicloMisure& m = (run == 0) ? a : b;
         Game game(12345u);
-        caricaSponsor(game);
+        caricaSponsor(game); caricaRivali(game);
         if (!game.avviaGara()) {
             std::printf("ciclo: FALLITO (avviaGara non riuscito)\n");
             return false;
@@ -1733,7 +1886,7 @@ static bool verificaCiclo(const std::string& outDir) {
     bool singolaOk = false;
     {
         Game game(12345u);
-        caricaSponsor(game);
+        caricaSponsor(game); caricaRivali(game);
         if (game.avviaGara()) {
             game.mostraMenu();
             passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
@@ -1748,7 +1901,7 @@ static bool verificaCiclo(const std::string& outDir) {
     bool esciOk = false;
     {
         Game game(12345u);
-        caricaSponsor(game);
+        caricaSponsor(game); caricaRivali(game);
         if (game.avviaGara()) {
             game.mostraMenu();
             passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
@@ -1780,7 +1933,7 @@ struct EsitoGara {
 EsitoGara corriGara(const char* scelte) {
     EsitoGara e;
     Game game(12345u);
-    caricaSponsor(game);
+    caricaSponsor(game); caricaRivali(game);
     if (!game.avviaGara()) return e;
     e.tappe.push_back(game.tappaCorrente());
     bool ribaltato = false;
@@ -2037,6 +2190,12 @@ int main(int argc, char** argv) {
         std::printf("%s\n", ok ? "GATE RIBALTAMENTO OK"
                                : "FALLITO: ribaltamento o ripartenza sul tracciato");
         return ok ? 0 : 5;
+    }
+
+    if (modo == "urto") {
+        const bool ok = verificaUrto(livello);
+        std::printf("%s\n", ok ? "GATE URTO OK" : "FALLITO: urto con avversario non conforme");
+        return ok ? 0 : 19;
     }
 
     if (modo == "accelerazione") {

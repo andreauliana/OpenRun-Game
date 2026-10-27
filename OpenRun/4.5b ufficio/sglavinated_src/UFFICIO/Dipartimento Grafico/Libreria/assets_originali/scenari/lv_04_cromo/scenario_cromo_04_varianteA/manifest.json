@@ -1,0 +1,30 @@
+{
+  "livello": "lv_04_cromo",
+  "variante": "A",
+  "scenario": "scenario_cromo_04",
+  "stile": "futurista / cromo",
+  "autore": "@grafico (disegnato da zero, nessun materiale Sega)",
+  "licenza": "CC0-1.0",
+  "originale": true,
+  "riferimenti_sega": false,
+  "palette_max_colori": 16,
+  "oggetti_bordo_strada": [
+    "guard_rail_cromo",
+    "lampione_lama",
+    "robot_servizio",
+    "pilone_cromo"
+  ],
+  "file": {
+    "oggetti": [
+      "oggetti/obj_guard_rail_cromo.png",
+      "oggetti/obj_lampione_lama.png",
+      "oggetti/obj_robot_servizio.png",
+      "oggetti/obj_pilone_cromo.png"
+    ]
+  },
+  "misure_oggetti": {
+    "oggetti/obj_lampione_lama.png": [40, 128],
+    "oggetti/obj_pilone_cromo.png": [48, 144]
+  },
+  "note": "Variante A (D6). 4 oggetti propri: guard-rail cromati, lampioni a lama, robot di servizio, pilone cromo. Nessun prestito. Skyline in skyline/varianteA_futurista. Misure oggetti alti aggiornate (passo DECO1 2f)."
+}

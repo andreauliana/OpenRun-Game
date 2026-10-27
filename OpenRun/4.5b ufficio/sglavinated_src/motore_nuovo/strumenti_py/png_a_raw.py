@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-# png_a_raw.py — converte i PNG dei cartelloni sponsor in raw per il core C++.
+# png_a_raw.py — converte i PNG approvati dal grafico in raw per il core C++.
 # Formato output: "SGLR" + u32 LE larghezza + u32 LE altezza + byte RGBA8888.
 # Usa solo la libreria standard di Python 3 (zlib). Da lanciare dalla radice
 # del progetto (sglavinated_src):
 #   python3 motore_nuovo/strumenti_py/png_a_raw.py
 # Legge:  assets_originali/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
+#         assets_originali/sprite/rivali/auto_rivale_<colore>_retro.png (4 rivali, RIV punto b)
 # Scrive: motore_nuovo/dati/sprite_raw/sponsor/<id>_<stile>.sglraw
+#         motore_nuovo/dati/sprite_raw/rivali/auto_rivale_<colore>_retro.sglraw
 # Il loader C++ corrispondente: motore_nuovo/src/render/sprite_raw.{h,cpp}.
 import struct
 import zlib
@@ -114,7 +116,29 @@ def main():
                 f.write(rgba)
             print(f"scritto {dst} ({w}x{h})")
             n += 1
-    print(f"convertiti {n} cartelloni in {OUTDIR}")
+
+    # Auto rivali (blocco RIV punto b): 4 modelli, stato "pronto" nel catalogo.
+    OUTDIR_RIVALE = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "rivali"
+    RIVALE_FILES = [
+        "auto_rivale_rosso_retro", "auto_rivale_azzurro_retro",
+        "auto_rivale_giallo_retro", "auto_rivale_verde_retro",
+    ]
+    ASSETS_RIVALE = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "rivali"
+    for nome in RIVALE_FILES:
+        src = ASSETS_RIVALE / (nome + ".png")
+        if not src.exists():
+            print(f"salta (manca): {src}")
+            continue
+        w, h, rgba = leggi_png(src)
+        dst = OUTDIR_RIVALE / (nome + ".sglraw")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(dst, "wb") as f:
+            f.write(MAGIC)
+            f.write(struct.pack("<II", w, h))
+            f.write(rgba)
+        print(f"scritto {dst} ({w}x{h})")
+        n += 1
+    print(f"convertiti {n} sprite in raw (sponsor {OUTDIR}, rivali {OUTDIR_RIVALE})")
 
 
 if __name__ == "__main__":

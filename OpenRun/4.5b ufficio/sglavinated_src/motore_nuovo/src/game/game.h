@@ -72,6 +72,9 @@ public:
     // Sprite dello skyline della tappa in corso (DECO1 2a), consegnato dal runner
     // prima di init(); vuoto = cielo piatto. Il core resta senza SDL.
     void setSkylineSprite(Sprite sprite);
+    // RIV punto b: consegna gli sprite delle auto rivali (decodati dal runner/test
+    // dai raw di png_a_raw.py) prima di init()/avviaGara().
+    void setRivaliSprites(std::vector<Sprite> sprites);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
     size_t numeroCartelloni() const { return cartelloni_.size(); }
 
@@ -157,6 +160,9 @@ private:
     f32 sollevamentoFaseS_ = 0.0f; // tempo per l'ondeggio mentre l'auto e' sollevata
     u32 playerFlipFrame_ = 0;
     u32 offroadFrames_ = 0;
+    bool playerBump_ = false;     // stato di bump dopo urto con un avversario (nessun ribaltamento)
+    f32 playerBumpTimer_ = 0.0f;  // tempo restante del bump (secondi)
+    f32 playerBumpSpintaX_ = 0.0f; // spinta laterale residua del bump (unita'/s)
     static constexpr f32 FLIP_ANIMATION_S = 1.5f;    // durata ribaltamento in secondi (indipendente dalla frequenza)
     static constexpr f32 OFFROAD_CRASH_S = 2.0f;     // secondi fuori strada prima del ribaltamento
 
@@ -181,6 +187,8 @@ private:
 
     void spawnTraffic();
     bool collisioneOggettiVicini() const;
+    bool collisioneRivaleVicino() const;   // RIV: contatto con un avversario (bump, non ribaltamento)
+    bool collisioneCartelloneVicino() const; // RIV: contatto con un cartellone bordo strada (nessun ribaltamento)
 
     // Blocco R2: logica separata per fase di guida e fase di menu.
     void aggiornaGuida(f32 dt);
@@ -196,6 +204,10 @@ private:
     bool tempoScaduto_ = false;
     i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
 f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (secondi, dati/config.json)
+    // RIV (Andrea 27/10): contatto con un avversario = bump, non ribaltamento.
+    f32 bumpRallentaFattore_ = 0.85f; // fattore velocita' dopo urto con rivale (0.85 = -15%, config.json)
+    f32 bumpDurataS_ = 1.0f;          // durata stato bump (secondi, config.json)
+    f32 bumpSpintaLaterale_ = 200.0f; // spinta laterale urto rivale (unita'/s, config.json)
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
     f32 tempoGiocoS_ = 0;        // secondi di gioco accumulati (frequenza indipendente)
     std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
@@ -219,7 +231,9 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
         f32 passo = 0.0f, passoMax = 0.0f; // velocita' in unita' di strada al secondo
         i32 ramo = 1;   // ramo preso ai bivi (-1 sinistra, +1 destra)
-        i32 colore = 9; // indice di palette della sagoma
+        i32 colore = 9; // indice di palette della sagoma (solo sagoma sintetica)
+        f32 bravura = 1.0f; // bravura propria (0.92..1.08, seme fisso), scala passoMax
+        i32 spriteIdx = -1; // indice sprite rivale in Renderer (RIV punto b), -1 = rettangolo sintetico
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;
@@ -242,6 +256,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     f32 secondiDaSceltaBivio_ = 0.0f; // secondi dalla scelta del ramo al bivio (fattore ramp)
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
+    i32 nSpriteRivali_ = 0; // sprite rivali caricati (RIV punto b)
     bool uscitaRichiesta_ = false; // voce ESCI del menu (blocco R2)
     GestoreFasi fasi_; // blocco R2: Splash -> Menu -> Gara -> FineTempo -> Risultati
 };

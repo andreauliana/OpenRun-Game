@@ -173,9 +173,14 @@ struct PunteggioEntry {
 
 class RisultatiFase : public Fase {
 public:
-    RisultatiFase() : timerS_(0.0f), punteggio_(0), posizione_(0), finita_(false) {}
+    RisultatiFase() : timerS_(0.0f), punteggio_(0), posizione_(0), finita_(false),
+                      nomePos_(0) {
+        nome_[0] = 'A'; nome_[1] = 'A'; nome_[2] = 'A'; nome_[3] = '\0';
+    }
     void entra(Game& gioco) override {
         timerS_ = 0.0f; finita_ = false;
+        nomePos_ = 0;
+        nome_[0] = 'A'; nome_[1] = 'A'; nome_[2] = 'A'; nome_[3] = '\0';
         // Formula punteggio (dati/punteggio.json, valori default se manca il file).
         i32 puntiPerKm = PUNTI_PER_KM_DEFAULT;
         i32 bonusTempo = BONUS_TEMPO_RESIDUO_DEFAULT;
@@ -196,7 +201,7 @@ public:
         // Classifica: 9 giocatori fittizi + il punteggio del giocatore
         // (dati/classifica_finta.json; default fitti se il file manca).
         classifica_.clear();
-        classifica_.push_back({"TU", punteggio_});
+        classifica_.push_back({std::string(nome_), punteggio_});
         JsonReader classifica(leggiFileTesto("motore_nuovo/dati/classifica_finta.json"));
         if (classifica.parse() && jsonIsObject(classifica.valore())) {
             JsonValue elencoV;
@@ -223,7 +228,7 @@ public:
         if (classifica_.size() > 10) classifica_.resize(10);
         posizione_ = 1;
         for (const PunteggioEntry& e : classifica_) {
-            if (e.nome == "TU") break;
+            if (e.nome == nome_) break;
             if (e.punti >= punteggio_) ++posizione_;
         }
     }
@@ -231,7 +236,12 @@ public:
         (void)dt;
         timerS_ += dt;
         const Pad& p = gioco.input();
-        // Start torna al menu; timeout di sicurezza a 30 s.
+        // Inserimento nome a 3 lettere: SU/GIU cambia lettera, Left/Right sposta il cursore.
+        if (p.pressed & Pad::Up)   { nome_[nomePos_] = (nome_[nomePos_] == 'Z') ? 'A' : char(nome_[nomePos_] + 1); }
+        if (p.pressed & Pad::Down) { nome_[nomePos_] = (nome_[nomePos_] == 'A') ? 'Z' : char(nome_[nomePos_] - 1); }
+        if (p.pressed & Pad::Right) nomePos_ = (nomePos_ + 1) % 3;
+        if (p.pressed & Pad::Left)  nomePos_ = (nomePos_ + 2) % 3;
+        // Start conferma il nome e torna al menu; timeout di sicurezza a 30 s.
         if ((p.pressed & Pad::Start) || timerS_ > 30.0f) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer&) const override {
@@ -239,13 +249,21 @@ public:
         const char* titolo = "RISULTATI";
         const i32 w = ren.larghezzaTesto(titolo, 2);
         ren.drawTesto(160 - w / 2, 40, titolo, 0xFFFFFFFFu, 2, true);
-        std::snprintf(buf, sizeof(buf), "TU %d PUNTI   POSIZIONE %d", punteggio_, posizione_);
-        ren.drawTesto(64, 72, buf, 0xFFA0A0A0u, 1, true);
-        i32 y = 90;
+        char nomeVis[8];
+        std::snprintf(nomeVis, sizeof(nomeVis), "%c%c%c", nome_[0], nome_[1], nome_[2]);
+        // Riga nome: cursore visibile sulla lettera in editing.
+        char nomeCursore[8];
+        std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c", nome_[0], nome_[1], nome_[2]);
+        nomeCursore[nomePos_] = '_';
+        std::snprintf(buf, sizeof(buf), "NOME: %s   SU/GIU CAMBIA  START OK", nomeCursore);
+        ren.drawTesto(64, 72, buf, 0xFFFFFFFFu, 1, true);
+        std::snprintf(buf, sizeof(buf), "%s %d PUNTI   POSIZIONE %d", nomeVis, punteggio_, posizione_);
+        ren.drawTesto(64, 88, buf, 0xFFA0A0A0u, 1, true);
+        i32 y = 110;
         for (size_t i = 0; i < classifica_.size(); ++i) {
             const PunteggioEntry& e = classifica_[i];
-            std::snprintf(buf, sizeof(buf), "%c %-3s %6d", (e.nome == "TU" ? '>' : ' '), e.nome.c_str(), e.punti);
-            ren.drawTesto(64, y + (i32)i * 11, buf, e.nome == "TU" ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
+            std::snprintf(buf, sizeof(buf), "%c %-3s %6d", (e.nome == nomeVis ? '>' : ' '), e.nome.c_str(), e.punti);
+            ren.drawTesto(64, y + (i32)i * 11, buf, e.nome == nomeVis ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
         }
         const char* aiuto = "START TORNA AL MENU";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
@@ -259,6 +277,8 @@ private:
     i32 punteggio_;
     i32 posizione_;
     bool finita_;
+    char nome_[4];       // nome giocatore a 3 lettere (inserito con SU/GIU)
+    i32 nomePos_;        // cursore 0..2 sulla lettera in editing
     std::vector<PunteggioEntry> classifica_;
 };
 

@@ -31,7 +31,10 @@
       "oggetti/obj_torre_razzo.png",
       "oggetti/obj_segnale_atomico.png",
       "oggetti/obj_bancone_drive_in.png"
-    ]
+    ],
+    "misure_oggetti": {
+      "oggetti/obj_torre_razzo.png": [64, 144]
+    }
   },
-  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico)."
+  "note": "Atmosfera coerente con livello.json; nessun elemento Sega; generato da seme fisso (deterministico). Misure oggetti alti aggiornate (passo DECO1 2f)."
 }

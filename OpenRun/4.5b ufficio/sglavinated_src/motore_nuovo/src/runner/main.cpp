@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
 #include "runner/sponsor_loader.h" // decodifica cartelloni sponsor (solo runner)
+#include "render/sprite_raw.h"    // caricaSpriteRaw per i raw di png_a_raw.py
 #include <SDL2/SDL.h>
 #include <cstdio>
 #include <cstring>
@@ -251,6 +252,17 @@ int main(int argc, char** argv) {
     // core PRIMA di init(), che li posiziona bordo strada in modo deterministico.
     auto sponsorSprites = sgl::caricaSponsorSprite("UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor"); // (sponsor_id, Sprite) per abbinamento a livello.json
     game.setSponsorSprites(std::move(sponsorSprites));
+
+    // Auto rivali: sprite veri dal catalogo (raw prodotti da strumenti_py/png_a_raw.py),
+    // consegnati al core prima di avviaGara(). Senza i raw si mantiene la sagoma sintetica (RIV punto b).
+    std::vector<Sprite> rivaliSprites;
+    static const char* kRivaleRetro[4] = { "rosso", "azzurro", "giallo", "verde" };
+    for (const char* colore : kRivaleRetro) {
+        Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");
+        if (s.width > 0) rivaliSprites.push_back(std::move(s));
+        else std::printf("rivali: raw mancante auto_rivale_%s_retro.sglraw\n", colore);
+    }
+    game.setRivaliSprites(std::move(rivaliSprites));
 
     // Default: gara a tappe con bivi (dati/percorso_gara.json). --livello <id>:
     // una sola pista che gira in tondo, per provarla.

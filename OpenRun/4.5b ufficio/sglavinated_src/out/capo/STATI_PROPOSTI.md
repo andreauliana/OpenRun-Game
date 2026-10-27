@@ -7,9 +7,9 @@
 
 ## Verifica chiusure checkpoint
 
-- **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
+- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate e review indipendente registrati e positivi (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde; prova runner Mac Andrea 23/10 ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente). Si procede senza aspettare. Avvio R2 subordinato a conferma formale Andrea (D18 = B); nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale.
 - **CP-007 (FORK1 bivio e transizione di tema): CHIUSO** 2026-10-27. Non si riapre.
-- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate e review indipendente registrati e positivi (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde; prova runner Mac Andrea 23/10 ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente). Si procede senza aspettare. Nessun CP chiuso in questo turno.
+- **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
 - **CP-002 (G1 inventario grafico): APERTO** — check verde, ma review indipendente mancante.
 - Nessun altro checkpoint ha gate + review registrati da chiudere in questo turno.
 
@@ -17,18 +17,22 @@
 
 | Blocco | Stato | Responsabile | Revisore indipendente | Percorso consegna | Criterio di chiusura | Note |
 |---|---|---|---|---|---|---|
-| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). Avvio R2 subordinato ad Andrea (D18 = B). Nessun tocco `src/runner/` (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
+| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
 | P1 | [x] | @developer | — | `out/developer/` | build CMake, screenshot gameplay (prova differita) | T1-Q2 sì (Andrea). |
 | G1 | [~] (check [x]) | @grafico | da assegnare (CP-002, diverso da @grafico; cand. @developer-junior) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. CP-002 in attesa review indipendente. |
 | H | [~] | Andrea | — | — | v91 runner Mac su build corretta, poi fps/temp Pi 400 | Prova Mac 23/10 ok; prima Mac poi Pi (D12/D14 = A). |
 | FORK1 | [x] | @developer + @developer-junior | incrociata positiva (CP-007) | `out/developer/`, `out/developer-junior/` | ctest verde, gate `bivio_*` / `tema_transizione` verdi, replay 2x IDENTICO | CP-007 CHIUSO. Dopo FORK1: DECO1. |
-| DECO1 | [ ] | @developer (passi piccoli 2a-2f) + @grafico (asset) | da assegnare per gate `decorazioni` (cand. @developer-junior) | `out/developer/`, `out/grafico/` | ctest verde con `decorazioni`; screenshot PPM 6 livelli; ms/frame <= 20; check exit 0 | DECO1 [x] prima di ogni prova Pi 400/RetroPie. @grafico fornisce asset e rivede screenshot. |
-| F60 | [x] gate / [~] review | @developer | @developer-junior (pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICO | Dopo R1 prima di R2 (Andrea 19 ott); poi CP F60. |
+| DECO1 | [~] | @developer (passi piccoli 2a-2f, 2a-2e FATTO) + @grafico (asset) | da assegnare per gate `decorazioni` (cand. @developer-junior) | `out/developer/`, `out/grafico/` | ctest verde con `decorazioni`; screenshot PPM 6 livelli; ms/frame <= 20; check exit 0 | DECO1 [x] prima di ogni prova Pi 400/RetroPie. @grafico fornisce asset e rivede screenshot. Resta: review incrociata + CP DECO1 @capo. |
+| F60 | [x] gate / [~] review | @developer | @developer-junior (pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICO | Dopo R1 prima di R2 (Andrea 19 ott). CP F60 da aprire dopo review incrociata. |
+| R2 | [~] | @developer | @developer-junior (incrociata) | `out/developer/` | ctest verde con gate `ciclo`; tutte le 5 fasi | In corso (passi 1/1b/1c fatti, ctest 22/22 verde). NON subordinato a D18/D19 (Andrea 27/10). Prossimo: 1d nome 3 lettere, poi DECO1 2f, RIV, PIST1. |
+| RIV | [~] | @developer + @grafico | @developer-junior (gate `urto`, `gara`) | `out/developer/`, `out/grafico/` | ctest verde con `gara` e `urto`; sprite rivali catalogo; nessun ribaltamento su urto | Dopo DECO1 2f. Punti a,b,c (bump, sprite rivali, comportamento realistico). |
+| PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | Dopo RIV. |
+| FIN | [ ] | @developer + @grafico | @developer-junior (gate `gara` finale) | `out/developer/`, `out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. |
 
 ## Deleghe 4.6 (questa tappa)
 
-- **@developer**: codice C++, integrazione, CMake, build multipiattaforma; DECO1 passi piccoli (2a-2f, ognuno compila e lascia ctest verde); nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Consegna `out/developer/`.
-- **@developer-junior**: test, strumenti, diagnosi; revisore incrociato di @developer (FORK1 fatto); candidabile revisore indipendente CP-002 e gate `decorazioni` di DECO1. Consegna `out/developer-junior/`.
+- **@developer**: codice C++, integrazione, CMake, build multipiattaforma; DECO1 passi piccoli (2a-2f, ognuno compila e lascia ctest verde); R2 passo 1d poi RIV; nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Consegna `out/developer/`.
+- **@developer-junior**: test, strumenti, diagnosi; revisore incrociato di @developer (FORK1 fatto); candidabile revisore indipendente CP-002 e gate `decorazioni` di DECO1; gate `urto` e `tratti`. Consegna `out/developer-junior/`.
 - **@grafico**: asset e catalogo unico; G1 (100 PNG catalogati, licenza CC0-1.0); DECO1 fornisce skyline e oggetti per i 6 livelli (nessun prestito, stile proprio lv_04/lv_05/lv_06), converte PNG->raw; unico handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md`. Consegna `out/grafico/`.
 
 ## Decisioni Andrea (`ANDREA_REVIEW.md` — DEFAULT solo se mancante; si prosegue senza aspettare)
@@ -40,10 +44,12 @@
 
 ## Chiusura tappa
 
-Non tutti i blocchi della tappa sono `[x]` (T1-RUN [~], H [~], DECO1 [ ], CP-002 review mancante). **FINITO non creabile.** Nessun blocco richiede `PER_CLAUDE.md`: si prosegue autonomamente.
+Non tutti i blocchi della tappa sono `[x]` (T1-RUN [~], H [~], DECO1 [ ], R2 [~], RIV [~], PIST1 [ ], FIN [ ], CP-002 review mancante). **FINITO non creabile.** Nessun blocco richiede `PER_CLAUDE.md`: si prosegue autonomamente.
 
 ## Prossime azioni
 
 1. CP-006 resta APERTO: attendere nuova prova/decisione Andrea su runner Mac (D19 = B).
-2. DECO1: @developer prosegue passi piccoli 2a-2f; @grafico fornisce asset e rivede screenshot in `Test area/`; poi CP DECO1 (@capo).
-3. Dopo ok Andrea Mac: F60 review incrociata developer → developer-junior, poi R2 (D18 = B).
+2. R2: @developer passo 1d (nome a 3 lettere nei Risultati, gate `ciclo` verde), poi DECO1 passo 2f, poi RIV, poi PIST1.
+3. DECO1: @developer prosegue passi piccoli 2a-2f; @grafico fornisce asset e rivede screenshot in `Test area/`; poi CP DECO1 (@capo).
+4. F60: review incrociata developer → developer-junior, poi apertura CP F60.
+5. G1: CP-002 in attesa review indipendente (cand. @developer-junior).

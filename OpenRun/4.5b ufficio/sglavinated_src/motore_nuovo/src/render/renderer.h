@@ -6,6 +6,7 @@
 #include "render/sprite.h" // Sprite (usato da SpriteInstance e dagli sprite sponsor)
 #include "road/road.h"
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace sgl {
@@ -114,6 +115,16 @@ public:
     // (es. test ripetuti nello stesso processo) per non accumulare sprite e non
     // lasciare puntatori appesi dopo riallocazioni del vettore.
     void clearSponsorSprites() { sponsorSprites_.clear(); }
+    // Sprite delle auto rivali (RIV punto b): caricati una volta (runner o test),
+    // proprietario il Renderer; indice valido dopo la chiusura della carica.
+    i32 aggiungiRivaleSprite(Sprite sprite) {
+        rivaleSprites_.push_back(std::move(sprite));
+        return (i32)rivaleSprites_.size() - 1;
+    }
+    const Sprite* rivaleSprite(i32 indice) const {
+        return indice >= 0 && indice < (i32)rivaleSprites_.size() ? &rivaleSprites_[indice] : nullptr;
+    }
+    void clearRivaliSprites() { rivaleSprites_.clear(); }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
     i32 aggiungiOggettoSprite(Sprite sprite);
@@ -159,6 +170,7 @@ private:
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
+    std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
     Sprite skylineDa_;                      // skyline all'inizio della transizione di tema
     Sprite skylineA_;                       // skyline a fine transizione di tema

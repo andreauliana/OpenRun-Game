@@ -1,6 +1,7 @@
-# Riassunto developer — 27/10/2026 turno 3 (09:58)
-- DECO1 [x] completa 2a-2e: ultimo gate 27/10/2026 07:55 exit 0 (6/6 percorsi OK, medio <= 0.65, max 2.696 <= 20, replay 2x IDENTICO); lv_06_desktop smoke GATE OK 08:42 (medio 0.503, max 0.711 <= 20, replay IDENTICO).
-- R2 [~] codice completato 08:42 (fasi.h/.cpp Splash/Menu/Gara/FineTempo/Risultati; dt in secondi; punteggio.json, classifica_finta.json, CMakeLists; cmake --build prova_gate exit 0, ctest 10/10 verde) ma D18=B attende Andrea prima dell'avvio R2; residui (gate ciclo, schermate grafiche, CP-006) spettano a developer-junior/@grafico/@capo.
-- Bloccati: H [~] e T1-RUN [~] in attesa Andrea (D19=B; ok runner Mac v91 mancante, poi fps/temperatura Pi 400); P1 [~] punto 4 sprite veri in attesa @grafico; FORK1 [~] in attesa CP-007 @capo; PIST1/RIV/FIN [ ] post-R2.
-- Nessun blocco eseguibile (5 turni di fila: 09:12, 09:19, 09:25, 09:41, 09:58). gate non eseguito in questo turno (ultimo gate 27/10/2026 07:55 exit 0).
-- Scritture: bacheche/developer/diario.md, RIASSUNTO.md.
+# Riassunto developer — 27/10/2026 turno 1 (19:41)
+- R2 [~] RIV punto a (sviluppatore) fatto: urto con avversario = bump (spinta laterale + rallentamento -15%, nessun ribaltamento, controlli attivi); costanti in dati/config.json (bump_rallenta 0.85, bump_durata_s 1.0, bump_spinta_laterale 200.0); ribaltamento solo per fuori strada prolungato.
+- Build cmake --build UFFICIO/Officina/build --target prova_gate exit 0.
+- sh UFFICIO/Officina/TOOL/run_tests.sh ctest 22/22 verde (713s): gate_crash, gate_gara, gate_ciclo, 6 livelli smoke+percorso OK; gate_t1.sh non eseguito (ultimo gate 27/10/2026 19:11 exit 0, 6/6 percorsi OK).
+- RIV prossimi: punti b (sprite rivali da catalogo, @grafico) e c (comportamento realistico in aggiornaRivali), poi PIST1 (tipi tratto: chicane, ponte, autostrada, citta').
+- T1-RUN [~] e H [~] in attesa Andrea (ok runner Mac v91, poi fps/temperatura Pi 400); nessun lavoro Pi 400/RetroPie prima di ok Mac. FORK1 [~] attende CP-007 di @capo.
+- Scritture: motore_nuovo/dati/config.json, motore_nuovo/src/game/game.h, motore_nuovo/src/game/game.cpp, diario.md, RIASSUNTO.md, out/developer/ESITO_RIV_PUNTOA_27OTT.md.

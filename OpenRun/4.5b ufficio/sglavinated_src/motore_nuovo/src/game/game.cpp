@@ -89,6 +89,11 @@ constexpr f32 RIVALE_ELASTICO_DISTANZA = 40000.0f; // a questo distacco l'elasti
 constexpr f32 RIVALE_ELASTICO_MIN = 0.80f;
 constexpr f32 RIVALE_ELASTICO_MAX = 1.15f;
 constexpr f32 RIVALE_LATERALE_PER_S = 400.0f;
+constexpr f32 RIVALE_CURVA_SCALE = 0.5f;     // rallentamento in curva: scala |curva| del segmento
+constexpr f32 RIVALE_CURVA_SLOW_MAX = 0.50f; // max rallentamento in curva estrema (50%)
+constexpr f32 RIVALE_DISTANZA_MIN = 1500.0f; // distanza minima di seguito tra due rivali
+constexpr f32 RIVALE_LATERALE_MIN = 250.0f;  // soglia laterale per intervenire sull'altro rivale
+constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpassare di lato
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
 // nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
 // in ~0.3 s appena si frena, si curva o si esce di strada.
@@ -356,15 +361,23 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         if (s.width > 0) idxPerId[j] = ren_.aggiungiOggettoSprite(std::move(s));
     }
     // Una istanza ogni passoZ unita', lato alternato, bordo strada (+/-1600).
-    const f32 passoZ = 4000.0f;
+    // Nessun oggetto negli ultimi BIVIO_SEG segmenti: quando il bivio e' attivo
+    // i due rami occupano la carreggiata e un oggetto a +/-1600 finirebbe in
+    // mezzo alla strada (DECO1 2f punto 1).
+    const f32 passoZ = 2000.0f; // DECO1 2f punto 3: una istanza ogni 2000 unita' (prima 4000)
+    const f32 zBivioInizio = road_.bivioInizioZ(); // inizio ultimi BIVIO_SEG segmenti
+    // Scala degli oggetti: campo altezza_mondo/scala per oggetto nel manifest
+    // della variante; senza campo si usa 4.0 (lampione ~2x l'auto, visibile).
+    const f32 scalaOggetto = 4.0f; // DECO1 2f punto 2
     i32 k = 0;
     for (f32 z = passoZ; z < giro - passoZ; z += passoZ) {
+        if (zBivioInizio > 0.0f && z >= zBivioInizio) break; // nessun oggetto nell'area del bivio
         const i32 j = k % nOggetti;
         const i32 idx = idxPerId[j];
         SpriteInstance b;
         b.worldZ = z;
         b.worldX = (k & 1) ? 1600.0f : -1600.0f;
-        b.scale = 1.0f;
+        b.scale = scalaOggetto;
         b.sprite = (idx >= 0) ? ren_.oggettoSprite(idx) : nullptr;
         b.paletteBase = 0;
         oggettiStrada_.push_back(b);
@@ -388,6 +401,21 @@ void Game::init(const std::string& livelloId) {
             f32 val = (f32)jsonAsNumber(vt);
             if (val >= 0.0f) transizioneTemaS_ = val;
         }
+        JsonValue vb;
+        if (jsonGet(jsonAsObject(cfg.valore()), "bump_rallenta", vb) && jsonIsNumber(vb)) {
+            f32 val = (f32)jsonAsNumber(vb);
+            if (val > 0.0f && val <= 1.0f) bumpRallentaFattore_ = val;
+        }
+        JsonValue vd;
+        if (jsonGet(jsonAsObject(cfg.valore()), "bump_durata_s", vd) && jsonIsNumber(vd)) {
+            f32 val = (f32)jsonAsNumber(vd);
+            if (val >= 0.0f) bumpDurataS_ = val;
+        }
+        JsonValue vs;
+        if (jsonGet(jsonAsObject(cfg.valore()), "bump_spinta_laterale", vs) && jsonIsNumber(vs)) {
+            f32 val = (f32)jsonAsNumber(vs);
+            if (val >= 0.0f) bumpSpintaLaterale_ = val;
+        }
     }
 
     gara_ = false;
@@ -410,6 +438,9 @@ void Game::init(const std::string& livelloId) {
     assistenzaBivio_ = 0.0f;
     playerFlipFrame_ = 0;
     offroadFrames_ = 0;
+    playerBump_ = false;
+    playerBumpTimer_ = 0.0f;
+    playerBumpSpintaX_ = 0.0f;
     showManager_.reset(seed_); // stesso seed = stessi show (determinismo)
 
     // Testi fumetti da frasi.json (dati, CC-BY-4.0 Andrea): carica una volta,
@@ -663,6 +694,9 @@ void Game::inizializzaRivali() {
         r.passoMax = puntaGiocatore * (RIVALE_PUNTA_MIN + RIVALE_PUNTA_PASSO * (f32)rnd.next(7));
         r.ramo = (i % 2 == 0) ? -1 : 1;
         r.colore = 9 + (i % 4); // arancio, ciano, giallo, rosso
+        r.bravura = 0.92f + 0.04f * (f32)rnd.next(5); // bravura propria (0.92..1.08), seme fisso
+        r.passoMax *= r.bravura; // la bravura scala la velocita' di punta (punte e elastico invariati)
+        r.spriteIdx = nSpriteRivali_ > 0 ? i % nSpriteRivali_ : -1; // sprite rivale (RIV punto b)
     }
     rndRivali_ = Rng(seed_ ^ 0x4C414E45u);
     sprites_.clear();
@@ -806,6 +840,21 @@ void Game::setSkylineSprite(Sprite sprite) {
     // Consegnato dal runner (o dal test) prima di init(); applicato in
     // caricaLivello() alla tappa che viene caricata, poi svuotato.
     skylineSprite_ = std::move(sprite);
+}
+
+void Game::setRivaliSprites(std::vector<Sprite> sprites) {
+    // RIV punto b: consegna gli sprite delle auto rivali (decodati dal runner o
+    // dal test dai raw prodotti da png_a_raw.py) prima di avviaGara()/init().
+    // Senza sprite si mantiene la sagoma sintetica del renderer (retrocompatibile).
+    ren_.clearRivaliSprites();
+    nSpriteRivali_ = 0;
+    for (auto& s : sprites) {
+        if (s.width > 0) {
+            ren_.aggiungiRivaleSprite(std::move(s));
+            ++nSpriteRivali_;
+        }
+    }
+    std::printf("sprite rivali caricati: %d/%d\n", nSpriteRivali_, RIVALI);
 }
 
 bool Game::leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::SegmentDesc>& out) const {
@@ -1057,17 +1106,66 @@ void Game::aggiornaGuida(f32 dt) {
 
         if (gara_) aggiornaRivali();
         else if (trafficoAttivo_) spawnTraffic();
-        // Nel passaggio assistito i contatti non ribaltano l'auto.
-        const bool collisione = assistenzaBivio_ <= 0.0f && collisioneOggettiVicini();
-        if (collisione && !inCollision_) {
-            showManager_.crash();
+        // RIV (Andrea 27/10): separare il contatto con gli avversari (sprites_) da
+        // quello con i cartelloni. Urto con un avversario = bump: spinta laterale
+        // leggera + rallentamento (~ -15%), nessun ribaltamento, controlli sempre
+        // attivi. Contatto con un cartellone = nessun ribaltamento (ostacolo
+        // decorativo a bordo strada). Il ribaltamento resta solo per fuori strada
+        // prolungato.
+        const bool toccaRivale = assistenzaBivio_ <= 0.0f && collisioneRivaleVicino();
+        const bool toccaCartellone = assistenzaBivio_ <= 0.0f && collisioneCartelloneVicino();
+        const bool toccaQualcosa = toccaRivale || toccaCartellone;
+
+        if (toccaRivale && !inCollision_ && !playerFlipping_ && !playerBump_) {
+            // Avvia il bump: spinta laterale che allontana dal rivale urtato +
+            // rallentamento leggero. I controlli restano attivi (auto non bloccata).
+            playerBump_ = true;
+            playerBumpTimer_ = bumpDurataS_;
+            playerBumpSpintaX_ = 0.0f;
+            const f32 giro = (f32)road_.totalLength();
+            f32 dxMin = 1e9f;
+            i32 rivaleUrtato = -1;
+            // Trova l'avversario piu' vicino in collisione (stessa soglia di
+            // collisioneRivaleVicino): e' l'urttato e subisce il rallentamento.
+            for (i32 k = 0; k < RIVALI; ++k) {
+                const Rivale& rk = rivali_[k];
+                const f32 zLocale = rk.progresso - progressoTappePrecedenti_;
+                if (zLocale <= 0.0f || zLocale > 60000.0f || zLocale >= giro + 60000.0f) continue;
+                f32 dz = std::fmod(zLocale - road_.playerZ, giro);
+                if (dz < 0.0f) dz += giro;
+                if (dz >= 120.0f) continue;
+                const Road::Carreggiate c = road_.carreggiate(zLocale, latoBivio_);
+                const i32 indice = latoBivio_ == 0 ? (rk.ramo < 0 ? 0 : 1) : (rk.ramo == latoBivio_ ? 0 : 1);
+                const f32 dx = c.centro[indice] + rk.x * c.fattore - player_.x;
+                if (std::abs(dx) >= 180.0f) continue;
+                if (std::abs(dx) < std::abs(dxMin)) { dxMin = dx; rivaleUrtato = k; }
+            }
+            if (std::abs(dxMin) < 1e8f) {
+                playerBumpSpintaX_ = (dxMin >= 0.0f ? -1.0f : 1.0f) * bumpSpintaLaterale_;
+                if (rivaleUrtato >= 0) rivali_[rivaleUrtato].passo *= 0.85f; // urtato perde velocita'
+            }
+            player_.speed *= bumpRallentaFattore_;
             inCollision_ = true;
-        } else if (!collisione) {
+        } else if (!toccaQualcosa) {
             inCollision_ = false;
         }
 
-        if (collisione || offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_)) {
-            if (!collisione) showManager_.crash();
+        // Durante il bump: spinta laterale che decade, controlli sempre attivi
+        // (l'auto non si ferma e puo' continuare a sterzare/accelerare).
+        if (playerBump_) {
+            playerBumpTimer_ -= dt;
+            const f32 t = std::clamp(playerBumpTimer_ / bumpDurataS_, 0.0f, 1.0f);
+            player_.x += playerBumpSpintaX_ * t * dt;
+            if (playerBumpTimer_ <= 0.0f) {
+                playerBump_ = false;
+                playerBumpSpintaX_ = 0.0f;
+            }
+        }
+
+        // Ribaltamento solo per fuori strada prolungato (mai per contatto con
+        // rivali o cartelloni).
+        if (offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_) && !playerFlipping_ && !playerBump_) {
+            showManager_.crash();
             playerFlipping_ = true;
             playerFlipFrame_ = 0;
             playerXIncidente_ = player_.x;
@@ -1198,6 +1296,36 @@ bool Game::collisioneOggettiVicini() const {
     for (const SpriteInstance& oggetto : cartelloni_)
         if (collide(oggetto, 90.0f, 760.0f)) return true;
 
+    return false;
+}
+
+bool Game::collisioneRivaleVicino() const {
+    const f32 giro = (f32)road_.totalLength();
+    if (giro <= 0.0f) return false;
+    auto collide = [this, giro](const SpriteInstance& oggetto, f32 profondita, f32 larghezza) {
+        f32 dz = std::fmod(oggetto.worldZ - road_.playerZ, giro);
+        if (dz < 0.0f) dz += giro;
+        const f32 dx = oggetto.worldX - player_.x;
+        return dz < profondita && std::abs(dx) < larghezza;
+    };
+    // sprites_ contiene gli avversari (e, fuori gara, il traffico sintetico).
+    // Un contatto ravvicinato (dentro 120 unita' e 180 di larghezza) e' un urto.
+    for (const SpriteInstance& oggetto : sprites_)
+        if (collide(oggetto, 120.0f, 180.0f)) return true;
+    return false;
+}
+
+bool Game::collisioneCartelloneVicino() const {
+    const f32 giro = (f32)road_.totalLength();
+    if (giro <= 0.0f) return false;
+    auto collide = [this, giro](const SpriteInstance& oggetto, f32 profondita, f32 larghezza) {
+        f32 dz = std::fmod(oggetto.worldZ - road_.playerZ, giro);
+        if (dz < 0.0f) dz += giro;
+        const f32 dx = oggetto.worldX - player_.x;
+        return dz < profondita && std::abs(dx) < larghezza;
+    };
+    for (const SpriteInstance& oggetto : cartelloni_)
+        if (collide(oggetto, 90.0f, 760.0f)) return true;
     return false;
 }
 

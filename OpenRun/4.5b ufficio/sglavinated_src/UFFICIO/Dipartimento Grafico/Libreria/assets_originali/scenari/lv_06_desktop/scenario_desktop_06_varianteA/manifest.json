@@ -27,7 +27,10 @@
       "oggetti/obj_case_computer.png",
       "oggetti/obj_delfino_cartone.png",
       "oggetti/obj_icona_cartella.png"
-    ]
+    ],
+    "misure_oggetti": {
+      "oggetti/obj_pali_cavi.png": [56, 128]
+    }
   },
-  "note": "Variante A (D6). Disegnato da zero con Pillow, seme fisso, deterministico."
+  "note": "Variante A (D6). Disegnato da zero con Pillow, seme fisso, deterministico. Misure oggetti alti aggiornate (passo DECO1 2f)."
 }
