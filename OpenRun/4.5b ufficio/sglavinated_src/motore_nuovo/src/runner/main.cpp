@@ -25,6 +25,7 @@ struct Opzioni {
     bool vsync = true;      // --no-vsync: per driver che bloccano la presentazione
     std::string radiceDati; // --data: cartella sglavinated_src (vuota = ricerca automatica)
     std::string livello;    // --livello: solo quella pista, in tondo (vuoto = gara a tappe)
+    bool subito = false;    // --subito: salta splash e menu, si parte gia' in gara
 };
 
 Opzioni leggiOpzioni(int argc, char** argv) {
@@ -35,6 +36,7 @@ Opzioni leggiOpzioni(int argc, char** argv) {
         else if (std::strcmp(argv[i], "--no-vsync") == 0) o.vsync = false;
         else if (std::strcmp(argv[i], "--data") == 0 && i + 1 < argc) o.radiceDati = argv[++i];
         else if (std::strcmp(argv[i], "--livello") == 0 && i + 1 < argc) o.livello = argv[++i];
+        else if (std::strcmp(argv[i], "--subito") == 0) o.subito = true;
     }
     return o;
 }
@@ -254,6 +256,9 @@ int main(int argc, char** argv) {
     // una sola pista che gira in tondo, per provarla.
     if (!opz.livello.empty()) game.init(opz.livello);
     else if (!game.avviaGara()) game.init();
+    // Blocco R2: senza --livello e --subito si parte da Splash -> Menu
+    // (corsa singola, gara a tappe, esci); poi Gara -> FineTempo -> Risultati -> Menu.
+    if (opz.livello.empty() && !opz.subito) game.mostraMenu();
     std::printf("cartelloni sponsor sulla pista: %zu\n", game.numeroCartelloni());
 
     Controller ctrl;
@@ -322,6 +327,7 @@ int main(int argc, char** argv) {
             }
 
             game.update();
+            if (game.uscitaRichiesta()) running = false; // voce ESCI del menu
             // Render a ogni tick, come prima: il framebuffer (e quindi frameHash)
             // dipende solo dai tick, non da quante volte lo schermo si aggiorna.
             game.render();

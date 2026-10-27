@@ -81,6 +81,13 @@ public:
     f32 distanzaKm() const { return km_; }
     i32 numeroTappa() const { return numeroTappa_; }
     f32 tempoResiduoS() const { return tempoResiduoS_; }
+    bool arrivato() const { return arrivo_; }
+    // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
+    // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
+    void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }
+    // Voce ESCI del menu: il runner legge il flag e chiude la finestra.
+    void richiediUscita() { uscitaRichiesta_ = true; }
+    bool uscitaRichiesta() const { return uscitaRichiesta_; }
 
     // Radio: passa al brano successivo (input del runner: tasto R o Start+B).
     void nextBranoRadio() { mixer_.nextBrano(); }
@@ -235,6 +242,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     f32 secondiDaSceltaBivio_ = 0.0f; // secondi dalla scelta del ramo al bivio (fattore ramp)
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
+    bool uscitaRichiesta_ = false; // voce ESCI del menu (blocco R2)
     GestoreFasi fasi_; // blocco R2: Splash -> Menu -> Gara -> FineTempo -> Risultati
 };
 

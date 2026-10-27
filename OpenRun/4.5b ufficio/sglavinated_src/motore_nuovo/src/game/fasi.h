@@ -33,6 +33,9 @@ class GestoreFasi {
 public:
     GestoreFasi();
     ~GestoreFasi();
+    // Passa alla fase id. Se chiamata da dentro la fase corrente (es. il menu
+    // che avvia la gara) il cambio e' rimandato alla fine di aggiorna(), cosi'
+    // la fase che sta girando non viene distrutta a meta'.
     void cambia(FaseId id, Game& gioco);
     FaseId attuale() const { return attuale_; }
     void aggiorna(Game& gioco, f32 dt);
@@ -41,6 +44,9 @@ private:
     std::unique_ptr<Fase> crea(FaseId id);
     std::unique_ptr<Fase> fase_;
     FaseId attuale_ = FaseId::Splash;
+    bool inAggiorna_ = false;        // true mentre gira fase_->aggiorna()
+    bool cambioRimandato_ = false;   // cambia() chiamata durante aggiorna()
+    FaseId fasePendente_ = FaseId::Splash;
 };
 
 } // namespace sgl
