@@ -84,7 +84,9 @@ public:
         if (p.pressed & Pad::Down) sel_ = (sel_ + 1) % 3;
         if (p.pressed & (Pad::Start | Pad::A)) {
             switch (sel_) {
-                case 0: gioco.init("lv_01_neon"); break; // corsa singola, pista fissa (init -> Gara)
+                case 0: // corsa singola: prima tappa della gara (stessi tracciati, rivali e tempo), poi arrivo
+                    if (!gioco.avviaGara("motore_nuovo/dati/percorso_gara.json", true)) gioco.init("lv_01_neon");
+                    break;
                 case 1: // gara a tappe con bivi (avviaGara -> Gara); senza percorso: corsa singola
                     if (!gioco.avviaGara()) gioco.init("lv_01_neon");
                     break;

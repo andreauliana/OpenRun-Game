@@ -49,7 +49,19 @@ public:
         // (anello: l'ultimo torna al primo).
         i32 entrata = -1;
         i32 uscita = -1;
+        // Larghezza della carreggiata (Andrea 27/10: strada che si allarga a piu'
+        // corsie): 1 = 2 corsie, 2 = 4 corsie. Raccordata in LARGHEZZA_RACCORDO
+        // segmenti; sempre 1 negli ultimi BIVIO_SEG segmenti (bivio).
+        f32 larghezza = 1.0f;
+        // Dune / rialzi (Andrea 27/10): `onde` dossi alti `dune` (stessa unita'
+        // di collina) sopra la quota del tratto; tornano a zero ai due capi.
+        // onde = 1 e' un dosso solo (cresta cieca), 3-5 sono dune.
+        f32 dune = 0.0f;
+        i32 onde = 0;
     };
+    // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
+    // chi e' nella corsia esterna ha il tempo di rientrare.
+    static constexpr i32 LARGHEZZA_RACCORDO = 150;
 
     // Costruisce il tracciato da descrittori: ogni descrittore diventa
     // "lunghezza" segmenti da SEG_LEN, con curva e collina raccordate.
@@ -63,6 +75,11 @@ public:
     // circolare. Restituisce 0 se il tracciato e' vuoto o z non e' trovato.
     // Zero alloc, deterministico, nessun orologio di sistema.
     f32 curvaAt(f32 z) const;
+    // Larghezza della carreggiata (moltiplicatore di ROAD_WIDTH) alla posizione z.
+    f32 larghezzaAt(f32 z) const;
+    // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti
+    // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
+    i32 indiceSegmento(f32 z) const;
 
     // Proietta i segmenti visibili a partire da playerZ e riempie out (max DRAW_DIST).
     // Carreggiate a una posizione del tracciato: una sola, o i due rami del bivio.

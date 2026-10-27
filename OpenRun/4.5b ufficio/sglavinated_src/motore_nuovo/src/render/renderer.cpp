@@ -109,9 +109,18 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 hw = hwFar + (hwNear - hwFar) * t;
         if (y >= HORIZON_Y) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
             fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
+        // restano della misura della strada normale.
+        const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
+        const f32 hwBase = (rami == 1 && fattore > 1.0f) ? hw / fattore : hw;
+        // Corsie larghe come quelle della strada normale (mezza strada = una
+        // corsia): strisce al centro e ogni hwBase verso i bordi. Le corsie
+        // nuove nascono dai bordi mentre la strada si allarga (2 -> 4 corsie).
+        i32 stricePerLato = 0;
+        while ((f32)(stricePerLato + 1) * hwBase < hw - 0.25f * hwBase) ++stricePerLato;
         // Rumble: larghezza proporzionale alla larghezza locale, quindi continua
         // fra segmenti contigui (nessun gradino ai confini).
-        i32 rw = (i32)(hw * 0.14f);
+        i32 rw = (i32)(hwBase * 0.14f);
         if (rw < 1) rw = 1;
         const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distance = invZ > 0.0f ? 1.0f / invZ : next.worldZ;
@@ -130,9 +139,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             fb_.hline(lx, lx + rw - 1, y, rumble);
             fb_.hline(rx - rw + 1, rx, y, rumble);
             if (dashPhase < LANE_DASH_LENGTH) {
-                i32 lw = (i32)(hw * 0.02f);
+                i32 lw = (i32)(hwBase * 0.02f);
                 if (lw < 1) lw = 1;
-                fb_.hline((i32)cx - lw, (i32)cx + lw, y, lane);
+                for (i32 k = -stricePerLato; k <= stricePerLato; ++k) {
+                    const i32 sx = (i32)(cx + hwBase * (f32)k);
+                    fb_.hline(sx - lw, sx + lw, y, lane);
+                }
             }
         }
     }
@@ -287,10 +299,20 @@ u32 Renderer::lerpColore(u32 da, u32 a, f32 t) {
 
 void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen) {
     if (projs_.empty()) return; // drawRoad deve girare prima (stessa proiezione)
-    // Ordina per distanza decrescente (dietro prima).
+    // Ordina per distanza dalla telecamera decrescente (dietro prima). La
+    // distanza tiene conto del giro: vicino al punto di wrap gli sprite di
+    // inizio pista sono lontani anche se hanno worldZ piccolo.
+    auto distanza = [playerZ, totalLen](const SpriteInstance& s) {
+        f32 z = s.worldZ - playerZ;
+        if (totalLen > 0.0f) {
+            z = std::fmod(z, totalLen);
+            if (z < 0.0f) z += totalLen;
+        }
+        return z;
+    };
     std::sort(sprites.begin(), sprites.end(),
-              [](const SpriteInstance& a, const SpriteInstance& b) {
-                  return a.worldZ > b.worldZ;
+              [&distanza](const SpriteInstance& a, const SpriteInstance& b) {
+                  return distanza(a) > distanza(b);
               });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
     for (auto& s : sprites) {

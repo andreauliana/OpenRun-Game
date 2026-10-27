@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "road/road.h"
 #include "render/framebuffer.h" // Framebuffer::WIDTH/HEIGHT per la proiezione
+#include <algorithm> // std::clamp, std::min, std::max
 #include <cmath> // std::fmod per il wrap di z in curvaAt
 
 namespace sgl {
@@ -58,7 +59,12 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
     // Raccordo con la tappa precedente: se impostato, la prima curva parte dal
     // valore finale della tappa precedente invece che dall'ultimo tratto del
     // tracciato corrente (cambio tappa senza scatto di prospettiva).
-    f32 curvaPrima = curvaInizioTappaSet_ ? curvaInizioTappa_ : descs.back().curva;
+    // Senza tappa precedente si parte dalla curva del primo tratto: l'ultimo
+    // tratto esce gia' verso quella curva, quindi il giunto di fine giro e'
+    // continuo (prima si partiva dalla curva dell'ultimo tratto e, se era una
+    // curva, al giro dopo la curva saltava di colpo, fino a 0.85).
+    f32 curvaPrima = curvaInizioTappaSet_ ? curvaInizioTappa_ : descs.front().curva;
+    f32 larghezzaPrima = 1.0f; // ogni tappa parte (e finisce) a larghezza normale
     i32 indice = 0;
     for (i32 d = 0; d < (i32)descs.size(); ++d) {
         const SegmentDesc& desc = descs[d];
@@ -72,6 +78,8 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             ee = (i32)((f32)ee * scala);
             uu = (i32)((f32)uu * scala);
         }
+        const f32 larghezzaDentro = desc.larghezza > 0.5f ? desc.larghezza : 1.0f;
+        const i32 rl = std::min(LARGHEZZA_RACCORDO, std::max(1, n / 2));
         const f32 curvaDentro = desc.curva;
         const f32 curvaFuori = descs[(d + 1) % (i32)descs.size()].curva; // anello
         for (i32 k = 1; k <= n; ++k) {
@@ -88,6 +96,8 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             }
             seg.curve = c;
             seg.hill = desc.collina;
+            seg.larghezza = k <= rl ? larghezzaPrima + (larghezzaDentro - larghezzaPrima) * raccordo((f32)k / (f32)rl)
+                                    : larghezzaDentro;
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
@@ -95,6 +105,19 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             ++indice;
         }
         curvaPrima = curvaFuori; // a fine uscita si e' gia' alla curva del tratto seguente
+        larghezzaPrima = larghezzaDentro;
+    }
+    // Bivio e cambio tappa a larghezza normale: gli ultimi BIVIO_SEG segmenti
+    // sono larghi 1 e i LARGHEZZA_RACCORDO prima tornano a 1 con dolcezza.
+    {
+        const i32 n = (i32)segs_.size();
+        const i32 fine = std::max(0, n - BIVIO_SEG);
+        const i32 inizio = std::max(0, fine - LARGHEZZA_RACCORDO);
+        const f32 da = inizio < n ? segs_[inizio].larghezza : 1.0f;
+        for (i32 i = inizio; i < n; ++i) {
+            const f32 t = i >= fine ? 1.0f : raccordo((f32)(i - inizio + 1) / (f32)(fine - inizio));
+            segs_[i].larghezza = da + (1.0f - da) * t;
+        }
     }
 
     // Chiusura di direzione: la somma ponderata delle curve non si bilancia
@@ -127,6 +150,11 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
             seg.p2y = quotaPrima + (quota - quotaPrima) * raccordo((f32)k / (f32)n);
+            if (d.dune != 0.0f && d.onde > 0) {
+                // sin^2: dossi morbidi, pendenza zero ai capi del tratto.
+                const f32 onda = std::sin(PI * (f32)d.onde * (f32)k / (f32)n);
+                seg.p2y += d.dune * HILL_HEIGHT * onda * onda;
+            }
             seg.p2z = curZ + (f32)SEG_LEN;
 
             curX = seg.p2x;
@@ -149,25 +177,35 @@ void Road::advance(f32 dt) {
     while (playerX < -ROAD_HALF_WORLD) playerX += 2.0f * ROAD_HALF_WORLD;
 }
 
-f32 Road::curvaAt(f32 z) const {
-    if (segs_.empty() || totalLen_ <= 0) return 0.0f;
+i32 Road::indiceSegmento(f32 z) const {
+    if (segs_.empty() || totalLen_ <= 0) return -1;
     // Wrap di z sul tracciato circolare (stessa logica di advance).
     z = std::fmod(z, (f32)totalLen_);
     if (z < 0.0f) z += (f32)totalLen_;
-    // Cammina le lunghezze cumulative fino al segmento che contiene z.
-    f32 acc = 0.0f;
-    for (i32 i = 0; i < (i32)segs_.size(); ++i) {
-        if (acc + segs_[i].length > z) return segs_[i].curve;
-        acc += segs_[i].length;
-    }
-    return 0.0f; // non trovato (non dovrebbe accadere dopo il wrap)
+    const i32 i = (i32)(z / (f32)SEG_LEN);
+    return std::clamp(i, 0, (i32)segs_.size() - 1);
+}
+
+f32 Road::curvaAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 ? segs_[i].curve : 0.0f;
+}
+
+f32 Road::larghezzaAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 ? segs_[i].larghezza : 1.0f;
 }
 
 Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
     Carreggiate c;
-    if (!bivio_ || totalLen_ <= 0) return c;
+    if (totalLen_ <= 0) return c;
     const f32 inizio = bivioInizioZ(), blocco = bivioBloccoZ();
-    if (zAbs <= inizio) return c;
+    // Fuori dal bivio: una carreggiata, larga quanto il segmento (piu' corsie).
+    // Oltre la fine della tappa (zAbs >= giro) il ramo scelto resta largo 1.
+    if (!bivio_ || zAbs <= inizio) {
+        c.fattore = zAbs < (f32)totalLen_ ? larghezzaAt(zAbs) : 1.0f;
+        return c;
+    }
     const f32 apertura = zAbs >= blocco ? 1.0f : raccordo((zAbs - inizio) / (blocco - inizio));
     const f32 d = apertura * BIVIO_DIST;
     c.doppia = true;
@@ -207,12 +245,8 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
     if (z0 < 0.0f) z0 += (f32)totalLen_;
 
     // Segmento sotto la telecamera e posizione dentro il segmento.
-    i32 startIdx = 0;
-    f32 acc = 0.0f;
-    for (i32 i = 0; i < (i32)segs_.size(); ++i) {
-        if (acc + segs_[i].length > z0) { startIdx = i; break; }
-        acc += segs_[i].length;
-    }
+    const i32 startIdx = indiceSegmento(z0);
+    const f32 acc = (f32)startIdx * (f32)SEG_LEN;
     const RoadSegment& startSeg = segs_[startIdx];
     const f32 segT = (z0 - acc) / (f32)startSeg.length; // 0..1 dentro il segmento
     const f32 camY = startSeg.p1y + (startSeg.p2y - startSeg.p1y) * segT + CAM_HEIGHT;

@@ -264,6 +264,16 @@ int main(int argc, char** argv) {
     }
     game.setRivaliSprites(std::move(rivaliSprites));
 
+    // Traffico comune (Andrea 27/10): veicoli civili, stessi raw di png_a_raw.py.
+    std::vector<Sprite> trafficoSprites;
+    static const char* kTraffico[4] = { "utilitaria_bianca", "furgone_grigio", "berlina_blu", "camioncino_beige" };
+    for (const char* nome : kTraffico) {
+        Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/traffico/traffico_") + nome + "_retro.sglraw");
+        if (s.width > 0) trafficoSprites.push_back(std::move(s));
+        else std::printf("traffico: raw mancante traffico_%s_retro.sglraw\n", nome);
+    }
+    game.setTrafficoSprites(std::move(trafficoSprites));
+
     // Default: gara a tappe con bivi (dati/percorso_gara.json). --livello <id>:
     // una sola pista che gira in tondo, per provarla.
     if (!opz.livello.empty()) game.init(opz.livello);

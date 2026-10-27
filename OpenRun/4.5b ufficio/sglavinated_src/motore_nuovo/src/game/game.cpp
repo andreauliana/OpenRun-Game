@@ -94,6 +94,28 @@ constexpr f32 RIVALE_CURVA_SLOW_MAX = 0.50f; // max rallentamento in curva estre
 constexpr f32 RIVALE_DISTANZA_MIN = 1500.0f; // distanza minima di seguito tra due rivali
 constexpr f32 RIVALE_LATERALE_MIN = 250.0f;  // soglia laterale per intervenire sull'altro rivale
 constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpassare di lato
+// Rivali e traffico grandi come l'auto del giocatore (Andrea 27/10: "piccolini"):
+// 40 px x SPRITE_WORLD_PX x 1.4 = 280 unita', l'auto del giocatore ne copre ~270.
+constexpr f32 SCALA_AUTO = 1.4f;
+// Rivale che raggiunge un veicolo del traffico: cambia corsia per tempo e,
+// se e' gia' attaccato, si accoda.
+constexpr f32 RIVALE_SCHIVA_DIST = 12000.0f;   // traffico entro questa distanza davanti
+constexpr f32 RIVALE_SCHIVA_LATERALE = 330.0f; // sovrapposizione laterale (unita' mondo)
+constexpr f32 RIVALE_SCHIVA_MARGINE = 480.0f;  // passa a questa distanza laterale dal veicolo
+constexpr f32 RIVALE_SCHIVA_PER_S = 1500.0f;   // cambio corsia rapido per schivare
+constexpr f32 RIVALE_X_MAX = 650.0f;           // laterale massimo di un rivale (unita' di corsia)
+// Traffico comune (Andrea 27/10): pochi veicoli lenti, uno ogni 3-4 s a tutta
+// velocita'. Velocita' 35-55% della punta del giocatore.
+constexpr f32 TRAFFICO_VEL_MIN = 0.35f;
+constexpr f32 TRAFFICO_VEL_PASSO = 0.05f;        // + 0..4 passi
+constexpr f32 TRAFFICO_PRIMO = 30000.0f;         // primo veicolo, davanti alla griglia
+constexpr f32 TRAFFICO_DISTANZA_MIN = 45000.0f;  // fra un veicolo e il successivo
+constexpr u32 TRAFFICO_DISTANZA_VAR = 25000u;    // + 0..25000
+constexpr f32 TRAFFICO_DIETRO = 3000.0f;         // superato di tanto: torna davanti
+constexpr f32 TRAFFICO_MARGINE_BIVIO = 2000.0f;  // nessun veicolo nuovo nella zona del bivio
+constexpr f32 TRAFFICO_CODA = 3000.0f;           // stessa corsia: si accoda a chi e' davanti
+constexpr f32 TRAFFICO_LATERALE_PER_S = 900.0f;
+constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza strada normale
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
 // nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
 // in ~0.3 s appena si frena, si curva o si esce di strada.
@@ -109,6 +131,15 @@ constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
 constexpr f32 ASSIST_ENTRATA_S = 0.5f;
 constexpr f32 ASSIST_USCITA_S = 2.5f;
 constexpr f32 ASSIST_RICHIAMO_TAU_S = 0.6f;
+constexpr u32 CARTELLONI_OGNI_SEG = 10;     // in media un cartellone ogni 10 segmenti (~10%)
+// Oggetti decorativi (Andrea 27/10 sera): mai sul tracciato, a bordo strada o
+// sparsi nel paesaggio. Distanze dal bordo della carreggiata, unita' mondo.
+constexpr f32 OGGETTI_PASSO_Z = 1600.0f;     // una fila ogni 1600 unita' di strada
+constexpr f32 OGGETTI_BORDO_MIN = 250.0f;    // fascia bordo strada: da 250 ...
+constexpr f32 OGGETTI_BORDO_MAX = 900.0f;    // ... a 900 dal bordo
+constexpr f32 OGGETTI_PAESAGGIO_MAX = 5000.0f; // fascia paesaggio: fino a 5000 dal bordo
+constexpr f32 OGGETTO_ALTEZZA_MONDO = 1280.0f; // oggetti alti: altezza a schermo come ~2 auto
+constexpr f32 BIVIO_ISTERESI = 300.0f;     // unita' mondo: cambio di ramo seguito solo se piu' vicini all'altro di tanto
 constexpr f32 ASSIST_RICHIAMO_MAX = 250.0f; // unita'/s, sotto lo sterzo (>= 510 in alto)
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
 // Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' al secondo.
@@ -135,6 +166,32 @@ std::string leggiFileTesto(const std::string& path) {
 // libreria e' illeggibile o una voce e' sconosciuta, quella voce e' saltata;
 // quando out resta vuoto il chiamante usa il campo "segmenti" (compatibile
 // con i tracciati gia' esistenti).
+// Campi di un tratto (libreria tratti.json o override nel livello): solo quelli
+// presenti sovrascrivono d. "larghezza": 1 = 2 corsie, 2 = 4 corsie.
+// "dune" + "onde": dossi sopra la quota del tratto (v. Road::SegmentDesc).
+void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
+    JsonValue cv, hv, lv, ev, uv, wv, dv, ov;
+    if (jsonGet(o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
+    if (jsonGet(o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
+    if (jsonGet(o, "lunghezza", lv) && jsonIsNumber(lv)) {
+        i32 l = (i32)jsonAsNumber(lv);
+        if (l > 0) d.lunghezza = l;
+    }
+    if (jsonGet(o, "entrata", ev) && jsonIsNumber(ev)) {
+        i32 e = (i32)jsonAsNumber(ev);
+        if (e >= 0) d.entrata = e;
+    }
+    if (jsonGet(o, "uscita", uv) && jsonIsNumber(uv)) {
+        i32 u = (i32)jsonAsNumber(uv);
+        if (u >= 0) d.uscita = u;
+    }
+    if (jsonGet(o, "larghezza", wv) && jsonIsNumber(wv)) {
+        d.larghezza = std::clamp((f32)jsonAsNumber(wv), 1.0f, 2.0f);
+    }
+    if (jsonGet(o, "dune", dv) && jsonIsNumber(dv)) d.dune = std::clamp((f32)jsonAsNumber(dv), -0.2f, 0.2f);
+    if (jsonGet(o, "onde", ov) && jsonIsNumber(ov)) d.onde = std::max(0, (i32)jsonAsNumber(ov));
+}
+
 bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
     if (!jsonIsArray(campoTracciato)) return false;
     const JsonArray& arr = jsonAsArray(campoTracciato);
@@ -153,21 +210,7 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
         if (!jsonIsObject(kv.second)) continue;
         const JsonObject& o = jsonAsObject(kv.second);
         Road::SegmentDesc d;
-        JsonValue cv, hv, lv, ev, uv;
-        if (jsonGet(o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
-        if (jsonGet(o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
-        if (jsonGet(o, "lunghezza", lv) && jsonIsNumber(lv)) {
-            i32 l = (i32)jsonAsNumber(lv);
-            if (l > 0) d.lunghezza = l;
-        }
-        if (jsonGet(o, "entrata", ev) && jsonIsNumber(ev)) {
-            i32 e = (i32)jsonAsNumber(ev);
-            if (e >= 0) d.entrata = e;
-        }
-        if (jsonGet(o, "uscita", uv) && jsonIsNumber(uv)) {
-            i32 u = (i32)jsonAsNumber(uv);
-            if (u >= 0) d.uscita = u;
-        }
+        leggiCampiTratto(o, d);
         libreria.emplace(kv.first, d);
     }
 
@@ -189,23 +232,7 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
         auto it = libreria.find(nome);
         if (it == libreria.end()) continue;
         d = it->second;
-        if (o) {
-            JsonValue cv, hv, lv, ev, uv;
-            if (jsonGet(*o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
-            if (jsonGet(*o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
-            if (jsonGet(*o, "lunghezza", lv) && jsonIsNumber(lv)) {
-                i32 l = (i32)jsonAsNumber(lv);
-                if (l > 0) d.lunghezza = l;
-            }
-            if (jsonGet(*o, "entrata", ev) && jsonIsNumber(ev)) {
-                i32 e = (i32)jsonAsNumber(ev);
-                if (e >= 0) d.entrata = e;
-            }
-            if (jsonGet(*o, "uscita", uv) && jsonIsNumber(uv)) {
-                i32 u = (i32)jsonAsNumber(uv);
-                if (u >= 0) d.uscita = u;
-            }
-        }
+        if (o) leggiCampiTratto(*o, d); // override del livello
         if (d.lunghezza > 0) out.push_back(d);
     }
     return !out.empty();
@@ -298,15 +325,15 @@ void Game::caricaLivello(const std::string& livelloId) {
         //    leggiCartelloniDaFile segna i segmenti usati in segmentoOccupato.
         const bool daFile = leggiCartelloniDaFile(radiceLivello, segmentoOccupato);
 
-        // 2) DECO1 2d / D2b: densita' totale cartelloni ~20-30% dei segmenti
-        //    (target ~25%, valore scelto: 1 segmento su 4). I segmenti senza
+        // 2) Densita' totale cartelloni ~8-12% dei segmenti (Andrea 27/10 sera:
+        //    erano troppi al 25%, ora circa un terzo: 1 segmento su 10). I segmenti senza
         //    cartellone esplicito vengono riempiti in modo deterministico
         //    (seed di tappa), senza sovrapporre le posizioni esplicite del file.
         //    Tutte le allocazioni avvengono qui (init): zero alloc per frame.
         i32 k = (i32)cartelloni_.size();
         for (i32 i = 0; i < nSeg; ++i) {
             if (segmentoOccupato[(size_t)i]) continue;
-            if (rndCartelloni.next(4) != 0) continue; // ~1 segmento su 4 con cartellone
+            if (rndCartelloni.next(CARTELLONI_OGNI_SEG) != 0) continue; // ~1 segmento su 10 con cartellone
             SpriteInstance b;
             b.worldZ = (f32)(i * Road::SEG_LEN);
             b.worldX = (k & 1) ? latoDx : latoSx; // lato alternato: distribuzione bilanciata
@@ -334,6 +361,17 @@ void Game::caricaLivello(const std::string& livelloId) {
 
     // Oggetti bordo strada (DECO1 2c): sprite da tema_grafico.oggetti_bordo_strada.
     caricaOggettiStrada(livelloId);
+    // Strada larga (piu' corsie): cartelloni e oggetti si spostano con il
+    // bordo, cosi' restano fuori dalla carreggiata. Il cartello del bivio
+    // (worldX 0) non si sposta; al bivio la larghezza e' sempre 1.
+    for (std::vector<SpriteInstance>* fissi : {&cartelloni_, &oggettiStrada_}) {
+        for (SpriteInstance& f : *fissi) {
+            const f32 extra = (road_.larghezzaAt(f.worldZ) - 1.0f) * Road::ROAD_HALF_WORLD;
+            if (f.worldX < 0.0f) f.worldX -= extra;
+            else if (f.worldX > 0.0f) f.worldX += extra;
+        }
+    }
+    ordinaSpriteFissi();
 }
 
 namespace {
@@ -360,28 +398,40 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + livelloId + "/" + nome + ".sglraw"));
         if (s.width > 0) idxPerId[j] = ren_.aggiungiOggettoSprite(std::move(s));
     }
-    // Una istanza ogni passoZ unita', lato alternato, bordo strada (+/-1600).
-    // Nessun oggetto negli ultimi BIVIO_SEG segmenti: quando il bivio e' attivo
-    // i due rami occupano la carreggiata e un oggetto a +/-1600 finirebbe in
-    // mezzo alla strada (DECO1 2f punto 1).
-    const f32 passoZ = 2000.0f; // DECO1 2f punto 3: una istanza ogni 2000 unita' (prima 4000)
-    const f32 zBivioInizio = road_.bivioInizioZ(); // inizio ultimi BIVIO_SEG segmenti
-    // Scala degli oggetti: campo altezza_mondo/scala per oggetto nel manifest
-    // della variante; senza campo si usa 4.0 (lampione ~2x l'auto, visibile).
-    const f32 scalaOggetto = 4.0f; // DECO1 2f punto 2
+    // Posizioni (Andrea 27/10 sera): mai sul tracciato. Per ogni fila, un
+    // oggetto a bordo strada (lato alternato) e uno nel paesaggio dal lato
+    // opposto, a distanza variabile dal seme (deterministico). La distanza si
+    // misura dal bordo della carreggiata al bordo dello sprite, quindi anche gli
+    // oggetti larghi restano fuori strada. Nella zona del bivio la carreggiata e'
+    // larga quanto i due rami: lo stesso margine parte dal bordo esterno dei rami.
+    const bool conBivio = tappaConBivio(livelloId);
+    const f32 zBivioInizio = conBivio ? road_.bivioInizioZ() : giro;
+    const f32 bordo = Road::ROAD_WIDTH * 0.5f;
+    const f32 bordoBivio = Road::BIVIO_DIST + bordo;
+    Rng rnd(seed_ ^ 0x4F474745u);
     i32 k = 0;
-    for (f32 z = passoZ; z < giro - passoZ; z += passoZ) {
-        if (zBivioInizio > 0.0f && z >= zBivioInizio) break; // nessun oggetto nell'area del bivio
-        const i32 j = k % nOggetti;
-        const i32 idx = idxPerId[j];
-        SpriteInstance b;
-        b.worldZ = z;
-        b.worldX = (k & 1) ? 1600.0f : -1600.0f;
-        b.scale = scalaOggetto;
-        b.sprite = (idx >= 0) ? ren_.oggettoSprite(idx) : nullptr;
-        b.paletteBase = 0;
-        oggettiStrada_.push_back(b);
-        ++k;
+    for (f32 z = OGGETTI_PASSO_Z; z < giro - OGGETTI_PASSO_Z; z += OGGETTI_PASSO_Z, ++k) {
+        const f32 bordoQui = z >= zBivioInizio ? bordoBivio : bordo;
+        for (i32 fascia = 0; fascia < 2; ++fascia) {
+            const i32 j = (i32)rnd.next((u32)nOggetti);
+            const Sprite* sprite = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
+            if (!sprite) continue;
+            // Scala: gli oggetti alti (ridisegnati 32x96 e oltre) arrivano a
+            // OGGETTO_ALTEZZA_MONDO; quelli piccoli restano a 4x come prima.
+            const f32 scala = std::clamp(OGGETTO_ALTEZZA_MONDO / ((f32)sprite->height * Renderer::SPRITE_WORLD_PX), 1.0f, 4.0f);
+            const f32 metaLarghezza = 0.5f * (f32)sprite->width * Renderer::SPRITE_WORLD_PX * scala;
+            const f32 da = fascia == 0 ? OGGETTI_BORDO_MIN : OGGETTI_BORDO_MAX;
+            const f32 a = fascia == 0 ? OGGETTI_BORDO_MAX : OGGETTI_PAESAGGIO_MAX;
+            const f32 distanza = da + (a - da) * (f32)rnd.next(1000) / 1000.0f;
+            const f32 lato = ((k + fascia) & 1) ? 1.0f : -1.0f;
+            SpriteInstance o;
+            o.worldZ = z + (f32)rnd.next((u32)(OGGETTI_PASSO_Z * 0.5f)); // file non allineate
+            o.worldX = lato * (bordoQui + distanza + metaLarghezza);
+            o.scale = scala;
+            o.sprite = sprite;
+            o.paletteBase = 0;
+            oggettiStrada_.push_back(o);
+        }
     }
 }
 
@@ -436,6 +486,8 @@ void Game::init(const std::string& livelloId) {
     sollevamento_ = 0.0f;
     sollevamentoFaseS_ = 0.0f;
     assistenzaBivio_ = 0.0f;
+    ramoProvvisorio_ = 0;
+    centroRamoPrec_ = 0.0f;
     playerFlipFrame_ = 0;
     offroadFrames_ = 0;
     playerBump_ = false;
@@ -604,7 +656,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
     ren_.impostaTema(tema);
 }
 
-bool Game::avviaGara(const std::string& fileTappe) {
+bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     // Albero delle tappe (dati/percorso_gara.json): ogni tappa indica la tappa
     // a sinistra e a destra del bivio finale; senza rami e' un arrivo.
     tappe_.clear();
@@ -630,6 +682,7 @@ bool Game::avviaGara(const std::string& fileTappe) {
     }
     if (partenza.empty() || !trovaTappa(partenza)) return false;
 
+    corsaSingola_ = soloPrimaTappa; // prima di init(): caricaOggettiStrada guarda il bivio
     init(partenza);
     gara_ = true;
     tappaId_ = partenza;
@@ -645,6 +698,11 @@ bool Game::avviaGara(const std::string& fileTappe) {
     return true;
 }
 
+bool Game::tappaConBivio(const std::string& id) const {
+    const Tappa* t = trovaTappa(id);
+    return !corsaSingola_ && t && !t->sinistra.empty() && !t->destra.empty();
+}
+
 const Game::Tappa* Game::trovaTappa(const std::string& id) const {
     for (const Tappa& t : tappe_)
         if (t.id == id) return &t;
@@ -654,8 +712,7 @@ const Game::Tappa* Game::trovaTappa(const std::string& id) const {
 void Game::preparaBivio() {
     // Bivio solo se la tappa ha due rami; il cartello sta nello spartitraffico
     // poco prima del punto in cui la scelta si blocca.
-    const Tappa* t = trovaTappa(tappaId_);
-    const bool rami = t && !t->sinistra.empty() && !t->destra.empty();
+    const bool rami = tappaConBivio(tappaId_);
     road_.impostaBivio(rami);
     latoBivio_ = 0;
     if (!rami) return;
@@ -677,7 +734,7 @@ void Game::preparaBivio() {
         tenuti.push_back(b);
     }
     cartelloni_ = std::move(tenuti);
-    scenaSprites_.reserve(RIVALI + cartelloni_.size());
+    ordinaSpriteFissi();
 }
 
 void Game::inizializzaRivali() {
@@ -700,7 +757,108 @@ void Game::inizializzaRivali() {
     }
     rndRivali_ = Rng(seed_ ^ 0x4C414E45u);
     sprites_.clear();
-    sprites_.reserve(RIVALI);
+    sprites_.reserve(RIVALI + TRAFFICO);
+    inizializzaTraffico();
+}
+
+void Game::setTrafficoSprites(std::vector<Sprite> sprites) {
+    ren_.clearTrafficoSprites();
+    nSpriteTraffico_ = 0;
+    for (auto& s : sprites) {
+        if (s.width > 0) {
+            ren_.aggiungiTrafficoSprite(std::move(s));
+            ++nSpriteTraffico_;
+        }
+    }
+}
+
+f32 Game::xCorsia(i32 corsia, f32 z) const {
+    // Corsie larghe TRAFFICO_CORSIA: +-600 sulla strada normale, +-1800 per
+    // le esterne quando la strada e' larga 2 (4 corsie). Le esterne seguono il
+    // bordo mentre la strada si allarga o si stringe.
+    const f32 meta = Road::ROAD_HALF_WORLD * road_.larghezzaAt(z);
+    const f32 lato = corsia < 0 ? -1.0f : 1.0f;
+    const f32 centro = lato * ((f32)std::abs(corsia) - 0.5f) * TRAFFICO_CORSIA;
+    const f32 limite = std::max(0.5f * TRAFFICO_CORSIA, meta - 0.5f * TRAFFICO_CORSIA);
+    return std::clamp(centro, -limite, limite);
+}
+
+void Game::inizializzaTraffico() {
+    // Seme fisso per tappa: stessa partita = stesso traffico.
+    rndTraffico_ = Rng(seed_ ^ 0x54524146u);
+    for (Veicolo& v : traffico_) v.attivo = false;
+    f32 z = TRAFFICO_PRIMO;
+    for (Veicolo& v : traffico_) {
+        piazzaVeicolo(v, z);
+        if (!v.attivo) break;
+        z = v.z + TRAFFICO_DISTANZA_MIN + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR);
+    }
+}
+
+void Game::piazzaVeicolo(Veicolo& v, f32 z) {
+    if (z > road_.bivioInizioZ() - TRAFFICO_MARGINE_BIVIO) { // bivio e arrivo liberi
+        v.attivo = false;
+        return;
+    }
+    v.attivo = true;
+    v.z = z;
+    const i32 lato = rndTraffico_.next(2) == 0 ? -1 : 1;
+    const bool largo = road_.larghezzaAt(z) >= 1.75f; // 4 corsie: anche le esterne
+    v.corsia = lato * (largo ? 1 + (i32)rndTraffico_.next(2) : 1);
+    v.x = xCorsia(v.corsia, z);
+    const f32 punta = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
+    v.passo = punta * (TRAFFICO_VEL_MIN + TRAFFICO_VEL_PASSO * (f32)rndTraffico_.next(5));
+    v.ramo = rndTraffico_.next(2) == 0 ? -1 : 1;
+    v.spriteIdx = nSpriteTraffico_ > 0 ? (i32)rndTraffico_.next((u32)nSpriteTraffico_) : -1;
+}
+
+void Game::aggiornaTraffico(f32 dt) {
+    if (arrivo_) return;
+    // Chi e' stato superato torna davanti, oltre la vista (nessuna comparsa
+    // improvvisa) e dopo il veicolo piu' avanti.
+    const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
+    f32 zLibero = road_.playerZ + vista;
+    for (const Veicolo& v : traffico_)
+        if (v.attivo) zLibero = std::max(zLibero, v.z + TRAFFICO_DISTANZA_MIN);
+    for (Veicolo& v : traffico_) {
+        if (!v.attivo || v.z < road_.playerZ - TRAFFICO_DIETRO) {
+            piazzaVeicolo(v, zLibero + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR));
+            if (v.attivo) zLibero = v.z + TRAFFICO_DISTANZA_MIN;
+            continue;
+        }
+        f32 passo = v.passo;
+        for (const Veicolo& a : traffico_) { // stessa corsia, piu' lento davanti: si accoda
+            if (&a == &v || !a.attivo || std::abs(a.x - v.x) > 300.0f) continue;
+            const f32 dz = a.z - v.z;
+            if (dz > 0.0f && dz < TRAFFICO_CODA) passo = std::min(passo, a.passo);
+        }
+        v.z += passo * dt;
+        // Dove la strada si stringe la corsia esterna finisce: il veicolo
+        // rientra guardando 1 s avanti, prima che il bordo lo raggiunga.
+        const f32 qui = xCorsia(v.corsia, v.z), avanti = xCorsia(v.corsia, v.z + passo);
+        const f32 obiettivo = std::abs(avanti) < std::abs(qui) ? avanti : qui;
+        const f32 lat = TRAFFICO_LATERALE_PER_S * dt;
+        v.x = v.x < obiettivo ? std::min(obiettivo, v.x + lat) : std::max(obiettivo, v.x - lat);
+    }
+}
+
+void Game::aggiungiSpriteTraffico() {
+    if (arrivo_) return;
+    for (const Veicolo& v : traffico_) {
+        if (!v.attivo) continue;
+        const f32 zRel = v.z - road_.playerZ;
+        if (zRel <= 0.0f || zRel > 60000.0f) continue;
+        // Al bivio ogni veicolo segue il suo ramo, come gli avversari.
+        const Road::Carreggiate c = road_.carreggiate(v.z, latoBivio_);
+        const i32 indice = latoBivio_ == 0 ? (v.ramo < 0 ? 0 : 1) : (v.ramo == latoBivio_ ? 0 : 1);
+        SpriteInstance s;
+        s.worldZ = road_.playerZ + zRel;
+        s.worldX = c.centro[indice] + v.x * (c.doppia ? c.fattore : 1.0f);
+        s.scale = SCALA_AUTO;
+        s.sprite = ren_.trafficoSprite(v.spriteIdx);
+        s.paletteBase = 10; // sagoma sintetica se manca lo sprite
+        sprites_.push_back(s);
+    }
 }
 
 void Game::aggiornaRivali() {
@@ -740,13 +898,34 @@ void Game::aggiornaRivali() {
                 r.passo = std::min(r.passo, q.passo * 0.95f);
                 if (dz < RIVALE_DISTANZA_MIN * 0.5f) {
                     r.xObiettivo = r.x > q.x
-                        ? std::min(r.xObiettivo + RIVALE_SPOSTAMENTO, 650.0f)
-                        : std::max(r.xObiettivo - RIVALE_SPOSTAMENTO, -650.0f);
+                        ? std::min(r.xObiettivo + RIVALE_SPOSTAMENTO, RIVALE_X_MAX)
+                        : std::max(r.xObiettivo - RIVALE_SPOSTAMENTO, -RIVALE_X_MAX);
                 }
             }
         }
+        // Traffico davanti nella stessa corsia: cambia corsia per tempo e, se
+        // e' gia' attaccato, si accoda finche' non si e' spostato.
+        bool schiva = false;
+        if (zLocale > 0.0f && zLocale < giro) {
+            const f32 f = std::max(0.5f, road_.carreggiate(zLocale, latoBivio_).fattore);
+            const f32 xMondo = r.x * f;
+            for (const Veicolo& v : traffico_) {
+                if (!v.attivo) continue;
+                const f32 dz = v.z - zLocale;
+                if (dz <= 0.0f || dz > RIVALE_SCHIVA_DIST) continue;
+                if (road_.bivioAttivo() && v.z >= road_.bivioInizioZ() && v.ramo != r.ramo) continue;
+                const f32 dx = xMondo - v.x;
+                if (std::abs(dx) >= RIVALE_SCHIVA_LATERALE) continue;
+                schiva = true;
+                f32 obiettivo = v.x + (dx >= 0.0f ? 1.0f : -1.0f) * RIVALE_SCHIVA_MARGINE;
+                if (std::abs(obiettivo) > RIVALE_X_MAX * f) // non c'e' spazio: dall'altra parte
+                    obiettivo = v.x - (dx >= 0.0f ? 1.0f : -1.0f) * RIVALE_SCHIVA_MARGINE;
+                r.xObiettivo = std::clamp(obiettivo / f, -RIVALE_X_MAX, RIVALE_X_MAX);
+                if (dz < 900.0f && std::abs(dx) < 250.0f) r.passo = std::min(r.passo, v.passo);
+            }
+        }
         r.progresso += r.passo * dt;
-        const f32 laterale = RIVALE_LATERALE_PER_S * dt;
+        const f32 laterale = (schiva ? RIVALE_SCHIVA_PER_S : RIVALE_LATERALE_PER_S) * dt;
         if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
         if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
 
@@ -758,6 +937,7 @@ void Game::aggiornaRivali() {
         SpriteInstance s;
         s.worldZ = road_.playerZ + zRel;
         s.worldX = c.centro[indice] + r.x * c.fattore;
+        s.scale = SCALA_AUTO;
         s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
         sprites_.push_back(s);
@@ -767,7 +947,7 @@ void Game::aggiornaRivali() {
 void Game::fineTappa(f32 avanzo) {
     // Fine del tracciato in gara: il ramo scelto porta alla tappa seguente;
     // una tappa senza rami e' l'arrivo.
-    const Tappa* t = trovaTappa(tappaId_);
+    const Tappa* t = corsaSingola_ ? nullptr : trovaTappa(tappaId_); // corsa singola: una tappa e arrivo
     const std::string prossima = !t ? std::string() : (latoBivio_ < 0 ? t->sinistra : t->destra);
     if (prossima.empty() || !trovaTappa(prossima)) {
         if (!arrivo_) {
@@ -787,7 +967,14 @@ void Game::fineTappa(f32 avanzo) {
     }
     const TemaColori temaPrima = ren_.tema(); // tema della tappa che finisce (ancora corrente)
     const Sprite skylinePrima = ren_.skylineCorrente(); // skyline prima del cambio tappa (foto)
-    progressoTappePrecedenti_ += (f32)road_.totalLength();
+    const f32 giroFinito = (f32)road_.totalLength();
+    progressoTappePrecedenti_ += giroFinito;
+    // Traffico: resta solo chi e' davanti sul ramo scelto (continua nella
+    // tappa nuova); gli altri tornano davanti quando serve.
+    for (Veicolo& v : traffico_) {
+        if (v.attivo && v.ramo == latoBivio_ && v.z > giroFinito) v.z -= giroFinito;
+        else v.attivo = false;
+    }
     caricaLivello(prossima); // imposta subito il tema e lo skyline della tappa nuova (impostaTema)
     // Transizione graduale verso il tema di arrivo (FORK1 punto 6): i colori di
     // ambiente e lo skyline si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
@@ -1033,22 +1220,40 @@ void Game::aggiornaGuida(f32 dt) {
             player_.offroad = false;
             road_.playerX = player_.x;
         }
-        if (gara_) aggiornaRivali(); // gli avversari non aspettano
+        if (gara_) { // gli avversari e il traffico non aspettano
+            aggiornaTraffico(dt);
+            aggiornaRivali();
+            aggiungiSpriteTraffico();
+        }
     } else {
         // Corsia dell'auto: al bivio e' il ramo piu' vicino.
         const Road::Carreggiate carr = road_.carreggiate(player_.z, latoBivio_);
         if (latoBivio_ == 0 && !carr.doppia) {
             player_.centroCorsia = 0.0f;
-            player_.larghezzaCorsia = 1.0f;
+            player_.larghezzaCorsia = carr.fattore; // > 1 dove la strada si allarga
         } else if (latoBivio_ == 0) {
-            // Scelta ancora aperta: corsia = ramo piu' vicino, cosi' l'auto
+            // Scelta ancora aperta: corsia = ramo seguito, cosi' l'auto
             // segue il ramo mentre si apre fino a BIVIO_DIST. Con il centro
             // fisso a 0 il clamp X_LIMIT (900) la teneva sullo spartitraffico,
             // fuori strada, e al blocco scattava di 100 unita' (gate
-            // bivio_uscita, 25/10). Il clamp agisce ogni frame mentre il ramo
-            // si apre, quindi la spinta verso il proprio lato resta continua.
-            const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
-            player_.centroCorsia = carr.centro[vicino];
+            // bivio_uscita, 25/10). Il ramo si sceglie una volta (lato dell'auto,
+            // a parita' lo sterzo) e cambia solo se l'auto e' chiaramente piu'
+            // vicina all'altro: prima la scelta "piu' vicino" e il richiamo
+            // usavano due regole diverse a x = 0 e l'auto restava in mezzo.
+            if (ramoProvvisorio_ == 0) {
+                // Lato dello sterzo se il giocatore sterza, altrimenti lato dell'auto.
+                const i32 sterzo = sterzoBivio();
+                ramoProvvisorio_ = sterzo != 0 ? sterzo : (player_.x < 0.0f ? -1 : 1);
+                centroRamoPrec_ = carr.centro[ramoProvvisorio_ < 0 ? 0 : 1];
+            }
+            const i32 attuale = ramoProvvisorio_ < 0 ? 0 : 1;
+            const f32 dAttuale = std::abs(player_.x - carr.centro[attuale]);
+            const f32 dAltro = std::abs(player_.x - carr.centro[1 - attuale]);
+            if (dAltro + BIVIO_ISTERESI < dAttuale) {
+                ramoProvvisorio_ = -ramoProvvisorio_;
+                centroRamoPrec_ = carr.centro[1 - attuale];
+            }
+            player_.centroCorsia = carr.centro[ramoProvvisorio_ < 0 ? 0 : 1];
             player_.larghezzaCorsia = carr.fattore;
         } else {
             const i32 vicino = std::abs(player_.x - carr.centro[0]) <= std::abs(player_.x - carr.centro[1]) ? 0 : 1;
@@ -1078,6 +1283,7 @@ void Game::aggiornaGuida(f32 dt) {
         bool sceltaFattaOra = false;
         if (road_.bivioAttivo() && latoBivio_ == 0 && player_.z >= road_.bivioBloccoZ()) {
             latoBivio_ = player_.x < 0.0f ? -1 : 1;
+            ramoProvvisorio_ = 0;
             player_.x -= (f32)latoBivio_ * Road::BIVIO_DIST;
             player_.centroCorsia = 0.0f;
             road_.playerX = player_.x;
@@ -1103,11 +1309,23 @@ void Game::aggiornaGuida(f32 dt) {
             // Richiamo morbido verso il centro del ramo piu' vicino.
             const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
             f32 centro = player_.centroCorsia;
-            if (c.doppia && latoBivio_ == 0) centro = player_.x < 0.0f ? c.centro[0] : c.centro[1];
+            // Il giocatore sterza verso l'altro ramo: nessun aiuto finche' non ci
+            // arriva (prima l'aiuto tirava dalla parte opposta e l'auto restava in mezzo).
+            bool aiuto = true;
+            if (c.doppia && latoBivio_ == 0 && ramoProvvisorio_ != 0) {
+                // L'auto si sposta insieme al ramo che si apre (prima lo inseguiva
+                // a 250 unita'/s mentre il ramo si allontanava piu' in fretta:
+                // ~4 s nell'erba dello spartitraffico e -40% di velocita').
+                centro = c.centro[ramoProvvisorio_ < 0 ? 0 : 1];
+                const i32 sterzo = sterzoBivio();
+                aiuto = sterzo == 0 || sterzo == ramoProvvisorio_;
+                if (aiuto) player_.x += (centro - centroRamoPrec_) * assistenzaBivio_;
+                centroRamoPrec_ = centro;
+            }
             f32 richiamo = (centro - player_.x) * (1.0f - std::exp(-dt / ASSIST_RICHIAMO_TAU_S));
             const f32 maxPasso = ASSIST_RICHIAMO_MAX * dt;
             richiamo = std::clamp(richiamo, -maxPasso, maxPasso);
-            player_.x += richiamo * assistenzaBivio_;
+            if (aiuto) player_.x += richiamo * assistenzaBivio_;
         }
         player_.vincolaAllaCorsia();
 
@@ -1123,8 +1341,11 @@ void Game::aggiornaGuida(f32 dt) {
         if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
         else offroadFrames_ = 0;
 
-        if (gara_) aggiornaRivali();
-        else if (trafficoAttivo_) spawnTraffic();
+        if (gara_) {
+            aggiornaTraffico(dt);
+            aggiornaRivali();
+            aggiungiSpriteTraffico();
+        } else if (trafficoAttivo_) spawnTraffic();
         // RIV (Andrea 27/10): separare il contatto con gli avversari (sprites_) da
         // quello con i cartelloni. Urto con un avversario = bump: spinta laterale
         // leggera + rallentamento (~ -15%), nessun ribaltamento, controlli sempre
@@ -1143,6 +1364,7 @@ void Game::aggiornaGuida(f32 dt) {
             playerBumpSpintaX_ = 0.0f;
             const f32 giro = (f32)road_.totalLength();
             f32 dxMin = 1e9f;
+            f32 dxRivale = 1e9f;
             i32 rivaleUrtato = -1;
             // Trova l'avversario piu' vicino in collisione (stessa soglia di
             // collisioneRivaleVicino): e' l'urttato e subisce il rallentamento.
@@ -1157,7 +1379,14 @@ void Game::aggiornaGuida(f32 dt) {
                 const i32 indice = latoBivio_ == 0 ? (rk.ramo < 0 ? 0 : 1) : (rk.ramo == latoBivio_ ? 0 : 1);
                 const f32 dx = c.centro[indice] + rk.x * c.fattore - player_.x;
                 if (std::abs(dx) >= 180.0f) continue;
-                if (std::abs(dx) < std::abs(dxMin)) { dxMin = dx; rivaleUrtato = k; }
+                if (std::abs(dx) < std::abs(dxRivale)) { dxRivale = dx; rivaleUrtato = k; }
+            }
+            // Spinta dal veicolo piu' vicino in collisione: avversario o traffico.
+            for (const SpriteInstance& o : sprites_) {
+                f32 dz = std::fmod(o.worldZ - road_.playerZ, giro);
+                if (dz < 0.0f) dz += giro;
+                const f32 dx = o.worldX - player_.x;
+                if (dz < 120.0f && std::abs(dx) < 180.0f && std::abs(dx) < std::abs(dxMin)) dxMin = dx;
             }
             if (std::abs(dxMin) < 1e8f) {
                 playerBumpSpintaX_ = (dxMin >= 0.0f ? -1.0f : 1.0f) * bumpSpintaLaterale_;
@@ -1242,9 +1471,12 @@ void Game::render() {
     ren_.drawRoad(road_, player_.x, road_.playerZ, latoBivio_);
     // Merge traffico + cartelloni in un buffer riutilizzato (zero alloc a regime)
     // e disegna tutto in ordine di distanza (dietro prima).
+    // Cartelloni e oggetti sono fissi e ordinati per worldZ: si prendono solo
+    // quelli nel tratto visibile (ricerca binaria) invece di copiarli e
+    // ordinarli tutti a ogni frame (migliaia di sprite, conta sul Pi 400).
     scenaSprites_ = sprites_;
-    scenaSprites_.insert(scenaSprites_.end(), cartelloni_.begin(), cartelloni_.end());
-    scenaSprites_.insert(scenaSprites_.end(), oggettiStrada_.begin(), oggettiStrada_.end());
+    aggiungiVisibili(cartelloni_);
+    aggiungiVisibili(oggettiStrada_);
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
     const bool steeringLeft = (input_.held & Pad::Left) != 0;
     const bool steeringRight = (input_.held & Pad::Right) != 0;
@@ -1296,6 +1528,29 @@ void Game::render() {
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
+}
+
+void Game::ordinaSpriteFissi() {
+    auto perZ = [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; };
+    std::stable_sort(cartelloni_.begin(), cartelloni_.end(), perZ);
+    std::stable_sort(oggettiStrada_.begin(), oggettiStrada_.end(), perZ);
+    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size()); // zero alloc per frame
+}
+
+void Game::aggiungiVisibili(const std::vector<SpriteInstance>& fissi) {
+    // fissi e' ordinato per worldZ (ordinaSpriteFissi); finestra visibile
+    // [playerZ, playerZ + DRAW_DIST segmenti], con il giro che ricomincia da 0.
+    const f32 giro = (f32)road_.totalLength();
+    if (fissi.empty() || giro <= 0.0f) return;
+    const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
+    auto da = [&fissi](f32 z) {
+        return std::lower_bound(fissi.begin(), fissi.end(), z,
+                                [](const SpriteInstance& s, f32 v) { return s.worldZ < v; });
+    };
+    const f32 z0 = road_.playerZ;
+    const f32 z1 = z0 + vista;
+    scenaSprites_.insert(scenaSprites_.end(), da(z0), z1 <= giro ? da(z1) : fissi.end());
+    if (z1 > giro) scenaSprites_.insert(scenaSprites_.end(), fissi.begin(), da(z1 - giro));
 }
 
 bool Game::collisioneOggettiVicini() const {
