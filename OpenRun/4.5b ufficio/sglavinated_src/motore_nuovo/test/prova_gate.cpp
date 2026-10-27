@@ -1603,24 +1603,21 @@ static bool verificaDecorazioni(const std::string& outDir) {
 }
 
 // --- Blocco R2 punto 2 (@developer-junior): gate `ciclo`.
-// Attraversa le fasi della macchina a stati con input scriptati:
-//   avviaGara() -> Menu -> Start (corsa singola) -> Gara -> guida
-// Verifica: ordine delle fasi, partenza/reattivita' della guida,
-// determinismo (due run identici: stessa sequenza di fasi, stesse misure,
-// stesso frameHash), nessun ribaltamento. Salva uno screenshot PPM per
-// fase attraversata.
-// Nota: FineTempo/Risultati richiedono gara_ attiva in fase Gara (cablaggio
-// Menu -> gara a tappe da completare da @developer in un passo successivo
-// di R2; raggiunto quando il wiring e' chiuso).
+// Attraversa tutta la macchina a stati con input scriptati, come nel runner:
+//   avviaGara() + mostraMenu() -> Splash -> Start -> Menu -> Giu + Start
+//   (gara a tappe) -> Gara (5 s di gas, poi senza gas) -> tempo scaduto ->
+//   FineTempo -> Risultati -> Start -> Menu.
+// Verifica: sequenza esatta delle fasi, la guida parte (velocita' > 0),
+// nessun ribaltamento, determinismo (due run identici: stessa sequenza,
+// stesse misure, stesso frameHash). Poi due controlli brevi del menu:
+// "CORSA SINGOLA" porta in Gara e guida, "ESCI" chiede l'uscita al runner.
+// Uno screenshot PPM per ogni fase in outDir.
 struct CicloMisure {
     std::vector<FaseId> sequenza;     // fasi attraversate (senza duplicati consecutivi)
-    f32 speedFinale = 0.0f;
+    f32 speedMassima = 0.0f;
     f32 kmFinale = 0.0f;
     i32 tappaFinale = 0;
-    f32 tempoResiduoFinale = 0.0f;
     bool ribaltato = false;
-    bool menuVisto = false;
-    bool garaVisto = false;
     std::vector<u32> hash;
 };
 
@@ -1635,9 +1632,22 @@ static const char* nomeFase(FaseId f) {
     return "?";
 }
 
+// Un tick con input; il fronte (pressed) dura un solo tick come nel runner.
+static void passoCiclo(Game& game, u64 held, u64 pressed) {
+    Pad pad{};
+    pad.held = held;
+    pad.pressed = pressed;
+    game.setInput(pad);
+    game.update();
+    game.render();
+}
+
 static bool verificaCiclo(const std::string& outDir) {
     std::filesystem::create_directories(outDir);
-    const i32 FRAME_GUIDA = 300;   // 5 s di guida a 60 Hz
+    const i32 FRAME_MAX = 60 * 300;   // tetto di sicurezza: 5 minuti a 60 Hz
+    const i32 FRAME_GAS = 300;        // 5 s di gas, poi la macchina rallenta e il tempo scade
+    const std::vector<FaseId> attesa = { FaseId::Splash, FaseId::Menu, FaseId::Gara,
+                                         FaseId::FineTempo, FaseId::Risultati, FaseId::Menu };
     CicloMisure a, b;
     for (int run = 0; run < 2; ++run) {
         CicloMisure& m = (run == 0) ? a : b;
@@ -1647,68 +1657,110 @@ static bool verificaCiclo(const std::string& outDir) {
             std::printf("ciclo: FALLITO (avviaGara non riuscito)\n");
             return false;
         }
-        if (game.faseCorrente() != FaseId::Menu) {
-            std::printf("ciclo: FALLITO (fase dopo avviaGara: %s, attesa Menu)\n",
-                        nomeFase(game.faseCorrente()));
+        if (game.faseCorrente() != FaseId::Gara) {
+            std::printf("ciclo: FALLITO (dopo avviaGara fase %s, attesa Gara)\n", nomeFase(game.faseCorrente()));
             return false;
         }
-        m.menuVisto = true;
+        game.mostraMenu();
+        game.render();
         m.sequenza.push_back(game.faseCorrente());
-        salvaPPM(outDir + "/ciclo_menu.ppm", game.fb().data(),
-                 Framebuffer::WIDTH, Framebuffer::HEIGHT);
-        bool startInviato = false, garaScreenshot = false;
-        for (i32 frame = 0; frame < FRAME_GUIDA; ++frame) {
-            Pad pad{};
-            if (!startInviato && frame == 10) {
-                pad.pressed = Pad::Start; // Menu: conferma corsa singola -> Gara
-                startInviato = true;
+        salvaPPM(outDir + "/ciclo_splash.ppm", game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        i32 tickInFase = 0, frameGara = 0, menuVisti = 0;
+        for (i32 frame = 0; frame < FRAME_MAX; ++frame) {
+            const FaseId f = game.faseCorrente();
+            u64 held = 0, pressed = 0;
+            switch (f) {
+                case FaseId::Splash:
+                    if (tickInFase == 5) pressed = Pad::Start;
+                    break;
+                case FaseId::Menu:
+                    if (tickInFase == 5) pressed = Pad::Down;   // "GARA A TAPPE"
+                    if (tickInFase == 8) pressed = Pad::Start;
+                    break;
+                case FaseId::Gara:
+                    if (frameGara < FRAME_GAS) {
+                        held = Pad::A;
+                        const f32 x = game.state().playerX;
+                        if (x > 120.0f) held |= Pad::Left;
+                        else if (x < -120.0f) held |= Pad::Right;
+                    }
+                    ++frameGara;
+                    break;
+                case FaseId::FineTempo:
+                    break;
+                case FaseId::Risultati:
+                    if (tickInFase == 60) pressed = Pad::Start; // 1 s, poi torna al menu
+                    break;
+            }
+            passoCiclo(game, held, pressed);
+            const FaseId dopo = game.faseCorrente();
+            if (dopo != m.sequenza.back()) {
+                m.sequenza.push_back(dopo);
+                tickInFase = 0;
+                salvaPPM(outDir + "/ciclo_" + std::to_string(m.sequenza.size()) + "_" + nomeFase(dopo) + ".ppm",
+                         game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                if (dopo == FaseId::Menu && ++menuVisti == 2) break; // giro completo
             } else {
-                pad.held = Pad::A;        // gas
-                const f32 x = game.state().playerX;
-                if (x > 120.0f) pad.held |= Pad::Left;
-                else if (x < -120.0f) pad.held |= Pad::Right;
+                ++tickInFase;
             }
-            game.setInput(pad);
-            game.update();
-            game.render();
-            FaseId f = game.faseCorrente();
-            if (m.sequenza.empty() || m.sequenza.back() != f) m.sequenza.push_back(f);
-            if (f == FaseId::Gara) {
-                m.garaVisto = true;
-                if (!garaScreenshot) {
-                    salvaPPM(outDir + "/ciclo_gara.ppm", game.fb().data(),
-                             Framebuffer::WIDTH, Framebuffer::HEIGHT);
-                    garaScreenshot = true;
-                }
-            }
+            if (dopo == FaseId::Gara && frameGara == 60)
+                salvaPPM(outDir + "/ciclo_gara.ppm", game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
             if (game.state().playerFlipping) m.ribaltato = true;
-            m.speedFinale = game.state().playerSpeed;
+            m.speedMassima = std::max(m.speedMassima, game.state().playerSpeed);
             m.kmFinale = game.distanzaKm();
             m.tappaFinale = game.numeroTappa();
-            m.tempoResiduoFinale = game.tempoResiduoS();
             m.hash.push_back(game.frameHash());
         }
     }
+    const bool sequenzaGiusta = a.sequenza == attesa;
     const bool stessaSequenza = a.sequenza == b.sequenza;
-    const bool stesseMisure = std::abs(a.speedFinale - b.speedFinale) < 0.01f &&
+    const bool stesseMisure = std::abs(a.speedMassima - b.speedMassima) < 0.01f &&
                               std::abs(a.kmFinale - b.kmFinale) < 0.01f &&
-                              a.tappaFinale == b.tappaFinale &&
-                              std::abs(a.tempoResiduoFinale - b.tempoResiduoFinale) < 0.01f;
+                              a.tappaFinale == b.tappaFinale;
     const bool stessoHash = a.hash == b.hash;
     std::printf("ciclo: sequenza A=");
     for (FaseId f : a.sequenza) std::printf("%s ", nomeFase(f));
     std::printf("| B=");
     for (FaseId f : b.sequenza) std::printf("%s ", nomeFase(f));
     std::printf("\n");
-    std::printf("ciclo: speed=%.2f km=%.2f tappa=%d tempoResiduo=%.2f | ribaltato=%s\n",
-                a.speedFinale, a.kmFinale, a.tappaFinale, a.tempoResiduoFinale,
-                a.ribaltato ? "sì" : "no");
-    std::printf("ciclo: stessa sequenza=%s stesse misure=%s stesso hash=%s\n",
-                stessaSequenza ? "sì" : "no",
-                stesseMisure ? "sì" : "no",
-                stessoHash ? "sì" : "no");
-    bool ok = stessaSequenza && stesseMisure && stessoHash && !a.ribaltato &&
-              a.menuVisto && a.garaVisto;
+    std::printf("ciclo: speedMax=%.2f km=%.2f tappa=%d | ribaltato=%s\n",
+                a.speedMassima, a.kmFinale, a.tappaFinale, a.ribaltato ? "sì" : "no");
+    std::printf("ciclo: sequenza giusta=%s stessa sequenza=%s stesse misure=%s stesso hash=%s\n",
+                sequenzaGiusta ? "sì" : "no", stessaSequenza ? "sì" : "no",
+                stesseMisure ? "sì" : "no", stessoHash ? "sì" : "no");
+
+    // Menu -> "CORSA SINGOLA": parte la guida su lv_01_neon.
+    bool singolaOk = false;
+    {
+        Game game(12345u);
+        caricaSponsor(game);
+        if (game.avviaGara()) {
+            game.mostraMenu();
+            passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
+            passoCiclo(game, 0, 0);
+            passoCiclo(game, 0, Pad::Start);  // Menu: prima voce
+            const bool inGara = game.faseCorrente() == FaseId::Gara;
+            for (i32 i = 0; i < 120; ++i) passoCiclo(game, Pad::A, 0);
+            singolaOk = inGara && game.faseCorrente() == FaseId::Gara && game.state().playerSpeed > 0.0f;
+        }
+    }
+    // Menu -> "ESCI": il runner deve chiudere.
+    bool esciOk = false;
+    {
+        Game game(12345u);
+        caricaSponsor(game);
+        if (game.avviaGara()) {
+            game.mostraMenu();
+            passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
+            passoCiclo(game, 0, Pad::Down);
+            passoCiclo(game, 0, Pad::Down);
+            passoCiclo(game, 0, Pad::Start);  // terza voce: ESCI
+            esciOk = game.uscitaRichiesta() && game.faseCorrente() == FaseId::Menu;
+        }
+    }
+    std::printf("ciclo: corsa singola=%s esci=%s\n", singolaOk ? "ok" : "NO", esciOk ? "ok" : "NO");
+    const bool ok = sequenzaGiusta && stessaSequenza && stesseMisure && stessoHash &&
+                    !a.ribaltato && a.speedMassima > 0.0f && singolaOk && esciOk;
     std::printf("%s\n", ok ? "GATE CICLO OK" : "FALLITO: ciclo di fasi non verificato");
     return ok;
 }

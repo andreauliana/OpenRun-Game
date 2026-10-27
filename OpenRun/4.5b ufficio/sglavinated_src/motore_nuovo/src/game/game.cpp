@@ -610,7 +610,7 @@ bool Game::avviaGara(const std::string& fileTappe) {
     preparaBivio();
     inizializzaRivali();
     aggiornaStatoGara();
-    fasi_.cambia(FaseId::Menu, *this); // blocco R2: la gara a tappe inizia dal menu
+    fasi_.cambia(FaseId::Gara, *this); // blocco R2: avviaGara() parte guidando (gate, runner --subito)
     return true;
 }
 

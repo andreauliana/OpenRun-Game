@@ -53,11 +53,12 @@ public:
     }
     void disegna(Renderer& ren, Framebuffer& fb) const override {
         // Placeholder del titolo: @grafico consegna lo schermo di splash (D15/D16).
-        fb.fillRect(80, 76, 240, 116, 0xFF6060A0u);
-        const char* titolo = "Sglavinated Edition";
+        const char* titolo = "SGLAVINATED EDITION";
         const i32 w = ren.larghezzaTesto(titolo, 2);
+        fb.fillRect(160 - w / 2 - 8, 76, 160 + w / 2 + 8, 116, 0xFF6060A0u);
         ren.drawTesto(160 - w / 2, 90, titolo, 0xFFFFFFFFu, 2, true);
-        ren.drawTesto(104, 136, "PREMI START", 0xFFA0A0A0u, 1, true);
+        const char* premi = "PREMI START";
+        ren.drawTesto(160 - ren.larghezzaTesto(premi, 1) / 2, 136, premi, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return FaseId::Menu; }
@@ -83,9 +84,11 @@ public:
         if (p.pressed & Pad::Down) sel_ = (sel_ + 1) % 3;
         if (p.pressed & (Pad::Start | Pad::A)) {
             switch (sel_) {
-                case 0: gioco.init("lv_01_neon");   break; // corsa singola, pista fissa
-                case 1: gioco.avviaGara();           break; // gara a tappe con bivi
-                case 2: prossima_ = FaseId::Menu;   break; // esci: resta in menu
+                case 0: gioco.init("lv_01_neon"); break; // corsa singola, pista fissa (init -> Gara)
+                case 1: // gara a tappe con bivi (avviaGara -> Gara); senza percorso: corsa singola
+                    if (!gioco.avviaGara()) gioco.init("lv_01_neon");
+                    break;
+                case 2: gioco.richiediUscita(); prossima_ = FaseId::Menu; break; // il runner chiude
             }
             finita_ = true;
         }
@@ -99,9 +102,10 @@ public:
             i32 wi = ren.larghezzaTesto(voci[i], 1);
             u32 colore = (i == sel_) ? 0xFFFFFFFFu : 0xFFA0A0A0u;
             ren.drawTesto(160 - wi / 2, 104 + i * 14, voci[i], colore, 1, true);
-            if (i == sel_) ren.drawTesto(136, 104 + i * 14, ">", 0xFFFFFFFFu, 1, true);
+            if (i == sel_) ren.drawTesto(160 - wi / 2 - 12, 104 + i * 14, ">", 0xFFFFFFFFu, 1, true);
         }
-        ren.drawTesto(72, 160, "START/A = conferma  B/ESC = indietro", 0xFFA0A0A0u, 1, true);
+        const char* aiuto = "SU/GIU SCEGLI   START CONFERMA";
+        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return prossima_; }
@@ -138,13 +142,13 @@ private:
 class FineTempoFase : public Fase {
 public:
     FineTempoFase() : timerS_(0.0f), finita_(false) {}
-    void entra(Game&) override { timerS_ = 0.0f; finita_ = false; }
+    void entra(Game& gioco) override { timerS_ = 0.0f; finita_ = false; arrivo_ = gioco.arrivato(); }
     void aggiorna(Game&, f32 dt) override {
         timerS_ += dt;
         if (timerS_ >= FINE_TEMPO_DURATA_S) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer&) const override {
-        const char* testo = "TEMPO SCADUTO";
+        const char* testo = arrivo_ ? "ARRIVO" : "TEMPO SCADUTO";
         const i32 w = ren.larghezzaTesto(testo, 2);
         ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
     }
@@ -155,6 +159,7 @@ public:
 private:
     f32 timerS_;
     bool finita_;
+    bool arrivo_ = false;
 };
 
 // ---------------------------------------------------------------------------
@@ -234,15 +239,16 @@ public:
         const char* titolo = "RISULTATI";
         const i32 w = ren.larghezzaTesto(titolo, 2);
         ren.drawTesto(160 - w / 2, 40, titolo, 0xFFFFFFFFu, 2, true);
-        std::snprintf(buf, sizeof(buf), "TU %d punti   posizione %d", punteggio_, posizione_);
-        ren.drawTesto(64, 80, buf, 0xFFA0A0A0u, 1, true);
-        i32 y = 100;
+        std::snprintf(buf, sizeof(buf), "TU %d PUNTI   POSIZIONE %d", punteggio_, posizione_);
+        ren.drawTesto(64, 72, buf, 0xFFA0A0A0u, 1, true);
+        i32 y = 90;
         for (size_t i = 0; i < classifica_.size(); ++i) {
             const PunteggioEntry& e = classifica_[i];
             std::snprintf(buf, sizeof(buf), "%c %-3s %6d", (e.nome == "TU" ? '>' : ' '), e.nome.c_str(), e.punti);
-            ren.drawTesto(64, y + (i32)i * 12, buf, e.nome == "TU" ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
+            ren.drawTesto(64, y + (i32)i * 11, buf, e.nome == "TU" ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
         }
-        ren.drawTesto(72, 200, "START = torna al menu", 0xFFA0A0A0u, 1, true);
+        const char* aiuto = "START TORNA AL MENU";
+        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return FaseId::Menu; }
@@ -280,6 +286,12 @@ std::unique_ptr<Fase> GestoreFasi::crea(FaseId id) {
 }
 
 void GestoreFasi::cambia(FaseId id, Game& gioco) {
+    if (inAggiorna_) {
+        // Il cambio avviene alla fine di aggiorna(): la fase corrente sta ancora girando.
+        cambioRimandato_ = true;
+        fasePendente_ = id;
+        return;
+    }
     if (fase_) fase_->esci(gioco);
     fase_ = crea(id);
     attuale_ = id;
@@ -288,14 +300,17 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
 
 void GestoreFasi::aggiorna(Game& gioco, f32 dt) {
     if (!fase_) return;
-    const FaseId prima = attuale_;
+    inAggiorna_ = true;
+    cambioRimandato_ = false;
     fase_->aggiorna(gioco, dt);
-    // Se aggiorna() ha già cambiato fase (es. menu che avvia la gara),
-    // non si cambia una seconda volta nello stesso tick.
-    if (attuale_ == prima && fase_->finita()) {
-        const FaseId prossima = fase_->prossima();
-        fase_->esci(gioco);
-        cambia(prossima, gioco);
+    inAggiorna_ = false;
+    // Un cambio chiesto durante aggiorna() (es. menu che avvia la gara) vince
+    // su prossima(): una sola transizione per tick.
+    if (cambioRimandato_) {
+        cambioRimandato_ = false;
+        cambia(fasePendente_, gioco);
+    } else if (fase_->finita()) {
+        cambia(fase_->prossima(), gioco);
     }
 }
 

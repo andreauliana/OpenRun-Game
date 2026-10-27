@@ -279,6 +279,8 @@ Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non confer
 
 RISPOSTA DI ANDREA: B
 
+AGGIORNAMENTO DI ANDREA 27/10 (scritto da Claude su richiesta di Andrea): D18 e' chiusa. R2 e i blocchi dopo (DECO1 2f, RIV, PIST1, FIN) **non aspettano** D18 ne' D19: si lavora senza altri ok. D19 = B vale solo per chiudere T1-RUN.
+
 
 **Important:** 23/10 test Mac: ctest 17/17, runner ok, al bivio, in alcuni livelli, glitch di ricalcolo e la tappa dopo parte con posizionamento percorso sbagliato, senza un transizione graduale, incrementare leggermente la curvatura dei due Fork, perche la macchina puo andare in crush toccando i bordi della parte centrale (FORK1). The other players are going a bit too fast and far, they should act a bit more realistically, as in a race.
 
