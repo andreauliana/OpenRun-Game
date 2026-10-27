@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-25 12:02
+# Pacchetto per Claude — 2026-10-27 21:14
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -58,19 +58,19 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 183:## BLOCCO R1 — @developer + @developer-junior — tracciati modificabili per le 6 piste (da Andrea e Claude 19 ott)
 191:| Stato | [x] | (Claude 22/10: gate 6/6 verde 21/10 10:44 `out/developer/ESITO_GATE_21OTT_1044.md`, `ctest` 17/17 ricontrollato su main ae16132; review registrate: `out/developer-junior/REVIEW_CP005_PUNTI1-3_DEVELOPER_2026-10-20_1714.md` POSITIVA, `out/developer/REVIEW_CP005_PUNTI45_JUNIOR_20OTT.md` POSITIVA. Resta solo a @capo: chiudere CP-005 nel registro. Prossimo: F60) |
 195:## BLOCCO R2 — @developer + @developer-junior + @grafico — ciclo di gioco completo (da Andrea 19 ott)
-203:| Stato | [ ] | (dopo F60 e RIV) |
-207:## BLOCCO F60 — @developer + @developer-junior — gioco a 60 Hz, tempi in secondi (Andrea 19 ott; dopo R1, prima di R2)
-213:| Stato | [x] | (Claude 23/10: gate verde 22/10 20:06, `gate_t1.sh` exit 0, GATE FREQUENZA 60 Hz OK e 50 Hz OK, replay IDENTICO, 6/6 percorsi OK, `out/developer-junior/ESITO_F60_22OTT_2006.md`. A @capo resta solo il checkpoint CP-006. Prossimo: FORK1) |
-217:## BLOCCO FORK1 — @developer + @developer-junior + @grafico — bivio e cambio tappa fluidi, transizione di tema, bordi strada (Andrea 22 ott, dopo prove su Mac; dopo F60, prima di RIV)
-227:| Stato | [ ] | (Claude 23/10: SI PARTE ORA, F60 e' [x]. FORK1, DECO1, RIV e FIN NON aspettano la prova runner di Andrea su Mac: D16/D18 e l'ordine T1-Q5 riguardano solo T1-RUN, H e il lavoro dedicato a Pi 400/RetroPie. "Dopo prove su Mac" nel titolo vuol dire che le segnalazioni vengono dalle prove gia' fatte da Andrea. Unico vincolo: non toccare `src/runner/`. @grafico intanto puo' lavorare a DECO1 punto 1 e RIV punto 3, che non dipendono dal codice) |
-231:## BLOCCO DECO1 — @grafico + @developer + @developer-junior — elementi decorativi di ogni livello (Andrea 22 ott; dopo FORK1, prima di RIV e prima di ogni prova su Pi 400/RetroPie)
-242:| Stato | [ ] |
-246:## BLOCCO PIST1 — @developer + @developer-junior + @grafico — percorsi piu' vari: ponti, colline, chicane, autostrada, citta' (Andrea 23 ott, dopo la prova su Mac; dopo DECO1, prima di RIV)
-255:| Stato | [ ] |
-259:## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
-268:| Stato | [ ] |
-272:## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
-279:| Stato | [ ] |
+204:| Stato | [~] | (Andrea 25/10: R2 parte subito DOPO DECO1, PRIMA di PIST1 e RIV. Ordine: FORK1 review -> DECO1 -> R2 -> PIST1 -> RIV -> FIN. Struttura voluta: intro (caricamento), selezione, partita, risultati, ripartenza. Per R2 si tocca `src/runner/` solo per chiamare la fase corrente.) |
+208:## BLOCCO F60 — @developer + @developer-junior — gioco a 60 Hz, tempi in secondi (Andrea 19 ott; dopo R1, prima di R2)
+214:| Stato | [x] | (Claude 23/10: gate verde 22/10 20:06, `gate_t1.sh` exit 0, GATE FREQUENZA 60 Hz OK e 50 Hz OK, replay IDENTICO, 6/6 percorsi OK, `out/developer-junior/ESITO_F60_22OTT_2006.md`. A @capo resta solo il checkpoint CP-006. Prossimo: FORK1) |
+218:## BLOCCO FORK1 — @developer + @developer-junior + @grafico — bivio e cambio tappa fluidi, transizione di tema, bordi strada (Andrea 22 ott, dopo prove su Mac; dopo F60, prima di RIV)
+229:| Stato | [~] | (Claude 26/10: le due review incrociate sono FATTE e POSITIVE: `out/developer-junior/REVIEW_FORK1_26OTT.md` (07:14) e `out/developer/REVIEW_FORK1_26OTT.md` (07:20). Resta SOLO @capo: nel prossimo turno apre CP-007 per FORK1, lo chiude (gate ctest verde + 2 review positive), registra in REGISTRO_REVISIONI e aggiorna STATO_CORRENTE e STATI_PROPOSTI con FORK1 e DECO1; poi propone FORK1 [x]. Developer e developer-junior NON aspettano CP-007: passano a DECO1.) (Claude 25/10: codice e gate FORK1 FATTI, ctest 20/20. Restano SOLO: a) review incrociata, UN turno ciascuno: @developer rivede i gate 4, 5, 7 di `prova_gate.cpp`; @developer-junior rivede la modifica di `game.cpp` (corsia a scelta aperta) e la transizione tema; esito in `out/<ruolo>/REVIEW_FORK1_<data>.md`. b) @capo apre CP-007 per FORK1 e lo chiude quando le due review sono positive. c) @grafico elemento di passaggio al bivio: FACOLTATIVO, non blocca. Nessuno aspetta piu' `game.cpp`: chi trova FORK1 senza lavoro suo passa a DECO1.) |
+233:## BLOCCO DECO1 — @grafico + @developer + @developer-junior — elementi decorativi di ogni livello (Andrea 22 ott; dopo FORK1, prima di RIV e prima di ogni prova su Pi 400/RetroPie)
+248:| Stato | [~] | (Claude 27/10: codice @developer passi 2a-2e FATTO, `gate_t1.sh` 07:55 exit 0, lv_06 smoke OK 08:42. Restano solo: review incrociata (un turno ciascuno, esito in `out/<ruolo>/REVIEW_DECO1_<data>.md`), @grafico rivede gli screenshot in `out/developer-junior/` e `Test area/`, @capo apre e chiude il checkpoint. Nessuno aspetta altro codice DECO1: il @developer passa a R2.) |
+252:## BLOCCO PIST1 — @developer + @developer-junior + @grafico — percorsi piu' vari: ponti, colline, chicane, autostrada, citta' (Andrea 23 ott, dopo la prova su Mac; dopo DECO1, prima di RIV)
+261:| Stato | [ ] |
+265:## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
+276:| Stato | [~] | (Andrea 27/10: punti 2 e 3 anticipati prima di PIST1, vedi 'Chi tocca adesso') |
+280:## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
+287:| Stato | [ ] |
 
 ## Decisioni aperte
 74:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
@@ -92,15 +92,15 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 250:## D15 | Attivazione G1 e delega @grafico | capo | [CHIUSA 2026-10-23 da Andrea]
 258:## D16 | Attivazione G1 e delega @grafico | Andrea | [CHIUSA 2026-10-23 da Andrea]
 268:## D18 | Chiusura T1-RUN e avvio R2 | capo | [CHIUSA 2026-10-23 da Andrea]
-285:## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
+287:## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 2 | REVIEWER | 2026-10-25 10:57 | [APERTA]
-OK      sintassi giro.sh
+### CHECKPOINT 1 | REVIEWER | 2026-10-27 21:00 | [APERTA]
 OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
 OK      sintassi set_model.sh
 OK      sintassi start_process_brains.sh
@@ -112,23 +112,25 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 GATE FREQUENZA 50 Hz OK
-screenshot P1: curva frame 1616 (scarto 181 px), sponsor frame 672 (4037 px), personaggio+fumetto frame 446
+screenshot P1: curva frame 1587 (scarto 173 px), sponsor frame 672 (40516 px), personaggio+fumetto frame 446
 GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
+GATE T1: FALLITO (exit 15)
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.6% (6087272 di 6110034 byte), soglia 50.0%
+quota open: 99.6% (6147590 di 6170352 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 25
-blocchi da fare [ ]: 12
+blocchi da fare [ ]: 8
 
-OK (controlli automatici verdi: review del modello saltata, zero crediti)
+[0m
+> developer-junior · nemotron-3.5-super-vl-free
+CORREGGI: gate_t1.sh -> @developer.
 
-### CHECKPOINT 3 | REVIEWER | 2026-10-25 12:02 | [APERTA]
-OK      sintassi giro.sh
+### CHECKPOINT 2 | REVIEWER | 2026-10-27 21:13 | [APERTA]
 OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
 OK      sintassi set_model.sh
 OK      sintassi start_process_brains.sh
@@ -139,19 +141,17 @@ OK      nessuna ROM Sega presente
 OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
-FALLITO: troppo lento
-screenshot P1: curva frame 1616 (scarto 181 px), sponsor frame 672 (4037 px), personaggio+fumetto frame 446
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1587 (scarto 173 px), sponsor frame 672 (40516 px), personaggio+fumetto frame 446
 GATE SCREENSHOT P1 OK
-GATE T1: FALLITO (exit 15)
+GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.6% (6087272 di 6110034 byte), soglia 50.0%
+quota open: 99.6% (6147590 di 6170352 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 25
-blocchi da fare [ ]: 12
+blocchi da fare [ ]: 8
 
-REVIEW FALLITA (exit 1): [0m
-> developer-junior · nemotron-3.5-super-vl-free
-[91m[1mError: [0mFree usage limit reached. Free models work in OpenCode (https://opencode.ai); subscribe to OpenCode Go to keep going: https://opencode.ai/go
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

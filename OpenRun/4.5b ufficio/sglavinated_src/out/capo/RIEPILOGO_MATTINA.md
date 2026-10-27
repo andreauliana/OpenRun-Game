@@ -1,20 +1,24 @@
-# RIEPILOGO_MATTINA — OpenRun 4.6 (2026-10-20)
+# RIEPILOGO MATTINA — OpenRun 4.6 (27/10/2026)
 
-## Fatto per blocco / agente (20/10)
-- @developer (R1 + T1-RUN): road.h/road.cpp (raccordo entrata/uscita, deriva solo curve != 0), game.cpp campo `tracciato` su 6 livello.json, tratti.json (8 tratti) e regole.json creati. `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, GATE T1 TUTTO OK, 6/6 percorsi OK, ms/frame ~0.18-0.20 (< 2), replay 2x IDENTICO. Log: UFFICIO/Officina/Test area/gate_t1.log.
-- @developer-junior: prova_gate legge regole.json, test espansione OK 6/6. Peer review VOCE1175 positiva 19/10. Compito 3 BLOCCATO: edit negato su motore_nuovo/test/prova_gate.cpp.
-- @grafico (Designer): G1 attivato (T1-Q4). Inventario CP-002 verificato: catalogo 52 voci (30 approvate, 16 pronte, 2 costruzione, 4 mancanti), 100 PNG non catalogati. Mancano sprite concorrenti/personaggi e 3 finali animati.
+## Fatto per blocco / agente
+- CP-007 FORK1 CHIUSO 27/10: review incrociate @developer-junior→@developer (07:14) e @developer→@developer-junior (07:20) positive, ctest 20/20 verde, gate bivio_uscita/bivio_bordi/tema_transizione exit 0, replay 2x IDENTICO.
+- @developer: DECO1 passi 2a-2e fatti (road.cpp raccordo, dati/tracciati/tratti.json+regole.json, campo tracciato in 6 livello.json, gate decorazioni 6/6 livelli, densità cartelloni ~26-27% target 20-30%, gate_t1 exit 0 07:55, ctest 21/21 verde). F60 gate verde 22/10 (60/50 Hz, ms/frame <= 20, replay IDENTICO); review incrociata pendente.
+- @grafico: DECO1 2f eseguito 20:02 (6 oggetti alti + manifest varianti A); G1 catalogo 181 elementi, PNG non catalogati 0; CP-002 in attesa review indipendente.
+- Gate T1 verde: soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde 22/10; runner Mac Andrea 23/10 ok.
 
-## Non funziona / blocchi aperti
-- CP-005 APERTO: gate verde ma review incrociata indipendente mancante (sviluppatore-junior → sviluppatore punti 1-3; sviluppatore → sviluppatore-junior punti 4-5); ctest (7 test) da rieseguire e registrare.
-- v91 Andrea su runner Mac SDL2 non rieseguito dopo il tuning 20/10 (ultimo esito 09:39: GATE T1 FALLITO exit 13, giro guidato 5/6). Blocca D12 e Pi 400.
-- libretro.h manca → BUILD_LIBRETRO=ON non compila; nessun lavoro Pi 400/RetroPie finché Andrea non dà ok su Mac (ordine Andrea).
-- SDL2_image non installabile: runner senza caricamento PNG (D10: conversione PNG->raw offline, zero nuove dipendenze).
+## Non funziona / blocchi
+- T1-RUN [~]: D19 = B, Andrea non conferma chiusura; CP-006 APERTO (regola 8, DEFAULT non applicabile). Nessun lavoro dedicato Pi 400/RetroPie prima di ok Mac formale (D12/D14 = A).
+- src/runner/ non toccabile prima di ok Andrea Mac (D16).
+- libretro.h assente: BUILD_LIBRETRO=ON non compila (Pi 400/RetroPie in attesa).
+- CP-002 (G1) e CP F60: review indipendente mancante.
+- Giro guidato KO 5/6 su Mac 19/10 (exit 13): risolto con R1, tutti e 6 ora passano.
 
-## Decisioni aperte in ANDREA_REVIEW.md (top 3)
-1. D12 [APERTA, risposta A = sì]: Andrea ri-verifica runner su Mac dopo R1 verde e gate 6/6, prima di Pi 400/RetroPie.
-2. Frequenza di gioco (19 ott): 60 Hz default + opzione 50 Hz; tutte le misure in secondi (dt), non frame. Checkpoint dedicato dopo R1, prima di R2.
-3. T1-Q5 / R1: logica tracciati consecutivi per la gara, soglie giro guidato non abbassate, tuning un parametro alla volta; chiudere CP-005 con review indipendente.
+## Decisioni aperte ANDREA_REVIEW.md (3 più importanti)
+1. D19 [APERTA] T1-RUN chiusura dopo Mac 23/10: RISPOSTA B → attendere nuova prova/decisione Andrea.
+2. D18 [CHIUSA B] chiusura T1-RUN e avvio R2: esito B, ma nota Andrea 27/10: R2 non aspetta D18/D19, si lavora senza altri ok.
+3. D12/D14 [CHIUSE A] ordine test: prima Mac, poi Pi 400/RetroPie.
 
 ## Prossimo passo consigliato
-Registrare la review incrociata indipendente su CP-005, poi riconfermare gate soak + ctest e chiedere ad Andrea la ri-verifica Mac (D12). Solo dopo: chiudere T1-RUN [x] e attivare G1 (catalogo 100 PNG).
+- CP-006: attendere nuova prova runner Mac (build corretta) da Andrea prima di chiudere T1-RUN e avviare R2.
+- R2 in corso: @developer passo 1d (nome 3 lettere, gate ciclo), poi DECO1 2f, RIV, PIST1.
+- Aprire review incrociata F60 (developer → developer-junior) + CP F60; assegnare review indipendente CP-002 (cand. @developer-junior).

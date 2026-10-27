@@ -1015,3 +1015,31 @@ blocchi da fare [ ]: 8
 [0m
 > developer-junior · nemotron-3.5-super-vl-free
 CORREGGI: gate_t1.sh -> @developer.
+
+### CHECKPOINT 2 | REVIEWER | 2026-10-27 21:13 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1587 (scarto 173 px), sponsor frame 672 (40516 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.6% (6147590 di 6170352 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 25
+blocchi da fare [ ]: 8
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
