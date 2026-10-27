@@ -27,6 +27,21 @@ i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
     return (i32)sponsorSprites_.size() - 1;
 }
 
+i32 Renderer::aggiungiOggettoSprite(Sprite sprite) {
+    // Caricato una volta in caricaLivello: lo sprite resta di proprieta' del
+    // Renderer; SpriteInstance ne memorizza solo il puntatore.
+    oggettoSprites_.push_back(std::move(sprite));
+    return (i32)oggettoSprites_.size() - 1;
+}
+
+void Renderer::impostaSkyline(Sprite sprite) {
+    // Skyline della tappa in corso (DECO1 2b). Copia una volta: zero alloc nel
+    // ciclo di gioco. Sprite vuoto ripristina il cielo piatto. skylineA_ e' il
+    // bersaglio di una eventuale transizione di tema (FORK1 punto 6).
+    skylineA_ = std::move(sprite);
+    skylineSprite_ = skylineA_;
+}
+
 void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio) {
     const auto& segs = road.segments();
     if (segs.empty()) return;
@@ -40,6 +55,10 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
 
     // Cielo (parte superiore dello schermo) e terra (sotto l'orizzonte).
     fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, tema_.cielo);
+    // Skyline sopra l'orizzonte (DECO1 2b: ogni tappa il suo skyline; durante la
+    // transizione di tema si incrocia con il precedente, FORK1 punto 6).
+    if (transizioneT_ < 1.0f) drawSkylineTransizione(skylineDa_, skylineA_, transizioneT_);
+    else if (skylineSprite_.width > 0) drawSkyline(skylineSprite_);
     fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, tema_.erba);
 
     // Disegna i segmenti dal piu' LONTANO al piu' VICINO: projs_ e' ordinato
@@ -142,8 +161,86 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
     }
 }
 
-void Renderer::iniziaTransizioneTema(const TemaColori& da, f32 durataSecondi) {
+void Renderer::drawSkyline(const Sprite& s) {
+    // Skyline: largo quanto lo schermo, ancorato all'orizzonte, proporzioni
+    // della fonte. Indice 0 = trasparente (resta il colore del cielo).
+    if (s.width <= 0 || s.height <= 0) return;
+    const f32 scalaX = (f32)Framebuffer::WIDTH / (f32)s.width;
+    i32 h = (i32)((f32)s.height * scalaX);
+    if (h < 1) h = 1;
+    if (h > HORIZON_Y) h = HORIZON_Y; // entra interamente nella fascia cielo
+    const i32 y0 = HORIZON_Y - h;
+    const bool palettePropria = !s.palette.empty();
+    const i32 nPalette = (i32)s.palette.size();
+    for (i32 sy = 0; sy < h; ++sy) {
+        const i32 ty = (i32)((f32)sy / (f32)h * (f32)s.height);
+        const u8* src = s.pixels.data() + (size_t)ty * (size_t)s.width;
+        u32* dst = fb_.data() + (size_t)(y0 + sy) * (size_t)Framebuffer::WIDTH;
+        for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+            const i32 tx = (i32)((f32)x / (f32)Framebuffer::WIDTH * (f32)s.width);
+            u8 idx = src[tx];
+            if (idx == 0) continue; // trasparente
+            u32 col = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
+                                     : pal_[s.paletteBase + idx];
+            if ((col >> 24) == 0) continue; // trasparente
+            dst[x] = col;
+        }
+    }
+}
+
+void Renderer::drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t) {
+    // Crossfade skyline durante la transizione di tema: t=0 disegna solo da
+    // (tappa che finisce), t=1 solo a (tappa nuova). I pixel trasparenti
+    // (alpha 0) lasciano vedere il cielo di tema_, gia' interpolato da drawRoad.
+    if (da.width <= 0 && a.width <= 0) return;
+    const f32 scalaX = (f32)Framebuffer::WIDTH;
+    auto scalaAltezza = [&](const Sprite& s) -> i32 {
+        if (s.width <= 0 || s.height <= 0) return 0;
+        i32 h = (i32)((f32)s.height * scalaX / (f32)s.width);
+        if (h < 1) h = 1;
+        if (h > HORIZON_Y) h = HORIZON_Y;
+        return h;
+    };
+    const i32 hDa = scalaAltezza(da), hA = scalaAltezza(a), h = std::max(hDa, hA);
+    if (h < 1) return;
+    const bool palDa = !da.palette.empty();
+    const bool palA = !a.palette.empty();
+    const i32 nDa = (i32)da.palette.size(), nA = (i32)a.palette.size();
+    u32* dstBase = fb_.data();
+    for (i32 sy = 0; sy < h; ++sy) {
+        u32* dst = dstBase + (size_t)sy * (size_t)Framebuffer::WIDTH;
+        const i32 tyDa = hDa > 0 ? (i32)((f32)sy / (f32)h * (f32)da.height) : 0;
+        const i32 tyA = hA > 0 ? (i32)((f32)sy / (f32)h * (f32)a.height) : 0;
+        const u8* srcDa = da.width > 0 ? da.pixels.data() + (size_t)tyDa * (size_t)da.width : nullptr;
+        const u8* srcA = a.width > 0 ? a.pixels.data() + (size_t)tyA * (size_t)a.width : nullptr;
+        for (i32 sx = 0; sx < Framebuffer::WIDTH; ++sx) {
+            const i32 txDa = da.width > 0 ? (i32)((f32)sx / (f32)Framebuffer::WIDTH * (f32)da.width) : 0;
+            const i32 txA = a.width > 0 ? (i32)((f32)sx / (f32)Framebuffer::WIDTH * (f32)a.width) : 0;
+            u8 idxDa = srcDa ? srcDa[txDa] : 0;
+            u8 idxA = srcA ? srcA[txA] : 0;
+            u32 cDa = 0, cA = 0;
+            bool opDa = false, opA = false;
+            if (idxDa != 0) {
+                cDa = palDa ? da.palette[(size_t)idxDa % (size_t)nDa] : pal_[idxDa];
+                opDa = (cDa >> 24) != 0;
+            }
+            if (idxA != 0) {
+                cA = palA ? a.palette[(size_t)idxA % (size_t)nA] : pal_[idxA];
+                opA = (cA >> 24) != 0;
+            }
+            if (!opDa && !opA) continue; // cielo gia' disegnato da drawRoad
+            u32 col;
+            if (!opDa) col = lerpColore(dst[sx], cA, t);      // da svanisce: resta cielo + a
+            else if (!opA) col = lerpColore(cDa, dst[sx], t); // a appare: da + cielo
+            else col = lerpColore(cDa, cA, t);                // incrocio da -> a
+            dst[sx] = col;
+        }
+    }
+}
+
+void Renderer::iniziaTransizioneTema(const TemaColori& da, const Sprite& daSkyline, f32 durataSecondi) {
     temaDa_ = da;                       // tema della tappa che finisce
+    skylineDa_ = daSkyline;             // skyline della tappa che finisce (foto prima del cambio)
     // temaA_ e' il tema di destinazione (impostato da impostaTema) e resta fisso:
     // aggiornaTransizioneTema porta tema_ da temaDa_ a temaA_. Prima si
     // interpolava verso tema_ stesso, sovrascritto a ogni frame, e la tappa
@@ -157,6 +254,7 @@ bool Renderer::aggiornaTransizioneTema(f32 dt) {
     if (transizioneT_ >= 1.0f || transizioneDurataS_ <= 0.0f) {
         transizioneT_ = 1.0f;
         tema_ = temaA_;
+        skylineSprite_ = skylineA_; // fine transizione: lo skyline della tappa nuova diventa corrente
         return false;
     }
     transizioneT_ += dt / transizioneDurataS_;

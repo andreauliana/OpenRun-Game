@@ -286,3 +286,22 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Gate eseguito in questo turno: sì (`bivio_bordi`, exit 0, 25/10 08:46).
 - Nessun file src/ toccato (solo motore_nuovo/test/prova_gate.cpp e motore_nuovo/dati/tracciati/regole.json, percorsi assegnati al ruolo).
 
+## Report turno 27/10 06:37 — developer-junior
+
+- Blocco DECO1 [ ] (punto 3 del blocco, mio): esteso `motore_nuovo/test/prova_gate.cpp` gate `decorazioni` con screenshot PPM per livello e verifica che lo skyline sia disegnato sopra l'orizzonte su lv_01_neon (passo 2A di @developer completato: `renderer.cpp` `drawSkyline`, `game.cpp` `setSkylineSprite`, raw `sprite_raw/scenari/lv_01_neon/skyline.sglraw`; `caricaSkyline` già nel gate).
+- Comando: `cmake --build UFFICIO/Officina/build --target prova_gate` → exit 0.
+- Comando: `UFFICIO/Officina/build/prova_gate UFFICIO/Officina/build/test-results/decorazioni lv_01_neon decorazioni` → exit 0, `GATE DECORAZIONI OK`.
+- Misure: 6/6 livelli catalogo risolto (skyline+oggetti, nessun id mancante o in prestito), cartelloni 35-61 per livello, ms/frame medio <= 0.296 max <= 0.604 (limite 20) su tutti i livelli; lv_01_neon cielo 0x0A0A1A con 16292 pixel cielo diversi = skyline disegnato; screenshot PPM in `UFFICIO/Officina/build/test-results/decorazioni/decorazioni_<livello>/`.
+- Nessuna regressione sugli altri modi di prova_gate (codice condiviso non toccato). Nessun file `src/` modificato.
+- Consegne: `bacheche/developer-junior/diario.md` (1 riga), `bacheche/developer-junior/RIASSUNTO.md` (<=12 righe), `out/developer-junior/ESITO_DECO1_DECORAZIONI_27OTT.md`.
+- In attesa: DECO1 passi 2b-2e (@developer) e G1 (@grafico), poi R2 [ ]; FORK1 [~] attende review @developer gate 4/5/7 e CP-007 @capo; T1-RUN [~] (D19 = B); H [~] chiuso da Andrea 23/10.
+
+## Report turno 27/10/2026 07:55 — developer
+
+- Blocco DECO1 [ ] passo 2d fatto: densita' cartelloni ~26-27% per livello (target 20-30%, D2b). motore_nuovo/src/game/game.cpp (`init()`: posizioni esplicite di livello.json + riempimento deterministico dei segmenti liberi, Rng(seed_), 1 segmento su 4, zero alloc per frame, nessun sovrapposizione con le posizioni esplicite); motore_nuovo/src/game/game.h (`leggiCartelloniDaFile` segnala i segmenti occupati).
+- Gate eseguito questo turno: cmake --build UFFICIO/Officina/build --target prova_gate exit 0; sh UFFICIO/Officina/TOOL/gate_t1.sh exit 0, GATE T1: TUTTO OK — 6/6 percorsi OK (rettilineo 55-71%, curva max 0.72-0.98, fuori strada 0%), ms/frame medio <= 0.65 max 2.696 (limite 20), replay 2x IDENTICO, gara 4 combinazioni OK, frequenza 60/50 Hz OK, screenshot P1 OK. Log: UFFICIO/Officina/Test area/gate_t1.log.
+- sh UFFICIO/Officina/TOOL/run_tests.sh -> ctest 21/21 verde (gate decorazioni su 6/6 livelli incluso).
+- Misure densita' cartelloni: lv_01 26.8% (1141), lv_02 26.4% (1492), lv_03 27.0% (1268), lv_04 26.7% (1414), lv_05 26.6% (1249), lv_06 26.6% (1288).
+- Consegne: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_DECO1_P2D_27OTT.md; questo status aggiornato. Zero scritture in UFFICIO/Officina/TOOL/; nessun test del Junior modificato; src/runner/ non toccato (review Andrea runner Mac in corso).
+- Prossimo: DECO1 2e (parallasse), poi R2 (ordine DECO1 -> R2 -> PIST1 -> RIV -> FIN). T1-RUN [~] e H [~] in attesa Andrea (runner Mac v91, poi fps/temperatura Pi 400); nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac.
+

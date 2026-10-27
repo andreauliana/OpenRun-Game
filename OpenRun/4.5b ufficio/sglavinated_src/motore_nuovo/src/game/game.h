@@ -68,6 +68,9 @@ public:
     // Ogni sprite e' accompagnato dal suo sponsor_id (catalogo: v. sponsor_loader.h);
     // init() abbina lo sponsor_id di livello.json allo sprite corrispondente.
     void setSponsorSprites(std::vector<std::pair<std::string, Sprite>> sprites);
+    // Sprite dello skyline della tappa in corso (DECO1 2a), consegnato dal runner
+    // prima di init(); vuoto = cielo piatto. Il core resta senza SDL.
+    void setSkylineSprite(Sprite sprite);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
     size_t numeroCartelloni() const { return cartelloni_.size(); }
 
@@ -121,8 +124,10 @@ private:
     // (setSponsorSprites li registra li); qui si tengono solo gli indici.
     std::vector<i32> sponsorSpriteIdx_;   // indice per ren_.sponsorSprite() (caricati una volta)
     std::vector<std::string> sponsorId_;  // sponsorId_[i] e' l'id di sponsorSpriteIdx_[i] (per abbinare livello.json)
+    Sprite skylineSprite_;                // skyline della tappa in corso (DECO1 2a), svuotato dopo caricaLivello
     std::vector<SpriteInstance> cartelloni_;   // posizioni bordo strada fissate in init(), nessun alloc dopo
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
+    std::vector<SpriteInstance> oggettiStrada_; // oggetti bordo strada (DECO1 2c), posizioni fisse
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;
@@ -142,7 +147,9 @@ private:
 
     // Dati cartelloni da livello.json (letto una volta in init).
     // radice: livello.json gia' analizzato (nullptr se il file manca o non e' valido).
-    bool leggiCartelloniDaFile(const JsonValue* radice);
+    // segmentoOccupato (dimensione nSeg del tracciato) viene segnato true per i
+    // segmenti che ricevono un cartellone esplicito dal file.
+    bool leggiCartelloniDaFile(const JsonValue* radice, std::vector<bool>& segmentoOccupato);
     // Segmenti del tracciato da livello.json (campo "segmenti"): curva/collina/lunghezza.
     // Ritorna false se il file e' illeggibile o il campo manca/vuoto (init usa il fallback).
     bool leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::SegmentDesc>& out) const;
@@ -164,6 +171,7 @@ private:
     void caricaLivello(const std::string& livelloId);
     void leggiTemaDaFile(const JsonValue* radice);
     void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
+    void caricaOggettiStrada(const std::string& livelloId); // DECO1 2c: carica sprite oggetti bordo strada
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;

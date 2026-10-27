@@ -114,6 +114,28 @@ public:
     // (es. test ripetuti nello stesso processo) per non accumulare sprite e non
     // lasciare puntatori appesi dopo riallocazioni del vettore.
     void clearSponsorSprites() { sponsorSprites_.clear(); }
+    // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
+    // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
+    i32 aggiungiOggettoSprite(Sprite sprite);
+    const Sprite* oggettoSprite(i32 indice) const {
+        return indice >= 0 && indice < (i32)oggettoSprites_.size() ? &oggettoSprites_[indice] : nullptr;
+    }
+    void clearOggettoSprites() { oggettoSprites_.clear(); }
+    // Imposta lo skyline della tappa in corso (DECO1 2b): sprite vuoto = cielo piatto.
+    // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
+    // init()/fineTappa(), mai nel ciclo di gioco.
+    void impostaSkyline(Sprite sprite);
+    // Skyline della tappa corrente fuori transizione: usato per fotografare lo
+    // skyline della tappa che finisce prima del cambio tappa (FORK1 punto 6).
+    const Sprite& skylineCorrente() const { return skylineSprite_; }
+    // Avvia la transizione graduale del tema: da `da` (tema della tappa che finisce)
+    // al tema attuale (impostato con impostaTema, tema della tappa che comincia)
+    // in durataSecondi secondi (FORK1 punto 6). `daSkyline` e' lo skyline della
+    // tappa che finisce, fotografato prima del cambio: durante la transizione lo
+    // skyline incrocia daSkyline -> skylineA_ (impostato da impostaSkyline per la
+    // tappa nuova), sincronizzato con l'interpolazione di tema_, cosi' non c'e'
+    // scatto visibile al cambio tappa.
+    void iniziaTransizioneTema(const TemaColori& da, const Sprite& daSkyline, f32 durataSecondi);
 
 private:
     Framebuffer& fb_;
@@ -125,9 +147,18 @@ private:
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
     void drawRoadsideMarkers(f32 playerZ);
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
+    void drawSkyline(const Sprite& s);
+    // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo
+    // da (tappa che finisce), t = 1 solo a (tappa nuova); i pixel trasparenti
+    // lasciano vedere il cielo di tema_, gia' interpolato da drawRoad.
+    void drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t);
 
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
+    std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
+    Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
+    Sprite skylineDa_;                      // skyline all'inizio della transizione di tema
+    Sprite skylineA_;                       // skyline a fine transizione di tema
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
     TemaColori tema_;                       // colori di ambiente della tappa
     // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).

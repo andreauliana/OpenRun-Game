@@ -105,6 +105,15 @@ void caricaSponsor(Game& game) {
     game.setSponsorSprites(std::move(sprites));
 }
 
+// Skyline della tappa (DECO1 2b): stesso formato raw degli sponsor, caricato
+// per ogni livello prima di init(); il core lo ricarica in caricaLivello a
+// ogni cambio tappa, quindi il primo livello e' coerente col runner.
+void caricaSkyline(Game& game, const std::string& livello) {
+    Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/scenari/") + livello + "/skyline.sglraw");
+    if (s.width > 0) game.setSkylineSprite(std::move(s));
+    else std::printf("prova_gate: skyline %s non trovato\n", livello.c_str());
+}
+
 u64 padPerFrame(i32 frameAssoluto) {
     const i32 frame = frameAssoluto % SMOKE_FRAMES; // il ciclo di 500 frame si ripete nel soak
     if (frame <= 100) return Pad::A;                 // dritto, accelera
@@ -115,7 +124,7 @@ u64 padPerFrame(i32 frameAssoluto) {
 Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
     Esito e;
     Game game(12345u);
-    caricaSponsor(game); game.init(livello);
+    caricaSponsor(game); caricaSkyline(game, livello); game.init(livello);
     std::ofstream log;
     if (scrivi) log.open(outDir + "/prova_gate.log");
     bool sc0 = false, sc1 = false, sc2 = false;
@@ -1457,6 +1466,60 @@ static bool catalogoHa(const std::map<std::string, CatalogoEntry>& cat, const st
     return true;
 }
 
+// Legge un PPM P6 scritto da salvaPPM e conta i pixel della fascia cielo
+// (prime CIELO_RIGHE righe) diversi dal colore dell'angolo in alto a sinistra.
+// Serve a verificare che lo skyline della tappa sia disegnato sopra l'orizzonte
+// (DECO1 passo 2a: in questo passo solo lv_01_neon ha skyline; gli altri
+// livelli hanno ancora il cielo piatto di tema_).
+constexpr i32 CIELO_RIGHE = 112; // HORIZON_Y di src/render/renderer.h
+
+static i32 contaPixelSkyDiversi(const std::string& path, u32& cieloRif) {
+    cieloRif = 0;
+    std::FILE* f = std::fopen(path.c_str(), "rb");
+    if (!f) return -1;
+    char firma[2] = {};
+    if (std::fread(firma, 1, 2, f) != 2 || firma[0] != 'P' || firma[1] != '6') {
+        std::fclose(f);
+        return -1;
+    }
+    auto saltaSpazi = [&]() -> int {
+        int c = 0;
+        do { c = std::fgetc(f); } while (c != EOF && (c == ' ' || c == '\n' || c == '\r' || c == '\t'));
+        return c;
+    };
+    auto leggiInt = [&](int& out) -> bool {
+        int c = saltaSpazi();
+        out = 0;
+        bool ok = false;
+        while (c != EOF && c >= '0' && c <= '9') { out = out * 10 + (c - '0'); ok = true; c = std::fgetc(f); }
+        return ok;
+    };
+    int w = 0, h = 0, maxval = 0;
+    if (!leggiInt(w) || !leggiInt(h) || !leggiInt(maxval) || w <= 0 || h <= 0) {
+        std::fclose(f);
+        return -1;
+    }
+    // leggiInt ha gia' consumato il carattere dopo maxval (il newline che
+    // chiude l'intestazione "P6\n<w> <h>\n<maxval>\n"): i pixel iniziano qui.
+    std::vector<u8> buf((size_t)w * (size_t)h * 3);
+    if (std::fread(buf.data(), 1, buf.size(), f) != buf.size()) {
+        std::fclose(f);
+        return -1;
+    }
+    std::fclose(f);
+    cieloRif = (u32)buf[0] << 16 | (u32)buf[1] << 8 | (u32)buf[2];
+    i32 n = 0;
+    const i32 skyRows = std::min(h, CIELO_RIGHE);
+    for (i32 y = 0; y < skyRows; ++y) {
+        const u8* riga = buf.data() + (size_t)y * (size_t)w * 3;
+        for (i32 x = 0; x < w; ++x) {
+            const u32 c = (u32)riga[x * 3] << 16 | (u32)riga[x * 3 + 1] << 8 | (u32)riga[x * 3 + 2];
+            if (c != cieloRif) ++n;
+        }
+    }
+    return n;
+}
+
 static bool verificaDecorazioni(const std::string& outDir) {
     static const char* kLivelli[6] = {
         "lv_01_neon", "lv_02_atomico", "lv_03_foglie",
@@ -1515,10 +1578,22 @@ static bool verificaDecorazioni(const std::string& outDir) {
         bool msOk = msMed <= MAX_MS_FRAME;
         bool cartOk = cartelloni > 0;
         bool catalogoOk = (risolti == (i32)ids.size()) && !ids.empty();
+        // Screenshot PPM per livello (scritto da esegui con scrivi=true).
+        std::string ppmLivello =
+            outDir + "/decorazioni_" + std::string(livello) + "/prova_gate_curva.ppm";
+        // DECO1 2b: ogni tappa ha il suo skyline sopra l'orizzonte
+        // (tema_grafico.skyline), non solo lv_01_neon.
+        u32 cieloRif = 0;
+        i32 skyVarianti = contaPixelSkyDiversi(ppmLivello, cieloRif);
+        std::printf("  %s: screenshot %s, cielo 0x%06X, pixel cielo diversi=%d\n",
+                    livello, ppmLivello.c_str(), cieloRif, skyVarianti);
+        bool skyOk = skyVarianti > 0;
+        if (!skyOk)
+            std::printf("  %s: VIOLAZIONE skyline non disegnato sopra l'orizzonte\n", livello);
         std::printf("decorazioni %s: catalogo %d/%d id risolti, cartelloni=%d (densita %.4f/unit), ms/frame medio=%.3f max=%.3f | %s\n",
                     livello, risolti, (i32)ids.size(), cartelloni, densita, msMed, e.msMax,
-                    (catalogoOk && cartOk && msOk) ? "OK" : "FALLITO");
-        ok = ok && catalogoOk && cartOk && msOk;
+                    (catalogoOk && cartOk && msOk && skyOk) ? "OK" : "FALLITO");
+        ok = ok && catalogoOk && cartOk && msOk && skyOk;
         if (!msOk) std::printf("  %s: VIOLAZIONE ms/frame medio=%.3f > %.0f\n", livello, msMed, MAX_MS_FRAME);
     }
     std::printf("%s\n", ok ? "GATE DECORAZIONI OK" : "FALLITO: decorazioni non risolte o oltre soglia");

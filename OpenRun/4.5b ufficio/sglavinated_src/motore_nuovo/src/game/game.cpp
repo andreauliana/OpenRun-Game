@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
+#include "render/sprite_raw.h" // caricaSpriteRaw: skyline raw del livello, core senza SDL
 #include <algorithm> // std::min/max
 #include <cctype> // std::isdigit
 #include <cmath> // std::fmod
@@ -282,27 +283,93 @@ void Game::caricaLivello(const std::string& livelloId) {
     // Tutte le allocazioni avvengono qui (init): zero alloc nel ciclo di gioco.
     cartelloni_.clear();
     if (!sponsorSpriteIdx_.empty()) {
-        if (!leggiCartelloniDaFile(radiceLivello)) {
-            // Campo assente o non valido -> fallback casualita' deterministica.
-            Rng rndCartelloni(seed_);
-            const f32 latoSx = -1600.0f; // bordo strada sinistro (unita' mondo)
-            const f32 latoDx = 1600.0f;  // bordo strada destro
-            i32 k = 0;
-            const i32 nSeg = (i32)road_.segments().size();
-            for (i32 i = 0; i < nSeg; ++i) {
-                if (rndCartelloni.next(4) != 0) continue; // ~1 segmento su 4 con cartellone
-                SpriteInstance b;
-                b.worldZ = (f32)(i * Road::SEG_LEN);
-                b.worldX = (k & 1) ? latoDx : latoSx; // lato alternato: distribuzione bilanciata
-                b.scale = 1.0f;
-                b.sprite = ren_.sponsorSprite(sponsorSpriteIdx_[rndCartelloni.next((u32)sponsorSpriteIdx_.size())]);
-                b.paletteBase = 0;
-                cartelloni_.push_back(b);
-                ++k;
-            }
+        const f32 latoSx = -1600.0f; // bordo strada sinistro (unita' mondo)
+        const f32 latoDx = 1600.0f;  // bordo strada destro
+        const i32 nSeg = (i32)road_.segments().size();
+        std::vector<bool> segmentoOccupato(nSeg, false);
+        Rng rndCartelloni(seed_);
+
+        // 1) Posizioni esplicite da livello.json (campo cartelloni_sponsor).
+        //    leggiCartelloniDaFile segna i segmenti usati in segmentoOccupato.
+        const bool daFile = leggiCartelloniDaFile(radiceLivello, segmentoOccupato);
+
+        // 2) DECO1 2d / D2b: densita' totale cartelloni ~20-30% dei segmenti
+        //    (target ~25%, valore scelto: 1 segmento su 4). I segmenti senza
+        //    cartellone esplicito vengono riempiti in modo deterministico
+        //    (seed di tappa), senza sovrapporre le posizioni esplicite del file.
+        //    Tutte le allocazioni avvengono qui (init): zero alloc per frame.
+        i32 k = (i32)cartelloni_.size();
+        for (i32 i = 0; i < nSeg; ++i) {
+            if (segmentoOccupato[(size_t)i]) continue;
+            if (rndCartelloni.next(4) != 0) continue; // ~1 segmento su 4 con cartellone
+            SpriteInstance b;
+            b.worldZ = (f32)(i * Road::SEG_LEN);
+            b.worldX = (k & 1) ? latoDx : latoSx; // lato alternato: distribuzione bilanciata
+            b.scale = 1.0f;
+            b.sprite = ren_.sponsorSprite(sponsorSpriteIdx_[rndCartelloni.next((u32)sponsorSpriteIdx_.size())]);
+            b.paletteBase = 0;
+            cartelloni_.push_back(b);
+            segmentoOccupato[(size_t)i] = true;
+            ++k;
         }
+        const double densita = nSeg > 0 ? (double)cartelloni_.size() / (double)nSeg : 0.0;
+        std::printf("cartelloni sulla pista: %zu (da file %s, densita ~%.1f%% del percorso)\n",
+                    cartelloni_.size(), daFile ? "sì" : "no", densita * 100.0);
     }
     scenaSprites_.reserve(sprites_.capacity() + cartelloni_.size()); // zero alloc per frame a regime
+
+    // Skyline della tappa (DECO1 2b): raw del livello da
+    // motore_nuovo/dati/sprite_raw/scenari/<livello>/skyline.sglraw (id del
+    // catalogo tema_grafico.skyline, letto in leggiTemaDaFile). Caricato in
+    // caricaLivello, quindi si rinnova a ogni cambio tappa (init e fineTappa):
+    // cielo piatto se il raw manca o e' illeggibile. Zero alloc nel ciclo di gioco.
+    Sprite skyline = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + livelloId + "/skyline.sglraw"));
+    if (skyline.width > 0) ren_.impostaSkyline(std::move(skyline));
+    else ren_.impostaSkyline(Sprite{});
+
+    // Oggetti bordo strada (DECO1 2c): sprite da tema_grafico.oggetti_bordo_strada.
+    caricaOggettiStrada(livelloId);
+}
+
+namespace {
+std::string nomeOggettoDaId(const std::string& id);
+}
+
+void Game::caricaOggettiStrada(const std::string& livelloId) {
+    // DECO1 2c: carica gli sprite raw degli oggetti bordo strada dichiarati in
+    // tema_grafico.oggetti_bordo_strada e ne fissa le posizioni a bordo strada
+    // (seme fisso, zero alloc nel ciclo di gioco).
+    // Sono puramente decorativi: NON generano collisione (oggetti non solidi).
+    oggettiStrada_.clear();
+    ren_.clearOggettoSprites();
+    if (oggettiBordoStrada_.empty()) return;
+    const i32 nOggetti = (i32)oggettiBordoStrada_.size();
+    const f32 giro = (f32)road_.totalLength();
+    if (giro <= 0.0f) return;
+    // Indice sprite per ogni id: registra prima tutti gli sprite, cosi' i
+    // puntatori restituiti da oggettoSprite() restano validi (nessuna rialloc
+    // dopo la creazione delle istanze).
+    std::vector<i32> idxPerId(nOggetti, -1);
+    for (i32 j = 0; j < nOggetti; ++j) {
+        std::string nome = nomeOggettoDaId(oggettiBordoStrada_[j]);
+        Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + livelloId + "/" + nome + ".sglraw"));
+        if (s.width > 0) idxPerId[j] = ren_.aggiungiOggettoSprite(std::move(s));
+    }
+    // Una istanza ogni passoZ unita', lato alternato, bordo strada (+/-1600).
+    const f32 passoZ = 4000.0f;
+    i32 k = 0;
+    for (f32 z = passoZ; z < giro - passoZ; z += passoZ) {
+        const i32 j = k % nOggetti;
+        const i32 idx = idxPerId[j];
+        SpriteInstance b;
+        b.worldZ = z;
+        b.worldX = (k & 1) ? 1600.0f : -1600.0f;
+        b.scale = 1.0f;
+        b.sprite = (idx >= 0) ? ren_.oggettoSprite(idx) : nullptr;
+        b.paletteBase = 0;
+        oggettiStrada_.push_back(b);
+        ++k;
+    }
 }
 
 void Game::init(const std::string& livelloId) {
@@ -424,6 +491,13 @@ bool rgb(const JsonObject& o, const char* chiave, u32& out) {
 std::string stringa(const JsonObject& o, const char* chiave) {
     JsonValue v;
     return jsonGet(o, chiave, v) && jsonIsString(v) ? jsonAsString(v) : std::string();
+}
+// Estrae il nome dello sprite da un id di catalogo tipo "oggetto.lv_01_neon.palo_neon"
+// (tutto dopo l'ultimo punto): usato per risolvere il file raw per livello.
+std::string nomeOggettoDaId(const std::string& id) {
+    const size_t pos = id.rfind('.');
+    if (pos == std::string::npos || pos + 1 >= id.size()) return id;
+    return id.substr(pos + 1);
 }
 } // namespace
 
@@ -657,11 +731,12 @@ void Game::fineTappa(f32 avanzo) {
         road_.setCollinaInizioTappa(last.hill);
     }
     const TemaColori temaPrima = ren_.tema(); // tema della tappa che finisce (ancora corrente)
+    const Sprite skylinePrima = ren_.skylineCorrente(); // skyline prima del cambio tappa (foto)
     progressoTappePrecedenti_ += (f32)road_.totalLength();
-    caricaLivello(prossima); // imposta subito il tema della tappa nuova (impostaTema)
+    caricaLivello(prossima); // imposta subito il tema e lo skyline della tappa nuova (impostaTema)
     // Transizione graduale verso il tema di arrivo (FORK1 punto 6): i colori di
-    // ambiente si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
-    ren_.iniziaTransizioneTema(temaPrima, transizioneTemaS_);
+    // ambiente e lo skyline si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
+    ren_.iniziaTransizioneTema(temaPrima, skylinePrima, transizioneTemaS_);
     tappaId_ = prossima;
     ++numeroTappa_;
     if (!tempoScaduto_) tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
@@ -725,6 +800,12 @@ void Game::setSponsorSprites(std::vector<std::pair<std::string, Sprite>> sprites
     // Possesso esclusivo del Renderer; puntatori stabili dopo questa chiamata.
 }
 
+void Game::setSkylineSprite(Sprite sprite) {
+    // Consegnato dal runner (o dal test) prima di init(); applicato in
+    // caricaLivello() alla tappa che viene caricata, poi svuotato.
+    skylineSprite_ = std::move(sprite);
+}
+
 bool Game::leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::SegmentDesc>& out) const {
     if (!radice) return false; // file assente o non valido: init() usa il fallback hardcoded
     const JsonValue& root = *radice;
@@ -758,7 +839,7 @@ bool Game::leggiSegmentiDaFile(const JsonValue* radice, std::vector<Road::Segmen
     return !out.empty();
 }
 
-bool Game::leggiCartelloniDaFile(const JsonValue* radice) {
+bool Game::leggiCartelloniDaFile(const JsonValue* radice, std::vector<bool>& segmentoOccupato) {
     if (!radice) return false; // file assente o non valido: init() usa il fallback casuale deterministico
     const JsonValue& root = *radice;
     JsonValue campo;
@@ -784,6 +865,8 @@ bool Game::leggiCartelloniDaFile(const JsonValue* radice) {
         JsonValue segV;
         if (!jsonGet(o, "segmento", segV) || !jsonIsNumber(segV)) continue; // segmento obbligatorio
         const i32 segmento = (i32)jsonAsNumber(segV);
+        if (segmento >= 0 && segmento < (i32)road_.segments().size())
+            segmentoOccupato[(size_t)segmento] = true; // posizionamento esplicito del file
 
         f32 worldX;
         JsonValue latoV;
@@ -1007,6 +1090,7 @@ void Game::render() {
     // e disegna tutto in ordine di distanza (dietro prima).
     scenaSprites_ = sprites_;
     scenaSprites_.insert(scenaSprites_.end(), cartelloni_.begin(), cartelloni_.end());
+    scenaSprites_.insert(scenaSprites_.end(), oggettiStrada_.begin(), oggettiStrada_.end());
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
     const bool steeringLeft = (input_.held & Pad::Left) != 0;
     const bool steeringRight = (input_.held & Pad::Right) != 0;
