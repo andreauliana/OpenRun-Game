@@ -30,7 +30,7 @@ Leggere [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) per l'ultim
 1. CP-006 APERTO (D19 RISPOSTA DI ANDREA: B): T1-RUN resta [~]; attendere nuova prova/decisione Andrea su runner Mac (D12 = A, D14 = A). DEFAULT non applicabile (risposta Andrea presente). Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale. CP-006 si chiude solo con decisione Andrea (regola 8).
 2. CP-007 CHIUSO 2026-10-27 (FORK1): review incrociate indipendenti positive + ctest 20/20 verde. FORK1 [x]. Nessun CP R2 ancora aperto.
 3. DECO1 [ ]: prossimo passo 2a (skyline lv_01 sopra l'orizzonte) del @developer, non del @grafico; poi 2b-2e; gate `decorazioni` e CP DECO1 dopo; @grafico fornisce asset e rivede screenshot. DECO1 [x] prima di ogni prova Pi 400/RetroPie.
-4. R2 [ ] non avviato: subordinato a conferma formale Andrea su runner Mac (D18 = B); dopo F60 review incrociata developer→developer-junior (ancora pendente). Poi R2 dopo ok Andrea Mac.
+4. R2 [~] in corso (aggiornato da Claude 27/10 su richiesta di Andrea): R2 NON e' subordinato a D18 o D19. Passi 1, 1b, 1c fatti, ctest 22/22 verde con gate `ciclo`; prossimo @developer passo 1d, poi DECO1 2f, RIV, PIST1 (vedi RICHIESTA, 'Chi tocca adesso' di R2).
 5. F60 gate verde registrato 22/10 20:06 (60/50 Hz OK, replay 2x IDENTICO, 6/6 percorsi OK); manca solo review incrociata developer→developer-junior e apertura CP F60.
 6. G1 @grafico: catalogo 100 PNG, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0" (handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` consultato); CP-002 in attesa review indipendente.
 
