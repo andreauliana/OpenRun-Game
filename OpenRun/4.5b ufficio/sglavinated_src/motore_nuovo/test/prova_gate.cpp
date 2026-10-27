@@ -6,7 +6,9 @@
 //                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti) |
 //                percorso (profilo del tracciato + un giro intero con guida automatica) |
 //                espansione (verifica espansione tracciato su tutti i 6 livelli) |
-//                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste)
+//                gara (tappe con bivi: le 4 combinazioni di scelte arrivano alle 6 piste) |
+//                ciclo (R2: macchina a stati Menu -> Gara -> guida, ordine fasi,
+//                       determinismo, screenshot PPM per fase)
 //                bivio_bordi (bordo strada attraverso il bivio sul livello piu' curvo:
 //                           nessun ribaltamento, offroad consecutivi <= N)
 //                decorazioni (DECO1: catalogo skyline/oggetti per livello, cartelloni,
@@ -1600,6 +1602,117 @@ static bool verificaDecorazioni(const std::string& outDir) {
     return ok;
 }
 
+// --- Blocco R2 punto 2 (@developer-junior): gate `ciclo`.
+// Attraversa le fasi della macchina a stati con input scriptati:
+//   avviaGara() -> Menu -> Start (corsa singola) -> Gara -> guida
+// Verifica: ordine delle fasi, partenza/reattivita' della guida,
+// determinismo (due run identici: stessa sequenza di fasi, stesse misure,
+// stesso frameHash), nessun ribaltamento. Salva uno screenshot PPM per
+// fase attraversata.
+// Nota: FineTempo/Risultati richiedono gara_ attiva in fase Gara (cablaggio
+// Menu -> gara a tappe da completare da @developer in un passo successivo
+// di R2; raggiunto quando il wiring e' chiuso).
+struct CicloMisure {
+    std::vector<FaseId> sequenza;     // fasi attraversate (senza duplicati consecutivi)
+    f32 speedFinale = 0.0f;
+    f32 kmFinale = 0.0f;
+    i32 tappaFinale = 0;
+    f32 tempoResiduoFinale = 0.0f;
+    bool ribaltato = false;
+    bool menuVisto = false;
+    bool garaVisto = false;
+    std::vector<u32> hash;
+};
+
+static const char* nomeFase(FaseId f) {
+    switch (f) {
+        case FaseId::Splash:    return "Splash";
+        case FaseId::Menu:      return "Menu";
+        case FaseId::Gara:      return "Gara";
+        case FaseId::FineTempo: return "FineTempo";
+        case FaseId::Risultati: return "Risultati";
+    }
+    return "?";
+}
+
+static bool verificaCiclo(const std::string& outDir) {
+    std::filesystem::create_directories(outDir);
+    const i32 FRAME_GUIDA = 300;   // 5 s di guida a 60 Hz
+    CicloMisure a, b;
+    for (int run = 0; run < 2; ++run) {
+        CicloMisure& m = (run == 0) ? a : b;
+        Game game(12345u);
+        caricaSponsor(game);
+        if (!game.avviaGara()) {
+            std::printf("ciclo: FALLITO (avviaGara non riuscito)\n");
+            return false;
+        }
+        if (game.faseCorrente() != FaseId::Menu) {
+            std::printf("ciclo: FALLITO (fase dopo avviaGara: %s, attesa Menu)\n",
+                        nomeFase(game.faseCorrente()));
+            return false;
+        }
+        m.menuVisto = true;
+        m.sequenza.push_back(game.faseCorrente());
+        salvaPPM(outDir + "/ciclo_menu.ppm", game.fb().data(),
+                 Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        bool startInviato = false, garaScreenshot = false;
+        for (i32 frame = 0; frame < FRAME_GUIDA; ++frame) {
+            Pad pad{};
+            if (!startInviato && frame == 10) {
+                pad.pressed = Pad::Start; // Menu: conferma corsa singola -> Gara
+                startInviato = true;
+            } else {
+                pad.held = Pad::A;        // gas
+                const f32 x = game.state().playerX;
+                if (x > 120.0f) pad.held |= Pad::Left;
+                else if (x < -120.0f) pad.held |= Pad::Right;
+            }
+            game.setInput(pad);
+            game.update();
+            game.render();
+            FaseId f = game.faseCorrente();
+            if (m.sequenza.empty() || m.sequenza.back() != f) m.sequenza.push_back(f);
+            if (f == FaseId::Gara) {
+                m.garaVisto = true;
+                if (!garaScreenshot) {
+                    salvaPPM(outDir + "/ciclo_gara.ppm", game.fb().data(),
+                             Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                    garaScreenshot = true;
+                }
+            }
+            if (game.state().playerFlipping) m.ribaltato = true;
+            m.speedFinale = game.state().playerSpeed;
+            m.kmFinale = game.distanzaKm();
+            m.tappaFinale = game.numeroTappa();
+            m.tempoResiduoFinale = game.tempoResiduoS();
+            m.hash.push_back(game.frameHash());
+        }
+    }
+    const bool stessaSequenza = a.sequenza == b.sequenza;
+    const bool stesseMisure = std::abs(a.speedFinale - b.speedFinale) < 0.01f &&
+                              std::abs(a.kmFinale - b.kmFinale) < 0.01f &&
+                              a.tappaFinale == b.tappaFinale &&
+                              std::abs(a.tempoResiduoFinale - b.tempoResiduoFinale) < 0.01f;
+    const bool stessoHash = a.hash == b.hash;
+    std::printf("ciclo: sequenza A=");
+    for (FaseId f : a.sequenza) std::printf("%s ", nomeFase(f));
+    std::printf("| B=");
+    for (FaseId f : b.sequenza) std::printf("%s ", nomeFase(f));
+    std::printf("\n");
+    std::printf("ciclo: speed=%.2f km=%.2f tappa=%d tempoResiduo=%.2f | ribaltato=%s\n",
+                a.speedFinale, a.kmFinale, a.tappaFinale, a.tempoResiduoFinale,
+                a.ribaltato ? "sì" : "no");
+    std::printf("ciclo: stessa sequenza=%s stesse misure=%s stesso hash=%s\n",
+                stessaSequenza ? "sì" : "no",
+                stesseMisure ? "sì" : "no",
+                stessoHash ? "sì" : "no");
+    bool ok = stessaSequenza && stesseMisure && stessoHash && !a.ribaltato &&
+              a.menuVisto && a.garaVisto;
+    std::printf("%s\n", ok ? "GATE CICLO OK" : "FALLITO: ciclo di fasi non verificato");
+    return ok;
+}
+
 // --- Gara: partenza, bivi e arrivo seguendo dati/percorso_gara.json ---
 // Guida automatica: gas pieno, schiva gli avversari davanti, al bivio va sul
 // ramo voluto. Per ogni combinazione di scelte controlla le tappe attraversate,
@@ -2002,6 +2115,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaDecorazioni(outDir);
         std::printf("%s\n", ok ? "GATE DECORAZIONI OK" : "FALLITO: decorazioni non risolte o oltre soglia");
         return ok ? 0 : 19;
+    }
+
+    if (modo == "ciclo") {
+        const bool ok = verificaCiclo(outDir);
+        std::printf("%s\n", ok ? "GATE CICLO OK" : "FALLITO: ciclo di fasi non verificato");
+        return ok ? 0 : 20;
     }
 
     // --- modo smoke (default) ---

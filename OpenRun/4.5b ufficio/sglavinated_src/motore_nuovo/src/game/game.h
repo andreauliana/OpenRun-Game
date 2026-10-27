@@ -14,6 +14,7 @@
 #include "gameplay/show.h"
 #include "gameplay/disegno_show.h" // scena show: personaggio/fumetto/UFO in px
 #include "gameplay/testi_frasi.h"  // testi frasi.json per i fumetti
+#include "game/fasi.h"             // blocco R2: macchina a stati di gioco
 #include <string>
 #include <utility>
 #include <vector>
@@ -73,6 +74,13 @@ public:
     void setSkylineSprite(Sprite sprite);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
     size_t numeroCartelloni() const { return cartelloni_.size(); }
+
+    // --- Blocco R2: macchina a stati di gioco ---
+    FaseId faseCorrente() const { return fasi_.attuale(); }
+    // Dati per la schermata risultati (distanza, tappa, tempo residuo in secondi).
+    f32 distanzaKm() const { return km_; }
+    i32 numeroTappa() const { return numeroTappa_; }
+    f32 tempoResiduoS() const { return tempoResiduoS_; }
 
     // Radio: passa al brano successivo (input del runner: tasto R o Start+B).
     void nextBranoRadio() { mixer_.nextBrano(); }
@@ -167,6 +175,10 @@ private:
     void spawnTraffic();
     bool collisioneOggettiVicini() const;
 
+    // Blocco R2: logica separata per fase di guida e fase di menu.
+    void aggiornaGuida(f32 dt);
+    void aggiornaMenu(f32 dt);
+
     // Tracciato, cartelloni e tema di una tappa (senza toccare auto e show).
     void caricaLivello(const std::string& livelloId);
     void leggiTemaDaFile(const JsonValue* radice);
@@ -223,6 +235,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     f32 secondiDaSceltaBivio_ = 0.0f; // secondi dalla scelta del ramo al bivio (fattore ramp)
     Rivale rivali_[RIVALI];
     Rng rndRivali_{1u};
+    GestoreFasi fasi_; // blocco R2: Splash -> Menu -> Gara -> FineTempo -> Risultati
 };
 
 // Dichiarazioni anticipate per prova_gate.cpp (definizioni locali statiche

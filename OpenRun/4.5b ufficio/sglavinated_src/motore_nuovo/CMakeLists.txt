@@ -42,6 +42,8 @@ add_library(sglavinated_core
     src/player/player.cpp
     src/game/game.h
     src/game/game.cpp
+    src/game/fasi.h
+    src/game/fasi.cpp
     # ---------------------------------------------------------------------------
     # Modulo gameplay (blocco D): interfaccia verso il nucleo (show.h).
     # Scritto da @grafico in src/gameplay/; @developer lo collega al ciclo di gioco

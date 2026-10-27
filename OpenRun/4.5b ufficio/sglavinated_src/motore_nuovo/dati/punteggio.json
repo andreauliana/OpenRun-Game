@@ -1,0 +1,8 @@
+{
+  "licenza": "MIT",
+  "autore": "@developer (blocco R2, placeholder da definire con Andrea)",
+  "descrizione": "Formula punteggio della gara: punti per km percorso, bonus per secondo di tempo residuo e bonus per tappa (checkpoint) completata.",
+  "punti_per_km": 10,
+  "bonus_tempo_residuo_per_secondo": 2,
+  "bonus_checkpoint": 300
+}

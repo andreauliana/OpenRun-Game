@@ -1,0 +1,16 @@
+{
+  "licenza": "CC-BY-4.0",
+  "autore": "@developer (blocco R2, classifica fittizia placeholder per i risultati; da curare con @grafico)",
+  "descrizione": "Classifica fittizia della gara: 9 avversari con nome e punteggio. Il punteggio del giocatore viene inserito al suo posto nella schermata risultati.",
+  "giocatori": [
+    {"nome": "ALE", "punti": 9800},
+    {"nome": "BEN", "punti": 9100},
+    {"nome": "SIM", "punti": 8500},
+    {"nome": "LUC", "punti": 7900},
+    {"nome": "MAR", "punti": 7400},
+    {"nome": "GIA", "punti": 6900},
+    {"nome": "FIO", "punti": 6300},
+    {"nome": "LEO", "punti": 5800},
+    {"nome": "ANN", "punti": 5200}
+  ]
+}

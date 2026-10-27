@@ -437,6 +437,7 @@ void Game::init(const std::string& livelloId) {
     radioM.sampleRate = 12922;
     i32 n = mixer_.loadRadio(radioM);
     if (n > 0) mixer_.selezionaBrano(0);
+    fasi_.cambia(FaseId::Gara, *this); // blocco R2: free-play (init senza gara) guida subito
 }
 
 namespace {
@@ -609,6 +610,7 @@ bool Game::avviaGara(const std::string& fileTappe) {
     preparaBivio();
     inizializzaRivali();
     aggiornaStatoGara();
+    fasi_.cambia(FaseId::Menu, *this); // blocco R2: la gara a tappe inizia dal menu
     return true;
 }
 
@@ -907,7 +909,35 @@ void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
     f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
+    fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
+    if (fasi_.attuale() == FaseId::Gara || fasi_.attuale() == FaseId::FineTempo) {
+        aggiornaGuida(dt);
+    } else {
+        aggiornaMenu(dt);
+    }
+    // Aggiorna stato esportato (comune a tutte le fasi).
+    state_.frame = clock_.frame;
+    state_.playerSpeed = player_.speed;
+    state_.playerX = player_.x;
+    state_.playerZ = player_.z;
+    state_.playerOffroad = player_.offroad;
+    state_.playerFlipping = playerFlipping_;
+    state_.playerFlipFrame = playerFlipFrame_;
+    if (gara_) {
+        if (!arrivo_ && !tempoScaduto_) {
+            ++frameGara_;
+            if (tempoResiduoS_ > 0.0f) tempoResiduoS_ -= dt;
+            if (tempoResiduoS_ <= 0.0f) tempoScaduto_ = true; // game over
+        }
+        aggiornaStatoGara();
+        // Tempo scaduto o arrivo: FineTempo, poi Risultati (blocco R2).
+        if (fasi_.attuale() == FaseId::Gara && (tempoScaduto_ || arrivo_))
+            fasi_.cambia(FaseId::FineTempo, *this);
+    }
+    clock_.tick();
+}
 
+void Game::aggiornaGuida(f32 dt) {
     if (playerFlipping_) {
         passoGiocatore_ = 0.0f;
         ++playerFlipFrame_;
@@ -1066,28 +1096,31 @@ void Game::update() {
 
     // Replay: registra gli input se attivo.
     if (replay_.active()) replay_.record(input_.pressed | input_.held);
+}
 
-    // Aggiorna stato esportato.
-    state_.frame = clock_.frame;
-    state_.playerSpeed = player_.speed;
-    state_.playerX = player_.x;
-    state_.playerZ = player_.z;
-    state_.playerOffroad = player_.offroad;
-    state_.playerFlipping = playerFlipping_;
-    state_.playerFlipFrame = playerFlipFrame_;
-    if (gara_) {
-        if (!arrivo_ && !tempoScaduto_) {
-            ++frameGara_;
-            if (tempoResiduoS_ > 0.0f) tempoResiduoS_ -= dt;
-            if (tempoResiduoS_ <= 0.0f) tempoScaduto_ = true; // game over
-        }
-        aggiornaStatoGara();
-    }
-
-    clock_.tick();
+void Game::aggiornaMenu(f32 dt) {
+    // Fase senza guida (menu/splash/risultati): show e orologio, nessun input di guida.
+    tempoGiocoS_ += dt;
+    StatoGameplayInput gi;
+    gi.frame = clock_.frame;
+    gi.dt = dt;
+    gi.stage = 0;
+    gi.inGara = false;
+    gi.inputAttivo = (input_.held != 0ull);
+    gi.offRoad = false;
+    showManager_.aggiorna(gi);
+    disegnoShow_.aggiorna(tempoGiocoS_, showManager_);
+    // Silenzio in menu: velocita' zero.
+    std::fill(audioBuf_.begin(), audioBuf_.end(), (i16)0);
 }
 
 void Game::render() {
+    if (fasi_.attuale() != FaseId::Gara && fasi_.attuale() != FaseId::FineTempo) {
+        // Schermate di menu/risultati: niente strada, disegna la fase corrente.
+        fb_.clear(pal_[7]);
+        fasi_.disegna(ren_, fb_);
+        return;
+    }
     fb_.clear(pal_[7]); // cielo
     ren_.drawRoad(road_, player_.x, road_.playerZ, latoBivio_);
     // Merge traffico + cartelloni in un buffer riutilizzato (zero alloc a regime)
@@ -1145,6 +1178,7 @@ void Game::render() {
         ren_.drawHud(player_.speed / player_.maxSpeed(), player_.gear, player_.offroad);
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
+    if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
 }
 
 bool Game::collisioneOggettiVicini() const {
