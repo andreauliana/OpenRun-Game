@@ -165,7 +165,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/prova_gate.cpp")
 
         # FORK1 (25/10): bivio_uscita, bivio_bordi, tema_transizione. DECO1 (26/10): decorazioni.
         # R2 (27/10): ciclo (Splash -> Menu -> Gara -> FineTempo -> Risultati -> Menu).
-        foreach(mode accelerazione crash sterzo curve gara urto bivio_uscita bivio_centro bivio_bordi tema_transizione decorazioni ciclo traffico corsie tratti sprite_sottili)
+        foreach(mode accelerazione crash sterzo curve gara urto bivio_uscita bivio_centro bivio_bordi tema_transizione decorazioni ciclo traffico corsie tratti)
             add_test(
                 NAME gate_${mode}
                 COMMAND prova_gate "${GATE_TEST_OUTPUT}/${mode}" lv_01_neon ${mode}

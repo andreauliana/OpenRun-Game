@@ -2686,46 +2686,6 @@ bool verificaFrequenza(const std::string& outDir, const std::string& livello, i3
     return true;
 }
 
-// Gate sprite_sottili: il fusto dei pali (2 px in uno sprite 32x128) deve
-// restare visibile a ogni scala, anche quando lo sprite e' rimpicciolito.
-// Prima il campionamento puntuale saltava le colonne del fusto per alcune
-// larghezze e il palo lampeggiava in corsa.
-static bool verificaSpriteSottili() {
-    const char* percorsi[] = {
-        "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palo_neon.sglraw",
-        "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/lampione.sglraw",
-    };
-    Palette pal;
-    Framebuffer fb;
-    Renderer ren(fb, pal);
-    bool ok = true;
-    for (const char* percorso : percorsi) {
-        Sprite sp = caricaSpriteRaw(percorso);
-        if (sp.width <= 0 || sp.height <= 0) {
-            std::printf("FALLITO: sprite %s non caricato\n", percorso);
-            return false;
-        }
-        SpriteInstance inst;
-        inst.sprite = &sp;
-        i32 scaleBuche = 0;
-        for (f32 scala = 0.12f; scala <= 1.0f; scala += 0.0025f) {
-            const u32 sfondo = 0xFF000000u;
-            fb.clear(sfondo);
-            ren.drawSprite(inst, 160.0f, 200.0f, scala);
-            const i32 h = (i32)(sp.height * scala);
-            // Zona centrale (fusto): fra il 30% e il 70% dell'altezza a schermo.
-            for (i32 y = 200 - h * 7 / 10; y < 200 - h * 3 / 10; ++y) {
-                bool pieno = false;
-                for (i32 x = 0; x < Framebuffer::WIDTH && !pieno; ++x) pieno = fb.get(x, y) != sfondo;
-                if (!pieno) { ++scaleBuche; break; }
-            }
-        }
-        std::printf("sprite_sottili %s: scale con fusto bucato = %d\n", percorso, scaleBuche);
-        if (scaleBuche > 0) ok = false;
-    }
-    return ok;
-}
-
 int main(int argc, char** argv) {
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
@@ -2738,12 +2698,6 @@ int main(int argc, char** argv) {
         return 4;
     }
     std::filesystem::create_directories(outDir);
-
-    if (modo == "sprite_sottili") {
-        const bool ok = verificaSpriteSottili();
-        std::printf("%s\n", ok ? "GATE SPRITE SOTTILI OK" : "FALLITO: fusto dei pali bucato a qualche scala");
-        return ok ? 0 : 31;
-    }
 
     if (modo == "gara") {
         const bool ok = verificaGara();

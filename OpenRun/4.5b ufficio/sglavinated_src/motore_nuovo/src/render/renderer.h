@@ -81,9 +81,6 @@ public:
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
     void drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen);
-    // Un solo sprite con base in (screenX, screenY) e scala in pixel per texel.
-    // Pubblico per il gate sprite_sottili (prova_gate).
-    void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f);
@@ -172,6 +169,7 @@ private:
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
     void drawRoadsideMarkers(f32 playerZ);
+    void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s);
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo
     // da (tappa che finisce), t = 1 solo a (tappa nuova); i pixel trasparenti
