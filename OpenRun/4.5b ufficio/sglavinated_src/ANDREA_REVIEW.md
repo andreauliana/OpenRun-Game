@@ -149,7 +149,6 @@ Domanda:
 Dopo peer review incrociata su R1 e gate `sh UFFICIO/Officina/TOOL/gate_t1.sh soak` verde su tutti e 6 i percorsi, Andrea ri-verifica il runner su Mac (v91, SDL2) prima dei test Pi 400/RetroPie?
 Opzioni: A) sì, Andrea ri-verifica su Mac runner prima di procedere a Pi 400  B) no, si procede direttamente a Pi 400 dopo peer review
 RISPOSTA DI ANDREA: A
-Impatto se cambi idea: saltare la ri-verifica Mac e passare direttamente a Raspberry Pi 400/RetroPie (core libretro, BUILD_LIBRETRO=ON, aggiornare con libretro.h).
 
 ## Feedback storico v90 — 2026-10-17
 
@@ -161,7 +160,7 @@ Andrea aveva valutato la tappa 1 **NON OK** per l'assenza di una dinamica di gui
 2. Migliorare principi di guida: accelerazione con limite da migliorare, freno, rallentamento a gas rilasciato, sterzo dipendente dalla velocita', reazione alla curva, rallentamento toccando il bordo strada, animazione ribaltamento/collisioni del fuori strada (riparte con animazione di rientro nel percorso e prosecuzione della tragitto).
 3. Rappresentare nel pannello velocita' (HUV) e risposta del motore animazioni brani audio radio interpretando segnali dei brani .mx Traker.
 
-Perfezionamento e implementazione dei Personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
+Perfezionamento e implementazione dei personaggi animati sono rinviati alla fase successiva. La richiesta di test headless con screenshot e misure e' una registrazione storica: usare gli esiti documentati nei checkpoint/status correnti, senza considerarli superati o completati per deduzione.
 
 
 ## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [CHIUSA 2026-10-23 da Andrea]
@@ -170,8 +169,6 @@ Domanda:
 Confermare stati proposti in `out/capo/STATI_PROPOSTI.md` per Tappa 1 / Gate T1-RUN e deleghe 4.6 (developer, developer-junior, designer = @grafico; consegne `out/developer/`, `out/developer-junior/`, `out/designer/`)?
 Opzioni: A) sì, procedo con questi stati e DEFAULT  B) no, revisionare stati prima di proseguire
 Raccomandazione: A
-DEFAULT usato nel frattempo: A — proseguo senza aspettare; T1-RUN resta [~] fino a CP-005 chiuso + `ctest` verde + prova runner su Mac di Andrea (D13: B, D14: A); nessun lavoro dedicato a Pi 400/RetroPie prima dell'ok Mac; G1 attivo su designer; 60 Hz entra dopo R1, prima di R2.
-Impatto se cambi idea: aggiornare `out/capo/STATI_PROPOSTI.md`, ridelegare i blocchi interessati e rieseguire review indipendente se cambia l'autore.
 RISPOSTA DI ANDREA: A
 
 ## Nuovo feedback o decisione (Andrea, 19 ott)
@@ -271,16 +268,9 @@ Domanda: dopo chiusura formale CP-005 (review incrociata registrata) e `ctest` v
 
 Opzioni: A) sì, chiudi T1-RUN [x] e avvia R2 dopo CP-005 + ctest + ok Andrea Mac  B) no, attendere ulteriore prova/decisione di Andrea prima di R2
 
-Raccomandazione: A
-
-DEFAULT usato nel frattempo: A — CP-005 + `ctest` verde, poi T1-RUN resta [~] fino a ok Andrea Mac (D16); nessun lavoro Pi 400/RetroPie dedicato prima dell'ok.
-
-Impatto se cambi idea: T1-RUN resta [~] e R2 non parte finché Andrea non conferma.
-
 RISPOSTA DI ANDREA: B
 
-AGGIORNAMENTO DI ANDREA 27/10 (scritto da Claude su richiesta di Andrea): D18 e' chiusa. R2 e i blocchi dopo (DECO1 2f, RIV, PIST1, FIN) **non aspettano** D18 ne' D19: si lavora senza altri ok. D19 = B vale solo per chiudere T1-RUN.
-
+AGGIORNAMENTO DI ANDREA 27/10: D18 e' chiusa. R2 e i blocchi dopo (DECO1 2f, RIV, PIST1, FIN) **non aspettano** D18 ne' D19: si lavora senza altri ok. D19 = B vale solo per chiudere T1-RUN.
 
 **Important:** 23/10 test Mac: ctest 17/17, runner ok, al bivio, in alcuni livelli, glitch di ricalcolo e la tappa dopo parte con posizionamento percorso sbagliato, senza un transizione graduale, incrementare leggermente la curvatura dei due Fork, perche la macchina puo andare in crush toccando i bordi della parte centrale (FORK1). The other players are going a bit too fast and far, they should act a bit more realistically, as in a race.
 
