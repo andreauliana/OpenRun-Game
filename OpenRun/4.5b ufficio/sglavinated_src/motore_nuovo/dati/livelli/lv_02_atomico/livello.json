@@ -11,7 +11,7 @@
     "segmenti": 7250,
     "durata_stimata_s": 52
   },
-  "tracciato": ["rettilineo_lungo", "collina_su", "dune", "curva_dolce_sx", "rettilineo_largo", "curva_larga_dx", "curva_larga_sx", "rettilineo_corto", "curva_stretta_sx", "curva_dolce_dx", "curva_stretta_dx", "chicane_dx", "chicane_sx"],
+  "tracciato": ["rettilineo_lungo", "collina_su", "chicane_dx", "chicane_sx", "dune", "curva_dolce_sx", "rettilineo_largo", "curva_larga_dx", "curva_larga_sx", "rettilineo_corto", "curva_stretta_sx", "curva_dolce_dx", "curva_stretta_dx"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.0, "lunghezza": 600},
     {"curva": 0.0, "collina": 0.3, "lunghezza": 500},
