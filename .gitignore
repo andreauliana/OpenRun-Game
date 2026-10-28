@@ -43,3 +43,6 @@ OpenRun/**/outrun_src/*
 
 # Copie zip dell'albero: tenerle fuori da git
 OpenRun/*.zip
+
+# Copia sbagliata della cartella UFFICIO fuori da sglavinated_src (quella vera e' in sglavinated_src/UFFICIO)
+/OpenRun/4.5b ufficio/UFFICIO/

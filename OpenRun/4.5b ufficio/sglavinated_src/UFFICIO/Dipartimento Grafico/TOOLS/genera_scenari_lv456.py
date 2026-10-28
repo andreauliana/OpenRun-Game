@@ -7,10 +7,11 @@ from PIL import Image, ImageDraw
 import json, struct, zlib
 from pathlib import Path
 
-ROOT = Path("UFFICIO/Dipartimento Grafico/Libreria/assets_originali")
+SRC = Path(__file__).resolve().parents[3]  # sglavinated_src, qualunque sia la cartella da cui si lancia
+ROOT = SRC / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali"
 SCENARI = ROOT / "scenari"
 CATALOGO = ROOT / "CATALOGO_GRAFICO.json"
-RAW_ROOT = Path("motore_nuovo/dati/sprite_raw")
+RAW_ROOT = SRC / "motore_nuovo/dati/sprite_raw"
 
 def save_png(path, img):
     path.parent.mkdir(parents=True, exist_ok=True)
