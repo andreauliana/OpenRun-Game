@@ -133,7 +133,8 @@ SPEC = [
     ("scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png", 56, 128, pali_cavi),
 ]
 
-ROOT = "UFFICIO/Dipartimento Grafico/Libreria/assets_originali"
+SRC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # sglavinated_src
+ROOT = os.path.join(SRC, "UFFICIO", "Dipartimento Grafico", "Libreria", "assets_originali")
 ok = True
 for rel, w, h, disegna in SPEC:
     path = os.path.join(ROOT, rel)

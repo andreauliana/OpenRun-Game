@@ -8,7 +8,9 @@ import json
 import random
 from PIL import Image, ImageDraw
 
-ROOT = "assets_originali/scenari"
+SRC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # sglavinated_src
+# era "assets_originali/scenari" (vecchio link rimosso): ora la libreria vera
+ROOT = os.path.join(SRC, "UFFICIO", "Dipartimento Grafico", "Libreria", "assets_originali", "scenari")
 
 LEVELS = {
     "lv_01_neon": {

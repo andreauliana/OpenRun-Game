@@ -7,8 +7,9 @@
 import struct, zlib, json
 from pathlib import Path
 
-LIBRERIA = Path("UFFICIO/Dipartimento Grafico/Libreria/assets_originali")
-RAW_ROOT = Path("motore_nuovo/dati/sprite_raw")
+SRC = Path(__file__).resolve().parents[3]  # sglavinated_src, qualunque sia la cartella da cui si lancia
+LIBRERIA = SRC / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali"
+RAW_ROOT = SRC / "motore_nuovo/dati/sprite_raw"
 CATALOGO = LIBRERIA / "CATALOGO_GRAFICO.json"
 MAGIC = b"SGLR"
 
