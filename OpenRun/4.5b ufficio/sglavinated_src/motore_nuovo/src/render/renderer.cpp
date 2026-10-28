@@ -374,20 +374,36 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     const i32 syFin = (y0 + h > Framebuffer::HEIGHT) ? Framebuffer::HEIGHT - y0 : h;
     const i32 sxIni = x0 < 0 ? -x0 : 0;
     const i32 sxFin = (x0 + w > Framebuffer::WIDTH) ? Framebuffer::WIDTH - x0 : w;
+    const i32 sw = s.sprite->width;
+    const i32 sh = s.sprite->height;
+    // Colore del texel (tx, ty); alpha 0 = trasparente.
+    auto texel = [&](i32 tx, i32 ty) -> u32 {
+        const u8 idx = s.sprite->pixels[ty * sw + tx];
+        // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
+        if (palettePropria) return s.sprite->palette[idx % nPalette];
+        // Palette del motore: indice 0 = trasparente.
+        return idx == 0 ? 0u : pal_[s.paletteBase + idx];
+    };
     for (i32 sy = syIni; sy < syFin; ++sy) {
-        i32 ty = (i32)((f32)sy / (f32)h * (f32)s.sprite->height);
+        // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
+        const i32 ty0 = (i32)((i64)sy * sh / h);
+        i32 ty1 = (i32)((i64)(sy + 1) * sh / h);
+        if (ty1 <= ty0) ty1 = ty0 + 1;
+        const i32 ty = (ty0 + ty1) / 2;
         for (i32 sx = sxIni; sx < sxFin; ++sx) {
-            i32 tx = (i32)((f32)sx / (f32)w * (f32)s.sprite->width);
-            u8 idx = s.sprite->pixels[ty * s.sprite->width + tx];
-            u32 col;
-            if (palettePropria) {
-                // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
-                col = s.sprite->palette[idx % nPalette];
-            } else {
-                // Palette del motore: indice 0 = trasparente.
-                if (idx == 0) continue;
-                col = pal_[s.paletteBase + idx];
-            }
+            const i32 tx0 = (i32)((i64)sx * sw / w);
+            i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
+            if (tx1 <= tx0) tx1 = tx0 + 1;
+            u32 col = texel((tx0 + tx1) / 2, ty);
+            // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
+            // texel centrale e' trasparente si cerca un texel pieno nel resto
+            // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px
+            // in uno sprite da 32) non spariscono a intermittenza quando la
+            // larghezza a schermo cambia di frame in frame. Da vicino (area di
+            // 1 texel) il risultato e' identico al campionamento semplice.
+            for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry)
+                for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
+                    col = texel(rx, ry);
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
             fb_.put(x0 + sx, y0 + sy, col);
         }
