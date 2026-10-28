@@ -113,6 +113,9 @@ public:
     i32 numeroTappa() const { return numeroTappa_; }
     f32 tempoResiduoS() const { return tempoResiduoS_; }
     bool arrivato() const { return arrivo_; }
+    // Posizione del giocatore nella gara (1 = primo). In arrivo riporta la
+    // posizione registrata al traguardo (blocco FIN).
+    i32 posizioneArrivo() const { return arrivo_ ? posizioneArrivo_ : posizioneGiocatore(); }
     // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
     // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
     void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }

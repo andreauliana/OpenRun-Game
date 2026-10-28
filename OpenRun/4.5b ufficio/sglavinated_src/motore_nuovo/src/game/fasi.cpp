@@ -14,6 +14,7 @@ namespace {
 // Durate in secondi (frequenza indipendente, decisione Andrea 19 ott).
 constexpr f32 SPLASH_DURATA_S = 2.0f;   // logo, poi menu da solo o con un tasto
 constexpr f32 FINE_TEMPO_DURATA_S = 4.0f; // "TEMPO SCADUTO" visibile prima dei risultati
+constexpr f32 FINALE_DURATA_S = 5.0f;   // scena di arrivo prima dei risultati (blocco FIN)
 
 // Score: distanza + bonus tempo residuo + bonus checkpoint (dati/punteggio.json).
 constexpr i32 PUNTI_PER_KM_DEFAULT = 10;
@@ -155,7 +156,9 @@ public:
         ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
     }
     void esci(Game&) override {}
-    FaseId prossima() const override { return FaseId::Risultati; }
+    // Arrivo: Finale poi Risultati. Tempo scaduto: salta il finale, va diretto
+    // a Risultati (compatibile con il gate ciclo, che finisce sempre in tempo scaduto).
+    FaseId prossima() const override { return arrivo_ ? FaseId::Finale : FaseId::Risultati; }
     bool finita() const override { return finita_; }
     const char* nome() const override { return "FineTempo"; }
 private:
@@ -284,6 +287,62 @@ private:
     std::vector<PunteggioEntry> classifica_;
 };
 
+namespace {
+// Scena del finale scelta da dati/finali.json in base alla pista d'arrivo e alla
+// posizione (primo / podio / altro). Voci mancanti o file assente -> segnaposto motore.
+std::string scenaFinale(const std::string& pista, i32 posizione) {
+    std::string path = "motore_nuovo/dati/finali.json";
+    JsonReader r(leggiFileTesto(path));
+    if (!r.parse() || !jsonIsObject(r.valore())) return {};
+    const JsonObject& o = jsonAsObject(r.valore());
+    JsonValue pv;
+    if (!jsonGet(o, pista.c_str(), pv) || !jsonIsObject(pv)) return {};
+    const JsonObject& po = jsonAsObject(pv);
+    const char* chiave = (posizione == 1) ? "primo" : (posizione <= 3 ? "podio" : "altro");
+    JsonValue sv;
+    if (jsonGet(po, chiave, sv) && jsonIsString(sv)) return jsonAsString(sv);
+    return {};
+}
+} // namespace
+
+// ---------------------------------------------------------------------------
+// Fase: Finale (scena di arrivo, poi Risultati) — blocco FIN
+// ---------------------------------------------------------------------------
+
+class FinaleFase : public Fase {
+public:
+    FinaleFase() : timerS_(0.0f), durataS_(FINALE_DURATA_S), finita_(false), posizione_(0) {}
+    void entra(Game& gioco) override {
+        timerS_ = 0.0f; finita_ = false;
+        pista_ = gioco.tappaCorrente();
+        posizione_ = gioco.posizioneArrivo();
+        scena_ = scenaFinale(pista_, posizione_);
+    }
+    void aggiorna(Game&, f32 dt) override {
+        timerS_ += dt;
+        if (timerS_ >= durataS_) finita_ = true;
+    }
+    void disegna(Renderer& ren, Framebuffer&) const override {
+        const char* testo = scena_.empty() ? "FINALE" : scena_.c_str();
+        const i32 w = ren.larghezzaTesto(testo, 2);
+        ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
+        char buf[96];
+        std::snprintf(buf, sizeof(buf), "PISTA: %s   POSIZIONE: %d", pista_.c_str(), posizione_);
+        ren.drawTesto(64, 120, buf, 0xFFFFFFFFu, 1, true);
+    }
+    void esci(Game&) override {}
+    FaseId prossima() const override { return FaseId::Risultati; }
+    bool finita() const override { return finita_; }
+    const char* nome() const override { return "Finale"; }
+private:
+    f32 timerS_;
+    f32 durataS_;
+    bool finita_;
+    std::string pista_;
+    std::string scena_;
+    i32 posizione_;
+};
+
 // ---------------------------------------------------------------------------
 // GestoreFasi
 // ---------------------------------------------------------------------------
@@ -302,6 +361,7 @@ std::unique_ptr<Fase> GestoreFasi::crea(FaseId id) {
         case FaseId::Menu:      return std::make_unique<MenuFase>();
         case FaseId::Gara:      return std::make_unique<GaraFase>();
         case FaseId::FineTempo: return std::make_unique<FineTempoFase>();
+        case FaseId::Finale:    return std::make_unique<FinaleFase>();
         case FaseId::Risultati: return std::make_unique<RisultatiFase>();
     }
     return std::make_unique<MenuFase>();

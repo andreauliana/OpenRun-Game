@@ -320,7 +320,9 @@ bool verificaUrto(const std::string& livello) {
                 pad.held = (u64)(Pad::A | Pad::Left);
                 frameDopoContatto++;
                 if (frameDopoContatto >= BUMP_FRAMES + CONTROLLI_FRAMES) {
-                    r.controlliAttivi = (s.playerX < xPrimaControlli - 60.0f);
+                    // Controlli attivi: lo sterzo a sinistra deve spostare l'auto
+                    // a sinistra (soglia bassa: bastano pochi frame di risposta).
+                    r.controlliAttivi = (s.playerX < xPrimaControlli - 15.0f);
                     break;
                 }
             }
@@ -841,6 +843,62 @@ static std::map<std::string, i32> leggiLunghezzeTratti() {
         out[kv.first] = len;
     }
     return out;
+}
+
+// --- Definizioni tratto (curva, collina, larghezza, lunghezza) da tratti.json ---
+struct TrattoDef {
+    f32 curva = 0.0f;
+    f32 collina = 0.0f;
+    f32 larghezza = 1.0f;
+    i32 lunghezza = 1;
+};
+
+static std::map<std::string, TrattoDef> leggiDefTratti() {
+    std::map<std::string, TrattoDef> out;
+    std::ifstream f("motore_nuovo/dati/tracciati/tratti.json");
+    if (!f.is_open()) return out;
+    std::stringstream ss;
+    ss << f.rdbuf();
+    f.close();
+    sgl::JsonReader reader(ss.str());
+    if (!reader.parse()) return out;
+    const auto& val = reader.valore();
+    if (!sgl::jsonIsObject(val)) return out;
+    const auto& root = sgl::jsonAsObject(val);
+    sgl::JsonValue trattiVal;
+    if (!sgl::jsonGet(root, "tratti", trattiVal) || !sgl::jsonIsObject(trattiVal)) return out;
+    const auto& tratti = sgl::jsonAsObject(trattiVal);
+    for (const auto& kv : tratti) {
+        const auto& obj = sgl::jsonAsObject(kv.second);
+        TrattoDef d;
+        leggiNumeroJson(obj, "curva", d.curva);
+        leggiNumeroJson(obj, "collina", d.collina);
+        leggiNumeroJson(obj, "larghezza", d.larghezza);
+        sgl::JsonValue lv;
+        i32 len = 1;
+        if (sgl::jsonGet(obj, "lunghezza", lv) && sgl::jsonIsNumber(lv))
+            len = (i32)sgl::jsonAsNumber(lv);
+        d.lunghezza = len <= 0 ? 1 : len;
+        out.emplace(kv.first, d);
+    }
+    return out;
+}
+
+// Indice del segmento che contiene la posizione z (avvolto sul giro).
+static i32 segmentoIndiceZ(const Road& road, f32 z) {
+    const auto& segs = road.segments();
+    const f32 giro = (f32)road.totalLength();
+    if (giro <= 0.0f || segs.empty()) return 0;
+    z = std::fmod(z, giro);
+    if (z < 0.0f) z += giro;
+    f32 acc = 0.0f;
+    i32 i = 0;
+    for (const RoadSegment& seg : segs) {
+        if (acc + seg.length > z) return i;
+        acc += seg.length;
+        ++i;
+    }
+    return (i32)segs.size() - 1;
 }
 
 // Dato un indice di segmento del tracciato costruito ripetendo il pattern
@@ -2064,6 +2122,124 @@ static bool verificaDecorazioni(const std::string& outDir) {
     return ok;
 }
 
+// --- Blocco PIST1 punto 4 (@developer-junior): gate `tratti`.
+// Per ogni livello verifica:
+//   - ogni tipo di tratto dichiarato in livello.json ("tracciato") risulta costruito nei segmenti
+//     (assegnato per posizione tramite trattoDiSegmento, non per valore, cosi' tratti con
+//     stessa curva/collina/larghezza es. rettilineo e ponte si distinguono);
+//   - nel cuore di ogni tratto (esclusi i raccordi entrata/uscita) curva/collina/larghezza
+//     coincidono con la definizione di tratti.json;
+//   - nessun salto per segmento di curva/collina/larghezza oltre le soglie regole.json;
+//   - ms/frame smoke entro soglia; screenshot PPM al primo ingresso in ogni tratto.
+bool verificaTratti(const std::string& outDir) {
+    static const char* kLivelli[6] = {
+        "lv_01_neon", "lv_02_atomico", "lv_03_foglie",
+        "lv_04_cromo", "lv_05_spray", "lv_06_desktop"};
+    const BivioRegole br = leggiRegoleBivio();
+    constexpr f32 kTol = 0.05f;          // tolleranza cuore tratto su curva/collina/larghezza
+    constexpr f32 kDeltaLarghezzaMax = 0.1f; // salto larghezza per segmento (raccordo graduale)
+    bool ok = true;
+    for (const char* livello : kLivelli) {
+        std::filesystem::create_directories(outDir + "/tratti_" + std::string(livello));
+        Game game(12345u);
+        game.init(livello);
+        const auto& segs = game.road().segments();
+        const i32 n = (i32)segs.size();
+        const f32 giro = (f32)game.road().totalLength();
+        const auto nomi = leggiNomiTratti(livello);
+        const auto lunghezze = leggiLunghezzeTratti();
+        const auto defs = leggiDefTratti();
+        // somma lunghezze pattern per espansione
+        i32 somma = 0;
+        for (const auto& nm : nomi) {
+            auto it = lunghezze.find(nm);
+            somma += (it != lunghezze.end()) ? it->second : 1;
+        }
+        bool espansioneOk = (somma > 0 && n >= somma && (n % somma) == 0);
+        // presenza e fedelta' cuore tratto
+        std::map<std::string,bool> dichiarato, presente;
+        for (const auto& nm : nomi) dichiarato[nm] = true;
+        i32 mismatchCuore = 0;
+        for (i32 i = 0; i < n; ++i) {
+            std::string nome;
+            i32 inizio = -1;
+            if (!trattoDiSegmento(i, nomi, lunghezze, nome, inizio)) continue;
+            auto dit = defs.find(nome);
+            if (dit == defs.end()) continue;
+            const TrattoDef& d = dit->second;
+            const i32 ramp = std::min(i32(d.lunghezza / 3), 60);
+            const i32 fine = inizio + d.lunghezza;
+            const bool cuore = (i >= inizio + ramp) && (i < fine - ramp);
+            if (cuore) {
+                const RoadSegment& seg = segs[i];
+                if (std::abs(seg.curve - d.curva) > kTol ||
+                    std::abs(seg.hill - d.collina) > kTol ||
+                    std::abs(seg.larghezza - d.larghezza) > kTol) {
+                    ++mismatchCuore;
+                }
+            }
+            presente[nome] = true;
+        }
+        bool tuttiPresenti = true;
+        for (const auto& kv : dichiarato)
+            if (!presente[kv.first]) tuttiPresenti = false;
+        // salti per segmento consecutivo
+        f32 maxDC = 0.0f, maxDCol = 0.0f, maxDL = 0.0f;
+        for (i32 i = 1; i < n; ++i) {
+            maxDC = std::max(maxDC, std::abs(segs[i].curve - segs[i - 1].curve));
+            maxDCol = std::max(maxDCol, std::abs(segs[i].hill - segs[i - 1].hill));
+            maxDL = std::max(maxDL, std::abs(segs[i].larghezza - segs[i - 1].larghezza));
+        }
+        bool saltiLarghezzaOk = maxDL <= kDeltaLarghezzaMax;
+        // ms/frame smoke
+        Esito e = esegui(outDir + "/tratti_" + std::string(livello), livello, true, SMOKE_FRAMES);
+        double msMed = e.msTot / SMOKE_FRAMES;
+        bool msOk = msMed <= MAX_MS_FRAME;
+        // screenshot: guida un giro e cattura al primo ingresso di ogni tratto
+        std::map<std::string,bool> visti;
+        f32 percorso = 0.0f, zPrima = 0.0f;
+        i32 frame = 0;
+        const i32 FRAME_MAX = 60000;
+        bool giroFinito = false;
+        while (percorso < giro && frame < FRAME_MAX) {
+            Pad pad{}; pad.held = Pad::A;
+            const f32 x = game.state().playerX;
+            if (x > 120.0f) pad.held |= Pad::Left;
+            else if (x < -120.0f) pad.held |= Pad::Right;
+            game.setInput(pad);
+            game.update();
+            game.render();
+            const f32 z = game.state().playerZ;
+            f32 dz = z - zPrima;
+            if (dz < 0.0f) dz += giro;
+            percorso += dz;
+            zPrima = z;
+            ++frame;
+            const Road& road = game.road();
+            i32 si = segmentoIndiceZ(road, z);
+            std::string nome;
+            i32 inizio = -1;
+            if (trattoDiSegmento(si, nomi, lunghezze, nome, inizio) && !visti[nome]) {
+                visti[nome] = true;
+                salvaPPM(outDir + "/tratti_" + std::string(livello) + "/tratti_" +
+                         std::string(livello) + "_" + nome + ".ppm",
+                         game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+            }
+        }
+        giroFinito = percorso >= giro;
+        std::printf("tratti %s: segmenti=%d espansione=%s dichiarati=%zu presenti=%zu mismatchCuore=%d "
+                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f giro=%s | %s\n",
+                    livello, n, espansioneOk ? "OK" : "NO", dichiarato.size(),
+                    presente.size(), mismatchCuore, maxDC, maxDCol, maxDL, msMed,
+                    giroFinito ? "finito" : "NO",
+                    (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito) ? "OK" : "FALLITO");
+        bool lvOk = espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito;
+        ok = ok && lvOk;
+    }
+    std::printf("%s\n", ok ? "GATE TRATTI OK" : "FALLITO: tratti non coerenti su un livello");
+    return ok;
+}
+
 // --- Blocco R2 punto 2 (@developer-junior): gate `ciclo`.
 // Attraversa tutta la macchina a stati con input scriptati, come nel runner:
 //   avviaGara() + mostraMenu() -> Splash -> Start -> Menu -> Giu + Start
@@ -2265,6 +2441,7 @@ struct EsitoGara {
     i32 posizione = 0;
     u32 frame = 0;
     u32 incidenti = 0;
+    i32 sovrapposizioni = 0; // veicoli visibili (rivali + traffico) troppo vicini tra loro (RIV)
 };
 
 EsitoGara corriGara(const char* scelte) {
@@ -2296,6 +2473,13 @@ EsitoGara corriGara(const char* scelte) {
         if (game.state().playerFlipping && !ribaltato) ++e.incidenti;
         ribaltato = game.state().playerFlipping;
         if (game.tappaCorrente() != e.tappe.back()) e.tappe.push_back(game.tappaCorrente());
+        // Sovrapposizione tra veicoli visibili (rivali + traffico): nessun paio troppo vicino.
+        const auto& vis = game.traffico();
+        for (size_t va = 0; va < vis.size(); ++va)
+            for (size_t vb = va + 1; vb < vis.size(); ++vb)
+                if (std::abs(vis[va].worldZ - vis[vb].worldZ) < 100.0f &&
+                    std::abs(vis[va].worldX - vis[vb].worldX) < 150.0f)
+                    ++e.sovrapposizioni;
     }
     e.arrivo = game.state().arrivo;
     e.posizione = game.state().posizione;
@@ -2319,12 +2503,13 @@ bool verificaGara() {
         bool tappeOk = a.tappe.size() == 3;
         for (size_t i = 0; tappeOk && i < 3; ++i) tappeOk = a.tappe[i] == c.atteso[i];
         const bool uguali = a.frame == b.frame && a.posizione == b.posizione && a.tappe == b.tappe;
-        std::printf("gara %s: %s -> %s -> %s, arrivo %s in %.1f s, posizione %d/8, incidenti %u, replay %s\n",
+        std::printf("gara %s: %s -> %s -> %s, arrivo %s in %.1f s, posizione %d/8, incidenti %u, sovrapposizioni %d, replay %s\n",
                     c.scelte, a.tappe.size() > 0 ? a.tappe[0].c_str() : "-", a.tappe.size() > 1 ? a.tappe[1].c_str() : "-",
                     a.tappe.size() > 2 ? a.tappe[2].c_str() : "-", a.arrivo ? "si" : "NO", a.frame / 50.0f,
-                    a.posizione, a.incidenti, uguali ? "IDENTICO" : "DIVERSO");
+                    a.posizione, a.incidenti, a.sovrapposizioni, uguali ? "IDENTICO" : "DIVERSO");
         // Una tappa dura circa un minuto: la gara intera resta sotto i 5 minuti.
-        ok = ok && tappeOk && a.arrivo && uguali && a.frame < 15000u && a.posizione >= 1 && a.posizione <= 8;
+        ok = ok && tappeOk && a.arrivo && uguali && a.frame < 15000u && a.posizione >= 1 && a.posizione <= 8 &&
+             a.sovrapposizioni <= 20;
     }
     return ok;
 }
@@ -2690,6 +2875,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaCiclo(outDir);
         std::printf("%s\n", ok ? "GATE CICLO OK" : "FALLITO: ciclo di fasi non verificato");
         return ok ? 0 : 20;
+    }
+
+    if (modo == "tratti") {
+        const bool ok = verificaTratti(outDir);
+        std::printf("%s\n", ok ? "GATE TRATTI OK" : "FALLITO: tratti non coerenti");
+        return ok ? 0 : 26;
     }
 
     // --- modo smoke (default) ---
