@@ -1,7 +1,7 @@
 {
   "licenza": "CC-BY-4.0",
   "autore": "@developer (blocco R1, tracce originali, nessun materiale Sega)",
-  "nota": "Libreria di tratti riutilizzabili dai 6 livello.json (campo 'tracciato'). 'lunghezza' conta segmenti da 200 unita'. entrata/uscita: -1 = raccordo automatico min(lunghezza/3, 60) gestito da road.cpp; 0 disabilita il raccordo per quel lato. La correzione della deriva di road.cpp si applica solo ai segmenti con curva != 0. 27/10 (Andrea: livelli piu' corti, dune, strada piu' larga): lunghezze ridotte di circa un quarto; 'larghezza' 2 = strada a 4 corsie (1 = 2 corsie, raccordo di 80 segmenti, sempre 1 al bivio); 'dune' + 'onde' = dossi sopra la quota del tratto (onde 1 = dosso singolo con cresta cieca). 27/10 (PIST1, @developer): nuovi tipi tratto: chicane_dx/chicane_sx (curva-controcurva stretta, 0.85/-0.85 su 140 seg), ponte (sovrapasso a tema, larghezza 1, parapetti oggetti bordo a cura del grafico), autostrada (larghezza 2 = 4 corsie, guardrail a cura del grafico), citta (curve strette 0.7 su 200 seg, facciate tema a cura del grafico), valle (collina -0.35 su 220 seg). larghezza per segmento 1.0-2.0 raccordata da road.cpp senza scatti, default 1.0.",
+  "nota": "Libreria di tratti riutilizzabili dai 6 livello.json (campo 'tracciato'). 'lunghezza' conta segmenti da 200 unita'. entrata/uscita: -1 = raccordo automatico min(lunghezza/3, 60) gestito da road.cpp; 0 disabilita il raccordo per quel lato. La correzione della deriva di road.cpp si applica solo ai segmenti con curva != 0. 27/10 (Andrea: livelli piu' corti, dune, strada piu' larga): lunghezze ridotte di circa un quarto; 'larghezza' 2 = strada a 4 corsie (1 = 2 corsie, raccordo di 80 segmenti, sempre 1 al bivio); 'dune' + 'onde' = dossi sopra la quota del tratto (onde 1 = dosso singolo con cresta cieca). 27/10 (PIST1, @developer): nuovi tipi tratto: chicane_dx/chicane_sx (curva-controcurva stretta, 0.85/-0.85 su 140 seg), ponte (sovrapasso a tema, larghezza 1, parapetti oggetti bordo a cura del grafico), autostrada (larghezza 2 = 4 corsie, guardrail a cura del grafico), citta (rettilineo tra le facciate, curva 0 dal 28/10, facciate tema a cura del grafico), valle (collina -0.35 su 220 seg). 28/10 (Claude): i tratti nuovi vanno messi prima degli ultimi 1200 segmenti (bivio, sempre 2 corsie) e la somma curva*lunghezza di ogni livello deve restare ~0 (chicane sempre in coppia dx+sx). larghezza per segmento 1.0-2.0 raccordata da road.cpp senza scatti, default 1.0.",
   "tratti": {
     "rettilineo_corto": {"curva": 0.0, "collina": 0.0, "lunghezza": 340, "entrata": -1, "uscita": -1},
     "rettilineo_lungo": {"curva": 0.0, "collina": 0.0, "lunghezza": 480, "entrata": -1, "uscita": -1},
@@ -20,7 +20,7 @@
     "chicane_sx": {"curva": -0.85, "collina": 0.0, "lunghezza": 140, "entrata": -1, "uscita": -1},
     "ponte": {"curva": 0.0, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1, "larghezza": 1.0},
     "autostrada": {"curva": 0.0, "collina": 0.0, "lunghezza": 520, "entrata": -1, "uscita": -1, "larghezza": 2.0},
-    "citta": {"curva": 0.7, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1},
+    "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1},
     "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1}
   }
 }

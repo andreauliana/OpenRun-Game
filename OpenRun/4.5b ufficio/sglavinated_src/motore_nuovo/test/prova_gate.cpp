@@ -348,8 +348,13 @@ bool verificaUrto(const std::string& livello) {
                         if (game.veicolo(i).attivo && std::abs(game.veicolo(i).z - t.worldZ) < 1.0f) traffico = true;
                     if (traffico) continue;
                     const f32 dz = t.worldZ - dopo.playerZ;
+                    // Fuori dal bivio: li' il ramo scelto viene ricentrato e
+                    // playerX salta, la prova sullo sterzo non avrebbe senso
+                    // (28/10: con i tratti PIST1 il contatto cadeva nel bivio).
+                    const bool nelBivio = game.road().bivioAttivo() &&
+                                          dopo.playerZ >= game.road().bivioInizioZ();
                     if (dz > 0.0f && dz < 120.0f && std::abs(t.worldX - dopo.playerX) < 180.0f &&
-                        !dopo.playerOffroad) {
+                        !dopo.playerOffroad && !nelBivio) {
                         contatto = true;
                         frameContatto = frame;
                         frameDopoContatto = 0;
