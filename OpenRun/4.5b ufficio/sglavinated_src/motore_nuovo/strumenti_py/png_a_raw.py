@@ -8,9 +8,11 @@
 # Legge:  assets_originali/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
 #         assets_originali/sprite/rivali/auto_rivale_<colore>_retro.png (4 rivali, RIV punto b)
 #         assets_originali/sprite/traffico/traffico_<nome>_retro.png (4 veicoli di traffico)
+#         assets_originali/sprite/pubblico/pubblico_<gruppo>_<posa>.png (pubblico all'arrivo)
 # Scrive: motore_nuovo/dati/sprite_raw/sponsor/<id>_<stile>.sglraw
 #         motore_nuovo/dati/sprite_raw/rivali/auto_rivale_<colore>_retro.sglraw
 #         motore_nuovo/dati/sprite_raw/traffico/traffico_<nome>_retro.sglraw
+#         motore_nuovo/dati/sprite_raw/pubblico/pubblico_<gruppo>_<posa>.sglraw
 # Il loader C++ corrispondente: motore_nuovo/src/render/sprite_raw.{h,cpp}.
 import struct
 import zlib
@@ -37,6 +39,8 @@ TRAFFICO_FILES = [
     "traffico_utilitaria_bianca_retro", "traffico_furgone_grigio_retro",
     "traffico_berlina_blu_retro", "traffico_camioncino_beige_retro",
 ]
+# Stesso elenco caricato da Game::caricaSpriteFolla (game.cpp).
+PUBBLICO_FILES = ["pubblico_a_giu", "pubblico_a_su", "pubblico_b_giu", "pubblico_b_su"]
 
 
 def leggi_png(path):
@@ -164,7 +168,26 @@ def main():
             f.write(rgba)
         print(f"scritto {dst} ({w}x{h})")
         n += 1
-    print(f"convertiti {n} sprite in raw (sponsor {OUTDIR}, rivali {OUTDIR_RIVALE}, traffico {OUTDIR_TRAFFICO})")
+    # Pubblico all'arrivo (Andrea 29/10), disegnato da
+    # UFFICIO/Dipartimento Grafico/TOOLS/disegna_pubblico.py.
+    OUTDIR_PUBBLICO = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "pubblico"
+    ASSETS_PUBBLICO = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "pubblico"
+    for nome in PUBBLICO_FILES:
+        src = ASSETS_PUBBLICO / (nome + ".png")
+        if not src.exists():
+            print(f"salta (manca): {src}")
+            continue
+        w, h, rgba = leggi_png(src)
+        dst = OUTDIR_PUBBLICO / (nome + ".sglraw")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(dst, "wb") as f:
+            f.write(MAGIC)
+            f.write(struct.pack("<II", w, h))
+            f.write(rgba)
+        print(f"scritto {dst} ({w}x{h})")
+        n += 1
+    print(f"convertiti {n} sprite in raw (sponsor {OUTDIR}, rivali {OUTDIR_RIVALE}, traffico {OUTDIR_TRAFFICO}, "
+          f"pubblico {OUTDIR_PUBBLICO})")
 
 
 if __name__ == "__main__":

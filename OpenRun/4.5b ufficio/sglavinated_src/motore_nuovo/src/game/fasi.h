@@ -12,7 +12,9 @@ class Framebuffer;
 
 // Fase di gioco (blocco R2). Ogni fase espone entra/aggiorna/disegna/esce.
 // Deterministica: niente orologi di sistema, durate in secondi e input solo via Pad.
-enum class FaseId { Splash, Menu, Gara, FineTempo, Finale, Risultati };
+// Arrivo: FineTempo (l'auto frena e si ferma sulla strada) e Risultati
+// (classifica sopra la scena); la vecchia fase Finale e' tolta (Andrea 29/10).
+enum class FaseId { Splash, Menu, Gara, FineTempo, Risultati };
 
 class Fase {
 public:

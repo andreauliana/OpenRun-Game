@@ -35,6 +35,8 @@ struct HudElemento {
     i32 x = 0, y = 0, w = 0, h = 0, spessore = 2;   // cornice / barra (barra_pos, barra_w, barra_h)
     i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
     i32 scalaValore = 1, scala = 1;
+    i32 scalaLabel = 0;     // 0 = font mini 3x5 (etichette piccole e coerenti)
+    i32 oscuraSfondo = 0;   // cornice: % di scurimento dell'interno (0 = trasparente)
     u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
 };
 
@@ -44,7 +46,9 @@ struct HudDati {
     f32 km = 0.0f;        // distanza percorsa
     f32 giri = 0.0f;      // 0..1 contagiri
     bool gara = false;    // tempo, tappa e posizione solo in gara
-    i32 tempoS = 0;       // secondi rimasti
+    i32 tempoS = 0;       // secondi rimasti (conto alla rovescia)
+    f32 totaleS = 0.0f;   // tempo totale di gara (secondi)
+    i32 tempoExtra = 0;   // > 0: secondi aggiunti al checkpoint (avviso a schermo)
     i32 tappa = 1, tappe = 3, posizione = 0, concorrenti = 0;
     bool marciaAlta = false;
     bool show = false;
@@ -64,6 +68,9 @@ public:
     // Disegna la strada (segmenti proiettati) con rumble laterali e fondo cielo.
     // latoBivio: ramo scelto al bivio di fine tappa (0 = ancora da scegliere).
     void drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio = 0);
+    // Traguardo (Andrea 29/10): linea a scacchi per terra dove il tracciato
+    // finisce, solo sulla tappa d'arrivo.
+    void setLineaArrivo(bool attiva) { lineaArrivo_ = attiva; }
     void impostaTema(const TemaColori& t) { tema_ = t; temaA_ = t; transizioneT_ = 1.0f; }
     const TemaColori& tema() const { return tema_; }
     // Avvia la transizione graduale del tema: da `da` (tema della tappa che
@@ -83,7 +90,9 @@ public:
     void drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen);
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
-    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f);
+    // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
+    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
+                       bool frena = false, f32 fumoS = -1.0f);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -94,6 +103,7 @@ public:
     bool haHud() const { return !hud_.empty(); }
     void drawHudDati(const HudDati& d);
     // Testo col font pixel dell'HUD (font_hud.h); scala intera, ombra nera di 1 px.
+    // scala 0 = font mini 3x5 (etichette), 1..n = font 5x7 ingrandito.
     void drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala = 1, bool ombra = true);
     static i32 larghezzaTesto(const char* testo, i32 scala = 1);
 
@@ -186,6 +196,8 @@ private:
     Sprite skylineA_;                       // skyline a fine transizione di tema
     f32 skylineScrollX_ = 0.0f;             // scorrere orizzontale skyline, parallasse in curva (DECO1 2e)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
+    bool lineaArrivo_ = false;              // scacchi sul traguardo (fine del tracciato)
+    f32 giro_ = 0.0f;                       // lunghezza del tracciato dell'ultima drawRoad
     TemaColori tema_;                       // colori di ambiente della tappa
     // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).
     TemaColori temaDa_;                     // tema di partenza (tappa che finisce)

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "render/renderer.h"
 #include "render/font_hud.h"
+#include "render/font_mini.h"
 #include <cstdio>
 #include <algorithm>
 #include <cmath> // std::fmod per il wrap di zRel
@@ -12,6 +13,7 @@ namespace {
 // frame, con un ciclo di 800 le strisce sembravano ferme o all'indietro.
 constexpr f32 LANE_DASH_CYCLE = 2000.0f;
 constexpr f32 LANE_DASH_LENGTH = 1000.0f;
+constexpr f32 LINEA_ARRIVO_PROF = 600.0f; // traguardo: 3 file di scacchi da 200 unita'
 constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
 }
 
@@ -56,6 +58,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
 
     // playerX del frame: drawSprites riusa la stessa proiezione della strada.
     lastPlayerX_ = playerX; // (riservato; drawSprites usa il centro strada proiettato)
+    giro_ = (f32)road.totalLength();
 
     // Cielo (parte superiore dello schermo) e terra (sotto l'orizzonte).
     fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, tema_.cielo);
@@ -128,6 +131,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
         f32 dashPhase = std::fmod(playerZ + distance, LANE_DASH_CYCLE);
         if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
+        // Traguardo: tre file di scacchi appena dopo la fine del tracciato.
+        i32 filaScacchi = -1;
+        if (lineaArrivo_ && giro_ > 0.0f) {
+            f32 zPista = std::fmod(playerZ + distance, giro_);
+            if (zPista < 0.0f) zPista += giro_;
+            if (zPista < LINEA_ARRIVO_PROF) filaScacchi = (i32)(zPista * 3.0f / LINEA_ARRIVO_PROF);
+        }
         for (i32 r = 0; r < rami; ++r) {
             const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
             const f32 cFar  = next.screenX + next.carr.centro[r] * pxFar;
@@ -138,6 +148,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             fb_.hline(lx, rx, y, road);
             fb_.hline(lx, lx + rw - 1, y, rumble);
             fb_.hline(rx - rw + 1, rx, y, rumble);
+            if (filaScacchi >= 0) {
+                // 16 caselle da bordo a bordo, alternate a ogni fila.
+                const f32 casella = (f32)(rx - lx + 1) / 16.0f;
+                for (i32 c = 0; c < 16; ++c) {
+                    const i32 x0 = lx + (i32)((f32)c * casella), x1 = lx + (i32)((f32)(c + 1) * casella) - 1;
+                    fb_.hline(x0, x1, y, ((c + filaScacchi) & 1) ? 0xFFF4F4F4u : 0xFF141414u);
+                }
+                continue;
+            }
             if (dashPhase < LANE_DASH_LENGTH) {
                 i32 lw = (i32)(hwBase * 0.02f);
                 if (lw < 1) lw = 1;
@@ -410,7 +429,8 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
-void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx) {
+void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
+                             bool frena, f32 fumoS) {
     // Auto del giocatore: sagoma sintetica (nessun asset Sega).
     // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
     // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
@@ -447,11 +467,35 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
-    if (speed > 0.0f && !offroad) {
+    if (frena) {
+        // Stop accesi: rossi e piu' grandi.
+        drawRotatedRect(cx - 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+        drawRotatedRect(cx + 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+    } else if (speed > 0.0f && !offroad) {
         drawRotatedRect(cx - 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
         drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
     }
-    (void)speed; // riservato per animazione sospensione / salto
+    if (fumoS >= 0.0f) {
+        // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s
+        // per ruota posteriore, sale, si allarga e si dirada (pixel a
+        // scacchiera, niente trasparenze).
+        constexpr f32 OGNI_S = 0.1f, VITA_S = 0.6f, FUMO_S = 1.0f;
+        for (i32 n = 0; (f32)n * OGNI_S <= std::min(fumoS, FUMO_S); ++n) {
+            const f32 eta = fumoS - (f32)n * OGNI_S;
+            if (eta > VITA_S) continue;
+            const f32 k = eta / VITA_S;
+            const i32 r = 2 + (i32)(k * 6.0f);
+            for (i32 lato = -1; lato <= 1; lato += 2) {
+                const i32 px = cx + lato * (13 + (i32)(k * 10.0f)) + ((n & 1) ? 2 : -2);
+                const i32 py = cy - 1 - (i32)(k * 12.0f);
+                const u32 col = k < 0.4f ? 0xFFE8E8E8u : 0xFFB8B8C0u;
+                for (i32 dy = -r; dy <= r; ++dy)
+                    for (i32 dx = -r; dx <= r; ++dx)
+                        if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
+                            fb_.put(px + dx, py + dy, col);
+            }
+        }
+    }
 }
 
 void Renderer::drawHud(f32 speedPct, i32 gear, bool offroad) {
@@ -501,10 +545,25 @@ void Renderer::drawGara(i32 posizione, i32 concorrenti, i32 tappa, bool arrivo, 
 i32 Renderer::larghezzaTesto(const char* testo, i32 scala) {
     i32 n = 0;
     while (testo[n]) ++n;
-    return n * FONT_HUD_W * scala;
+    return scala <= 0 ? n * FONT_MINI_W - 1 : n * FONT_HUD_W * scala;
 }
 
 void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala, bool ombra) {
+    if (scala <= 0) {
+        // Font mini 3x5 per le etichette, stessa ombra di 1 px.
+        for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
+            const i32 d = passo == 0 ? 1 : 0;
+            const u32 col = passo == 0 ? 0xFF000000u : colore;
+            i32 cx = x;
+            for (const char* c = testo; *c; ++c, cx += FONT_MINI_W) {
+                const u8* righe = fontMini(*c);
+                for (i32 r = 0; r < FONT_MINI_H; ++r)
+                    for (i32 k = 0; k < 3; ++k)
+                        if (righe[r] & (4u >> k)) fb_.put(cx + k + d, y + r + d, col);
+            }
+        }
+        return;
+    }
     // Font pixel 5x7 della variante B (approvato): una cella 6x8 per carattere.
     for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
         const i32 d = passo == 0 ? 1 : 0; // prima l'ombra, spostata di 1 px
@@ -538,14 +597,28 @@ void Renderer::drawHudDati(const HudDati& d) {
     char buf[32];
     for (const HudElemento& e : hud_) {
         if (e.tipo == "cornice") {
+            if (e.oscuraSfondo > 0) {
+                // Vetro scuro: l'interno resta leggibile sopra cielo e skyline.
+                const u32 k = (u32)(100 - std::min(e.oscuraSfondo, 100));
+                for (i32 y = e.y + e.spessore; y < e.y + e.h - e.spessore; ++y)
+                    for (i32 x = e.x + e.spessore; x < e.x + e.w - e.spessore; ++x) {
+                        const u32 c = fb_.get(x, y);
+                        const u32 r = ((c >> 16) & 0xFFu) * k / 100, g = ((c >> 8) & 0xFFu) * k / 100, b = (c & 0xFFu) * k / 100;
+                        fb_.put(x, y, 0xFF000000u | (r << 16) | (g << 8) | b);
+                    }
+            }
             cornicePiena(fb_, e.x + 1, e.y + 1, e.w, e.h, e.spessore, 0xFF000000u); // ombra
             cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.colore);
+            continue;
+        }
+        if (e.tipo == "linea") { // divisorio sottile dentro il box
+            fb_.fillRect(e.x, e.y, e.x + std::max(e.w, 1) - 1, e.y + std::max(e.h, 1) - 1, e.colore);
             continue;
         }
         if (e.tipo == "barra") {
             f32 pieno = e.id == "giri" ? d.giri : 0.0f;
             pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
-            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
             cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.coloreBordo);
             const i32 interno = e.w - 2 * e.spessore;
             const i32 px = (i32)(pieno * (f32)interno);
@@ -556,21 +629,25 @@ void Renderer::drawHudDati(const HudDati& d) {
             continue;
         }
         // testo: valore vivo per id; gli elementi di gara spariscono fuori gara.
-        const bool soloGara = e.id == "tempo" || e.id == "tappa" || e.id == "posizione";
+        const bool soloGara = e.id == "tempo" || e.id == "totale" || e.id == "tappa" || e.id == "posizione";
         if (soloGara && !d.gara) continue;
         const char* valore = nullptr;
         u32 coloreValore = e.colore;
-        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%05.1f", d.km); valore = buf; }
+        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%d M", (i32)(d.km * 1000.0f)); valore = buf; }
         else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
         else if (e.id == "tempo") {
             std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);
             valore = buf;
             if (d.tempoS <= 10 && (d.frame / 12) % 2) coloreValore = e.coloreLabel; // lampeggia negli ultimi 10 s
         }
+        else if (e.id == "totale") {
+            const i32 cs = (i32)(d.totaleS * 100.0f);
+            std::snprintf(buf, sizeof(buf), "%d'%02d\"%02d", cs / 6000, (cs / 100) % 60, cs % 100);
+            valore = buf;
+        }
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
-        else if (e.id == "marcia") valore = d.marciaAlta ? "HIGH" : "LOW";
-        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
         if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
             const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();
@@ -587,6 +664,10 @@ void Renderer::drawHudDati(const HudDati& d) {
         centro(70, "ARRIVO", 3);
         std::snprintf(buf, sizeof(buf), "POSIZIONE %d/%d", d.posizione, d.concorrenti);
         centro(100, buf, 1);
+    } else if (d.tempoExtra > 0) {
+        if ((d.frame / 8) % 2 == 0) centro(70, "TEMPO EXTRA", 2);
+        std::snprintf(buf, sizeof(buf), "+%d", d.tempoExtra);
+        centro(92, buf, 2);
     } else if (d.bivio && (d.frame / 15) % 2 == 0) {
         drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
         drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);

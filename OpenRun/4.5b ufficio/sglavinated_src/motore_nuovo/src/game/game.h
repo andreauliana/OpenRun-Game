@@ -10,11 +10,13 @@
 #include "render/renderer.h"
 #include "input/pad.h"
 #include "audio/mixer.h"
+#include "render/visualizzatore.h"
 #include "player/player.h"
 #include "gameplay/show.h"
 #include "gameplay/disegno_show.h" // scena show: personaggio/fumetto/UFO in px
 #include "gameplay/testi_frasi.h"  // testi frasi.json per i fumetti
 #include "game/fasi.h"             // blocco R2: macchina a stati di gioco
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -116,6 +118,8 @@ public:
     // Posizione del giocatore nella gara (1 = primo). In arrivo riporta la
     // posizione registrata al traguardo (blocco FIN).
     i32 posizioneArrivo() const { return arrivo_ ? posizioneArrivo_ : posizioneGiocatore(); }
+    // Dopo il traguardo l'auto frena da sola: secondi da quando e' ferma (-1 = si muove ancora).
+    f32 fermoDopoArrivoS() const { return fermoS_; }
     // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
     // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
     void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }
@@ -123,8 +127,29 @@ public:
     void richiediUscita() { uscitaRichiesta_ = true; }
     bool uscitaRichiesta() const { return uscitaRichiesta_; }
 
-    // Radio: passa al brano successivo (input del runner: tasto R o Start+B).
-    void nextBranoRadio() { mixer_.nextBrano(); }
+    // Contatto tra auto (Andrea 29/10). La telecamera sta dietro l'auto del
+    // giocatore: a schermo la sua carrozzeria copre le auto tra URTO_Z_MIN e
+    // URTO_Z_MAX unita' davanti alla telecamera. Li' due auto si toccano se
+    // |dx| < URTO_LARGHEZZA. Prima il contatto era a meno di 120 unita' (sotto
+    // la telecamera) e a schermo le auto si attraversavano prima di toccarsi.
+    static constexpr f32 URTO_Z_MIN = 750.0f;
+    static constexpr f32 URTO_Z_MAX = 1250.0f;
+    static constexpr f32 URTO_LARGHEZZA = 240.0f;
+
+    // Classifica d'arrivo (Andrea 29/10): tempo di ognuno sul traguardo,
+    // ordinata dal piu' veloce. Vuota finche' il giocatore non arriva.
+    struct Classificato {
+        const char* nome = "";
+        f32 tempoS = 0.0f;
+        bool giocatore = false;
+    };
+    const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
+    f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
+
+    // Radio: brani tracker (.xm) di dati/audio/playlist.json, uno per il menu e
+    // quelli della gara (Andrea 29/10). In gara il tasto R (o Start+B) passa al prossimo.
+    void nextBranoRadio() { if (radioInGara_) ++radioGara_; }
+    const InfoMusica& musica() const { return mixer_.info(); } // per lo spettro e i tocchi a ritmo
     i32 branoRadio() const { return mixer_.currentTrack(); }    // indice 0-based del brano in corso
     i32 numBraniRadio() const { return mixer_.numTracks(); }    // totale brani caricati (0 se radio assente)
 
@@ -168,6 +193,48 @@ private:
     const ScenaShow& scenaShow() const { return disegnoShow_.scena(); }
     const TestiFrasi& testiFrasi() const { return testiFrasi_; }
     std::vector<i16> audioBuf_; // stereo interleaved, riempito ogni update
+    // Radio: brani caricati una volta; aggiornaRadio sceglie quello della fase/tappa.
+    void caricaMusica();
+    void aggiornaRadio();
+    bool musicaCaricata_ = false;
+    i32 branoMenu_ = -1;      // indice nel mixer del brano del menu (-1 = nessuno)
+    i32 primoBranoGara_ = 0;  // i brani della gara vengono dopo
+    i32 radioGara_ = -1;      // avanza a ogni gara e con R / Start+B
+    bool radioInGara_ = false;
+    void drawMusica(); // spettro e battito in gara
+    // Urti con le altre auto (Andrea 29/10): nessuna compenetrazione, urto
+    // diverso per il traffico (botta forte, clacson) e per i rivali (sportellata).
+    std::vector<i32> spritesFonte_; // parallelo a sprites_ in gara: >= 0 rivale, < 0 traffico (-1 - indice)
+    f32 passoFonte(i32 fonte) const;
+    void urto(i32 fonte, f32 dx, bool tamponamento);
+    f32 urtoEffettoS_ = 0.0f, urtoEffettoDurataS_ = 1.0f;
+    bool urtoTraffico_ = false;
+    std::vector<Classificato> classifica_;
+    void calcolaClassifica();
+    void scuotiScena(i32 dx, i32 dy);
+    std::vector<u32> scossaBuf_;
+    Visualizzatore visualizzatore_;
+    // Salto sui dossi ad alta velocita' (quota dell'auto sopra la strada, unita' mondo).
+    void aggiornaSalto(f32 dt);
+    f32 saltoAltezza_ = 0.0f, saltoVY_ = 0.0f;
+    f32 saltoQuotaPrec_ = -1e9f, saltoVStradaPrec_ = 0.0f;
+    f32 tempoExtraS_ = 0.0f; // avviso "TEMPO EXTRA" dopo un checkpoint
+    // Arrivo sulla strada (Andrea 29/10): linea a scacchi, pubblico ai lati
+    // dietro le transenne, l'auto frena da sola e si ferma, poi la classifica.
+    void preparaArrivo();     // sulla tappa d'arrivo: linea e pubblico
+    void caricaSpriteFolla(); // dati/sprite_raw/pubblico/ (PNG in assets_originali/sprite/pubblico/)
+    void frenataArrivo(f32 dt);
+    // La strada si disegna e si aggiorna in gara, a fine tempo e, dopo
+    // l'arrivo, anche sotto la classifica.
+    bool scenaStrada() const {
+        const FaseId f = fasi_.attuale();
+        return f == FaseId::Gara || f == FaseId::FineTempo || (arrivo_ && f == FaseId::Risultati);
+    }
+    std::array<Sprite, 4> spriteFolla_; // gruppi a, b x pose giu', su
+    std::vector<SpriteInstance> folla_; // ordinata per worldZ
+    f32 arrivoS_ = 0.0f;      // secondi dal traguardo
+    f32 fermoS_ = -1.0f;      // secondi da fermo dopo il traguardo
+    f32 velocitaArrivo_ = 0.0f;
     std::vector<SpriteInstance> sprites_; // traffico base (placeholder)
     // Cartelloni sponsor: gli sprite sono di proprieta' del Renderer
     // (setSponsorSprites li registra li); qui si tengono solo gli indici.
@@ -278,6 +345,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         i32 colore = 9; // indice di palette della sagoma (solo sagoma sintetica)
         f32 bravura = 1.0f; // bravura propria (0.92..1.08, seme fisso), scala passoMax
         i32 spriteIdx = -1; // indice sprite rivale in Renderer (RIV punto b), -1 = rettangolo sintetico
+        f32 ritmoFase = 0.0f, ritmoVel = 0.2f; // ritmo proprio: un po' piu' veloce o lento nel tempo
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;

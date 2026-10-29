@@ -71,6 +71,14 @@ Raccomandazione: A
 RISPOSTA DI ANDREA (2026-10-19): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per @developer. Serve una logica di tracciati consecutivi per la gara. Compito operativo: blocco R1 in RICHIESTA.md (tratti con tema, tracciati per percorsi, gate che indica il tratto del percorse da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il @capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
 ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su Raspberry Pi 400/RetroPie. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Raspberry Pi 400/RetroPie oltre a non rompere la build Linux. Note per allora: Raspberry Pi 400/RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
 
+## Feedback Andrea 29/10 (prova della PR #44) — regole per tutti
+- Menu semplice: niente scelta della musica nel menu. In gara a schermo solo lo spettro audio, senza titolo del brano. Niente scritta MARCIA HIGH/LOW.
+- Musica: un brano per il menu e due per la gara (`dati/audio/playlist.json`, voci `menu` e `gara`); i brani .xm di Andrea stanno in `dati/audio/musica/`.
+- Il giocatore non attraversa le altre auto; bump diverso tra traffico (guidatori qualunque) e concorrenti; i rivali non scappano e non restano appiccicati al giocatore; classifica d'arrivo sul tempo.
+- Arrivo: NIENTE scena finale disegnata a parte ("non c'entra niente"). Linea a scacchi per terra, pubblico che aspetta, l'auto si ferma con un'animazione, poi i risultati.
+- Cruscotto (box info e HUD): deve diventare meno invasivo, Andrea ci sta ragionando. Per ora solo: separatore al centro del box, sfondo nero al 10%. Non cambiare altro dell'HUD senza una sua decisione.
+- Asset grafici ordinati e modificabili da Andrea: persone, auto, oggetti e scenari sono PNG in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`, registrati nel catalogo e convertiti con `png_a_raw.py` (stesso nome e misura per ridisegnarli). Nel codice restano solo effetti semplici (scacchi del traguardo, fumo, spettro audio).
+
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
 Opzioni: A) codice MIT, grafiche CC-BY  B) codice GPL-3.0, grafiche CC-BY-SA  C) codice aperto, grafiche riservate

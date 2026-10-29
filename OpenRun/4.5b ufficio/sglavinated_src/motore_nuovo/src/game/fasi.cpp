@@ -14,7 +14,11 @@ namespace {
 // Durate in secondi (frequenza indipendente, decisione Andrea 19 ott).
 constexpr f32 SPLASH_DURATA_S = 2.0f;   // logo, poi menu da solo o con un tasto
 constexpr f32 FINE_TEMPO_DURATA_S = 4.0f; // "TEMPO SCADUTO" visibile prima dei risultati
-constexpr f32 FINALE_DURATA_S = 5.0f;   // scena di arrivo prima dei risultati (blocco FIN)
+// Arrivo (Andrea 29/10): l'auto frena e si ferma sulla strada, poi la
+// classifica compare sopra la scena. Tetto di sicurezza alla frenata.
+constexpr f32 FERMO_PRIMA_DEI_RISULTATI_S = 0.8f;
+constexpr f32 ARRIVO_MAX_S = 6.0f;
+constexpr f32 RIGA_CLASSIFICA_S = 0.12f; // le righe della classifica entrano una alla volta
 
 // Score: distanza + bonus tempo residuo + bonus checkpoint (dati/punteggio.json).
 constexpr i32 PUNTI_PER_KM_DEFAULT = 10;
@@ -36,6 +40,23 @@ std::string leggiFileTesto(const std::string& path) {
 i32 jsonNumero(const JsonObject& o, const char* chiave, i32 def) {
     JsonValue v;
     return jsonGet(o, chiave, v) && jsonIsNumber(v) ? (i32)jsonAsNumber(v) : def;
+}
+
+// Scurisce un rettangolo del framebuffer (pannello sopra la scena di gioco).
+void scurisci(Framebuffer& fb, i32 x0, i32 y0, i32 x1, i32 y1, u32 percento) {
+    u32* d = fb.data();
+    for (i32 y = std::max(0, y0); y <= std::min(Framebuffer::HEIGHT - 1, y1); ++y)
+        for (i32 x = std::max(0, x0); x <= std::min(Framebuffer::WIDTH - 1, x1); ++x) {
+            const u32 c = d[y * Framebuffer::WIDTH + x];
+            d[y * Framebuffer::WIDTH + x] = 0xFF000000u | ((((c >> 16) & 0xFFu) * percento / 100) << 16) |
+                                            ((((c >> 8) & 0xFFu) * percento / 100) << 8) | ((c & 0xFFu) * percento / 100);
+        }
+}
+
+// Tempo M'SS"CC (come il TOTALE dell'HUD).
+void formattaTempo(char* buf, size_t n, f32 secondi) {
+    const i32 cs = (i32)(secondi * 100.0f + 0.5f);
+    std::snprintf(buf, n, "%d'%02d\"%02d", cs / 6000, (cs / 100) % 60, cs % 100);
 }
 } // namespace
 
@@ -146,19 +167,20 @@ class FineTempoFase : public Fase {
 public:
     FineTempoFase() : timerS_(0.0f), finita_(false) {}
     void entra(Game& gioco) override { timerS_ = 0.0f; finita_ = false; arrivo_ = gioco.arrivato(); }
-    void aggiorna(Game&, f32 dt) override {
+    void aggiorna(Game& gioco, f32 dt) override {
         timerS_ += dt;
-        if (timerS_ >= FINE_TEMPO_DURATA_S) finita_ = true;
+        // Arrivo: si aspetta che l'auto si fermi in mezzo al pubblico.
+        if (arrivo_) finita_ = gioco.fermoDopoArrivoS() >= FERMO_PRIMA_DEI_RISULTATI_S || timerS_ >= ARRIVO_MAX_S;
+        else if (timerS_ >= FINE_TEMPO_DURATA_S) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer&) const override {
-        const char* testo = arrivo_ ? "ARRIVO" : "TEMPO SCADUTO";
+        if (arrivo_) return; // la scena d'arrivo e' la strada (scacchi, pubblico, frenata)
+        const char* testo = "TEMPO SCADUTO";
         const i32 w = ren.larghezzaTesto(testo, 2);
         ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
     }
     void esci(Game&) override {}
-    // Arrivo: Finale poi Risultati. Tempo scaduto: salta il finale, va diretto
-    // a Risultati (compatibile con il gate ciclo, che finisce sempre in tempo scaduto).
-    FaseId prossima() const override { return arrivo_ ? FaseId::Finale : FaseId::Risultati; }
+    FaseId prossima() const override { return FaseId::Risultati; }
     bool finita() const override { return finita_; }
     const char* nome() const override { return "FineTempo"; }
 private:
@@ -230,6 +252,10 @@ public:
         }
         std::sort(classifica_.begin(), classifica_.end(),
                   [](const PunteggioEntry& a, const PunteggioEntry& b) { return a.punti > b.punti; });
+        // Arrivo: classifica della gara sul tempo di ognuno (Andrea 29/10).
+        arrivo_.clear();
+        if (gioco.arrivato())
+            for (const Game::Classificato& c : gioco.classificaArrivo()) arrivo_.push_back(c);
         if (classifica_.size() > 10) classifica_.resize(10);
         posizione_ = 1;
         for (const PunteggioEntry& e : classifica_) {
@@ -249,8 +275,9 @@ public:
         // Start conferma il nome e torna al menu; timeout di sicurezza a 30 s.
         if ((p.pressed & Pad::Start) || timerS_ > 30.0f) finita_ = true;
     }
-    void disegna(Renderer& ren, Framebuffer&) const override {
+    void disegna(Renderer& ren, Framebuffer& fb) const override {
         char buf[96];
+        if (!arrivo_.empty()) { disegnaArrivo(ren, fb); return; }
         const char* titolo = "RISULTATI";
         const i32 w = ren.larghezzaTesto(titolo, 2);
         ren.drawTesto(160 - w / 2, 40, titolo, 0xFFFFFFFFu, 2, true);
@@ -273,6 +300,45 @@ public:
         const char* aiuto = "START TORNA AL MENU";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
+    // Classifica d'arrivo sopra la scena della strada (auto ferma, pubblico):
+    // posizione, nome e tempo; il giocatore evidenziato, podio in oro,
+    // argento e bronzo, distacco dal primo. Le righe entrano una alla volta.
+    void disegnaArrivo(Renderer& ren, Framebuffer& fb) const {
+        scurisci(fb, 48, 14, 271, 217, 30);
+        fb.fillRect(48, 14, 271, 14, 0xFF909090u);
+        fb.fillRect(48, 217, 271, 217, 0xFF909090u);
+        fb.fillRect(48, 14, 48, 217, 0xFF909090u);
+        fb.fillRect(271, 14, 271, 217, 0xFF909090u);
+        const char* titolo = "CLASSIFICA";
+        ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
+        ren.drawTesto(64, 48, "POS", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(96, 48, "PILOTA", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(170, 48, "TEMPO", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(226, 48, "DISTACCO", 0xFFA0A0A0u, 0, true);
+        static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
+        char buf[32], tempo[24];
+        const size_t righe = std::min(arrivo_.size(), (size_t)(timerS_ / RIGA_CLASSIFICA_S) + 1);
+        for (size_t i = 0; i < righe; ++i) {
+            const Game::Classificato& c = arrivo_[i];
+            const i32 y = 58 + (i32)i * 14;
+            if (c.giocatore) fb.fillRect(56, y - 3, 266, y + 10, 0xFF303060u);
+            const u32 col = c.giocatore ? 0xFFFFFFFFu : 0xFFB0B0B0u;
+            std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
+            ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
+            ren.drawTesto(96, y, c.nome, col, 1, true);
+            formattaTempo(tempo, sizeof(tempo), c.tempoS);
+            ren.drawTesto(170, y, tempo, col, 1, true);
+            if (i > 0) {
+                std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
+                ren.drawTesto(226, y, buf, col, 1, true);
+            }
+        }
+        if (righe < arrivo_.size()) return;
+        std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 178, buf, 0xFFFFE080u, 1, true);
+        const char* aiuto = "START TORNA AL MENU";
+        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 202, aiuto, 0xFFA0A0A0u, 1, true);
+    }
     void esci(Game&) override {}
     FaseId prossima() const override { return FaseId::Menu; }
     bool finita() const override { return finita_; }
@@ -285,62 +351,7 @@ private:
     char nome_[4];       // nome giocatore a 3 lettere (inserito con SU/GIU)
     i32 nomePos_;        // cursore 0..2 sulla lettera in editing
     std::vector<PunteggioEntry> classifica_;
-};
-
-namespace {
-// Scena del finale scelta da dati/finali.json in base alla pista d'arrivo e alla
-// posizione (primo / podio / altro). Voci mancanti o file assente -> segnaposto motore.
-std::string scenaFinale(const std::string& pista, i32 posizione) {
-    std::string path = "motore_nuovo/dati/finali.json";
-    JsonReader r(leggiFileTesto(path));
-    if (!r.parse() || !jsonIsObject(r.valore())) return {};
-    const JsonObject& o = jsonAsObject(r.valore());
-    JsonValue pv;
-    if (!jsonGet(o, pista.c_str(), pv) || !jsonIsObject(pv)) return {};
-    const JsonObject& po = jsonAsObject(pv);
-    const char* chiave = (posizione == 1) ? "primo" : (posizione <= 3 ? "podio" : "altro");
-    JsonValue sv;
-    if (jsonGet(po, chiave, sv) && jsonIsString(sv)) return jsonAsString(sv);
-    return {};
-}
-} // namespace
-
-// ---------------------------------------------------------------------------
-// Fase: Finale (scena di arrivo, poi Risultati) — blocco FIN
-// ---------------------------------------------------------------------------
-
-class FinaleFase : public Fase {
-public:
-    FinaleFase() : timerS_(0.0f), durataS_(FINALE_DURATA_S), finita_(false), posizione_(0) {}
-    void entra(Game& gioco) override {
-        timerS_ = 0.0f; finita_ = false;
-        pista_ = gioco.tappaCorrente();
-        posizione_ = gioco.posizioneArrivo();
-        scena_ = scenaFinale(pista_, posizione_);
-    }
-    void aggiorna(Game&, f32 dt) override {
-        timerS_ += dt;
-        if (timerS_ >= durataS_) finita_ = true;
-    }
-    void disegna(Renderer& ren, Framebuffer&) const override {
-        const char* testo = scena_.empty() ? "FINALE" : scena_.c_str();
-        const i32 w = ren.larghezzaTesto(testo, 2);
-        ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
-        char buf[96];
-        std::snprintf(buf, sizeof(buf), "PISTA: %s   POSIZIONE: %d", pista_.c_str(), posizione_);
-        ren.drawTesto(64, 120, buf, 0xFFFFFFFFu, 1, true);
-    }
-    void esci(Game&) override {}
-    FaseId prossima() const override { return FaseId::Risultati; }
-    bool finita() const override { return finita_; }
-    const char* nome() const override { return "Finale"; }
-private:
-    f32 timerS_;
-    f32 durataS_;
-    bool finita_;
-    std::string pista_;
-    std::string scena_;
-    i32 posizione_;
+    std::vector<Game::Classificato> arrivo_; // classifica sul tempo, solo dopo l'arrivo
 };
 
 // ---------------------------------------------------------------------------
@@ -361,7 +372,6 @@ std::unique_ptr<Fase> GestoreFasi::crea(FaseId id) {
         case FaseId::Menu:      return std::make_unique<MenuFase>();
         case FaseId::Gara:      return std::make_unique<GaraFase>();
         case FaseId::FineTempo: return std::make_unique<FineTempoFase>();
-        case FaseId::Finale:    return std::make_unique<FinaleFase>();
         case FaseId::Risultati: return std::make_unique<RisultatiFase>();
     }
     return std::make_unique<MenuFase>();

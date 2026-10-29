@@ -247,8 +247,9 @@ bool verificaRibaltamento(const std::string& livello) {
 // Avvia una gara, guida verso il primo avversario davanti e provoca un urto.
 // Verifica: nessun ribaltamento (playerFlipping sempre falso), velocita' > 0
 // dopo l'urto (auto non bloccata), controlli di nuovo attivi entro 1,5 s
-// (sterzo risponde). Il contatto usa la stessa soglia di
-// Game::collisioneRivaleVicino (dz < 120, |dx| < 180, fuori dal bivio attivo).
+// (sterzo risponde). Il contatto usa la stessa finestra di
+// Game::collisioneRivaleVicino (Game::URTO_Z_MIN..URTO_Z_MAX davanti alla
+// telecamera, |dx| < Game::URTO_LARGHEZZA, fuori dal bivio attivo; 29/10).
 // Deterministico: seed fissa, input scriptati, replay 2x IDENTICO.
 bool verificaUrto(const std::string& livello) {
     const i32 FREQ = ::leggiFrequenzaDaConfig();
@@ -290,7 +291,7 @@ bool verificaUrto(const std::string& livello) {
                 // risponda (risposta e' proporzionale a speed/MAX_SPEED, zero da fermi).
                 pad.held = (u64)Pad::A;
                 // Sterzo verso l'avversario piu' vicino davanti per allinearsi alla
-                // sua corsia e provocare il contatto (soglia: dz < 120, |dx| < 180).
+                // sua corsia e provocare il contatto (finestra Game::URTO_Z_MIN..MAX).
                 f32 obiettivo = s.playerX;
                 f32 dzMigliore = 1e9f;
                 auto eTraffico = [&game](const SpriteInstance& t) {
@@ -353,7 +354,8 @@ bool verificaUrto(const std::string& livello) {
                     // (28/10: con i tratti PIST1 il contatto cadeva nel bivio).
                     const bool nelBivio = game.road().bivioAttivo() &&
                                           dopo.playerZ >= game.road().bivioInizioZ();
-                    if (dz > 0.0f && dz < 120.0f && std::abs(t.worldX - dopo.playerX) < 180.0f &&
+                    if (dz > Game::URTO_Z_MIN && dz < Game::URTO_Z_MAX &&
+                        std::abs(t.worldX - dopo.playerX) < Game::URTO_LARGHEZZA &&
                         !dopo.playerOffroad && !nelBivio) {
                         contatto = true;
                         frameContatto = frame;
@@ -2270,7 +2272,6 @@ static const char* nomeFase(FaseId f) {
         case FaseId::Menu:      return "Menu";
         case FaseId::Gara:      return "Gara";
         case FaseId::FineTempo: return "FineTempo";
-        case FaseId::Finale:    return "Finale";
         case FaseId::Risultati: return "Risultati";
     }
     return "?";
@@ -2331,7 +2332,6 @@ static bool verificaCiclo(const std::string& outDir) {
                     ++frameGara;
                     break;
                 case FaseId::FineTempo:
-                case FaseId::Finale:      // scena d'arrivo: passa da sola ai Risultati
                     break;
                 case FaseId::Risultati:
                     if (tickInFase == 60) pressed = Pad::Start; // 1 s, poi torna al menu
