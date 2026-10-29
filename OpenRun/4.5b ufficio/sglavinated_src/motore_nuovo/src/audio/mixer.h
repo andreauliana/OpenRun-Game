@@ -19,6 +19,7 @@ struct InfoMusica {
     f32 battito = 0.0f;           // 1 sul primo tempo della battuta, poi cala
     f32 energia = 0.0f;           // volume medio della musica (0..1, smorzato)
     f32 livello[MAX_CANALI] = {}; // 1 quando un canale suona una nota, poi cala
+    i32 nota[MAX_CANALI] = {};    // nota che il canale sta suonando (0..119), -1 = muto
 };
 
 // Mixer audio int16 stereo, deterministico.

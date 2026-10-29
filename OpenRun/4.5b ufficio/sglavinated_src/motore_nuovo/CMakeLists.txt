@@ -53,6 +53,9 @@ add_library(sglavinated_core
     src/render/renderer.cpp
     src/render/sprite_raw.h
     src/render/sprite_raw.cpp
+    src/render/font_mini.h
+    src/render/visualizzatore.h
+    src/render/visualizzatore.cpp
     src/input/pad.h
     src/audio/mixer.h
     src/audio/mixer.cpp

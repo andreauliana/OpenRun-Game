@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "render/renderer.h"
 #include "render/font_hud.h"
+#include "render/font_mini.h"
 #include <cstdio>
 #include <algorithm>
 #include <cmath> // std::fmod per il wrap di zRel
@@ -501,10 +502,25 @@ void Renderer::drawGara(i32 posizione, i32 concorrenti, i32 tappa, bool arrivo, 
 i32 Renderer::larghezzaTesto(const char* testo, i32 scala) {
     i32 n = 0;
     while (testo[n]) ++n;
-    return n * FONT_HUD_W * scala;
+    return scala <= 0 ? n * FONT_MINI_W - 1 : n * FONT_HUD_W * scala;
 }
 
 void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala, bool ombra) {
+    if (scala <= 0) {
+        // Font mini 3x5 per le etichette, stessa ombra di 1 px.
+        for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
+            const i32 d = passo == 0 ? 1 : 0;
+            const u32 col = passo == 0 ? 0xFF000000u : colore;
+            i32 cx = x;
+            for (const char* c = testo; *c; ++c, cx += FONT_MINI_W) {
+                const u8* righe = fontMini(*c);
+                for (i32 r = 0; r < FONT_MINI_H; ++r)
+                    for (i32 k = 0; k < 3; ++k)
+                        if (righe[r] & (4u >> k)) fb_.put(cx + k + d, y + r + d, col);
+            }
+        }
+        return;
+    }
     // Font pixel 5x7 della variante B (approvato): una cella 6x8 per carattere.
     for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
         const i32 d = passo == 0 ? 1 : 0; // prima l'ombra, spostata di 1 px
@@ -538,14 +554,28 @@ void Renderer::drawHudDati(const HudDati& d) {
     char buf[32];
     for (const HudElemento& e : hud_) {
         if (e.tipo == "cornice") {
+            if (e.oscuraSfondo > 0) {
+                // Vetro scuro: l'interno resta leggibile sopra cielo e skyline.
+                const u32 k = (u32)(100 - std::min(e.oscuraSfondo, 100));
+                for (i32 y = e.y + e.spessore; y < e.y + e.h - e.spessore; ++y)
+                    for (i32 x = e.x + e.spessore; x < e.x + e.w - e.spessore; ++x) {
+                        const u32 c = fb_.get(x, y);
+                        const u32 r = ((c >> 16) & 0xFFu) * k / 100, g = ((c >> 8) & 0xFFu) * k / 100, b = (c & 0xFFu) * k / 100;
+                        fb_.put(x, y, 0xFF000000u | (r << 16) | (g << 8) | b);
+                    }
+            }
             cornicePiena(fb_, e.x + 1, e.y + 1, e.w, e.h, e.spessore, 0xFF000000u); // ombra
             cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.colore);
+            continue;
+        }
+        if (e.tipo == "linea") { // divisorio sottile dentro il box
+            fb_.fillRect(e.x, e.y, e.x + std::max(e.w, 1) - 1, e.y + std::max(e.h, 1) - 1, e.colore);
             continue;
         }
         if (e.tipo == "barra") {
             f32 pieno = e.id == "giri" ? d.giri : 0.0f;
             pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
-            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
             cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.coloreBordo);
             const i32 interno = e.w - 2 * e.spessore;
             const i32 px = (i32)(pieno * (f32)interno);
@@ -574,7 +604,7 @@ void Renderer::drawHudDati(const HudDati& d) {
         }
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
-        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
+        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
         if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
             const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();

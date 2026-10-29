@@ -19,50 +19,57 @@
     {
       "id": "cornice",
       "tipo": "cornice",
-      "nota": "cornice fissa attorno a distanza + barra razzo (disegnata per prima, sotto gli altri elementi)",
+      "nota": "box informazioni (Andrea 29/10): bordo da 1 px, interno scurito per leggibilita'; dentro tempo, totale, tappa, posizione e distanza. Fuori solo velocita' e giri.",
       "x": 8,
       "y": 8,
-      "w": 120,
-      "h": 60,
-      "spessore": 2,
+      "w": 124,
+      "h": 62,
+      "spessore": 1,
       "colore": [
-        160,
-        160,
-        160
+        210,
+        210,
+        210
+      ],
+      "oscura_sfondo": 45
+    },
+    {
+      "id": "divisorio",
+      "tipo": "linea",
+      "x": 74,
+      "y": 13,
+      "w": 1,
+      "h": 52,
+      "colore": [
+        110,
+        110,
+        110
       ]
     },
     {
-      "id": "giri",
-      "tipo": "barra",
-      "label": "GIRI",
+      "id": "tempo",
+      "tipo": "testo",
+      "nota": "conto alla rovescia, il dato principale; a ogni checkpoint si aggiunge il tempo della tappa",
+      "label": "TEMPO",
+      "valore": "75",
       "label_pos": [
-        16,
-        50
+        14,
+        13
       ],
-      "barra_pos": [
-        16,
-        59
+      "valore_pos": [
+        14,
+        22
       ],
-      "barra_w": 60,
-      "barra_h": 6,
-      "spessore_bordo": 2,
-      "riempimento_px": 40,
-      "colore_bordo": [
+      "scala_valore": 3,
+      "colore": [
         255,
         255,
         255
-      ],
-      "colore_riempimento": [
-        120,
-        120,
-        120
       ],
       "colore_label": [
         160,
         160,
         160
-      ],
-      "nota": "contagiri del motore (prima barra RAZZO: il razzo non c'e' nel motore, B e' il freno). Il motore riempie la barra con i giri del frame."
+      ]
     },
     {
       "id": "tappa",
@@ -70,12 +77,38 @@
       "label": "TAPPA",
       "valore": "1/3",
       "label_pos": [
-        16,
-        76
+        14,
+        50
       ],
       "valore_pos": [
-        16,
-        86
+        14,
+        57
+      ],
+      "scala_valore": 1,
+      "colore": [
+        255,
+        255,
+        255
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "totale",
+      "tipo": "testo",
+      "nota": "tempo totale di gara, allineato al conto alla rovescia",
+      "label": "TOTALE",
+      "valore": "0'00\"00",
+      "label_pos": [
+        80,
+        13
+      ],
+      "valore_pos": [
+        80,
+        20
       ],
       "scala_valore": 1,
       "colore": [
@@ -95,12 +128,38 @@
       "label": "POS",
       "valore": "8/8",
       "label_pos": [
-        64,
-        76
+        80,
+        31
       ],
       "valore_pos": [
-        64,
-        86
+        80,
+        38
+      ],
+      "scala_valore": 1,
+      "colore": [
+        255,
+        255,
+        255
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
+    },
+    {
+      "id": "distanza",
+      "tipo": "testo",
+      "nota": "distanza in metri",
+      "label": "DIST",
+      "valore": "000",
+      "label_pos": [
+        80,
+        50
+      ],
+      "valore_pos": [
+        80,
+        57
       ],
       "scala_valore": 1,
       "colore": [
@@ -125,7 +184,7 @@
       ],
       "valore_pos": [
         200,
-        24
+        20
       ],
       "scala_valore": 3,
       "colore": [
@@ -143,12 +202,11 @@
       "id": "unita_vel",
       "tipo": "testo",
       "testo": "KM/H",
-      "nota": "y=48 (era 44): con scala 3 il valore '120' arriva a riga 44, a 44 le due scritte si sovrapponevano",
       "pos": [
-        240,
-        48
+        258,
+        39
       ],
-      "scala": 1,
+      "scala": 0,
       "colore": [
         160,
         160,
@@ -156,50 +214,29 @@
       ]
     },
     {
-      "id": "tempo",
-      "tipo": "testo",
-      "label": "TEMPO",
-      "valore": "75",
+      "id": "giri",
+      "tipo": "barra",
+      "label": "GIRI",
       "label_pos": [
-        16,
-        12
+        200,
+        50
       ],
-      "valore_pos": [
-        16,
-        24
+      "barra_pos": [
+        200,
+        57
       ],
-      "scala_valore": 3,
-      "colore": [
-        255,
-        255,
-        255
+      "barra_w": 72,
+      "barra_h": 5,
+      "spessore_bordo": 1,
+      "colore_bordo": [
+        230,
+        230,
+        230
       ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ],
-      "nota": "conto alla rovescia: il dato principale, nel box in alto a sinistra (Andrea 29/10); a ogni checkpoint si aggiunge il tempo della tappa"
-    },
-    {
-      "id": "totale",
-      "tipo": "testo",
-      "nota": "tempo totale di gara, accanto al conto alla rovescia e allineato",
-      "label": "TOTALE",
-      "valore": "0'00\"00",
-      "label_pos": [
-        82,
-        12
-      ],
-      "valore_pos": [
-        82,
-        24
-      ],
-      "scala_valore": 1,
-      "colore": [
-        255,
-        255,
-        255
+      "colore_riempimento": [
+        120,
+        120,
+        120
       ],
       "colore_label": [
         160,
@@ -222,32 +259,6 @@
         255
       ],
       "nota": "SHOW ON quando Gianni/Gesu' sono in scena"
-    },
-    {
-      "id": "distanza",
-      "tipo": "testo",
-      "label": "DIST",
-      "valore": "000",
-      "label_pos": [
-        200,
-        62
-      ],
-      "valore_pos": [
-        200,
-        72
-      ],
-      "scala_valore": 1,
-      "colore": [
-        255,
-        255,
-        255
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ],
-      "nota": "distanza in metri, piccola (Andrea 29/10)"
     }
   ],
   "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'cornice' = rettangolo con bordo di 'spessore' px; tipo 'testo' con label/valore = etichetta in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala'; tipo 'barra' = etichetta a label_pos, bordo rettangolo (barra_pos, barra_w, barra_h) di 'spessore_bordo' px in colore_bordo, riempimento pieno in colore_riempimento di 'riempimento_px' px di larghezza e barra_h-2*spessore_bordo di altezza, partendo da barra_pos+spessore_bordo. In gioco i testi hanno un'ombra nera di 1 px per restare leggibili sul cielo chiaro.",

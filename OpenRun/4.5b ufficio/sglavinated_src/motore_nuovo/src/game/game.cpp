@@ -633,11 +633,13 @@ void Game::leggiHud() {
         coppia(o, "pos", e.tx, e.ty);
         e.scalaValore = numero(o, "scala_valore", 1);
         e.scala = numero(o, "scala", 1);
+        e.scalaLabel = numero(o, "scala_label", 0);
+        e.oscuraSfondo = numero(o, "oscura_sfondo", 0);
         rgb(o, "colore", e.colore);
         rgb(o, "colore_label", e.coloreLabel);
         rgb(o, "colore_bordo", e.coloreBordo);
         rgb(o, "colore_riempimento", e.coloreRiempimento);
-        if (e.tipo == "cornice" || e.tipo == "testo" || e.tipo == "barra") elementi.push_back(std::move(e));
+        if (e.tipo == "cornice" || e.tipo == "testo" || e.tipo == "barra" || e.tipo == "linea") elementi.push_back(std::move(e));
     }
     ren_.impostaHud(std::move(elementi));
 }
@@ -1468,6 +1470,7 @@ void Game::aggiornaGuida(f32 dt) {
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
+    visualizzatore_.aggiorna(mixer_.info(), dt);
 
     // Replay: registra gli input se attivo.
     if (replay_.active()) replay_.record(input_.pressed | input_.held);
@@ -1594,14 +1597,7 @@ void Game::aggiornaSalto(f32 dt) {
 void Game::drawMusica() {
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
-    // Equalizzatore in basso a sinistra: una barra per canale del brano.
-    const i32 n = std::min(m.canali, 16);
-    const i32 x0 = 8, yBase = Framebuffer::HEIGHT - 8, hMax = 24;
-    for (i32 c = 0; c < n; ++c) {
-        const i32 h = 1 + (i32)(m.livello[c] * (f32)hMax);
-        const u32 col = m.livello[c] > 0.8f ? 0xFFFFFFFFu : (m.livello[c] > 0.4f ? 0xFF60E0FFu : 0xFF3070C0u);
-        fb_.fillRect(x0 + c * 5, yBase - h, x0 + c * 5 + 3, yBase, col);
-    }
+    visualizzatore_.disegna(fb_, 8, Framebuffer::HEIGHT - 10); // spettro in basso a sinistra
     // Battito: due tacche ai lati dello schermo che si accendono sul primo tempo.
     if (m.battito > 0.05f) {
         const i32 h = (i32)(m.battito * 40.0f);

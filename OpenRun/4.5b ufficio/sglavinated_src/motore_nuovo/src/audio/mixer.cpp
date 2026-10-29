@@ -94,8 +94,11 @@ void Mixer::aggiornaInfo(const i16* musica, i32 frames) {
     info_.bpm = fi.bpm;
     info_.battito *= kBattito;
     // Una nota tenuta resta accesa a meta' (in proporzione al volume del canale).
-    for (i32 c = 0; c < info_.canali; ++c)
-        info_.livello[c] = std::max(info_.livello[c] * kCanale, 0.45f * (f32)fi.channel_info[c].volume / 64.0f);
+    for (i32 c = 0; c < info_.canali; ++c) {
+        const struct xmp_channel_info& ci = fi.channel_info[c];
+        info_.livello[c] = std::max(info_.livello[c] * kCanale, 0.45f * (f32)ci.volume / 64.0f);
+        info_.nota[c] = (ci.volume > 0 && ci.note < XMP_MAX_KEYS) ? (i32)ci.note : -1;
+    }
 
     // Riga nuova: ogni canale che attacca una nota si accende al suo volume.
     if (fi.row != rigaPrec_) {

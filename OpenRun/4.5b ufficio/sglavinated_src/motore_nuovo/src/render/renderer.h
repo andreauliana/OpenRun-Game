@@ -35,6 +35,8 @@ struct HudElemento {
     i32 x = 0, y = 0, w = 0, h = 0, spessore = 2;   // cornice / barra (barra_pos, barra_w, barra_h)
     i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
     i32 scalaValore = 1, scala = 1;
+    i32 scalaLabel = 0;     // 0 = font mini 3x5 (etichette piccole e coerenti)
+    i32 oscuraSfondo = 0;   // cornice: % di scurimento dell'interno (0 = trasparente)
     u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
 };
 
@@ -96,6 +98,7 @@ public:
     bool haHud() const { return !hud_.empty(); }
     void drawHudDati(const HudDati& d);
     // Testo col font pixel dell'HUD (font_hud.h); scala intera, ombra nera di 1 px.
+    // scala 0 = font mini 3x5 (etichette), 1..n = font 5x7 ingrandito.
     void drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala = 1, bool ombra = true);
     static i32 larghezzaTesto(const char* testo, i32 scala = 1);
 

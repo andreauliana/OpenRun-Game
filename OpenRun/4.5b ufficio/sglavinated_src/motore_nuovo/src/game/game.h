@@ -10,6 +10,7 @@
 #include "render/renderer.h"
 #include "input/pad.h"
 #include "audio/mixer.h"
+#include "render/visualizzatore.h"
 #include "player/player.h"
 #include "gameplay/show.h"
 #include "gameplay/disegno_show.h" // scena show: personaggio/fumetto/UFO in px
@@ -174,6 +175,7 @@ private:
     void caricaMusica();
     bool musicaCaricata_ = false;
     void drawMusica(); // spettro e battito in gara
+    Visualizzatore visualizzatore_;
     // Salto sui dossi ad alta velocita' (quota dell'auto sopra la strada, unita' mondo).
     void aggiornaSalto(f32 dt);
     f32 saltoAltezza_ = 0.0f, saltoVY_ = 0.0f;
