@@ -334,7 +334,7 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
                   return distanza(a) > distanza(b);
               });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
-    i32 nEtichette = 0;
+    i32 nSegnalini = 0;
     for (auto& s : sprites) {
         // zRel con modulo totalLen: playerZ avvolge sul giro mentre worldZ e'
         // assoluto, quindi vicino al punto di wrap gli sprite non spariscono né
@@ -370,7 +370,7 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
             fb_.fillRect(cx - w / 4, cy - h + 1, cx + w / 4, cy - h / 2, pal_[10]);
             fb_.fillRect(cx - w / 2, cy - 2, cx - w / 3, cy + 1, pal_[14]);
             fb_.fillRect(cx + w / 3, cy - 2, cx + w / 2, cy + 1, pal_[14]);
-            if (s.etichetta && nEtichette < ETICHETTE_MAX) etichette_[nEtichette++] = {cx, cy - h, h, s.etichetta, s.coloreEtichetta};
+            if (s.segnalino && nSegnalini < SEGNALINI_MAX) segnalini_[nSegnalini++] = {cx, cy - h, h, s.segnalino};
             continue;
         }
         // Scala in pixel: stessa proiezione della strada (scl * W/2 per unita' mondo)
@@ -378,17 +378,17 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
         const f32 scala = scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale;
         drawSprite(s, sx, sy, scala);
-        if (s.etichetta && nEtichette < ETICHETTE_MAX) {
+        if (s.segnalino && nSegnalini < SEGNALINI_MAX) {
             const i32 h = (i32)(s.sprite->height * scala);
-            etichette_[nEtichette++] = {(i32)sx, (i32)sy - h, h, s.etichetta, s.coloreEtichetta};
+            segnalini_[nSegnalini++] = {(i32)sx, (i32)sy - h, h, s.segnalino};
         }
     }
-    for (i32 i = 0; i < nEtichette; ++i) drawEtichetta(etichette_[i]);
+    for (i32 i = 0; i < nSegnalini; ++i) drawSegnalino(segnalini_[i]);
 }
 
-void Renderer::drawEtichetta(const Etichetta& e) {
-    // Segnalino a freccia (5 px, bordo nero) sopra il tetto del rivale; da
-    // vicino anche il nome del pilota nel font mini. Solo pixel pieni.
+void Renderer::drawSegnalino(const Segnalino& e) {
+    // Freccia (7 px, bordo nero) del colore dell'auto sopra il tetto del
+    // rivale. Solo pixel pieni.
     // Auto gia' a fianco (base sotto lo schermo): niente freccia sospesa sull'erba.
     if (e.y < 4 || e.y + e.h >= Framebuffer::HEIGHT) return;
     const i32 punta = e.y - 2 - std::min(4, e.h / 6); // stacco dal tetto, cresce un poco da vicino
@@ -396,9 +396,6 @@ void Renderer::drawEtichetta(const Etichetta& e) {
         fb_.hline(e.x - std::min(r, 4), e.x + std::min(r, 4), punta + 1 - r, 0xFF000000u);
     for (i32 r = 0; r <= 3; ++r)
         fb_.hline(e.x - r, e.x + r, punta - r, e.colore);
-    if (e.h < 10) return; // lontano: basta la freccia
-    const i32 w = larghezzaTesto(e.testo, 0);
-    drawTesto(e.x - w / 2, punta - 11, e.testo, e.colore, 0, true);
 }
 
 void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale) {
@@ -719,6 +716,19 @@ void Renderer::drawHudDati(const HudDati& d) {
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
         if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
+        if (e.id == "posizione" && d.sorpasso > 0.0f && valore && e.vx >= 0) {
+            // Sorpasso (Andrea 29/10): la posizione fa un saltello, lampeggia
+            // giallo/bianco con una freccia in su accanto, poi torna normale.
+            const f32 t = 1.0f - d.sorpasso; // 0 all'inizio del sorpasso
+            const i32 su = t < 0.2f ? (i32)(3.0f * std::sin(t / 0.2f * 3.14159f) + 0.5f) : 0;
+            const u32 col = (d.frame / 4) % 2 ? 0xFFFFE040u : 0xFFFFFFFFu;
+            drawTesto(e.vx, e.vy - su, valore, col, e.scalaValore);
+            const i32 fx = e.vx + larghezzaTesto(valore, e.scalaValore) + 3;
+            const i32 fy = e.vy - su + 1;
+            for (i32 r = 0; r <= 2; ++r) fb_.hline(fx + 2 - r, fx + 2 + r, fy + r, 0xFF40E060u);
+            fb_.fillRect(fx + 1, fy + 3, fx + 3, fy + 5, 0xFF40E060u);
+            continue;
+        }
         if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
             const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();
@@ -742,9 +752,9 @@ void Renderer::drawHudDati(const HudDati& d) {
     } else if (d.bivio && (d.frame / 15) % 2 == 0) {
         drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
         drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);
-    } else if (d.fuoristrada && (d.frame / 10) % 2 == 0) {
-        centro(150, "FUORI STRADA", 1);
     }
+    // Fuori strada: nessuna scritta (Andrea 29/10, ridondante): lo dicono gia'
+    // l'erba, il sobbalzo e le scintille.
 }
 
 } // namespace sgl

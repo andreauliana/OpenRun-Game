@@ -17,10 +17,9 @@ struct SpriteInstance {
     f32 scale = 1.0f;
     const Sprite* sprite = nullptr;
     i32 paletteBase = 0; // offset di palette (per variazioni colore auto)
-    // Rivali (Andrea 29/10, "piu' evidenti"): segnalino colorato sopra l'auto
-    // e, da vicino, il nome del pilota. nullptr = nessuna etichetta.
-    const char* etichetta = nullptr;
-    u32 coloreEtichetta = 0xFFFFFFFFu;
+    // Rivali (Andrea 29/10, "piu' evidenti"): freccia del colore dell'auto
+    // sopra il tetto, niente nomi. 0 = nessuna freccia.
+    u32 segnalino = 0;
 };
 
 // Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
@@ -66,6 +65,7 @@ struct HudDati {
     f32 totaleS = 0.0f;   // tempo totale di gara (secondi)
     i32 tempoExtra = 0;   // > 0: secondi aggiunti al checkpoint (avviso a schermo)
     i32 tappa = 1, tappe = 3, posizione = 0, concorrenti = 0;
+    f32 sorpasso = 0.0f;  // 1 -> 0 dopo un sorpasso: la POS si accende e torna normale
     bool marciaAlta = false;
     bool show = false;
     bool fuoristrada = false;
@@ -203,12 +203,12 @@ private:
     void drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t);
 
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
-    // Etichette dei rivali del frame: disegnate dopo tutti gli sprite, cosi'
+    // Frecce dei rivali del frame: disegnate dopo tutti gli sprite, cosi'
     // un cartello o un'auto piu' vicina non le copre (array fisso, zero alloc).
-    struct Etichetta { i32 x = 0, y = 0, h = 0; const char* testo = nullptr; u32 colore = 0; };
-    static constexpr i32 ETICHETTE_MAX = 8;
-    Etichetta etichette_[ETICHETTE_MAX];
-    void drawEtichetta(const Etichetta& e);
+    struct Segnalino { i32 x = 0, y = 0, h = 0; u32 colore = 0; };
+    static constexpr i32 SEGNALINI_MAX = 8;
+    Segnalino segnalini_[SEGNALINI_MAX];
+    void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)

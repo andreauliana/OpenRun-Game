@@ -112,7 +112,7 @@ void caricaSponsor(Game& game) {
 
 // Auto rivali (RIV punto b): sprite veri dal catalogo, stesso percorso del runner.
 void caricaRivali(Game& game) {
-    static const char* kRivale[4] = { "rosso", "azzurro", "giallo", "verde" };
+    static const char* kRivale[7] = { "rosso", "azzurro", "giallo", "verde", "bianco", "arancio", "viola" };
     std::vector<Sprite> sprites;
     for (const char* colore : kRivale) {
         Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");

@@ -216,14 +216,18 @@ private:
     // conteggio va nei risultati. Ciglio: il primo tocco rallenta, un altro
     // tocco a velocita' alta mentre si ricorda il primo e' un incidente.
     i32 urtiGara_ = 0, toccateCiglio_ = 0;
+    // Sorpasso (Andrea 29/10): la POS dell'HUD si evidenzia per SORPASSO_S secondi.
+    i32 posizionePrec_ = 0;
+    f32 sorpassoS_ = 0.0f;
+    static constexpr f32 SORPASSO_S = 1.0f;
     f32 dallUrtoS_ = -1.0f;      // secondi dall'ultima botta (scintille, lampo)
     i32 latoUrto_ = 0;
     void segnaBotta(i32 lato);
     bool offroadPrec_ = false;
     f32 ciglioMemoriaS_ = 0.0f;  // > 0: il tocco precedente e' ancora "ricordato"
-    f32 avvisoCiglioS_ = 0.0f;   // scritta CIGLIO! sopra l'auto
     void toccaCiglio();
     void ribalta();
+    void liberaRipartenza();
     f32 ciglioRallenta_ = 0.7f;      // config.json ciglio_rallenta
     f32 ciglioMemoriaDurataS_ = 6.0f; // config.json ciglio_memoria_s
     f32 ciglioCrashVelocita_ = 0.45f; // config.json ciglio_crash_velocita (frazione della punta)

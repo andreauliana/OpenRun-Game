@@ -1794,7 +1794,7 @@
             "lv_05_spray",
             "lv_06_desktop"
          ],
-         "nota": "RIV: auto rivale vista dietro, modello rosso corsa. Originale, disegnata da zero, nessun materiale Sega."
+         "nota": "RIV: auto rivale vista dietro, coupe' rosso corsa 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
       },
       {
          "id": "auto.rivale.azzurro",
@@ -1809,7 +1809,7 @@
             "lv_05_spray",
             "lv_06_desktop"
          ],
-         "nota": "RIV: auto rivale vista dietro, modello azzurro. Originale, disegnata da zero, nessun materiale Sega."
+         "nota": "RIV: auto rivale vista dietro, coupe' azzurro 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
       },
       {
          "id": "auto.rivale.giallo",
@@ -1824,7 +1824,7 @@
             "lv_05_spray",
             "lv_06_desktop"
          ],
-         "nota": "RIV: auto rivale vista dietro, modello giallo. Originale, disegnata da zero, nessun materiale Sega."
+         "nota": "RIV: auto rivale vista dietro, coupe' giallo 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
       },
       {
          "id": "auto.rivale.verde",
@@ -1839,7 +1839,52 @@
             "lv_05_spray",
             "lv_06_desktop"
          ],
-         "nota": "RIV: auto rivale vista dietro, modello verde. Originale, disegnata da zero, nessun materiale Sega."
+         "nota": "RIV: auto rivale vista dietro, coupe' verde 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.bianco",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_bianco_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' bianco 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.arancio",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_arancio_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' arancio 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.viola",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_viola_retro.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' viola 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
       },
       {
          "id": "auto.rivale.rosso.lato",

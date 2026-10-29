@@ -314,7 +314,7 @@ public:
         const char* titolo = "CLASSIFICA";
         ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
         ren.drawTesto(64, 48, "POS", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(96, 48, "PILOTA", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(96, 48, "AUTO", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(170, 48, "TEMPO", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(226, 48, "DISTACCO", 0xFFA0A0A0u, 0, true);
         static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};

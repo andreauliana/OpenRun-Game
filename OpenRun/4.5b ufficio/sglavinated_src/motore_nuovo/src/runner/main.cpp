@@ -256,7 +256,8 @@ int main(int argc, char** argv) {
     // Auto rivali: sprite veri dal catalogo (raw prodotti da strumenti_py/png_a_raw.py),
     // consegnati al core prima di avviaGara(). Senza i raw si mantiene la sagoma sintetica (RIV punto b).
     std::vector<Sprite> rivaliSprites;
-    static const char* kRivaleRetro[4] = { "rosso", "azzurro", "giallo", "verde" };
+    // Un'auto per rivale (Andrea 29/10), stesso ordine di png_a_raw.py e prova_gate.cpp.
+    static const char* kRivaleRetro[7] = { "rosso", "azzurro", "giallo", "verde", "bianco", "arancio", "viola" };
     for (const char* colore : kRivaleRetro) {
         Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");
         if (s.width > 0) rivaliSprites.push_back(std::move(s));

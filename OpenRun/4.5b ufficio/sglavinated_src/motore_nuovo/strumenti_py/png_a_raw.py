@@ -6,7 +6,7 @@
 # del progetto (sglavinated_src):
 #   python3 motore_nuovo/strumenti_py/png_a_raw.py
 # Legge:  assets_originali/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
-#         assets_originali/sprite/rivali/auto_rivale_<colore>_retro.png (4 rivali, RIV punto b)
+#         assets_originali/sprite/rivali/auto_rivale_<colore>_retro.png (7 rivali, RIV punto b)
 #         assets_originali/sprite/traffico/traffico_<nome>_retro.png (4 veicoli di traffico)
 #         assets_originali/sprite/pubblico/pubblico_<gruppo>_<posa>.png (pubblico all'arrivo)
 # Scrive: motore_nuovo/dati/sprite_raw/sponsor/<id>_<stile>.sglraw
@@ -129,11 +129,14 @@ def main():
             print(f"scritto {dst} ({w}x{h})")
             n += 1
 
-    # Auto rivali (blocco RIV punto b): 4 modelli, stato "pronto" nel catalogo.
+    # Auto rivali (blocco RIV punto b): 7 modelli, uno per rivale (Andrea 29/10),
+    # disegnati da UFFICIO/Dipartimento Grafico/TOOLS/disegna_rivali.py.
     OUTDIR_RIVALE = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "rivali"
     RIVALE_FILES = [
         "auto_rivale_rosso_retro", "auto_rivale_azzurro_retro",
         "auto_rivale_giallo_retro", "auto_rivale_verde_retro",
+        "auto_rivale_bianco_retro", "auto_rivale_arancio_retro",
+        "auto_rivale_viola_retro",
     ]
     ASSETS_RIVALE = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "rivali"
     for nome in RIVALE_FILES:
