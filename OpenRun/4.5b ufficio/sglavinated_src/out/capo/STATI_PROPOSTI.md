@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
 
 > Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 > Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**.
