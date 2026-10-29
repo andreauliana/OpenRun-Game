@@ -17,8 +17,12 @@ void Player::input(const Pad& pad, f32 dt) {
     if (steer_ < obiettivo) steer_ = std::min(obiettivo, steer_ + rampa);
     else if (steer_ > obiettivo) steer_ = std::max(obiettivo, steer_ - rampa);
     accel_ = 0.0f;
-    // Acceleratore: A (pad) o Su (tastiera). Freno: B o Giu'.
-    if (pad.held & (Pad::Up | Pad::A))    accel_ = 1.0f;
+    // Acceleratore: A (pad) o Su (tastiera).
+    // Per garantire che Pad::A attivi l'accelerazione anche quando Up e' premuto,
+    // trattiamo i due casi separatamente.
+    if (pad.held & Pad::A)    accel_ = 1.0f;
+    if (pad.held & Pad::Up)   accel_ = 1.0f;
+    // Freno: B o Giu'.
     if (pad.held & (Pad::Down | Pad::B))  accel_ = -1.0f;
 }
 

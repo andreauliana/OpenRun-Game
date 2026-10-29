@@ -2,6 +2,9 @@
   "licenza": "CC-BY-4.0",
   "autore": "@developer (blocco FIN, scene originali, nessun materiale Sega)",
   "nota": "Scene di finale (blocco FIN, compito 1 @developer). Chiave = id livello di arrivo (livello.json 'id'); 'primo' = posizione 1, 'podio' = posizione 2-3, 'altro' = posizione 4+. Voci mancanti o file assente -> segnaposto motore 'FINALE'. Le scene vere (grafica) sono di competenza del @grafico (blocco FIN compito 2); qui ci sono id di scena da risolvere nel catalogo.",
+  "lv_01_neon": { "primo": "podio_neon", "podio": "arrivo_neon", "altro": "traguardo_neon" },
+  "lv_02_atomico": { "primo": "podio_atomico", "podio": "arrivo_atomico", "altro": "traguardo_atomico" },
+  "lv_03_foglie": { "primo": "podio_foglie", "podio": "arrivo_foglie", "altro": "traguardo_foglie" },
   "lv_04_cromo": { "primo": "podio_cromo", "podio": "arrivo_cromo", "altro": "traguardo_cromo" },
   "lv_05_spray": { "primo": "podio_spray", "podio": "arrivo_spray", "altro": "traguardo_spray" },
   "lv_06_desktop": { "primo": "podio_desktop", "podio": "arrivo_desktop", "altro": "traguardo_desktop" }

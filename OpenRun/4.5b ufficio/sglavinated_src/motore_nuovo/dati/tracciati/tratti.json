@@ -21,6 +21,6 @@
     "ponte": {"curva": 0.0, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1, "larghezza": 1.0},
     "autostrada": {"curva": 0.0, "collina": 0.0, "lunghezza": 520, "entrata": -1, "uscita": -1, "larghezza": 2.0},
     "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1},
-    "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1}
+    "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1, "nota": "tipo tratto PIST1: collina negativa marcata, riferimento ANDREA_REVIEW T1-Q5. Larghezza default 1.0 raccordata senza scatti (regola PIST1 punto 2)."}
   }
 }

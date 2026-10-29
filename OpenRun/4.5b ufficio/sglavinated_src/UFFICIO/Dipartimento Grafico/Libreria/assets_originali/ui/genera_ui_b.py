@@ -362,6 +362,10 @@ def build_hud():
             if riemp > 0:
                 rect(img, bx + sp, by + sp, min(riemp, bw - 2 * sp), bh - 2 * sp,
                      tuple(el["colore_riempimento"]))
+        elif tipo == "linea":
+            # Linea verticale divisoria (es. divisorio HUD)
+            sp = int(el.get("spessore", 1))
+            cornice(img, el["x"], el["y"], el["w"], el["h"], sp, tuple(el["colore"]))
         else:
             raise RuntimeError(f"elemento HUD sconosciuto: {tipo!r}")
     return img

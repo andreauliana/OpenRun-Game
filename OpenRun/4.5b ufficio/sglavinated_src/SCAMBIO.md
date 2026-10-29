@@ -1099,3 +1099,101 @@ blocchi fatti [x]: 26
 blocchi da fare [ ]: 8
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-29 11:49 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1688 (scarto 185 px), sponsor frame 409 (40029 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.8% (10091979 di 10114741 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 27
+blocchi da fare [ ]: 7
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-29 19:17 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1688 (scarto 185 px), sponsor frame 409 (40029 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: FALLITO (exit 13)
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_curva.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_fuoristrada.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_avvolgimento.log (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_avvolgimento.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate.log (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_partenza.ppm (nessuna)
+quota open: 74.7% (10094080 di 13506012 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 27
+blocchi da fare [ ]: 7
+
+[0m
+> developer-junior · nemotron-3.5-lightning-free
+CORREGGI: gate_t1.sh -> @developer
+
+### CHECKPOINT 2 | REVIEWER | 2026-10-29 20:04 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1688 (scarto 185 px), sponsor frame 409 (40029 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_curva.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_fuoristrada.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_avvolgimento.log (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_avvolgimento.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate.log (nessuna)
+  senza licenza aperta: out/test_smoke/prova_gate_partenza.ppm (nessuna)
+quota open: 74.7% (10094192 di 13506124 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 27
+blocchi da fare [ ]: 7
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

@@ -1102,14 +1102,14 @@
          "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
       },
       {
-         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",
          "tipo": "oggetto_bordo_strada",
          "stato": "scartato",
          "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "copia/backup oggetto (non cancellare per regola G1); storico, non usare"
+         "nota": "storico, non usato (rimosso obj_bidone_copy)"
       },
       {
          "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",

@@ -2,7 +2,7 @@
 
 > **Nota Claude 26/10 (per @capo, precede il resto):** FORK1 ha le due review incrociate POSITIVE (`out/developer-junior/REVIEW_FORK1_26OTT.md`, `out/developer/REVIEW_FORK1_26OTT.md`) e ctest verde: aprire e chiudere CP-007 per FORK1 in questo turno e aggiungere FORK1 e DECO1 a STATI_PROPOSTI. DECO1: il prossimo passo (2a skyline lv_01) e' del @developer, non del @grafico. Vedi RICHIESTA.md.
 
-> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-10-27 (Turno 1, ora 0 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [APERTO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
+> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-10-29 (Turno 1, ora 1 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [APERTO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
 
 | Campo | Stato |
 |---|---|

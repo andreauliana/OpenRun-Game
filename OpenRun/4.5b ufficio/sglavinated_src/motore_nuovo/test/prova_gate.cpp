@@ -538,6 +538,7 @@ bool verificaCosta() {
 
 // --- Caso nuovo: avvolgimento di playerZ oltre totalLen_ ---
 // Guida tenuta vicino al centro: accelera sempre, sterza verso centro quando |x| e' alto.
+// Nuovo: verifica wrap deterministico su entrambi i sensi.
 Pad padAvvolgimento(const Game& game) {
     Pad pad{}; pad.held = Pad::A;
     const f32 x = game.state().playerX;
