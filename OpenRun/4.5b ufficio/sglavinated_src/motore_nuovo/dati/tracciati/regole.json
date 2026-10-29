@@ -3,15 +3,15 @@
   "autore": "@developer (blocco R1, regole originali, nessun materiale Sega)",
   "nota": "Regole di guidabilita' per pista, lette da prova_gate al posto delle soglie hardcodate. rettilineo_min/max: quota del giro con |curva| < 0.05. rettilineo_piu_lungo_min: segmenti consecutivi dritti. curva_max: max |curva| ammessa nel giro. curva_dx_min / curva_sx_min: forza minima richiesta delle curve forti per senso (varieta'). fuori_strada_max: quota massima di frame fuori strada nel giro guidato. Valori coerenti con lv_02_atomico (rettilineo ~40-75%, curva max 0.85), riferimento ANDREA_REVIEW T1-Q5.",
   "default": {
-    "rettilineo_min": 0.30,
-    "rettilineo_max": 0.80,
+    "rettilineo_min": 0.35,
+    "rettilineo_max": 0.75,
     "rettilineo_piu_lungo_min": 300,
-    "curva_max": 1.0,
+    "curva_max": 0.86,
     "curva_dx_min": 0.3,
     "curva_sx_min": 0.3,
     "fuori_strada_max": 0.01
   },
-  "nota_default": "rettilineo_min ridotto a 0.30 per consentire track con minore quota dritta; da tarare con generazione tratti",
+  "nota_default": "rettilineo_min alzato a 0.35 e rettilineo_max a 0.75 per allineare a profilo lv_02_atomico (rectilineo ~40%, curva max 0.86); da tarare con generazione tratti un parametro alla volta",
   "regole": {
     "lv_01_neon": {
       "rettilineo_min": 0.35,

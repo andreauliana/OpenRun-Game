@@ -1,1 +1,1 @@
-[29/10 19:46] Turno developer-junior | gate non eseguito: nessun blocco [ ]/[~] mio eseguibile; awaiting D19 resolution T1-RUN [~], restrizioni shell gate precedente.
+[29/10 20:59] Turno developer-junior | gate non eseguito: nessun blocco [ ]/[~] mio eseguibile; awaiting D19 Andrea T1-RUN [~]=B, restrizioni shell.

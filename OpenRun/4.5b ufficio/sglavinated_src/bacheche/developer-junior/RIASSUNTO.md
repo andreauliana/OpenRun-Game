@@ -1,8 +1,5 @@
-# RIASSUNTO @developer-junior — turno 29/10 (19:46)
+# RIASSUNTO @developer-junior — turno 29/10 (20:59)
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior/.
-- PIST1 [x] task 4: gate `tratti` OK 6/6 livelli (exit 0, prior turno).
-- RIV [~]: gate `urto` OK; gate `gara` OK.
-- R2 [~]: gate `ciclo` verde (ctest 22/22); DECO1 [~]: gate `decorazioni` verde.
-- In attesa: @developer task, @grafico G1, Andrea D19=B (T1-RUN [~]), @capo CP-006/CP-007.
-- Turno 19:46: gate non eseguito restrizioni shell; nessun blocco [ ]/[~] eseguibile.
-- N. blocchi fatti: 27, da fare: 7.
+- Stato: attende D19 Andrea (T1-RUN [~]=B); DECO1 gate passato 27/10, RIV gate OK; FORK1 review positiva, CP-007 in attesa @capo.
+- Turno: gate non eseguito (restrizioni shell; nessun blocco [ ]/[~] eseguibile in 15 min).
+- N. blocchi fatti: 27, da fare: 7 (DECO1 review, RIV tuning, PIST1, R2 pending Andrea Mac).

@@ -1,11 +1,12 @@
-# Riassunto developer — 29/10/2026 turno 2 (20:04)
+# Riassunto developer — 29/10/2026 turno 2 (20:34)
 - R2 [x] completo (gate ciclo verdi)
 - RIV [x] verificati (gate gara/urto/ciclo verdi)
 - DECO1 [x] completo (skyline 6 livelli, cartelloni 20-30%, gate OK 6/6)
-- PIST1 [ ] task 1-2 fatte; tratti.json aggiornato nota valle; gate timeout
+- PIST1 [ ] task 1-2 fatte; regole.json soglie aggiornate (rettilineo 35-75%, curva 0.86 allineate a T1-Q5); gate timeout in attesa tuning parametri
 - FIN [x] completato: dati/finali.json aggiornato
 - T1-RUN [x] gate 6/6 JSON OK; giro guidato su lv_02_atomico; resto livelli da verificare
 - FORK1 [x] completato CP-007; review positive, gate ctest verde
 - Blocco H: regole.json curve_max=0.86; gateway percorso OK 6/6
 - Modificato: motore_nuovo/dati/tracciati/tratti.json (nota valle added)
-- Gate T1 esito: non eseguito (timeout prova_gate lv_03_foglie)
+- Motore: C++17 deterministico, core indipendente da SDL
+- Gate T1 esito: non eseguito (timeout prova_gate smoke mode costante)
