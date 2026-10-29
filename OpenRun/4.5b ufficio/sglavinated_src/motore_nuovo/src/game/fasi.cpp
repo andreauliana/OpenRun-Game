@@ -256,6 +256,8 @@ public:
         arrivo_.clear();
         if (gioco.arrivato())
             for (const Game::Classificato& c : gioco.classificaArrivo()) arrivo_.push_back(c);
+        urti_ = gioco.urtiGara();
+        ciglio_ = gioco.toccateCiglio();
         if (classifica_.size() > 10) classifica_.resize(10);
         posizione_ = 1;
         for (const PunteggioEntry& e : classifica_) {
@@ -336,6 +338,9 @@ public:
         if (righe < arrivo_.size()) return;
         std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
         ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 178, buf, 0xFFFFE080u, 1, true);
+        // Memoria delle botte della gara (Andrea 29/10).
+        std::snprintf(buf, sizeof(buf), "URTI %d   CIGLIO %d", urti_, ciglio_);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 0) / 2, 191, buf, 0xFFA0A0A0u, 0, true);
         const char* aiuto = "START TORNA AL MENU";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 202, aiuto, 0xFFA0A0A0u, 1, true);
     }
@@ -352,6 +357,7 @@ private:
     i32 nomePos_;        // cursore 0..2 sulla lettera in editing
     std::vector<PunteggioEntry> classifica_;
     std::vector<Game::Classificato> arrivo_; // classifica sul tempo, solo dopo l'arrivo
+    i32 urti_ = 0, ciglio_ = 0;              // botte della gara (auto e ciglio)
 };
 
 // ---------------------------------------------------------------------------

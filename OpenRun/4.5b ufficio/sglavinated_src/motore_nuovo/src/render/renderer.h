@@ -17,6 +17,22 @@ struct SpriteInstance {
     f32 scale = 1.0f;
     const Sprite* sprite = nullptr;
     i32 paletteBase = 0; // offset di palette (per variazioni colore auto)
+    // Rivali (Andrea 29/10, "piu' evidenti"): segnalino colorato sopra l'auto
+    // e, da vicino, il nome del pilota. nullptr = nessuna etichetta.
+    const char* etichetta = nullptr;
+    u32 coloreEtichetta = 0xFFFFFFFFu;
+};
+
+// Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
+// restano per tutta la gara, scintille e lampo al momento della botta, fumo
+// dal cofano quando le botte sono tante.
+struct DanniAuto {
+    i32 segni = 0;          // ammaccature visibili (0..DANNI_MAX)
+    f32 dallUrtoS = -1.0f;  // secondi dall'ultima botta (< 0 = nessuna)
+    i32 lato = 0;           // lato della botta: -1 sinistra, +1 destra, 0 dietro/davanti
+    bool fumo = false;      // fumo dal cofano
+    f32 tempoS = 0.0f;      // orologio per animare il fumo
+    static constexpr i32 DANNI_MAX = 8;
 };
 
 // Colori di ambiente della tappa (da livello.json "colori"); i default sono
@@ -92,7 +108,7 @@ public:
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
-                       bool frena = false, f32 fumoS = -1.0f);
+                       bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -187,6 +203,12 @@ private:
     void drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t);
 
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
+    // Etichette dei rivali del frame: disegnate dopo tutti gli sprite, cosi'
+    // un cartello o un'auto piu' vicina non le copre (array fisso, zero alloc).
+    struct Etichetta { i32 x = 0, y = 0, h = 0; const char* testo = nullptr; u32 colore = 0; };
+    static constexpr i32 ETICHETTE_MAX = 8;
+    Etichetta etichette_[ETICHETTE_MAX];
+    void drawEtichetta(const Etichetta& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)

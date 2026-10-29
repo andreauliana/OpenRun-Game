@@ -120,6 +120,9 @@ public:
     i32 posizioneArrivo() const { return arrivo_ ? posizioneArrivo_ : posizioneGiocatore(); }
     // Dopo il traguardo l'auto frena da sola: secondi da quando e' ferma (-1 = si muove ancora).
     f32 fermoDopoArrivoS() const { return fermoS_; }
+    // Memoria delle botte della gara (Andrea 29/10): auto urtate e tocchi del ciglio.
+    i32 urtiGara() const { return urtiGara_; }
+    i32 toccateCiglio() const { return toccateCiglio_; }
     // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
     // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
     void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }
@@ -209,6 +212,21 @@ private:
     void urto(i32 fonte, f32 dx, bool tamponamento);
     f32 urtoEffettoS_ = 0.0f, urtoEffettoDurataS_ = 1.0f;
     bool urtoTraffico_ = false;
+    // Memoria delle botte (Andrea 29/10): restano ammaccature sull'auto, il
+    // conteggio va nei risultati. Ciglio: il primo tocco rallenta, un altro
+    // tocco a velocita' alta mentre si ricorda il primo e' un incidente.
+    i32 urtiGara_ = 0, toccateCiglio_ = 0;
+    f32 dallUrtoS_ = -1.0f;      // secondi dall'ultima botta (scintille, lampo)
+    i32 latoUrto_ = 0;
+    void segnaBotta(i32 lato);
+    bool offroadPrec_ = false;
+    f32 ciglioMemoriaS_ = 0.0f;  // > 0: il tocco precedente e' ancora "ricordato"
+    f32 avvisoCiglioS_ = 0.0f;   // scritta CIGLIO! sopra l'auto
+    void toccaCiglio();
+    void ribalta();
+    f32 ciglioRallenta_ = 0.7f;      // config.json ciglio_rallenta
+    f32 ciglioMemoriaDurataS_ = 6.0f; // config.json ciglio_memoria_s
+    f32 ciglioCrashVelocita_ = 0.45f; // config.json ciglio_crash_velocita (frazione della punta)
     std::vector<Classificato> classifica_;
     void calcolaClassifica();
     void scuotiScena(i32 dx, i32 dy);

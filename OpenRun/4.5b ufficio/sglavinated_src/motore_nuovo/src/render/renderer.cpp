@@ -334,6 +334,7 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
                   return distanza(a) > distanza(b);
               });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
+    i32 nEtichette = 0;
     for (auto& s : sprites) {
         // zRel con modulo totalLen: playerZ avvolge sul giro mentre worldZ e'
         // assoluto, quindi vicino al punto di wrap gli sprite non spariscono né
@@ -369,13 +370,35 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
             fb_.fillRect(cx - w / 4, cy - h + 1, cx + w / 4, cy - h / 2, pal_[10]);
             fb_.fillRect(cx - w / 2, cy - 2, cx - w / 3, cy + 1, pal_[14]);
             fb_.fillRect(cx + w / 3, cy - 2, cx + w / 2, cy + 1, pal_[14]);
+            if (s.etichetta && nEtichette < ETICHETTE_MAX) etichette_[nEtichette++] = {cx, cy - h, h, s.etichetta, s.coloreEtichetta};
             continue;
         }
         // Scala in pixel: stessa proiezione della strada (scl * W/2 per unita' mondo)
         // per le unita' mondo di un pixel sprite. Prima si passava scl da solo
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
-        drawSprite(s, sx, sy, scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale);
+        const f32 scala = scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale;
+        drawSprite(s, sx, sy, scala);
+        if (s.etichetta && nEtichette < ETICHETTE_MAX) {
+            const i32 h = (i32)(s.sprite->height * scala);
+            etichette_[nEtichette++] = {(i32)sx, (i32)sy - h, h, s.etichetta, s.coloreEtichetta};
+        }
     }
+    for (i32 i = 0; i < nEtichette; ++i) drawEtichetta(etichette_[i]);
+}
+
+void Renderer::drawEtichetta(const Etichetta& e) {
+    // Segnalino a freccia (5 px, bordo nero) sopra il tetto del rivale; da
+    // vicino anche il nome del pilota nel font mini. Solo pixel pieni.
+    // Auto gia' a fianco (base sotto lo schermo): niente freccia sospesa sull'erba.
+    if (e.y < 4 || e.y + e.h >= Framebuffer::HEIGHT) return;
+    const i32 punta = e.y - 2 - std::min(4, e.h / 6); // stacco dal tetto, cresce un poco da vicino
+    for (i32 r = 0; r <= 5; ++r) // bordo nero: la freccia allargata di 1 px
+        fb_.hline(e.x - std::min(r, 4), e.x + std::min(r, 4), punta + 1 - r, 0xFF000000u);
+    for (i32 r = 0; r <= 3; ++r)
+        fb_.hline(e.x - r, e.x + r, punta - r, e.colore);
+    if (e.h < 10) return; // lontano: basta la freccia
+    const i32 w = larghezzaTesto(e.testo, 0);
+    drawTesto(e.x - w / 2, punta - 11, e.testo, e.colore, 0, true);
 }
 
 void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale) {
@@ -430,7 +453,7 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
 }
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
-                             bool frena, f32 fumoS) {
+                             bool frena, f32 fumoS, const DanniAuto* danni) {
     // Auto del giocatore: sagoma sintetica (nessun asset Sega).
     // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
     // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
@@ -438,6 +461,8 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     // come in OutRun. offsetX e' usato solo per un leggero accenno di
     // sterzo visibile (inclinazione del corpo) senza spostare l'auto.
     u32 body = offroad ? pal_[12] : pal_[9];
+    // Lampo bianco nei primi istanti della botta: l'urto si vede subito.
+    if (danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f) body = 0xFFFFFFFFu;
     u32 cabin = pal_[10];
     // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
     i32 cx = 160 + (i32)(offsetX * 0.035f);
@@ -467,6 +492,17 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
+    if (danni && danni->segni > 0) {
+        // Ammaccature: restano per tutta la gara, una per botta (fino a
+        // DANNI_MAX), in punti fissi del retro; ombra scura e graffio chiaro.
+        static constexpr i32 SEGNI[DanniAuto::DANNI_MAX][2] = {
+            {-12, -4}, {11, -6}, {-6, -1}, {7, -2}, {-15, -8}, {14, -3}, {-2, -5}, {3, -8}};
+        for (i32 k = 0; k < std::min(danni->segni, DanniAuto::DANNI_MAX); ++k) {
+            const i32 sx = cx + SEGNI[k][0], sy = cy + SEGNI[k][1];
+            drawRotatedRect(sx, sy, 3, 2, 0xFF402020u);
+            drawRotatedRect(sx + 1, sy - 1, 2, 1, 0xFFE0D0C0u);
+        }
+    }
     if (frena) {
         // Stop accesi: rossi e piu' grandi.
         drawRotatedRect(cx - 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
@@ -494,6 +530,41 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                         if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
                             fb_.put(px + dx, py + dy, col);
             }
+        }
+    }
+    if (!danni) return;
+    if (danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.4f) {
+        // Scintille dal lato della botta (dietro/davanti: da entrambi i lati):
+        // punti gialli e bianchi che volano via e cadono.
+        const f32 t = danni->dallUrtoS;
+        for (i32 n = 0; n < 8; ++n) {
+            const i32 lato = danni->lato != 0 ? danni->lato : ((n & 1) ? 1 : -1);
+            const f32 vx = 60.0f + 25.0f * (f32)(n % 4);
+            const f32 vy = -50.0f - 18.0f * (f32)((n * 5) % 4);
+            const i32 px = cx + lato * (17 + (i32)(vx * t));
+            const i32 py = cy - h / 2 + (n % 3) * 3 + (i32)(vy * t + 220.0f * t * t);
+            const u32 col = (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u;
+            fb_.put(px, py, col);
+            if (t < 0.2f) fb_.put(px - lato, py, 0xFFFF8020u); // scia
+        }
+    }
+    if (danni->fumo) {
+        // Fumo dal cofano dopo tante botte: sbuffi grigi che salgono e si
+        // allargano, uno ogni 0,25 s (pixel a scacchiera, niente trasparenze).
+        constexpr f32 OGNI_S = 0.25f, VITA_S = 1.0f;
+        const f32 fase = std::fmod(danni->tempoS, OGNI_S);
+        for (i32 n = 0; n < 4; ++n) {
+            const f32 eta = fase + (f32)n * OGNI_S;
+            if (eta > VITA_S) continue;
+            const f32 k = eta / VITA_S;
+            const i32 r = 2 + (i32)(k * 4.0f);
+            const i32 px = cx + ((n & 1) ? 3 : -3) + (i32)(k * 4.0f);
+            const i32 py = cy - h - 2 - (i32)(k * 20.0f);
+            const u32 col = k < 0.4f ? 0xFFE0E0E8u : 0xFF404048u; // chiaro sul nero, scuro sull'asfalto
+            for (i32 dy = -r; dy <= r; ++dy)
+                for (i32 dx = -r; dx <= r; ++dx)
+                    if (dx * dx + dy * dy <= r * r && (k < 0.6f || ((px + dx + py + dy) & 1) == 0))
+                        fb_.put(px + dx, py + dy, col);
         }
     }
 }
