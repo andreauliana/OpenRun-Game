@@ -97,6 +97,14 @@ constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpass
 // Rivali e traffico grandi come l'auto del giocatore (Andrea 27/10: "piccolini"):
 // 40 px x SPRITE_WORLD_PX x 1.4 = 280 unita', l'auto del giocatore ne copre ~270.
 constexpr f32 SCALA_AUTO = 1.4f;
+// Arrivo (Andrea 29/10): pubblico dietro le transenne ai lati della strada,
+// da FOLLA_PRIMA unita' prima del traguardo a FOLLA_DOPO dopo (l'auto si
+// ferma li' in mezzo), un gruppo ogni FOLLA_PASSO per lato. Le persone sono
+// alte come l'auto (40x26 px x SPRITE_WORLD_PX x 3.3).
+constexpr f32 FOLLA_SCALA = 3.3f;
+constexpr f32 FOLLA_PASSO = 600.0f;
+constexpr f32 FOLLA_PRIMA = 9000.0f, FOLLA_DOPO = 26000.0f;
+constexpr f32 FRENATA_ARRIVO_S = 1.6f; // da tutta velocita' a fermo dopo il traguardo
 // Urti (Andrea 29/10): le auto sono solide (finestra di contatto in game.h).
 // Il controllo e' "a spazzata": a 290 km/h il giocatore fa ~500 unita' per
 // frame e senza spazzata salterebbe oltre l'auto davanti.
@@ -550,6 +558,10 @@ void Game::init(const std::string& livelloId) {
     saltoVStradaPrec_ = 0.0f;
     tempoExtraS_ = 0.0f;
     urtoEffettoS_ = 0.0f;
+    arrivoS_ = 0.0f;
+    fermoS_ = -1.0f;
+    folla_.clear();
+    ren_.setLineaArrivo(false);
     assistenzaBivio_ = 0.0f;
     ramoProvvisorio_ = 0;
     centroRamoPrec_ = 0.0f;
@@ -752,6 +764,7 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     arrivo_ = false;
     tempoResiduoS_ = (f32)tempoLimiteTappaS_; // tempo della prima tappa (secondi)
     preparaBivio();
+    preparaArrivo();
     inizializzaRivali();
     aggiornaStatoGara();
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: avviaGara() parte guidando (gate, runner --subito)
@@ -1043,6 +1056,9 @@ void Game::fineTappa(f32 avanzo) {
     if (prossima.empty() || !trovaTappa(prossima)) {
         if (!arrivo_) {
             arrivo_ = true;
+            arrivoS_ = 0.0f;
+            fermoS_ = -1.0f;
+            velocitaArrivo_ = player_.speed;
             posizioneArrivo_ = posizioneGiocatore();
             calcolaClassifica(); // posizione d'arrivo dal tempo di ognuno
         }
@@ -1079,6 +1095,7 @@ void Game::fineTappa(f32 avanzo) {
     }
     saltoQuotaPrec_ = -1e9f; // tracciato nuovo: la quota riparte
     preparaBivio();
+    preparaArrivo();
     road_.playerZ = avanzo;
     player_.z = avanzo;
     road_.playerX = player_.x;
@@ -1262,7 +1279,7 @@ void Game::update() {
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
     fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
     aggiornaRadio();
-    if (fasi_.attuale() == FaseId::Gara || fasi_.attuale() == FaseId::FineTempo) {
+    if (scenaStrada()) {
         aggiornaGuida(dt);
     } else {
         aggiornaMenu(dt);
@@ -1361,6 +1378,7 @@ void Game::aggiornaGuida(f32 dt) {
         if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
         player_.input(comandi, dt);
         player_.update(dt);
+        if (arrivo_) frenataArrivo(dt);
 
         road_.playerX = player_.x;
         const f32 roadScrollScale = ROAD_SCROLL_SCALE *
@@ -1387,7 +1405,7 @@ void Game::aggiornaGuida(f32 dt) {
                 }
             }
             if (tampona) {
-                if (!playerBump_ && assistenzaBivio_ <= 0.0f) urto(tamponato, dxTamponato, true);
+                if (!playerBump_ && assistenzaBivio_ <= 0.0f && !arrivo_) urto(tamponato, dxTamponato, true);
                 // Spinge sulla coda: la velocita' resta quella di chi sta davanti.
                 const f32 vDavanti = passoFonte(tamponato) / roadScrollScale;
                 player_.speed = std::max(0.05f * player_.maxSpeed(), std::min(player_.speed, vDavanti));
@@ -1483,7 +1501,7 @@ void Game::aggiornaGuida(f32 dt) {
         const bool toccaCartellone = assistenzaBivio_ <= 0.0f && collisioneCartelloneVicino();
         const bool toccaQualcosa = toccaRivale || toccaCartellone;
 
-        if (toccaRivale && !inCollision_ && !playerFlipping_ && !playerBump_) {
+        if (toccaRivale && !inCollision_ && !playerFlipping_ && !playerBump_ && !arrivo_) {
             // Contatto di fianco (o rimasto dopo un tamponamento): urto con
             // l'auto piu' vicina, avversario o traffico.
             const f32 giro = (f32)road_.totalLength();
@@ -1534,7 +1552,7 @@ void Game::aggiornaGuida(f32 dt) {
 
         // Ribaltamento solo per fuori strada prolungato (mai per contatto con
         // rivali o cartelloni).
-        if (offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_) && !playerFlipping_ && !playerBump_) {
+        if (offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_) && !playerFlipping_ && !playerBump_ && !arrivo_) {
             showManager_.crash();
             playerFlipping_ = true;
             playerFlipFrame_ = 0;
@@ -1584,7 +1602,7 @@ void Game::aggiornaMenu(f32 dt) {
 }
 
 void Game::render() {
-    if (fasi_.attuale() != FaseId::Gara && fasi_.attuale() != FaseId::FineTempo) {
+    if (!scenaStrada()) {
         // Schermate di menu/risultati: niente strada, disegna la fase corrente.
         fb_.clear(pal_[7]);
         fasi_.disegna(ren_, fb_);
@@ -1600,9 +1618,21 @@ void Game::render() {
     scenaSprites_ = sprites_;
     aggiungiVisibili(cartelloni_);
     aggiungiVisibili(oggettiStrada_);
+    // Pubblico all'arrivo: compare quando il traguardo entra nella vista.
+    // Ognuno esulta col suo ritmo, piu' forte dopo che il giocatore e' arrivato.
+    const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
+    if (!folla_.empty() && (arrivo_ || road_.playerZ > (f32)road_.totalLength() - vista - FOLLA_PRIMA)) {
+        const f32 t = (f32)clock_.frame / (f32)frequenzaHz_;
+        for (size_t k = 0; k < folla_.size(); ++k) {
+            const f32 ritmo = (arrivo_ ? 3.0f : 1.4f) + 0.5f * (f32)(k % 3);
+            const bool su = std::fmod(t * ritmo + 0.37f * (f32)k, 1.0f) < 0.5f;
+            folla_[k].sprite = &spriteFolla_[((k / 2 + k) % 2) * 2 + (su ? 1 : 0)];
+        }
+        aggiungiVisibili(folla_);
+    }
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
-    const bool steeringLeft = (input_.held & Pad::Left) != 0;
-    const bool steeringRight = (input_.held & Pad::Right) != 0;
+    const bool steeringLeft = !arrivo_ && (input_.held & Pad::Left) != 0;
+    const bool steeringRight = !arrivo_ && (input_.held & Pad::Right) != 0;
     const f32 steeringLean = steeringLeft == steeringRight
         ? 0.0f : (steeringLeft ? -0.32f : 0.32f);
     const f32 rollAngle = playerFlipping_
@@ -1618,8 +1648,22 @@ void Game::render() {
         sobbalzoPx = (urtoTraffico_ ? 9.0f : 5.0f) * std::sin(3.14159f * (1.0f - urtoK));
         scodata = (urtoTraffico_ ? 0.35f : 0.18f) * urtoK * std::sin(urtoEffettoS_ * 45.0f);
     }
+    // Arrivo: frenata con il muso che si abbassa e una scodata, poi un
+    // rimbalzo quando l'auto si ferma.
+    bool frena = false;
+    if (arrivo_) {
+        const f32 k = velocitaArrivo_ > 0.0f ? 1.0f - player_.speed / velocitaArrivo_ : 1.0f;
+        frena = fermoS_ < 0.4f;
+        if (fermoS_ < 0.0f) {
+            scodata += 0.22f * std::sin(3.14159f * k);
+            sobbalzoPx -= 2.0f;
+        } else if (fermoS_ < 0.8f) {
+            sobbalzoPx += 3.0f * std::exp(-fermoS_ * 6.0f) * std::sin(fermoS_ * 22.0f);
+        }
+    }
     const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx + sobbalzoPx;
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle + scodata, sollevamentoPx);
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle + scodata, sollevamentoPx,
+                       frena, arrivo_ ? arrivoS_ : -1.0f);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
@@ -1636,6 +1680,11 @@ void Game::render() {
     }
     if (sc.bollaVisibile) {
         fb_.fillRect(sc.bollaX, sc.bollaY, sc.bollaX + sc.bollaW, sc.bollaY + sc.bollaH, 0xFF0000FFu);
+    }
+    // Risultati dell'arrivo: sopra la scena solo la classifica (fasi.cpp).
+    if (fasi_.attuale() == FaseId::Risultati) {
+        fasi_.disegna(ren_, fb_);
+        return;
     }
     // Pannello di info (tappa 1): velocita, marcia, fuoristrada.
     if (ren_.haHud()) {
@@ -1695,6 +1744,51 @@ void Game::aggiornaSalto(f32 dt) {
         if (saltoAltezza_ <= 0.0f || playerFlipping_) saltoAltezza_ = 0.0f; // atterraggio
     }
     saltoVStradaPrec_ = vStrada;
+}
+
+void Game::caricaSpriteFolla() {
+    static const char* NOMI[4] = {"pubblico_a_giu", "pubblico_a_su", "pubblico_b_giu", "pubblico_b_su"};
+    for (i32 i = 0; i < 4; ++i)
+        spriteFolla_[(size_t)i] = caricaSpriteRaw(percorsoDati(std::string("motore_nuovo/dati/sprite_raw/pubblico/") + NOMI[i] + ".sglraw"));
+    if (spriteFolla_[0].width == 0) std::printf("arrivo: raw del pubblico mancanti (png_a_raw.py)\n");
+}
+
+void Game::preparaArrivo() {
+    // Tappa d'arrivo (senza bivio): linea a scacchi dove il tracciato finisce
+    // e pubblico ai due lati, prima e dopo la linea.
+    folla_.clear();
+    const bool arrivoQui = gara_ && !tappaConBivio(tappaId_);
+    ren_.setLineaArrivo(arrivoQui);
+    if (!arrivoQui) return;
+    if (spriteFolla_[0].width == 0) caricaSpriteFolla();
+    if (spriteFolla_[0].width == 0) return;
+    const f32 giro = (f32)road_.totalLength();
+    const f32 metaGruppo = 0.5f * (f32)spriteFolla_[0].width * Renderer::SPRITE_WORLD_PX * FOLLA_SCALA;
+    auto fila = [&](f32 da, f32 a) {
+        for (f32 z = da; z < a; z += FOLLA_PASSO) {
+            const f32 bordo = Road::ROAD_HALF_WORLD * road_.larghezzaAt(z) + 150.0f + metaGruppo;
+            for (f32 lato : {-1.0f, 1.0f}) {
+                SpriteInstance s;
+                s.worldZ = z;
+                s.worldX = lato * bordo;
+                s.scale = FOLLA_SCALA;
+                s.sprite = &spriteFolla_[0];
+                folla_.push_back(s);
+            }
+        }
+    };
+    fila(std::max(0.0f, giro - FOLLA_PRIMA), giro);
+    fila(0.0f, std::min(FOLLA_DOPO, giro - FOLLA_PRIMA));
+    std::sort(folla_.begin(), folla_.end(),
+              [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; });
+}
+
+void Game::frenataArrivo(f32 dt) {
+    // Dopo il traguardo l'auto frena da sola fino a fermarsi (stop accesi,
+    // fumo e scodata in render()); da ferma conta i secondi per i risultati.
+    arrivoS_ += dt;
+    player_.speed = std::max(0.0f, player_.speed - player_.maxSpeed() / FRENATA_ARRIVO_S * dt);
+    if (player_.speed <= 0.0f) fermoS_ = fermoS_ < 0.0f ? 0.0f : fermoS_ + dt;
 }
 
 f32 Game::passoFonte(i32 fonte) const {

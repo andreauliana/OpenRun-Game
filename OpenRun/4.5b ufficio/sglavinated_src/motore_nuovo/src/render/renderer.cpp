@@ -13,6 +13,7 @@ namespace {
 // frame, con un ciclo di 800 le strisce sembravano ferme o all'indietro.
 constexpr f32 LANE_DASH_CYCLE = 2000.0f;
 constexpr f32 LANE_DASH_LENGTH = 1000.0f;
+constexpr f32 LINEA_ARRIVO_PROF = 600.0f; // traguardo: 3 file di scacchi da 200 unita'
 constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
 }
 
@@ -57,6 +58,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
 
     // playerX del frame: drawSprites riusa la stessa proiezione della strada.
     lastPlayerX_ = playerX; // (riservato; drawSprites usa il centro strada proiettato)
+    giro_ = (f32)road.totalLength();
 
     // Cielo (parte superiore dello schermo) e terra (sotto l'orizzonte).
     fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, tema_.cielo);
@@ -129,6 +131,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
         f32 dashPhase = std::fmod(playerZ + distance, LANE_DASH_CYCLE);
         if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
+        // Traguardo: tre file di scacchi appena dopo la fine del tracciato.
+        i32 filaScacchi = -1;
+        if (lineaArrivo_ && giro_ > 0.0f) {
+            f32 zPista = std::fmod(playerZ + distance, giro_);
+            if (zPista < 0.0f) zPista += giro_;
+            if (zPista < LINEA_ARRIVO_PROF) filaScacchi = (i32)(zPista * 3.0f / LINEA_ARRIVO_PROF);
+        }
         for (i32 r = 0; r < rami; ++r) {
             const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
             const f32 cFar  = next.screenX + next.carr.centro[r] * pxFar;
@@ -139,6 +148,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             fb_.hline(lx, rx, y, road);
             fb_.hline(lx, lx + rw - 1, y, rumble);
             fb_.hline(rx - rw + 1, rx, y, rumble);
+            if (filaScacchi >= 0) {
+                // 16 caselle da bordo a bordo, alternate a ogni fila.
+                const f32 casella = (f32)(rx - lx + 1) / 16.0f;
+                for (i32 c = 0; c < 16; ++c) {
+                    const i32 x0 = lx + (i32)((f32)c * casella), x1 = lx + (i32)((f32)(c + 1) * casella) - 1;
+                    fb_.hline(x0, x1, y, ((c + filaScacchi) & 1) ? 0xFFF4F4F4u : 0xFF141414u);
+                }
+                continue;
+            }
             if (dashPhase < LANE_DASH_LENGTH) {
                 i32 lw = (i32)(hwBase * 0.02f);
                 if (lw < 1) lw = 1;
@@ -411,7 +429,8 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
-void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx) {
+void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
+                             bool frena, f32 fumoS) {
     // Auto del giocatore: sagoma sintetica (nessun asset Sega).
     // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
     // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
@@ -448,11 +467,35 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
     drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
-    if (speed > 0.0f && !offroad) {
+    if (frena) {
+        // Stop accesi: rossi e piu' grandi.
+        drawRotatedRect(cx - 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+        drawRotatedRect(cx + 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+    } else if (speed > 0.0f && !offroad) {
         drawRotatedRect(cx - 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
         drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
     }
-    (void)speed; // riservato per animazione sospensione / salto
+    if (fumoS >= 0.0f) {
+        // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s
+        // per ruota posteriore, sale, si allarga e si dirada (pixel a
+        // scacchiera, niente trasparenze).
+        constexpr f32 OGNI_S = 0.1f, VITA_S = 0.6f, FUMO_S = 1.0f;
+        for (i32 n = 0; (f32)n * OGNI_S <= std::min(fumoS, FUMO_S); ++n) {
+            const f32 eta = fumoS - (f32)n * OGNI_S;
+            if (eta > VITA_S) continue;
+            const f32 k = eta / VITA_S;
+            const i32 r = 2 + (i32)(k * 6.0f);
+            for (i32 lato = -1; lato <= 1; lato += 2) {
+                const i32 px = cx + lato * (13 + (i32)(k * 10.0f)) + ((n & 1) ? 2 : -2);
+                const i32 py = cy - 1 - (i32)(k * 12.0f);
+                const u32 col = k < 0.4f ? 0xFFE8E8E8u : 0xFFB8B8C0u;
+                for (i32 dy = -r; dy <= r; ++dy)
+                    for (i32 dx = -r; dx <= r; ++dx)
+                        if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
+                            fb_.put(px + dx, py + dy, col);
+            }
+        }
+    }
 }
 
 void Renderer::drawHud(f32 speedPct, i32 gear, bool offroad) {

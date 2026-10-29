@@ -68,6 +68,9 @@ public:
     // Disegna la strada (segmenti proiettati) con rumble laterali e fondo cielo.
     // latoBivio: ramo scelto al bivio di fine tappa (0 = ancora da scegliere).
     void drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivio = 0);
+    // Traguardo (Andrea 29/10): linea a scacchi per terra dove il tracciato
+    // finisce, solo sulla tappa d'arrivo.
+    void setLineaArrivo(bool attiva) { lineaArrivo_ = attiva; }
     void impostaTema(const TemaColori& t) { tema_ = t; temaA_ = t; transizioneT_ = 1.0f; }
     const TemaColori& tema() const { return tema_; }
     // Avvia la transizione graduale del tema: da `da` (tema della tappa che
@@ -87,7 +90,9 @@ public:
     void drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen);
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
-    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f);
+    // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
+    void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
+                       bool frena = false, f32 fumoS = -1.0f);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -191,6 +196,8 @@ private:
     Sprite skylineA_;                       // skyline a fine transizione di tema
     f32 skylineScrollX_ = 0.0f;             // scorrere orizzontale skyline, parallasse in curva (DECO1 2e)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
+    bool lineaArrivo_ = false;              // scacchi sul traguardo (fine del tracciato)
+    f32 giro_ = 0.0f;                       // lunghezza del tracciato dell'ultima drawRoad
     TemaColori tema_;                       // colori di ambiente della tappa
     // Stato della transizione graduale di tema tra due tappe (FORK1 punto 6).
     TemaColori temaDa_;                     // tema di partenza (tappa che finisce)

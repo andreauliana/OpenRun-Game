@@ -16,6 +16,7 @@
 #include "gameplay/disegno_show.h" // scena show: personaggio/fumetto/UFO in px
 #include "gameplay/testi_frasi.h"  // testi frasi.json per i fumetti
 #include "game/fasi.h"             // blocco R2: macchina a stati di gioco
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -117,6 +118,8 @@ public:
     // Posizione del giocatore nella gara (1 = primo). In arrivo riporta la
     // posizione registrata al traguardo (blocco FIN).
     i32 posizioneArrivo() const { return arrivo_ ? posizioneArrivo_ : posizioneGiocatore(); }
+    // Dopo il traguardo l'auto frena da sola: secondi da quando e' ferma (-1 = si muove ancora).
+    f32 fermoDopoArrivoS() const { return fermoS_; }
     // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
     // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
     void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }
@@ -216,6 +219,22 @@ private:
     f32 saltoAltezza_ = 0.0f, saltoVY_ = 0.0f;
     f32 saltoQuotaPrec_ = -1e9f, saltoVStradaPrec_ = 0.0f;
     f32 tempoExtraS_ = 0.0f; // avviso "TEMPO EXTRA" dopo un checkpoint
+    // Arrivo sulla strada (Andrea 29/10): linea a scacchi, pubblico ai lati
+    // dietro le transenne, l'auto frena da sola e si ferma, poi la classifica.
+    void preparaArrivo();     // sulla tappa d'arrivo: linea e pubblico
+    void caricaSpriteFolla(); // dati/sprite_raw/pubblico/ (PNG in assets_originali/sprite/pubblico/)
+    void frenataArrivo(f32 dt);
+    // La strada si disegna e si aggiorna in gara, a fine tempo e, dopo
+    // l'arrivo, anche sotto la classifica.
+    bool scenaStrada() const {
+        const FaseId f = fasi_.attuale();
+        return f == FaseId::Gara || f == FaseId::FineTempo || (arrivo_ && f == FaseId::Risultati);
+    }
+    std::array<Sprite, 4> spriteFolla_; // gruppi a, b x pose giu', su
+    std::vector<SpriteInstance> folla_; // ordinata per worldZ
+    f32 arrivoS_ = 0.0f;      // secondi dal traguardo
+    f32 fermoS_ = -1.0f;      // secondi da fermo dopo il traguardo
+    f32 velocitaArrivo_ = 0.0f;
     std::vector<SpriteInstance> sprites_; // traffico base (placeholder)
     // Cartelloni sponsor: gli sprite sono di proprieta' del Renderer
     // (setSponsorSprites li registra li); qui si tengono solo gli indici.

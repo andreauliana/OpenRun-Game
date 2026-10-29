@@ -19,7 +19,7 @@
     {
       "id": "cornice",
       "tipo": "cornice",
-      "nota": "box informazioni (Andrea 29/10): bordo da 1 px, interno scurito per leggibilita'; dentro tempo, totale, tappa, posizione e distanza. Fuori solo velocita' e giri.",
+      "nota": "box informazioni (Andrea 29/10): bordo da 1 px, interno scurito del 10% (Andrea 29/10: sugli sfondi chiari il nero appesantiva), divisorio al centro; dentro tempo, totale, tappa, posizione e distanza. Fuori solo velocita' e giri.",
       "x": 8,
       "y": 8,
       "w": 124,
@@ -30,12 +30,12 @@
         210,
         210
       ],
-      "oscura_sfondo": 45
+      "oscura_sfondo": 10
     },
     {
       "id": "divisorio",
       "tipo": "linea",
-      "x": 74,
+      "x": 70,
       "y": 13,
       "w": 1,
       "h": 52,
@@ -103,11 +103,11 @@
       "label": "TOTALE",
       "valore": "0'00\"00",
       "label_pos": [
-        80,
+        76,
         13
       ],
       "valore_pos": [
-        80,
+        76,
         20
       ],
       "scala_valore": 1,
@@ -128,11 +128,11 @@
       "label": "POS",
       "valore": "8/8",
       "label_pos": [
-        80,
+        76,
         31
       ],
       "valore_pos": [
-        80,
+        76,
         38
       ],
       "scala_valore": 1,
@@ -154,11 +154,11 @@
       "label": "DIST",
       "valore": "000",
       "label_pos": [
-        80,
+        76,
         50
       ],
       "valore_pos": [
-        80,
+        76,
         57
       ],
       "scala_valore": 1,

@@ -538,6 +538,18 @@
          "nota": "Traffico comune in gara (Andrea 27/10): 4 veicoli civili vista dietro, disegnati da zero con TOOLS/disegna_traffico.py (Claude), raw in motore_nuovo/dati/sprite_raw/traffico/ via png_a_raw.py. Disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/: stesso nome e misura."
       },
       {
+         "id": "scena.arrivo.pubblico",
+         "tipo": "pubblico_arrivo",
+         "stato": "pronto",
+         "file": [
+            "assets_originali/sprite/pubblico/pubblico_a_giu.png",
+            "assets_originali/sprite/pubblico/pubblico_a_su.png",
+            "assets_originali/sprite/pubblico/pubblico_b_giu.png",
+            "assets_originali/sprite/pubblico/pubblico_b_su.png"
+         ],
+         "nota": "Pubblico all'arrivo (Andrea 29/10): due file di persone dietro la transenna, ai lati della strada prima e dopo il traguardo della tappa d'arrivo. Due gruppi (a, b) in due pose (giu = braccia giu', su = esultano): il motore alterna le pose. 40x26 px, disegnati da zero con TOOLS/disegna_pubblico.py (Claude); raw in motore_nuovo/dati/sprite_raw/pubblico/ via png_a_raw.py. Per ridisegnarli: stesso nome e misura, poi png_a_raw.py."
+      },
+      {
          "id": "personaggio.gianni",
          "tipo": "personaggio",
          "stato": "mancante",

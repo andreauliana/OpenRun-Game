@@ -2272,7 +2272,6 @@ static const char* nomeFase(FaseId f) {
         case FaseId::Menu:      return "Menu";
         case FaseId::Gara:      return "Gara";
         case FaseId::FineTempo: return "FineTempo";
-        case FaseId::Finale:    return "Finale";
         case FaseId::Risultati: return "Risultati";
     }
     return "?";
@@ -2333,7 +2332,6 @@ static bool verificaCiclo(const std::string& outDir) {
                     ++frameGara;
                     break;
                 case FaseId::FineTempo:
-                case FaseId::Finale:      // scena d'arrivo: passa da sola ai Risultati
                     break;
                 case FaseId::Risultati:
                     if (tickInFase == 60) pressed = Pad::Start; // 1 s, poi torna al menu
