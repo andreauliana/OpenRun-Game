@@ -57,7 +57,7 @@ Sprite caricaSpriteRaw(const std::string& path) {
                                     migliore = c;
                                 }
                             }
-                            if (migliorDistanza > 64 * 64 && (i32)s.palette.size() < 256) {
+                            if (migliorDistanza > SOGLIA_NUOVO_COLORE * SOGLIA_NUOVO_COLORE && (i32)s.palette.size() < 256) {
                                 s.palette.push_back(col);
                                 migliore = (i32)s.palette.size() - 1;
                             }

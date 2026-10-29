@@ -58,7 +58,7 @@ Sprite convertiSprite(SDL_Surface* surf) {
                     }
                 }
                 // Soglia oltre la quale si crea un nuovo colore di palette.
-                if (migliorDistanza > 64 * 64 && (i32)s.palette.size() < 256) {
+                if (migliorDistanza > SOGLIA_NUOVO_COLORE * SOGLIA_NUOVO_COLORE && (i32)s.palette.size() < 256) {
                     s.palette.push_back(0xFF000000u | (u32)r << 16 | (u32)g << 8 | (u32)b);
                     migliore = (i32)s.palette.size() - 1;
                 }
