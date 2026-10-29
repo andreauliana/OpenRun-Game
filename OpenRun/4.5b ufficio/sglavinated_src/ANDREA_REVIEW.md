@@ -73,11 +73,13 @@ ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) sol
 
 ## Feedback Andrea 29/10 (prova della PR #44) — regole per tutti
 - Menu semplice: niente scelta della musica nel menu. In gara a schermo solo lo spettro audio, senza titolo del brano. Niente scritta MARCIA HIGH/LOW.
-- Musica: un brano per il menu e due per la gara (`dati/audio/playlist.json`, voci `menu` e `gara`); i brani .xm di Andrea stanno in `dati/audio/musica/`.
+- Musica: un brano per il menu e i brani di gara in `dati/audio/playlist.json` (voci `menu` e `gara`; dal 29/10 sera in gara ce n'e' uno solo, Andrea ne aggiungera' o togliera'); i brani .xm di Andrea stanno in `dati/audio/musica/`.
 - Il giocatore non attraversa le altre auto; bump diverso tra traffico (guidatori qualunque) e concorrenti; i rivali non scappano e non restano appiccicati al giocatore; classifica d'arrivo sul tempo.
 - Arrivo: NIENTE scena finale disegnata a parte ("non c'entra niente"). Linea a scacchi per terra, pubblico che aspetta, l'auto si ferma con un'animazione, poi i risultati.
 - Cruscotto (box info e HUD): deve diventare meno invasivo, Andrea ci sta ragionando. Per ora solo: separatore al centro del box, sfondo nero al 10%. Non cambiare altro dell'HUD senza una sua decisione.
 - Asset grafici ordinati e modificabili da Andrea: persone, auto, oggetti e scenari sono PNG in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`, registrati nel catalogo e convertiti con `png_a_raw.py` (stesso nome e misura per ridisegnarli). Nel codice restano solo effetti semplici (scacchi del traguardo, fumo, spettro audio).
+- Palette piccola e dithering (Andrea 29/10 sera): pochi colori pieni e trame al posto delle sfumature, cosi' il gioco resta portabile (Pi, browser, Linux, Windows XP). Tecnica scelta: Bayer (ordinato 4x4). Trama solo sulle zone grandi (cielo, facciate, sfondi), mai su dettagli piu' stretti di ~10 px, al massimo una o due zone per immagine; se a grandezza reale sembra rumore, si toglie. Skyline: `UFFICIO/Dipartimento Grafico/TOOLS/trama_scenari.py` scrive `skyline_trama.png` accanto all'originale (che resta da modificare) e il raw del gioco; regolazioni per livello in `assets_originali/scenari/trama.json`. Dopo aver ridisegnato uno skyline, rilanciare lo script.
+- Spettro audio in gara (`render/visualizzatore.*`): niente sotto la linea di base, colori neon pieni con ombra di 1 px per il contrasto, animazioni pazze sui picchi. Non aggiungere riflessi o pannelli.
 
 ## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
 Domanda: licenza del tuo codice e delle tue grafiche/testi (serve per il 50% open source).
