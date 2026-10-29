@@ -83,6 +83,12 @@ public:
         const Pad& p = gioco.input();
         if (p.pressed & Pad::Up)   sel_ = (sel_ + 2) % 3;
         if (p.pressed & Pad::Down) sel_ = (sel_ + 1) % 3;
+        // Radio come in OutRun: si sceglie il brano prima di partire, e suona subito.
+        if (p.pressed & Pad::Left)  gioco.prevBranoRadio();
+        if (p.pressed & Pad::Right) gioco.nextBranoRadio();
+        musica_ = gioco.musica();
+        brano_ = gioco.branoRadio();
+        brani_ = gioco.numBraniRadio();
         if (p.pressed & (Pad::Start | Pad::A)) {
             switch (sel_) {
                 case 0: // corsa singola: prima tappa della gara (stessi tracciati, rivali e tempo), poi arrivo
@@ -96,10 +102,12 @@ public:
             finita_ = true;
         }
     }
-    void disegna(Renderer& ren, Framebuffer&) const override {
+    void disegna(Renderer& ren, Framebuffer& fb) const override {
         const char* titolo = "MENU";
         const i32 w = ren.larghezzaTesto(titolo, 2);
-        ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFFFFFFu, 2, true);
+        // Il titolo pulsa sul battito del brano.
+        const u32 g = (u32)(255.0f - 95.0f * musica_.battito);
+        ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFF0000u | (g << 8) | g, 2, true);
         static const char* voci[3] = { "CORSA SINGOLA", "GARA A TAPPE", "ESCI" };
         for (i32 i = 0; i < 3; ++i) {
             i32 wi = ren.larghezzaTesto(voci[i], 1);
@@ -107,8 +115,38 @@ public:
             ren.drawTesto(160 - wi / 2, 104 + i * 14, voci[i], colore, 1, true);
             if (i == sel_) ren.drawTesto(160 - wi / 2 - 12, 104 + i * 14, ">", 0xFFFFFFFFu, 1, true);
         }
-        const char* aiuto = "SU/GIU SCEGLI   START CONFERMA";
+        const char* aiuto = brani_ > 0 ? "SU/GIU SCEGLI  SX/DX MUSICA  START" : "SU/GIU SCEGLI   START CONFERMA";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
+        if (brani_ > 0) disegnaRadio(ren, fb);
+    }
+    // Autoradio: nome del brano, scala delle stazioni con la lancetta,
+    // equalizzatore con una barra per canale del modulo tracker.
+    void disegnaRadio(Renderer& ren, Framebuffer& fb) const {
+        const i32 x0 = 40, x1 = 280, y0 = 174, y1 = 218;
+        fb.fillRect(x0, y0, x1, y1, 0xFF8080A0u);
+        fb.fillRect(x0 + 2, y0 + 2, x1 - 2, y1 - 2, 0xFF101018u);
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "< %s >", musica_.titolo);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, y0 + 5, buf, 0xFFFFFFFFu, 1, true);
+        ren.drawTesto(x0 + 6, y0 + 5, "FM", 0xFFFF6040u, 1, true);
+        // Scala: una tacca per brano, lancetta rossa sul brano scelto.
+        const i32 sx0 = x0 + 20, sx1 = x1 - 20, sy = y0 + 18;
+        fb.hline(sx0, sx1, sy, 0xFF606070u);
+        for (i32 i = 0; i < brani_; ++i) {
+            const i32 tx = sx0 + (sx1 - sx0) * (2 * i + 1) / (2 * brani_);
+            fb.fillRect(tx, sy - 2, tx, sy + 2, 0xFFA0A0B0u);
+            if (i == brano_) fb.fillRect(tx - 1, sy - 5, tx + 1, sy + 5, 0xFFFF2020u);
+        }
+        // Equalizzatore: colonne larghe quanto serve per riempire il pannello.
+        const i32 n = std::max(1, std::min(musica_.canali, InfoMusica::MAX_CANALI));
+        const i32 passo = (sx1 - sx0) / n, base = y1 - 4, hMax = 16;
+        for (i32 c = 0; c < n && c < musica_.canali; ++c) {
+            const f32 l = musica_.livello[c];
+            const i32 h = 1 + (i32)(l * (f32)hMax);
+            const u32 col = l > 0.8f ? 0xFFFFFFFFu : (l > 0.4f ? 0xFF60E0FFu : 0xFF3070C0u);
+            const i32 bx = sx0 + c * passo;
+            fb.fillRect(bx, base - h, bx + std::max(1, passo - 2), base, col);
+        }
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return prossima_; }
@@ -118,6 +156,8 @@ private:
     i32 sel_;
     bool finita_;
     FaseId prossima_;
+    InfoMusica musica_;   // copia del frame: disegna() non vede Game
+    i32 brano_ = 0, brani_ = 0;
 };
 
 // ---------------------------------------------------------------------------

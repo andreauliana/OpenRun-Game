@@ -13,8 +13,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ---------------------------------------------------------------------------
+# Player tracker: libxmp-lite 4.6.0 (MIT, terzeparti/libxmp-lite), compilato
+# qui dentro: niente Homebrew ne' pacchetti. Legge .xm/.mod/.s3m (IT tolto).
+# ---------------------------------------------------------------------------
+file(GLOB XMP_LITE_SRC CONFIGURE_DEPENDS
+    terzeparti/libxmp-lite/src/*.c terzeparti/libxmp-lite/src/loaders/*.c)
+add_library(xmp_lite STATIC ${XMP_LITE_SRC})
+set_target_properties(xmp_lite PROPERTIES C_STANDARD 99 POSITION_INDEPENDENT_CODE ON)
+target_include_directories(xmp_lite PUBLIC terzeparti/libxmp-lite/include)
+target_compile_definitions(xmp_lite PUBLIC LIBXMP_CORE_PLAYER LIBXMP_CORE_DISABLE_IT LIBXMP_STATIC)
+if(NOT MSVC)
+    target_compile_options(xmp_lite PRIVATE -w) # codice esterno: niente warning nel log
+    find_library(LIBM m)
+    if(LIBM)
+        target_link_libraries(xmp_lite PUBLIC ${LIBM})
+    endif()
+endif()
+
+# ---------------------------------------------------------------------------
 # Target: sglavinated_core — nucleo C++17 indipendente dalla piattaforma.
-# Nessuna dipendenza da SDL, solo librerie standard.
+# Nessuna dipendenza da SDL: librerie standard + libxmp-lite (inclusa).
 # ---------------------------------------------------------------------------
 add_library(sglavinated_core
     src/core/frame_counter.h
@@ -65,6 +83,7 @@ add_library(sglavinated_core
 )
 
 target_include_directories(sglavinated_core PRIVATE src)
+target_link_libraries(sglavinated_core PUBLIC xmp_lite)
 
 # ---------------------------------------------------------------------------
 # Target: sglavinated_runner — runner desktop/terminal con SDL2 (solo test).

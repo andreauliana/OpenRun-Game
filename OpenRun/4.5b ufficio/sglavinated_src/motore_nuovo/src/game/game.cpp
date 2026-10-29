@@ -435,6 +435,25 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     }
 }
 
+void Game::caricaMusica() {
+    // dati/audio/playlist.json, sezione "xm": [{"file": "musica/x.xm", "titolo": "..."}].
+    // Senza file o brani si gioca con il solo motore (nessun crash).
+    if (musicaCaricata_) return;
+    musicaCaricata_ = true;
+    JsonReader r(leggiFileTesto(percorsoDati("motore_nuovo/dati/audio/playlist.json")));
+    if (!r.parse() || !jsonIsObject(r.valore())) return;
+    JsonValue elenco;
+    if (!jsonGet(jsonAsObject(r.valore()), "xm", elenco) || !jsonIsArray(elenco)) return;
+    for (const JsonValue& b : jsonAsArray(elenco)) {
+        if (!jsonIsObject(b)) continue;
+        JsonValue fv, tv;
+        if (!jsonGet(jsonAsObject(b), "file", fv) || !jsonIsString(fv)) continue;
+        const std::string titolo = jsonGet(jsonAsObject(b), "titolo", tv) && jsonIsString(tv) ? jsonAsString(tv) : "";
+        if (!mixer_.aggiungiBrano(percorsoDati("motore_nuovo/dati/audio/" + jsonAsString(fv)), titolo))
+            std::printf("radio: brano non leggibile %s\n", jsonAsString(fv).c_str());
+    }
+}
+
 void Game::init(const std::string& livelloId) {
     // Legge la frequenza logica da dati/config.json (default 60 Hz).
     // Tutto il core usa dt in secondi: stesso comportamento a 50 e 60 Hz.
@@ -510,16 +529,10 @@ void Game::init(const std::string& livelloId) {
     state_.seed = seed_;
     state_.frame = 0;
 
-    // Radio: nessun path hardcodato su shots/ (cartella del filone Mega Drive
-    // v87: regola 1; e fuori dal flusso audio guidato
-    // da dati della regola 8, motore_nuovo/dati/audio/playlist.json).
-    // Il runner carica il brano da playlist.json e lo passa al mixer; qui si
-    // lascia radioM senza path -> loadRadio() restituisce 0 (silenzio, nessun crash).
-    RadioDef radioM;
-    radioM.banksPerTrack = 5;
-    radioM.sampleRate = 12922;
-    i32 n = mixer_.loadRadio(radioM);
-    if (n > 0) mixer_.selezionaBrano(0);
+    caricaMusica();
+    // Campioni per tick: 735 a 60 Hz, 882 a 50 Hz (la musica non resta a corto).
+    audioBuf_.assign((size_t)(44100 / frequenzaHz_) * 2, 0);
+    radioAvvisoS_ = RADIO_AVVISO_S;
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: free-play (init senza gara) guida subito
 }
 
@@ -1438,7 +1451,8 @@ void Game::aggiornaGuida(f32 dt) {
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
-    mixer_.mix(audioBuf_.data(), AUDIO_FRAME_SAMPLES, rpm);
+    mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
+    if (radioAvvisoS_ > 0.0f) radioAvvisoS_ -= dt;
 
     // Replay: registra gli input se attivo.
     if (replay_.active()) replay_.record(input_.pressed | input_.held);
@@ -1456,8 +1470,8 @@ void Game::aggiornaMenu(f32 dt) {
     gi.offRoad = false;
     showManager_.aggiorna(gi);
     disegnoShow_.aggiorna(tempoGiocoS_, showManager_);
-    // Silenzio in menu: velocita' zero.
-    std::fill(audioBuf_.begin(), audioBuf_.end(), (i16)0);
+    // Menu e risultati: solo la radio (motore spento).
+    mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, 0.0f);
 }
 
 void Game::render() {
@@ -1527,7 +1541,34 @@ void Game::render() {
         ren_.drawHud(player_.speed / player_.maxSpeed(), player_.gear, player_.offroad);
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
+    drawMusica();
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
+}
+
+void Game::drawMusica() {
+    const InfoMusica& m = mixer_.info();
+    if (!m.attiva) return;
+    // Equalizzatore in basso a sinistra: una barra per canale del brano.
+    const i32 n = std::min(m.canali, 16);
+    const i32 x0 = 8, yBase = Framebuffer::HEIGHT - 8, hMax = 24;
+    for (i32 c = 0; c < n; ++c) {
+        const i32 h = 1 + (i32)(m.livello[c] * (f32)hMax);
+        const u32 col = m.livello[c] > 0.8f ? 0xFFFFFFFFu : (m.livello[c] > 0.4f ? 0xFF60E0FFu : 0xFF3070C0u);
+        fb_.fillRect(x0 + c * 5, yBase - h, x0 + c * 5 + 3, yBase, col);
+    }
+    // Battito: due tacche ai lati dello schermo che si accendono sul primo tempo.
+    if (m.battito > 0.05f) {
+        const i32 h = (i32)(m.battito * 40.0f);
+        const u32 col = 0xFF000000u | ((u32)(80 + 175 * m.battito) << 16) | ((u32)(40 + 60 * m.battito) << 8) | 0xC0u;
+        fb_.fillRect(0, 112 - h, 2, 112 + h, col);
+        fb_.fillRect(Framebuffer::WIDTH - 3, 112 - h, Framebuffer::WIDTH - 1, 112 + h, col);
+    }
+    // Nome del brano per qualche secondo a inizio gara o dopo un cambio (come la radio di OutRun).
+    if (radioAvvisoS_ > 0.0f) {
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "RADIO  %s", m.titolo);
+        ren_.drawTesto(x0 + n * 5 + 6, yBase - 8, buf, 0xFFFFFFFFu, 1, true);
+    }
 }
 
 void Game::ordinaSpriteFissi() {

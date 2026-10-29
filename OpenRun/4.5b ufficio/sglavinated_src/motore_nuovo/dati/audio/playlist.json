@@ -1,7 +1,17 @@
 {
   "licenza": "CC-BY-4.0",
   "autore": "Andrea Uliana",
-  "note": "Brani tracker di Andrea, convertiti in PCM 8-bit per la hack MD. Formato: unsigned 8-bit mono, ~12922 Hz, banchi da 32768 byte. Quando disponibili i .xm originali, aggiungere qui e usare libxmp.",
+  "note": "Radio del gioco: i brani .xm della sezione 'xm' (in musica/), suonati dal motore con libxmp-lite. Si scelgono nel menu con SINISTRA/DESTRA, in gara con R o Start+B. Per un'altra versione del gioco basta cambiare i file e questa lista. Le sezioni radio/sfx sotto sono il vecchio formato PCM della hack MD (non usato dal motore).",
+  "xm": [
+    {
+      "file": "musica/beatmastaz.xm",
+      "titolo": "BEAT MASTAZ"
+    },
+    {
+      "file": "musica/asplajungle4.xm",
+      "titolo": "ASP LA JUNGLE 4"
+    }
+  ],
   "formato_bin": {
     "tipo": "pcm_u8_mono",
     "sample_rate": 12922,
@@ -12,12 +22,24 @@
     "radio_M": {
       "file": "shots/pcmr_M.bin",
       "banchi_per_brano": 5,
-      "brani": ["moonlight", "irreversible", "heartbeats", "northern", "danny"]
+      "brani": [
+        "moonlight",
+        "irreversible",
+        "heartbeats",
+        "northern",
+        "danny"
+      ]
     },
     "radio_A": {
       "file": "shots/pcmr_A.bin",
       "banchi_per_brano": 7,
-      "brani": ["atmospheric", "perna5", "overview", "dealer", "remindme"]
+      "brani": [
+        "atmospheric",
+        "perna5",
+        "overview",
+        "dealer",
+        "remindme"
+      ]
     }
   },
   "sfx": {

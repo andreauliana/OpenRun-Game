@@ -123,8 +123,11 @@ public:
     void richiediUscita() { uscitaRichiesta_ = true; }
     bool uscitaRichiesta() const { return uscitaRichiesta_; }
 
-    // Radio: passa al brano successivo (input del runner: tasto R o Start+B).
-    void nextBranoRadio() { mixer_.nextBrano(); }
+    // Radio: brani tracker (.xm) di dati/audio/playlist.json, scelti nel menu
+    // con SINISTRA/DESTRA e in gara con il tasto R o Start+B.
+    void nextBranoRadio() { mixer_.nextBrano(); radioAvvisoS_ = RADIO_AVVISO_S; }
+    void prevBranoRadio() { mixer_.prevBrano(); radioAvvisoS_ = RADIO_AVVISO_S; }
+    const InfoMusica& musica() const { return mixer_.info(); } // per equalizzatore e tocchi a ritmo
     i32 branoRadio() const { return mixer_.currentTrack(); }    // indice 0-based del brano in corso
     i32 numBraniRadio() const { return mixer_.numTracks(); }    // totale brani caricati (0 se radio assente)
 
@@ -168,6 +171,12 @@ private:
     const ScenaShow& scenaShow() const { return disegnoShow_.scena(); }
     const TestiFrasi& testiFrasi() const { return testiFrasi_; }
     std::vector<i16> audioBuf_; // stereo interleaved, riempito ogni update
+    // Radio: brani caricati una volta (il brano scelto continua tra le tappe).
+    void caricaMusica();
+    bool musicaCaricata_ = false;
+    static constexpr f32 RADIO_AVVISO_S = 3.0f; // nome del brano a schermo a inizio gara
+    f32 radioAvvisoS_ = 0.0f;
+    void drawMusica(); // equalizzatore e battito in gara
     std::vector<SpriteInstance> sprites_; // traffico base (placeholder)
     // Cartelloni sponsor: gli sprite sono di proprieta' del Renderer
     // (setSponsorSprites li registra li); qui si tengono solo gli indici.
