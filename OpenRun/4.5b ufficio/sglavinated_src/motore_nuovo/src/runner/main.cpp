@@ -2,7 +2,10 @@
 #include "game/game.h"
 #include "runner/sponsor_loader.h" // decodifica cartelloni sponsor (solo runner)
 #include "render/sprite_raw.h"    // caricaSpriteRaw per i raw di png_a_raw.py
+#include "render/crt.h"           // filtro CRT opzionale (solo resa a schermo)
+#include "core/json_mini.h"
 #include <SDL2/SDL.h>
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -27,6 +30,7 @@ struct Opzioni {
     std::string radiceDati; // --data: cartella sglavinated_src (vuota = ricerca automatica)
     std::string livello;    // --livello: solo quella pista, in tondo (vuoto = gara a tappe)
     bool subito = false;    // --subito: salta splash e menu, si parte gia' in gara
+    int crt = -1;           // --crt / --no-crt: forza il filtro CRT (-1 = config.json)
 };
 
 Opzioni leggiOpzioni(int argc, char** argv) {
@@ -38,6 +42,8 @@ Opzioni leggiOpzioni(int argc, char** argv) {
         else if (std::strcmp(argv[i], "--data") == 0 && i + 1 < argc) o.radiceDati = argv[++i];
         else if (std::strcmp(argv[i], "--livello") == 0 && i + 1 < argc) o.livello = argv[++i];
         else if (std::strcmp(argv[i], "--subito") == 0) o.subito = true;
+        else if (std::strcmp(argv[i], "--crt") == 0) o.crt = 1;
+        else if (std::strcmp(argv[i], "--no-crt") == 0) o.crt = 0;
     }
     return o;
 }
@@ -92,6 +98,54 @@ bool trovaRadiceProgetto(const char* executablePath, const std::string& radiceDa
                  PROJECT_DATA_MARKER);
     return false;
 }
+
+// "filtro_crt": true in dati/config.json accende il filtro CRT all'avvio.
+bool leggiFiltroCrtDaConfig() {
+    std::FILE* f = std::fopen("motore_nuovo/dati/config.json", "rb");
+    if (!f) return false;
+    char buf[4096];
+    std::string testo;
+    size_t n;
+    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) testo.append(buf, n);
+    std::fclose(f);
+    JsonReader cfg(testo);
+    JsonValue v;
+    if (cfg.parse() && jsonIsObject(cfg.valore()) && jsonGet(jsonAsObject(cfg.valore()), "filtro_crt", v)
+        && std::holds_alternative<bool>(v.v))
+        return std::get<bool>(v.v);
+    return false;
+}
+
+// Filtro CRT nel runner: sbavatura del composito sulla CPU (320x224) e
+// maschera fissa righe + fosfori moltiplicata sopra dalla GPU, alla scala
+// intera dello schermo. La maschera si rifa' solo se la scala cambia.
+struct FiltroCrt {
+    bool acceso = false;
+    SDL_Texture* maschera = nullptr;
+    i32 scala = 0;
+    std::vector<u32> sbavato = std::vector<u32>((size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT);
+
+    void preparaMaschera(SDL_Renderer* ren) {
+        int ow = 0, oh = 0;
+        if (SDL_GetRendererOutputSize(ren, &ow, &oh) != 0) return;
+        i32 s = std::min(ow / Framebuffer::WIDTH, oh / Framebuffer::HEIGHT);
+        if (s < 1) s = 1;
+        if (maschera && s == scala) return;
+        if (maschera) SDL_DestroyTexture(maschera);
+        scala = s;
+        const auto px = crtMaschera(Framebuffer::WIDTH, Framebuffer::HEIGHT, s);
+        maschera = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,
+                                     Framebuffer::WIDTH * s, Framebuffer::HEIGHT * s);
+        if (!maschera) { SDL_Log("filtro CRT: maschera non creata: %s", SDL_GetError()); return; }
+        SDL_UpdateTexture(maschera, nullptr, px.data(), Framebuffer::WIDTH * s * 4);
+        SDL_SetTextureBlendMode(maschera, SDL_BLENDMODE_MOD);
+        SDL_Log("filtro CRT: maschera %dx%d (scala %d)", Framebuffer::WIDTH * s, Framebuffer::HEIGHT * s, s);
+    }
+    void chiudi() {
+        if (maschera) SDL_DestroyTexture(maschera);
+        maschera = nullptr;
+    }
+};
 
 bool inizializzaSDL() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0) {
@@ -287,6 +341,10 @@ int main(int argc, char** argv) {
     Controller ctrl;
     ctrl.apri();
 
+    FiltroCrt crt;
+    crt.acceso = opz.crt >= 0 ? opz.crt == 1 : leggiFiltroCrtDaConfig();
+    SDL_Log("filtro CRT %s (tasto C per cambiarlo)", crt.acceso ? "acceso" : "spento");
+
     // Passo fisso: la logica avanza di 1/frequenza s (config.json, 60 Hz di
     // default), il video si presenta a ogni refresh. L'accumulatore decide
     // quanti tick servono. Prima qui c'era 50 fisso mentre il core usa dt=1/60:
@@ -299,6 +357,7 @@ int main(int argc, char** argv) {
     bool rPrev = false;
     u64 frames = 0;
     bool running = true;
+    bool aggiornaTexture = false;
     while (running) {
         SDL_Event ev;
         while (SDL_PollEvent(&ev)) {
@@ -309,6 +368,11 @@ int main(int argc, char** argv) {
                 const bool fs = (SDL_GetWindowFlags(win) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
                 SDL_SetWindowFullscreen(win, fs ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
                 SDL_ShowCursor(fs ? SDL_ENABLE : SDL_DISABLE);
+            }
+            if (ev.type == SDL_KEYDOWN && !ev.key.repeat && ev.key.keysym.scancode == SDL_SCANCODE_C) {
+                crt.acceso = !crt.acceso;
+                aggiornaTexture = true; // si ricopia subito il fotogramma, anche in pausa
+                SDL_Log("filtro CRT %s", crt.acceso ? "acceso" : "spento");
             }
             if (ev.type == SDL_CONTROLLERDEVICEADDED || ev.type == SDL_JOYDEVICEADDED) ctrl.apri();
             if (ev.type == SDL_CONTROLLERDEVICEREMOVED || ev.type == SDL_JOYDEVICEREMOVED) {
@@ -371,12 +435,18 @@ int main(int argc, char** argv) {
             }
         }
 
-        if (aggiornato) {
-            // Copia il framebuffer software nella texture SDL.
+        if (aggiornato || aggiornaTexture) {
+            aggiornaTexture = false;
+            // Copia il framebuffer software nella texture SDL (con il filtro
+            // CRT acceso passa prima dalla sbavatura del composito).
             void* px = nullptr;
             int pitch = 0;
             if (SDL_LockTexture(tex, nullptr, &px, &pitch) == 0) {
                 const sgl::u32* src = game.fb().data();
+                if (crt.acceso) {
+                    crtSbava(src, crt.sbavato.data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                    src = crt.sbavato.data();
+                }
                 auto* dst = static_cast<Uint8*>(px);
                 for (i32 y = 0; y < sgl::Framebuffer::HEIGHT; ++y)
                     SDL_memcpy(dst + (size_t)y * pitch, src + y * sgl::Framebuffer::WIDTH,
@@ -388,6 +458,10 @@ int main(int argc, char** argv) {
         SDL_SetRenderDrawColor(sdlRen, 0, 0, 0, 255);
         SDL_RenderClear(sdlRen);
         SDL_RenderCopy(sdlRen, tex, nullptr, nullptr);
+        if (crt.acceso) {
+            crt.preparaMaschera(sdlRen);
+            if (crt.maschera) SDL_RenderCopy(sdlRen, crt.maschera, nullptr, nullptr);
+        }
         SDL_RenderPresent(sdlRen); // con vsync attende il refresh dello schermo
 
         // Senza vsync il ciclo dorme fino al prossimo tick (non consuma CPU a vuoto).
@@ -403,6 +477,7 @@ int main(int argc, char** argv) {
 
     if (audioDev) SDL_CloseAudioDevice(audioDev);
     ctrl.chiudi();
+    crt.chiudi();
     SDL_DestroyTexture(tex);
     SDL_DestroyRenderer(sdlRen);
     SDL_DestroyWindow(win);
