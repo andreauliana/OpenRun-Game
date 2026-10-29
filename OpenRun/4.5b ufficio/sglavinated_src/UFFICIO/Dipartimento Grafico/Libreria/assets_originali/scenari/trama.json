@@ -1,0 +1,8 @@
+{
+  "nota": "Trama Bayer sugli skyline (Andrea 29/10). La legge UFFICIO/Dipartimento Grafico/TOOLS/trama_scenari.py, che scrive skyline_trama.png accanto all'originale e il raw del gioco. tecnica: bayer | atkinson | halftone | nessuna. forza 0..1: quanto scurire in alto e schiarire in basso (0,5 = meta' dei pixel ai bordi). zone: quanti colori grandi ricevono la trama (1 o 2). Un livello assente usa i valori di 'predefinito'.",
+  "predefinito": {"tecnica": "bayer", "forza": 0.5, "zone": 2},
+  "livelli": {
+    "lv_02_atomico": {"forza": 0.35},
+    "lv_03_foglie": {"forza": 0.35}
+  }
+}
