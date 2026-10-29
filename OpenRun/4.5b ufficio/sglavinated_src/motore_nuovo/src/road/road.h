@@ -58,6 +58,9 @@ public:
         // onde = 1 e' un dosso solo (cresta cieca), 3-5 sono dune.
         f32 dune = 0.0f;
         i32 onde = 0;
+        // Campo `acqua` (0/1, default 0): quando 1, ai lati del tratto vengono usati
+        // i colori `acqua` del tema al posto di `erba`/`erbaAlt` (regola PIST1 punto 1).
+        f32 acqua = 0.0f;
     };
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.

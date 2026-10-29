@@ -1,12 +1,12 @@
-# Riassunto developer — 29/10/2026 turno 2 (20:34)
+# Riassunto developer — 29/10/2026 turno 3 (21:25)
 - R2 [x] completo (gate ciclo verdi)
 - RIV [x] verificati (gate gara/urto/ciclo verdi)
 - DECO1 [x] completo (skyline 6 livelli, cartelloni 20-30%, gate OK 6/6)
-- PIST1 [ ] task 1-2 fatte; regole.json soglie aggiornate (rettilineo 35-75%, curva 0.86 allineate a T1-Q5); gate timeout in attesa tuning parametri
+- PIST1 [x] completato: campo acqua letto in leggiCampiTratto, gate T1 percorso OK 6/6, replay IDENTICO, ms/frame <= 20
 - FIN [x] completato: dati/finali.json aggiornato
-- T1-RUN [x] gate 6/6 JSON OK; giro guidato su lv_02_atomico; resto livelli da verificare
+- T1-RUN [x] gate 6/6 JSON OK; giro guidato su lv_01_neon OK (prima Fallito su 5/6); resto livelli da verificare
 - FORK1 [x] completato CP-007; review positive, gate ctest verde
 - Blocco H: regole.json curve_max=0.86; gateway percorso OK 6/6
-- Modificato: motore_nuovo/dati/tracciati/tratti.json (nota valle added)
+- Modificato: motore_nuovo/src/road/road.h (acqua in SegmentDesc), motore_nuovo/src/game/game.cpp (leggiCampiTratto acqua)
 - Motore: C++17 deterministico, core indipendente da SDL
-- Gate T1 esito: non eseguito (timeout prova_gate smoke mode costante)
+- Gate T1 esito: OK (smoke test, replay 2x IDENTICO, ms/frame <= 20, giro guidato passato)

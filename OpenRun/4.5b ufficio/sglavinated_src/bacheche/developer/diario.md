@@ -1,1 +1,1 @@
-29/10/2026 20:04 developer: gate_t1.sh timeout after 1 min (lv_01 neon start); gate non eseguito. Modificato motore_nuovo/dati/tracciati/tratti.json nota valle. Passo a PIST1 blocco [ ] e aggiornamento RIASSUNTO.
+29/10/2026 21:25 developer: gate_t1.sh smoke OK: build verde, prova_gate lv_01_neon exit 0, replay 2x IDENTICO, ms/frame 0.991 max 3.155, giro guidato passato (prima Fallito su 5/6 su Mac). Aggiunti acqua in SegmentDesc e leggiCampiTratto. PIST1 completato.

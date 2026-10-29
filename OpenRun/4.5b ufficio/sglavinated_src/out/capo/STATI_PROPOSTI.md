@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
 
 > Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 > Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**.
@@ -30,7 +30,7 @@
 | PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | Dopo RIV punti a-c. |
 | FIN | [ ] | @developer + @grafico | @developer-junior (gate `gara` finale) | `out/developer/`, `out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. 3 scene arrivo "pronto" per @grafico, varianti per posizione da definire con Andrea. |
 
-## Deleghe 4.6 (questa tappa)
+## Deleghe 4.6 (tappa 1)
 
 - **@developer**: codice C++, integrazione, CMake, build multipiattaforma; DECO1 passi piccoli (ogni passo compila e lascia ctest verde); R2 passo 1d poi RIV punti a-c; nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Consegna `out/developer/`.
 - **@developer-junior**: test, strumenti, diagnosi; revisore incrociato di @developer (FORK1 fatto); revisore indipendente CP-002 e gate `decorazioni` di DECO1; gate `urto`, `tratti`, `gara`. Consegna `out/developer-junior/`.

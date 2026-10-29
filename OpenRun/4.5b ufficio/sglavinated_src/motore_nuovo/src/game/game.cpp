@@ -201,7 +201,7 @@ std::string leggiFileTesto(const std::string& path) {
 // presenti sovrascrivono d. "larghezza": 1 = 2 corsie, 2 = 4 corsie.
 // "dune" + "onde": dossi sopra la quota del tratto (v. Road::SegmentDesc).
 void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
-    JsonValue cv, hv, lv, ev, uv, wv, dv, ov;
+    JsonValue cv, hv, lv, ev, uv, wv, dv, ov, av;
     if (jsonGet(o, "curva", cv) && jsonIsNumber(cv)) d.curva = (f32)jsonAsNumber(cv);
     if (jsonGet(o, "collina", hv) && jsonIsNumber(hv)) d.collina = (f32)jsonAsNumber(hv);
     if (jsonGet(o, "lunghezza", lv) && jsonIsNumber(lv)) {
@@ -221,6 +221,7 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     }
     if (jsonGet(o, "dune", dv) && jsonIsNumber(dv)) d.dune = std::clamp((f32)jsonAsNumber(dv), -0.2f, 0.2f);
     if (jsonGet(o, "onde", ov) && jsonIsNumber(ov)) d.onde = std::max(0, (i32)jsonAsNumber(ov));
+    if (jsonGet(o, "acqua", av) && jsonIsNumber(av)) d.acqua = (f32)jsonAsNumber(av);
 }
 
 bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
