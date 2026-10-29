@@ -19,3 +19,11 @@ Build/test/gate: NON eseguibili in questo turno (tool shell non disponibile: com
 Vincoli rispettati: core indipendente da SDL, determinismo invariato (stesso seme = stesso tracciato), replay invariato, nessun materiale Sega, nessun lavoro dedicato a Pi 400/RetroPie prima dell'ok Mac (D19=B in ANDREA_REVIEW.md).
 
 Scritture: bacheche/developer/diario.md (riga 31), bacheche/developer/RIASSUNTO.md (riscritto, 10 righe), out/developer/ESITO_PIST1_TRATTI_27OTT.md.
+
+--- 29/10/2026 ~06:30 (developer, questo turno)
+Gate sh UFFICIO/Officina/TOOL/gate_t1.sh (non soak) eseguito 29/10/2026 ~06:30, comando singolo, timeout 12 min:
+- cmake configure OK, cmake --build target prova_gate OK.
+- lv_01_neon, lv_02_atomico, lv_03_foglie, lv_04_cromo: prova_gate exit 0 + percorso exit 0.
+- lv_05_spray: prova_gate exit 0, percorso lv_05 TIMEOUT >12 min (giro guidato non termina, nessun exit code dello script); lv_06_desktop non raggiunto.
+Esito: gate NON completato / non verde. Sospetto regressione del giro guidato sui nuovi tratti citta/chicane di lv_05 (PIST1 task 1-2, dati modificati 27/10 sera).
+Prossimo turno: isolare lv_05 (confrontare tracciato/segmenti vs lv_01-04) e correggere; nessun lavoro Pi 400/RetroPie prima di ok Mac (D19=B in ANDREA_REVIEW.md).
