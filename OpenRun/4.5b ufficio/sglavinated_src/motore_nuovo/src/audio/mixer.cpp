@@ -82,10 +82,6 @@ void Mixer::nextBrano() {
     if (numTracks() > 0) selezionaBrano((curTrack_ + 1) % numTracks());
 }
 
-void Mixer::prevBrano() {
-    if (numTracks() > 0) selezionaBrano((curTrack_ + numTracks() - 1) % numTracks());
-}
-
 void Mixer::aggiornaInfo(const i16* musica, i32 frames) {
     struct xmp_frame_info fi;
     xmp_get_frame_info(ctx(xmp_), &fi);

@@ -142,9 +142,14 @@ constexpr f32 OGGETTO_ALTEZZA_MONDO = 1280.0f; // oggetti alti: altezza a scherm
 constexpr f32 BIVIO_ISTERESI = 300.0f;     // unita' mondo: cambio di ramo seguito solo se piu' vicini all'altro di tanto
 constexpr f32 ASSIST_RICHIAMO_MAX = 250.0f; // unita'/s, sotto lo sterzo (>= 510 in alto)
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
-// Unita' di strada in un km: a 293 km/h l'auto percorre ~590 unita' al secondo.
-// speed e' gia' in unita'/secondo, quindi questa costante e' indipendente dalla frequenza.
-constexpr f32 UNITA_PER_KM = 590.0f * 50.0f * 3600.0f / 293.0f;
+constexpr f32 TEMPO_EXTRA_AVVISO_S = 2.5f; // "TEMPO EXTRA" a schermo dopo un checkpoint
+// Salto sui dossi (Andrea 29/10): se la strada scende piu' in fretta di quanto
+// la gravita' tiri giu' l'auto, l'auto si stacca e vola per inerzia.
+constexpr f32 SALTO_GRAVITA = 7000.0f;     // unita' mondo / s^2 (piu' bassa = salti piu' frequenti)
+constexpr f32 SALTO_SOGLIA_V = 0.6f;       // sotto il 60% della velocita' massima resta incollata
+constexpr f32 SALTO_PX_PER_UNITA = 0.04f;  // quota sopra la strada -> pixel a schermo
+constexpr f32 SALTO_MAX_PX = 28.0f;
+constexpr f32 SALTO_V_DISCONTINUITA = 60000.0f; // oltre: salto di quota del tracciato, non un dosso
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
 std::string leggiFileTesto(const std::string& path) {
@@ -504,6 +509,11 @@ void Game::init(const std::string& livelloId) {
     playerFlipping_ = false;
     sollevamento_ = 0.0f;
     sollevamentoFaseS_ = 0.0f;
+    saltoAltezza_ = 0.0f;
+    saltoVY_ = 0.0f;
+    saltoQuotaPrec_ = -1e9f;
+    saltoVStradaPrec_ = 0.0f;
+    tempoExtraS_ = 0.0f;
     assistenzaBivio_ = 0.0f;
     ramoProvvisorio_ = 0;
     centroRamoPrec_ = 0.0f;
@@ -532,7 +542,6 @@ void Game::init(const std::string& livelloId) {
     caricaMusica();
     // Campioni per tick: 735 a 60 Hz, 882 a 50 Hz (la musica non resta a corto).
     audioBuf_.assign((size_t)(44100 / frequenzaHz_) * 2, 0);
-    radioAvvisoS_ = RADIO_AVVISO_S;
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: free-play (init senza gara) guida subito
 }
 
@@ -994,7 +1003,11 @@ void Game::fineTappa(f32 avanzo) {
     ren_.iniziaTransizioneTema(temaPrima, skylinePrima, transizioneTemaS_);
     tappaId_ = prossima;
     ++numeroTappa_;
-    if (!tempoScaduto_) tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
+    if (!tempoScaduto_) {
+        tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
+        tempoExtraS_ = TEMPO_EXTRA_AVVISO_S;
+    }
+    saltoQuotaPrec_ = -1e9f; // tracciato nuovo: la quota riparte
     preparaBivio();
     road_.playerZ = avanzo;
     player_.z = avanzo;
@@ -1283,7 +1296,8 @@ void Game::aggiornaGuida(f32 dt) {
             (1.0f + ROAD_SCROLL_SPEED_BOOST * player_.speed / player_.maxSpeed());
         const f32 zPrima = road_.playerZ;
         passoGiocatore_ = player_.speed * dt * roadScrollScale;
-        km_ += passoGiocatore_ / UNITA_PER_KM;
+        // Contachilometri coerente con il tachimetro: a 290 km/h ~80 m al secondo.
+        km_ += player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH / 3600.0f * dt;
         road_.advance(passoGiocatore_);
         if (gara_ && road_.playerZ < zPrima) fineTappa(road_.playerZ); // fine del tracciato
         player_.z = road_.playerZ;
@@ -1350,6 +1364,8 @@ void Game::aggiornaGuida(f32 dt) {
         sollevamento_ = sollevamento_ < obiettivo ? std::min(obiettivo, sollevamento_ + passoSoll)
                                                   : std::max(obiettivo, sollevamento_ - passoSoll);
         sollevamentoFaseS_ = sollevamento_ > 0.0f ? sollevamentoFaseS_ + dt : 0.0f;
+        aggiornaSalto(dt);
+        if (tempoExtraS_ > 0.0f) tempoExtraS_ -= dt;
 
         if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
         else offroadFrames_ = 0;
@@ -1452,7 +1468,6 @@ void Game::aggiornaGuida(f32 dt) {
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
-    if (radioAvvisoS_ > 0.0f) radioAvvisoS_ -= dt;
 
     // Replay: registra gli input se attivo.
     if (replay_.active()) replay_.record(input_.pressed | input_.held);
@@ -1501,7 +1516,8 @@ void Game::render() {
         : steeringLean * 1.5f +
           (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
     const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
-    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX;
+    const f32 saltoPx = std::min(SALTO_MAX_PX, saltoAltezza_ * SALTO_PX_PER_UNITA);
+    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx;
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle, sollevamentoPx);
     // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
     // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.
@@ -1520,6 +1536,8 @@ void Game::render() {
         HudDati h;
         h.kmh = (i32)(player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH + 0.5f);
         h.km = km_;
+        h.totaleS = (f32)frameGara_ / (f32)frequenzaHz_;
+        h.tempoExtra = tempoExtraS_ > 0.0f ? tempoLimiteTappaS_ : 0;
         // Contagiri del cambio automatico a due marce: sale in LOW, riparte piu' alto in HIGH.
         const f32 v = player_.speed / player_.maxSpeed();
         constexpr f32 CAMBIO = 110.0f / 250.0f;
@@ -1545,6 +1563,34 @@ void Game::render() {
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
 }
 
+void Game::aggiornaSalto(f32 dt) {
+    // Velocita' verticale della strada sotto l'auto (unita'/s): in cima a un
+    // dosso cala di colpo. A terra l'auto la segue; in volo segue la gravita'.
+    const f32 quota = road_.quotaAt(road_.playerZ);
+    const f32 vStrada = (quota - saltoQuotaPrec_) / dt;
+    const bool primoPasso = saltoQuotaPrec_ < -1e8f;
+    saltoQuotaPrec_ = quota;
+    // Tappa nuova o giro del tracciato: la quota salta, non e' un dosso.
+    if (primoPasso || std::abs(vStrada) > SALTO_V_DISCONTINUITA) {
+        saltoVStradaPrec_ = 0.0f;
+        return;
+    }
+    const bool puoVolare = !player_.offroad && !playerFlipping_ && !playerBump_ &&
+        player_.speed >= SALTO_SOGLIA_V * player_.maxSpeed();
+    if (saltoAltezza_ <= 0.0f) {
+        // Cresta: la strada "cade" piu' in fretta della gravita' -> decollo.
+        if (puoVolare && (vStrada - saltoVStradaPrec_) / dt < -SALTO_GRAVITA) {
+            saltoVY_ = saltoVStradaPrec_;
+            saltoAltezza_ = 0.001f;
+        }
+    } else {
+        saltoVY_ -= SALTO_GRAVITA * dt;
+        saltoAltezza_ += (saltoVY_ - vStrada) * dt;
+        if (saltoAltezza_ <= 0.0f || playerFlipping_) saltoAltezza_ = 0.0f; // atterraggio
+    }
+    saltoVStradaPrec_ = vStrada;
+}
+
 void Game::drawMusica() {
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
@@ -1562,12 +1608,6 @@ void Game::drawMusica() {
         const u32 col = 0xFF000000u | ((u32)(80 + 175 * m.battito) << 16) | ((u32)(40 + 60 * m.battito) << 8) | 0xC0u;
         fb_.fillRect(0, 112 - h, 2, 112 + h, col);
         fb_.fillRect(Framebuffer::WIDTH - 3, 112 - h, Framebuffer::WIDTH - 1, 112 + h, col);
-    }
-    // Nome del brano per qualche secondo a inizio gara o dopo un cambio (come la radio di OutRun).
-    if (radioAvvisoS_ > 0.0f) {
-        char buf[64];
-        std::snprintf(buf, sizeof(buf), "RADIO  %s", m.titolo);
-        ren_.drawTesto(x0 + n * 5 + 6, yBase - 8, buf, 0xFFFFFFFFu, 1, true);
     }
 }
 

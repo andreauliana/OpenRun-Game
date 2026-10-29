@@ -75,6 +75,8 @@ public:
     // circolare. Restituisce 0 se il tracciato e' vuoto o z non e' trovato.
     // Zero alloc, deterministico, nessun orologio di sistema.
     f32 curvaAt(f32 z) const;
+    // Quota della strada (unita' mondo) alla posizione z, interpolata nel segmento.
+    f32 quotaAt(f32 z) const;
     // Larghezza della carreggiata (moltiplicatore di ROAD_WIDTH) alla posizione z.
     f32 larghezzaAt(f32 z) const;
     // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti

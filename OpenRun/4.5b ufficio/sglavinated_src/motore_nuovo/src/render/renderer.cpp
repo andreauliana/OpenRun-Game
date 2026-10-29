@@ -556,20 +556,24 @@ void Renderer::drawHudDati(const HudDati& d) {
             continue;
         }
         // testo: valore vivo per id; gli elementi di gara spariscono fuori gara.
-        const bool soloGara = e.id == "tempo" || e.id == "tappa" || e.id == "posizione";
+        const bool soloGara = e.id == "tempo" || e.id == "totale" || e.id == "tappa" || e.id == "posizione";
         if (soloGara && !d.gara) continue;
         const char* valore = nullptr;
         u32 coloreValore = e.colore;
-        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%05.1f", d.km); valore = buf; }
+        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%d M", (i32)(d.km * 1000.0f)); valore = buf; }
         else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
         else if (e.id == "tempo") {
             std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);
             valore = buf;
             if (d.tempoS <= 10 && (d.frame / 12) % 2) coloreValore = e.coloreLabel; // lampeggia negli ultimi 10 s
         }
+        else if (e.id == "totale") {
+            const i32 cs = (i32)(d.totaleS * 100.0f);
+            std::snprintf(buf, sizeof(buf), "%d'%02d\"%02d", cs / 6000, (cs / 100) % 60, cs % 100);
+            valore = buf;
+        }
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
-        else if (e.id == "marcia") valore = d.marciaAlta ? "HIGH" : "LOW";
         if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel);
         if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
@@ -587,6 +591,10 @@ void Renderer::drawHudDati(const HudDati& d) {
         centro(70, "ARRIVO", 3);
         std::snprintf(buf, sizeof(buf), "POSIZIONE %d/%d", d.posizione, d.concorrenti);
         centro(100, buf, 1);
+    } else if (d.tempoExtra > 0) {
+        if ((d.frame / 8) % 2 == 0) centro(70, "TEMPO EXTRA", 2);
+        std::snprintf(buf, sizeof(buf), "+%d", d.tempoExtra);
+        centro(92, buf, 2);
     } else if (d.bivio && (d.frame / 15) % 2 == 0) {
         drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
         drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);

@@ -38,7 +38,6 @@ public:
     // Seleziona il brano corrente (indice 0-based) e lo fa ripartire. Fuori range: niente.
     void selezionaBrano(i32 indice);
     void nextBrano();
-    void prevBrano();
 
     // Riempie `out` (interleaved L/R, int16) per `frames` campioni stereo.
     void mix(i16* out, i32 frames, f32 engineRpm);

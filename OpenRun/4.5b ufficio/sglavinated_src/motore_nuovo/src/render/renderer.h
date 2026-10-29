@@ -44,7 +44,9 @@ struct HudDati {
     f32 km = 0.0f;        // distanza percorsa
     f32 giri = 0.0f;      // 0..1 contagiri
     bool gara = false;    // tempo, tappa e posizione solo in gara
-    i32 tempoS = 0;       // secondi rimasti
+    i32 tempoS = 0;       // secondi rimasti (conto alla rovescia)
+    f32 totaleS = 0.0f;   // tempo totale di gara (secondi)
+    i32 tempoExtra = 0;   // > 0: secondi aggiunti al checkpoint (avviso a schermo)
     i32 tappa = 1, tappe = 3, posizione = 0, concorrenti = 0;
     bool marciaAlta = false;
     bool show = false;

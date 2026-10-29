@@ -123,11 +123,10 @@ public:
     void richiediUscita() { uscitaRichiesta_ = true; }
     bool uscitaRichiesta() const { return uscitaRichiesta_; }
 
-    // Radio: brani tracker (.xm) di dati/audio/playlist.json, scelti nel menu
-    // con SINISTRA/DESTRA e in gara con il tasto R o Start+B.
-    void nextBranoRadio() { mixer_.nextBrano(); radioAvvisoS_ = RADIO_AVVISO_S; }
-    void prevBranoRadio() { mixer_.prevBrano(); radioAvvisoS_ = RADIO_AVVISO_S; }
-    const InfoMusica& musica() const { return mixer_.info(); } // per equalizzatore e tocchi a ritmo
+    // Radio: brani tracker (.xm) di dati/audio/playlist.json; parte il primo,
+    // il tasto R (o Start+B) passa al successivo.
+    void nextBranoRadio() { mixer_.nextBrano(); }
+    const InfoMusica& musica() const { return mixer_.info(); } // per lo spettro e i tocchi a ritmo
     i32 branoRadio() const { return mixer_.currentTrack(); }    // indice 0-based del brano in corso
     i32 numBraniRadio() const { return mixer_.numTracks(); }    // totale brani caricati (0 se radio assente)
 
@@ -174,9 +173,12 @@ private:
     // Radio: brani caricati una volta (il brano scelto continua tra le tappe).
     void caricaMusica();
     bool musicaCaricata_ = false;
-    static constexpr f32 RADIO_AVVISO_S = 3.0f; // nome del brano a schermo a inizio gara
-    f32 radioAvvisoS_ = 0.0f;
-    void drawMusica(); // equalizzatore e battito in gara
+    void drawMusica(); // spettro e battito in gara
+    // Salto sui dossi ad alta velocita' (quota dell'auto sopra la strada, unita' mondo).
+    void aggiornaSalto(f32 dt);
+    f32 saltoAltezza_ = 0.0f, saltoVY_ = 0.0f;
+    f32 saltoQuotaPrec_ = -1e9f, saltoVStradaPrec_ = 0.0f;
+    f32 tempoExtraS_ = 0.0f; // avviso "TEMPO EXTRA" dopo un checkpoint
     std::vector<SpriteInstance> sprites_; // traffico base (placeholder)
     // Cartelloni sponsor: gli sprite sono di proprieta' del Renderer
     // (setSponsorSprites li registra li); qui si tengono solo gli indici.

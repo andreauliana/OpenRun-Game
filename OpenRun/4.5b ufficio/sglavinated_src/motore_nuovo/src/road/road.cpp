@@ -191,6 +191,16 @@ f32 Road::curvaAt(f32 z) const {
     return i >= 0 ? segs_[i].curve : 0.0f;
 }
 
+f32 Road::quotaAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    if (i < 0) return 0.0f;
+    const RoadSegment& s = segs_[i];
+    f32 t = std::fmod(z, (f32)totalLen_);
+    if (t < 0.0f) t += (f32)totalLen_;
+    t = std::clamp(t / (f32)SEG_LEN - (f32)i, 0.0f, 1.0f);
+    return s.p1y + (s.p2y - s.p1y) * t;
+}
+
 f32 Road::larghezzaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 ? segs_[i].larghezza : 1.0f;

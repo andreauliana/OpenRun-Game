@@ -32,41 +32,16 @@
       ]
     },
     {
-      "id": "distanza",
-      "tipo": "testo",
-      "label": "KM",
-      "valore": "000",
-      "label_pos": [
-        16,
-        12
-      ],
-      "valore_pos": [
-        16,
-        24
-      ],
-      "scala_valore": 2,
-      "colore": [
-        255,
-        255,
-        255
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ]
-    },
-    {
       "id": "giri",
       "tipo": "barra",
       "label": "GIRI",
       "label_pos": [
         16,
-        48
+        50
       ],
       "barra_pos": [
         16,
-        58
+        59
       ],
       "barra_w": 60,
       "barra_h": 6,
@@ -186,14 +161,14 @@
       "label": "TEMPO",
       "valore": "75",
       "label_pos": [
-        200,
-        62
+        16,
+        12
       ],
       "valore_pos": [
-        200,
-        72
+        16,
+        24
       ],
-      "scala_valore": 2,
+      "scala_valore": 3,
       "colore": [
         255,
         255,
@@ -204,7 +179,33 @@
         160,
         160
       ],
-      "nota": "D7b risposta A: tempo residuo in secondi contati all'indietro, sotto la velocita'; ogni tappa aggiunge il suo tempo_limite_s"
+      "nota": "conto alla rovescia: il dato principale, nel box in alto a sinistra (Andrea 29/10); a ogni checkpoint si aggiunge il tempo della tappa"
+    },
+    {
+      "id": "totale",
+      "tipo": "testo",
+      "nota": "tempo totale di gara, accanto al conto alla rovescia e allineato",
+      "label": "TOTALE",
+      "valore": "0'00\"00",
+      "label_pos": [
+        82,
+        12
+      ],
+      "valore_pos": [
+        82,
+        24
+      ],
+      "scala_valore": 1,
+      "colore": [
+        255,
+        255,
+        255
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ]
     },
     {
       "id": "show",
@@ -223,17 +224,17 @@
       "nota": "SHOW ON quando Gianni/Gesu' sono in scena"
     },
     {
-      "id": "marcia",
+      "id": "distanza",
       "tipo": "testo",
-      "label": "MARCIA",
-      "valore": "LOW",
+      "label": "DIST",
+      "valore": "000",
       "label_pos": [
-        264,
-        196
+        200,
+        62
       ],
       "valore_pos": [
-        264,
-        206
+        200,
+        72
       ],
       "scala_valore": 1,
       "colore": [
@@ -246,7 +247,7 @@
         160,
         160
       ],
-      "nota": "cambio automatico a due marce come l'originale: LOW / HIGH"
+      "nota": "distanza in metri, piccola (Andrea 29/10)"
     }
   ],
   "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'cornice' = rettangolo con bordo di 'spessore' px; tipo 'testo' con label/valore = etichetta in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala'; tipo 'barra' = etichetta a label_pos, bordo rettangolo (barra_pos, barra_w, barra_h) di 'spessore_bordo' px in colore_bordo, riempimento pieno in colore_riempimento di 'riempimento_px' px di larghezza e barra_h-2*spessore_bordo di altezza, partendo da barra_pos+spessore_bordo. In gioco i testi hanno un'ombra nera di 1 px per restare leggibili sul cielo chiaro.",
