@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-27 21:14
+# Pacchetto per Claude — 2026-10-29 08:21
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -65,12 +65,14 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 229:| Stato | [~] | (Claude 26/10: le due review incrociate sono FATTE e POSITIVE: `out/developer-junior/REVIEW_FORK1_26OTT.md` (07:14) e `out/developer/REVIEW_FORK1_26OTT.md` (07:20). Resta SOLO @capo: nel prossimo turno apre CP-007 per FORK1, lo chiude (gate ctest verde + 2 review positive), registra in REGISTRO_REVISIONI e aggiorna STATO_CORRENTE e STATI_PROPOSTI con FORK1 e DECO1; poi propone FORK1 [x]. Developer e developer-junior NON aspettano CP-007: passano a DECO1.) (Claude 25/10: codice e gate FORK1 FATTI, ctest 20/20. Restano SOLO: a) review incrociata, UN turno ciascuno: @developer rivede i gate 4, 5, 7 di `prova_gate.cpp`; @developer-junior rivede la modifica di `game.cpp` (corsia a scelta aperta) e la transizione tema; esito in `out/<ruolo>/REVIEW_FORK1_<data>.md`. b) @capo apre CP-007 per FORK1 e lo chiude quando le due review sono positive. c) @grafico elemento di passaggio al bivio: FACOLTATIVO, non blocca. Nessuno aspetta piu' `game.cpp`: chi trova FORK1 senza lavoro suo passa a DECO1.) |
 233:## BLOCCO DECO1 — @grafico + @developer + @developer-junior — elementi decorativi di ogni livello (Andrea 22 ott; dopo FORK1, prima di RIV e prima di ogni prova su Pi 400/RetroPie)
 248:| Stato | [~] | (Claude 27/10: codice @developer passi 2a-2e FATTO, `gate_t1.sh` 07:55 exit 0, lv_06 smoke OK 08:42. Restano solo: review incrociata (un turno ciascuno, esito in `out/<ruolo>/REVIEW_DECO1_<data>.md`), @grafico rivede gli screenshot in `out/developer-junior/` e `Test area/`, @capo apre e chiude il checkpoint. Nessuno aspetta altro codice DECO1: il @developer passa a R2.) |
-252:## BLOCCO PIST1 — @developer + @developer-junior + @grafico — percorsi piu' vari: ponti, colline, chicane, autostrada, citta' (Andrea 23 ott, dopo la prova su Mac; dopo DECO1, prima di RIV)
-261:| Stato | [ ] |
-265:## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
-276:| Stato | [~] | (Andrea 27/10: punti 2 e 3 anticipati prima di PIST1, vedi 'Chi tocca adesso') |
-280:## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
-287:| Stato | [ ] |
+252:## BLOCCO PROVA27 — @developer + @developer-junior + @grafico — prova di Andrea 27/10 sera: corsa singola, cartelloni, oggetti, bivio (PRIMA di RIV b/c e di PIST1)
+262:| Stato | [x] | (Andrea 27/10 sera; codice di Claude, review incrociata aperta) |
+266:## BLOCCO PIST1 — @developer + @developer-junior + @grafico — percorsi piu' vari: ponti, colline, chicane, autostrada, citta' (Andrea 23 ott, dopo la prova su Mac; dopo DECO1, prima di RIV)
+275:| Stato | [ ] |
+279:## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
+290:| Stato | [~] | (Andrea 27/10: punti 2 e 3 anticipati prima di PIST1, vedi 'Chi tocca adesso') |
+294:## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
+301:| Stato | [ ] |
 
 ## Decisioni aperte
 74:## D1 | PIANO_V3 | capo | [CHIUSA 2026-10-16 da Andrea]
@@ -86,49 +88,21 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 134:## D10 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 139:## D11 | T1-RUN | capo | [RISPOSTA REGISTRATA — verifica tecnica da checkpoint]
 146:## D12 | R1 completamento e ri-verifica Mac | builder-developer | [CHIUSA 2026-10-23 da Andrea]
-167:## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [CHIUSA 2026-10-23 da Andrea]
-228:## D13 | Chiusura T1-RUN (Tappa 1) | capo | [CHIUSA 2026-10-23 da Andrea]
-240:## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [CHIUSA 2026-10-23 da Andrea]
-250:## D15 | Attivazione G1 e delega @grafico | capo | [CHIUSA 2026-10-23 da Andrea]
-258:## D16 | Attivazione G1 e delega @grafico | Andrea | [CHIUSA 2026-10-23 da Andrea]
-268:## D18 | Chiusura T1-RUN e avvio R2 | capo | [CHIUSA 2026-10-23 da Andrea]
-287:## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
+166:## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [CHIUSA 2026-10-23 da Andrea]
+225:## D13 | Chiusura T1-RUN (Tappa 1) | capo | [CHIUSA 2026-10-23 da Andrea]
+237:## D14 | Ordine test post-R1 e Pi 400/RetroPie | capo | [CHIUSA 2026-10-23 da Andrea]
+247:## D15 | Attivazione G1 e delega @grafico | capo | [CHIUSA 2026-10-23 da Andrea]
+255:## D16 | Attivazione G1 e delega @grafico | Andrea | [CHIUSA 2026-10-23 da Andrea]
+265:## D18 | Chiusura T1-RUN e avvio R2 | capo | [CHIUSA 2026-10-23 da Andrea]
+277:## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-
-OK (controlli automatici verdi: review del modello saltata, zero crediti)
-
-### CHECKPOINT 1 | REVIEWER | 2026-10-27 21:00 | [APERTA]
-OK      sintassi modelli.sh
-OK      sintassi modo_locale.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE FREQUENZA 50 Hz OK
-screenshot P1: curva frame 1587 (scarto 173 px), sponsor frame 672 (40516 px), personaggio+fumetto frame 446
-GATE SCREENSHOT P1 OK
-GATE T1: FALLITO (exit 15)
-catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.6% (6147590 di 6170352 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 25
 blocchi da fare [ ]: 8
 
-[0m
-> developer-junior · nemotron-3.5-super-vl-free
-CORREGGI: gate_t1.sh -> @developer.
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 2 | REVIEWER | 2026-10-27 21:13 | [APERTA]
+### CHECKPOINT 1 | REVIEWER | 2026-10-28 04:30 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
@@ -142,16 +116,44 @@ OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
 GATE FREQUENZA 50 Hz OK
-screenshot P1: curva frame 1587 (scarto 173 px), sponsor frame 672 (40516 px), personaggio+fumetto frame 446
+screenshot P1: curva frame 1094 (scarto 179 px), sponsor frame 1128 (38857 px), personaggio+fumetto frame 446
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
   senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-quota open: 99.6% (6147590 di 6170352 byte), soglia 50.0%
+quota open: 99.6% (6319239 di 6342001 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 25
+blocchi fatti [x]: 26
+blocchi da fare [ ]: 8
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-29 08:18 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1688 (scarto 187 px), sponsor frame 409 (38828 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+quota open: 99.6% (6330745 di 6353507 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 26
 blocchi da fare [ ]: 8
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)

@@ -268,7 +268,7 @@ Domanda: dopo chiusura formale CP-005 (review incrociata registrata) e `ctest` v
 
 Opzioni: A) sì, chiudi T1-RUN [x] e avvia R2 dopo CP-005 + ctest + ok Andrea Mac  B) no, attendere ulteriore prova/decisione di Andrea prima di R2
 
-RISPOSTA DI ANDREA: B
+RISPOSTA DI ANDREA: A
 
 AGGIORNAMENTO DI ANDREA 27/10: D18 e' chiusa. R2 e i blocchi dopo (DECO1 2f, RIV, PIST1, FIN) **non aspettano** D18 ne' D19: si lavora senza altri ok. D19 = B vale solo per chiudere T1-RUN.
 
