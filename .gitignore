@@ -25,6 +25,9 @@ OpenRun/4.5b ufficio/sglavinated_src/notte.log
 OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/build/
 OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/Test area/*.ppm
 OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/Test area/*.log
+# Log e screenshot dei gate scritti dagli agenti (rigenerabili, 29/10)
+OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Officina/Test/area/
+OpenRun/4.5b ufficio/sglavinated_src/out/test_smoke/
 
 # Screenshot gate (.ppm rigenerabili)
 OpenRun/4.5b ufficio/sglavinated_src/out/collaudatore/**/*.ppm
