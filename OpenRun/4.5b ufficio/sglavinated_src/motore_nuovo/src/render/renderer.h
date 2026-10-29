@@ -17,6 +17,21 @@ struct SpriteInstance {
     f32 scale = 1.0f;
     const Sprite* sprite = nullptr;
     i32 paletteBase = 0; // offset di palette (per variazioni colore auto)
+    // Rivali (Andrea 29/10, "piu' evidenti"): freccia del colore dell'auto
+    // sopra il tetto, niente nomi. 0 = nessuna freccia.
+    u32 segnalino = 0;
+};
+
+// Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
+// restano per tutta la gara, scintille e lampo al momento della botta, fumo
+// dal cofano quando le botte sono tante.
+struct DanniAuto {
+    i32 segni = 0;          // ammaccature visibili (0..DANNI_MAX)
+    f32 dallUrtoS = -1.0f;  // secondi dall'ultima botta (< 0 = nessuna)
+    i32 lato = 0;           // lato della botta: -1 sinistra, +1 destra, 0 dietro/davanti
+    bool fumo = false;      // fumo dal cofano
+    f32 tempoS = 0.0f;      // orologio per animare il fumo
+    static constexpr i32 DANNI_MAX = 8;
 };
 
 // Colori di ambiente della tappa (da livello.json "colori"); i default sono
@@ -50,6 +65,7 @@ struct HudDati {
     f32 totaleS = 0.0f;   // tempo totale di gara (secondi)
     i32 tempoExtra = 0;   // > 0: secondi aggiunti al checkpoint (avviso a schermo)
     i32 tappa = 1, tappe = 3, posizione = 0, concorrenti = 0;
+    f32 sorpasso = 0.0f;  // 1 -> 0 dopo un sorpasso: la POS si accende e torna normale
     bool marciaAlta = false;
     bool show = false;
     bool fuoristrada = false;
@@ -92,7 +108,7 @@ public:
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
-                       bool frena = false, f32 fumoS = -1.0f);
+                       bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -187,6 +203,12 @@ private:
     void drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t);
 
     std::vector<Road::ProjectedSeg> projs_; // riutilizzato frame su frame (zero alloc a regime)
+    // Frecce dei rivali del frame: disegnate dopo tutti gli sprite, cosi'
+    // un cartello o un'auto piu' vicina non le copre (array fisso, zero alloc).
+    struct Segnalino { i32 x = 0, y = 0, h = 0; u32 colore = 0; };
+    static constexpr i32 SEGNALINI_MAX = 8;
+    Segnalino segnalini_[SEGNALINI_MAX];
+    void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)

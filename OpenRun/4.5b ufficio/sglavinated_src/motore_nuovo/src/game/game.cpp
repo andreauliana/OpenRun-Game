@@ -97,6 +97,15 @@ constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpass
 // Rivali e traffico grandi come l'auto del giocatore (Andrea 27/10: "piccolini"):
 // 40 px x SPRITE_WORLD_PX x 1.4 = 280 unita', l'auto del giocatore ne copre ~270.
 constexpr f32 SCALA_AUTO = 1.4f;
+// Rivali (Andrea 29/10, "piu' evidenti"): un'auto e un colore per rivale
+// (sprite 48x24, appena piu' grandi del traffico) e una freccia dello stesso
+// colore sopra il tetto (renderer drawSegnalino). Niente nomi di piloti: in
+// classifica ogni rivale e' il colore della sua auto. Stesso ordine degli
+// sprite caricati da runner e test (auto_rivale_<colore>_retro).
+constexpr f32 SCALA_RIVALE = 1.4f;
+const char* const NOMI_RIVALI[] = {"ROSSA", "AZZURRA", "GIALLA", "VERDE", "BIANCA", "ARANCIO", "VIOLA"};
+constexpr u32 COLORI_RIVALI[] = {0xFFFF3030u, 0xFF40A0FFu, 0xFFFFE020u, 0xFF40E070u,
+                                 0xFFF0F0F8u, 0xFFFF9020u, 0xFFB060FFu};
 // Arrivo (Andrea 29/10): pubblico dietro le transenne ai lati della strada,
 // da FOLLA_PRIMA unita' prima del traguardo a FOLLA_DOPO dopo (l'auto si
 // ferma li' in mezzo), un gruppo ogni FOLLA_PASSO per lato. Le persone sono
@@ -115,6 +124,11 @@ constexpr f32 URTO_SPINTA_RIVALE = 550.0f;    // sportellata tra piloti
 constexpr f32 URTO_TRAFFICO_DOPO = 0.70f;     // tamponamento: velocita' = 70% di quella del veicolo
 constexpr f32 URTO_RIVALE_DOPO = 0.95f;       // tamponamento di un rivale: quasi la sua velocita'
 constexpr f32 URTO_EFFETTO_TRAFFICO_S = 0.55f, URTO_EFFETTO_RIVALE_S = 0.35f;
+// Ciglio (Andrea 29/10): sotto questa frazione della punta uscire di strada
+// non e' una botta.
+constexpr f32 CIGLIO_V_MIN = 0.2f;
+// Botte da cui l'auto fuma dal cofano.
+constexpr i32 DANNI_FUMO = 5;
 // Rivali (Andrea 29/10): nessuna fuga impossibile e nessuno "appiccicato".
 // Entro +-RIVALE_LIBERO_S secondi di distacco ognuno va del suo ritmo; oltre,
 // chi e' davanti cala fino a -15% e chi e' dietro spinge fino a +25%.
@@ -534,6 +548,18 @@ void Game::init(const std::string& livelloId) {
             f32 val = (f32)jsonAsNumber(vs);
             if (val >= 0.0f) bumpSpintaLaterale_ = val;
         }
+        // Ciglio (Andrea 29/10): quanto rallenta il primo tocco, per quanti
+        // secondi lo si ricorda, da che velocita' il tocco seguente e' un incidente.
+        auto leggi = [&cfg](const char* chiave, f32& dove, f32 minimo, f32 massimo) {
+            JsonValue vc;
+            if (jsonGet(jsonAsObject(cfg.valore()), chiave, vc) && jsonIsNumber(vc)) {
+                const f32 val = (f32)jsonAsNumber(vc);
+                if (val >= minimo && val <= massimo) dove = val;
+            }
+        };
+        leggi("ciglio_rallenta", ciglioRallenta_, 0.1f, 1.0f);
+        leggi("ciglio_memoria_s", ciglioMemoriaDurataS_, 0.0f, 60.0f);
+        leggi("ciglio_crash_velocita", ciglioCrashVelocita_, 0.0f, 2.0f); // > 1 = mai incidente
     }
 
     gara_ = false;
@@ -571,6 +597,12 @@ void Game::init(const std::string& livelloId) {
     playerBump_ = false;
     playerBumpTimer_ = 0.0f;
     playerBumpSpintaX_ = 0.0f;
+    urtiGara_ = 0;
+    toccateCiglio_ = 0;
+    dallUrtoS_ = -1.0f;
+    latoUrto_ = 0;
+    offroadPrec_ = false;
+    ciglioMemoriaS_ = 0.0f;
     showManager_.reset(seed_); // stesso seed = stessi show (determinismo)
 
     // Testi fumetti da frasi.json (dati, CC-BY-4.0 Andrea): carica una volta,
@@ -768,6 +800,8 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     preparaArrivo();
     inizializzaRivali();
     aggiornaStatoGara();
+    posizionePrec_ = state_.posizione;
+    sorpassoS_ = 0.0f;
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: avviaGara() parte guidando (gate, runner --subito)
     return true;
 }
@@ -815,6 +849,8 @@ void Game::inizializzaRivali() {
     // Griglia di partenza: gli avversari partono davanti, in due file, e hanno
     // ognuno una velocita' di punta un po' sotto quella del giocatore.
     Rng rnd(seed_ ^ 0x52495641u);
+    static_assert(sizeof(NOMI_RIVALI) / sizeof(NOMI_RIVALI[0]) == RIVALI &&
+                  sizeof(COLORI_RIVALI) / sizeof(COLORI_RIVALI[0]) == RIVALI, "un nome e un colore per rivale");
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
         r.progresso = 900.0f + (f32)(i / 2) * 1200.0f + (f32)(i % 2) * 400.0f;
@@ -1041,9 +1077,10 @@ void Game::aggiornaRivali() {
         SpriteInstance s;
         s.worldZ = road_.playerZ + zRel;
         s.worldX = c.centro[indice] + r.x * c.fattore;
-        s.scale = SCALA_AUTO;
+        s.scale = SCALA_RIVALE;
         s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
+        s.segnalino = COLORI_RIVALI[r.spriteIdx >= 0 ? r.spriteIdx : i];
         sprites_.push_back(s);
         spritesFonte_.push_back(i);
     }
@@ -1300,6 +1337,10 @@ void Game::update() {
             if (tempoResiduoS_ <= 0.0f) tempoScaduto_ = true; // game over
         }
         aggiornaStatoGara();
+        // Sorpasso: la posizione migliora, la POS dell'HUD si accende per un attimo.
+        if (!arrivo_ && posizionePrec_ > 0 && state_.posizione < posizionePrec_) sorpassoS_ = SORPASSO_S;
+        posizionePrec_ = state_.posizione;
+        if (sorpassoS_ > 0.0f) sorpassoS_ = std::max(0.0f, sorpassoS_ - dt);
         // Tempo scaduto o arrivo: FineTempo, poi Risultati (blocco R2).
         if (fasi_.attuale() == FaseId::Gara && (tempoScaduto_ || arrivo_))
             fasi_.cambia(FaseId::FineTempo, *this);
@@ -1334,6 +1375,7 @@ void Game::aggiornaGuida(f32 dt) {
             player_.speed = 0.0f;
             player_.offroad = false;
             road_.playerX = player_.x;
+            if (gara_) liberaRipartenza();
         }
         if (gara_) { // gli avversari e il traffico non aspettano
             aggiornaTraffico(dt);
@@ -1483,6 +1525,9 @@ void Game::aggiornaGuida(f32 dt) {
         aggiornaSalto(dt);
         if (tempoExtraS_ > 0.0f) tempoExtraS_ -= dt;
         if (urtoEffettoS_ > 0.0f) urtoEffettoS_ = std::max(0.0f, urtoEffettoS_ - dt);
+        if (dallUrtoS_ >= 0.0f) dallUrtoS_ = dallUrtoS_ + dt > 5.0f ? -1.0f : dallUrtoS_ + dt;
+        // Il tocco del ciglio si dimentica solo guidando in strada.
+        if (ciglioMemoriaS_ > 0.0f && !player_.offroad) ciglioMemoriaS_ = std::max(0.0f, ciglioMemoriaS_ - dt);
 
         if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
         else offroadFrames_ = 0;
@@ -1551,16 +1596,19 @@ void Game::aggiornaGuida(f32 dt) {
             }
         }
 
-        // Ribaltamento solo per fuori strada prolungato (mai per contatto con
+        // Ciglio (Andrea 29/10): uscire di strada e' un tocco del ciglio. Il
+        // primo rallenta e resta in memoria; il seguente, se si va ancora forte,
+        // e' un incidente. Al bivio l'aiuto tiene l'auto: nessun tocco.
+        const bool entraFuori = player_.offroad && !offroadPrec_;
+        offroadPrec_ = player_.offroad;
+        if (entraFuori && assistenzaBivio_ <= 0.0f && !playerFlipping_ && !arrivo_ &&
+            player_.speed >= CIGLIO_V_MIN * player_.maxSpeed())
+            toccaCiglio();
+
+        // Ribaltamento per fuori strada prolungato (mai per contatto con
         // rivali o cartelloni).
-        if (offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_) && !playerFlipping_ && !playerBump_ && !arrivo_) {
-            showManager_.crash();
-            playerFlipping_ = true;
-            playerFlipFrame_ = 0;
-            playerXIncidente_ = player_.x;
-            player_.speed = 0.0f;
-            offroadFrames_ = 0;
-        }
+        if (offroadFrames_ >= (u32)(OFFROAD_CRASH_S * (f32)frequenzaHz_) && !playerFlipping_ && !playerBump_ && !arrivo_)
+            ribalta();
     }
 
     // 5) Personaggi/gameplay (blocco D): fatti del frame -> stato show.
@@ -1636,8 +1684,20 @@ void Game::render() {
     const bool steeringRight = !arrivo_ && (input_.held & Pad::Right) != 0;
     const f32 steeringLean = steeringLeft == steeringRight
         ? 0.0f : (steeringLeft ? -0.32f : 0.32f);
+    // Incidente (Andrea 29/10: rientro pulito): nel primo 40% l'auto salta e
+    // fa un giro su se stessa, poi atterra con un rimbalzo e il fumo delle
+    // gomme; nella seconda meta' scivola dritta al centro della corsia
+    // (aggiornaGuida) e riparte da ferma.
+    const f32 kFlip = playerFlipping_
+        ? std::min(1.0f, (f32)playerFlipFrame_ / (f32)(u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)) : 0.0f;
+    const f32 kGiro = std::min(1.0f, kFlip / 0.4f);
+    f32 flipPx = 0.0f;
+    if (playerFlipping_)
+        flipPx = kFlip < 0.4f ? 16.0f * std::sin(3.14159f * kGiro)
+                              : (kFlip < 0.5f ? 3.0f * std::sin(3.14159f * (kFlip - 0.4f) / 0.1f) : 0.0f);
+    const f32 fumoFlipS = playerFlipping_ && kFlip >= 0.4f ? (kFlip - 0.4f) * FLIP_ANIMATION_S : -1.0f;
     const f32 rollAngle = playerFlipping_
-        ? 6.2831853f * (f32)playerFlipFrame_ / (f32)(u32)(FLIP_ANIMATION_S * (f32)frequenzaHz_)
+        ? 6.2831853f * kGiro * kGiro * (3.0f - 2.0f * kGiro)
         : steeringLean * 1.5f +
           (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
     const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
@@ -1662,9 +1722,16 @@ void Game::render() {
             sobbalzoPx += 3.0f * std::exp(-fermoS_ * 6.0f) * std::sin(fermoS_ * 22.0f);
         }
     }
-    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx + sobbalzoPx;
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle + scodata, sollevamentoPx,
-                       frena, arrivo_ ? arrivoS_ : -1.0f);
+    const f32 sollevamentoPx = playerFlipping_ ? flipPx : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx + sobbalzoPx;
+    DanniAuto danni;
+    danni.segni = std::min(urtiGara_ + toccateCiglio_, DanniAuto::DANNI_MAX);
+    danni.dallUrtoS = dallUrtoS_;
+    danni.lato = latoUrto_;
+    danni.fumo = urtiGara_ + toccateCiglio_ >= DANNI_FUMO && !playerFlipping_;
+    danni.tempoS = tempoGiocoS_;
+    // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
+                       rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
@@ -1704,6 +1771,7 @@ void Game::render() {
         h.tappa = numeroTappa_;
         h.posizione = state_.posizione;
         h.concorrenti = state_.concorrenti;
+        h.sorpasso = sorpassoS_ / SORPASSO_S;
         h.show = showManager_.showAttivo();
         h.fuoristrada = player_.offroad;
         h.bivio = (road_.bivioAttivo() && latoBivio_ == 0 && player_.z > road_.bivioInizioZ() - 30000.0f) ? 1 : 0;
@@ -1824,16 +1892,72 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         r.xObiettivo = std::clamp(r.x - lato * 200.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
     }
+    ++urtiGara_;
+    segnaBotta(tamponamento ? 0 : -(i32)lato); // lato e' la spinta: la botta arriva dall'altra parte
     urtoTraffico_ = traffico;
     urtoEffettoDurataS_ = traffico ? URTO_EFFETTO_TRAFFICO_S : URTO_EFFETTO_RIVALE_S;
     urtoEffettoS_ = urtoEffettoDurataS_;
     mixer_.suonaUrto(traffico);
 }
 
+void Game::segnaBotta(i32 lato) {
+    // Ogni botta lascia un segno sull'auto (fino a DanniAuto::DANNI_MAX) e fa
+    // partire scintille e lampo dal lato colpito.
+    dallUrtoS_ = 0.0f;
+    latoUrto_ = lato;
+}
+
+void Game::toccaCiglio() {
+    ++toccateCiglio_;
+    const i32 lato = player_.x - player_.centroCorsia > 0.0f ? 1 : -1;
+    segnaBotta(lato);
+    if (ciglioMemoriaS_ > 0.0f && player_.speed >= ciglioCrashVelocita_ * player_.maxSpeed()) {
+        // Secondo tocco mentre si ricorda il primo, e si va ancora forte: incidente.
+        ciglioMemoriaS_ = 0.0f;
+        ribalta();
+        return;
+    }
+    // Primo tocco (o abbastanza piano): botta secca e si perde velocita';
+    // nessuna scritta (Andrea 29/10): bastano sobbalzo, scintille e ammaccatura.
+    player_.speed *= ciglioRallenta_;
+    urtoTraffico_ = false;
+    urtoEffettoDurataS_ = URTO_EFFETTO_RIVALE_S;
+    urtoEffettoS_ = urtoEffettoDurataS_;
+    mixer_.suonaUrto(false);
+    ciglioMemoriaS_ = ciglioMemoriaDurataS_;
+}
+
+void Game::liberaRipartenza() {
+    // Si riparte da fermi al centro della corsia: chi e' proprio li' davanti
+    // (o di fianco) si sposta, cosi' la ripartenza non finisce in un'altra
+    // botta appena tocchi il gas (Andrea 29/10: rientro senza errori strani).
+    const f32 xRel = player_.x - player_.centroCorsia;
+    for (Veicolo& v : traffico_) {
+        const f32 dz = v.z - road_.playerZ;
+        if (v.attivo && dz > Game::URTO_Z_MIN - 400.0f && dz < Game::URTO_Z_MAX + 3000.0f &&
+            std::abs(v.x - player_.x) < URTO_LARGHEZZA + 200.0f)
+            v.z = road_.playerZ + Game::URTO_Z_MAX + 4000.0f;
+    }
+    const f32 mio = progressoTappePrecedenti_ + player_.z;
+    for (Rivale& r : rivali_) {
+        const f32 dz = r.progresso - mio;
+        if (dz > Game::URTO_Z_MIN - 400.0f && dz < Game::URTO_Z_MAX + 1500.0f && std::abs(r.x - xRel) < URTO_LARGHEZZA + 100.0f)
+            r.x = r.xObiettivo = xRel <= 0.0f ? 450.0f : -450.0f;
+    }
+}
+
+void Game::ribalta() {
+    showManager_.crash();
+    playerFlipping_ = true;
+    playerFlipFrame_ = 0;
+    playerXIncidente_ = player_.x;
+    player_.speed = 0.0f;
+    offroadFrames_ = 0;
+}
+
 void Game::calcolaClassifica() {
     // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; per i
     // rivali ancora in corsa (o gia' arrivati) si stima dal distacco e dal loro ritmo medio.
-    static const char* NOMI[RIVALI] = {"VIPER", "NOVA", "BLITZ", "RAZOR", "LUNA", "TURBO", "ZETA"};
     const f32 tempo = tempoTotaleS();
     const f32 traguardo = progressoTappePrecedenti_ + (f32)road_.totalLength();
     classifica_.clear();
@@ -1841,7 +1965,7 @@ void Game::calcolaClassifica() {
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
         const f32 media = std::max(1.0f, r.passoMax * RIVALE_MEDIA_PUNTA);
-        classifica_.push_back({NOMI[i], std::max(1.0f, tempo + (traguardo - r.progresso) / media), false});
+        classifica_.push_back({NOMI_RIVALI[i], std::max(1.0f, tempo + (traguardo - r.progresso) / media), false});
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });

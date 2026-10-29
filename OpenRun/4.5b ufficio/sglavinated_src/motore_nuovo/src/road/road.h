@@ -27,6 +27,13 @@ public:
     static constexpr f32 HILL_HEIGHT = 6000.0f;
     // Bivio a fine tappa (solo in gara): la strada si apre in due rami.
     static constexpr i32 BIVIO_SEG = 1200;         // segmenti finali occupati dal bivio. Aumentato (FORK1 @developer, 25/10: raggio piu' ampio nell'apertura del bivio, i due rami si separano piu' dolcemente su piu' segmenti, senza scatti di prospettiva; alla scelta bloccata d == BIVIO_DIST e centro del ramo scelto == 0, coerente con il ricentramento in game.cpp).
+    // Rettilineo in piano prima e dentro il bivio (Andrea 29/10): parte
+    // BIVIO_RETTILINEO_PRIMA segmenti prima dell'apertura e finisce
+    // BIVIO_RETTILINEO_DOPO segmenti dopo il blocco della scelta; curve e
+    // quote entrano ed escono in BIVIO_RACCORDO segmenti (~1 s a tutta velocita').
+    static constexpr i32 BIVIO_RETTILINEO_PRIMA = 200;
+    static constexpr i32 BIVIO_RETTILINEO_DOPO = 0;
+    static constexpr i32 BIVIO_RACCORDO = 120;
     static constexpr f32 BIVIO_DIST = 1900.0f;     // centro di ogni ramo a bivio aperto (unita' mondo)
     static constexpr f32 BIVIO_SVOLTA = 4.0e-4f;   // quanto il ramo non scelto si allontana (curva via). Aumentato (feedback Andrea 23/10, FORK1: prova runner Mac): i due rami del bivio divergono di piu' cosi' l'auto sul ramo scelto non tocca i bordi della parte centrale al bivio.
 

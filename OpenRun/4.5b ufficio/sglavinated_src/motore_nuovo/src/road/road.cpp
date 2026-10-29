@@ -120,6 +120,23 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         }
     }
 
+    // Rettilineo del bivio (Andrea 29/10): "prima del bivio un piccolo
+    // rettilineo, e il bivio; le curve, i ponti, i salti vanno dentro alla
+    // corsa". Da BIVIO_RETTILINEO_PRIMA segmenti prima che la strada si apra
+    // fino a poco dopo il blocco della scelta la strada e' dritta e in piano
+    // (curve, colline e dune spente con un raccordo). Il resto della tappa e
+    // la fine (cambio tappa, giro in tondo) restano come da livello.json.
+    const i32 nSeg = (i32)segs_.size();
+    const i32 aDritto = nSeg - BIVIO_SEG - BIVIO_RETTILINEO_PRIMA;
+    const i32 bDritto = nSeg - BIVIO_SEG + (i32)(0.6f * (f32)BIVIO_SEG) + BIVIO_RETTILINEO_DOPO;
+    const bool conRettilineo = aDritto - BIVIO_RACCORDO > 0 && bDritto + BIVIO_RACCORDO < nSeg;
+    auto pesoDritto = [&](i32 i) -> f32 {
+        if (!conRettilineo || i < aDritto - BIVIO_RACCORDO || i > bDritto + BIVIO_RACCORDO) return 0.0f;
+        if (i < aDritto) return raccordo((f32)(i - (aDritto - BIVIO_RACCORDO) + 1) / (f32)BIVIO_RACCORDO);
+        if (i <= bDritto) return 1.0f;
+        return 1.0f - raccordo((f32)(i - bDritto) / (f32)BIVIO_RACCORDO);
+    };
+
     // Chiusura di direzione: la somma ponderata delle curve non si bilancia
     // mai esattamente. La residua si distribuisce SOLO sui segmenti con curva
     // diversa da zero (mai sui rettilinei), cosi' i dritti restano perfettamente
@@ -144,8 +161,12 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
         const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
         const f32 quota = d.collina * HILL_HEIGHT;
         for (i32 k = 1; k <= n; ++k) {
-            RoadSegment& seg = segs_[at++];
+            RoadSegment& seg = segs_[at];
             if (seg.curve != 0.0f) seg.curve -= correzione;
+            // Rettilineo del bivio dopo la chiusura di direzione: le altre
+            // curve restano quelle di sempre (la chiusura serve solo a p1x/p2x).
+            const f32 dritto = pesoDritto(at++);
+            seg.curve = dritto >= 1.0f ? 0.0f : seg.curve * (1.0f - dritto);
             seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
@@ -162,6 +183,18 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             curZ = seg.p2z;
         }
         quotaPrima = quota;
+    }
+    // Rettilineo del bivio: anche in piano, alla quota che la strada ha dove
+    // il rettilineo comincia (colline e dune raccordate, niente salti).
+    if (conRettilineo) {
+        const f32 quotaDritto = segs_[aDritto].p1y;
+        f32 prima = segs_[aDritto - BIVIO_RACCORDO].p1y;
+        for (i32 i = aDritto - BIVIO_RACCORDO; i <= bDritto + BIVIO_RACCORDO; ++i) {
+            RoadSegment& seg = segs_[i];
+            seg.p1y = prima;
+            seg.p2y += (quotaDritto - seg.p2y) * pesoDritto(i);
+            prima = seg.p2y;
+        }
     }
     // I valori di inizio tappa vengono consumati una sola volta.
     curvaInizioTappaSet_ = false;
