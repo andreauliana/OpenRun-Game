@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 3 (ora 4 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
 
 > Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 > Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**.
@@ -24,8 +24,8 @@
 | H | [~] | Andrea | — | — | v91 runner Mac su build corretta, poi fps/temp Pi 400 | Prova Mac 23/10 ok (ctest 17/17, runner ok); prima Mac poi Pi (D12/D14 = A). |
 | FORK1 | [x] | @developer + @developer-junior | incrociata positiva (CP-007) | `out/developer/`, `out/developer-junior/` | ctest verde, gate `bivio_*` / `tema_transizione` verdi, replay 2x IDENTICAL | CP-007 CHIUSO. Dopo FORK1: DECO1. |
 | DECO1 | [~] | @developer (passi piccoli 2a-2f; 2a-2d FATTO, 2e parallasse prossimo; 2f FATTO 27/10 20:02 da @grafico) + @grafico (asset, 2f FATTO) | da assegnare per gate `decorazioni` (cand. @developer-junior) | `out/developer/`, `out/grafico/` | ctest verde con `decorazioni` (21 test OK, developer-junior 27/10 06:37); screenshot PPM 6 livelli; ms/frame <= 20; check exit 0 | DECO1 [x] prima di ogni prova Pi 400/RetroPie. @grafico fornisce asset e rivede screenshot in `Test area/`. Resta: review incrociata + CP DECO1 (@capo, CP-008 da aprire). |
-| F60 | [x] gate / [~] review | @developer | @developer-junior (pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICAL | Dopo R1 prima di R2 (Andrea 19 oct). CP F60 da aprire dopo review incrociata. |
-| R2 | [~] | @developer | @developer-junior (incrociata) | `out/developer/` | ctest verde con gate `ciclo`; tutte le 5 fasi | In corso (passi 1/1b/1c fatti, ctest 22/22 verde con gate `ciclo`). NON subordinato a D18/D19 (Andrea 27/10). Prossimo: 1d nome 3 lettere, poi RIV punti a-c, poi PIST1 punto 1. |
+| F60 | [x] gate / [~] review | @developer | @developer-junior (incrociata pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICAL | Gate verde registrato 22/10 20:06; manca review incrociata developer→developer-junior e apertura CP F60. |
+| R2 | [~] | @developer | @developer-junior (incrociata) | `out/developer/` | ctest verde con gate `ciclo`; tutte le 5 fasi | In corso (passi 1/1b/1c fatti, ctest 22/22 verde con gate `ciclo`). NON subordinato a D18/D19 (Andrea 27/10). Prossimo: 1d nome a 3 lettere, poi RIV punti a-c, poi PIST1 punto 1. |
 | RIV | [~] | @developer + @grafico | @developer-junior (gate `urto`, `gara`) | `out/developer/`, `out/grafico/` | ctest verde con `gara` e `urto`; sprite rivali catalogo (7 sprite rivali "pronto"); nessun ribaltamento su urto | Dopo R2 1b-1c e DECO1 2f. Punti a,b,c (bump, sprite rivali, comportamento realistico). Punto 1 (percorso_gara.json per ogni rivale) dopo PIST1. |
 | PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | Dopo RIV punti a-c. |
 | FIN | [ ] | @developer + @grafico | @developer-junior (gate `gara` finale) | `out/developer/`, `out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. 3 scene arrivo "pronto" per @grafico, varianti per posizione da definire con Andrea. |
@@ -42,7 +42,6 @@
 - D12 = A, D13 = B, D14 = A, D15 = A, D17 = A, D18 = B (chiusa 27/10).
 - D19: **RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D19 per Andrea 27/10).
 - D16: Andrea sta testando la review del runner Mac (v91, SDL2); proseguire autonomamente in attesa.
-- Nessuna domanda senza risposta in questo turno.
 
 ## Chiusura tappa
 

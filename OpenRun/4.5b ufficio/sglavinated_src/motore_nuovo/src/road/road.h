@@ -63,6 +63,11 @@ public:
     // chi e' nella corsia esterna ha il tempo di rientrare.
     static constexpr i32 LARGHEZZA_RACCORDO = 150;
 
+// Campo `acqua` (0/1, default 0): quando 1, ai lati del tratto vengono usati
+// i colori `acqua` del tema al posto di `erba`/`erbaAlt` (regola PIST1 punto 1).
+// Scritta in SegmentDesc e letta in leggiCampiTratto.
+    f32 acqua = 0.0f;
+
     // Costruisce il tracciato da descrittori: ogni descrittore diventa
     // "lunghezza" segmenti da SEG_LEN, con curva e collina raccordate.
     void build(const std::vector<SegmentDesc>& descs, u32 seed);

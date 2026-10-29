@@ -15,7 +15,7 @@
   "regole": {
     "lv_01_neon": {
       "rettilineo_min": 0.35,
-      "rettilineo_max": 0.70,
+      "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.3,
@@ -35,7 +35,7 @@
     },
     "lv_03_foglie": {
       "rettilineo_min": 0.35,
-      "rettilineo_max": 0.65,
+      "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.3,
@@ -45,7 +45,7 @@
     },
     "lv_04_cromo": {
       "rettilineo_min": 0.35,
-      "rettilineo_max": 0.70,
+      "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.3,
@@ -65,7 +65,7 @@
     },
     "lv_06_desktop": {
       "rettilineo_min": 0.35,
-      "rettilineo_max": 0.70,
+      "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.3,
