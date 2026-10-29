@@ -209,6 +209,8 @@ ASan+UBSan puliti. **Non misurato**: fps/temperatura su Pi 400 (tocca ad Andrea)
 | `--livello <id>` | guida solo quella pista, in tondo (cartella in `motore_nuovo/dati/livelli/`, da lv_01_neon a lv_06_desktop). Senza: gara a tappe con bivi da `dati/percorso_gara.json` |
 | `--fullscreen` / `--window` | schermo intero (consigliato sul Pi) o finestra; F11 alterna durante il gioco |
 | `--no-vsync` | disattiva la sincronizzazione con lo schermo (solo per driver che si bloccano) |
+| `--crt` / `--no-crt` | accende o spegne il filtro CRT all'avvio (vince su `"filtro_crt"` di `dati/config.json`, spento di default); il tasto C lo alterna durante il gioco |
 
 Tasti: ESC esce; sul pad Select+Start esce, Start+B (o R sulla tastiera) cambia brano.
+Filtro CRT (`src/render/crt.*`, 29 ott): sbavatura orizzontale del segnale composito sulla CPU (320x224) e maschera fissa con righe scure tra le linee e strisce dei fosfori R/G/B moltiplicata sopra dalla GPU, alla scala intera dello schermo. Solo resa a schermo: framebuffer del core e frameHash non cambiano. Il core libretro non lo usa (RetroArch ha gia' i suoi shader CRT).
 La logica resta a passo fisso di 1/50 s (replay e hash invariati); il video si presenta con vsync e l'audio va in coda (`SDL_QueueAudio`), senza buchi.

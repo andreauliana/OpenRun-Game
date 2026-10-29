@@ -3,5 +3,6 @@
   "transizione_tema_s": 2.0,
   "bump_rallenta": 0.85,
   "bump_durata_s": 1.0,
-  "bump_spinta_laterale": 200.0
+  "bump_spinta_laterale": 200.0,
+  "filtro_crt": false
 }

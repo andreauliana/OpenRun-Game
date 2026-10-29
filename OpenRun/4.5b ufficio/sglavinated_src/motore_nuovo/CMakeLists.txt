@@ -56,6 +56,8 @@ add_library(sglavinated_core
     src/render/font_mini.h
     src/render/visualizzatore.h
     src/render/visualizzatore.cpp
+    src/render/crt.h
+    src/render/crt.cpp
     src/input/pad.h
     src/audio/mixer.h
     src/audio/mixer.cpp
