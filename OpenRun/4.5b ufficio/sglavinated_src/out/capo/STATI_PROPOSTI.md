@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turn 1 (ora 0 di 12) — @capo
+# STATI PROPOSTI — Turn 1 (ora 1 di 12) — @capo
 
 > Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 > Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**.
@@ -7,10 +7,10 @@
 
 ## Verifica chiusure checkpoint
 
-- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate e review indipendente registrati e positivi (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde; prova runner Mac Andrea 23/10 ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente). Si procede senza aspettare. Avvio R2 subordinato a conferma formale Andrea (D18 = B, chiusa 27/10: R2 non aspetta D18 né D19); nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale (D12/D14 = A).
+- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate e review indipendente registrati e positivi (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde; prova runner Mac Andrea 23/10 ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente: B). Si procede senza aspettare. Avvio R2 subordinato a conferma formale Andrea (D18 = B, chiusa 27/10: R2 non aspetta D18 né D19); nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale (D12/D14 = A).
 - **CP-007 (FORK1 bivio e transizione di tema): CHIUSO** 2026-10-27. Non si riapre.
 - **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
-- **CP-002 (G1 inventario grafico): APERTO** — G1 ora `[x]` (check_catalogo_grafico.py exit 0, "PNG non catalogati: 0", licenza CC0-1.0, handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` consultato), ma review indipendente mancante (da assegnare, cand. @developer-junior, diverso da @grafico).
+- **CP-002 (G1 inventario grafico): APERTO** — G1 ora `[x]` (`check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", licenza CC0-1.0, handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` consultato), ma review indipendente mancante (da assegnare, cand. @developer-junior, diverso da @grafico).
 - CP-003 e CP-004 restano APERTO (review indipendente da assegnare).
 - Nessun altro checkpoint ha gate + review indipendente registrati da chiudere in questo turno. DECO1 non ha ancora CP: serve apertura CP-008 dopo le review incrociate pendenti.
 
@@ -20,7 +20,7 @@
 |---|---|---|---|---|---|---|
 | T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
 | P1 | [x] | @developer | — | `out/developer/` | build CMake, screenshot gameplay (prova differita) | T1-Q2 sì (Andrea). |
-| G1 | [x] | @grafico | da assegnare (CP-002, diverso da @grafico; cand. @developer-junior) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. G1 chiuso per STATUS_GRAFICO_PER_CAPO.md 29/10 06:35 (181 elementi, PNG non catalogati: 0, CC0-1.0). CP-002 in attesa review indipendente. |
+| G1 | [x] | @grafico | da assegnare (CP-002, diverso da @grafico; cand. @developer-junior) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. G1 chiuso per STATUS_GRAFICO_PER_CAPO.md 29/10 07:18 (181 elementi, PNG non catalogati: 0, CC0-1.0). CP-002 in attesa review indipendente. |
 | H | [~] | Andrea | — | — | v91 runner Mac su build corretta, poi fps/temp Pi 400 | Prova Mac 23/10 ok (ctest 17/17, runner ok); prima Mac poi Pi (D12/D14 = A). |
 | FORK1 | [x] | @developer + @developer-junior | incrociata positiva (CP-007) | `out/developer/`, `out/developer-junior/` | ctest verde, gate `bivio_*` / `tema_transizione` verdi, replay 2x IDENTICO | CP-007 CHIUSO. Dopo FORK1: DECO1. |
 | DECO1 | [~] | @developer (passi piccoli 2a-2f; 2a-2e FATTO, 2f FATTO 27/10 20:02 da @grafico) + @grafico (asset, 2f FATTO) | da assegnare per gate `decorazioni` (cand. @developer-junior) | `out/developer/`, `out/grafico/` | ctest verde con `decorazioni` (21 test OK, developer-junior 27/10 06:37); screenshot PPM 6 livelli; ms/frame <= 20; check exit 0 | DECO1 [x] prima di ogni prova Pi 400/RetroPie. @grafico fornisce asset e rivede screenshot in `Test area/`. Resta: review incrociata + CP DECO1 (@capo, CP-008 da aprire). |
@@ -40,7 +40,7 @@
 
 - T1-Q1 sì, T1-Q2 sì → P1 [x]; T1-Q4 attivare → G1; T1-Q5 percorso R1 fatto (CP-005 chiuso).
 - D12 = A, D13 = B, D14 = A, D15 = A, D17 = A, D18 = B (chiusa 27/10).
-- D19: **RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN e avviare R2.
+- D19: **RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D19 per Andrea 27/10).
 - D16: Andrea sta testando la review del runner Mac (v91, SDL2); proseguire autonomamente in attesa.
 - Nessuna domanda senza risposta in questo turno.
 
