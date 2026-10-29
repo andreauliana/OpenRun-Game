@@ -143,9 +143,9 @@ public:
     const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
     f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
 
-    // Radio: brani tracker (.xm) di dati/audio/playlist.json; parte il primo,
-    // il tasto R (o Start+B) passa al successivo.
-    void nextBranoRadio() { mixer_.nextBrano(); }
+    // Radio: brani tracker (.xm) di dati/audio/playlist.json, uno per il menu e
+    // quelli della gara (Andrea 29/10). In gara il tasto R (o Start+B) passa al prossimo.
+    void nextBranoRadio() { if (radioInGara_) ++radioGara_; }
     const InfoMusica& musica() const { return mixer_.info(); } // per lo spettro e i tocchi a ritmo
     i32 branoRadio() const { return mixer_.currentTrack(); }    // indice 0-based del brano in corso
     i32 numBraniRadio() const { return mixer_.numTracks(); }    // totale brani caricati (0 se radio assente)
@@ -190,9 +190,14 @@ private:
     const ScenaShow& scenaShow() const { return disegnoShow_.scena(); }
     const TestiFrasi& testiFrasi() const { return testiFrasi_; }
     std::vector<i16> audioBuf_; // stereo interleaved, riempito ogni update
-    // Radio: brani caricati una volta (il brano scelto continua tra le tappe).
+    // Radio: brani caricati una volta; aggiornaRadio sceglie quello della fase/tappa.
     void caricaMusica();
+    void aggiornaRadio();
     bool musicaCaricata_ = false;
+    i32 branoMenu_ = -1;      // indice nel mixer del brano del menu (-1 = nessuno)
+    i32 primoBranoGara_ = 0;  // i brani della gara vengono dopo
+    i32 radioGara_ = -1;      // avanza a ogni gara e con R / Start+B
+    bool radioInGara_ = false;
     void drawMusica(); // spettro e battito in gara
     // Urti con le altre auto (Andrea 29/10): nessuna compenetrazione, urto
     // diverso per il traffico (botta forte, clacson) e per i rivali (sportellata).

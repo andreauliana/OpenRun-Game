@@ -345,7 +345,7 @@ int main(int argc, char** argv) {
             const bool startBNuovo = (pad.held & startB) == startB && (pad.pressed & startB) != 0;
             if (rPressed || startBNuovo) {
                 game.nextBranoRadio();
-                SDL_Log("radio: brano %d/%d in riproduzione", game.branoRadio() + 1, game.numBraniRadio());
+                SDL_Log("radio: prossimo brano di gara");
             }
 
             game.update();

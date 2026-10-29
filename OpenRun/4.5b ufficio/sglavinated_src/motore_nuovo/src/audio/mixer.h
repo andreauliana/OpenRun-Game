@@ -38,7 +38,6 @@ public:
 
     // Seleziona il brano corrente (indice 0-based) e lo fa ripartire. Fuori range: niente.
     void selezionaBrano(i32 indice);
-    void nextBrano();
 
     // Effetto di un urto: botta secca; con clacson = il traffico suona (Andrea 29/10).
     void suonaUrto(bool clacson) { urtoN_ = 0; clacson_ = clacson; }

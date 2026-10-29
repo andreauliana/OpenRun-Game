@@ -459,22 +459,39 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
 }
 
 void Game::caricaMusica() {
-    // dati/audio/playlist.json, sezione "xm": [{"file": "musica/x.xm", "titolo": "..."}].
-    // Senza file o brani si gioca con il solo motore (nessun crash).
+    // dati/audio/playlist.json: "menu": {"file": "musica/x.xm", "titolo": "..."}
+    // e "gara": [{...}, ...]. Senza file o brani si gioca con il solo motore (nessun crash).
     if (musicaCaricata_) return;
     musicaCaricata_ = true;
     JsonReader r(leggiFileTesto(percorsoDati("motore_nuovo/dati/audio/playlist.json")));
     if (!r.parse() || !jsonIsObject(r.valore())) return;
-    JsonValue elenco;
-    if (!jsonGet(jsonAsObject(r.valore()), "xm", elenco) || !jsonIsArray(elenco)) return;
-    for (const JsonValue& b : jsonAsArray(elenco)) {
-        if (!jsonIsObject(b)) continue;
+    auto aggiungi = [this](const JsonValue& b) {
         JsonValue fv, tv;
-        if (!jsonGet(jsonAsObject(b), "file", fv) || !jsonIsString(fv)) continue;
+        if (!jsonIsObject(b) || !jsonGet(jsonAsObject(b), "file", fv) || !jsonIsString(fv)) return false;
         const std::string titolo = jsonGet(jsonAsObject(b), "titolo", tv) && jsonIsString(tv) ? jsonAsString(tv) : "";
-        if (!mixer_.aggiungiBrano(percorsoDati("motore_nuovo/dati/audio/" + jsonAsString(fv)), titolo))
-            std::printf("radio: brano non leggibile %s\n", jsonAsString(fv).c_str());
-    }
+        if (mixer_.aggiungiBrano(percorsoDati("motore_nuovo/dati/audio/" + jsonAsString(fv)), titolo)) return true;
+        std::printf("radio: brano non leggibile %s\n", jsonAsString(fv).c_str());
+        return false;
+    };
+    JsonValue menu, gara;
+    if (jsonGet(jsonAsObject(r.valore()), "menu", menu) && aggiungi(menu)) branoMenu_ = 0;
+    primoBranoGara_ = mixer_.numTracks();
+    if (jsonGet(jsonAsObject(r.valore()), "gara", gara) && jsonIsArray(gara))
+        for (const JsonValue& b : jsonAsArray(gara)) aggiungi(b);
+}
+
+void Game::aggiornaRadio() {
+    // Menu: il suo brano. Dalla partenza ai risultati: i brani della gara,
+    // uno per tappa a giro; ogni nuova gara parte dal brano successivo.
+    const FaseId f = fasi_.attuale();
+    const bool inGara = f != FaseId::Splash && f != FaseId::Menu;
+    if (inGara && !radioInGara_) ++radioGara_;
+    radioInGara_ = inGara;
+    const i32 braniGara = mixer_.numTracks() - primoBranoGara_;
+    i32 voluto = branoMenu_;
+    if (inGara && braniGara > 0)
+        voluto = primoBranoGara_ + (radioGara_ + std::max(0, numeroTappa_ - 1)) % braniGara;
+    if (voluto >= 0 && voluto != mixer_.currentTrack()) mixer_.selezionaBrano(voluto);
 }
 
 void Game::init(const std::string& livelloId) {
@@ -1244,6 +1261,7 @@ void Game::update() {
     f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
     fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
+    aggiornaRadio();
     if (fasi_.attuale() == FaseId::Gara || fasi_.attuale() == FaseId::FineTempo) {
         aggiornaGuida(dt);
     } else {
