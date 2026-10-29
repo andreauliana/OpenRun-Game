@@ -124,6 +124,25 @@ public:
     void richiediUscita() { uscitaRichiesta_ = true; }
     bool uscitaRichiesta() const { return uscitaRichiesta_; }
 
+    // Contatto tra auto (Andrea 29/10). La telecamera sta dietro l'auto del
+    // giocatore: a schermo la sua carrozzeria copre le auto tra URTO_Z_MIN e
+    // URTO_Z_MAX unita' davanti alla telecamera. Li' due auto si toccano se
+    // |dx| < URTO_LARGHEZZA. Prima il contatto era a meno di 120 unita' (sotto
+    // la telecamera) e a schermo le auto si attraversavano prima di toccarsi.
+    static constexpr f32 URTO_Z_MIN = 750.0f;
+    static constexpr f32 URTO_Z_MAX = 1250.0f;
+    static constexpr f32 URTO_LARGHEZZA = 240.0f;
+
+    // Classifica d'arrivo (Andrea 29/10): tempo di ognuno sul traguardo,
+    // ordinata dal piu' veloce. Vuota finche' il giocatore non arriva.
+    struct Classificato {
+        const char* nome = "";
+        f32 tempoS = 0.0f;
+        bool giocatore = false;
+    };
+    const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
+    f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
+
     // Radio: brani tracker (.xm) di dati/audio/playlist.json; parte il primo,
     // il tasto R (o Start+B) passa al successivo.
     void nextBranoRadio() { mixer_.nextBrano(); }
@@ -175,6 +194,17 @@ private:
     void caricaMusica();
     bool musicaCaricata_ = false;
     void drawMusica(); // spettro e battito in gara
+    // Urti con le altre auto (Andrea 29/10): nessuna compenetrazione, urto
+    // diverso per il traffico (botta forte, clacson) e per i rivali (sportellata).
+    std::vector<i32> spritesFonte_; // parallelo a sprites_ in gara: >= 0 rivale, < 0 traffico (-1 - indice)
+    f32 passoFonte(i32 fonte) const;
+    void urto(i32 fonte, f32 dx, bool tamponamento);
+    f32 urtoEffettoS_ = 0.0f, urtoEffettoDurataS_ = 1.0f;
+    bool urtoTraffico_ = false;
+    std::vector<Classificato> classifica_;
+    void calcolaClassifica();
+    void scuotiScena(i32 dx, i32 dy);
+    std::vector<u32> scossaBuf_;
     Visualizzatore visualizzatore_;
     // Salto sui dossi ad alta velocita' (quota dell'auto sopra la strada, unita' mondo).
     void aggiornaSalto(f32 dt);
@@ -291,6 +321,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         i32 colore = 9; // indice di palette della sagoma (solo sagoma sintetica)
         f32 bravura = 1.0f; // bravura propria (0.92..1.08, seme fisso), scala passoMax
         i32 spriteIdx = -1; // indice sprite rivale in Renderer (RIV punto b), -1 = rettangolo sintetico
+        f32 ritmoFase = 0.0f, ritmoVel = 0.2f; // ritmo proprio: un po' piu' veloce o lento nel tempo
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;

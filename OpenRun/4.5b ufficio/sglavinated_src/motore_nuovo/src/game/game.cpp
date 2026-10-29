@@ -89,14 +89,32 @@ constexpr f32 RIVALE_ELASTICO_DISTANZA = 40000.0f; // a questo distacco l'elasti
 constexpr f32 RIVALE_ELASTICO_MIN = 0.80f;
 constexpr f32 RIVALE_ELASTICO_MAX = 1.15f;
 constexpr f32 RIVALE_LATERALE_PER_S = 400.0f;
-constexpr f32 RIVALE_CURVA_SCALE = 0.5f;     // rallentamento in curva: scala |curva| del segmento
-constexpr f32 RIVALE_CURVA_SLOW_MAX = 0.50f; // max rallentamento in curva estrema (50%)
+constexpr f32 RIVALE_CURVA_SCALE = 0.3f;     // rallentamento in curva: scala |curva| del segmento
+constexpr f32 RIVALE_CURVA_SLOW_MAX = 0.25f; // max rallentamento in curva estrema (25%; 29/10: prima 50%, restavano a un minuto)
 constexpr f32 RIVALE_DISTANZA_MIN = 1500.0f; // distanza minima di seguito tra due rivali
 constexpr f32 RIVALE_LATERALE_MIN = 250.0f;  // soglia laterale per intervenire sull'altro rivale
 constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpassare di lato
 // Rivali e traffico grandi come l'auto del giocatore (Andrea 27/10: "piccolini"):
 // 40 px x SPRITE_WORLD_PX x 1.4 = 280 unita', l'auto del giocatore ne copre ~270.
 constexpr f32 SCALA_AUTO = 1.4f;
+// Urti (Andrea 29/10): le auto sono solide (finestra di contatto in game.h).
+// Il controllo e' "a spazzata": a 290 km/h il giocatore fa ~500 unita' per
+// frame e senza spazzata salterebbe oltre l'auto davanti.
+constexpr f32 URTO_Z_DAVANTI = Game::URTO_Z_MAX - 100.0f; // il giocatore si ferma qui dietro a chi ha davanti
+constexpr f32 URTO_LARGHEZZA = Game::URTO_LARGHEZZA;
+constexpr f32 URTO_SPINTA_TRAFFICO = 900.0f;  // unita'/s: il traffico respinge forte
+constexpr f32 URTO_SPINTA_RIVALE = 550.0f;    // sportellata tra piloti
+constexpr f32 URTO_TRAFFICO_DOPO = 0.70f;     // tamponamento: velocita' = 70% di quella del veicolo
+constexpr f32 URTO_RIVALE_DOPO = 0.95f;       // tamponamento di un rivale: quasi la sua velocita'
+constexpr f32 URTO_EFFETTO_TRAFFICO_S = 0.55f, URTO_EFFETTO_RIVALE_S = 0.35f;
+// Rivali (Andrea 29/10): nessuna fuga impossibile e nessuno "appiccicato".
+// Entro +-RIVALE_LIBERO_S secondi di distacco ognuno va del suo ritmo; oltre,
+// chi e' davanti cala fino a -15% e chi e' dietro spinge fino a +25%.
+constexpr f32 RIVALE_LIBERO_S = 3.0f;
+constexpr f32 RIVALE_ELASTICO_RAMPA_S = 5.0f;
+constexpr f32 RIVALE_RITMO = 0.035f;          // +-3.5% di ritmo che cambia piano nel tempo
+// Tempo medio sul giro rispetto alla punta: serve a stimare il loro arrivo.
+constexpr f32 RIVALE_MEDIA_PUNTA = 0.88f;
 // Rivale che raggiunge un veicolo del traffico: cambia corsia per tempo e,
 // se e' gia' attaccato, si accoda.
 constexpr f32 RIVALE_SCHIVA_DIST = 12000.0f;   // traffico entro questa distanza davanti
@@ -514,6 +532,7 @@ void Game::init(const std::string& livelloId) {
     saltoQuotaPrec_ = -1e9f;
     saltoVStradaPrec_ = 0.0f;
     tempoExtraS_ = 0.0f;
+    urtoEffettoS_ = 0.0f;
     assistenzaBivio_ = 0.0f;
     ramoProvvisorio_ = 0;
     centroRamoPrec_ = 0.0f;
@@ -777,10 +796,17 @@ void Game::inizializzaRivali() {
         r.colore = 9 + (i % 4); // arancio, ciano, giallo, rosso
         r.bravura = 0.92f + 0.04f * (f32)rnd.next(5); // bravura propria (0.92..1.08), seme fisso
         r.passoMax *= r.bravura; // la bravura scala la velocita' di punta (punte e elastico invariati)
+        // Mai piu' veloci del giocatore a tutto gas (29/10): una guida pulita puo' vincere.
+        r.passoMax = std::min(r.passoMax, puntaGiocatore * 0.99f);
         r.spriteIdx = nSpriteRivali_ > 0 ? i % nSpriteRivali_ : -1; // sprite rivale (RIV punto b)
+        r.ritmoFase = 0.9f * (f32)i;
+        r.ritmoVel = 0.15f + 0.04f * (f32)rnd.next(5);
     }
+    classifica_.clear();
     rndRivali_ = Rng(seed_ ^ 0x4C414E45u);
     sprites_.clear();
+    spritesFonte_.clear();
+    spritesFonte_.reserve(RIVALI + TRAFFICO);
     sprites_.reserve(RIVALI + TRAFFICO);
     inizializzaTraffico();
 }
@@ -868,7 +894,8 @@ void Game::aggiornaTraffico(f32 dt) {
 
 void Game::aggiungiSpriteTraffico() {
     if (arrivo_) return;
-    for (const Veicolo& v : traffico_) {
+    for (i32 k = 0; k < TRAFFICO; ++k) {
+        const Veicolo& v = traffico_[k];
         if (!v.attivo) continue;
         const f32 zRel = v.z - road_.playerZ;
         if (zRel <= 0.0f || zRel > 60000.0f) continue;
@@ -882,6 +909,7 @@ void Game::aggiungiSpriteTraffico() {
         s.sprite = ren_.trafficoSprite(v.spriteIdx);
         s.paletteBase = 10; // sagoma sintetica se manca lo sprite
         sprites_.push_back(s);
+        spritesFonte_.push_back(-1 - k);
     }
 }
 
@@ -890,7 +918,10 @@ void Game::aggiornaRivali() {
     const f32 dt = 1.0f / (f32)frequenzaHz_;
     const f32 avvicina = 1.0f - std::exp(-dt / RIVALE_ACCEL_TAU_S);
     const f32 velocitaGiocatore = passoGiocatore_ / dt; // unita' al secondo
+    const f32 puntaGiocatore = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
+    const f32 mio = progressoTappePrecedenti_ + player_.z;
     sprites_.clear();
+    spritesFonte_.clear();
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
         const f32 zLocale = r.progresso - progressoTappePrecedenti_;
@@ -899,31 +930,42 @@ void Game::aggiornaRivali() {
         const f32 curvaQui = std::abs(road_.curvaAt(zLocale));
         const f32 lentaCurva = 1.0f - std::clamp(curvaQui * RIVALE_CURVA_SCALE * r.bravura,
                                                   0.0f, RIVALE_CURVA_SLOW_MAX);
-        // Elastico come nei giochi arcade: chi e' avanti rallenta, chi e' dietro
-        // spinge, in proporzione al distacco. Cosi' anche dopo un incidente la gara resta aperta.
-        const f32 distacco = r.progresso - (progressoTappePrecedenti_ + player_.z);
-        const f32 elastico = std::clamp(1.0f - 0.25f * distacco / RIVALE_ELASTICO_DISTANZA,
-                                        RIVALE_ELASTICO_MIN, RIVALE_ELASTICO_MAX);
-        r.passo += (r.passoMax * elastico * lentaCurva - r.passo) * avvicina;
-        // Chi arriva da dietro non tampona il giocatore: cambia corsia e, finche'
-        // e' allineato, resta alla sua velocita' (sorpasso/evita, mai cambi casuali di corsia).
+        // Elastico solo lontano dal giocatore: vicino ognuno va del suo ritmo
+        // (sorpassi veri, niente gruppo incollato); lontano davanti rallenta
+        // quanto basta perche' una guida pulita lo riprenda, lontano dietro spinge.
+        const f32 distacco = r.progresso - mio;
+        const f32 distaccoS = distacco / puntaGiocatore;
+        f32 elastico = 1.0f;
+        if (distaccoS > RIVALE_LIBERO_S)
+            elastico = 1.0f - 0.15f * std::min(1.0f, (distaccoS - RIVALE_LIBERO_S) / RIVALE_ELASTICO_RAMPA_S);
+        else if (distaccoS < -RIVALE_LIBERO_S)
+            elastico = 1.0f + 0.25f * std::min(1.0f, (-distaccoS - RIVALE_LIBERO_S) / RIVALE_ELASTICO_RAMPA_S);
+        r.ritmoFase += r.ritmoVel * dt;
+        const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
+        r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
+        // Chi arriva da dietro non tampona il giocatore: cambia corsia e resta
+        // alla sua velocita' solo finche' e' ancora dritto dietro di lui.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
-        if (distacco < 0.0f && distacco > -3000.0f && std::abs(dxGiocatore) < 400.0f) {
+        if (distacco < Game::URTO_Z_MIN && distacco > Game::URTO_Z_MIN - 4000.0f && std::abs(dxGiocatore) < 400.0f) {
             r.xObiettivo = (player_.x - player_.centroCorsia) > 0.0f ? -450.0f : 450.0f;
-            if (distacco > -600.0f) r.passo = std::min(r.passo, velocitaGiocatore);
+            if (distacco > Game::URTO_Z_MIN - 800.0f && std::abs(dxGiocatore) < URTO_LARGHEZZA)
+                r.passo = std::min(r.passo, velocitaGiocatore);
         }
         // Distanza minima tra rivali: chi raggiunge un altro rivale rallenta e,
         // se molto vicino, si sposta di lato per superarlo (corsia libera).
         for (i32 j = 0; j < RIVALI; ++j) {
             if (j == i) continue;
             const Rivale& q = rivali_[j];
-            const f32 dz = r.progresso - q.progresso;
+            // q davanti a r (29/10: prima il segno era invertito e a rallentare
+            // era chi stava davanti: i rivali si incollavano in fila a un terzo della velocita').
+            const f32 dz = q.progresso - r.progresso;
             if (dz > 0.0f && dz < RIVALE_DISTANZA_MIN && std::abs(r.x - q.x) < RIVALE_LATERALE_MIN) {
                 r.passo = std::min(r.passo, q.passo * 0.95f);
                 if (dz < RIVALE_DISTANZA_MIN * 0.5f) {
-                    r.xObiettivo = r.x > q.x
-                        ? std::min(r.xObiettivo + RIVALE_SPOSTAMENTO, RIVALE_X_MAX)
-                        : std::max(r.xObiettivo - RIVALE_SPOSTAMENTO, -RIVALE_X_MAX);
+                    // Sorpasso dal lato libero; al bordo si passa dall'altra parte.
+                    f32 dir = r.x > q.x ? 1.0f : (r.x < q.x ? -1.0f : (r.x <= 0.0f ? 1.0f : -1.0f));
+                    if (std::abs(r.xObiettivo) >= RIVALE_X_MAX - 1.0f && r.xObiettivo * dir > 0.0f) dir = -dir;
+                    r.xObiettivo = std::clamp(r.xObiettivo + dir * RIVALE_SPOSTAMENTO, -RIVALE_X_MAX, RIVALE_X_MAX);
                 }
             }
         }
@@ -949,6 +991,13 @@ void Game::aggiornaRivali() {
             }
         }
         r.progresso += r.passo * dt;
+        // Le auto sono solide: chi arriva da dietro non attraversa il giocatore.
+        const bool nelBivio = road_.bivioAttivo() && zLocale >= road_.bivioInizioZ();
+        if (!nelBivio && distacco <= Game::URTO_Z_MIN && r.progresso > mio + Game::URTO_Z_MIN &&
+            std::abs(dxGiocatore) < URTO_LARGHEZZA && !arrivo_) {
+            r.progresso = mio + Game::URTO_Z_MIN;
+            r.passo = std::min(r.passo, velocitaGiocatore);
+        }
         const f32 laterale = (schiva ? RIVALE_SCHIVA_PER_S : RIVALE_LATERALE_PER_S) * dt;
         if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
         if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
@@ -965,6 +1014,7 @@ void Game::aggiornaRivali() {
         s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
         sprites_.push_back(s);
+        spritesFonte_.push_back(i);
     }
 }
 
@@ -977,6 +1027,7 @@ void Game::fineTappa(f32 avanzo) {
         if (!arrivo_) {
             arrivo_ = true;
             posizioneArrivo_ = posizioneGiocatore();
+            calcolaClassifica(); // posizione d'arrivo dal tempo di ognuno
         }
         return;
     }
@@ -1298,6 +1349,32 @@ void Game::aggiornaGuida(f32 dt) {
             (1.0f + ROAD_SCROLL_SPEED_BOOST * player_.speed / player_.maxSpeed());
         const f32 zPrima = road_.playerZ;
         passoGiocatore_ = player_.speed * dt * roadScrollScale;
+        // Auto solide: il giocatore non passa attraverso chi ha davanti; si
+        // ferma sulla sua coda (anche se in un frame percorrerebbe di piu').
+        bool tampona = false;
+        i32 tamponato = 0;
+        f32 dxTamponato = 0.0f;
+        if (gara_ && !playerFlipping_) {
+            for (size_t k = 0; k < sprites_.size() && k < spritesFonte_.size(); ++k) {
+                const f32 dz = sprites_[k].worldZ - road_.playerZ;
+                const f32 dx = sprites_[k].worldX - player_.x;
+                // Solo chi e' ancora davanti alla carrozzeria; chi e' gia' a fianco e' un urto laterale.
+                if (dz < URTO_Z_DAVANTI - 50.0f || std::abs(dx) >= URTO_LARGHEZZA) continue;
+                const f32 libero = std::max(0.0f, dz - URTO_Z_DAVANTI + passoFonte(spritesFonte_[k]) * dt);
+                if (passoGiocatore_ > libero) {
+                    passoGiocatore_ = libero;
+                    tampona = true;
+                    tamponato = spritesFonte_[k];
+                    dxTamponato = dx;
+                }
+            }
+            if (tampona) {
+                if (!playerBump_ && assistenzaBivio_ <= 0.0f) urto(tamponato, dxTamponato, true);
+                // Spinge sulla coda: la velocita' resta quella di chi sta davanti.
+                const f32 vDavanti = passoFonte(tamponato) / roadScrollScale;
+                player_.speed = std::max(0.05f * player_.maxSpeed(), std::min(player_.speed, vDavanti));
+            }
+        }
         // Contachilometri coerente con il tachimetro: a 290 km/h ~80 m al secondo.
         km_ += player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH / 3600.0f * dt;
         road_.advance(passoGiocatore_);
@@ -1368,6 +1445,7 @@ void Game::aggiornaGuida(f32 dt) {
         sollevamentoFaseS_ = sollevamento_ > 0.0f ? sollevamentoFaseS_ + dt : 0.0f;
         aggiornaSalto(dt);
         if (tempoExtraS_ > 0.0f) tempoExtraS_ -= dt;
+        if (urtoEffettoS_ > 0.0f) urtoEffettoS_ = std::max(0.0f, urtoEffettoS_ - dt);
 
         if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
         else offroadFrames_ = 0;
@@ -1388,42 +1466,24 @@ void Game::aggiornaGuida(f32 dt) {
         const bool toccaQualcosa = toccaRivale || toccaCartellone;
 
         if (toccaRivale && !inCollision_ && !playerFlipping_ && !playerBump_) {
-            // Avvia il bump: spinta laterale che allontana dal rivale urtato +
-            // rallentamento leggero. I controlli restano attivi (auto non bloccata).
-            playerBump_ = true;
-            playerBumpTimer_ = bumpDurataS_;
-            playerBumpSpintaX_ = 0.0f;
+            // Contatto di fianco (o rimasto dopo un tamponamento): urto con
+            // l'auto piu' vicina, avversario o traffico.
             const f32 giro = (f32)road_.totalLength();
             f32 dxMin = 1e9f;
-            f32 dxRivale = 1e9f;
-            i32 rivaleUrtato = -1;
-            // Trova l'avversario piu' vicino in collisione (stessa soglia di
-            // collisioneRivaleVicino): e' l'urttato e subisce il rallentamento.
-            for (i32 k = 0; k < RIVALI; ++k) {
-                const Rivale& rk = rivali_[k];
-                const f32 zLocale = rk.progresso - progressoTappePrecedenti_;
-                if (zLocale <= 0.0f || zLocale > 60000.0f || zLocale >= giro + 60000.0f) continue;
-                f32 dz = std::fmod(zLocale - road_.playerZ, giro);
+            i32 fonte = 0;
+            bool trovata = false;
+            for (size_t k = 0; k < sprites_.size() && k < spritesFonte_.size(); ++k) {
+                f32 dz = std::fmod(sprites_[k].worldZ - road_.playerZ, giro);
                 if (dz < 0.0f) dz += giro;
-                if (dz >= 120.0f) continue;
-                const Road::Carreggiate c = road_.carreggiate(zLocale, latoBivio_);
-                const i32 indice = latoBivio_ == 0 ? (rk.ramo < 0 ? 0 : 1) : (rk.ramo == latoBivio_ ? 0 : 1);
-                const f32 dx = c.centro[indice] + rk.x * c.fattore - player_.x;
-                if (std::abs(dx) >= 180.0f) continue;
-                if (std::abs(dx) < std::abs(dxRivale)) { dxRivale = dx; rivaleUrtato = k; }
+                const f32 dx = sprites_[k].worldX - player_.x;
+                if (dz > Game::URTO_Z_MIN && dz < Game::URTO_Z_MAX && std::abs(dx) < URTO_LARGHEZZA &&
+                    std::abs(dx) < std::abs(dxMin)) {
+                    dxMin = dx;
+                    fonte = spritesFonte_[k];
+                    trovata = true;
+                }
             }
-            // Spinta dal veicolo piu' vicino in collisione: avversario o traffico.
-            for (const SpriteInstance& o : sprites_) {
-                f32 dz = std::fmod(o.worldZ - road_.playerZ, giro);
-                if (dz < 0.0f) dz += giro;
-                const f32 dx = o.worldX - player_.x;
-                if (dz < 120.0f && std::abs(dx) < 180.0f && std::abs(dx) < std::abs(dxMin)) dxMin = dx;
-            }
-            if (std::abs(dxMin) < 1e8f) {
-                playerBumpSpintaX_ = (dxMin >= 0.0f ? -1.0f : 1.0f) * bumpSpintaLaterale_;
-                if (rivaleUrtato >= 0) rivali_[rivaleUrtato].passo *= 0.85f; // urtato perde velocita'
-            }
-            player_.speed *= bumpRallentaFattore_;
+            if (trovata) urto(fonte, dxMin, false);
             inCollision_ = true;
         } else if (!toccaQualcosa) {
             inCollision_ = false;
@@ -1438,6 +1498,19 @@ void Game::aggiornaGuida(f32 dt) {
             if (playerBumpTimer_ <= 0.0f) {
                 playerBump_ = false;
                 playerBumpSpintaX_ = 0.0f;
+            }
+        }
+
+        // Fianco a fianco (auto tra URTO_Z_MIN e il punto di tamponamento):
+        // non si sterza dentro la sua carrozzeria, si resta appoggiati di lato.
+        if (!playerFlipping_) {
+            const f32 giro = (f32)road_.totalLength();
+            for (const auto& s : sprites_) {
+                f32 dz = std::fmod(s.worldZ - road_.playerZ, giro);
+                if (dz < 0.0f) dz += giro;
+                const f32 dx = s.worldX - player_.x;
+                if (dz > Game::URTO_Z_MIN && dz < URTO_Z_DAVANTI - 50.0f && std::abs(dx) < URTO_LARGHEZZA)
+                    player_.x = s.worldX + (dx > 0.0f ? -URTO_LARGHEZZA : URTO_LARGHEZZA);
             }
         }
 
@@ -1520,8 +1593,20 @@ void Game::render() {
           (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
     const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
     const f32 saltoPx = std::min(SALTO_MAX_PX, saltoAltezza_ * SALTO_PX_PER_UNITA);
-    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx;
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle, sollevamentoPx);
+    // Urto: sobbalzo e scodata (piu' forti col traffico), poi la scena trema.
+    f32 urtoK = 0.0f, sobbalzoPx = 0.0f, scodata = 0.0f;
+    if (urtoEffettoS_ > 0.0f) {
+        urtoK = urtoEffettoS_ / urtoEffettoDurataS_;
+        sobbalzoPx = (urtoTraffico_ ? 9.0f : 5.0f) * std::sin(3.14159f * (1.0f - urtoK));
+        scodata = (urtoTraffico_ ? 0.35f : 0.18f) * urtoK * std::sin(urtoEffettoS_ * 45.0f);
+    }
+    const f32 sollevamentoPx = playerFlipping_ ? 0.0f : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx + sobbalzoPx;
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad, rollAngle + scodata, sollevamentoPx);
+    if (urtoK > 0.0f) {
+        const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
+        const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
+        scuotiScena(dx, dy);
+    }
     // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
     // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.
     const gameplay::ScenaShow& sc = disegnoShow_.scena();
@@ -1594,6 +1679,63 @@ void Game::aggiornaSalto(f32 dt) {
     saltoVStradaPrec_ = vStrada;
 }
 
+f32 Game::passoFonte(i32 fonte) const {
+    if (fonte >= 0) return fonte < RIVALI ? rivali_[fonte].passo : 0.0f;
+    const i32 k = -1 - fonte;
+    return k < TRAFFICO ? traffico_[k].passo : 0.0f;
+}
+
+void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
+    // Due urti diversi (Andrea 29/10). Traffico (guidatori qualunque): botta
+    // forte, l'auto rimbalza di lato, sobbalza e il veicolo suona il clacson.
+    // Rivale (pilota): sportellata, si perde poco e l'altro viene spostato.
+    const bool traffico = fonte < 0;
+    const f32 xRel = player_.x - player_.centroCorsia;
+    const f32 lato = dx > 1.0f ? -1.0f : (dx < -1.0f ? 1.0f : (xRel > 0.0f ? -1.0f : 1.0f));
+    playerBump_ = true;
+    playerBumpTimer_ = bumpDurataS_;
+    playerBumpSpintaX_ = lato * (traffico ? URTO_SPINTA_TRAFFICO : URTO_SPINTA_RIVALE);
+    const f32 scala = ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST * player_.speed / player_.maxSpeed());
+    const f32 vAuto = passoFonte(fonte) / scala; // velocita' dell'altra auto in unita' del giocatore
+    if (tamponamento)
+        player_.speed = std::min(player_.speed, vAuto * (traffico ? URTO_TRAFFICO_DOPO : URTO_RIVALE_DOPO));
+    else
+        player_.speed *= traffico ? 0.85f : bumpRallentaFattore_;
+    player_.speed = std::max(player_.speed, 0.1f * player_.maxSpeed()); // mai fermi del tutto
+    if (traffico) {
+        Veicolo& v = traffico_[-1 - fonte];
+        v.x = std::clamp(v.x - lato * 260.0f, -RIVALE_X_MAX * 2.5f, RIVALE_X_MAX * 2.5f);
+    } else {
+        Rivale& r = rivali_[fonte];
+        r.x = std::clamp(r.x - lato * 160.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
+        r.xObiettivo = std::clamp(r.x - lato * 200.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
+        r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
+    }
+    urtoTraffico_ = traffico;
+    urtoEffettoDurataS_ = traffico ? URTO_EFFETTO_TRAFFICO_S : URTO_EFFETTO_RIVALE_S;
+    urtoEffettoS_ = urtoEffettoDurataS_;
+    mixer_.suonaUrto(traffico);
+}
+
+void Game::calcolaClassifica() {
+    // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; per i
+    // rivali ancora in corsa (o gia' arrivati) si stima dal distacco e dal loro ritmo medio.
+    static const char* NOMI[RIVALI] = {"VIPER", "NOVA", "BLITZ", "RAZOR", "LUNA", "TURBO", "ZETA"};
+    const f32 tempo = tempoTotaleS();
+    const f32 traguardo = progressoTappePrecedenti_ + (f32)road_.totalLength();
+    classifica_.clear();
+    classifica_.push_back({"TU", tempo, true});
+    for (i32 i = 0; i < RIVALI; ++i) {
+        const Rivale& r = rivali_[i];
+        const f32 media = std::max(1.0f, r.passoMax * RIVALE_MEDIA_PUNTA);
+        classifica_.push_back({NOMI[i], std::max(1.0f, tempo + (traguardo - r.progresso) / media), false});
+    }
+    std::stable_sort(classifica_.begin(), classifica_.end(),
+                     [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });
+    for (size_t i = 0; i < classifica_.size(); ++i)
+        if (classifica_[i].giocatore) posizioneArrivo_ = (i32)i + 1;
+}
+
 void Game::drawMusica() {
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
@@ -1604,6 +1746,19 @@ void Game::drawMusica() {
         const u32 col = 0xFF000000u | ((u32)(80 + 175 * m.battito) << 16) | ((u32)(40 + 60 * m.battito) << 8) | 0xC0u;
         fb_.fillRect(0, 112 - h, 2, 112 + h, col);
         fb_.fillRect(Framebuffer::WIDTH - 3, 112 - h, Framebuffer::WIDTH - 1, 112 + h, col);
+    }
+}
+
+void Game::scuotiScena(i32 dx, i32 dy) {
+    // Sposta l'immagine di qualche pixel (scossa dell'urto); l'HUD si disegna dopo, fermo.
+    if (dx == 0 && dy == 0) return;
+    const i32 W = Framebuffer::WIDTH, H = Framebuffer::HEIGHT;
+    u32* d = fb_.data();
+    std::vector<u32>& copia = scossaBuf_;
+    copia.assign(d, d + W * H);
+    for (i32 y = 0; y < H; ++y) {
+        const i32 ys = std::clamp(y - dy, 0, H - 1);
+        for (i32 x = 0; x < W; ++x) d[y * W + x] = copia[ys * W + std::clamp(x - dx, 0, W - 1)];
     }
 }
 
@@ -1653,16 +1808,13 @@ bool Game::collisioneOggettiVicini() const {
 bool Game::collisioneRivaleVicino() const {
     const f32 giro = (f32)road_.totalLength();
     if (giro <= 0.0f) return false;
-    auto collide = [this, giro](const SpriteInstance& oggetto, f32 profondita, f32 larghezza) {
+    // sprites_ contiene gli avversari e il traffico (fuori gara, il traffico sintetico).
+    // Urto: un'auto dove a schermo c'e' la carrozzeria del giocatore (URTO_Z_MIN..MAX).
+    for (const SpriteInstance& oggetto : sprites_) {
         f32 dz = std::fmod(oggetto.worldZ - road_.playerZ, giro);
         if (dz < 0.0f) dz += giro;
-        const f32 dx = oggetto.worldX - player_.x;
-        return dz < profondita && std::abs(dx) < larghezza;
-    };
-    // sprites_ contiene gli avversari (e, fuori gara, il traffico sintetico).
-    // Un contatto ravvicinato (dentro 120 unita' e 180 di larghezza) e' un urto.
-    for (const SpriteInstance& oggetto : sprites_)
-        if (collide(oggetto, 120.0f, 180.0f)) return true;
+        if (dz > URTO_Z_MIN && dz < URTO_Z_MAX && std::abs(oggetto.worldX - player_.x) < URTO_LARGHEZZA) return true;
+    }
     return false;
 }
 
@@ -1683,6 +1835,7 @@ bool Game::collisioneCartelloneVicino() const {
 void Game::spawnTraffic() {
     // Traffico sintetico: auto senza asset, disegnate come sagome dal renderer.
     sprites_.clear();
+    spritesFonte_.clear();
     const f32 giro = (f32)road_.totalLength(); // lunghezza reale del tracciato (prima 3000 fisso)
     const f32 zGiro = giro > 0.0f ? std::fmod(road_.playerZ, giro) : 0.0f;
     for (i32 i = 1; i <= 6; ++i) {

@@ -118,6 +118,27 @@ void Mixer::aggiornaInfo(const i16* musica, i32 frames) {
     info_.energia = e > info_.energia ? e : info_.energia * kCanale + e * (1.0f - kCanale);
 }
 
+f32 Mixer::sfxUrto() {
+    // Botta: rumore e tonfo grave che si spengono in un attimo. Col traffico
+    // segue il clacson (due note in onda quadra); coi rivali un colpo di lamiera.
+    const f32 t = (f32)urtoN_ / (f32)sampleRate_;
+    rumore_ = rumore_ * 1664525u + 1013904223u;
+    const f32 n = (f32)((rumore_ >> 16) & 0xFFFFu) / 32768.0f - 1.0f;
+    f32 s = (n * 9000.0f + 7000.0f * std::sin(2.0f * PI * 70.0f * t)) * std::exp(-t / 0.08f);
+    if (clacson_) {
+        if (t > 0.08f && t < 0.6f) {
+            const f32 inv = std::min(1.0f, (t - 0.08f) / 0.01f) * std::min(1.0f, (0.6f - t) / 0.04f);
+            const f32 a = std::fmod(t * 392.0f, 1.0f) < 0.5f ? 1.0f : -1.0f;
+            const f32 b = std::fmod(t * 494.0f, 1.0f) < 0.5f ? 1.0f : -1.0f;
+            s += inv * 2600.0f * (a + b);
+        }
+    } else {
+        s += 3500.0f * std::sin(2.0f * PI * 880.0f * t) * std::exp(-t / 0.05f);
+    }
+    if (++urtoN_ > (i32)(0.6f * (f32)sampleRate_)) urtoN_ = -1;
+    return s;
+}
+
 void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
     if (!enabled_) {
         for (i32 i = 0; i < frames * 2; ++i) out[i] = 0;
@@ -145,6 +166,7 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         f32 eng = amp * (std::sin(2.0f * PI * phase_) +
                          0.4f * std::sin(2.0f * PI * phase_ * 2.0f));
         f32 l = eng * engineVol_, r = l;
+        if (urtoN_ >= 0) { const f32 u = sfxUrto(); l += u; r += u; }
         if (musica) {
             l += (f32)musica[i * 2] * musicVol_;
             r += (f32)musica[i * 2 + 1] * musicVol_;

@@ -40,6 +40,9 @@ public:
     void selezionaBrano(i32 indice);
     void nextBrano();
 
+    // Effetto di un urto: botta secca; con clacson = il traffico suona (Andrea 29/10).
+    void suonaUrto(bool clacson) { urtoN_ = 0; clacson_ = clacson; }
+
     // Riempie `out` (interleaved L/R, int16) per `frames` campioni stereo.
     void mix(i16* out, i32 frames, f32 engineRpm);
 
@@ -72,6 +75,10 @@ private:
     std::vector<Brano> brani_;
     i32 curTrack_ = 0;
     std::vector<i16> bufMusica_;
+    i32 urtoN_ = -1;        // campioni dall'ultimo urto (-1 = nessuno)
+    bool clacson_ = false;
+    u32 rumore_ = 0x1234567u;
+    f32 sfxUrto();
     i32 rigaPrec_ = -1;
     InfoMusica info_;
 };
