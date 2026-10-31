@@ -168,6 +168,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             // curve restano quelle di sempre (la chiusura serve solo a p1x/p2x).
             const f32 dritto = pesoDritto(at++);
             seg.curve = dritto >= 1.0f ? 0.0f : seg.curve * (1.0f - dritto);
+            seg.quotaAcqua = d.acquaQuota * HILL_HEIGHT;
             seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
@@ -342,6 +343,7 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
             ps.carr = carreggiate(z0 + z, latoBivio);
             ps.acqua = seg.acqua;
+            ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
             out.push_back(ps);
         }
     }

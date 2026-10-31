@@ -18,7 +18,9 @@
     "dosso": {"curva": 0.0, "collina": 0.0, "lunghezza": 160, "entrata": -1, "uscita": -1, "dune": 0.1, "onde": 1},
     "chicane_dx": {"curva": 0.85, "collina": 0.0, "lunghezza": 140, "entrata": -1, "uscita": -1},
     "chicane_sx": {"curva": -0.85, "collina": 0.0, "lunghezza": 140, "entrata": -1, "uscita": -1},
-    "ponte": {"curva": 0.0, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1, "larghezza": 1.0, "acqua": 1},
+    "rampa_ponte": {"curva": 0.45, "collina": 1.0, "lunghezza": 200, "entrata": -1, "uscita": -1, "larghezza": 1.0, "nota": "salita al ponte alto (Andrea 31/10): salita in curva: la curva e la cresta nascondono il ponte, che appare all'improvviso sopra l'acqua"},
+    "ponte": {"curva": 0.0, "collina": 1.0, "lunghezza": 360, "entrata": -1, "uscita": -1, "larghezza": 1.0, "acqua": 1, "acqua_quota": 0.0, "nota": "impalcato alto: strada a quota collina, acqua ad acqua_quota (stessa unita'), piloni ogni 20 segmenti"},
+    "discesa_ponte": {"curva": -0.45, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1, "larghezza": 1.0, "nota": "discesa dal ponte alto, curva opposta alla rampa (somma curve del livello invariata)"},
     "autostrada": {"curva": 0.0, "collina": 0.0, "lunghezza": 520, "entrata": -1, "uscita": -1, "larghezza": 2.0},
     "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1},
     "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1, "nota": "tipo tratto PIST1: collina negativa marcata, riferimento ANDREA_REVIEW T1-Q5. Larghezza default 1.0 raccordata senza scatti (regola PIST1 punto 2)."}

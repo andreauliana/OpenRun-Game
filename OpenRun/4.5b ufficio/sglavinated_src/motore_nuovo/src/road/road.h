@@ -68,6 +68,10 @@ public:
         // Campo `acqua` (0/1, default 0): quando 1, ai lati del tratto vengono usati
         // i colori `acqua` del tema al posto di `erba`/`erbaAlt` (regola PIST1 punto 1).
         f32 acqua = 0.0f;
+        // Quota dell'acqua sotto il ponte (stessa unita' di collina, default 0):
+        // con il ponte piu' alto (collina 0.6) l'acqua resta in basso e il
+        // ponte si vede sospeso, con i piloni (Andrea 31/10).
+        f32 acquaQuota = 0.0f;
     };
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.
@@ -127,6 +131,7 @@ public:
         f32 screenY;                 // base sullo schermo
         Carreggiate carr;            // rami del bivio a questa profondita'
         bool acqua = false;          // ponte: acqua ai lati
+        f32 acquaY = 0.0f;           // riga dello schermo del pelo dell'acqua a questa distanza
     };
     void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio = 0) const;
 
