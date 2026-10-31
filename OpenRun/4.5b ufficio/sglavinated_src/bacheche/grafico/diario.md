@@ -1,1 +1,1 @@
-[31/10 12:08] Turno @grafico: quota open 49.7% sotto soglia 50%; lavoro blocchi M e DECO1; gate non eseguito; RIASSUNTO riscritto 12 righe.
+[31/10 12:39] Turno @grafico: rigenerati asset UI/HUD variante B (4 PNG) con genera_ui_b.py; blocchi M e DECO1 attivi; gate non eseguito.

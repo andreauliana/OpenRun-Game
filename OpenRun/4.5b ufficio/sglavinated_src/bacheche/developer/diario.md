@@ -1,1 +1,1 @@
-31/10/2026 11:58 developer: turno 2: modificato tracciato ponte in lv_01_neon/lv_04_cromo (ponte spostato inizio tracciato), build prova_gate exit 0, quota open 49.7% sotto 50%, gate_t1.sh soak timeout atteso; prossima verifica gateway. R2 in corso DECO1 [x] completo.
+31/10/2026 12:22 developer: turno 3: RIASSUNTO quota open aggiornata (Andrea 31/10 falso allarme), modificato regole.json lv_01_neon note P2, gate non eseguito (shell bloccata), PIST1 P2 ponte posizionamento in corso.
