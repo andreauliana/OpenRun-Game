@@ -1,1 +1,1 @@
-[29/10 20:53] Turno @grafico: catalogato obj_bidone_copy note in CATALOGO_GRAFICO.json; gate non eseguito; lavoro su blocchi M e DECO1.
+[31/10 11:47] Turno @grafico: rigenerati asset UI/HUD variante B con genera_ui_b.py (4 PNG); elemento "tempo" in hud.json; creato obj_lampione_cromo per DECO1; quota open 49.7% (sotto soglia 50%).

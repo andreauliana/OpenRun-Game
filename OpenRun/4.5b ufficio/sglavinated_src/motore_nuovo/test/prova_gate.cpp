@@ -603,7 +603,10 @@ EsitoAvvolgimento eseguiAvvolgimento(const std::string& outDir, const std::strin
 // --- Caso nuovo: inattivita' (10 s senza tasti) -> show/fumetto visibile nello screenshot ---
 Pad padInattivita(i32 frame) {
     Pad pad{};
+    // 10 secondi di silenzio totale dopo i frame iniziali: show/fumetto deve comparire
+    // dopo 500 frame di inattivita' (al frame 560, a 50 Hz = 11.2 s totali, 10 s di idle reali)
     if (frame < 60) pad.held = Pad::A; // input iniziali (arma inattivita), poi silenzio assoluto
+    else pad.held = 0;                 // silenzio totale dai frame 60 in poi
     return pad;
 }
 

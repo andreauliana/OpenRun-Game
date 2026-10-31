@@ -1,0 +1,8 @@
+{
+  "id": "tracciati",
+  "descrizione": "Libreria di tratti riutilizzabili: rettilinei, curve, colline, dune, dossi, ponti, autostrade, città, valle, chicane.",
+  "stato": "nuovo",
+  "licenza": "CC-BY-4.0",
+  "autore": "@developer",
+  "nota": "Legge prova_gate e road.cpp. Nessun materiale Sega. Originale @developer."
+}

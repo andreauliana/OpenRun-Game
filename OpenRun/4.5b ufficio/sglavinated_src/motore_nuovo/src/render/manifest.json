@@ -1,0 +1,8 @@
+{
+  "id": "render",
+  "descrizione": "Modulo render: renderer, sprite, palette, visualizzatore, font HUD.",
+  "stato": "nuovo",
+  "licenza": "MIT",
+  "autore": "@developer",
+  "nota": "Codice C++17 indipendente da SDL. Rendering e visualizzazione."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "livelli",
+  "descrizione": "Cartella livelli del motore nuovo: 6 percorsi tematici con segmenti, tratti e configurazioni.",
+  "stato": "nuovo",
+  "licenza": "CC-BY-4.0",
+  "autore": "@developer/@grafico",
+  "nota": "Ogni livello.json ha proprio campo 'licenza' CC-BY-4.0. Questo manifest copre la cartella directory."
+}

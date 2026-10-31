@@ -1197,3 +1197,50 @@ blocchi fatti [x]: 27
 blocchi da fare [ ]: 7
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-10-31 10:35 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE FREQUENZA 50 Hz OK
+screenshot P1: curva frame 1688 (scarto 184 px), sponsor frame 409 (40045 px), personaggio+fumetto frame 446
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: out/prova_gate_curva.ppm (nessuna)
+  senza licenza aperta: out/prova_gate_fuoristrada.ppm (nessuna)
+  senza licenza aperta: out/prova_gate_avvolgimento.log (nessuna)
+  senza licenza aperta: out/prova_gate_avvolgimento.ppm (nessuna)
+  senza licenza aperta: out/prova_gate.log (nessuna)
+  senza licenza aperta: out/prova_gate_partenza.ppm (nessuna)
+  senza licenza aperta: out/developer/prova_gate_curva.ppm (nessuna)
+  senza licenza aperta: out/developer/prova_gate_fuoristrada.ppm (nessuna)
+  senza licenza aperta: out/developer/prova_gate_avvolgimento.log (nessuna)
+  senza licenza aperta: out/developer/prova_gate_avvolgimento.ppm (nessuna)
+  senza licenza aperta: out/developer/prova_gate.log (nessuna)
+  senza licenza aperta: out/developer/prova_gate_partenza.ppm (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
+  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
+  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_curva.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_fuoristrada.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_avvolgimento.log (nessuna)
+  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_avvolgimento.ppm (nessuna)
+  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate.log (nessuna)
+quota open: 49.7% (9601049 di 19299833 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 6
+
+[0m
+> developer-junior · nemotron-3.5-lightning-free
+CORREGGI: quota_open 49.7% sotto soglia 50.0% -> @developer

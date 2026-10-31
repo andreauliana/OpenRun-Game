@@ -278,7 +278,7 @@
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/skyline.sglraw"
       },
       {
@@ -302,7 +302,7 @@
             "lv_01_neon",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/cassetta.sglraw"
       },
       {
@@ -314,7 +314,7 @@
             "lv_01_neon",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/lampione.sglraw"
       },
       {
@@ -326,7 +326,7 @@
             "lv_01_neon",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palina.sglraw"
       },
       {
@@ -338,7 +338,7 @@
             "lv_01_neon",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palo_neon.sglraw"
       },
       {
@@ -349,7 +349,7 @@
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/skyline.sglraw"
       },
       {
@@ -360,7 +360,7 @@
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/bancone_drive_in.sglraw"
       },
       {
@@ -372,7 +372,7 @@
             "lv_02_atomico",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/cupola.sglraw"
       },
       {
@@ -384,7 +384,7 @@
             "lv_02_atomico",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/freccia.sglraw"
       },
       {
@@ -396,7 +396,7 @@
             "lv_02_atomico",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/panchina_cromata.sglraw"
       },
       {
@@ -408,7 +408,7 @@
             "lv_02_atomico",
             "lv_05_spray"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/segnale_atomico.sglraw"
       },
       {
@@ -420,7 +420,7 @@
             "lv_02_atomico",
             "lv_04_cromo"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/torre_razzo.sglraw"
       },
       {
@@ -431,7 +431,7 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/skyline.sglraw"
       },
       {
@@ -442,7 +442,7 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/foglia_gigante.sglraw"
       },
       {
@@ -453,7 +453,7 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/fungo_psico.sglraw"
       },
       {
@@ -464,7 +464,7 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/insegna_fumosa.sglraw"
       },
       {
@@ -476,7 +476,7 @@
             "lv_03_foglie",
             "lv_06_desktop"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_curva.sglraw"
       },
       {
@@ -487,7 +487,7 @@
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D6: variante A",
+         "nota": "D6: variante A. Altezza >=32x96",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_fumo.sglraw"
       },
       {

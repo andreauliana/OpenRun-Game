@@ -1,9 +1,9 @@
 # RIEPILOGO — @grafico
-Turno 29/10/2026 20:53.
+Turno 31/10/2026 11:47.
 G1 [x]: 181 elementi catalogati, PNG 0.
-M [~]: check obj_bidone_copy risolto (note aggiunte catalogo); passaggio a DECO1.
-DECO1 [~]: oggetti alti >=32x96, misure aggiornate, trasparenza da migliorare.
-RIV [ ]: 7 sprite rivali catalogati pronti, attesa @developer.
-FIN [ ]: 3 scene arrivo catalogate pronti, varianti da definire con Andrea.
-Gate: non eseguito (attesa sviluppatore/Andrea).
-DECO1: verifica oggetti scenari lv_01-06, stato catalogo.
+M [~]: rigenerati asset UI/HUD variante B; 4 PNG rigenerati; elemento "tempo" in hud.json.
+DECO1 [~]: oggetti >=32x96, note catalogo aggiornate; creato obj_lampione_cromo.
+RIV [ ]: 7 sprite rivali catalogati, attesa @developer.
+FIN [ ]: 3 scene arrivo catalogate, varianti da Andrea.
+Gate: non eseguito.
+quota open: 49.7% (sotto soglia 50%).

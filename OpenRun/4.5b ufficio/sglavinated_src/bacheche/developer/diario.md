@@ -1,1 +1,1 @@
-29/10/2026 21:25 developer: gate_t1.sh smoke OK: build verde, prova_gate lv_01_neon exit 0, replay 2x IDENTICO, ms/frame 0.991 max 3.155, giro guidato passato (prima Fallito su 5/6 su Mac). Aggiunti acqua in SegmentDesc e leggiCampiTratto. PIST1 completato.
+31/10/2026 11:58 developer: turno 2: modificato tracciato ponte in lv_01_neon e lv_04_cromo (ponte spostato inizio tracciato), quota open 49.7% sotto soglia 50%, gate_t1.sh timeout, awaiting next verification.

@@ -21,7 +21,7 @@
       "curva_dx_min": 0.3,
       "curva_sx_min": 0.3,
       "fuori_strada_max": 0.01,
-      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-70%]"
+      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-75%]; rettilineo minimo 0.30 per varietà curva-retta"
     },
     "lv_02_atomico": {
       "rettilineo_min": 0.40,

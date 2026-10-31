@@ -1,9 +1,9 @@
-# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
+# STATI PROPOSTI — Turno 2 (ora 3 di 12) — @capo
 
 > Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
-> Tappa attiva: **1 — Gate T1 (blocco T1-RUN)**.
+> Tappa attiva: **1 — Gate T1-RUN**.
 > Ruoli 4.6: **developer, developer-junior, grafico**. Consegne: `out/developer/`, `out/developer-junior/`, `out/grafico/`.
-> Data: 2026-10-29.
+> Data: 2026-10-31.
 
 ## Verifica chiusure checkpoint
 
@@ -18,7 +18,7 @@
 
 | Blocco | Stato | Responsabile | Revisore indipendente | Percorso consegna | Criterio di chiusura | Note |
 |---|---|---|---|---|---|---|
-| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICAL, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
+| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
 | P1 | [x] | @developer | — | `out/developer/` | build CMake, screenshot gameplay (prova differita) | T1-Q2 sì (Andrea). |
 | G1 | [x] | @grafico | da assegnare (cand. @developer-junior, diverso da @grafico) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. G1 chiuso per STATUS_GRAFICO_PER_CAPO.md 29/10 07:18 (181 elementi, PNG non catalogati: 0, CC0-1.0). CP-002 chiuso. |
 | H | [~] | Andrea | — | — | v91 runner Mac su build corretta, poi fps/temp Pi 400 | Prova Mac 23/10 ok (ctest 17/17, runner ok); prima Mac poi Pi (D12/D14 = A). |
@@ -40,8 +40,8 @@
 
 - T1-Q1 sì, T1-Q2 sì → P1 [x]; T1-Q4 attivare → G1; T1-Q5 → R1 (CP-005 chiuso).
 - D12 = A, D13 = B, D14 = A, D15 = A, D17 = A, D18 = B (chiusa 27/10).
-- D19: **RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D19 per Andrea 27/10).
-- D16: Andrea sta testando la review del runner Mac (v91, SDL2); proseguire autonomamente in attesa.
+- **D19: RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D19 per Andrea 27/10).
+- D16: Andrea sta testando la review del runner Mac (v91, SDL2); procedere autonomamente in attesa.
 
 ## Chiusura tappa
 
