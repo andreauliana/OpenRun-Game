@@ -1,1 +1,1 @@
-[31/10 11:47] Turno @grafico: rigenerati asset UI/HUD variante B con genera_ui_b.py (4 PNG); elemento "tempo" in hud.json; creato obj_lampione_cromo per DECO1; quota open 49.7% (sotto soglia 50%).
+[31/10 12:08] Turno @grafico: quota open 49.7% sotto soglia 50%; lavoro blocchi M e DECO1; gate non eseguito; RIASSUNTO riscritto 12 righe.

@@ -1,7 +1,7 @@
 # Status grafico per il Capo — OpenRun 4.6
 
-**Aggiornato:** 2026-10-31 08:32  
-**Stato:** G1 [x] chiuso (catalogo 181 elementi, PNG non catalogati: 0, licenza CC0-1.0). M [~] UI/HUD variante B: check_catalogo_grafico.py exit 1 (errori preesistenti: file inesistente obj_insegna_neon, id duplicato). In questo turno: catalogo oggetti DECO1 aggiornato con nota altezza >=32x96; check_catalogo_grafico.py exit 1; RIASSUNTO.md riscritto (max 12 righe); diario.md registrato. Gate: non eseguito (attesa sviluppatore/Andrea).
+**Aggiornato:** 2026-10-31 12:08  
+**Stato:** G1 [x] chiuso (catalogo 181 elementi, PNG non catalogati: 0, licenza CC0-1.0). M [~] UI/HUD variante B: asset rigenerati (4 PNG, elemento tempo hud.json); quota open 49.7% sotto soglia 50%; check_catalogo_grafico.py exit 1 (file inesistente obj_insegna_neon). In questo turno: RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, gate non eseguito; handoff aggiornato.
 
 **Checkpoint:** [CP-002 — inventario grafico](../../Checkpoint%20Revision/CP-002-inventario-grafico.md)  
 **Inventario:** [CATALOGO_RISORSE.md](../../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md)
