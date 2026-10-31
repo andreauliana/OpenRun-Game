@@ -48,7 +48,7 @@
     {
       "id": "tempo",
       "tipo": "testo",
-      "nota": "conto alla rovescia, il dato principale; a ogni checkpoint si aggiunge il tempo della tappa",
+      "nota": "residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a destra; conto alla rovescia, il dato principale; a ogni checkpoint si aggiunge il tempo della tappa",
       "label": "TEMPO",
       "valore": "75",
       "label_pos": [
