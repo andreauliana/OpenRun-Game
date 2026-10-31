@@ -14,14 +14,14 @@
   "nota_default": "rettilineo_min alzato a 0.35 e rettilineo_max a 0.75 per allineare a profilo lv_02_atomico (rectilineo ~40%, curva max 0.86); da tarare con generazione tratti un parametro alla volta",
   "regole": {
     "lv_01_neon": {
-      "rettilineo_min": 0.35,
-      "rettilineo_max": 0.75,
+      "rettilineo_min": 0.30,
+      "rettilineo_max": 0.70,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
-      "curva_dx_min": 0.3,
-      "curva_sx_min": 0.3,
+      "curva_dx_min": 0.25,
+      "curva_sx_min": 0.25,
       "fuori_strada_max": 0.01,
-      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-75%]; rettilineo minimo 0.30 per varietà curva-retta. P2: ponte after first 2 tratti"
+      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-75%]; rettilineo minimo 0.30 per varietà curva-retta. P2: ponte after first 2 tratti. Soglie curvatura ridotte per aumentare segmenti rettilinei guidabili."
     },
     "lv_02_atomico": {
       "rettilineo_min": 0.40,

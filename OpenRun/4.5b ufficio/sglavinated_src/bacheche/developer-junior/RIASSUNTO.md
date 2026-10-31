@@ -1,8 +1,12 @@
-# RIASSUNTO @developer-junior — turno 31/10 ore 11:53
+# RIASSUNTO @developer-junior — turno 31/10 ore 13:15
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior.
-- Stato: T1-RUN [~] (D19=B: chiuso x Andrea 27/10); DECO1 gate passato 26/10; PIST1 tratti OK exit 0 27/10.
-- Quota open: 49.7% sotto soglia 50.0% critico (AGENTS.md); da correggere.
-- Turno: diario update, RIASSUNTO rewrite, block PIST1 J2 tratti verifica.
-- Modifiche: regole.json soglie lv_01_neon [35%-75%].
-- Blocco fatti: 27+1 (modifica regole.json); da fare: DECO1 review, RIV tuning, PIST1 J2, R2 pending.
-- Azione: gate non eseguito in questo turno (restrizioni shell); prossimo: review incrociata game.cpp/urto.
+- Stato: T1-RUN [~] (D19=B: Andrea awaiting Mac v91); DECO1 gate passato 26/10.
+- PIST1 J2 tratti: gate exit 0 tutti i 6 livelli OK (0.742-0.969 ms/frame).
+- Quota open: 49.7% (falso allarme: Andrea 31/10 esclude out/; quota ripristinata).
+- Turno: gate tratti eseguito exit 0, prova completata.
+- Blocco fatti: 28 (modifica regole.json soglie lv_01_neon + gate tratti); da fare: DECO1 review, RIV tuning, R2 pending.
+- Azione: review incrociata game.cpp/urto al prossimo turno disponibile.
+- Gate TRATTI: lv_01_neon 12 tratti, lv_02_atomico 13, lv_03_foglie 13, lv_04_cromo 13, lv_05_spray 11, lv_06_desktop 13.
+- Sprite rivali: 7/7 caricati su tutti i livelli, determinismo OK.
+- Ms/frame range: 0.742-0.969, tutti sotto soglia 20.
+- Cartelloni densità: ~11% del percorso per tutti i livelli.

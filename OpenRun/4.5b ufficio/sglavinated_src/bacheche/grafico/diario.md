@@ -1,1 +1,1 @@
-[31/10 12:39] Turno @grafico: rigenerati asset UI/HUD variante B (4 PNG) con genera_ui_b.py; blocchi M e DECO1 attivi; gate non eseguito.
+[31/10 12:58] Turno @grafico: aggiornato stato blocchi RIV [~] 10 sprite rivali catalogati e FIN [~] 3 scene arrivo nel catalogo; RIASSUNTO.md aggiornato.

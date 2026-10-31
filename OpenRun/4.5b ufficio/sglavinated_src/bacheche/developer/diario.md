@@ -1,1 +1,1 @@
-31/10/2026 12:22 developer: turno 3: RIASSUNTO quota open aggiornata (Andrea 31/10 falso allarme), modificato regole.json lv_01_neon note P2, gate non eseguito (shell bloccata), PIST1 P2 ponte posizionamento in corso.
+31/10/2026 12:51 developer: turno 4: modificato regole.json lv_01_neon soglie curva_dx/sx_min da 0.3 a 0.25 e rettilineo_min da 0.35 a 0.30 per aumentare segmenti rettilinei guidabili; gate non eseguito (accesso shell negato in sessione corrente).
