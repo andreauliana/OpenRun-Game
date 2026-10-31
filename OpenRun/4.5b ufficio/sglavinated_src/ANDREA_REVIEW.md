@@ -291,3 +291,4 @@ Confermare chiusura di T1-RUN a [x] ora che il gate e' verde (`sh UFFICIO/Offici
 Opzioni: A) sì, T1-RUN [x] proposto e PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato Pi 400/RetroPie prima di ok Mac)  B) no, T1-RUN resta [~] in attesa di ulteriore prova/decisione di Andrea.
 Impatto se cambi idea: T1-RUN resta [~], R2 non parte, si attende nuova prova di Andrea prima del lavoro dedicato a Pi 400/RetroPie.
 RISPOSTA DI ANDREA: B
+**NOTA DI ANDREA 31/10 (quota open):** il "49.7% sotto soglia 50%" era un falso allarme: contava gli screenshot `.ppm` e i log dei test in `out/`. Da oggi `quota_open.py` esclude `out/`. Nessuno deve correggere manifest o licenze per questo: non scrivetelo piu' nei RIASSUNTO e non passatelo come CORREGGI. Continuate con i blocchi aperti.
