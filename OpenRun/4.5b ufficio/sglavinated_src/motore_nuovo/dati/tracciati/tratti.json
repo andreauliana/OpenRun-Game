@@ -18,7 +18,7 @@
     "dosso": {"curva": 0.0, "collina": 0.0, "lunghezza": 160, "entrata": -1, "uscita": -1, "dune": 0.1, "onde": 1},
     "chicane_dx": {"curva": 0.85, "collina": 0.0, "lunghezza": 140, "entrata": -1, "uscita": -1},
     "chicane_sx": {"curva": -0.85, "collina": 0.0, "lunghezza": 140, "entrata": -1, "uscita": -1},
-    "ponte": {"curva": 0.0, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1, "larghezza": 1.0},
+    "ponte": {"curva": 0.0, "collina": 0.0, "lunghezza": 400, "entrata": -1, "uscita": -1, "larghezza": 1.0, "acqua": 1},
     "autostrada": {"curva": 0.0, "collina": 0.0, "lunghezza": 520, "entrata": -1, "uscita": -1, "larghezza": 2.0},
     "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1},
     "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1, "nota": "tipo tratto PIST1: collina negativa marcata, riferimento ANDREA_REVIEW T1-Q5. Larghezza default 1.0 raccordata senza scatti (regola PIST1 punto 2)."}

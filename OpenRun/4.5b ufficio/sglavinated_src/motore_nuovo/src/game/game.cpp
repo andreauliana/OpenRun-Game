@@ -380,6 +380,7 @@ void Game::caricaLivello(const std::string& livelloId) {
         for (i32 i = 0; i < nSeg; ++i) {
             if (segmentoOccupato[(size_t)i]) continue;
             if (rndCartelloni.next(CARTELLONI_OGNI_SEG) != 0) continue; // ~1 segmento su 10 con cartellone
+            if (road_.acquaAt((f32)(i * Road::SEG_LEN))) continue; // ponte: niente cartelloni nell'acqua
             SpriteInstance b;
             b.worldZ = (f32)(i * Road::SEG_LEN);
             b.worldX = (k & 1) ? latoDx : latoSx; // lato alternato: distribuzione bilanciata
@@ -472,6 +473,7 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             const f32 lato = ((k + fascia) & 1) ? 1.0f : -1.0f;
             SpriteInstance o;
             o.worldZ = z + (f32)rnd.next((u32)(OGGETTI_PASSO_Z * 0.5f)); // file non allineate
+            if (road_.acquaAt(o.worldZ)) continue; // sul ponte niente oggetti nell'acqua
             o.worldX = lato * (bordoQui + distanza + metaLarghezza);
             o.scale = scala;
             o.sprite = sprite;
@@ -738,6 +740,8 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "erba", tema.erba);
             leggiColore(c, "erba_alt", tema.erbaAlt);
             leggiColore(c, "rumble", tema.rumbleAlt);
+            leggiColore(c, "acqua", tema.acqua);
+            leggiColore(c, "acqua_alt", tema.acquaAlt);
         }
         tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
         sollevamentoAttivo_ = false;
@@ -1275,6 +1279,7 @@ bool Game::leggiCartelloniDaFile(const JsonValue* radice, std::vector<bool>& seg
         const i32 segmento = (i32)jsonAsNumber(segV);
         if (segmento >= 0 && segmento < (i32)road_.segments().size())
             segmentoOccupato[(size_t)segmento] = true; // posizionamento esplicito del file
+        if (road_.acquaAt((f32)segmento * (f32)Road::SEG_LEN)) continue; // ponte: niente cartelloni nell'acqua
 
         f32 worldX;
         JsonValue latoV;

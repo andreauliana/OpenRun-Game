@@ -41,6 +41,8 @@ struct TemaColori {
     u32 erba = 0xFF00AA00;
     u32 erbaAlt = 0xFF008C00;
     u32 rumbleAlt = 0xFFFF00FF;
+    u32 acqua = 0xFF1A3A8C;     // ponte (tratto "ponte"): acqua ai lati
+    u32 acquaAlt = 0xFF14306E;
 };
 
 // Un elemento dell'HUD da dati/ui/hud.json (variante B, bianco e nero).

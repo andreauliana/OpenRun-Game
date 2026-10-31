@@ -94,6 +94,8 @@ public:
     f32 quotaAt(f32 z) const;
     // Larghezza della carreggiata (moltiplicatore di ROAD_WIDTH) alla posizione z.
     f32 larghezzaAt(f32 z) const;
+    // true se z e' su un ponte (segmento con acqua ai lati).
+    bool acquaAt(f32 z) const;
     // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti
     // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
     i32 indiceSegmento(f32 z) const;
@@ -124,6 +126,7 @@ public:
         f32 screenX;                 // centro orizzontale sullo schermo
         f32 screenY;                 // base sullo schermo
         Carreggiate carr;            // rami del bivio a questa profondita'
+        bool acqua = false;          // ponte: acqua ai lati
     };
     void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio = 0) const;
 
