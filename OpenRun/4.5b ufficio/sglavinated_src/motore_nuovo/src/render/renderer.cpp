@@ -78,6 +78,11 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         if (lontano.screenY >= vicino.screenY) continue;
         // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
         drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+        // Piloni del ponte: al confine fra due segmenti, ogni PILONE_OGNI_SEG,
+        // dai bordi dell'impalcato giu' fino all'acqua.
+        if (vicino.acqua && lontano.acqua && lontano.index != vicino.index &&
+            (lontano.index % PILONE_OGNI_SEG) == 0)
+            drawPilone(vicino);
     }
     drawRoadsideMarkers(playerZ);
 }
@@ -90,6 +95,38 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // pseudo-3D (Lou's Pseudo 3d Page, Cannonball come riferimento di resa) — solo idea.
     const i32 cy = (i32)cur.screenY;
     const i32 ny = (i32)next.screenY;
+    const bool ponte = cur.acqua;
+    // Ponte (Andrea 31/10, "piu' cinematografico"): l'acqua e' un piano piu'
+    // in basso della strada. Ogni tratto di ponte dipinge prima la sua fascia
+    // d'acqua (righe del pelo dell'acqua a quella distanza), poi l'impalcato
+    // sopra; dal lontano al vicino, quindi l'impalcato vicino copre l'acqua.
+    if (ponte && next.acqua) {
+        const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
+        const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
+        const u32 acqua = band ? tema_.acqua : tema_.acquaAlt;
+        const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
+        const f32 ya = next.acquaY, yb = cur.acquaY;
+        for (i32 y = a0; y <= a1; ++y) {
+            fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
+            // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
+            // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
+            const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
+            const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
+            if (invZ <= 0.0f) continue;
+            const f32 zw = 1.0f / invZ;
+            const i32 fila = (i32)std::floor((playerZ + zw) / ONDA_PASSO_Z);
+            if ((fila & 1) == 0) continue;
+            const f32 xPerPx = zw / (Road::DEPTH * (Framebuffer::WIDTH / 2.0f)); // unita' mondo per pixel
+            for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+                const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
+                const i32 cella = (i32)std::floor(xw / ONDA_PASSO_X);
+                const u32 hsh = (u32)(fila * 73856093) ^ (u32)(cella * 19349663);
+                if ((hsh % 7u) != 0u) continue;
+                const f32 dentro = xw / ONDA_PASSO_X - (f32)cella;
+                if (dentro < 0.45f) fb_.put(x, y, riflesso);
+            }
+        }
+    }
     const i32 dy = cy - ny;
     if (dy <= 0) return;
 
@@ -101,9 +138,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
     const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
 
-    // Ponte: acqua ai lati e parapetto grigio/bianco al posto del rumble.
-    const bool ponte = cur.acqua;
-    const u32 grass  = ponte ? (band ? tema_.acqua : tema_.acquaAlt) : (band ? tema_.erba : tema_.erbaAlt);
+    // Ponte: parapetto grigio/bianco al posto del rumble; ai lati niente erba
+    // (l'acqua e' gia' stata dipinta piu' in basso, sopra).
+    const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
     const u32 rumble = ponte ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt); // bianco / colore della tappa
     const u32 lane   = pal_[1];
@@ -112,7 +149,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        if (y >= HORIZON_Y) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
+        if (y >= HORIZON_Y && !ponte) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
             fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
@@ -169,6 +206,31 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             }
         }
     }
+}
+
+void Renderer::drawPilone(const Road::ProjectedSeg& p) {
+    // Torri del ponte alto (Andrea 31/10, "piu' cinematografico"): due torri
+    // fuori dalla carreggiata, dall'acqua fino a sopra la strada, unite in
+    // alto da una trave (si passa sotto un portale). Solo se il ponte e' alto.
+    const i32 deck = (i32)p.screenY;
+    const i32 base = std::min((i32)p.acquaY, Framebuffer::HEIGHT - 1);
+    if (base <= deck + 2) return; // ponte a filo d'acqua: niente torri
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+    const f32 pxY = p.scale * 112.0f; // pixel per unita' di quota a questa distanza
+    const i32 cima = deck - (i32)(TORRE_SOPRA * pxY);
+    const i32 w = std::clamp((i32)(pxUnita * TORRE_LARGHEZZA), 1, 60);
+    const i32 xs[2] = {(i32)(p.screenX - hw * TORRE_DISTANZA), (i32)(p.screenX + hw * TORRE_DISTANZA)};
+    for (i32 cx : xs) {
+        if (cx + w < 0 || cx - w >= Framebuffer::WIDTH) continue;
+        fb_.fillRect(cx - w / 2, cima, cx + w / 2, base, 0xFF3C3C4Au);
+        fb_.fillRect(cx - w / 2, cima, cx - w / 2 + std::max(0, w / 4), base, 0xFF707084u); // lato in luce
+        if (w >= 4) fb_.fillRect(cx, cima, cx, base, tema_.rumbleAlt); // filo di luce del tema
+    }
+    // Trave del portale e filo di luce del tema sotto.
+    const i32 trave = std::max(1, (i32)(TORRE_TRAVE * pxY));
+    fb_.fillRect(xs[0] - w / 2, cima, xs[1] + w / 2, cima + trave, 0xFF2E2E3Cu);
+    fb_.hline(xs[0] + w / 2, xs[1] - w / 2, cima + trave, tema_.rumbleAlt);
 }
 
 void Renderer::drawRoadsideMarkers(f32 playerZ) {

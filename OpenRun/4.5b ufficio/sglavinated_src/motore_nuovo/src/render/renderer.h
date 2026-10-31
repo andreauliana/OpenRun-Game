@@ -196,6 +196,15 @@ private:
     static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
+    // Torri del ponte alto (Andrea 31/10): dall'acqua a sopra la strada, con trave.
+    void drawPilone(const Road::ProjectedSeg& p);
+    static constexpr i32 PILONE_OGNI_SEG = 60;      // un portale ogni 60 segmenti (12000 unita')
+    static constexpr f32 TORRE_LARGHEZZA = 240.0f;  // unita' mondo
+    static constexpr f32 TORRE_DISTANZA = 1.25f;    // centro torre / mezza carreggiata
+    static constexpr f32 TORRE_SOPRA = 3200.0f;     // altezza della torre sopra la strada
+    static constexpr f32 TORRE_TRAVE = 260.0f;      // spessore della trave in alto
+    static constexpr f32 ONDA_PASSO_Z = 260.0f;     // righe di onde sull'acqua (unita' mondo)
+    static constexpr f32 ONDA_PASSO_X = 520.0f;     // larghezza di una cella di riflesso
     void drawRoadsideMarkers(f32 playerZ);
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s);

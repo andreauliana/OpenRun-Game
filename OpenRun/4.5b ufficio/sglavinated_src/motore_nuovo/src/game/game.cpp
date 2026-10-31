@@ -236,6 +236,8 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     if (jsonGet(o, "dune", dv) && jsonIsNumber(dv)) d.dune = std::clamp((f32)jsonAsNumber(dv), -0.2f, 0.2f);
     if (jsonGet(o, "onde", ov) && jsonIsNumber(ov)) d.onde = std::max(0, (i32)jsonAsNumber(ov));
     if (jsonGet(o, "acqua", av) && jsonIsNumber(av)) d.acqua = (f32)jsonAsNumber(av);
+    JsonValue aq;
+    if (jsonGet(o, "acqua_quota", aq) && jsonIsNumber(aq)) d.acquaQuota = std::clamp((f32)jsonAsNumber(aq), -1.0f, 1.0f);
 }
 
 bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
