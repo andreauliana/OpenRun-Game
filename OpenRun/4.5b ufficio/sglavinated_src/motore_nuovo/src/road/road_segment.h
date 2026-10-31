@@ -19,6 +19,7 @@ struct RoadSegment {
     f32 curve = 0.0f;        // curva (valore di livello.json, gia' raccordato); curvatura = curve * Road::CURVE_SCALE
     f32 hill = 0.0f;         // collina del tratto (quota finale = hill * Road::HILL_HEIGHT)
     f32 larghezza = 1.0f;    // larghezza della carreggiata (1 = 2 corsie, 2 = 4 corsie), gia' raccordata
+    bool acqua = false;      // ponte: ai lati acqua al posto dell'erba (tratto "ponte", campo acqua)
     u32 colorRoad = 0xFF808080;  // colore asfalto (palette index -> render)
     u32 colorRumble = 0xFFFFFFFF; // colore strisce laterali
     // world coordinates del primo punto (calcolati da Road al build)

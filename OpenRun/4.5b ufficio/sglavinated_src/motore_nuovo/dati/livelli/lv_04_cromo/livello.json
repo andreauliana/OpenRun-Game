@@ -11,12 +11,12 @@
     "segmenti": 7500,
     "durata_stimata_s": 54
   },
-  "tracciato": ["ponte", "rettilineo_lungo", "curva_dolce_dx", "autostrada", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "rettilineo_largo", "curva_stretta_dx", "rettilineo_corto", "collina_giu", "dosso", "curva_stretta_sx", "curva_dolce_sx"],
+  "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "autostrada", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "ponte", "rettilineo_largo", "curva_stretta_dx", "rettilineo_corto", "collina_giu", "dosso", "curva_stretta_sx", "curva_dolce_sx"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.1, "lunghezza": 800},
     {"curva": 0.3, "collina": 0.2, "lunghezza": 700},
     {"curva": 0.0, "collina": 0.25, "lunghezza": 800},
-    {"curva": -0.35, "collina": 0.2, "lunghezza": 700, "acqua": 1, "tratto": "ponte"},
+    {"curva": -0.35, "collina": 0.2, "lunghezza": 700},
     {"curva": 0.0, "collina": -0.2, "lunghezza": 800},
     {"curva": 0.2, "collina": -0.25, "lunghezza": 700},
     {"curva": 0.0, "collina": 0.0, "lunghezza": 1000},

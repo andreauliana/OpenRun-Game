@@ -101,9 +101,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
     const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
 
-    const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
+    // Ponte: acqua ai lati e parapetto grigio/bianco al posto del rumble.
+    const bool ponte = cur.acqua;
+    const u32 grass  = ponte ? (band ? tema_.acqua : tema_.acquaAlt) : (band ? tema_.erba : tema_.erbaAlt);
     const u32 road   = band ? pal_[2] : pal_[3];
-    const u32 rumble = band ? pal_[5] : tema_.rumbleAlt; // bianco / colore della tappa
+    const u32 rumble = ponte ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt); // bianco / colore della tappa
     const u32 lane   = pal_[1];
 
     for (i32 y = ny; y <= cy; ++y) {
@@ -302,6 +304,8 @@ bool Renderer::aggiornaTransizioneTema(f32 dt) {
     tema_.erba = lerpColore(temaDa_.erba, temaA_.erba, transizioneT_);
     tema_.erbaAlt = lerpColore(temaDa_.erbaAlt, temaA_.erbaAlt, transizioneT_);
     tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, temaA_.rumbleAlt, transizioneT_);
+    tema_.acqua = lerpColore(temaDa_.acqua, temaA_.acqua, transizioneT_);
+    tema_.acquaAlt = lerpColore(temaDa_.acquaAlt, temaA_.acquaAlt, transizioneT_);
     return transizioneT_ < 1.0f;
 }
 
