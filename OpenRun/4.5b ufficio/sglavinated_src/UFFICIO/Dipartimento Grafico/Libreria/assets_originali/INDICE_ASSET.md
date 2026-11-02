@@ -1,6 +1,6 @@
 # Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)
 
-Aggiornato: 02/11/2026 05:14 — 297 file in assets_originali/.
+Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
 
 ## Cosa serve per il primo livello giocabile
 
@@ -14,9 +14,9 @@ Aggiornato: 02/11/2026 05:14 — 297 file in assets_originali/.
 | HUD | 3 | 1 | OK |
 | menu | 3 | 1 | OK |
 | font pixel UI | 3 | 1 | OK |
-| personaggio Gianni (sprite) | 1 | 1 | OK |
-| personaggio Gesu' (sprite) | 1 | 1 | OK |
-| UFO (sprite) | 1 | 1 | OK |
+| personaggio Gianni (sprite) | 0 | 1 | MANCA |
+| personaggio Gesu' (sprite) | 0 | 1 | MANCA |
+| UFO (sprite) | 0 | 1 | MANCA |
 
 ## Per categoria
 

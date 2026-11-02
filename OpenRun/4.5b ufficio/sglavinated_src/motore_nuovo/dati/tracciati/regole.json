@@ -15,13 +15,13 @@
   "regole": {
     "lv_01_neon": {
       "rettilineo_min": 0.30,
-      "rettilineo_max": 0.70,
+      "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.25,
       "curva_sx_min": 0.25,
       "fuori_strada_max": 0.01,
-      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-75%]; rettilineo minimo 0.30 per varietà curva-retta. P2: ponte after first 2 tratti. Soglie curvatura ridotte per aumentare segmenti rettilinei guidabili."
+      "note": "tema neon: rettilinei di respiro, curve alternate - allineato a lv_02_atomico. Gate percorso: rettilineo 50% entro soglie [35%-75%]; rettilineo minimo 0.30 per varietà curva-retta. P2: ponte after first 2 tratti. Soglie curvatura ridotte per aumentare segmenti rettilinei guidabili. Claude 02/11: rettilineo_max 0.75 come le altre piste (col ponte alto lv_01 e' al 70%, esattamente sul limite: sul Mac il gate dava exit 13)."
     },
     "lv_02_atomico": {
       "rettilineo_min": 0.40,

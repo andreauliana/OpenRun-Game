@@ -37,3 +37,4 @@ Sei il @capo. Applica `AGENTS.md` e coordina i 4 ruoli senza sostituirli.
 
 Consegna sintetica: task, responsabile, revisore, esito delle verifiche, blocchi e decisioni ancora necessarie.
 - Non creare file alla radice di `sglavinated_src` (es. `RIEPILOGO_MATTINA.md`): scrivi solo in `Checkpoint Revision/`, `out/capo/` o `bacheche/capo/`. Usa solo percorsi relativi, mai assoluti.
+- `REGISTRO_REVISIONI.md` e' append-only: aggiungi SEMPRE una riga nuova in fondo alla tabella, non sostituire ne' modificare righe esistenti (nemmeno la tua del turno prima).
