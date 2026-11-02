@@ -20,12 +20,10 @@ void Player::input(const Pad& pad, f32 dt) {
     // Acceleratore: A (pad) o Su (tastiera).
     // Per garantire che Pad::A attivi l'accelerazione anche quando Up e' premuto,
     // trattiamo i due casi separatamente.
-    // Priorita': A > Up. Se entrambi premuti, A ha la priorita' di accelerare.
     if (pad.held & Pad::A)    accel_ = 1.0f;
-    else if (pad.held & Pad::Up)   accel_ = 1.0f;
+    if (pad.held & Pad::Up)   accel_ = 1.0f;
     // Freno: B o Giu'.
-    // Il freno ha priority inferiore: solo se non si sta accelerando.
-    if (!((pad.held & Pad::A) || (pad.held & Pad::Up)) && (pad.held & (Pad::Down | Pad::B))) accel_ = -1.0f;
+    if (pad.held & (Pad::Down | Pad::B))  accel_ = -1.0f;
 }
 
 void Player::update(f32 dt) {

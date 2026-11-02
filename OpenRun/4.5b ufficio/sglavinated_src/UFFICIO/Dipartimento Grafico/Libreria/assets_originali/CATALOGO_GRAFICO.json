@@ -495,7 +495,7 @@
          "tipo": "ui",
          "stato": "pronto",
          "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
-         "nota": "D7: variante B (anteprima) - produzione finita, ok Andrea - catalogo aggiornato 02/11/2026"
+         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8 chiusa da @capo con DEFAULT, non da Andrea)"
       },
       {
          "id": "ui.menu",

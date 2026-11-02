@@ -20,7 +20,7 @@
     {"curva": 0.0, "collina": -0.2, "lunghezza": 800},
     {"curva": 0.2, "collina": -0.25, "lunghezza": 700},
     {"curva": 0.0, "collina": 0.0, "lunghezza": 1000},
-    {"curva": -0.6, "collina": -0.2, "lunghezza": 500},
+    {"curva": -0.6, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.0, "collina": 0.1, "lunghezza": 800},
     {"curva": 0.4, "collina": 0.0, "lunghezza": 700}
   ],
