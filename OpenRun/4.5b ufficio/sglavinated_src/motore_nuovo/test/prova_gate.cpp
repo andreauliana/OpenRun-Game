@@ -58,7 +58,7 @@ namespace {
 constexpr i32 SMOKE_FRAMES = 500;   // 10 s @ 50 Hz (default)
 constexpr i32 SOAK_FRAMES  = 30000; // 10 min @ 50 Hz (accettazione)
 constexpr i32 INATTIVITA_FRAMES = 900; // inattivita: 60 frame di input, poi silenzio
-constexpr i32 AVVOLGIMENTO_FRAMES = 60000; // abbastanza per diversi giri del circuito
+constexpr i32 AVVOLGIMENTO_FRAMES = 6000; // ~3 giri del circuito (un giro ~1900 frame): basta per vedere il wrap; 60000 rendeva gate_t1.sh lungo ~15 min (timeout agenti)
 constexpr i32 PIXEL_MIN = 100;      // soglia pixel per ritenere presente un rettangolo di show
 constexpr double MAX_MS_FRAME = 20.0;
 constexpr f32 MIN_SPEED_FIRST_FRAME = 8.0f;

@@ -2054,13 +2054,10 @@ bool Game::collisioneRivaleVicino() const {
     if (giro <= 0.0f) return false;
     // sprites_ contiene gli avversari e il traffico (fuori gara, il traffico sintetico).
     // Urto: un'auto dove a schermo c'e' la carrozzeria del giocatore (URTO_Z_MIN..MAX).
-    // Uso una tolleranza laterale leggermente aumentata per garantire la rilevazione
-    // dei contatti con i rivali anche in curva, evitando falsi positivi con i cartelloni.
-    f32 larghezzaTollerata = URTO_LARGHEZZA * 1.15f;
     for (const SpriteInstance& oggetto : sprites_) {
         f32 dz = std::fmod(oggetto.worldZ - road_.playerZ, giro);
         if (dz < 0.0f) dz += giro;
-        if (dz > URTO_Z_MIN && dz < URTO_Z_MAX && std::abs(oggetto.worldX - player_.x) < larghezzaTollerata) return true;
+        if (dz > URTO_Z_MIN && dz < URTO_Z_MAX && std::abs(oggetto.worldX - player_.x) < URTO_LARGHEZZA) return true;
     }
     return false;
 }
