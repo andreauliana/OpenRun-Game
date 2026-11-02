@@ -1,0 +1,8 @@
+{
+    "autore": "@grafico (progetto Sglavinated)",
+    "licenza": "CC0-1.0",
+    "descrizione": "Sprite UFO - veicolo alieno verde con occhi rossi e luce superiore",
+    "files": ["ufo.png"],
+    "originale": true,
+    "riferimenti_sega": false
+}

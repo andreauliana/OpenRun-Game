@@ -1,0 +1,1 @@
+Turno 1, 02/11/2026 04:06: Modified 6 livello.json files to increase straight segments for guided driving gate. Gate test timed out (shell permission issue). Blocks H [~] fps/Pi and P1 [~] player.cpp accel/brake pending.

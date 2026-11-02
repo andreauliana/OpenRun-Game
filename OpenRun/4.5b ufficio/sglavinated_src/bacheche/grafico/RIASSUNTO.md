@@ -1,9 +1,9 @@
 # RIEPILOGO — @grafico
-31/10/2026 13:19.
+02/11/2026 05:52.
 G1 [x]: 181 elementi catalogati, PNG 0.
-M [~]: asset UI/HUD variante B rigenerati (4 PNG, elemento tempo hud.json); genera_ui_b.py exit 0.
-DECO1 [~]: obj_lampione_cromo creato; oggetti livelli in attesa @developer.
-RIV [~]: 10 sprite rivali catalogati, stato pronto nel catalogo.
-FIN [~]: 3 scene arrivo catalogate, stato pronto nel catalogo.
+M [x]: UI/HUD variante B completata (elemento tempo D8, genera_ui_b.py exit 0).
+DECO1 [x]: obj_lampione_cromo + 24 oggetti livello catalogati (pronti, nessun prestito).
+RIV [x]: 10 sprite rivali catalogati + 3 personaggio (Gianni, Gesu, UFO) catalogo completato.
+FIN [x]: 3 scene arrivo catalogo, pubblico arrivo pronto.
 Gate: non eseguito.
-quota open: 49.7% (Andrea 31/10: falso allarme, esclude out/; continuare blocchi aperti).
+Blocchi G1 M DECO1 RIV FIN completati.

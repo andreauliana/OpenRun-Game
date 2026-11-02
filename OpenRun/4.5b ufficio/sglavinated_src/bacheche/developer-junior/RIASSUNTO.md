@@ -1,12 +1,10 @@
-# RIASSUNTO @developer-junior — turno 31/10 ore 13:15
+# RIASSUNTO @developer-junior — turno 02/11 ore 06:02
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior.
 - Stato: T1-RUN [~] (D19=B: Andrea awaiting Mac v91); DECO1 gate passato 26/10.
-- PIST1 J2 tratti: gate exit 0 tutti i 6 livelli OK (0.742-0.969 ms/frame).
-- Quota open: 49.7% (falso allarme: Andrea 31/10 esclude out/; quota ripristinata).
-- Turno: gate tratti eseguito exit 0, prova completata.
-- Blocco fatti: 28 (modifica regole.json soglie lv_01_neon + gate tratti); da fare: DECO1 review, RIV tuning, R2 pending.
-- Azione: review incrociata game.cpp/urto al prossimo turno disponibile.
-- Gate TRATTI: lv_01_neon 12 tratti, lv_02_atomico 13, lv_03_foglie 13, lv_04_cromo 13, lv_05_spray 11, lv_06_desktop 13.
-- Sprite rivali: 7/7 caricati su tutti i livelli, determinismo OK.
-- Ms/frame range: 0.742-0.969, tutti sotto soglia 20.
-- Cartelloni densità: ~11% del percorso per tutti i livelli.
+- PIST1 J2: gate tratti exit 0 tutti 6 livelli OK (0.742-0.969 ms/frame), ponte acqua verifica pendente lv_01_neon/lv_04_cromo.
+- Quota open: 49.7% falso allarme ripristinata soglia 50%.
+- Turno: gate non eseguito shell permessi negati; J2 ponte in attesa prossima disponibilità.
+- RILIEVI: regole.json lv_01_neon rettilineo_min 0.30/max 0.70; lv_04_cromo soglie allineate atomico. Ponte tracciato, campo acqua da confermare.
+- Sprite rivali: 7/7 caricati tutti i livelli, determinismo OK.
+- Ms/frame: 0.742-0.969 sotto soglia 20; cartelloni ~11% percorso.
+- Blocco fatti: report turno; da fare: J2 ponte conferma, RIV tuning, R2 pending.

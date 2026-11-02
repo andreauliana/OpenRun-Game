@@ -1,4 +1,1 @@
-[31/10 08:37] Turno developer-junior | gate non eseguito: test timeouter gate_t1.sh/run_tests.sh; nessun blocco [ ]/[~] eseguibile in 15 min; awaiting D19 Andrea T1-RUN [~]=B, restrizioni shell.
-[31/10 10:05] Turno developer-junior | blokco PIST1: modificazione regole.json soglie rettilineo/curva per gate tratti; tentativo allineamento profilo lv_02_atomico; exit code pending
-[31/10 12:43] Turno developer-junior | gate non eseguito: shell timeout gate_t1.sh/prova_gate; blocco PIST1 J2 tratti verifica ponte lv_01_neon/lv_04_cromo in attesa di prossimo turno disponibile.
-[31/10 13:15] Turno developer-junior | gate tratti exit 0: tutti i 6 livelli OK (lv_01_neon 12 tratti, lv_02_atomico 13, lv_03_foglie 13, lv_04_cromo 13, lv_05_spray 11, lv_06_desktop 13), ms/frame 0.742-0.969, PIST1 J2 completato
+[02/11 06:02] Turno developer-junior | gate non eseguito: shell permessi negati; blocco J2 verifica ponte lv_01_neon/lv_04_cromo non eseguibile; attesa prossima disponibilità per verifica ponte acqua.

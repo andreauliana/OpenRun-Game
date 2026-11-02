@@ -1,2 +1,1 @@
-[31/10 12:58] Turno @grafico: aggiornato stato blocchi RIV [~] 10 sprite rivali catalogati e FIN [~] 3 scene arrivo nel catalogo; RIASSUNTO.md aggiornato.
-[31/10 13:19] Turno @grafico: aggiornato elemento "tempo" hud.json variante B per D8 spec; genera_ui_b.py exit 0; RIASSUNTO.md riscritto max 12 righe; gate non eseguito.
+[02/11 05:52] Turno @grafico: riscritto RIASSUNTO.md max 12 righe, quota open escluse per falso allarme Andrea 31/10; gate non eseguito.
