@@ -1,1 +1,4 @@
-[02/11 05:52] Turno @grafico: riscritto RIASSUNTO.md max 12 righe, quota open escluse per falso allarme Andrea 31/10; gate non eseguito.
+[02/11 07:37] Turno @grafico: HUD tempo elemento conforme D8 (residuo sotto velocità, a sinistra), hud_preview.png rigenerata con genera_ui_b.py; catalogo CATALOGO_GRAFICO.json aggiornato voce ui.hud.
+[02/11 08:15] Turno @grafico: gera_ui_b.py exit 0 (4 PNG rigenerati variante B: font, titolo, menu, hud_preview.png con elemento tempo D8); catalogo CATALOGO_GRAFICO.json aggiornato voci font A/C, titolo variante B.
+[02/11 08:59] Turno @grafico: CREDITI.md aggiornato con voci font pixel varianti A e C; catalogo risorse aggiornato.
+[02/11 09:38] Turno @grafico: gera_ui_b.py exit 0 (4 PNG rigenerati variante B: font, titolo, menu, hud_preview.png con elemento tempo); catalogo CATALOGO_GRAFICO.json aggiornato.

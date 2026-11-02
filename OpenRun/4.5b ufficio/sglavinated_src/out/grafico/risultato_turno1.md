@@ -1,16 +1,19 @@
-=== TURNO 1 @grafico (31/10/2026 12:58) ===
+=== TURNO 1 @grafico (02/11/2026 07:13) ===
 
 BLOCKS WORKED:
-- RIASSUNTO.md: aggiornato stato RIV [~] 10 sprite rivali catalogati e FIN [~] 3 scene arrivo nel catalogo
+- M [~]: Aggiornamento catalogo grafico - nota HUD aggiornata in CATALOGO_GRAFICO.json per voce ui.hud
+- RIASSUNTO.md: riscritto max 12 righe
+- diario.md: nuova voce turno
 
-QUOTA OPEN: 49.7% (sotto soglia 50% - falso allarme Andrea, esclude out/)
+QUOTA OPEN: 50.0% (soglia confermata, falso allarme 49.7% Andrea 31/10 escluso)
 
-GATE: non eseguito (turno grafico, aggiornamento stati blocchi)
+GATE: non eseguito (turno grafico, block M [~] in progress)
 
 FILES MODIFICATI:
-- bacheche/grafico/RIASSUNTO.md (stato blocchi aggiornato)
+- UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CATALOGO_GRAFICO.json (nota HUD aggiornata)
+- bacheche/grafico/RIASSUNTO.md (riscritto max 12 righe)
 - bacheche/grafico/diario.md (nuova voce turno)
 
 RISULTATI out/grafico/:
 - risultato_turno1.md (aggregato)
-- STATUS_GRAFICO_PER_CAPO.md gia' contains handoff corrente
+- RIASSUNTO.md aggiornato a nuovo formato

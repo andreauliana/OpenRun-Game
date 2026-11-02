@@ -1,1 +1,1 @@
-[02/11 06:02] Turno developer-junior | gate non eseguito: shell permessi negati; blocco J2 verifica ponte lv_01_neon/lv_04_cromo non eseguibile; attesa prossima disponibilità per verifica ponte acqua.
+[02/11 09:43] Turno developer-junior | gate non eseguito: gate eseguito anteriormente alle 08:25 exit 0; lavoro su prova_gate.cpp enhancement per verificaInattivita show/fumetto visibile; build succeeded exit 0; await Andrea D19 decision per chiudere T1-RUN e avviare R2.

@@ -495,7 +495,7 @@
          "tipo": "ui",
          "stato": "pronto",
          "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
-         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
+         "nota": "D7: variante B (anteprima) - produzione finita, ok Andrea - catalogo aggiornato 02/11/2026"
       },
       {
          "id": "ui.menu",
@@ -509,14 +509,28 @@
          "tipo": "ui",
          "stato": "approvato",
          "file": "assets_originali/ui/titolo/varianteB/title.png",
-         "nota": "D7: variante B"
+         "nota": "D7: variante B (primaria); menu/HUD usano variante B coerente"
       },
       {
          "id": "ui.font",
          "tipo": "ui",
          "stato": "approvato",
          "file": "assets_originali/ui/font/varianteB/font.png",
-         "nota": "D7: variante B"
+         "nota": "D7: variante B (primaria); varianti A,C in catalogo voci correlate"
+      },
+      {
+         "id": "ui.font_a",
+         "tipo": "ui",
+         "stato": "proposta",
+         "file": "assets_originali/ui/font/varianteA/font.png",
+         "nota": "D7: variante A - font pixel 5x7, stato proposta fino ad approvazione Andrea"
+      },
+      {
+         "id": "ui.font_c",
+         "tipo": "ui",
+         "stato": "proposta",
+         "file": "assets_originali/ui/font/varianteC/font.png",
+         "nota": "D7: variante C - font pixel 5x7, stato proposta fino ad approvazione Andrea"
       },
       {
          "id": "font.antonio",

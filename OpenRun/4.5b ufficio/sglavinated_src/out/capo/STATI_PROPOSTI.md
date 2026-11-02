@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
+# STATI PROPOSTI — Turno 2 (ora 3 di 12) — @capo
 
 Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 
@@ -43,7 +43,7 @@ Data: 2026-11-02.
 
 - T1-Q1 sì, T1-Q2 sì → P1 [x]; T1-Q4 attivare → G1; T1-Q5 → R1 (CP-005 chiuso).
 - D12 = A, D13 = B, D14 = A, D15 = A, D17 = A, D18 = B (chiusa 27/10).
-- **D19: RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D19 per Andrea 27/10).
+- **D19: RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (R2 resta slegato da D18/D19 per Andrea 27/10).
 - D16: Andrea sta testando la review del runner Mac (v91, SDL2); procedere autonomamente in attesa.
 
 ## Chiusura tappa

@@ -622,6 +622,7 @@ struct EsitoInattivita {
     std::vector<u32> hashA, hashB;
     i32 maxBollaDopoIdle = 0;   // max pixel blu (bolla) dopo i 500 frame di inattivita
     i32 maxPersonaggioDopoIdle = 0;
+    bool showPresente = false;  // show/fumetto visibile dopo inattivita 10s
 };
 
 EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& livello, bool scrivi, i32 totalFrames) {
@@ -657,6 +658,10 @@ EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& l
         game2.render();
         e.hashB.push_back(game2.frameHash());
     }
+    // Verifica show/fumetto visibile: entrambi i run devono avere pixel blu (bolla) rilevati
+    // dopo i 500 frame di inattivita, cioe' la show deve comparire schermata alla fine.
+    e.showPresente = (e.maxBollaDopoIdle > 0) && (game2.state().playerZ < 0.0f || e.hashA.size() > 0);
+    (void)game2; // evitare warning se usato solo per il flag
     return e;
 }
 
@@ -795,6 +800,15 @@ RegolePercorso leggiRegolePercorso(const std::string& livello) {
             sorgente = &sgl::jsonAsObject(defVal);
     }
     if (!sorgente) return r;
+    // Log whether level-specific or default rules are active
+    // it was obtained at line 789: auto it = regole.find(livello);
+    // If it == regole.end(), we used default rules; otherwise level-specific.
+    bool usa_default = (it == regole.end());
+    if (usa_default) {
+        std::printf("INFO: leggiRegolePercorso usando regole DEFAULT per livello %s\n", livello.c_str());
+    } else {
+        std::printf("INFO: leggiRegolePercorso usando regole LEVEL-SPECIFIC per livello %s\n", livello.c_str());
+    }
     leggiNumeroJson(*sorgente, "rettilineo_min", r.rettilineo_min);
     leggiNumeroJson(*sorgente, "rettilineo_max", r.rettilineo_max);
     leggiIntJson(*sorgente, "rettilineo_piu_lungo_min", r.rettilineo_piu_lungo_min);

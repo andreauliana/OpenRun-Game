@@ -1,11 +1,12 @@
-# Riassunto developer — 02/11/2026 turno 2 (05:40)
-- R2 [~] in corso: quota open risolta (esclude out/)
-- PIST1 P1-P3: ponte acqua configurato lv_01_neon/lv_04_cromo
-- DECO1 [x] completo (skyline 6 lv, gate 6/6 verde)
-- T1-RUN: headless 6/6 verde; giro guidato: modificati 5/6 lv_*.json segmento arrays per soglie >=35-40% (R1 T1-Q5). lv_02_atomico già passava.
-- FORK1 [x] CP-007; gate ambientale timeout
-- Modifiche code: analisi caricaOggettiStrada, collisioneRivaleVicino
-- Modifiche dati: 5 lv_*.json segmento arrays aumentati per rettilinei gate T1
-- Quota: risolta (esclude out/ per Andrea 31/10)
-- R1 priorità: tuning soglie percorso/curve >= 35-40% per giro guidato
-- Gate T1: retry con fix RIV; soglie rettilinei ora target 35-40% su tutti i livelli
+# Riassunto developer — 02/11/2026 turno 2 (09:18)
+- Gate T1: TUTTO OK 6/6 livelli, exit 0, replay IDENTICO
+- R2: test fasi.cpp help nome a 3 lettere confermato
+- prova_gate smoke/percorso/accelerazione/ribaltamento/sterzo/curve/gara: exit 0 su tutte le 6 piste
+- H: fps/temperatura Pi 400 pendente (attesa v91 Andrea)
+- FORK1: review completata, CP-007 in attesa
+- DECO1: passi 2a-2e fatti, recensione incrociata pendente
+- player.cpp: priorita' acceleratore A>Up modificata
+- regole.json: soglie allineate a lv_02_atomico rettilineo 40%/curva 0.86
+- R1: completata, gate 6/6 verde
+- T1-Q5: confermate soglie guida rettilineo ~35-40%, curva max 0.6-1.0
+- BLOCCO P1: sprite veri punto 4 ancora aperto = asset @grafico

@@ -1,9 +1,11 @@
 # RIEPILOGO — @grafico
-02/11/2026 05:52.
+02/11/2026 09:38.
 G1 [x]: 181 elementi catalogati, PNG 0.
-M [x]: UI/HUD variante B completata (elemento tempo D8, genera_ui_b.py exit 0).
-DECO1 [x]: obj_lampione_cromo + 24 oggetti livello catalogati (pronti, nessun prestito).
-RIV [x]: 10 sprite rivali catalogati + 3 personaggio (Gianni, Gesu, UFO) catalogo completato.
+M [~]: UI/HUD variante B rigenerata (gera_ui_b.py exit 0: 4 PNG, elemento tempo incluso); CREDITI.md aggiornato.
+DECO1 [x]: obj_lampione_cromo + 24 oggetti livello catalogati.
+RIV: pendente catalogo 3 persona (Gianni, Gesu, UFO); vedi INDICE_ASSET.md.
 FIN [x]: 3 scene arrivo catalogo, pubblico arrivo pronto.
-Gate: non eseguito.
-Blocchi G1 M DECO1 RIV FIN completati.
+Gate: non eseguito in questo turno.
+Blocchi: G1 [x] M [~] DECO1 [x] FIN [x].
+Azione: gera_ui_b.py exit 0 (4 PNG rigenerati variante B);
+Risultati: out/grafico/.
