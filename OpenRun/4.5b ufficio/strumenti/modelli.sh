@@ -8,8 +8,8 @@ for f in "$A"/*.md; do
   printf '%-17s %s\n' "$(basename "$f" .md)" "$(grep -m1 '^model:' "$f" | sed 's/^model: *//')"
 done
 echo "== Controllo con opencode models =="
-LIST="$(cd "$BASE/sglavinated_src" && opencode models opencode 2>/dev/null)"
-[ -n "$LIST" ] || LIST="$(cd "$BASE/sglavinated_src" && opencode models 2>/dev/null)"
+# Solo le righe provider/modello (OpenCode 2 non accetta "opencode models <provider>": stampa l'aiuto).
+LIST="$(cd "$BASE/sglavinated_src" && opencode models 2>/dev/null | grep -E '^[a-z0-9._-]+/[^ ]+$' | sort -u)"
 [ -n "$LIST" ] || { echo "opencode non risponde: controlla l'installazione"; exit 1; }
 for f in "$A"/*.md; do
   m="$(grep -m1 '^model:' "$f" | sed 's/^model: *//')"; n="$(basename "$f" .md)"

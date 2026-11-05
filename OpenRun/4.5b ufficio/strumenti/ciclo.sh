@@ -41,6 +41,12 @@ oc() {
     printf '%s %s\n' "$agente" "$(date +%s)" > .agente_corrente.tmp && mv .agente_corrente.tmp .agente_corrente || return 1
   fi
   FL=""; [ "${OC_STANDALONE:-0}" = 1 ] && FL="--standalone"
+  # OpenCode 2 (05/11): il servizio in background puo' ignorare il "model:" dell'agente e usare il suo
+  # modello predefinito (crouton-alpha, bloccato in Italia). Passo sempre --model esplicito.
+  if [ -n "$agente" ] && [ -f "$P/.opencode/agents/$agente.md" ]; then
+    MOD="$(grep -m1 '^model:' "$P/.opencode/agents/$agente.md" | sed 's/^model: *//')"
+    [ -n "$MOD" ] && FL="$FL --model $MOD"
+  fi
   (cd "$P" && exec opencode run $FL --auto "$@") &
   pid=$!; OC_PID="$pid"
   ( sleep "${OC_TIMEOUT:-2400}"; kill "$pid" 2>/dev/null ) >/dev/null 2>&1 &

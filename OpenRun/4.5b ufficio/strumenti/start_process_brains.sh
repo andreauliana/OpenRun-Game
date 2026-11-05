@@ -6,6 +6,8 @@ if ! command -v opencode >/dev/null 2>&1; then echo "ERRORE: opencode non instal
 if ! (cd "$BASE/sglavinated_src" && opencode models >/dev/null 2>&1); then echo "ERRORE: opencode non carica la configurazione (opencode.json). Non parto, per non lasciare gli agenti senza limiti di cartella. Mandami l'output di: cd \"$BASE/sglavinated_src\" && opencode models"; exit 1; fi
 # prova reale: OpenCode deve trovare l'agente capo (provo prima normale, poi con --standalone)
 P="$BASE/sglavinated_src"; OC_STANDALONE=0
+# OpenCode 2: passo sempre il modello dell'agente con --model (altrimenti puo' usare il predefinito, crouton-alpha, bloccato in UE).
+mod_capo() { grep -m1 '^model:' "$P/.opencode/agents/capo.md" | sed 's/^model: *//'; }
 if [ -f "$P/.ciclo.pid" ]; then
   C_PID="$(cat "$P/.ciclo.pid")"
   case "$C_PID" in
@@ -19,7 +21,7 @@ fi
 # se il modello free e' al limite di richieste, aspetto (5 min x fino a 24 volte) invece di rinunciare
 T=""; RC=1
 for i in $(seq 1 24); do
-  T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC=$?
+  T="$(cd "$P" && opencode run --model "$(mod_capo)" --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC=$?
   if echo "$T" | grep -qiE "usage limit|unavailable|not available"; then
     # Limite gratuito (o modello non disponibile) sul modello del capo: provo gli altri modelli della panchina (come fa il ciclo).
     CUR="$(grep -m1 '^model:' "$P/.opencode/agents/capo.md" | sed 's/^model: *//')"; OK_PAN=0
@@ -33,7 +35,7 @@ for i in $(seq 1 24); do
       case "$m" in '#'*) continue ;; esac
       grep -qxF "$m" "$BASE/strumenti/panchina_esclusi.txt" 2>/dev/null && continue
       V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$m" >/dev/null
-      T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
+      T="$(cd "$P" && opencode run --model "$(mod_capo)" --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
       # Buono solo se risponde senza errori: "Model is unavailable" o "not found" fanno provare il modello dopo.
       if [ "$RC" -eq 0 ] && ! echo "$T" | grep -qiE "usage limit|rate limit|unavailable|not available|not found|^Error"; then echo "[brains] $CUR non disponibile: il capo passa a $m"; OK_PAN=1; break; fi
       echo "[brains] anche $m non risponde ($(echo "$T" | grep -m1 -i error | cut -c1-80)), provo il successivo"
@@ -42,7 +44,7 @@ for i in $(seq 1 24); do
     V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$CUR" >/dev/null
     # Riserva locale (Ollama o llama.cpp): se e' pronta si parte in locale (nessun credito) invece di rinunciare.
     if [ "${RISERVA_LOCALE:-1}" = 1 ] && V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" disponibile && V3_BASE="$BASE" sh "$BASE/strumenti/modo_locale.sh" entra; then
-      T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
+      T="$(cd "$P" && opencode run --model "$(mod_capo)" --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
       echo "[brains] LIMITE RAGGIUNTO sui modelli free: parto con la riserva locale (torno ai free dopo ${RISERVA_ORE:-6} ore)"; break
     fi
     echo "LIMITE RAGGIUNTO: i crediti gratuiti di OpenCode sono finiti su tutti i modelli della panchina (strumenti/panchina.txt). Non parto: riprova piu' tardi (o domani), oppure prepara la riserva locale: sh strumenti/modo_locale.sh prepara" >&2; exit 1
@@ -53,7 +55,7 @@ for i in $(seq 1 24); do
 done
 # Riusa la risposta del controllo: una chiamata basta a provare che capo risponde.
 if [ "$RC" -ne 0 ] || echo "$T" | grep -qi "not found"; then
-  T2="$(cd "$P" && opencode run --standalone --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC2=$?
+  T2="$(cd "$P" && opencode run --standalone --model "$(mod_capo)" --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC2=$?
   if [ "$RC2" -eq 0 ] && ! echo "$T2" | grep -qi "not found"; then OC_STANDALONE=1; T="$T2"
   else echo "ERRORE: OpenCode non esegue l'agente 'capo'. Non parto."; echo "--- prova 1 ---"; echo "$T" | head -8; echo "--- prova 2 (--standalone) ---"; echo "$T2" | head -8; echo "Diagnosi: cd \"$P\" && opencode debug agents && opencode debug config"; echo "Mandami questo output."; exit 1; fi
 fi
