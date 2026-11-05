@@ -1,17 +1,10 @@
 # Status grafico per il Capo — OpenRun 4.6
 
-**Aggiornato:** 2026-11-02 08:15  
-**Stato:** G1 [x] chiuso (catalogo 181 elementi, PNG non catalogati: 0, licenza CC0-1.0). M [~] UI/HUD variante B asset rigenerati (gera_ui_b.py exit 0: 4 PNG con elemento tempo D8); catalogo CATALOGO_GRAFICO.json aggiornato voci font A/C; quota open esclude out/ per decisione Andrea 31/10. In questo turno: RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, gate non eseguito; handoff aggiornato.
+**Aggiornato:** 2026-11-05 21:02
+**Stato:** nessun nuovo asset da produrre (nessun blocco [ ]/[~] azionabile oggi). PIST1 G-P1 [x] verificato completo (parapetto.png 32x48 + guardrail.png 48x32 su disco, raw, 2 voci pronto, catalogo exit 0). G1 [x]. M [~] bloccato da Andrea (HUD/font/menu/CREDITI fermi). DECO1 [~] produzione completa, attesa integrazione in gioco @developer e review incrociata + @capo. RIV [~] dopo PIST1. FIN [x].
 
-**Checkpoint:** [CP-002 — inventario grafico](../../Checkpoint%20Revision/CP-002-inventario-grafico.md)  
-**Inventario:** [CATALOGO_RISORSE.md](../../UFFICIO/Dipartimento%20Grafico/Libreria/CATALOGO_RISORSE.md)
-
-Turno 29/10/2026 17:42: RIASSUNTO.md aggiornato, diario.md registrato, CATALOGO_GRAFICO.json misure confermate; M [~] stato invariato (manifest bozza), DECO1 [~] completato objects ridisegnati e annuncio @developer; gate non eseguito; handoff invariato. Unico handoff corrente del Designer per il Capo. Aggiornarlo in place a ogni task grafico; non creare riepiloghi di stato paralleli.
-Turno 29/10/2026 19:39: @grafico RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, check_catalogo_grafico.py obj_bidone_copy pendente; gate non eseguito; handoff aggiornato.
-Turno 29/10/2026 20:22: RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, check_catalogo_grafico.py obj_bidone_copy pendente, DECO1 [~] verifica oggetti e misure; gate non eseguito; handoff aggiornato.
-Turno 31/10/2026 09:12: RIASSUNTO.md aggiornato (max 12 righe), diario.md registrato, genera_ui_b.py exit 0, asset UI/HUD variante B rigenerati (font, titolo, menu, hud_preview.png); M [~] stato invariato, gate non eseguito; handoff corrente aggiornato.
-Turno 31/10/2026 10:44: RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, genera_ui_b.py exit 0, asset UI/HUD variante B rigenerati (4 PNG); M [~] stato invariato, quota open 49.7% sotto soglia 50%; gate non eseguito; handoff aggiornato.
-Turno 31/10/2026 13:19: RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, hud.json D8 tempo element aggiornato, genera_ui_b.py exit 0, asset UI/HUD variante B rigenerati (4 PNG, elemento tempo incluso); M [~] stato invariato, gate non eseguito; handoff aggiornato.
-Turno 02/11/2026 04:27: @grafico RIASSUNTO.md riscritto (max 12 rigre), diario.md registrato, stato blocchi aggiornati G1/M/DECO1/FIN, RIV [~] con 3 persona. mancanti, quota open confermata escludendo out/; gate non eseguito; handoff aggiornato.
-Turno 02/11/2026 05:14: @grafico catalogo 3 personaggio sprite (Gianni, Gesu, UFO) completato con manifest.json e INDICE_ASSET.md aggiornato; RIASSUNTO.md riscritto max 12 righe, diario.md registrato, gate non eseguito; handoff aggiornato.
-Turno 02/11/2026 05:52: @grafico RIASSUNTO.md riscritto (max 12 righe), diario.md registrato, gera_ui_b.py exit 0 (4 PNG rigenerati variante B: font, titolo, menu, hud_preview.png con elemento tempo), quota open esclude out/ per decisione Andrea 31/10; gate non eseguito; handoff aggiornato.
+**Materiali creati/modificati:** nessuno questo turno (solo verifica G-P1 + diario/RIASSUNTO/STATUS aggiornati).
+**Catalogo/licenze:** CATALOGO_GRAFICO.json 189 elementi, CC0-1.0, nessun materiale Sega; invariato.
+**Controlli/esiti:** ls conferma parapetto.png e guardrail.png su disco; check_catalogo_grafico.py exit 0, 0 non catalogati; gate_t1.sh non eseguito.
+**Lacune/blocchi:** M attende decisione Andrea; DECO1 attende @developer e review/@capo; RIV dopo PIST1 (P3, J1, J2 a developer/junior).
+**Review richiesta:** nessuna (nessun asset nuovo da revisionare).

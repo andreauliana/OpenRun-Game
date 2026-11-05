@@ -2149,6 +2149,10 @@ static bool verificaDecorazioni(const std::string& outDir) {
 //     coincidono con la definizione di tratti.json;
 //   - nessun salto per segmento di curva/collina/larghezza oltre le soglie regole.json;
 //   - ms/frame smoke entro soglia; screenshot PPM al primo ingresso in ogni tratto.
+//   PIST1 J2 (@developer-junior): lv_01_neon e lv_04_cromo devono avere il
+//     tratto `ponte` e tutti i suoi segmenti devono avere `acqua` = 1; lo
+//     screenshot del ponte e' catturato a meta' impalcato (all'ingresso la
+//     rampa in curva nasconde il ponte).
 bool verificaTratti(const std::string& outDir) {
     static const char* kLivelli[6] = {
         "lv_01_neon", "lv_02_atomico", "lv_03_foglie",
@@ -2201,6 +2205,23 @@ bool verificaTratti(const std::string& outDir) {
         bool tuttiPresenti = true;
         for (const auto& kv : dichiarato)
             if (!presente[kv.first]) tuttiPresenti = false;
+        // PIST1 J2 (@developer-junior): il tratto `ponte` deve esistere su
+        // lv_01_neon e lv_04_cromo e ogni suo segmento deve avere acqua = 1.
+        const bool vuolePonte = (std::string(livello) == "lv_01_neon" ||
+                                 std::string(livello) == "lv_04_cromo");
+        bool ponteTrovato = false;
+        i32 ponteSeg = 0, ponteAcquaSeg = 0;
+        for (i32 i = 0; i < n; ++i) {
+            std::string nome;
+            i32 inizio = -1;
+            if (!trattoDiSegmento(i, nomi, lunghezze, nome, inizio)) continue;
+            if (nome != "ponte") continue;
+            ponteTrovato = true;
+            ++ponteSeg;
+            if (segs[i].acqua > 0.5f) ++ponteAcquaSeg;
+        }
+        bool ponteOk = !vuolePonte || (ponteTrovato && ponteSeg > 0 &&
+                                       ponteAcquaSeg == ponteSeg);
         // salti per segmento consecutivo
         f32 maxDC = 0.0f, maxDCol = 0.0f, maxDL = 0.0f;
         for (i32 i = 1; i < n; ++i) {
@@ -2237,21 +2258,34 @@ bool verificaTratti(const std::string& outDir) {
             i32 si = segmentoIndiceZ(road, z);
             std::string nome;
             i32 inizio = -1;
-            if (trattoDiSegmento(si, nomi, lunghezze, nome, inizio) && !visti[nome]) {
-                visti[nome] = true;
-                salvaPPM(outDir + "/tratti_" + std::string(livello) + "/tratti_" +
-                         std::string(livello) + "_" + nome + ".ppm",
-                         game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+            if (trattoDiSegmento(si, nomi, lunghezze, nome, inizio)) {
+                // Ponte (J2): lo screenshot di questo tratto e' preso a meta'
+                // impalcato, non all'ingresso (la rampa ancora lo nasconde).
+                auto dit = defs.find(nome);
+                const i32 lenSeg = (dit != defs.end()) ? dit->second.lunghezza : 1;
+                const bool metaPonte =
+                    (nome == "ponte") && (si >= inizio + lenSeg / 2);
+                const bool cattura =
+                    (nome != "ponte") ? !visti[nome] :
+                    (metaPonte && !visti[nome]);
+                if (cattura) {
+                    visti[nome] = true;
+                    salvaPPM(outDir + "/tratti_" + std::string(livello) + "/tratti_" +
+                             std::string(livello) + "_" + nome + ".ppm",
+                             game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                }
             }
         }
         giroFinito = percorso >= giro;
         std::printf("tratti %s: segmenti=%d espansione=%s dichiarati=%zu presenti=%zu mismatchCuore=%d "
-                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f giro=%s | %s\n",
+                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f ponte=%d/%d acqua giro=%s | %s\n",
                     livello, n, espansioneOk ? "OK" : "NO", dichiarato.size(),
                     presente.size(), mismatchCuore, maxDC, maxDCol, maxDL, msMed,
+                    ponteAcquaSeg, ponteSeg,
                     giroFinito ? "finito" : "NO",
-                    (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito) ? "OK" : "FALLITO");
-        bool lvOk = espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito;
+                    (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito && ponteOk) ? "OK" : "FALLITO");
+        bool lvOk = espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk &&
+                    giroFinito && ponteOk;
         ok = ok && lvOk;
     }
     std::printf("%s\n", ok ? "GATE TRATTI OK" : "FALLITO: tratti non coerenti su un livello");

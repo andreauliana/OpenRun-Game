@@ -162,6 +162,11 @@ public:
         return indice >= 0 && indice < (i32)trafficoSprites_.size() ? &trafficoSprites_[indice] : nullptr;
     }
     void clearTrafficoSprites() { trafficoSprites_.clear(); }
+    // Auto del giocatore (P1 punto 4): sprite vero caricato una volta; vuoto =
+    // rettangolo sintetico in drawPlayerCar.
+    void impostaGiocatoreSprite(Sprite sprite) { giocatoreSprite_ = std::move(sprite); }
+    const Sprite* giocatoreSprite() const { return &giocatoreSprite_; }
+    void clearGiocatoreSprite() { giocatoreSprite_ = Sprite{}; }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
     i32 aggiungiOggettoSprite(Sprite sprite);
@@ -222,6 +227,7 @@ private:
     void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
+    Sprite giocatoreSprite_;                  // auto del giocatore (P1 punto 4), vuoto = rettangolo sintetico
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)

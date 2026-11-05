@@ -2,7 +2,7 @@
 
 > **Nota Claude 26/10 (per @capo, precede il resto):** FORK1 ha le due review incrociate POSITIVE (`out/developer-junior/REVIEW_FORK1_26OTT.md`, `out/developer/REVIEW_FORK1_26OTT.md`) e ctest verde: aprire e chiudere CP-007 per FORK1 in questo turno e aggiungere FORK1 e DECO1 a STATI_PROPOSTI. DECO1: il prossimo passo (2a skyline lv_01) e' del @developer, non del @grafico. Vedi RICHIESTA.md.
 
-> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-02 (Turno 1, ora 0 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [APERTO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
+> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-05 (Turno 2, ora 2 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [APERTO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
 
 | Campo | Stato |
 |---|---|
@@ -27,11 +27,12 @@ Leggere [STATUS_OFFICINA.md](../UFFICIO/Officina/STATUS_OFFICINA.md) per l'ultim
 
 ## Prossime azioni
 
-1. CP-006 APERTO (D19 RISPOSTA DI ANDREA: B): T1-RUN resta [~]; attendere nuova prova/decisione Andrea su runner Mac (D12 = A, D14 = A). DEFAULT non applicabile (risposta Andrea presente). Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale. CP-006 si chiude solo con decisione Andrea (regola 8).
-2. CP-007 CHIUSO 2026-10-27 (FORK1): review incrociate indipendenti positive + ctest 20/20 verde. FORK1 [x]. Nessun CP R2 ancora aperto.
-3. DECO1 [ ]: prossimo passo 2a (skyline lv_01 sopra l'orizzonte) del @developer, non del @grafico; poi 2b-2e; gate `decorazioni` e CP DECO1 dopo; @grafico fornisce asset e rivede screenshot. DECO1 [x] prima di ogni prova Pi 400/RetroPie.
-4. R2 [~] in corso (aggiornato da Claude 27/10 su richiesta di Andrea): R2 NON e' subordinato a D18 o D19. Passi 1, 1b, 1c fatti, ctest 22/22 verde con gate `ciclo`; prossimo @developer passo 1d, poi DECO1 2f, RIV, PIST1 (vedi RICHIESTA, 'Chi tocca adesso' di R2).
-5. F60 gate verde registrato 22/10 20:06 (60/50 Hz OK, replay 2x IDENTICO, 6/6 percorsi OK); manca solo review incrociata developer→developer-junior e apertura CP F60.
-6. G1 @grafico: catalogo 100 PNG, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0" (handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` consultato); CP-002 in attesa review indipendente.
+1. CP-006 APERTO (D19 RISPOSTA DI ANDREA: B): T1-RUN resta [~]; attendere nuova prova/decisione Andrea su runner Mac (D12 = A, D14 = A: prima Mac, poi Pi 400/RetroPie). DEFAULT non applicabile (risposta Andrea presente). Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale. CP-006 si chiude solo con decisione Andrea (regola 8).
+2. CP-007 CHIUSO 2026-10-27 (FORK1): review incrociate indipendenti positive + ctest 20/20 verde. FORK1 [x].
+3. DECO1 [~]: passi 2a-2d FATTO (@developer, gate_t1.sh exit 0 27/10 07:55, ctest 21/21 verde gate `decorazioni` 6/6 livelli), 2f FATTO (@grafico 27/10 20:02, 6 oggetti alti >=32x96, manifest aggiornati); 2e parallasse prossimo. Resta: review incrociata + CP DECO1 (@capo, CP-008 da aprire). DECO1 [x] prima di ogni prova Pi 400/RetroPie.
+4. PIST1: G-P1 [x] per handoff grafico 2026-11-05 20:46 (parapetto.png 32x48 + guardrail.png 48x32 su disco, raw, 2 voci `pronto`, catalogo exit 0). Passo successivo: @developer P3 (parapetti come oggetti ai due lati ogni ~400 unità sui segmenti con `acqua`), poi `sh UFFICIO/Officina/TOOL/gate_t1.sh`; poi @developer-junior J2 e J1 (gate `tratti`). @capo: riga di registro (Turno 2, ora 2 di 12).
+5. R2 [~] in corso (aggiornato da Claude 27/10 su richiesta di Andrea): R2 NON e' subordinato a D18 o D19. Passi 1, 1b, 1c fatti, ctest 22/22 verde con gate `ciclo`; prossimo @developer passo 1d, poi RIV punti a-c, poi PIST1 punto 1 (vedi RICHIESTA, 'Chi tocca adesso' di R2).
+6. F60 gate verde registrato 22/10 20:06 (60/50 Hz OK, replay 2x IDENTICO, 6/6 percorsi OK); manca solo review incrociata developer→developer-junior e apertura CP F60.
+7. G1 @grafico: catalogo, `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0" (handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` consultato); CP-002 in attesa review indipendente.
 
 Per la cronologia e gli ID, consultare [REGISTRO_REVISIONI.md](./REGISTRO_REVISIONI.md). Per una nuova scheda, usare [TEMPLATE_CHECKPOINT.md](./TEMPLATE_CHECKPOINT.md).

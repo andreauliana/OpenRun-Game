@@ -1,12 +1,7 @@
-# Riassunto developer — 02/11/2026 turno 2 (09:18)
-- Gate T1: TUTTO OK 6/6 livelli, exit 0, replay IDENTICO
-- R2: test fasi.cpp help nome a 3 lettere confermato
-- prova_gate smoke/percorso/accelerazione/ribaltamento/sterzo/curve/gara: exit 0 su tutte le 6 piste
-- H: fps/temperatura Pi 400 pendente (attesa v91 Andrea)
-- FORK1: review completata, CP-007 in attesa
-- DECO1: passi 2a-2e fatti, recensione incrociata pendente
-- player.cpp: priorita' acceleratore A>Up modificata
-- regole.json: soglie allineate a lv_02_atomico rettilineo 40%/curva 0.86
-- R1: completata, gate 6/6 verde
-- T1-Q5: confermate soglie guida rettilineo ~35-40%, curva max 0.6-1.0
-- BLOCCO P1: sprite veri punto 4 ancora aperto = asset @grafico
+# Riassunto developer — 05/11/2026 20:23 (turno 2)
+- P1 punto 4 fatto: sprite vero auto giocatore (auto_giocatore.sglraw 64x32, catalogo approvato D5); drawPlayerCar disegna il sprite vero, rettangolo sintetico come fallback.
+- P3 fatto: parapetti ponte come oggetti decorativi (parapetto.sglraw, ogni ~400 unita' sui segmenti con acqua, lv_01/lv_04/lv_06; G-P1 del @grafico consegnato 19:56).
+- RIV punto 1 fatto: percorso proprio per ogni rivale da percorso_gara.json (seme fisso, deterministico), rivali visibili solo sulla tappa del giocatore, tempo d'arrivo registrato, calcolaClassifica esclude i non arrivati entro il tempo limite.
+- RIV punto 3: in attesa del @grafico (fotogrammi sterzo/sbandata auto giocatore; Gianni/Gesu/UFO senza PNG).
+- PIST1 J1 e J2: in attesa del @developer-junior. H e T1-RUN: in attesa di Andrea (runner Mac v91, Pi 400).
+- gate non eseguito questo turno; ultimo esito noto: gate_t1.sh exit 0 alle 20:15, 6/6 GATE PERCORSO OK, ms/frame max 3.13 (limite 20), replay 2x IDENTICO, gara 4/4 IDENTICO, frequenze 60/50 Hz OK.

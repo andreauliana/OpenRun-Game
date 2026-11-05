@@ -171,6 +171,25 @@ def main():
             f.write(rgba)
         print(f"scritto {dst} ({w}x{h})")
         n += 1
+    # Auto del giocatore (P1 punto 4): sprite vero al posto del rettangolo sintetico.
+    # Variante predefinita tra le 3 approvate in catalogo (tipo auto_giocatore, D5).
+    OUTDIR_GIOCATORE = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "giocatore"
+    ASSETS_GIOCATORE = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "auto_gt"
+    GIOCATORE_FILES = ["auto_rosso_corsa"]
+    for nome in GIOCATORE_FILES:
+        src = ASSETS_GIOCATORE / (nome + ".png")
+        if not src.exists():
+            print(f"salta (manca): {src}")
+            continue
+        w, h, rgba = leggi_png(src)
+        dst = OUTDIR_GIOCATORE / "auto_giocatore.sglraw"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with open(dst, "wb") as f:
+            f.write(MAGIC)
+            f.write(struct.pack("<II", w, h))
+            f.write(rgba)
+        print(f"scritto {dst} ({w}x{h})")
+        n += 1
     # Pubblico all'arrivo (Andrea 29/10), disegnato da
     # UFFICIO/Dipartimento Grafico/TOOLS/disegna_pubblico.py.
     OUTDIR_PUBBLICO = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "pubblico"
@@ -190,7 +209,7 @@ def main():
         print(f"scritto {dst} ({w}x{h})")
         n += 1
     print(f"convertiti {n} sprite in raw (sponsor {OUTDIR}, rivali {OUTDIR_RIVALE}, traffico {OUTDIR_TRAFFICO}, "
-          f"pubblico {OUTDIR_PUBBLICO})")
+          f"giocatore {OUTDIR_GIOCATORE}, pubblico {OUTDIR_PUBBLICO})")
 
 
 if __name__ == "__main__":

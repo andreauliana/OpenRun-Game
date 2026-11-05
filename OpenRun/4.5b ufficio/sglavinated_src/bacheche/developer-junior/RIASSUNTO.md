@@ -1,10 +1,8 @@
-# RIASSUNTO @developer-junior — turno 02/11 ore 09:43
+# RIASSUNTO @developer-junior — turno 05/11 ore 20:20
 - Ruolo: Developer Junior (4.6); scrittura: motore_nuovo/test/, bacheche/developer-junior/, out/developer-junior.
-- Stato: T1-RUN [~] (Andrea D19: pending Mac runner v91 decision); DECO1 gate passato 26/10; PIST1 gate tratti exit 0 tutti 6 livelli OK.
-- Gate oggi 08:25: smoke exit 0, 6/6 percorsi OK, ms/frame 0.742-0.969 sotto soglia 20.
-- Quota open: 100.0% (soglia 50% esclusione out/).
-- Modifica: enhanced verificaInattivita in prova_gate.cpp adding showPresente flag per show/fumetto visibile screenshot.
-- Build: cmake --build target prova_gate exit 0, compilazione riuscita con modifica.
-- Da fare: RIV tuning, R2 pending. Confermato: test verde. BLOCCO H: in attesa guida Pi 400 e fps/temperatura da Andrea v91.
-- Turno: gate non eseguito (già eseguito 08:25); lavoro codice test modulo inattivita'.
-- Prossimo: await Andrea decision per chiudere T1-RUN e avviare R2.
+- Blocco: PIST1 [~]. Passi fatti: J2 (gate tratti ponte+acqua, OK 6/6 su lv_01_neon/lv_04_cromo) e J1 (review incrociata game.cpp PR #44, consegna REVIEW_PR44_05NOV.md, solo osservazioni).
+- Nessun mio passo rimanente in PIST1: resta @grafico G-P1 (PNG parapetto/guardrail, 2 voci catalogo pronto, raw, check_catalogo exit 0), poi @developer P3 (parapetti come oggetti sui segmenti con acqua), poi gate_t1.sh e @capo.
+- RIV [~]: punti 1 (@developer) e 3 (@grafico) non di mia competenza.
+- Prossimo passo mio: nessuno (in attesa di @grafico G-P1).
+- gate: non eseguito in questo turno.
+- File modificati nel turno: nessuno (solo diario.md, RIASSUNTO.md, ULTIMO_TURNO.md).

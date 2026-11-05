@@ -179,6 +179,13 @@ constexpr f32 OGGETTI_BORDO_MIN = 250.0f;    // fascia bordo strada: da 250 ...
 constexpr f32 OGGETTI_BORDO_MAX = 900.0f;    // ... a 900 dal bordo
 constexpr f32 OGGETTI_PAESAGGIO_MAX = 5000.0f; // fascia paesaggio: fino a 5000 dal bordo
 constexpr f32 OGGETTO_ALTEZZA_MONDO = 1280.0f; // oggetti alti: altezza a schermo come ~2 auto
+// Parapetti del ponte (PIST1 P3, Andrea 29/10): sprite comune 32x48 del
+// @grafico (G-P1), ai due lati dei segmenti con acqua ogni 400 unita'. Scala 3
+// (~480x720 unita' mondo) forma una ringhiera continua; 40 unita' di stacco
+// dal bordo della carreggiata. Solo decorativi, nessuna collisione.
+constexpr f32 PARAPETTI_PASSO_Z = 400.0f;
+constexpr f32 PARAPETTO_SCALA = 3.0f;
+constexpr f32 PARAPETTO_STACCO = 40.0f;
 constexpr f32 BIVIO_ISTERESI = 300.0f;     // unita' mondo: cambio di ramo seguito solo se piu' vicini all'altro di tanto
 constexpr f32 ASSIST_RICHIAMO_MAX = 250.0f; // unita'/s, sotto lo sterzo (>= 510 in alto)
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
@@ -433,19 +440,26 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // (seme fisso, zero alloc nel ciclo di gioco).
     // Sono puramente decorativi: NON generano collisione (oggetti non solidi).
     oggettiStrada_.clear();
+    parapetti_.clear();
     ren_.clearOggettoSprites();
-    if (oggettiBordoStrada_.empty()) return;
     const i32 nOggetti = (i32)oggettiBordoStrada_.size();
     const f32 giro = (f32)road_.totalLength();
-    if (giro <= 0.0f) return;
-    // Indice sprite per ogni id: registra prima tutti gli sprite, cosi' i
-    // puntatori restituiti da oggettoSprite() restano validi (nessuna rialloc
-    // dopo la creazione delle istanze).
+    // Indice sprite per ogni id: registra prima tutti gli sprite (di tema e
+    // parapetto comune), cosi' i puntatori restituiti da oggettoSprite()
+    // restano validi (nessuna rialloc dopo la creazione delle istanze).
     std::vector<i32> idxPerId(nOggetti, -1);
     for (i32 j = 0; j < nOggetti; ++j) {
         std::string nome = nomeOggettoDaId(oggettiBordoStrada_[j]);
         Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + livelloId + "/" + nome + ".sglraw"));
         if (s.width > 0) idxPerId[j] = ren_.aggiungiOggettoSprite(std::move(s));
+    }
+    // PIST1 P3 (05/11): parapetto comune del ponte (G-P1), registrato qui prima
+    // delle istanze; si usa solo sui segmenti con acqua (caricaParapetti).
+    Sprite sp = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/comuni/parapetto.sglraw"));
+    const i32 idxParapetto = sp.width > 0 ? ren_.aggiungiOggettoSprite(std::move(sp)) : -1;
+    if (giro <= 0.0f || nOggetti == 0) {
+        caricaParapetti(idxParapetto); // solo parapetti (nessun oggetto di tema)
+        return;
     }
     // Posizioni (Andrea 27/10 sera): mai sul tracciato. Per ogni fila, un
     // oggetto a bordo strada (lato alternato) e uno nel paesaggio dal lato
@@ -483,6 +497,33 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             oggettiStrada_.push_back(o);
         }
     }
+    caricaParapetti(idxParapetto); // PIST1 P3: istanze sui segmenti con acqua
+}
+
+void Game::caricaParapetti(i32 idxParapetto) {
+    // PIST1 P3 (05/11): parapetto comune del ponte (assets del @grafico, G-P1)
+    // ai due lati dei segmenti con acqua, ogni PARAPETTI_PASSO_Z unita'.
+    // Puramente decorativo: nessuna collisione. Tutte le allocazioni qui in
+    // init/cambio tappa, zero alloc nel ciclo di gioco.
+    const Sprite* sprite = ren_.oggettoSprite(idxParapetto);
+    if (!sprite) return; // raw assente: ponte senza parapetti, nessun crash
+    const f32 giro = (f32)road_.totalLength();
+    if (giro <= 0.0f) return;
+    const f32 meta = 0.5f * (f32)sprite->width * Renderer::SPRITE_WORLD_PX * PARAPETTO_SCALA;
+    for (f32 z = PARAPETTI_PASSO_Z * 0.5f; z < giro; z += PARAPETTI_PASSO_Z) {
+        if (!road_.acquaAt(z)) continue; // solo sul ponte (segmenti con acqua)
+        const f32 bordo = Road::ROAD_WIDTH * 0.5f * road_.larghezzaAt(z);
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            SpriteInstance o;
+            o.worldZ = z;
+            o.worldX = (f32)lato * (bordo + PARAPETTO_STACCO + meta);
+            o.scale = PARAPETTO_SCALA;
+            o.sprite = sprite;
+            o.paletteBase = 0;
+            parapetti_.push_back(o);
+        }
+    }
+    if (!parapetti_.empty()) std::printf("parapetti del ponte: %zu\n", parapetti_.size());
 }
 
 void Game::caricaMusica() {
@@ -573,6 +614,15 @@ void Game::init(const std::string& livelloId) {
     km_ = 0.0f;
     leggiHud();
     caricaLivello(livelloId);
+
+    // P1 punto 4: sprite vero dell'auto del giocatore (variante approvata in
+    // catalogo, D5), caricato una volta all'avvio.
+    Sprite giocatore = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));
+    if (giocatore.width > 0) ren_.impostaGiocatoreSprite(std::move(giocatore));
+    else {
+        ren_.impostaGiocatoreSprite(Sprite{});
+        std::printf("giocatore: raw motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw mancante\n");
+    }
 
     road_.playerZ = 0.0f;
     road_.playerX = 0.0f;
@@ -793,6 +843,12 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     }
     if (partenza.empty() || !trovaTappa(partenza)) return false;
 
+    // Lunghezza nominale di ogni tappa: serve ai rivali per il proprio percorso
+    // (RIV punto 1). Calcolata una volta sola, qui.
+    lunghezzeTappe_.clear();
+    lunghezzeTappe_.reserve(tappe_.size());
+    for (const Tappa& t : tappe_) lunghezzeTappe_.push_back(lunghezzaNominaleTappa(t.id));
+
     corsaSingola_ = soloPrimaTappa; // prima di init(): caricaOggettiStrada guarda il bivio
     init(partenza);
     gara_ = true;
@@ -821,6 +877,56 @@ const Game::Tappa* Game::trovaTappa(const std::string& id) const {
     for (const Tappa& t : tappe_)
         if (t.id == id) return &t;
     return nullptr;
+}
+
+i32 Game::indiceTappa(const std::string& id) const {
+    for (size_t i = 0; i < tappe_.size(); ++i)
+        if (tappe_[i].id == id) return (i32)i;
+    return -1;
+}
+
+f32 Game::lunghezzaNominaleTappa(const std::string& livelloId) const {
+    // Stessa espansione di caricaLivello (tracciato + ripetizione fino a
+    // 2*DRAW_DIST segmenti), ma senza costruire la Road: serve ai rivali per
+    // sapere dove finisce la tappa in cui corrono.
+    JsonReader livello(leggiFileTesto(percorsoDati("motore_nuovo/dati/livelli/" + livelloId + "/livello.json")));
+    const JsonValue* radice = livello.parse() ? &livello.valore() : nullptr;
+    std::vector<Road::SegmentDesc> descs;
+    bool daFile = false;
+    if (radice && jsonIsObject(*radice)) {
+        const JsonObject& root = jsonAsObject(*radice);
+        JsonValue campo;
+        if (jsonGet(root, "tracciato", campo) && jsonIsArray(campo))
+            daFile = leggiTracciato(campo, descs) && !descs.empty();
+        if (!daFile) daFile = leggiSegmentiDaFile(radice, descs) && !descs.empty();
+    }
+    if (!daFile) return 0.0f;
+    const std::vector<Road::SegmentDesc> pattern = descs;
+    i32 segTotali = 0;
+    const i32 minSeg = Road::DRAW_DIST * 2;
+    while (segTotali < minSeg) // stesso ciclo di caricaLivello: il giro si ripete
+        for (const Road::SegmentDesc& d : pattern) segTotali += d.lunghezza > 0 ? d.lunghezza : 1;
+    return (f32)segTotali * (f32)Road::SEG_LEN;
+}
+
+void Game::avanzaTappaRivale(Rivale& r) {
+    // Il rivale ha superato la fine della sua tappa: passa alla tappa scelta
+    // dal suo percorso. Ultima tappa (senza rami) = traguardo: registra il tempo.
+    for (i32 guardia = 0; guardia < RIVALE_MAX_TAPPE; ++guardia) {
+        if (r.passoPercorso < 0 || r.passoPercorso >= r.nPercorso) return;
+        const i32 idx = r.percorso[r.passoPercorso];
+        if (idx < 0 || idx >= (i32)lunghezzeTappe_.size()) return;
+        const f32 lung = lunghezzeTappe_[(size_t)idx];
+        if (r.progressoTappa < lung) return;
+        if (r.passoPercorso + 1 >= r.nPercorso) { // tappa d'arrivo: tempo sul traguardo
+            r.progressoTappa = lung;
+            if (r.tempoArrivoS < 0.0f) r.tempoArrivoS = tempoTotaleS();
+            return;
+        }
+        r.progressoTappa -= lung;
+        ++r.passoPercorso;
+        r.ramo = r.ramiPercorso[r.passoPercorso - 1];
+    }
 }
 
 void Game::preparaBivio() {
@@ -860,6 +966,7 @@ void Game::inizializzaRivali() {
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
         r.progresso = 900.0f + (f32)(i / 2) * 1200.0f + (f32)(i % 2) * 400.0f;
+        r.progressoTappa = r.progresso; // griglia di partenza dentro la prima tappa
         r.x = (i % 2 == 0) ? -450.0f : 450.0f;
         r.xObiettivo = r.x;
         r.passo = 0.0f;
@@ -874,6 +981,26 @@ void Game::inizializzaRivali() {
         r.spriteIdx = nSpriteRivali_ > 0 ? i % nSpriteRivali_ : -1; // sprite rivale (RIV punto b)
         r.ritmoFase = 0.9f * (f32)i;
         r.ritmoVel = 0.15f + 0.04f * (f32)rnd.next(5);
+        // RIV punto 1: percorso del rivale nell'albero delle tappe, scelto dal
+        // seme (deterministico). Parte dalla stessa tappa del giocatore; a ogni
+        // bivio sceglie sinistra o destra; l'ultima tappa e' il suo traguardo.
+        r.nPercorso = 0;
+        r.passoPercorso = 0;
+        r.tempoArrivoS = -1.0f;
+        i32 cur = indiceTappa(tappaId_);
+        while (cur >= 0 && r.nPercorso < RIVALE_MAX_TAPPE) {
+            r.percorso[r.nPercorso] = cur;
+            const Tappa& t = tappe_[(size_t)cur];
+            if (t.sinistra.empty() || t.destra.empty()) {
+                r.ramiPercorso[r.nPercorso] = 0;
+                ++r.nPercorso;
+                break;
+            }
+            const i32 scelta = rnd.next(2) == 0 ? -1 : 1;
+            r.ramiPercorso[r.nPercorso] = scelta;
+            ++r.nPercorso;
+            cur = indiceTappa(scelta < 0 ? t.sinistra : t.destra);
+        }
     }
     classifica_.clear();
     rndRivali_ = Rng(seed_ ^ 0x4C414E45u);
@@ -893,6 +1020,12 @@ void Game::setTrafficoSprites(std::vector<Sprite> sprites) {
             ++nSpriteTraffico_;
         }
     }
+}
+
+void Game::impostaGiocatoreSprite(Sprite sprite) {
+    // P1 punto 4: sprite vero dell'auto del giocatore, caricato una volta;
+    // se il raw manca drawPlayerCar resta sul rettangolo sintetico.
+    ren_.impostaGiocatoreSprite(std::move(sprite));
 }
 
 f32 Game::xCorsia(i32 corsia, f32 z) const {
@@ -995,9 +1128,26 @@ void Game::aggiornaRivali() {
     const f32 mio = progressoTappePrecedenti_ + player_.z;
     sprites_.clear();
     spritesFonte_.clear();
+    const i32 tappaGiocatore = indiceTappa(tappaId_);
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
-        const f32 zLocale = r.progresso - progressoTappePrecedenti_;
+        if (r.tempoArrivoS >= 0.0f) continue; // gia' al traguardo: fuori dalla corsa
+        const bool sullaTappa = r.passoPercorso < r.nPercorso &&
+                                r.percorso[r.passoPercorso] == tappaGiocatore;
+        if (!sullaTappa) {
+            // RIV punto 1: fuori dalla tappa del giocatore il rivale prosegue
+            // col suo ritmo, ma non si vede (la strada caricata non e' la sua)
+            // e non interagisce con traffico e bivi del giocatore.
+            r.ritmoFase += r.ritmoVel * dt;
+            const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
+            r.passo += (r.passoMax * ritmo - r.passo) * avvicina;
+            const f32 distanza = r.passo * dt;
+            r.progresso += distanza;
+            r.progressoTappa += distanza;
+            avanzaTappaRivale(r);
+            continue;
+        }
+        const f32 zLocale = r.progressoTappa; // dentro la tappa (la strada del giocatore)
         // Rallenta in curva in base alla curvatura del segmento (piu' curva = piu' lento),
         // attenuato dalla bravura: i rivali piu' bravi soffrono meno la curva.
         const f32 curvaQui = std::abs(road_.curvaAt(zLocale));
@@ -1064,6 +1214,12 @@ void Game::aggiornaRivali() {
             }
         }
         r.progresso += r.passo * dt;
+        r.progressoTappa += r.passo * dt;
+        avanzaTappaRivale(r);
+        // Tappa finita o traguardo raggiunto in questo frame: non si disegna
+        // piu' sulla strada del giocatore.
+        if (r.tempoArrivoS >= 0.0f || r.passoPercorso >= r.nPercorso ||
+            r.percorso[r.passoPercorso] != tappaGiocatore) continue;
         // Le auto sono solide: chi arriva da dietro non attraversa il giocatore.
         const bool nelBivio = road_.bivioAttivo() && zLocale >= road_.bivioInizioZ();
         if (!nelBivio && distacco <= Game::URTO_Z_MIN && r.progresso > mio + Game::URTO_Z_MIN &&
@@ -1674,6 +1830,7 @@ void Game::render() {
     scenaSprites_ = sprites_;
     aggiungiVisibili(cartelloni_);
     aggiungiVisibili(oggettiStrada_);
+    aggiungiVisibili(parapetti_); // PIST1 P3: ringhiera del ponte
     // Pubblico all'arrivo: compare quando il traguardo entra nella vista.
     // Ognuno esulta col suo ritmo, piu' forte dopo che il giocatore e' arrivato.
     const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
@@ -1946,7 +2103,11 @@ void Game::liberaRipartenza() {
             v.z = road_.playerZ + Game::URTO_Z_MAX + 4000.0f;
     }
     const f32 mio = progressoTappePrecedenti_ + player_.z;
+    const i32 tappaGiocatore = indiceTappa(tappaId_);
     for (Rivale& r : rivali_) {
+        // RIV punto 1: solo i rivali che stanno sulla tappa del giocatore.
+        if (r.tempoArrivoS >= 0.0f || r.passoPercorso >= r.nPercorso ||
+            r.percorso[r.passoPercorso] != tappaGiocatore) continue;
         const f32 dz = r.progresso - mio;
         if (dz > Game::URTO_Z_MIN - 400.0f && dz < Game::URTO_Z_MAX + 1500.0f && std::abs(r.x - xRel) < URTO_LARGHEZZA + 100.0f)
             r.x = r.xObiettivo = xRel <= 0.0f ? 450.0f : -450.0f;
@@ -1963,16 +2124,17 @@ void Game::ribalta() {
 }
 
 void Game::calcolaClassifica() {
-    // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; per i
-    // rivali ancora in corsa (o gia' arrivati) si stima dal distacco e dal loro ritmo medio.
+    // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; ogni
+    // rivale registra il proprio tempo quando arriva alla fine del suo percorso
+    // (RIV punto 1). Chi non arriva entro il tempo limite esce dalla classifica:
+    // nessun tempo stimato per chi e' ancora in corsa.
     const f32 tempo = tempoTotaleS();
-    const f32 traguardo = progressoTappePrecedenti_ + (f32)road_.totalLength();
     classifica_.clear();
     classifica_.push_back({"TU", tempo, true});
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
-        const f32 media = std::max(1.0f, r.passoMax * RIVALE_MEDIA_PUNTA);
-        classifica_.push_back({NOMI_RIVALI[i], std::max(1.0f, tempo + (traguardo - r.progresso) / media), false});
+        if (r.tempoArrivoS < 0.0f) continue; // non arrivato entro il tempo limite: escluso
+        classifica_.push_back({NOMI_RIVALI[i], r.tempoArrivoS, false});
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });
@@ -2010,7 +2172,8 @@ void Game::ordinaSpriteFissi() {
     auto perZ = [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; };
     std::stable_sort(cartelloni_.begin(), cartelloni_.end(), perZ);
     std::stable_sort(oggettiStrada_.begin(), oggettiStrada_.end(), perZ);
-    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size()); // zero alloc per frame
+    std::stable_sort(parapetti_.begin(), parapetti_.end(), perZ);
+    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size() + parapetti_.size()); // zero alloc per frame
 }
 
 void Game::aggiungiVisibili(const std::vector<SpriteInstance>& fissi) {

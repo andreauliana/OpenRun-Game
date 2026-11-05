@@ -517,62 +517,93 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
                              bool frena, f32 fumoS, const DanniAuto* danni) {
-    // Auto del giocatore: sagoma sintetica (nessun asset Sega).
-    // Il corpo e' un rettangolo centrale, l'abitacolo una striscia diversa,
-    // l'ombra sotto. L'auto resta CENTRATA sullo schermo (cx=160): e' la
-    // strada che si sposta sotto di lei tramite camX=playerX in road.project(),
-    // come in OutRun. offsetX e' usato solo per un leggero accenno di
-    // sterzo visibile (inclinazione del corpo) senza spostare l'auto.
-    u32 body = offroad ? pal_[12] : pal_[9];
-    // Lampo bianco nei primi istanti della botta: l'urto si vede subito.
-    if (danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f) body = 0xFFFFFFFFu;
-    u32 cabin = pal_[10];
-    // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
-    i32 cx = 160 + (i32)(offsetX * 0.035f);
-    // Sollevamento alle velocita' piu' alte: l'ombra resta a terra, la
-    // carrozzeria sale di sollevamentoPx (moduli_fx.sollevamento_auto_alta_velocita).
-    const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
-    if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]);
-    i32 cy = 200 - sollevamento;
-    i32 w = 34, h = 18;
-    auto drawRotatedRect = [this, rollAngle](i32 centerX, i32 centerY, i32 rw, i32 rh, u32 color) {
-        const f32 c = std::cos(rollAngle);
-        const f32 s = std::sin(rollAngle);
-        const i32 extent = (rw + rh) / 2 + 1;
-        for (i32 y = centerY - extent; y <= centerY + extent; ++y) {
-            for (i32 x = centerX - extent; x <= centerX + extent; ++x) {
-                const f32 dx = (f32)(x - centerX);
-                const f32 dy = (f32)(y - centerY);
-                const f32 localX = c * dx + s * dy;
-                const f32 localY = -s * dx + c * dy;
-                if (std::abs(localX) <= rw / 2.0f && std::abs(localY) <= rh / 2.0f)
-                    fb_.put(x, y, color);
+    // P1 punto 4: sprite vero dell'auto del giocatore (catalogo auto_giocatore,
+    // variante rosso_corsa, @grafico, D5) quando il raw e' disponibile;
+    // altrimenti sagoma sintetica retrocompatibile. Nessun materiale Sega.
+    const bool lampo = danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f;
+    i32 cx = 160, cy = 200, w = 34, h = 18;
+    if (const Sprite* s = giocatoreSprite(); s->width > 0) {
+        // Sprite vero: stessa altezza di riferimento del vecchio corpo (18 px);
+        // l'auto resta centrata (cx=160), e' la strada che si muove sotto di lei.
+        // offsetX accenna lo sterzo spostandola leggermente; sollevamentoPx la
+        // solleva alle alte velocita'. rollAngle e' ignorato (futuro: fotogrammi
+        // per sterzo/sbandata, a carico del @grafico).
+        const f32 scala = 18.0f / (f32)s->height;
+        w = std::max(1, (i32)(s->width * scala));
+        h = std::max(1, (i32)(s->height * scala));
+        cx = 160 + (i32)(offsetX * 0.035f);
+        const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
+        cy = 200 - sollevamento;
+        if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]); // ombra a terra
+        SpriteInstance si;
+        si.sprite = s;
+        si.scale = scala;
+        si.paletteBase = 0;
+        drawSprite(si, (f32)cx, (f32)cy, scala);
+        if (lampo) {
+            // Lampo bianco nei primi istanti della botta.
+            fb_.fillRect(cx - w / 2, cy - h, cx + w / 2, cy, 0xFFFFFFFFu);
+        } else if (frena) {
+            // Stop accesi ai due lati del retro.
+            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 7, cy - h / 2 + 4, 0xFFFF2020u);
+            fb_.fillRect(cx + w / 2 - 7, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 4, 0xFFFF2020u);
+        } else if (speed > 0.0f && !offroad) {
+            // Retromarcia accesa in marcia (piccoli quadratini).
+            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 6, cy - h / 2 + 3, 0xFFFFF4B0u);
+            fb_.fillRect(cx + w / 2 - 6, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 3, 0xFFFFF4B0u);
+        }
+    } else {
+        // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
+        u32 body = offroad ? pal_[12] : pal_[9];
+        if (lampo) body = 0xFFFFFFFFu;
+        u32 cabin = pal_[10];
+        // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
+        cx = 160 + (i32)(offsetX * 0.035f);
+        // Sollevamento alle velocita' piu' alte: l'ombra resta a terra, la
+        // carrozzeria sale di sollevamentoPx (moduli_fx.sollevamento_auto_alta_velocita).
+        const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
+        if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]);
+        cy = 200 - sollevamento;
+        w = 34; h = 18;
+        auto drawRotatedRect = [this, rollAngle](i32 centerX, i32 centerY, i32 rw, i32 rh, u32 color) {
+            const f32 c = std::cos(rollAngle);
+            const f32 s = std::sin(rollAngle);
+            const i32 extent = (rw + rh) / 2 + 1;
+            for (i32 y = centerY - extent; y <= centerY + extent; ++y) {
+                for (i32 x = centerX - extent; x <= centerX + extent; ++x) {
+                    const f32 dx = (f32)(x - centerX);
+                    const f32 dy = (f32)(y - centerY);
+                    const f32 localX = c * dx + s * dy;
+                    const f32 localY = -s * dx + c * dy;
+                    if (std::abs(localX) <= rw / 2.0f && std::abs(localY) <= rh / 2.0f)
+                        fb_.put(x, y, color);
+                }
+            }
+        };
+        drawRotatedRect(cx, cy - h / 2, w, h, body);
+        drawRotatedRect(cx, cy - h / 2 - 4, w / 2, h / 2, cabin);
+        drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
+        drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
+        drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
+        if (danni && danni->segni > 0) {
+            // Ammaccature: restano per tutta la gara, una per botta (fino a
+            // DANNI_MAX), in punti fissi del retro; ombra scura e graffio chiaro.
+            static constexpr i32 SEGNI[DanniAuto::DANNI_MAX][2] = {
+                {-12, -4}, {11, -6}, {-6, -1}, {7, -2}, {-15, -8}, {14, -3}, {-2, -5}, {3, -8}};
+            for (i32 k = 0; k < std::min(danni->segni, DanniAuto::DANNI_MAX); ++k) {
+                const i32 sx = cx + SEGNI[k][0], sy = cy + SEGNI[k][1];
+                drawRotatedRect(sx, sy, 3, 2, 0xFF402020u);
+                drawRotatedRect(sx + 1, sy - 1, 2, 1, 0xFFE0D0C0u);
             }
         }
-    };
-    drawRotatedRect(cx, cy - h / 2, w, h, body);
-    drawRotatedRect(cx, cy - h / 2 - 4, w / 2, h / 2, cabin);
-    drawRotatedRect(cx - 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
-    drawRotatedRect(cx + 13, cy - h / 2 + 5, 5, h - 3, pal_[14]);
-    drawRotatedRect(cx, cy - 2, w - 4, 2, pal_[11]);
-    if (danni && danni->segni > 0) {
-        // Ammaccature: restano per tutta la gara, una per botta (fino a
-        // DANNI_MAX), in punti fissi del retro; ombra scura e graffio chiaro.
-        static constexpr i32 SEGNI[DanniAuto::DANNI_MAX][2] = {
-            {-12, -4}, {11, -6}, {-6, -1}, {7, -2}, {-15, -8}, {14, -3}, {-2, -5}, {3, -8}};
-        for (i32 k = 0; k < std::min(danni->segni, DanniAuto::DANNI_MAX); ++k) {
-            const i32 sx = cx + SEGNI[k][0], sy = cy + SEGNI[k][1];
-            drawRotatedRect(sx, sy, 3, 2, 0xFF402020u);
-            drawRotatedRect(sx + 1, sy - 1, 2, 1, 0xFFE0D0C0u);
+        if (frena) {
+            // Stop accesi: rossi e piu' grandi.
+            drawRotatedRect(cx - 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+            drawRotatedRect(cx + 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
+        } else if (speed > 0.0f && !offroad) {
+            drawRotatedRect(cx - 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
+            drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
         }
-    }
-    if (frena) {
-        // Stop accesi: rossi e piu' grandi.
-        drawRotatedRect(cx - 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
-        drawRotatedRect(cx + 10, cy - h / 2 + 2, 5, 3, 0xFFFF2020u);
-    } else if (speed > 0.0f && !offroad) {
-        drawRotatedRect(cx - 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
-        drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
     }
     if (fumoS >= 0.0f) {
         // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s

@@ -521,16 +521,16 @@
       {
          "id": "ui.font_a",
          "tipo": "ui",
-         "stato": "proposta",
+         "stato": "pronto",
          "file": "assets_originali/ui/font/varianteA/font.png",
-         "nota": "D7: variante A - font pixel 5x7, stato proposta fino ad approvazione Andrea"
+         "nota": "D7: variante A - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
       },
       {
          "id": "ui.font_c",
          "tipo": "ui",
-         "stato": "proposta",
+         "stato": "pronto",
          "file": "assets_originali/ui/font/varianteC/font.png",
-         "nota": "D7: variante C - font pixel 5x7, stato proposta fino ad approvazione Andrea"
+         "nota": "D7: variante C - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
       },
       {
          "id": "font.antonio",
@@ -1116,14 +1116,13 @@
          "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
       },
       {
-         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
          "tipo": "oggetto_bordo_strada",
          "stato": "scartato",
-         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "storico, non usato (rimosso obj_bidone_copy)"
+         "nota": "storico, non usato (rimosso obj_bidone_copy): il file 'obj_bidone copy.png' non esiste piu', quindi nessun percorso a catalogo; id corretto perche' era doppio con obj_insegna_neon"
       },
       {
          "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_insegna_neon",
@@ -1966,6 +1965,35 @@
             "lv_06_desktop"
          ],
          "nota": "FIN: scena di arrivo lv_06_desktop - desktop si spegne e riparte con l'auto vincitrice (FLUSSO_GIOCO.md sezione 4). Varianti per posizione (primo/podio/fuori podio) da definire con Andrea. Disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.comuni.parapetto",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/parapetto.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_04_cromo",
+            "lv_06_desktop"
+         ],
+         "nota": "PIST1 G-P1: parapetto del ponte, comune a tutti i temi, colori neutri, 32x48 (ponte su lv_01/lv_04/lv_06). Originale, disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/parapetto.sglraw"
+      },
+      {
+         "id": "oggetto.comuni.guardrail",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/guardrail.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PIST1 G-P1: guardrail dell'autostrada, comune a tutti i temi, acciaio neutro, 48x32 (livelli con tratto autostrada). Originale, disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/guardrail.sglraw"
       }
    ]
 }

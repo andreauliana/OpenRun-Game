@@ -23,6 +23,28 @@ def png_variante_a(livello, nome):
     return None
 
 
+def converti_comuni():
+    """Oggetti comuni a tutti i temi (PIST1, passo G-P1 @grafico): parapetto del
+    ponte e guardrail dell'autostrada, da scenari/comuni/oggetti/*.png a
+    sprite_raw/scenari/comuni/<nome>.sglraw (lo stesso formato SGLR)."""
+    src_dir = SCENARI / "comuni" / "oggetti"
+    if not src_dir.is_dir():
+        return 0
+    dst_dir = RAW / "comuni"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    n = 0
+    for png in sorted(src_dir.glob("*.png")):
+        img = Image.open(png).convert("RGBA")
+        dati = b"SGLR" + struct.pack("<II", img.width, img.height) + img.tobytes()
+        dst = dst_dir / (png.stem + ".sglraw")
+        if dst.exists() and dst.read_bytes() == dati:
+            continue
+        dst.write_bytes(dati)
+        print(f"scritto {dst} ({img.width}x{img.height}) da {png}")
+        n += 1
+    return n
+
+
 def main():
     n = 0
     for raw in sorted(RAW.glob("*/*.sglraw")):
@@ -39,6 +61,7 @@ def main():
         raw.write_bytes(dati)
         print(f"aggiornato {raw} ({img.width}x{img.height}) da {png}")
         n += 1
+    n += converti_comuni()
     print(f"raw oggetti aggiornati: {n}")
 
 

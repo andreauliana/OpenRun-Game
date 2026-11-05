@@ -84,6 +84,10 @@ public:
     void setRivaliSprites(std::vector<Sprite> sprites);
     // Traffico comune (Andrea 27/10): sprite dei veicoli civili, prima di avviaGara().
     void setTrafficoSprites(std::vector<Sprite> sprites);
+    // P1 punto 4: sprite vero dell'auto del giocatore (raw in
+    // sprite_raw/giocatore/auto_giocatore.sglraw); il Renderer lo disegna al
+    // posto del rettangolo sintetico. Se manca il raw resta la sagoma sintetica.
+    void impostaGiocatoreSprite(Sprite sprite);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
     size_t numeroCartelloni() const { return cartelloni_.size(); }
     // Oggetti decorativi della tappa (posizioni fisse; per i gate).
@@ -270,6 +274,9 @@ private:
     void aggiungiVisibili(const std::vector<SpriteInstance>& fissi);
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     std::vector<SpriteInstance> oggettiStrada_; // oggetti bordo strada (DECO1 2c), posizioni fisse
+    // PIST1 P3 (05/11): parapetti del ponte, comuni a tutti i temi, ai due lati
+    // dei segmenti con acqua ogni PARAPETTI_PASSO_Z unita' (sprite_raw/scenari/comuni).
+    std::vector<SpriteInstance> parapetti_;
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;
@@ -332,6 +339,7 @@ private:
     void leggiTemaDaFile(const JsonValue* radice);
     void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
     void caricaOggettiStrada(const std::string& livelloId); // DECO1 2c: carica sprite oggetti bordo strada
+    void caricaParapetti(i32 idxParapetto); // PIST1 P3: parapetto comune ai due lati dei segmenti con acqua (ponte)
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
@@ -359,6 +367,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     struct Tappa {
         std::string id, sinistra, destra; // rami vuoti = arrivo
     };
+    static constexpr i32 RIVALE_MAX_TAPPE = 8; // profondita' massima del percorso di un rivale
     struct Rivale {
         f32 progresso = 0.0f; // distanza percorsa dalla partenza (tutte le tappe)
         f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
@@ -368,9 +377,24 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         f32 bravura = 1.0f; // bravura propria (0.92..1.08, seme fisso), scala passoMax
         i32 spriteIdx = -1; // indice sprite rivale in Renderer (RIV punto b), -1 = rettangolo sintetico
         f32 ritmoFase = 0.0f, ritmoVel = 0.2f; // ritmo proprio: un po' piu' veloce o lento nel tempo
+        // RIV punto 1 (05/11): ogni rivale ha il suo percorso nell'albero delle
+        // tappe, scelto dal seme. Fuori dalla tappa del giocatore non si vede
+        // (non guida la strada caricata); registra il proprio tempo d'arrivo.
+        i32 percorso[RIVALE_MAX_TAPPE] = {};      // indici in tappe_
+        i32 ramiPercorso[RIVALE_MAX_TAPPE] = {};  // ramo scelto per passare alla tappa k+1
+        i32 nPercorso = 0;
+        i32 passoPercorso = 0;     // indice in percorso[] della tappa corrente
+        f32 progressoTappa = 0.0f; // distanza percorsa dentro la tappa corrente
+        f32 tempoArrivoS = -1.0f;  // tempo totale al traguardo (s), -1 = ancora in corsa
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;
+    i32 indiceTappa(const std::string& id) const;
+    // Lunghezza del tracciato di una tappa (somma dei segmenti di livello.json,
+    // stessa regola di ripetizione di caricaLivello), senza costruire la Road.
+    f32 lunghezzaNominaleTappa(const std::string& livelloId) const;
+    void avanzaTappaRivale(Rivale& r); // cambio tappa o arrivo del rivale
+    std::vector<f32> lunghezzeTappe_;  // parallelo a tappe_
     void preparaBivio();
     void inizializzaRivali();
     void aggiornaRivali();
