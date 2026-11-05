@@ -20,15 +20,22 @@ fi
 T=""; RC=1
 for i in $(seq 1 24); do
   T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1)"; RC=$?
-  if echo "$T" | grep -qiE "usage limit|unavailable"; then
+  if echo "$T" | grep -qiE "usage limit|unavailable|not available"; then
     # Limite gratuito (o modello non disponibile) sul modello del capo: provo gli altri modelli della panchina (come fa il ciclo).
     CUR="$(grep -m1 '^model:' "$P/.opencode/agents/capo.md" | sed 's/^model: *//')"; OK_PAN=0
+    # "not available in your country": il modello non funziona qui, lo escludo per sempre (strumenti/panchina_esclusi.txt).
+    if echo "$T" | grep -qiE "not available in your (country|region|location)"; then
+      grep -qxF "$CUR" "$BASE/strumenti/panchina_esclusi.txt" 2>/dev/null || echo "$CUR" >> "$BASE/strumenti/panchina_esclusi.txt"
+      echo "[brains] $CUR non e' disponibile in questo paese: escluso (strumenti/panchina_esclusi.txt)"
+    fi
     while read -r m; do
       [ -n "$m" ] && [ "$m" != "$CUR" ] || continue
+      case "$m" in '#'*) continue ;; esac
+      grep -qxF "$m" "$BASE/strumenti/panchina_esclusi.txt" 2>/dev/null && continue
       V3_BASE="$BASE" sh "$BASE/strumenti/set_model.sh" capo "$m" >/dev/null
       T="$(cd "$P" && opencode run --agent capo "Rispondi solo con la parola PRONTO." 2>&1 < /dev/null)"; RC=$?
       # Buono solo se risponde senza errori: "Model is unavailable" o "not found" fanno provare il modello dopo.
-      if [ "$RC" -eq 0 ] && ! echo "$T" | grep -qiE "usage limit|rate limit|unavailable|not found|^Error"; then echo "[brains] $CUR non disponibile: il capo passa a $m"; OK_PAN=1; break; fi
+      if [ "$RC" -eq 0 ] && ! echo "$T" | grep -qiE "usage limit|rate limit|unavailable|not available|not found|^Error"; then echo "[brains] $CUR non disponibile: il capo passa a $m"; OK_PAN=1; break; fi
       echo "[brains] anche $m non risponde ($(echo "$T" | grep -m1 -i error | cut -c1-80)), provo il successivo"
     done < "$BASE/strumenti/panchina.txt"
     [ "$OK_PAN" -eq 1 ] && break

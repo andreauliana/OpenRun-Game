@@ -289,7 +289,7 @@ public:
         char nomeCursore[8];
         std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c", nome_[0], nome_[1], nome_[2]);
         nomeCursore[nomePos_] = '_';
-        std::snprintf(buf, sizeof(buf), "NOME: %s   SU/GIU CAMBIA LETTERA  START OK", nomeCursore);
+        std::snprintf(buf, sizeof(buf), "NOME: %s   SU/GIU CAMBIA  START OK", nomeCursore);
         ren.drawTesto(64, 72, buf, 0xFFFFFFFFu, 1, true);
         std::snprintf(buf, sizeof(buf), "%s %d PUNTI   POSIZIONE %d", nomeVis, punteggio_, posizione_);
         ren.drawTesto(64, 88, buf, 0xFFA0A0A0u, 1, true);

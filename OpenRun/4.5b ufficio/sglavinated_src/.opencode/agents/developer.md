@@ -1,7 +1,7 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
 model: opencode/deepseek-v4.1-flash-free
-# fallback (cambia manualmente se modello sopra non disponibile): nemotron-3.5-super-vl-free
+# modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:
   read:
@@ -11,7 +11,8 @@ permission:
     "*": deny
     "bacheche/developer/**": allow
     "PER_CLAUDE.md": allow
-    "out/developer/**": allow
+    "out/developer/ULTIMO_TURNO.md": allow
+    "out/developer/REVIEW_*.md": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
@@ -81,3 +82,5 @@ Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configur
 - TEMPI: `sh UFFICIO/Officina/TOOL/gate_t1.sh` dura circa 2-4 minuti (compilazione compresa; prima del 02/11 ~13 min). Lancialo con il parametro timeout dello strumento bash a 900000 (15 min): senza, lo strumento si ferma a 2 minuti e sembra un "permesso negato" o un "timeout". Per una prova rapida usa un solo test: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/<nome>" <livello> <modo>`. Se un comando e' davvero negato, scrivi nel diario il comando ESATTO che hai lanciato.
 - Se `gate_t1.sh` esce con un codice, cerca la riga FALLITO in `UFFICIO/Officina/Test area/gate_t1.log` prima di cambiare qualcosa: exit 13 = percorso fuori soglia (il log dice quale pista e quale numero).
 - Non cambiare costanti di gameplay (urti, velocita', sterzo, tolleranze) se un passo di RICHIESTA.md non lo chiede esplicitamente.
+
+- DOCUMENTI (Andrea 05/11): non creare documenti nuovi. Gli unici file di testo che scrivi sono: una riga in `bacheche/<ruolo>/diario.md`, `bacheche/<ruolo>/RIASSUNTO.md` (riscritto, max 12 righe), `out/developer/ULTIMO_TURNO.md` (riscritto, max 15 righe) e, solo se il blocco chiede una review, `out/developer/REVIEW_<BLOCCO>.md`. Il lavoro vero e' codice, test, dati o PNG: un turno che produce solo testo e' un turno perso. Le direzioni sono SOLO nella riga "Tocca a" del RIEPILOGO CORRENTE di `RICHIESTA.md`: fai il primo passo tuo non fatto, uno per turno.
