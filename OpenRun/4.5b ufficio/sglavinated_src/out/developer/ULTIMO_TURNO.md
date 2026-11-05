@@ -1,6 +1,7 @@
-# Ultimo turno developer — 05/11/2026 20:23 (turno 2)
-Blocco: RIV [~] / PIST1 [~] — nessuna scrittura di codice (G-P1 del @grafico consegnata, P3 e RIV punto 1 gia' fatti; RIV punto 3 spetta al @grafico, J1/J2 al @developer-junior).
-File cambiati: nessuno.
-Comando: nessuno (gate non eseguito).
-Esito: gate non eseguito; ultimo esito noto gate_t1.sh exit 0 alle 20:15 (6/6 GATE PERCORSO OK, ms/frame max 3.13 limite 20, replay 2x IDENTICO, gara 4/4 IDENTICO).
-Prossimo: attendere J1/J2 del @developer-junior e RIV punto 3 del @grafico, poi valutare R2 (dopo DECO1); H e T1-RUN restano in attesa di Andrea.
+# Ultimo turno developer — 05/11/2026 21:18 (turno 3)
+Blocco: RIV [~] — passo: verifica RIV punto 1 (ogni rivale i suoi bivi da percorso_gara.json).
+File cambiati: nessuno (RIV punto 1 gia' implementato in game.cpp, nessuna modifica necessaria).
+Comando: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/RIV_punto1_gara" lv_01_neon gara
+Exit code: 0 (GATE GARA OK; 4/4 arrivi, posizione 4/1/5/8, replay IDENTICO, 0 incidenti, 0 sovrapposizioni).
+Esito: RIV punto 1 verificato. RIV punto 3 attende @grafico; PIST1 J1/J2 attendono @developer-junior; H e T1-RUN attendono Andrea.
+Prossimo: attendere J1/J2 e RIV punto 3, poi R2 (dopo DECO1); nessun blocco sviluppatore eseguibile in codice.

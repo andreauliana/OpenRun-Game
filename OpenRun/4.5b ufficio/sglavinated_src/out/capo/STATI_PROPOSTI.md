@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 2 (ora 2 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
 
 Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md.
 
@@ -30,7 +30,7 @@ Data: 2026-11-05.
 | F60 | [x] gate / [~] review | @developer | @developer-junior (incrociata pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICO | Gate verde registrato 22/10 20:06; manca review incrociata developer→developer-junior e apertura CP F60. |
 | R2 | [~] | @developer | @developer-junior (incrociata) | `out/developer/` | ctest verde con gate `ciclo`; tutte le 5 fasi | In corso (passi 1/1b/1c fatti, ctest 22/22 verde gate `ciclo`). NON subordinato a D18/D19 (Andrea 27/10). Prossimo: 1d nome a 3 lettere, poi RIV punti a-c, poi PIST1 punto 1. |
 | RIV | [~] | @developer + @grafico | @developer-junior (gate `urto`, `gara`) | `out/developer/`, `out/grafico/` | ctest verde con `gara` e `urto`; sprite rivali catalogo (7 sprite rivali "pronto"); nessun ribaltamento su urto | Dopo R2 1b-1c e DECO1 2f. Punti a,b,c (bump, sprite rivali, comportamento realistico). Punto 1 (percorso_gara.json per ogni rivale) dopo PIST1. |
-| PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | G-P1 [x] per handoff grafico 2026-11-05 20:46 (parapetto.png 32x48 + guardrail.png 48x32 su disco, raw, 2 voci `pronto`, catalogo exit 0). Ora: @developer P3 (parapetti oggetti ai due lati ogni ~400 unità sui segmenti `acqua`, dopo G-P1), poi gate_t1.sh; poi @developer-junior J2 e J1. |
+| PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | G-P1 [x] per handoff grafico 2026-11-05 20:46 (parapetto.png 32x48 + guardrail.png 48x32 su disco, raw, 2 voci `pronto`, catalogo exit 0). Ora: @developer P3 (parapetti oggetti ai due lati ogni ~400 unità sui segmenti `acqua`, dopo G-P1 [x]), poi `sh UFFICIO/Officina/TOOL/gate_t1.sh`; poi @developer-junior J2 e J1. |
 | FIN | [ ] | @developer + @grafico | @developer-junior (gate `gara` finale) | `out/developer/`, `out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. 3 scene arrivo "pronto" per @grafico, varianti per posizione da definire con Andrea. |
 
 ## Deleghe 4.6 (tappa 1)
