@@ -103,8 +103,8 @@ constexpr f32 SCALA_AUTO = 1.4f;
 // classifica ogni rivale e' il colore della sua auto. Stesso ordine degli
 // sprite caricati da runner e test (auto_rivale_<colore>_retro).
 constexpr f32 SCALA_RIVALE = 1.4f;
-// Andrea 05/11 notte: cognomi di piloti verosimili al posto dei colori.
-const char* const NOMI_RIVALI[] = {"ROSSI", "WILLIAMS", "MULLER", "DUBOIS", "TANAKA", "SILVA", "KOWALSKI"};
+// Andrea 05/11 notte: nomi inventati da 6 lettere al posto dei colori.
+const char* const NOMI_RIVALI[] = {"KARVEN", "MIRADO", "TOVESK", "BRANZI", "OKUMAR", "SELVIN", "DAROKA"};
 // Triangolo sopra i rivali (Andrea 05/11 sera): acceso nei primi
 // SEGNALINO_PARTENZA_S secondi di gara, poi solo per SEGNALINO_DURATA_S quando
 // un rivale entra nella fascia vicina (davanti o appena dietro). Isteresi: si
