@@ -215,9 +215,20 @@ u64 leggiPadHeld(const Uint8* kb, const Controller& c, f32& axisLX, f32& axisLY)
     } else if (c.joy) {
         axisLX = SDL_JoystickGetAxis(c.joy, 0) / 32768.0f;
         axisLY = SDL_JoystickGetAxis(c.joy, 1) / 32768.0f;
+        // Pad USB generici non riconosciuti da SDL (es. cloni Super Nintendo):
+        // 4 tasti frontali 0-3, Select 8 e Start 9 come nella maggior parte dei
+        // cloni; la croce arriva dagli assi (sopra) o dal primo hat.
         const int nb = SDL_JoystickNumButtons(c.joy);
-        if (nb > 0 && SDL_JoystickGetButton(c.joy, 0)) held |= Pad::A;
-        if (nb > 1 && SDL_JoystickGetButton(c.joy, 1)) held |= Pad::B;
+        auto jb = [&](int i, u64 bit) { if (nb > i && SDL_JoystickGetButton(c.joy, i)) held |= bit; };
+        jb(0, Pad::A); jb(1, Pad::B); jb(2, Pad::X); jb(3, Pad::Y);
+        jb(8, Pad::Select); jb(9, Pad::Start);
+        if (SDL_JoystickNumHats(c.joy) > 0) {
+            const Uint8 h = SDL_JoystickGetHat(c.joy, 0);
+            if (h & SDL_HAT_UP)    held |= Pad::Up;
+            if (h & SDL_HAT_DOWN)  held |= Pad::Down;
+            if (h & SDL_HAT_LEFT)  held |= Pad::Left;
+            if (h & SDL_HAT_RIGHT) held |= Pad::Right;
+        }
     }
     if (axisLX < -0.5f) held |= Pad::Left;
     if (axisLX >  0.5f) held |= Pad::Right;
