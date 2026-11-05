@@ -23,12 +23,23 @@ centrata, ruote appoggiate al bordo basso del PNG.
 | `auto_dx1.png`, `auto_dx2.png` | 64x32 | come sopra a destra | no (se mancano il gioco specchia sx1/sx2) |
 | `auto_salita.png` | 64x32 | dritta in salita (si vede piu' il tetto) | no |
 | `auto_discesa.png` | 64x32 | dritta in discesa (si vede piu' il paraurti) | no |
-| `<nome>_b.png` | 64x32 | stesso fotogramma con le ruote al secondo passo (es. `auto_dritto_b.png`, `auto_sx1_b.png`) | no (senza: solo rimbalzo) |
 | `auto_sbandata.png` | 64x32 | auto di traverso dopo un urto | no |
 | `auto_ribalta_1.png` ... `auto_ribalta_4.png` | 64x48 | quattro pose del ribaltamento | no (senza: il gioco ruota il fotogramma) |
 
-Il gioco sceglie da solo il fotogramma in base a sterzo, salita/discesa, velocita' e incidente.
-Stop, ombra, fumo e lampo dell'urto li aggiunge il motore sopra il tuo disegno.
+L'auto e' **a componenti**: i fotogrammi qui sopra sono solo la carrozzeria, **senza le ruote posteriori**.
+Le parti animate si disegnano una volta sola e il gioco le riusa su tutti i fotogrammi:
+
+| File | Misura | Cosa disegnare |
+|---|---|---|
+| `ruota_1.png`, `ruota_2.png`, `ruota_3.png` | 12x10 | ruota posteriore sinistra vista da dietro, 3 passi di rotazione (la destra e' specchiata) |
+| `luci_stop.png` | 12x4 | fanale posteriore sinistro acceso (il destro e' specchiato) |
+| `fumo_1.png`, `fumo_2.png`, `fumo_3.png` | 16x16 | sbuffo di fumo in 3 passi |
+
+Dove va ogni ruota e ogni fanale per ogni fotogramma lo dice `auto_giocatore.json` nella stessa cartella
+(lo prepara il @grafico; se sposti le ruote nel tuo disegno, cambia li' i numeri in pixel).
+Il gioco sceglie da solo il fotogramma in base a sterzo, salita/discesa, velocita' e incidente;
+la carrozzeria rimbalza leggermente mentre le ruote restano a terra. Se un componente manca, il gioco
+usa il disegno semplice di oggi. Ombra e lampo dell'urto li aggiunge il motore.
 
 ## 2. Il resto che si vede gia' in gioco
 
