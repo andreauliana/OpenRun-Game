@@ -4,7 +4,11 @@
 BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
 P="$BASE/sglavinated_src"; LOG="$P/giro.log"; MAX_ORE="${MAX_ORE:-10}"; t0=$(date +%s); r=0
 oc() {
-  (cd "$P" && exec opencode run --auto "$@") >> "$LOG" 2>&1 &
+  # OpenCode 2: modello dell'agente passato con --model (il predefinito puo' essere bloccato in UE).
+  ag=""; prec=""; for a in "$@"; do [ "$prec" = "--agent" ] && { ag="$a"; break; }; prec="$a"; done
+  MF=""; [ -n "$ag" ] && MF="--model $(grep -m1 '^model:' "$P/.opencode/agents/$ag.md" 2>/dev/null | sed 's/^model: *//')"
+  [ "$MF" = "--model " ] && MF=""
+  (cd "$P" && exec opencode run $MF --auto "$@") >> "$LOG" 2>&1 &
   pid=$!; ( sleep "${OC_TIMEOUT:-1500}"; kill "$pid" 2>/dev/null ) >/dev/null 2>&1 & w=$!
   wait "$pid"; rc=$?; kill "$w" 2>/dev/null; return $rc
 }
