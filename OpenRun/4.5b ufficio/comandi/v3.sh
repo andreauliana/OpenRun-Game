@@ -1,5 +1,5 @@
 #!/bin/sh
-# Comando unico della build (nomi interni V3). Uso: sh v3.sh <start|stop|stop-subito|stato|vivo|pannello|aggiorna>
+# Comando unico della build (nomi interni V3). Uso: sh v3.sh <start|stop|stop-subito|stato|vivo|pannello|modelli|aggiorna>
 BASE="${V3_BASE:-$(cd "$(dirname "$0")/.." && pwd)}"
 export V3_BASE="$BASE"
 S="$BASE/sglavinated_src"; T="$BASE/strumenti"
@@ -87,5 +87,6 @@ case "${1:-stato}" in
     sh "$T/blocchi.sh" ;;
   vivo)     exec sh "$T/vivo.sh" ;;
   pannello) apri_pannello ;;
-  *) echo "Uso: v3.sh start | stop | stop-subito | stato | vivo | pannello | aggiorna" ;;
+  modelli)  exec sh "$T/modelli.sh" ;;
+  *) echo "Uso: v3.sh start | stop | stop-subito | stato | vivo | pannello | modelli | aggiorna" ;;
 esac

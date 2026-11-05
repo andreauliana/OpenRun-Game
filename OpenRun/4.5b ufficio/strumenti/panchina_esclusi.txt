@@ -1,0 +1,9 @@
+# Modelli da non usare mai (uno per riga). Il ciclo aggiunge qui da solo i modelli che rispondono
+# "not available in your country" / "not available in your region".
+# Andrea e' in Italia (UE): crouton-alpha e pulse-alpha non sono disponibili nell'UE.
+# flint-40b-free: i dati vengono usati per l'addestramento, meglio evitarlo per il codice del gioco.
+opencode/crouton-alpha-free
+opencode/pulse-alpha-free
+opencode/flint-40b-free
+opencode/longcat-2.5-preview-free
+opencode/space-bunny-free

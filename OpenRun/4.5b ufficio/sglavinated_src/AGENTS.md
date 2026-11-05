@@ -68,6 +68,7 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 - La musica segue `motore_nuovo/dati/audio/playlist.json`; MD0 è sospeso.
 - Quota open almeno 50%. Per verificare il catalogo e la quota, usare gli strumenti esistenti sotto `motore_nuovo/strumenti_py/` solo se assegnati.
 - Non cancellare file, non creare copie di sorgenti e non modificare documenti storici in `archivio_v4/`.
+- Documenti (Andrea 05/11): nessun documento nuovo. Ogni ruolo scrive solo una riga di diario, il proprio RIASSUNTO, `out/<ruolo>/ULTIMO_TURNO.md` riscritto (Grafico: `STATUS_GRAFICO_PER_CAPO.md`; Capo: `STATI_PROPOSTI.md` e `Checkpoint Revision/`) e `REVIEW_<BLOCCO>.md` solo se il blocco chiede una review. Le direzioni stanno solo nella riga "Tocca a" di `RICHIESTA.md`. `archivio_per_claude/` non si legge.
 
 ## Build e test
 
