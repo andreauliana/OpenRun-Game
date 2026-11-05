@@ -103,7 +103,16 @@ constexpr f32 SCALA_AUTO = 1.4f;
 // classifica ogni rivale e' il colore della sua auto. Stesso ordine degli
 // sprite caricati da runner e test (auto_rivale_<colore>_retro).
 constexpr f32 SCALA_RIVALE = 1.4f;
-const char* const NOMI_RIVALI[] = {"ROSSA", "AZZURRA", "GIALLA", "VERDE", "BIANCA", "ARANCIO", "VIOLA"};
+// Andrea 05/11 sera: nomi in inglese, a tema spaziale, al posto dei colori.
+const char* const NOMI_RIVALI[] = {"NOVA", "VEGA", "ORION", "LYRA", "PULSAR", "QUASAR", "NEBULA"};
+// Triangolo sopra i rivali (Andrea 05/11 sera): acceso nei primi
+// SEGNALINO_PARTENZA_S secondi di gara, poi solo per SEGNALINO_DURATA_S quando
+// un rivale entra nella fascia vicina (davanti o appena dietro). Isteresi: si
+// riaccende solo dopo che il rivale e' uscito oltre SEGNALINO_LONTANO_Z.
+constexpr f32 SEGNALINO_PARTENZA_S = 3.0f;
+constexpr f32 SEGNALINO_DURATA_S = 2.5f;
+constexpr f32 SEGNALINO_VICINO_Z = 25000.0f;
+constexpr f32 SEGNALINO_LONTANO_Z = 32000.0f;
 constexpr u32 COLORI_RIVALI[] = {0xFFFF3030u, 0xFF40A0FFu, 0xFFFFE020u, 0xFF40E070u,
                                  0xFFF0F0F8u, 0xFFFF9020u, 0xFFB060FFu};
 // Arrivo (Andrea 29/10): pubblico dietro le transenne ai lati della strada,
@@ -987,6 +996,8 @@ void Game::inizializzaRivali() {
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
+        r.segnalinoS = 0.0f;
+        r.vicino = false;
         i32 cur = indiceTappa(tappaId_);
         while (cur >= 0 && r.nPercorso < RIVALE_MAX_TAPPE) {
             r.percorso[r.nPercorso] = cur;
@@ -1232,6 +1243,11 @@ void Game::aggiornaRivali() {
         if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
 
         const f32 zRel = zLocale - road_.playerZ;
+        // Triangolo: si accende quando il rivale entra nella fascia vicina.
+        const f32 distAss = std::abs(zRel);
+        if (!r.vicino && distAss < SEGNALINO_VICINO_Z) { r.vicino = true; r.segnalinoS = SEGNALINO_DURATA_S; }
+        else if (r.vicino && distAss > SEGNALINO_LONTANO_Z) r.vicino = false;
+        if (r.segnalinoS > 0.0f) r.segnalinoS = std::max(0.0f, r.segnalinoS - dt);
         if (zRel <= 0.0f || zRel > 60000.0f || zLocale >= giro + 60000.0f) continue;
         // Sul bivio ogni avversario segue il suo ramo.
         const Road::Carreggiate c = road_.carreggiate(zLocale, latoBivio_);
@@ -1242,7 +1258,8 @@ void Game::aggiornaRivali() {
         s.scale = SCALA_RIVALE;
         s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
-        s.segnalino = COLORI_RIVALI[r.spriteIdx >= 0 ? r.spriteIdx : i];
+        const bool segnalinoAcceso = tempoTotaleS() < SEGNALINO_PARTENZA_S || r.segnalinoS > 0.0f;
+        s.segnalino = segnalinoAcceso ? COLORI_RIVALI[r.spriteIdx >= 0 ? r.spriteIdx : i] : 0u;
         sprites_.push_back(s);
         spritesFonte_.push_back(i);
     }
@@ -2130,7 +2147,7 @@ void Game::calcolaClassifica() {
     // nessun tempo stimato per chi e' ancora in corsa.
     const f32 tempo = tempoTotaleS();
     classifica_.clear();
-    classifica_.push_back({"TU", tempo, true});
+    classifica_.push_back({"YOU", tempo, true});
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
         if (r.tempoArrivoS < 0.0f) continue; // non arrivato entro il tempo limite: escluso
