@@ -1008,13 +1008,18 @@ void Game::inizializzaRivali() {
         r.ritmoVel = 0.15f + 0.04f * (f32)rnd.next(5);
         // RIV punto 1: ogni rivale ha la sua sequenza deterministica di tappe
         // da percorso_gara.json, scelta col seme del gioco. Parte dalla stessa
-        // tappa del giocatore; a ogni bivio sceglie sinistra o destra; l'ultima
-        // tappa e' il suo traguardo. Il percorso e' memorizzato in r.percorso[]
-        // e i rami scelti in r.ramiPercorso[], con nPercorso elementi.
-        // Tempo d'arrivo registrato in r.tempoArrivoS (>=0 quando finito).
+        // tappa del giocatore; a ogni bivio usa la propria sorgente RNG
+        // (seed = seed_ ^ 0x52495641u ^ i) per garantire percorsi diversi
+        // tra rivali ma coerenti per seed. Il percorso e' memorizzato in
+        // r.percorso[] e i rami scelti in r.ramiPercorso[], con nPercorso
+        // elementi. Tempo d'arrivo registrato in r.tempoArrivoS (>=0 quando
+        // finito).
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
+        // Sorgente RNG per le scelte del bivio di questo rivale (deterministico
+        // per index di rivale, garantisce percorsi differenti ma coerenti).
+        Rng rndBivio(seed_ ^ 0x52495641u ^ (u32)i);
         i32 cur = indiceTappa(tappaId_);
         // RIV punto 1: percorso deterministico dal seme, parte dalla tappa del giocatore.
         // Se la tappa non fosse trovata, si usa un percorso di arrivo immediato.
@@ -1031,7 +1036,7 @@ void Game::inizializzaRivali() {
                     ++r.nPercorso;
                     break;
                 }
-                const i32 scelta = rnd.next(2) == 0 ? -1 : 1;
+                const i32 scelta = rndBivio.next(2) == 0 ? -1 : 1;
                 r.ramiPercorso[r.nPercorso] = scelta;
                 ++r.nPercorso;
                 cur = indiceTappa(scelta < 0 ? t.sinistra : t.destra);

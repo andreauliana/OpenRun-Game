@@ -1,1 +1,1 @@
-06/11/2026 06:49 developer: RIV punto 1 migliorato: added safety check + documentation to inizializzaRivali() in game.cpp, gate_t1.sh exit 0 GATE T1: TUTTO OK 6/6 percorsi
+06/11/2026 07:23 developer: RIV punto 1 percorso deterministico per ramo: ogni rivale usa RNG seed per index, scelte bivio differenti ma coerenti, gate percorso 6/6 OK

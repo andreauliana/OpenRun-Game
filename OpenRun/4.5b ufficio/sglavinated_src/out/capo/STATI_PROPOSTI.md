@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 5 (ora 9 di 12) — @capo
+# STATI PROPOSTI — Turno 6 (ora 10 di 12) — @capo
 
 Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md.
 
@@ -14,7 +14,7 @@ Data: 2026-11-06.
 - **CP-007 (FORK1 bivio e transizione di tema): CHIUSO** 2026-10-27 (review incrociate indipendenti positive, ctest 20/20 verde). Non si riapre.
 - **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
 - **CP-002 (G1 inventario grafico): APERTO** — G1 `[x]` per handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` (189 elementi, PNG non catalogati: 0, licenza CC0-1.0, `check_catalogo_grafico.py` exit 0), ma review indipendente ancora da assegnare (regola AGENTS 9): revisore diverso da @grafico (cand. @developer-junior). CP-002 si chiude solo dopo review indipendente positiva.
-- CP-003 e CP-004 restano APERTO (review indipendente da assegnare, contesto storico).
+- **CP-003 e CP-004 restano APERTO** (review indipendente da assegnare, contesto storico).
 - Nessun altro checkpoint ha gate + review indipendente registrati da chiudere in questo turno (CP-006 bloccato da D19 = B; DECO1 e F60 attendono review incrociata).
 
 ## Stati proposti (tappa 1 / Gate T1)
