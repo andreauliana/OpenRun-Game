@@ -99,6 +99,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.larghezza = k <= rl ? larghezzaPrima + (larghezzaDentro - larghezzaPrima) * raccordo((f32)k / (f32)rl)
                                     : larghezzaDentro;
             seg.acqua = desc.acqua > 0.5f;
+            seg.sospeso = seg.acqua || desc.sospeso > 0.5f;
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
@@ -241,6 +242,11 @@ bool Road::acquaAt(f32 z) const {
     return i >= 0 && segs_[i].acqua;
 }
 
+bool Road::sospesoAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 && segs_[i].sospeso;
+}
+
 f32 Road::larghezzaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 ? segs_[i].larghezza : 1.0f;
@@ -343,6 +349,7 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
             ps.carr = carreggiate(z0 + z, latoBivio);
             ps.acqua = seg.acqua;
+            ps.sospeso = seg.sospeso;
             ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
             out.push_back(ps);
         }

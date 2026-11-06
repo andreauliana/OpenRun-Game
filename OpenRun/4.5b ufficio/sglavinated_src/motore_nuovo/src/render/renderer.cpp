@@ -95,19 +95,22 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // pseudo-3D (Lou's Pseudo 3d Page, Cannonball come riferimento di resa) — solo idea.
     const i32 cy = (i32)cur.screenY;
     const i32 ny = (i32)next.screenY;
-    const bool ponte = cur.acqua;
-    // Ponte (Andrea 31/10, "piu' cinematografico"): l'acqua e' un piano piu'
-    // in basso della strada. Ogni tratto di ponte dipinge prima la sua fascia
-    // d'acqua (righe del pelo dell'acqua a quella distanza), poi l'impalcato
-    // sopra; dal lontano al vicino, quindi l'impalcato vicino copre l'acqua.
-    if (ponte && next.acqua) {
+    // Strada sospesa (ponte e sue rampe): il terreno ai lati e' un piano piu'
+    // in basso, a quotaAcqua. Ogni tratto dipinge prima la sua fascia di
+    // terreno (acqua sul ponte, erba sulle rampe: Andrea 06/11, prima l'erba
+    // saliva con la rampa fino alla carreggiata), poi la strada sopra; dal
+    // lontano al vicino, quindi la strada vicina copre il terreno.
+    const bool sospeso = cur.sospeso && next.sospeso;
+    const bool ponte = sospeso && cur.acqua && next.acqua;
+    if (sospeso) {
         const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
         const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
-        const u32 acqua = band ? tema_.acqua : tema_.acquaAlt;
+        const u32 acqua = ponte ? (band ? tema_.acqua : tema_.acquaAlt) : (band ? tema_.erba : tema_.erbaAlt);
         const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
         const f32 ya = next.acquaY, yb = cur.acquaY;
         for (i32 y = a0; y <= a1; ++y) {
             fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
+            if (!ponte) continue; // erba sotto le rampe: niente onde
             // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
             // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
             const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
@@ -138,18 +141,19 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
     const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
 
-    // Ponte: parapetto grigio/bianco al posto del rumble; ai lati niente erba
-    // (l'acqua e' gia' stata dipinta piu' in basso, sopra).
+    // Strada sospesa: parapetto basso grigio/bianco al posto del rumble; ai
+    // lati niente erba alla quota della strada (il terreno e' gia' stato
+    // dipinto piu' in basso, sopra).
     const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
-    const u32 rumble = ponte ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt); // bianco / colore della tappa
+    const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt); // bianco / colore della tappa
     const u32 lane   = pal_[1];
 
     for (i32 y = ny; y <= cy; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        if (y >= HORIZON_Y && !ponte) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
+        if (y >= HORIZON_Y && !sospeso) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
             fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
@@ -243,6 +247,8 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         // Al bivio i paletti apparirebbero su un solo ramo: niente paletti finche'
         // le carreggiate sono due (feedback Andrea 23/10).
         if (p.carr.doppia) continue;
+        // Ponte e rampe (Andrea 06/11): bordo aperto sul vuoto, niente paletti.
+        if (p.sospeso) continue;
 
         const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
         const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;

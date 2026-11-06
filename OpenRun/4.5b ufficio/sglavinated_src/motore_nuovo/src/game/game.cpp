@@ -188,13 +188,6 @@ constexpr f32 OGGETTI_BORDO_MIN = 250.0f;    // fascia bordo strada: da 250 ...
 constexpr f32 OGGETTI_BORDO_MAX = 900.0f;    // ... a 900 dal bordo
 constexpr f32 OGGETTI_PAESAGGIO_MAX = 5000.0f; // fascia paesaggio: fino a 5000 dal bordo
 constexpr f32 OGGETTO_ALTEZZA_MONDO = 1280.0f; // oggetti alti: altezza a schermo come ~2 auto
-// Parapetti del ponte (PIST1 P3, Andrea 29/10): sprite comune 32x48 del
-// @grafico (G-P1), ai due lati dei segmenti con acqua ogni 400 unita'. Scala 3
-// (~480x720 unita' mondo) forma una ringhiera continua; 40 unita' di stacco
-// dal bordo della carreggiata. Solo decorativi, nessuna collisione.
-constexpr f32 PARAPETTI_PASSO_Z = 400.0f;
-constexpr f32 PARAPETTO_SCALA = 3.0f;
-constexpr f32 PARAPETTO_STACCO = 40.0f;
 constexpr f32 BIVIO_ISTERESI = 300.0f;     // unita' mondo: cambio di ramo seguito solo se piu' vicini all'altro di tanto
 constexpr f32 ASSIST_RICHIAMO_MAX = 250.0f; // unita'/s, sotto lo sterzo (>= 510 in alto)
 constexpr f32 VELOCITA_MAX_KMH = 293.0f; // velocita' massima mostrata (come l'originale)
@@ -254,6 +247,8 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     if (jsonGet(o, "acqua", av) && jsonIsNumber(av)) d.acqua = (f32)jsonAsNumber(av);
     JsonValue aq;
     if (jsonGet(o, "acqua_quota", aq) && jsonIsNumber(aq)) d.acquaQuota = std::clamp((f32)jsonAsNumber(aq), -1.0f, 1.0f);
+    JsonValue sv;
+    if (jsonGet(o, "sospeso", sv) && jsonIsNumber(sv)) d.sospeso = (f32)jsonAsNumber(sv);
 }
 
 bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
@@ -398,7 +393,7 @@ void Game::caricaLivello(const std::string& livelloId) {
         for (i32 i = 0; i < nSeg; ++i) {
             if (segmentoOccupato[(size_t)i]) continue;
             if (rndCartelloni.next(CARTELLONI_OGNI_SEG) != 0) continue; // ~1 segmento su 10 con cartellone
-            if (road_.acquaAt((f32)(i * Road::SEG_LEN))) continue; // ponte: niente cartelloni nell'acqua
+            if (road_.sospesoAt((f32)(i * Road::SEG_LEN))) continue; // ponte e rampe: niente cartelloni sospesi nel vuoto
             SpriteInstance b;
             b.worldZ = (f32)(i * Road::SEG_LEN);
             b.worldX = (k & 1) ? latoDx : latoSx; // lato alternato: distribuzione bilanciata
@@ -449,27 +444,22 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // (seme fisso, zero alloc nel ciclo di gioco).
     // Sono puramente decorativi: NON generano collisione (oggetti non solidi).
     oggettiStrada_.clear();
-    parapetti_.clear();
     ren_.clearOggettoSprites();
     const i32 nOggetti = (i32)oggettiBordoStrada_.size();
     const f32 giro = (f32)road_.totalLength();
-    // Indice sprite per ogni id: registra prima tutti gli sprite (di tema e
-    // parapetto comune), cosi' i puntatori restituiti da oggettoSprite()
-    // restano validi (nessuna rialloc dopo la creazione delle istanze).
+    // Indice sprite per ogni id: registra prima tutti gli sprite, cosi' i
+    // puntatori restituiti da oggettoSprite() restano validi (nessuna rialloc
+    // dopo la creazione delle istanze).
     std::vector<i32> idxPerId(nOggetti, -1);
     for (i32 j = 0; j < nOggetti; ++j) {
         std::string nome = nomeOggettoDaId(oggettiBordoStrada_[j]);
         Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + livelloId + "/" + nome + ".sglraw"));
         if (s.width > 0) idxPerId[j] = ren_.aggiungiOggettoSprite(std::move(s));
     }
-    // PIST1 P3 (05/11): parapetto comune del ponte (G-P1), registrato qui prima
-    // delle istanze; si usa solo sui segmenti con acqua (caricaParapetti).
-    Sprite sp = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/comuni/parapetto.sglraw"));
-    const i32 idxParapetto = sp.width > 0 ? ren_.aggiungiOggettoSprite(std::move(sp)) : -1;
-    if (giro <= 0.0f || nOggetti == 0) {
-        caricaParapetti(idxParapetto); // solo parapetti (nessun oggetto di tema)
-        return;
-    }
+    // Ponte (Andrea 06/11): niente pannelli o ringhiere ai lati. Il ponte
+    // resta aperto sull'acqua, "l'emozione di correre sospesi": il bordo e'
+    // solo il filo grigio/bianco del parapetto basso (Renderer).
+    if (giro <= 0.0f || nOggetti == 0) return;
     // Posizioni (Andrea 27/10 sera): mai sul tracciato. Per ogni fila, un
     // oggetto a bordo strada (lato alternato) e uno nel paesaggio dal lato
     // opposto, a distanza variabile dal seme (deterministico). La distanza si
@@ -498,7 +488,7 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             const f32 lato = ((k + fascia) & 1) ? 1.0f : -1.0f;
             SpriteInstance o;
             o.worldZ = z + (f32)rnd.next((u32)(OGGETTI_PASSO_Z * 0.5f)); // file non allineate
-            if (road_.acquaAt(o.worldZ)) continue; // sul ponte niente oggetti nell'acqua
+            if (road_.sospesoAt(o.worldZ)) continue; // ponte e rampe: niente oggetti nel vuoto
             o.worldX = lato * (bordoQui + distanza + metaLarghezza);
             o.scale = scala;
             o.sprite = sprite;
@@ -506,37 +496,6 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             oggettiStrada_.push_back(o);
         }
     }
-    caricaParapetti(idxParapetto); // PIST1 P3: istanze sui segmenti con acqua
-}
-
-void Game::caricaParapetti(i32 idxParapetto) {
-    // PIST1 P3 (05/11): parapetto comune del ponte (assets del @grafico, G-P1)
-    // ai due lati dei segmenti con acqua, ogni PARAPETTI_PASSO_Z unita'.
-    // Puramente decorativo: nessuna collisione. Tutte le allocazioni qui in
-    // init/cambio tappa, zero alloc nel ciclo di gioco.
-    const Sprite* sprite = ren_.oggettoSprite(idxParapetto);
-    if (!sprite) return; // raw assente: ponte senza parapetti, nessun crash
-    const f32 giro = (f32)road_.totalLength();
-    if (giro <= 0.0f) return;
-    const f32 meta = 0.5f * (f32)sprite->width * Renderer::SPRITE_WORLD_PX * PARAPETTO_SCALA;
-    // Booleana per sapere se c'e' almeno un segmento con acqua (idempotente al cambio tappa)
-    bool has_acqua = false;
-    for (f32 z = PARAPETTI_PASSO_Z * 0.5f; z < giro; z += PARAPETTI_PASSO_Z) {
-        if (!road_.acquaAt(z)) continue; // solo sul ponte (segmenti con acqua)
-        has_acqua = true;
-        const f32 bordo = Road::ROAD_WIDTH * 0.5f * road_.larghezzaAt(z);
-        for (i32 lato = -1; lato <= 1; lato += 2) {
-            SpriteInstance o;
-            o.worldZ = z;
-            o.worldX = (f32)lato * (bordo + PARAPETTO_STACCO + meta);
-            o.scale = PARAPETTO_SCALA;
-            o.sprite = sprite;
-            o.paletteBase = 0;
-            parapetti_.push_back(o);
-        }
-    }
-    if (has_acqua && !parapetti_.empty()) std::printf("parapetti del ponte: %zu\n", parapetti_.size());
-    else if (!parapetti_.empty()) std::printf("parapetti del ponte gia' carichi: %zu\n", parapetti_.size());
 }
 
 void Game::caricaMusica() {
@@ -1512,7 +1471,7 @@ bool Game::leggiCartelloniDaFile(const JsonValue* radice, std::vector<bool>& seg
         const i32 segmento = (i32)jsonAsNumber(segV);
         if (segmento >= 0 && segmento < (i32)road_.segments().size())
             segmentoOccupato[(size_t)segmento] = true; // posizionamento esplicito del file
-        if (road_.acquaAt((f32)segmento * (f32)Road::SEG_LEN)) continue; // ponte: niente cartelloni nell'acqua
+        if (road_.sospesoAt((f32)segmento * (f32)Road::SEG_LEN)) continue; // ponte e rampe: niente cartelloni nel vuoto
 
         f32 worldX;
         JsonValue latoV;
@@ -1906,7 +1865,6 @@ void Game::render() {
     scenaSprites_ = sprites_;
     aggiungiVisibili(cartelloni_);
     aggiungiVisibili(oggettiStrada_);
-    aggiungiVisibili(parapetti_); // PIST1 P3: ringhiera del ponte
     // Pubblico all'arrivo: compare quando il traguardo entra nella vista.
     // Ognuno esulta col suo ritmo, piu' forte dopo che il giocatore e' arrivato.
     const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
@@ -1995,18 +1953,11 @@ void Game::render() {
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
         scuotiScena(dx, dy);
     }
-    // Show (UFO/personaggio/fumetto): disegno placeholder con rettangoli colorati.
-    // Gli sprite veri verranno aggiunti quando @asset avra' creato gli sprite originali.
-    const gameplay::ScenaShow& sc = disegnoShow_.scena();
-    if (sc.ufoVisibile) {
-        fb_.fillRect(sc.ufoX, sc.ufoY, sc.ufoX + 64, sc.ufoY + 24, 0xFFFF0000u);
-    }
-    if (sc.personaggioVisibile) {
-        fb_.fillRect(sc.persX, sc.persY, sc.persX + sc.persW, sc.persY + sc.persH, 0xFF00FF00u);
-    }
-    if (sc.bollaVisibile) {
-        fb_.fillRect(sc.bollaX, sc.bollaY, sc.bollaX + sc.bollaW, sc.bollaY + sc.bollaH, 0xFF0000FFu);
-    }
+    // Show (UFO/personaggio/fumetto): la logica gira (ShowManager, DisegnoShow)
+    // ma senza sprite veri non si disegna nulla. I rettangoli pieni rosso,
+    // verde e blu usati come segnaposto sembravano errori grafici in gara
+    // (Andrea 06/11: "la parte alta e' tutta sbagliata" alla partenza, quando
+    // passa l'UFO). Si disegneranno con gli sprite del @grafico.
     // Risultati dell'arrivo: sopra la scena solo la classifica (fasi.cpp).
     if (fasi_.attuale() == FaseId::Risultati) {
         fasi_.disegna(ren_, fb_);
@@ -2220,15 +2171,26 @@ void Game::ribalta() {
 void Game::calcolaClassifica() {
     // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; ogni
     // rivale registra il proprio tempo quando arriva alla fine del suo percorso
-    // (RIV punto 1). Chi non arriva entro il tempo limite esce dalla classifica:
-    // nessun tempo stimato per chi e' ancora in corsa.
+    // (RIV punto 1). Chi e' ancora in corsa quando il giocatore arriva entra
+    // in classifica con il tempo stimato (Andrea 06/11: prima si vedevano solo
+    // quelli davanti): strada che gli manca diviso la sua media fin qui.
     const f32 tempo = tempoTotaleS();
     classifica_.clear();
     classifica_.push_back({"YOU", tempo, true});
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
-        if (r.tempoArrivoS < 0.0f) continue; // non arrivato entro il tempo limite: escluso
-        classifica_.push_back({NOMI_RIVALI[i], r.tempoArrivoS, false});
+        f32 tempoR = r.tempoArrivoS;
+        if (tempoR < 0.0f) {
+            f32 manca = -r.progressoTappa;
+            for (i32 k = std::max(0, r.passoPercorso); k < r.nPercorso; ++k) {
+                const i32 idx = r.percorso[k];
+                if (idx >= 0 && idx < (i32)lunghezzeTappe_.size()) manca += lunghezzeTappe_[(size_t)idx];
+            }
+            const f32 media = tempo > 0.0f ? r.progresso / tempo : 0.0f;
+            const f32 passo = media > 1.0f ? media : std::max(r.passoMax, 1.0f);
+            tempoR = tempo + std::max(manca, 0.0f) / passo;
+        }
+        classifica_.push_back({NOMI_RIVALI[i], tempoR, false});
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });
@@ -2266,8 +2228,7 @@ void Game::ordinaSpriteFissi() {
     auto perZ = [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; };
     std::stable_sort(cartelloni_.begin(), cartelloni_.end(), perZ);
     std::stable_sort(oggettiStrada_.begin(), oggettiStrada_.end(), perZ);
-    std::stable_sort(parapetti_.begin(), parapetti_.end(), perZ);
-    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size() + parapetti_.size()); // zero alloc per frame
+    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size()); // zero alloc per frame
 }
 
 void Game::aggiungiVisibili(const std::vector<SpriteInstance>& fissi) {
