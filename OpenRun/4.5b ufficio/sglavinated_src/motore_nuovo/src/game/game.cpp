@@ -643,6 +643,10 @@ void Game::init(const std::string& livelloId) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         ren_.impostaGiocatoreSprite(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/") + POSE[k] + ".sglraw")));
+    // Stop accesi delle pose (facoltativi): auto_stop_<posa>.sglraw.
+    for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
+        ren_.impostaStopSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_") + (POSE[k] + 5) + ".sglraw")));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         struct FrameGiocatore { i32 posa; const char* nome; };
         static const FrameGiocatore AGENTI[] = {

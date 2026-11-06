@@ -6,7 +6,8 @@
 # nei raw che il motore legge in motore_nuovo/dati/sprite_raw/giocatore/pose/.
 # Pose: dritta, sx1..sx4 (1 = appena girata, 4 = sterzo pieno), dx1..dx4
 # (facoltative: se mancano il gioco specchia le sx), salita, discesa.
-# Tutte della stessa misura della dritta. Lanciare da qualunque cartella:
+# Tutte della stessa misura della dritta. Facoltativi: auto_stop.png e
+# auto_stop_<posa>.png con i soli stop accesi (vedi in fondo). Lanciare da qualunque cartella:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_pose_auto.py"
 import os
 import struct
@@ -42,6 +43,24 @@ if immagini:
     for p, im in immagini.items():
         im = im.crop(box) if box else im
         raw = os.path.join(DST, f"auto_{p}.sglraw")
+        with open(raw, "wb") as f:
+            f.write(b"SGLR" + struct.pack("<II", im.width, im.height) + im.tobytes())
+        print(f"scritto {raw} ({im.width}x{im.height})")
+    # Stop accesi (facoltativi): auto_stop.png per la dritta, auto_stop_<posa>.png
+    # per le altre. Stessa misura della posa, solo i fanali accesi, il resto
+    # trasparente. Il gioco li sovrappone alla posa quando si frena.
+    for p in POSE:
+        nome = "auto_stop.png" if p == "dritta" else f"auto_stop_{p}.png"
+        png = os.path.join(SRC, nome)
+        raw = os.path.join(DST, f"auto_stop_{p}.sglraw")
+        if not os.path.exists(png) or p not in immagini:
+            if os.path.exists(raw):
+                os.remove(raw)
+            continue
+        im = Image.open(png).convert("RGBA")
+        if im.size != immagini[p].size:
+            print(f"ATTENZIONE {nome}: {im.size[0]}x{im.size[1]}, la posa e' {immagini[p].size[0]}x{immagini[p].size[1]}")
+        im = im.crop(box) if box else im
         with open(raw, "wb") as f:
             f.write(b"SGLR" + struct.pack("<II", im.width, im.height) + im.tobytes())
         print(f"scritto {raw} ({im.width}x{im.height})")

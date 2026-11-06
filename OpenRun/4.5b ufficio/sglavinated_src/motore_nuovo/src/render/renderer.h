@@ -217,6 +217,14 @@ public:
     const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
+        for (Sprite& s : stopSprites_) s = Sprite{};
+    }
+    // Stop accesi (Andrea 06/11): per ogni posa un disegno della stessa misura
+    // con solo i fanali accesi, sovrapposto quando si frena. Facoltativo: se
+    // manca, la posa resta com'e'. Una posa specchiata usa lo stop specchiato.
+    void impostaStopSprite(i32 posa, Sprite sprite) {
+        if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) return;
+        stopSprites_[posa] = std::move(sprite);
     }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
@@ -278,6 +286,7 @@ private:
     void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
+    Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
