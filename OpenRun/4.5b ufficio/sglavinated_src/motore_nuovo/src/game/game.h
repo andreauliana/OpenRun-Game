@@ -166,6 +166,11 @@ public:
     // Disegna il frame corrente nel framebuffer interno.
     void render();
 
+    // Scena show del frame corrente (dopo update()): posizioni e visibilita'
+    // di personaggio, fumetto e UFO. Finche' mancano gli sprite veri non si
+    // disegna (Andrea 06/11), quindi i test la leggono da qui e non dai pixel.
+    const ScenaShow& scenaShow() const { return disegnoShow_.scena(); }
+
     // Esporta lo stato (per HUD, moduli fx, replay, test).
     const GameState& state() const { return state_; }
     // Frequenza logica (Hz) di dati/config.json: il runner fa un tick ogni 1/frequenza s.
@@ -196,8 +201,6 @@ private:
     TestiFrasi testiFrasi_;   // testi frasi.json caricati una volta in init()
     GameState state_;
 
-    // Scena show del frame corrente (dopo update()); renderer la disegna in render().
-    const ScenaShow& scenaShow() const { return disegnoShow_.scena(); }
     const TestiFrasi& testiFrasi() const { return testiFrasi_; }
     std::vector<i16> audioBuf_; // stereo interleaved, riempito ogni update
     // Radio: brani caricati una volta; aggiornaRadio sceglie quello della fase/tappa.
@@ -274,9 +277,6 @@ private:
     void aggiungiVisibili(const std::vector<SpriteInstance>& fissi);
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     std::vector<SpriteInstance> oggettiStrada_; // oggetti bordo strada (DECO1 2c), posizioni fisse
-    // PIST1 P3 (05/11): parapetti del ponte, comuni a tutti i temi, ai due lati
-    // dei segmenti con acqua ogni PARAPETTI_PASSO_Z unita' (sprite_raw/scenari/comuni).
-    std::vector<SpriteInstance> parapetti_;
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;
@@ -339,7 +339,6 @@ private:
     void leggiTemaDaFile(const JsonValue* radice);
     void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
     void caricaOggettiStrada(const std::string& livelloId); // DECO1 2c: carica sprite oggetti bordo strada
-    void caricaParapetti(i32 idxParapetto); // PIST1 P3: parapetto comune ai due lati dei segmenti con acqua (ponte)
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;

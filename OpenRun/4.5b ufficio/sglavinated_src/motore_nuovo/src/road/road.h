@@ -72,6 +72,11 @@ public:
         // con il ponte piu' alto (collina 0.6) l'acqua resta in basso e il
         // ponte si vede sospeso, con i piloni (Andrea 31/10).
         f32 acquaQuota = 0.0f;
+        // Campo `sospeso` (0/1, default 0): strada su viadotto (rampe del ponte
+        // alto). Il terreno ai lati resta a acqua_quota e non sale con la
+        // strada: salendo e scendendo dal ponte si vede il vuoto sotto, non un
+        // prato che si alza fino alla carreggiata (Andrea 06/11).
+        f32 sospeso = 0.0f;
     };
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.
@@ -100,6 +105,8 @@ public:
     f32 larghezzaAt(f32 z) const;
     // true se z e' su un ponte (segmento con acqua ai lati).
     bool acquaAt(f32 z) const;
+    // true se z e' su un tratto sospeso (ponte o sue rampe): niente oggetti ai lati.
+    bool sospesoAt(f32 z) const;
     // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti
     // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
     i32 indiceSegmento(f32 z) const;
@@ -132,6 +139,7 @@ public:
         Carreggiate carr;            // rami del bivio a questa profondita'
         bool acqua = false;          // ponte: acqua ai lati
         f32 acquaY = 0.0f;           // riga dello schermo del pelo dell'acqua a questa distanza
+        bool sospeso = false;        // terreno in basso (a acquaY): ponte o rampe
     };
     void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio = 0) const;
 

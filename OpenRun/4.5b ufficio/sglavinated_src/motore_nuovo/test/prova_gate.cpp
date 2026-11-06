@@ -639,8 +639,12 @@ EsitoInattivita eseguiInattivita(const std::string& outDir, const std::string& l
         e.hashA.push_back(h);
         const GameState& s = game.state();
         const u32* d = game.fb().data();
-        i32 blu = contaPixel(d, Framebuffer::WIDTH, Framebuffer::HEIGHT, 0, 0, 255);     // fumetto: bolla blu
-        i32 verde = contaPixel(d, Framebuffer::WIDTH, Framebuffer::HEIGHT, 0, 255, 0); // personaggio verde
+        // Show senza sprite veri (Andrea 06/11: i rettangoli segnaposto non si
+        // disegnano piu'): si misura l'area di bolla e personaggio nella scena.
+        (void)d;
+        const auto& sc = game.scenaShow();
+        i32 blu = sc.bollaVisibile ? sc.bollaW * sc.bollaH : 0;              // fumetto
+        i32 verde = sc.personaggioVisibile ? sc.persW * sc.persH : 0;        // personaggio
         if (frame >= 560) { // oltre i 500 frame di inattivita (idle dal frame 60)
             if (blu > e.maxBollaDopoIdle) e.maxBollaDopoIdle = blu;
             if (verde > e.maxPersonaggioDopoIdle) e.maxPersonaggioDopoIdle = verde;

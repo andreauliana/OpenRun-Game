@@ -99,6 +99,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.larghezza = k <= rl ? larghezzaPrima + (larghezzaDentro - larghezzaPrima) * raccordo((f32)k / (f32)rl)
                                     : larghezzaDentro;
             seg.acqua = desc.acqua > 0.5f;
+            seg.sospeso = seg.acqua || desc.sospeso > 0.5f;
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
@@ -153,16 +154,14 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
     const f32 correzione =
         lunghezzaCurva > 0 ? residuo / ((f32)lunghezzaCurva * CURVE_SCALE) : 0.0f;
 
-    // Passata 2: posizioni assolute del tracciota.
-    // Collina: quota assoluta per segmento (non cumulativa), evitando che
-    // la strada salga indefinitamente ("salire nel cielo"). Ogni segmento
-    // ha p2y = quota sotto l'auto + CAM_HEIGHT, con raccordo morbido.
+    // Passata 2: posizioni assolute del tracciato.
+    f32 quotaPrima = collinaInizioTappaSet_ ? collinaInizioTappa_ * HILL_HEIGHT : descs.back().collina * HILL_HEIGHT;
     f32 direzione = 0.0f; // pendenza laterale del mondo (solo per p1x/p2x)
-    curY = 0.0f;
+    curY = quotaPrima;
     size_t at = 0;
     for (const SegmentDesc& d : descs) {
         const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
-        const f32 segCollina = d.collina * HILL_HEIGHT;
+        const f32 quota = d.collina * HILL_HEIGHT;
         for (i32 k = 1; k <= n; ++k) {
             RoadSegment& seg = segs_[at];
             if (seg.curve != 0.0f) seg.curve -= correzione;
@@ -174,9 +173,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
-            // Quota assoluta per questo segmento: collina * HILL_HEIGHT + CAM_HEIGHT
-            // per avere la camera che segue la quota sotto l'auto.
-            seg.p2y = segCollina + CAM_HEIGHT;
+            seg.p2y = quotaPrima + (quota - quotaPrima) * raccordo((f32)k / (f32)n);
             if (d.dune != 0.0f && d.onde > 0) {
                 // sin^2: dossi morbidi, pendenza zero ai capi del tratto.
                 const f32 onda = std::sin(PI * (f32)d.onde * (f32)k / (f32)n);
@@ -188,6 +185,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             curY = seg.p2y;
             curZ = seg.p2z;
         }
+        quotaPrima = quota;
     }
     // Rettilineo del bivio: anche in piano, alla quota che la strada ha dove
     // il rettilineo comincia (colline e dune raccordate, niente salti).
@@ -242,6 +240,11 @@ f32 Road::quotaAt(f32 z) const {
 bool Road::acquaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 && segs_[i].acqua;
+}
+
+bool Road::sospesoAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 && segs_[i].sospeso;
 }
 
 f32 Road::larghezzaAt(f32 z) const {
@@ -346,6 +349,7 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
             ps.carr = carreggiate(z0 + z, latoBivio);
             ps.acqua = seg.acqua;
+            ps.sospeso = seg.sospeso;
             ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
             out.push_back(ps);
         }
