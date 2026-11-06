@@ -168,9 +168,10 @@ constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza str
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
 // nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
 // in ~0.3 s appena si frena, si curva o si esce di strada.
+// BLOCCATO (Andrea 06/11): sollevamento e salti dell'auto in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
 constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
 constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
-constexpr f32 SOLLEVAMENTO_MAX_PX = 2.0f; // Andrea 06/11: troppo alta dal suolo, ora solo un accenno
+constexpr f32 SOLLEVAMENTO_MAX_PX = 0.0f; // Andrea 06/11 sera: l'auto resta sempre appoggiata alla strada
 constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
 constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
 // Passaggio assistito al bivio (feedback Andrea 23/10): niente spinta delle
@@ -197,7 +198,7 @@ constexpr f32 TEMPO_EXTRA_AVVISO_S = 2.5f; // "TEMPO EXTRA" a schermo dopo un ch
 constexpr f32 SALTO_GRAVITA = 7000.0f;     // unita' mondo / s^2 (piu' bassa = salti piu' frequenti)
 constexpr f32 SALTO_SOGLIA_V = 0.6f;       // sotto il 60% della velocita' massima resta incollata
 constexpr f32 SALTO_PX_PER_UNITA = 0.02f;  // quota sopra la strada -> pixel a schermo (06/11: dimezzato)
-constexpr f32 SALTO_MAX_PX = 10.0f;
+constexpr f32 SALTO_MAX_PX = 6.0f;
 constexpr f32 SALTO_V_DISCONTINUITA = 60000.0f; // oltre: salto di quota del tracciato, non un dosso
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
@@ -1894,10 +1895,14 @@ void Game::render() {
         flipPx = kFlip < 0.4f ? 16.0f * std::sin(3.14159f * kGiro)
                               : (kFlip < 0.5f ? 3.0f * std::sin(3.14159f * (kFlip - 0.4f) / 0.1f) : 0.0f);
     const f32 fumoFlipS = playerFlipping_ && kFlip >= 0.4f ? (kFlip - 0.4f) * FLIP_ANIMATION_S : -1.0f;
+    // Con le pose disegnate (Andrea 06/11) la curva la mostra la posa: l'auto
+    // resta orizzontale, appoggiata alla strada. L'inclinazione forte serve
+    // solo alla vecchia sagoma a rettangoli.
+    const bool conPose = ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width > 0;
     const f32 rollAngle = playerFlipping_
         ? 6.2831853f * kGiro * kGiro * (3.0f - 2.0f * kGiro)
-        : steeringLean * 1.5f +
-          (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
+        : (conPose ? 0.0f : steeringLean * 1.5f) +
+          (player_.offroad ? (player_.x < 0.0f ? -1.0f : 1.0f) * (conPose ? 0.05f : 0.18f) : 0.0f);
     const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
     const f32 saltoPx = std::min(SALTO_MAX_PX, saltoAltezza_ * SALTO_PX_PER_UNITA);
     // Urto: sobbalzo e scodata (piu' forti col traffico), poi la scena trema.

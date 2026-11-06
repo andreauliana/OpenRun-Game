@@ -25,7 +25,7 @@ SOVRASCRIVI = "--sovrascrivi" in sys.argv
 
 # Maximum shift of the top row at full steering (level 4), in pixels of the
 # drawing; the front wheel and the flank follow it.
-TAGLIO_MAX = 9
+TAGLIO_MAX = 4  # small: Andrea 06/11 evening wants flatter, more horizontal poses
 GOMMA = (24, 22, 24, 255)
 GOMMA_LUCE = (70, 66, 70, 255)
 CERCHIO = (150, 146, 152, 255)
@@ -84,14 +84,15 @@ def genera(dritta, stop, liv):
                     s = stop.getpixel((x, y))
                     if s[3] > 0:
                         out_stop.putpixel((nx, y), s)
-        if not opachi or d == 0:
+        if not opachi:
             continue
         # Right flank: fills the gap between the shifted right edge and the
         # original one (the side of the car that turns towards the camera).
         destra = max(opachi)
         # The flank also sticks out past the rear corner (the car's length is
         # now seen at an angle): 0..2 px, more at the bottom.
-        oltre = (liv + 1) // 2 if y >= cabina_fine else 0
+        # Same width on every body row, so the side reads as a flat horizontal band.
+        oltre = liv if y >= cabina_fine else 0
         for x in range(destra + d + 1, min(dritta.width, destra + 1 + oltre)):
             if y < cabina_fine:
                 c = vetro if y > y0 + 1 else fianco

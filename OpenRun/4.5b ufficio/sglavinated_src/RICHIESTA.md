@@ -294,6 +294,9 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 ---
 
 ## BLOCCO AUTO1 — @grafico + @developer + @developer-junior — auto del giocatore a fotogrammi, finto 3D (Andrea 05/11 sera)
+
+**CHIUSO E BLOCCATO (Andrea 06/11 sera):** l'auto del giocatore e' definita in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente la tocca piu' (ne' codice, ne' valori, ne' sprite). Le pose le ridisegna Andrea a mano.
+
 | Campo | Valore |
 |---|---|
 | Richiesta di Andrea | L'auto del giocatore non e' piu' un gruppo di rettangoli: e' fatta di **sprite a fotogrammi** che cambiano con lo sterzo, la salita/discesa, la velocita' (ruote) e l'incidente, con prospettiva e animazioni ad hoc (finto 3D come OutRun, disegno nostro). Andrea vuole poter sostituire lui i PNG con i suoi (stesso nome, stessa misura): guida in `UFFICIO/Dipartimento Grafico/GUIDA_GRAFICA_ANDREA.md`. |

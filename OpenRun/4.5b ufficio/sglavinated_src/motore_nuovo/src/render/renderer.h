@@ -46,8 +46,9 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 // Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
-constexpr i32 AUTO_GIOCATORE_TERRA_Y = 218; // riga dello schermo dove appoggiano le ruote (224 = fondo)
-constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 120; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
+// BLOCCATO (Andrea 06/11): valori dell'auto del giocatore in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 222; // riga dello schermo dove appoggiano le ruote (224 = fondo)
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 100; // Andrea 06/11 sera: 125 px era troppo grande; ~1/3 dello schermo, appoggiata in basso
 
 enum PosaGiocatore : i32 {
     // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena

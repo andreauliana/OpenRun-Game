@@ -586,7 +586,14 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
+        if (sollevamento > 0) {
+            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
+            // piu' stretta della carrozzeria, niente barra nera piena.
+            const i32 mezza = w / 2 - w / 8;
+            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
+                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
+                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        }
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         // Stop accesi: disegno della posa con i soli fanali accesi (stessa misura).
