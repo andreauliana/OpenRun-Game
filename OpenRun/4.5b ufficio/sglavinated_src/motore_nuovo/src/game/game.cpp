@@ -170,7 +170,7 @@ constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza str
 // in ~0.3 s appena si frena, si curva o si esce di strada.
 constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
 constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
-constexpr f32 SOLLEVAMENTO_MAX_PX = 7.0f;
+constexpr f32 SOLLEVAMENTO_MAX_PX = 2.0f; // Andrea 06/11: troppo alta dal suolo, ora solo un accenno
 constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
 constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
 // Passaggio assistito al bivio (feedback Andrea 23/10): niente spinta delle
@@ -203,8 +203,8 @@ constexpr f32 TEMPO_EXTRA_AVVISO_S = 2.5f; // "TEMPO EXTRA" a schermo dopo un ch
 // la gravita' tiri giu' l'auto, l'auto si stacca e vola per inerzia.
 constexpr f32 SALTO_GRAVITA = 7000.0f;     // unita' mondo / s^2 (piu' bassa = salti piu' frequenti)
 constexpr f32 SALTO_SOGLIA_V = 0.6f;       // sotto il 60% della velocita' massima resta incollata
-constexpr f32 SALTO_PX_PER_UNITA = 0.04f;  // quota sopra la strada -> pixel a schermo
-constexpr f32 SALTO_MAX_PX = 28.0f;
+constexpr f32 SALTO_PX_PER_UNITA = 0.02f;  // quota sopra la strada -> pixel a schermo (06/11: dimezzato)
+constexpr f32 SALTO_MAX_PX = 10.0f;
 constexpr f32 SALTO_V_DISCONTINUITA = 60000.0f; // oltre: salto di quota del tracciato, non un dosso
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
@@ -1752,7 +1752,8 @@ void Game::aggiornaGuida(f32 dt) {
         }
         player_.vincolaAllaCorsia();
 
-        const bool inVolo = sollevamentoAttivo_ && !player_.offroad &&
+        // All'arrivo l'auto torna giu' e resta a terra (Andrea 06/11).
+        const bool inVolo = sollevamentoAttivo_ && !player_.offroad && !arrivo_ &&
             player_.speed >= SOLLEVAMENTO_SOGLIA_V * player_.maxSpeed() &&
             std::abs(curvaQui) <= SOLLEVAMENTO_CURVA_MAX;
         const f32 obiettivo = inVolo ? 1.0f : 0.0f;
@@ -2056,7 +2057,7 @@ void Game::aggiornaSalto(f32 dt) {
         saltoVStradaPrec_ = 0.0f;
         return;
     }
-    const bool puoVolare = !player_.offroad && !playerFlipping_ && !playerBump_ &&
+    const bool puoVolare = !player_.offroad && !playerFlipping_ && !playerBump_ && !arrivo_ &&
         player_.speed >= SALTO_SOGLIA_V * player_.maxSpeed();
     if (saltoAltezza_ <= 0.0f) {
         // Cresta: la strada "cade" piu' in fretta della gravita' -> decollo.

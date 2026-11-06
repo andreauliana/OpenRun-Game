@@ -2148,6 +2148,70 @@
          "file": "assets_originali/sprite/giocatore_pose/auto_stop.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
          "nota": "Stop accesi sopra la posa dritta, sovrapposti in frenata (06/11). Prima versione di Claude ricavata dai fanali di Andrea; Andrea puo' ridisegnarla. Stessa misura della posa, il resto trasparente. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_sx1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 1, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_sx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 2, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_sx3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx3.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 3, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx4",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_sx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx4.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 4, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.stop.sx1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_stop_sx1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx1.sglraw",
+         "nota": "Stop accesi per la posa sx1, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_stop_sx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx2.sglraw",
+         "nota": "Stop accesi per la posa sx2, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_stop_sx3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx3.sglraw",
+         "nota": "Stop accesi per la posa sx3, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx4",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_stop_sx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
+         "nota": "Stop accesi per la posa sx4, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
       }
    ]
 }

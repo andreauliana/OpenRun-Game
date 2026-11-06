@@ -2745,6 +2745,11 @@ bool verificaFrequenza(const std::string& outDir, const std::string& livello, i3
 }
 
 int main(int argc, char** argv) {
+    // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
+    if (argc > 1 && argv[1][0] == '-') {
+        std::printf("uso: prova_gate [cartella_out=out/debugger] [livello=lv_01_neon] [modo=smoke] [hz=60]\n");
+        return 0;
+    }
     const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
     const std::string modo = argc > 3 ? argv[3] : "smoke";
