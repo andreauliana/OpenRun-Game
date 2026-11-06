@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-11-06 05:24
+# Pacchetto per Claude — 2026-11-06 08:15
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -105,53 +105,53 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (6960223 di 6960223 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 28
-blocchi da fare [ ]: 6
-
-OK (controlli automatici verdi: review del modello saltata, zero crediti)
-
-### CHECKPOINT 3 | REVIEWER | 2026-11-06 03:29 | [APERTA]
-OK      sintassi modelli.sh
-OK      sintassi modo_locale.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (6960223 di 6960223 byte), soglia 50.0%
-bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 28
-blocchi da fare [ ]: 6
-
-OK (controlli automatici verdi: review del modello saltata, zero crediti)
-
-### CHECKPOINT 4 | REVIEWER | 2026-11-06 05:22 | [APERTA]
-OK      sintassi modelli.sh
-OK      sintassi modo_locale.sh
-OK      sintassi recap.sh
-OK      sintassi set_model.sh
-OK      sintassi start_process_brains.sh
-OK      sintassi verifica.sh
-OK      sintassi vivo.sh
-OK      sintassi run.sh
-OK      nessuna ROM Sega presente
-OK      opencode installato
-OK      comando claude presente (review automatica possibile)
-== TUTTO OK ==
-GATE SCREENSHOT P1 OK
-GATE T1: TUTTO OK
-catalogo: 11 righe, 2 cartelle
 quota open: 100.0% (7076816 di 7076816 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 6
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 5 | REVIEWER | 2026-11-06 07:35 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (7065635 di 7065635 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 6
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 6 | REVIEWER | 2026-11-06 08:14 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (7065653 di 7065653 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 28
 blocchi da fare [ ]: 6

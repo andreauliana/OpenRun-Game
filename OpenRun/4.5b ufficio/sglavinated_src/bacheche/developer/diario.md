@@ -1,1 +1,1 @@
-06/11/2026 06:49 developer: RIV punto 1 migliorato: added safety check + documentation to inizializzaRivali() in game.cpp, gate_t1.sh exit 0 GATE T1: TUTTO OK 6/6 percorsi
+06/11/2026 07:51 developer: aggiunto campo 'larghezza':1.0 a rettilineo_corto in tratti.json, gate T1 6/6 OK exit 0

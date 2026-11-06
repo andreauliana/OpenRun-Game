@@ -1,2 +1,1 @@
-[06/11 06:16] Turno @grafico: G-P1 completato (parapetto/guardrail nel catalogo pronto), avvio DECO1 step 2f verifiche.
-[06/11 06:35] Turno @grafico: G-P1 verificato, catalogo confermato, DECO1 in attesa @developer passo 2a.
+[06/11 08:03] Turno @grafico: G-P1 completato (parapetto 32x48 + guardrail 48x32 generati, catalogo con voci pronto + raw OK). Verificato catalocco check_catalogo_grafico.py exit 0, "PNG non catalogati: 0". UI variante B asset confermati (font, titolo, menu, HUD preview rigenerati 6/11).
