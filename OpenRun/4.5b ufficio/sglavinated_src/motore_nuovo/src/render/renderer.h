@@ -38,6 +38,9 @@ struct DanniAuto {
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
 // tutti 64x32 con la stessa sagoma e l'ancoraggio a terra.
+// Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
+constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
+
 enum PosaGiocatore : i32 {
     POSA_GIOCATORE_DRITTA = 0,
     POSA_GIOCATORE_STERZO_SX_LEGGERO,

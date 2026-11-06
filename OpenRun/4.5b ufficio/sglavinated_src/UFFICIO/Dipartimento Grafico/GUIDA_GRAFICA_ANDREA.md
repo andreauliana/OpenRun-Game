@@ -12,7 +12,13 @@ Gli agenti non sovrascrivono mai un tuo PNG.
 
 ## 1. Auto del giocatore (da fare per prima, blocco AUTO1)
 
-Cartella: `sprite/giocatore/` (se non c'e' ancora, creala). Auto vista da dietro e un po' dall'alto,
+**Aggiornamento 06/11:** il grafico ha gia' fatto le 7 pose della carrozzeria in `sprite/auto_gt/`, con questi nomi:
+`auto_giocatore_dritta.png`, `auto_giocatore_sterzo_sx_leggero.png`, `auto_giocatore_sterzo_sx_forte.png`,
+`auto_giocatore_sterzo_dx_leggero.png`, `auto_giocatore_sterzo_dx_forte.png`, `auto_giocatore_salita.png`,
+`auto_giocatore_discesa.png` (tutte 64x32). Per ridisegnarle tu, sostituisci QUESTI file (stesso nome, stessa misura).
+La tabella qui sotto resta valida per cosa disegnare in ogni posa; i componenti (ruote, stop, fumo) vanno in `sprite/giocatore/`.
+
+Cartella dei componenti: `sprite/giocatore/` (se non c'e' ancora, creala). Auto vista da dietro e un po' dall'alto,
 centrata, ruote appoggiate al bordo basso del PNG.
 
 | File | Misura | Cosa disegnare | Obbligatorio |

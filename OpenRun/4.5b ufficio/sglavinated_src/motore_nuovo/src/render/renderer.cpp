@@ -527,25 +527,58 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     const Sprite* s = giocatoreSprite(posa);
     if (s->width <= 0) s = giocatoreSprite(POSA_GIOCATORE_DRITTA);
     if (s->width > 0) {
-        // Sprite vero: stessa altezza di riferimento del vecchio corpo (18 px);
-        // l'auto resta centrata (cx=160), e' la strada che si muove sotto di lei.
-        // offsetX accenna lo sterzo spostandola leggermente; sollevamentoPx la
-        // solleva alle alte velocita'. rollAngle resta per la sagoma sintetica.
-        const f32 scala = 18.0f / (f32)s->height;
+        // Sprite vero (AUTO1 A4-A5, Claude 06/11): disegnato a grandezza piena
+        // (64x32, scala 1, niente rimpicciolimento a 18 px); l'auto resta
+        // centrata (cx=160), e' la strada che si muove sotto di lei. offsetX
+        // accenna lo sterzo, sollevamentoPx la solleva alle alte velocita' e
+        // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
+        // centro, come faceva la sagoma a rettangoli. Il lampo dell'urto
+        // schiarisce i pixel dell'auto invece di coprirla con un riquadro.
+        const f32 scala = AUTO_GIOCATORE_SCALA;
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = 200 - sollevamento;
-        if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]); // ombra a terra
-        SpriteInstance si;
-        si.sprite = s;
-        si.scale = scala;
-        si.paletteBase = 0;
-        drawSprite(si, (f32)cx, (f32)cy, scala);
-        if (lampo) {
-            // Lampo bianco nei primi istanti della botta.
-            fb_.fillRect(cx - w / 2, cy - h, cx + w / 2, cy, 0xFFFFFFFFu);
+        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, 199, cx + w / 2 - 4, 201, pal_[0]); // ombra a terra
+        const bool palettePropria = !s->palette.empty();
+        const i32 nPal = (i32)s->palette.size();
+        auto texel = [&](i32 tx, i32 ty) -> u32 {
+            const u8 idx = s->pixels[ty * s->width + tx];
+            if (palettePropria) return s->palette[idx % nPal];
+            return idx == 0 ? 0u : pal_[idx];
+        };
+        auto schiarisci = [](u32 col) -> u32 {
+            const u32 r = ((col >> 16) & 0xFF), g = ((col >> 8) & 0xFF), b = (col & 0xFF);
+            return 0xFF000000u | ((r + (255 - r) * 3 / 4) << 16) | ((g + (255 - g) * 3 / 4) << 8) | (b + (255 - b) * 3 / 4);
+        };
+        if (std::abs(rollAngle) < 0.01f) {
+            const i32 x0 = cx - w / 2, y0 = cy - h;
+            for (i32 y = 0; y < h; ++y)
+                for (i32 x = 0; x < w; ++x) {
+                    u32 col = texel((i32)(x / scala), (i32)(y / scala));
+                    if ((col >> 24) == 0) continue;
+                    fb_.put(x0 + x, y0 + y, lampo ? schiarisci(col) : col);
+                }
+        } else {
+            // Rotazione con campionamento inverso: per ogni pixel dello schermo
+            // nel quadrato che contiene l'auto ruotata si cerca il texel.
+            const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
+            const f32 pcx = (f32)cx, pcy = (f32)cy - h * 0.5f;
+            const i32 r = (i32)(0.5f * std::sqrt((f32)(w * w + h * h))) + 1;
+            for (i32 y = (i32)pcy - r; y <= (i32)pcy + r; ++y)
+                for (i32 x = (i32)pcx - r; x <= (i32)pcx + r; ++x) {
+                    const f32 dx = (f32)x - pcx, dy = (f32)y - pcy;
+                    const f32 lx = co * dx + si * dy + w * 0.5f;
+                    const f32 ly = -si * dx + co * dy + h * 0.5f;
+                    if (lx < 0.0f || ly < 0.0f || lx >= (f32)w || ly >= (f32)h) continue;
+                    u32 col = texel((i32)(lx / scala), (i32)(ly / scala));
+                    if ((col >> 24) == 0) continue;
+                    fb_.put(x, y, lampo ? schiarisci(col) : col);
+                }
+        }
+        if (lampo || std::abs(rollAngle) >= 0.01f) {
+            // Lampo o auto ruotata: niente luci sopra (non seguirebbero la rotazione).
         } else if (frena) {
             // Stop accesi ai due lati del retro.
             fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 7, cy - h / 2 + 4, 0xFFFF2020u);
