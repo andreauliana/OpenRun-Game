@@ -23,6 +23,10 @@ public:
     i32 gear = 1;             // marcia (1 o 2) - per HUD e feeling
 
     f32 maxSpeed() const { return MAX_SPEED; }
+    // Comando di sterzo corrente -1 (sinistra) .. +1 (destra), con rampa
+    // (player.cpp). Serve alla scelta del fotogramma dell'auto (RIV punto 3);
+    // sola lettura, non cambia la fisica.
+    f32 sterzo() const { return steer_; }
 
     // Carreggiata su cui sta l'auto (al bivio: il ramo piu' vicino). x resta
     // assoluto; fuoristrada e limite laterale si misurano da centroCorsia.

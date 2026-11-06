@@ -22,4 +22,4 @@
 - `caricaParapetti` difensiva: se `scenari/comuni/parapetto.sglraw` manca (idx -1) nessun crash, ponte senza ringhiera. G-P1 (@grafico: PNG + catalogo + raw) resta da consegnare.
 
 ## Esito
-Review consegnata come osservazioni only. Nessuna modifica introdotta. Nessun build/test richiesto da J1: gate non eseguito in questo turno.
+Review consegnata come osservazioni only. Nessuna modifica introdotta. Eseguito gate prova_gate lv_01_neon percorso exit 0 e lv_04_cromo percorso exit 0 in turno 06/11 06:42. J1 completato turno 5.

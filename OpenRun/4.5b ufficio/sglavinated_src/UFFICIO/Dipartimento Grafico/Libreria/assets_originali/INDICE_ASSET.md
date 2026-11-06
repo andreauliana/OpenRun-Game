@@ -1,17 +1,17 @@
 # Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)
 
-Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
+Aggiornato: 2026-11-06 04:28 — 345 file in assets_originali/.
 
 ## Cosa serve per il primo livello giocabile
 
 | Serve | Trovati | Minimo | Stato |
 |---|---|---|---|
-| auto giocatore | 3 | 3 | OK |
-| traffico / altri veicoli | 0 | 1 | MANCA |
+| auto giocatore | 10 | 3 | OK |
+| traffico / altri veicoli | 4 | 1 | OK |
 | cartelloni sponsor (7 sponsor x 3 stili) | 21 | 21 | OK |
-| skyline per livello | 18 | 3 | OK |
-| oggetti bordo strada | 98 | 10 | OK |
-| HUD | 3 | 1 | OK |
+| skyline per livello | 20 | 3 | OK |
+| oggetti bordo strada | 109 | 10 | OK |
+| HUD | 1 | 1 | OK |
 | menu | 3 | 1 | OK |
 | font pixel UI | 3 | 1 | OK |
 | personaggio Gianni (sprite) | 0 | 1 | MANCA |
@@ -22,17 +22,17 @@ Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
 
 | Categoria | File | PNG | Byte | Con avvisi |
 |---|---|---|---|---|
-| (radice) | 6 | 0 | 46998 | 0 |
-| font | 2 | 0 | 37765 | 0 |
+| (radice) | 6 | 0 | 123869 | 0 |
+| font | 2 | 0 | 37761 | 0 |
 | palette | 9 | 3 | 7801 | 0 |
-| ricerca | 6 | 0 | 12401 | 0 |
-| scenari | 191 | 146 | 89843 | 133 |
-| skyline | 6 | 3 | 14551 | 0 |
+| ricerca | 6 | 0 | 12435 | 0 |
+| scenari | 222 | 171 | 122733 | 135 |
+| skyline | 7 | 4 | 19101 | 0 |
 | sponsor | 31 | 21 | 63907 | 9 |
-| sprite | 11 | 6 | 8975 | 3 |
-| ui | 32 | 12 | 76101 | 2 |
+| sprite | 41 | 36 | 24472 | 3 |
+| ui | 21 | 8 | 66790 | 4 |
 
-## Avvisi (147)
+## Avvisi (151)
 
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/palette.png
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png
@@ -61,21 +61,18 @@ Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
 - `assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_03/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/palette.png
 - `assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_03/sfondo.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/sfondo.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/palette.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png
+- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_cassetta.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palina.png`: minuscolo_probabile_segnaposto
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png
+- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/palette.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png`: copia_o_backup
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png
+- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png`: minuscolo_probabile_segnaposto
+- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/palette.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_cassetta.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png
-- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png
+- `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png
 - `assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png
 - `assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/palette.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/palette.png
 - `assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/skyline.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/skyline.png
@@ -104,7 +101,6 @@ Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_freccia.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_panchina_cromata.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png
-- `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_torre_razzo.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/palette.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/palette.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_bancone_drive_in.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_cupola.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png
@@ -114,7 +110,11 @@ Aggiornato: 2026-10-18 09:11 — 294 file in assets_originali/.
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/palette.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/palette.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_bancone_drive_in.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png
-- ... altri 67 nel JSON
+- `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_cupola.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png
+- `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_freccia.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png
+- `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_panchina_cromata.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png
+- `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png
+- ... altri 71 nel JSON
 
 ## Scelte di Andrea in uso
 

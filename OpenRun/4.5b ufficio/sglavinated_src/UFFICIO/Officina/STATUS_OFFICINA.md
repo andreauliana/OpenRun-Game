@@ -305,3 +305,12 @@ Le allowlist di Builder/Developer e Developer/Builder Junior consentono i wrappe
 - Consegne: bacheche/developer/diario.md (1 riga), bacheche/developer/RIASSUNTO.md (<=12 righe), out/developer/ESITO_DECO1_P2D_27OTT.md; questo status aggiornato. Zero scritture in UFFICIO/Officina/TOOL/; nessun test del Junior modificato; src/runner/ non toccato (review Andrea runner Mac in corso).
 - Prossimo: DECO1 2e (parallasse), poi R2 (ordine DECO1 -> R2 -> PIST1 -> RIV -> FIN). T1-RUN [~] e H [~] in attesa Andrea (runner Mac v91, poi fps/temperatura Pi 400); nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac.
 
+## Report turno 06/11/2026 04:10 — developer
+
+- Blocco RIV [~] punto 3, lato codice: auto del giocatore in finto 3D alla OutRun. 7 fotogrammi del catalogo (`auto.giocatore.*`, stato `pronto`: dritta, sterzo sx/dx leggero/forte, salita, discesa) caricati una volta in `Game::init()` dai raw `motore_nuovo/dati/sprite_raw/giocatore/*.sglraw` e scelti a ogni frame in `Game::disegna()` da `Player::sterzo()` (nuova lettura sola, fisica invariata) e dalla pendenza della strada (soglia 80 unita' su 4 segmenti). `Renderer::drawPlayerCar` accetta la posa e ricade sul fotogramma dritto, poi sulla sagoma sintetica.
+- File: `motore_nuovo/src/render/renderer.h`, `motore_nuovo/src/render/renderer.cpp`, `motore_nuovo/src/game/game.cpp`, `motore_nuovo/src/player/player.h`. Nessuna costante di guida modificata; `src/runner/` e test del @developer-junior non toccati.
+- `sh UFFICIO/Officina/TOOL/run_tests.sh`: exit 0, ctest 27/27 verde (191 s), inclusi `gara`, `urto`, `bivio_*`, `ciclo`, `tratti`.
+- `sh UFFICIO/Officina/TOOL/gate_t1.sh`: exit 0, `GATE T1: TUTTO OK`, 6/6 `GATE PERCORSO OK`, ms/frame medio 0.74-0.96 max 2.96-4.23 (limite 20), replay 2x IDENTICO, gara 4/4 IDENTICO, frequenza 60/50 Hz OK, screenshot P1 OK. Log: `UFFICIO/Officina/Test area/gate_t1.log`.
+- Resta su RIV punto 3 il lato @grafico: fotogrammi dei rivali visti di lato per le curve e fotogramma di sbandata del giocatore (voce di catalogo senza raw). Poi J1/J2 @developer-junior; H e T1-RUN restano in attesa di Andrea (runner Mac v91, fps/temperatura Pi 400).
+- Consegne: `bacheche/developer/diario.md` (1 riga), `bacheche/developer/RIASSUNTO.md` (riscritto), `out/developer/ULTIMO_TURNO.md` (riscritto), questo status.
+

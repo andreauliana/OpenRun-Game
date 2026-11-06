@@ -34,6 +34,21 @@ struct DanniAuto {
     static constexpr i32 DANNI_MAX = 8;
 };
 
+// RIV punto 3 (finto 3D alla OutRun): fotogrammi dell'auto del giocatore,
+// scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
+// quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
+// tutti 64x32 con la stessa sagoma e l'ancoraggio a terra.
+enum PosaGiocatore : i32 {
+    POSA_GIOCATORE_DRITTA = 0,
+    POSA_GIOCATORE_STERZO_SX_LEGGERO,
+    POSA_GIOCATORE_STERZO_SX_FORTE,
+    POSA_GIOCATORE_STERZO_DX_LEGGERO,
+    POSA_GIOCATORE_STERZO_DX_FORTE,
+    POSA_GIOCATORE_SALITA,
+    POSA_GIOCATORE_DISCESA,
+    POSA_GIOCATORE_COUNT
+};
+
 // Colori di ambiente della tappa (da livello.json "colori"); i default sono
 // quelli storici della palette del motore.
 struct TemaColori {
@@ -110,7 +125,8 @@ public:
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
-                       bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr);
+                       bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr,
+                       i32 posa = POSA_GIOCATORE_DRITTA);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -162,11 +178,24 @@ public:
         return indice >= 0 && indice < (i32)trafficoSprites_.size() ? &trafficoSprites_[indice] : nullptr;
     }
     void clearTrafficoSprites() { trafficoSprites_.clear(); }
-    // Auto del giocatore (P1 punto 4): sprite vero caricato una volta; vuoto =
-    // rettangolo sintetico in drawPlayerCar.
-    void impostaGiocatoreSprite(Sprite sprite) { giocatoreSprite_ = std::move(sprite); }
-    const Sprite* giocatoreSprite() const { return &giocatoreSprite_; }
-    void clearGiocatoreSprite() { giocatoreSprite_ = Sprite{}; }
+    // Auto del giocatore (P1 punto 4 + RIV punto 3): un fotogramma per posa
+    // (sterzo leggero/forte a sinistra e destra, salita, discesa), caricati una
+    // volta; vuoto = rettangolo sintetico in drawPlayerCar. La variante senza
+    // posa scrive il fotogramma dritto (retrocompatibile con i test esistenti).
+    void impostaGiocatoreSprite(Sprite sprite) {
+        impostaGiocatoreSprite(POSA_GIOCATORE_DRITTA, std::move(sprite));
+    }
+    void impostaGiocatoreSprite(i32 posa, Sprite sprite) {
+        if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) return;
+        giocatoreSprites_[posa] = std::move(sprite);
+    }
+    const Sprite* giocatoreSprite(i32 posa = POSA_GIOCATORE_DRITTA) const {
+        if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) posa = POSA_GIOCATORE_DRITTA;
+        return &giocatoreSprites_[posa];
+    }
+    void clearGiocatoreSprite() {
+        for (Sprite& s : giocatoreSprites_) s = Sprite{};
+    }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
     i32 aggiungiOggettoSprite(Sprite sprite);
@@ -227,7 +256,7 @@ private:
     void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
-    Sprite giocatoreSprite_;                  // auto del giocatore (P1 punto 4), vuoto = rettangolo sintetico
+    Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)

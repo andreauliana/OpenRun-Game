@@ -516,18 +516,21 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
 }
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
-                             bool frena, f32 fumoS, const DanniAuto* danni) {
-    // P1 punto 4: sprite vero dell'auto del giocatore (catalogo auto_giocatore,
-    // variante rosso_corsa, @grafico, D5) quando il raw e' disponibile;
-    // altrimenti sagoma sintetica retrocompatibile. Nessun materiale Sega.
+                             bool frena, f32 fumoS, const DanniAuto* danni, i32 posa) {
+    // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
+    // auto.giocatore.* (finto 3D alla OutRun). Game sceglie il fotogramma con
+    // `posa` (sterzo leggero/forte, salita, discesa); se il fotogramma chiesto
+    // non c'e' si ricade su quello dritto, poi sulla sagoma sintetica.
+    // Nessun materiale Sega.
     const bool lampo = danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f;
     i32 cx = 160, cy = 200, w = 34, h = 18;
-    if (const Sprite* s = giocatoreSprite(); s->width > 0) {
+    const Sprite* s = giocatoreSprite(posa);
+    if (s->width <= 0) s = giocatoreSprite(POSA_GIOCATORE_DRITTA);
+    if (s->width > 0) {
         // Sprite vero: stessa altezza di riferimento del vecchio corpo (18 px);
         // l'auto resta centrata (cx=160), e' la strada che si muove sotto di lei.
         // offsetX accenna lo sterzo spostandola leggermente; sollevamentoPx la
-        // solleva alle alte velocita'. rollAngle e' ignorato (futuro: fotogrammi
-        // per sterzo/sbandata, a carico del @grafico).
+        // solleva alle alte velocita'. rollAngle resta per la sagoma sintetica.
         const f32 scala = 18.0f / (f32)s->height;
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));

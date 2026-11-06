@@ -1904,6 +1904,7 @@
          "tipo": "auto_rivale",
          "stato": "pronto",
          "file": "assets_originali/sprite/rivali/auto_rivale_rosso_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_rosso_lato.sglraw",
          "livelli": [
             "lv_01_neon",
             "lv_02_atomico",
@@ -1919,6 +1920,7 @@
          "tipo": "auto_rivale",
          "stato": "pronto",
          "file": "assets_originali/sprite/rivali/auto_rivale_azzurro_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_azzurro_lato.sglraw",
          "livelli": [
             "lv_01_neon",
             "lv_02_atomico",
@@ -1928,6 +1930,86 @@
             "lv_06_desktop"
          ],
          "nota": "RIV: auto rivale vista di lato (curve), modello azzurro. Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.giallo.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_giallo_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_giallo_lato.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello giallo 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.verde.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_verde_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_verde_lato.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello verde 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.bianco.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_bianco_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_bianco_lato.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello bianco 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.arancio.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_arancio_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_arancio_lato.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello arancio 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.viola.lato",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/rivali/auto_rivale_viola_lato.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_viola_lato.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello viola 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
       },
       {
          "id": "auto.giocatore.sbandata",
@@ -1976,7 +2058,7 @@
             "lv_04_cromo",
             "lv_06_desktop"
          ],
-         "nota": "PIST1 G-P1: parapetto del ponte, comune a tutti i temi, colori neutri, 32x48 (ponte su lv_01/lv_04/lv_06). Originale, disegnato da zero, nessun materiale Sega.",
+         "nota": "PIST1 G-P1: parapetto del ponte, comune a tutti i temi, colori neutri, 32x48 (ponte su lv_01/lv_04/lv_06). Rigenerato turno 4 06/11/2026, originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
          "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/parapetto.sglraw"
       },
       {
@@ -1994,6 +2076,62 @@
          ],
          "nota": "PIST1 G-P1: guardrail dell'autostrada, comune a tutti i temi, acciaio neutro, 48x32 (livelli con tratto autostrada). Originale, disegnato da zero, nessun materiale Sega.",
          "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/guardrail.sglraw"
+      },
+      {
+         "id": "auto.giocatore.dritta",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_dritta.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_dritta.sglraw",
+         "nota": "RIV punto 3: auto giocatore dritta, 64x32, variante D5 rosso corsa. Originale, disegnata da zero (TOOLS/disegna_auto_giocatore.py), nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.sterzo_sx_leggero",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_leggero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_sterzo_sx_leggero.sglraw",
+         "nota": "RIV punto 3: auto giocatore in sterzo leggero a sinistra (finto 3D, +6 gradi in senso antiorario), 64x32, stessa sagoma. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.sterzo_sx_forte",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_forte.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_sterzo_sx_forte.sglraw",
+         "nota": "RIV punto 3: auto giocatore in sterzo forte a sinistra (finto 3D, +12 gradi in senso antiorario), 64x32, stessa sagoma. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.sterzo_dx_leggero",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_leggero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_sterzo_dx_leggero.sglraw",
+         "nota": "RIV punto 3: auto giocatore in sterzo leggero a destra (finto 3D, -6 gradi in senso orario), 64x32, stessa sagoma. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.sterzo_dx_forte",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_forte.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_sterzo_dx_forte.sglraw",
+         "nota": "RIV punto 3: auto giocatore in sterzo forte a destra (finto 3D, -12 gradi in senso orario), 64x32, stessa sagoma. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.salita",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_salita.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_salita.sglraw",
+         "nota": "RIV punto 3: auto giocatore in salita (allungata del 12% in verticale, ancorata a terra), 64x32. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.discesa",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/auto_gt/auto_giocatore_discesa.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_discesa.sglraw",
+         "nota": "RIV punto 3: auto giocatore in discesa (schiacciata del 10% in verticale, ancorata a terra), 64x32. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
       }
    ]
 }

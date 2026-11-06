@@ -510,8 +510,11 @@ void Game::caricaParapetti(i32 idxParapetto) {
     const f32 giro = (f32)road_.totalLength();
     if (giro <= 0.0f) return;
     const f32 meta = 0.5f * (f32)sprite->width * Renderer::SPRITE_WORLD_PX * PARAPETTO_SCALA;
+    // Booleana per sapere se c'e' almeno un segmento con acqua (idempotente al cambio tappa)
+    bool has_acqua = false;
     for (f32 z = PARAPETTI_PASSO_Z * 0.5f; z < giro; z += PARAPETTI_PASSO_Z) {
         if (!road_.acquaAt(z)) continue; // solo sul ponte (segmenti con acqua)
+        has_acqua = true;
         const f32 bordo = Road::ROAD_WIDTH * 0.5f * road_.larghezzaAt(z);
         for (i32 lato = -1; lato <= 1; lato += 2) {
             SpriteInstance o;
@@ -523,7 +526,8 @@ void Game::caricaParapetti(i32 idxParapetto) {
             parapetti_.push_back(o);
         }
     }
-    if (!parapetti_.empty()) std::printf("parapetti del ponte: %zu\n", parapetti_.size());
+    if (has_acqua && !parapetti_.empty()) std::printf("parapetti del ponte: %zu\n", parapetti_.size());
+    else if (!parapetti_.empty()) std::printf("parapetti del ponte gia' carichi: %zu\n", parapetti_.size());
 }
 
 void Game::caricaMusica() {
@@ -615,13 +619,34 @@ void Game::init(const std::string& livelloId) {
     leggiHud();
     caricaLivello(livelloId);
 
-    // P1 punto 4: sprite vero dell'auto del giocatore (variante approvata in
-    // catalogo, D5), caricato una volta all'avvio.
-    Sprite giocatore = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));
-    if (giocatore.width > 0) ren_.impostaGiocatoreSprite(std::move(giocatore));
-    else {
-        ren_.impostaGiocatoreSprite(Sprite{});
-        std::printf("giocatore: raw motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw mancante\n");
+    // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore in finto 3D
+    // alla OutRun. Un fotogramma per posa dal catalogo auto.giocatore.* (stato
+    // "pronto", @grafico): dritta, sterzo leggero/forte a sinistra e destra,
+    // salita, discesa. Caricati una volta all'avvio; se un raw manca resta il
+    // rettangolo sintetico, mai un crash.
+    struct FrameGiocatore {
+        i32 posa;
+        const char* nome;
+    };
+    static const FrameGiocatore FRAME_GIOCATORE[] = {
+        {POSA_GIOCATORE_DRITTA, "auto_giocatore_dritta"},
+        {POSA_GIOCATORE_STERZO_SX_LEGGERO, "auto_giocatore_sterzo_sx_leggero"},
+        {POSA_GIOCATORE_STERZO_SX_FORTE, "auto_giocatore_sterzo_sx_forte"},
+        {POSA_GIOCATORE_STERZO_DX_LEGGERO, "auto_giocatore_sterzo_dx_leggero"},
+        {POSA_GIOCATORE_STERZO_DX_FORTE, "auto_giocatore_sterzo_dx_forte"},
+        {POSA_GIOCATORE_SALITA, "auto_giocatore_salita"},
+        {POSA_GIOCATORE_DISCESA, "auto_giocatore_discesa"},
+    };
+    for (const FrameGiocatore& f : FRAME_GIOCATORE) {
+        Sprite s = caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/") + f.nome + ".sglraw"));
+        ren_.impostaGiocatoreSprite(f.posa, std::move(s));
+    }
+    if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
+        // Compatibilita': raw storico con la sola auto dritta (auto_giocatore.sglraw).
+        Sprite vecchio = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));
+        if (vecchio.width > 0) ren_.impostaGiocatoreSprite(POSA_GIOCATORE_DRITTA, std::move(vecchio));
+        else std::printf("giocatore: raw motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_dritta.sglraw mancante\n");
     }
 
     road_.playerZ = 0.0f;
@@ -981,25 +1006,42 @@ void Game::inizializzaRivali() {
         r.spriteIdx = nSpriteRivali_ > 0 ? i % nSpriteRivali_ : -1; // sprite rivale (RIV punto b)
         r.ritmoFase = 0.9f * (f32)i;
         r.ritmoVel = 0.15f + 0.04f * (f32)rnd.next(5);
-        // RIV punto 1: percorso del rivale nell'albero delle tappe, scelto dal
-        // seme (deterministico). Parte dalla stessa tappa del giocatore; a ogni
-        // bivio sceglie sinistra o destra; l'ultima tappa e' il suo traguardo.
+        // RIV punto 1: ogni rivale ha la sua sequenza deterministica di tappe
+        // da percorso_gara.json, scelta col seme del gioco. Parte dalla stessa
+        // tappa del giocatore; a ogni bivio sceglie sinistra o destra; l'ultima
+        // tappa e' il suo traguardo. Il percorso e' memorizzato in r.percorso[]
+        // e i rami scelti in r.ramiPercorso[], con nPercorso elementi.
+        // Tempo d'arrivo registrato in r.tempoArrivoS (>=0 quando finito).
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
         i32 cur = indiceTappa(tappaId_);
-        while (cur >= 0 && r.nPercorso < RIVALE_MAX_TAPPE) {
-            r.percorso[r.nPercorso] = cur;
-            const Tappa& t = tappe_[(size_t)cur];
-            if (t.sinistra.empty() || t.destra.empty()) {
-                r.ramiPercorso[r.nPercorso] = 0;
+        // RIV punto 1: percorso deterministico dal seme, parte dalla tappa del giocatore.
+        // Se la tappa non fosse trovata, si usa un percorso di arrivo immediato.
+        if (cur < 0) {
+            r.percorso[0] = 0;
+            r.ramiPercorso[0] = 0;
+            r.nPercorso = 1;
+        } else {
+            while (cur >= 0 && r.nPercorso < RIVALE_MAX_TAPPE) {
+                r.percorso[r.nPercorso] = cur;
+                const Tappa& t = tappe_[(size_t)cur];
+                if (t.sinistra.empty() || t.destra.empty()) {
+                    r.ramiPercorso[r.nPercorso] = 0;
+                    ++r.nPercorso;
+                    break;
+                }
+                const i32 scelta = rnd.next(2) == 0 ? -1 : 1;
+                r.ramiPercorso[r.nPercorso] = scelta;
                 ++r.nPercorso;
-                break;
+                cur = indiceTappa(scelta < 0 ? t.sinistra : t.destra);
             }
-            const i32 scelta = rnd.next(2) == 0 ? -1 : 1;
-            r.ramiPercorso[r.nPercorso] = scelta;
-            ++r.nPercorso;
-            cur = indiceTappa(scelta < 0 ? t.sinistra : t.destra);
+            // Safety: se il loop termina per raggiungere il limite massimo di tappe,
+            // assicurarsi che l'ultimo ramo sia impostato correttamente.
+            if (r.nPercorso >= RIVALE_MAX_TAPPE) {
+                r.nPercorso = RIVALE_MAX_TAPPE - 1;
+                r.ramiPercorso[r.nPercorso] = 0;
+            }
         }
     }
     classifica_.clear();
@@ -1893,9 +1935,27 @@ void Game::render() {
     danni.lato = latoUrto_;
     danni.fumo = urtiGara_ + toccateCiglio_ >= DANNI_FUMO && !playerFlipping_;
     danni.tempoS = tempoGiocoS_;
+    // RIV punto 3: fotogramma dell'auto in finto 3D alla OutRun. Priorita' allo
+    // sterzo (leggero/forte a sinistra e destra); senza sterzo la salita o la
+    // discesa, misurata sulla quota a due segmenti davanti e dietro (non sui
+    // sobbalzi). Durante l'incidente resta il fotogramma dritto.
+    i32 posaGiocatore = POSA_GIOCATORE_DRITTA;
+    if (!playerFlipping_) {
+        constexpr f32 SOGLIA_PENDENZA = 80.0f; // unita' di quota su 4 segmenti (~10% di pendenza)
+        const f32 sterzo = player_.sterzo();
+        const f32 dz = 2.0f * (f32)Road::SEG_LEN;
+        const f32 pendenza = road_.quotaAt(road_.playerZ + dz) - road_.quotaAt(road_.playerZ - dz);
+        if (sterzo <= -0.55f) posaGiocatore = POSA_GIOCATORE_STERZO_SX_FORTE;
+        else if (sterzo <= -0.15f) posaGiocatore = POSA_GIOCATORE_STERZO_SX_LEGGERO;
+        else if (sterzo >= 0.55f) posaGiocatore = POSA_GIOCATORE_STERZO_DX_FORTE;
+        else if (sterzo >= 0.15f) posaGiocatore = POSA_GIOCATORE_STERZO_DX_LEGGERO;
+        else if (pendenza > SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_SALITA;
+        else if (pendenza < -SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_DISCESA;
+    }
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
-                       rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni);
+                       rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
+                       posaGiocatore);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;

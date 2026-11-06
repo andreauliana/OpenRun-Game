@@ -2,19 +2,32 @@
 # Blocco RIV — sprite auto rivali originali (OpenRun 4.6, @grafico).
 # Disegnati da zero con Pillow. Nessun asset Sega. Licenza CC0-1.0.
 # Produce: 7 rivali (vista dietro, 48x24, colore e dettagli distinti; ridisegnati 29/10),
-# 2 viste di lato (curve) e 1 fotogramma di sbandata auto giocatore.
-import os, json
+# 7 viste di lato (curve, 44x16) e 1 fotogramma di sbandata auto giocatore.
+# Scrive anche i raw per il motore: motore_nuovo/dati/sprite_raw/rivali/<nome>.sglraw
+# (formato "SGLR" + u32 LE w + u32 LE h + RGBA8888, come png_a_raw.py).
+import os
+import struct
 from PIL import Image, ImageDraw
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 LIB = os.path.abspath(os.path.join(BASE, "..", "Libreria", "assets_originali"))
 OUT = os.path.join(LIB, "sprite", "rivali")
+ROOT = os.path.abspath(os.path.join(BASE, "..", "..", ".."))
+RAW = os.path.join(ROOT, "motore_nuovo", "dati", "sprite_raw", "rivali")
 os.makedirs(OUT, exist_ok=True)
+os.makedirs(RAW, exist_ok=True)
 
 def salvo(nome, img):
     p = os.path.join(OUT, nome)
     img.save(p)
     print(f"  [OK] {p}")
+    return p
+
+def salvo_raw(nome, img):
+    p = os.path.join(RAW, nome + ".sglraw")
+    with open(p, "wb") as f:
+        f.write(b"SGLR" + struct.pack("<II", img.width, img.height) + img.tobytes())
+    print(f"  [OK] {p} {img.width}x{img.height}")
     return p
 
 # Colori delle 7 auto rivali (Andrea 29/10: "leggermente migliori nel
@@ -94,22 +107,56 @@ def retro(pal, w=48, h=24):
     return img
 
 def lato(pal, w=44, h=16):
+    """Coupe' vista di lato (curve): profilo basso, abitacolo, alettone,
+    cerchi chiari, fanale e fascia da corsa del modello."""
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.polygon([(4, h - 4), (6, 8), (12, 6), (w - 10, 6), (w - 6, 8), (w - 4, h - 4)], fill=pal["body"], outline=pal["dark"])
-    d.polygon([(10, 8), (w - 12, 8), (w - 10, 10), (12, 10)], fill=VETRO, outline=pal["dark"])
-    d.ellipse([8, h - 6, 14, h - 2], fill=pal["dark"])
-    d.ellipse([10, h - 4, 12, h - 2], fill=SCARICO)
-    d.ellipse([w - 14, h - 6, w - 8, h - 2], fill=pal["dark"])
-    d.ellipse([w - 12, h - 4, w - 10, h - 2], fill=SCARICO)
-    d.rectangle([6, 10, 9, 12], fill=FANALE, outline=pal["dark"])
+    # Ombra a terra.
+    d.line([2, h - 1, w - 3, h - 1], fill=(0, 0, 0, 110))
+    # Gomme (posteriore a sinistra, anteriore a destra) con cerchio chiaro.
+    for x0 in (4, w - 12):
+        d.ellipse([x0, h - 6, x0 + 8, h - 1], fill=GOMMA)
+        d.point([(x0 + 3, h - 4), (x0 + 4, h - 4)], fill=GOMMA_LUCE)
+    # Profilo della carrozzeria: coda corta, fiancata piena, muso che scende.
+    d.polygon([(1, 11), (3, 7), (10, 5), (16, 4), (32, 4), (38, 6),
+               (43, 9), (43, 11)], fill=pal["body"], outline=pal["dark"])
+    # Abitacolo e vetro laterale.
+    d.polygon([(12, 5), (16, 1), (27, 1), (33, 5)], fill=pal["body"], outline=pal["dark"])
+    d.polygon([(14, 4), (17, 2), (26, 2), (30, 4)], fill=VETRO)
+    d.line([18, 2, 24, 2], fill=VETRO_LUCE)
+    # Fascia da corsa sulla fiancata (solo modelli che ce l'hanno).
+    if pal["striscia"]:
+        d.line([6, 8, 39, 8], fill=pal["striscia"])
+    # Riflesso sulla spalla e alettone sulla coda.
+    d.line([5, 7, 11, 6], fill=pal["luce"])
+    if pal["alettone"]:
+        d.rectangle([0, 3, 8, 4], fill=pal["dark"])
+        d.line([1, 3, 7, 3], fill=pal["body"])
+    # Fanale anteriore, presa d'aria e scarico posteriore.
+    d.rectangle([39, 8, 42, 9], fill=FANALE, outline=NERO)
+    d.point([(40, 8)], fill=FANALE_LUCE)
+    d.rectangle([11, 9, 14, 10], fill=pal["dark"], outline=NERO)
+    d.rectangle([1, 9, 3, 10], fill=SCARICO, outline=NERO)
     return img
 
 files = []
 for name in ORDINE:
-    files.append(salvo(f"auto_rivale_{name}_retro.png", retro(PALETTES[name])))
-files.append(salvo("auto_rivale_rosso_lato.png", lato(PALETTES["rosso"])))
-files.append(salvo("auto_rivale_azzurro_lato.png", lato(PALETTES["azzurro"])))
+    retro_png = os.path.join(OUT, f"auto_rivale_{name}_retro.png")
+    if os.path.exists(retro_png):
+        # PNG modificabile a mano: se c'e' gia' non lo sovrascrive, ne ricava il raw.
+        print(f"  [SKIP] {retro_png} (esistente)")
+        files.append(retro_png)
+    else:
+        files.append(salvo(f"auto_rivale_{name}_retro.png", retro(PALETTES[name])))
+    with Image.open(retro_png) as im:
+        salvo_raw(f"auto_rivale_{name}_retro", im.convert("RGBA"))
+
+for name in ORDINE:
+    img = lato(PALETTES[name])
+    files.append(salvo(f"auto_rivale_{name}_lato.png", img))
+    salvo_raw(f"auto_rivale_{name}_lato", img)
+    opachi = sum(1 for a in img.tobytes()[3::4] if a > 0)
+    print(f"  [CHK] {name}.lato bbox {img.getbbox()} pixel opachi {opachi}")
 
 # Sbandata auto giocatore: auto GT inclissa + segni di sbandata (fumo/strisce)
 img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
