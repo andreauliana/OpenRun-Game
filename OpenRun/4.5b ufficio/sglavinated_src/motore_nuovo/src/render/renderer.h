@@ -38,15 +38,32 @@ struct DanniAuto {
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
 // tutti 64x32 con la stessa sagoma e l'ancoraggio a terra.
+// Andrea 06/11: le pose sono quelle disegnate da lui (sprite/giocatore_pose/,
+// TOOLS/converti_pose_auto.py); i fotogrammi degli agenti restano come riserva.
+// Inclinazione in curva quando manca la posa di sterzo (radianti a sterzo pieno).
+constexpr f32 STERZO_IMBARDATA = 0.09f;
+
+// Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
+constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
+// Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 218; // riga dello schermo dove appoggiano le ruote (224 = fondo)
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 96; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
+
 enum PosaGiocatore : i32 {
+    // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena
+    // girata, 4 = sterzo pieno) + salita/discesa. Le pose destre, se mancano,
+    // sono lo specchio delle sinistre.
     POSA_GIOCATORE_DRITTA = 0,
-    POSA_GIOCATORE_STERZO_SX_LEGGERO,
-    POSA_GIOCATORE_STERZO_SX_FORTE,
-    POSA_GIOCATORE_STERZO_DX_LEGGERO,
-    POSA_GIOCATORE_STERZO_DX_FORTE,
+    POSA_GIOCATORE_SX_1, POSA_GIOCATORE_SX_2, POSA_GIOCATORE_SX_3, POSA_GIOCATORE_SX_4,
+    POSA_GIOCATORE_DX_1, POSA_GIOCATORE_DX_2, POSA_GIOCATORE_DX_3, POSA_GIOCATORE_DX_4,
     POSA_GIOCATORE_SALITA,
     POSA_GIOCATORE_DISCESA,
-    POSA_GIOCATORE_COUNT
+    POSA_GIOCATORE_COUNT,
+    // Nomi delle pose del 05-06/11 (agenti), tenuti come alias.
+    POSA_GIOCATORE_STERZO_SX_LEGGERO = POSA_GIOCATORE_SX_2,
+    POSA_GIOCATORE_STERZO_SX_FORTE = POSA_GIOCATORE_SX_4,
+    POSA_GIOCATORE_STERZO_DX_LEGGERO = POSA_GIOCATORE_DX_2,
+    POSA_GIOCATORE_STERZO_DX_FORTE = POSA_GIOCATORE_DX_4,
 };
 
 // Colori di ambiente della tappa (da livello.json "colori"); i default sono
@@ -193,6 +210,11 @@ public:
         if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) posa = POSA_GIOCATORE_DRITTA;
         return &giocatoreSprites_[posa];
     }
+    // Fotogramma da disegnare per una posa: se manca usa la posa piu' vicina
+    // dello stesso lato, poi lo specchio dell'altro lato, poi la dritta.
+    // `specchia` = disegnare a specchio; `sterzoResiduo` (-1..1) = sterzo che il
+    // fotogramma scelto non mostra (lo rende l'inclinazione del motore).
+    const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
     }

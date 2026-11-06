@@ -515,6 +515,30 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
+const Sprite* Renderer::risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const {
+    specchia = false;
+    sterzoResiduo = 0.0f;
+    auto c = [this](i32 p) { return giocatoreSprites_[p].width > 0 ? &giocatoreSprites_[p] : nullptr; };
+    const bool sx = posa >= POSA_GIOCATORE_SX_1 && posa <= POSA_GIOCATORE_SX_4;
+    const bool dx = posa >= POSA_GIOCATORE_DX_1 && posa <= POSA_GIOCATORE_DX_4;
+    if (sx || dx) {
+        const i32 livello = sx ? posa - POSA_GIOCATORE_SX_1 + 1 : posa - POSA_GIOCATORE_DX_1 + 1; // 1..4
+        const i32 base = sx ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1;
+        const i32 altro = sx ? POSA_GIOCATORE_DX_1 : POSA_GIOCATORE_SX_1;
+        const f32 segno = sx ? -1.0f : 1.0f;
+        for (i32 k = livello; k >= 1; --k) {
+            const Sprite* p = c(base + k - 1);
+            bool sp = false;
+            if (!p && (p = c(altro + k - 1))) sp = true;
+            if (p) { specchia = sp; sterzoResiduo = segno * (f32)(livello - k) / 4.0f; return p; }
+        }
+        sterzoResiduo = segno * (f32)livello / 4.0f;
+    } else if (const Sprite* p = c(posa)) {
+        return p;
+    }
+    return &giocatoreSprites_[POSA_GIOCATORE_DRITTA];
+}
+
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
                              bool frena, f32 fumoS, const DanniAuto* danni, i32 posa) {
     // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
@@ -524,41 +548,68 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     // Nessun materiale Sega.
     const bool lampo = danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f;
     i32 cx = 160, cy = 200, w = 34, h = 18;
-    const Sprite* s = giocatoreSprite(posa);
-    if (s->width <= 0) s = giocatoreSprite(POSA_GIOCATORE_DRITTA);
+    bool specchia = false;
+    f32 sterzoResiduo = 0.0f;
+    const Sprite* s = risolviPosa(posa, specchia, sterzoResiduo);
     if (s->width > 0) {
-        // Sprite vero: stessa altezza di riferimento del vecchio corpo (18 px);
-        // l'auto resta centrata (cx=160), e' la strada che si muove sotto di lei.
-        // offsetX accenna lo sterzo spostandola leggermente; sollevamentoPx la
-        // solleva alle alte velocita'. rollAngle resta per la sagoma sintetica.
-        const f32 scala = 18.0f / (f32)s->height;
+        // Sprite vero (AUTO1 A4-A5, Claude 06/11): disegnato a grandezza piena
+        // (64x32, scala 1, niente rimpicciolimento a 18 px); l'auto resta
+        // centrata (cx=160), e' la strada che si muove sotto di lei. offsetX
+        // accenna lo sterzo, sollevamentoPx la solleva alle alte velocita' e
+        // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
+        // centro, come faceva la sagoma a rettangoli. Nessun lampo sull'urto
+        // (Andrea 06/11: non realistico).
+        // Scala intera (pixel netti) per arrivare a circa AUTO_GIOCATORE_LARGHEZZA px:
+        // la posa di Andrea (25 px) e' disegnata x4, i fotogrammi da 64 px x1.
+        const f32 scala = (f32)std::max(1, (i32)std::lround((f32)AUTO_GIOCATORE_LARGHEZZA / (f32)s->width));
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
-        cy = 200 - sollevamento;
-        if (sollevamento > 0) fb_.fillRect(cx - 15, 199, cx + 15, 201, pal_[0]); // ombra a terra
-        SpriteInstance si;
-        si.sprite = s;
-        si.scale = scala;
-        si.paletteBase = 0;
-        drawSprite(si, (f32)cx, (f32)cy, scala);
-        if (lampo) {
-            // Lampo bianco nei primi istanti della botta.
-            fb_.fillRect(cx - w / 2, cy - h, cx + w / 2, cy, 0xFFFFFFFFu);
-        } else if (frena) {
-            // Stop accesi ai due lati del retro.
-            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 7, cy - h / 2 + 4, 0xFFFF2020u);
-            fb_.fillRect(cx + w / 2 - 7, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 4, 0xFFFF2020u);
-        } else if (speed > 0.0f && !offroad) {
-            // Retromarcia accesa in marcia (piccoli quadratini).
-            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 6, cy - h / 2 + 3, 0xFFFFF4B0u);
-            fb_.fillRect(cx + w / 2 - 6, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 3, 0xFFFFF4B0u);
+        cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
+        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
+        const bool palettePropria = !s->palette.empty();
+        const i32 nPal = (i32)s->palette.size();
+        // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
+        rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
+        auto texel = [&](i32 tx, i32 ty) -> u32 {
+            if (specchia) tx = s->width - 1 - tx;
+            const u8 idx = s->pixels[ty * s->width + tx];
+            if (palettePropria) return s->palette[idx % nPal];
+            return idx == 0 ? 0u : pal_[idx];
+        };
+        if (std::abs(rollAngle) < 0.01f) {
+            const i32 x0 = cx - w / 2, y0 = cy - h;
+            for (i32 y = 0; y < h; ++y)
+                for (i32 x = 0; x < w; ++x) {
+                    u32 col = texel((i32)(x / scala), (i32)(y / scala));
+                    if ((col >> 24) == 0) continue;
+                    fb_.put(x0 + x, y0 + y, col);
+                }
+        } else {
+            // Rotazione con campionamento inverso: per ogni pixel dello schermo
+            // nel quadrato che contiene l'auto ruotata si cerca il texel.
+            const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
+            const f32 pcx = (f32)cx, pcy = (f32)cy - h * 0.5f;
+            const i32 r = (i32)(0.5f * std::sqrt((f32)(w * w + h * h))) + 1;
+            for (i32 y = (i32)pcy - r; y <= (i32)pcy + r; ++y)
+                for (i32 x = (i32)pcx - r; x <= (i32)pcx + r; ++x) {
+                    const f32 dx = (f32)x - pcx, dy = (f32)y - pcy;
+                    const f32 lx = co * dx + si * dy + w * 0.5f;
+                    const f32 ly = -si * dx + co * dy + h * 0.5f;
+                    if (lx < 0.0f || ly < 0.0f || lx >= (f32)w || ly >= (f32)h) continue;
+                    u32 col = texel((i32)(lx / scala), (i32)(ly / scala));
+                    if ((col >> 24) == 0) continue;
+                    fb_.put(x, y, col);
+                }
         }
+        // Niente luci disegnate dal motore sopra la posa: fanali e stop sono
+        // nel disegno (Andrea 06/11). Lo stop acceso arrivera' come pezzo.
+        (void)frena;
     } else {
         // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
         u32 body = offroad ? pal_[12] : pal_[9];
-        if (lampo) body = 0xFFFFFFFFu;
+        // Nessun lampo bianco sull'urto (Andrea 06/11).
         u32 cabin = pal_[10];
         // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
         cx = 160 + (i32)(offsetX * 0.035f);

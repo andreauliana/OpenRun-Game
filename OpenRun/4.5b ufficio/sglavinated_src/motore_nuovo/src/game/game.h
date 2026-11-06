@@ -386,6 +386,10 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         i32 passoPercorso = 0;     // indice in percorso[] della tappa corrente
         f32 progressoTappa = 0.0f; // distanza percorsa dentro la tappa corrente
         f32 tempoArrivoS = -1.0f;  // tempo totale al traguardo (s), -1 = ancora in corsa
+        // Triangolo sopra il rivale (Andrea 05/11 sera): non sempre acceso, solo
+        // alla partenza e per qualche secondo quando il rivale arriva vicino.
+        f32 segnalinoS = 0.0f; // secondi rimasti di triangolo acceso
+        bool vicino = false;   // era gia' vicino al frame prima (accende solo all'ingresso)
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;
