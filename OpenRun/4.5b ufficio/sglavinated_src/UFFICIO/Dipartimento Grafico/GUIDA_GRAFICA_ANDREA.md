@@ -26,6 +26,8 @@ Il gioco le ingrandisce a scala intera fino a circa 52 px di larghezza (la tua r
 Se una posa manca il gioco usa la piu' vicina e inclina un po' l'auto. Dopo aver salvato i PNG lancia
 `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_pose_auto.py"`.
 Il motore aggiunge da solo: ombra, sollevamento in velocita', rotazione nel ribaltamento, scodata, fumo e scintille.
+Le pose `auto_sx1..sx4.png` che trovi ora sono segnaposto generati da `TOOLS/genera_pose_sterzo.py` partendo dalla tua dritta: la parte alta scivola verso l'interno della curva, compare il fianco destro e la ruota anteriore sinistra sterzata. Servono a provare la sensazione di curva; ridisegnale sopra a mano (stesso nome, stessa misura) e lo script non le tocchera' piu'. Se cambi la dritta e vuoi rigenerarle: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/genera_pose_sterzo.py" --sovrascrivi`, poi `converti_pose_auto.py`.
+
 Fanali e stop sono nel tuo disegno. Lo stop acceso in frenata e' un PNG a parte, `auto_stop.png`: stessa misura della posa dritta, solo i pixel dei fanali accesi, tutto il resto trasparente. Il gioco lo sovrappone quando freni. Per le altre pose: `auto_stop_sx1.png` ecc. (facoltativi; senza, quella posa frena senza stop accesi). La prima versione l'ha fatta Claude dai tuoi fanali: ridisegnala pure. Le ammaccature le aggiunge il motore (puntini scuri e graffi chiari), non vanno disegnate.
 
 ## 2. Il resto che si vede gia' in gioco

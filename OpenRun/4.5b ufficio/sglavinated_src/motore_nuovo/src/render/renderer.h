@@ -47,7 +47,7 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
 constexpr i32 AUTO_GIOCATORE_TERRA_Y = 218; // riga dello schermo dove appoggiano le ruote (224 = fondo)
-constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 96; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 120; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
 
 enum PosaGiocatore : i32 {
     // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena

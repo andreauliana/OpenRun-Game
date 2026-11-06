@@ -559,9 +559,22 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
         // centro, come faceva la sagoma a rettangoli. Nessun lampo sull'urto
         // (Andrea 06/11: non realistico).
-        // Scala 1.0 a schermo (AUTO1 A5): fotogrammi 64x32 disegnati a grandezza piena,
-        // nessun rimpicciolimento a 18 px. Ombre e componenti agganciati al rect del frame.
-        const f32 scala = AUTO_GIOCATORE_SCALA;
+        // Scala intera (pixel netti) per arrivare a circa AUTO_GIOCATORE_LARGHEZZA px,
+        // calcolata sulla posa dritta cosi' tutte le pose hanno la stessa grandezza
+        // (Andrea 06/11: "a bit small"; la scala 1.0 degli agenti la rimpiccioliva a 25 px).
+        const Sprite& dritta = giocatoreSprites_[POSA_GIOCATORE_DRITTA];
+        // Larghezza della carrozzeria vera (pixel non trasparenti), non del
+        // riquadro comune a tutte le pose, che include ruote e fianchi delle curve.
+        const Sprite& rif = dritta.width > 0 ? dritta : *s;
+        i32 xMin = rif.width, xMax = -1;
+        for (i32 y = 0; y < rif.height; ++y)
+            for (i32 x = 0; x < rif.width; ++x) {
+                const u8 idx = rif.pixels[y * rif.width + x];
+                const u32 c = !rif.palette.empty() ? rif.palette[idx % (i32)rif.palette.size()] : (idx ? 0xFF000000u : 0u);
+                if ((c >> 24) != 0) { xMin = std::min(xMin, x); xMax = std::max(xMax, x); }
+            }
+        const i32 baseW = xMax >= xMin ? xMax - xMin + 1 : rif.width;
+        const f32 scala = (f32)std::max(1, (i32)std::lround((f32)AUTO_GIOCATORE_LARGHEZZA / (f32)baseW));
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
         cx = 160 + (i32)(offsetX * 0.035f);
