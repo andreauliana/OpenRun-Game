@@ -25,7 +25,6 @@ constexpr f32 ONDA_VELOCITA = 36.0f;    // barre al secondo: attraversa lo spett
 constexpr f32 ONDA_ALZA_PX = 4.0f;      // quanto l'onda solleva una barra
 constexpr f32 DERIVA = 0.05f;           // giri di palette al secondo
 constexpr f32 TINTA_BARRA = 0.035f;     // scarto di colore tra una barra e la vicina
-constexpr u32 OMBRA = 0xFF0C0818u;      // ombra di 1 px: stacca le barre anche sugli sfondi chiari
 constexpr u32 BIANCO = 0xFFFFFFFFu;
 
 u32 rgb(f32 r, f32 g, f32 b) {
@@ -58,9 +57,9 @@ u32 neon(f32 giro, f32 bianco, f32 s) {
     return rgb(c.r, c.g, c.b);
 }
 
-// Rettangolo con ombra di 1 px in basso a destra.
+// Rettangolo pieno. L'ombra scura di 1 px sotto ogni LED e' stata tolta
+// (Andrea 06/11: sembrava Tetris); il nome resta per non toccare le chiamate.
 void conOmbra(Framebuffer& fb, i32 x0, i32 y0, i32 x1, i32 y1, u32 col) {
-    fb.fillRect(x0 + 1, y0 + 1, x1 + 1, y1 + 1, OMBRA);
     fb.fillRect(x0, y0, x1, y1, col);
 }
 } // namespace
