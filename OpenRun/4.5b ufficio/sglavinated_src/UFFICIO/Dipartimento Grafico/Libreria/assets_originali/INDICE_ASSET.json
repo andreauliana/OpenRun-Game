@@ -1,18 +1,18 @@
 {
- "generato": "2026-10-18 09:11",
- "n_file": 294,
+ "generato": "2026-11-06 04:28",
+ "n_file": 345,
  "lacune": [
   {
    "serve": "auto giocatore",
-   "trovati": 3,
+   "trovati": 10,
    "minimo": 3,
    "ok": true
   },
   {
    "serve": "traffico / altri veicoli",
-   "trovati": 0,
+   "trovati": 4,
    "minimo": 1,
-   "ok": false
+   "ok": true
   },
   {
    "serve": "cartelloni sponsor (7 sponsor x 3 stili)",
@@ -22,19 +22,19 @@
   },
   {
    "serve": "skyline per livello",
-   "trovati": 18,
+   "trovati": 20,
    "minimo": 3,
    "ok": true
   },
   {
    "serve": "oggetti bordo strada",
-   "trovati": 98,
+   "trovati": 109,
    "minimo": 10,
    "ok": true
   },
   {
    "serve": "HUD",
-   "trovati": 3,
+   "trovati": 1,
    "minimo": 1,
    "ok": true
   },
@@ -74,44 +74,44 @@
    "percorso": "assets_originali/CATALOGO_GRAFICO.json",
    "categoria": "(radice)",
    "tipo": "json",
-   "byte": 14935,
+   "byte": 90452,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792259327,
+   "mtime": 1793935550,
    "flag": []
   },
   {
    "percorso": "assets_originali/CREDITI.md",
    "categoria": "(radice)",
    "tipo": "md",
-   "byte": 2408,
+   "byte": 3487,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242220,
+   "mtime": 1793606870,
    "flag": []
   },
   {
    "percorso": "assets_originali/DIREZIONE_ARTISTICA.md",
    "categoria": "(radice)",
    "tipo": "md",
-   "byte": 4179,
+   "byte": 2533,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792251275,
+   "mtime": 1792750276,
    "flag": []
   },
   {
    "percorso": "assets_originali/MAPPA_LIVELLI_SPONSOR.json",
    "categoria": "(radice)",
    "tipo": "json",
-   "byte": 2557,
+   "byte": 4478,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242220,
+   "mtime": 1792353282,
    "flag": []
   },
   {
@@ -122,7 +122,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -133,7 +133,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242222,
+   "mtime": 1792449861,
    "flag": []
   },
   {
@@ -144,7 +144,7 @@
    "licenza": "OFL-1.1",
    "stato": "generato",
    "originale": false,
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "scelta": "D4: Antonio Bold per titoli e fumetti",
    "flag": []
   },
@@ -152,11 +152,11 @@
    "percorso": "assets_originali/font/antonio/manifest.json",
    "categoria": "font",
    "tipo": "json",
-   "byte": 969,
+   "byte": 965,
    "licenza": "OFL-1.1",
    "stato": "generato",
    "originale": false,
-   "mtime": 1792242222,
+   "mtime": 1792332355,
    "scelta": "D4: Antonio Bold per titoli e fumetti",
    "flag": []
   },
@@ -169,7 +169,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "A",
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -181,7 +181,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "A",
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -196,7 +196,7 @@
    "w": 256,
    "h": 64,
    "sha1": "71acc83b8fa23209404e2a643a746616037863d0",
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -208,7 +208,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "B",
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -220,7 +220,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "B",
-   "mtime": 1792242222,
+   "mtime": 1792235022,
    "flag": []
   },
   {
@@ -235,7 +235,7 @@
    "w": 256,
    "h": 64,
    "sha1": "27a23ae0597409942a079b1842e996b949740ffb",
-   "mtime": 1792242224,
+   "mtime": 1792235024,
    "flag": []
   },
   {
@@ -247,7 +247,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "C",
-   "mtime": 1792242224,
+   "mtime": 1792235024,
    "flag": []
   },
   {
@@ -259,7 +259,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "C",
-   "mtime": 1792242224,
+   "mtime": 1792235024,
    "flag": []
   },
   {
@@ -274,73 +274,112 @@
    "w": 256,
    "h": 64,
    "sha1": "3f592a26e7e664f1f4b9ba96e24cfa3acfafc958",
-   "mtime": 1792242224,
+   "mtime": 1792235024,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/00_LEGGIMI.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 1265,
+   "byte": 1262,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242224,
+   "mtime": 1792332355,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/censimento_motori_outrun.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 3655,
+   "byte": 3644,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242224,
+   "mtime": 1792451300,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/font_pixel.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 1426,
+   "byte": 1428,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792270756,
+   "mtime": 1792451298,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/sfx_motore.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 1963,
+   "byte": 1962,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242224,
+   "mtime": 1792451334,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/skyline_sci-fi_notturno.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 2272,
+   "byte": 2313,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242226,
+   "mtime": 1792451494,
    "flag": []
   },
   {
    "percorso": "assets_originali/ricerca/texture_strada.md",
    "categoria": "ricerca",
    "tipo": "md",
-   "byte": 1820,
+   "byte": 1826,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242226,
+   "mtime": 1792451532,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/trama.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 591,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/comuni/oggetti/guardrail.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 259,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 32,
+   "sha1": "cb7582c9d08c94cdfc723bad3adbc3a00142315d",
+   "mtime": 1793907642,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/comuni/oggetti/parapetto.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 275,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 32,
+   "h": 48,
+   "sha1": "d0bcf1812d4cc7e30e6287e41b6f5464758ade8d",
+   "mtime": 1793907642,
    "flag": []
   },
   {
@@ -352,7 +391,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
-   "mtime": 1792242226,
+   "mtime": 1792235026,
    "flag": []
   },
   {
@@ -365,7 +404,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
-   "mtime": 1792242226,
+   "mtime": 1792235026,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -379,7 +418,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -396,7 +435,7 @@
    "w": 64,
    "h": 32,
    "sha1": "bcd18f573375ff5a9b2c56ab3f3e772f29644878",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/palette.png"
@@ -415,7 +454,7 @@
    "w": 256,
    "h": 128,
    "sha1": "a3c69b1dbb8f19e8879b94641217bfaf4eef3c98",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png"
@@ -434,7 +473,7 @@
    "w": 31,
    "h": 20,
    "sha1": "54dd1b331374fc015d4f85ccd98af59a2de14475",
-   "mtime": 1792242648,
+   "mtime": 1792235448,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -454,7 +493,7 @@
    "w": 44,
    "h": 37,
    "sha1": "74a997b26a7a81454803eb2a95ec6ee8a1c0eb2c",
-   "mtime": 1792242226,
+   "mtime": 1792235026,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -474,7 +513,7 @@
    "w": 26,
    "h": 33,
    "sha1": "0a6a88237760d21dfc16b826835bc5f334e2d927",
-   "mtime": 1792242226,
+   "mtime": 1792235026,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -494,7 +533,7 @@
    "w": 39,
    "h": 29,
    "sha1": "9865813caafde98891e1ee5f30558997ef192b74",
-   "mtime": 1792242226,
+   "mtime": 1792235026,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -511,7 +550,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "B",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "flag": []
   },
   {
@@ -524,7 +563,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "B",
-   "mtime": 1792242230,
+   "mtime": 1792235030,
    "flag": []
   },
   {
@@ -540,7 +579,7 @@
    "w": 64,
    "h": 32,
    "sha1": "bcd18f573375ff5a9b2c56ab3f3e772f29644878",
-   "mtime": 1792242230,
+   "mtime": 1792235030,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/palette.png"
    ]
@@ -558,7 +597,7 @@
    "w": 256,
    "h": 128,
    "sha1": "a3c69b1dbb8f19e8879b94641217bfaf4eef3c98",
-   "mtime": 1792242230,
+   "mtime": 1792235030,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png"
    ]
@@ -576,7 +615,7 @@
    "w": 31,
    "h": 20,
    "sha1": "54dd1b331374fc015d4f85ccd98af59a2de14475",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_00.png"
@@ -595,7 +634,7 @@
    "w": 44,
    "h": 37,
    "sha1": "74a997b26a7a81454803eb2a95ec6ee8a1c0eb2c",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_01.png"
@@ -614,7 +653,7 @@
    "w": 26,
    "h": 33,
    "sha1": "0a6a88237760d21dfc16b826835bc5f334e2d927",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_02.png"
@@ -633,7 +672,7 @@
    "w": 39,
    "h": 29,
    "sha1": "9865813caafde98891e1ee5f30558997ef192b74",
-   "mtime": 1792242228,
+   "mtime": 1792235028,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_03.png"
@@ -649,7 +688,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "C",
-   "mtime": 1792242230,
+   "mtime": 1792235030,
    "flag": []
   },
   {
@@ -662,7 +701,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "C",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": []
   },
   {
@@ -678,7 +717,7 @@
    "w": 64,
    "h": 32,
    "sha1": "bcd18f573375ff5a9b2c56ab3f3e772f29644878",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/palette.png"
    ]
@@ -696,7 +735,7 @@
    "w": 256,
    "h": 128,
    "sha1": "a3c69b1dbb8f19e8879b94641217bfaf4eef3c98",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png"
    ]
@@ -714,7 +753,7 @@
    "w": 31,
    "h": 20,
    "sha1": "54dd1b331374fc015d4f85ccd98af59a2de14475",
-   "mtime": 1792242232,
+   "mtime": 1792235032,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_00.png"
@@ -733,7 +772,7 @@
    "w": 44,
    "h": 37,
    "sha1": "74a997b26a7a81454803eb2a95ec6ee8a1c0eb2c",
-   "mtime": 1792242232,
+   "mtime": 1792235032,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_01.png"
@@ -752,7 +791,7 @@
    "w": 26,
    "h": 33,
    "sha1": "0a6a88237760d21dfc16b826835bc5f334e2d927",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_02.png"
@@ -771,7 +810,7 @@
    "w": 39,
    "h": 29,
    "sha1": "9865813caafde98891e1ee5f30558997ef192b74",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_03.png"
@@ -790,7 +829,7 @@
    "w": 21,
    "h": 25,
    "sha1": "fea4ed994bbddb5e1452021965cf263b4772ca8a",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "minuscolo_probabile_segnaposto"
    ]
@@ -808,7 +847,7 @@
    "w": 34,
    "h": 21,
    "sha1": "3234266dcd7061f5b4162c7bdf9a6c1b87673879",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": [
     "minuscolo_probabile_segnaposto"
    ]
@@ -822,7 +861,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
-   "mtime": 1792242276,
+   "mtime": 1792235076,
    "flag": []
   },
   {
@@ -837,7 +876,7 @@
    "w": 256,
    "h": 40,
    "sha1": "30defc8574c37795d2bedd2606e8a6f0ce84d420",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_02/palette.png"
    ]
@@ -854,7 +893,7 @@
    "w": 256,
    "h": 128,
    "sha1": "720b20b20ed08672345fc4ec76e9d387bbc05f9a",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_02/sfondo.png"
    ]
@@ -868,7 +907,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": []
   },
   {
@@ -883,7 +922,7 @@
    "w": 256,
    "h": 40,
    "sha1": "30defc8574c37795d2bedd2606e8a6f0ce84d420",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/palette.png"
    ]
@@ -900,7 +939,7 @@
    "w": 256,
    "h": 128,
    "sha1": "720b20b20ed08672345fc4ec76e9d387bbc05f9a",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/sfondo.png"
    ]
@@ -914,7 +953,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
-   "mtime": 1792242278,
+   "mtime": 1792235078,
    "flag": []
   },
   {
@@ -929,7 +968,7 @@
    "w": 256,
    "h": 40,
    "sha1": "30defc8574c37795d2bedd2606e8a6f0ce84d420",
-   "mtime": 1792242280,
+   "mtime": 1792235080,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/palette.png"
    ]
@@ -946,7 +985,7 @@
    "w": 256,
    "h": 128,
    "sha1": "720b20b20ed08672345fc4ec76e9d387bbc05f9a",
-   "mtime": 1792242280,
+   "mtime": 1792235080,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_lv_01_neon_01/sfondo.png"
    ]
@@ -955,13 +994,13 @@
    "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/manifest.json",
    "categoria": "scenari",
    "tipo": "json",
-   "byte": 882,
+   "byte": 1052,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
-   "mtime": 1792242280,
+   "mtime": 1793127923,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -975,7 +1014,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
-   "mtime": 1792242282,
+   "mtime": 1792235082,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -992,7 +1031,7 @@
    "w": 256,
    "h": 16,
    "sha1": "fba4414ec45969a1befe4d5a3ac8328254548da2",
-   "mtime": 1792242282,
+   "mtime": 1792235082,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/palette.png"
@@ -1011,7 +1050,24 @@
    "w": 256,
    "h": 128,
    "sha1": "670af2c24d92913623de14e3d58fbe71bdc07a3d",
-   "mtime": 1792242282,
+   "mtime": 1792235082,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/skyline_trama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 3010,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_01_neon",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "a06cef8f51da3bbf2893e7a6faa00b65cce71815",
+   "mtime": 1793311053,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1028,11 +1084,11 @@
    "w": 32,
    "h": 32,
    "sha1": "07b9e7723b3c6bfc43099909f1c563603de6b062",
-   "mtime": 1792242280,
+   "mtime": 1792235080,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png"
+    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png"
    ]
   },
   {
@@ -1048,7 +1104,7 @@
    "w": 32,
    "h": 32,
    "sha1": "8398a26cd3bb692dc9b0459acb01c29225a67ba9",
-   "mtime": 1792242280,
+   "mtime": 1792235080,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -1059,21 +1115,18 @@
    "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png",
    "categoria": "scenari",
    "tipo": "png",
-   "byte": 166,
+   "byte": 246,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
-   "w": 32,
-   "h": 32,
-   "sha1": "8a0010f3117dfcf36d8b8ad5f554306510bf4e23",
-   "mtime": 1792242280,
+   "w": 48,
+   "h": 128,
+   "sha1": "cac05e8ae4f5bdf4f9b785cb2267013929d8c468",
+   "mtime": 1793127892,
    "scelta": "D6: variante A per tutti i livelli",
-   "flag": [
-    "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png"
-   ]
+   "flag": []
   },
   {
    "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palina.png",
@@ -1088,7 +1141,7 @@
    "w": 32,
    "h": 32,
    "sha1": "38892bf39e8a3a5571067aa697689b1b37254217",
-   "mtime": 1792242280,
+   "mtime": 1792235080,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto"
@@ -1098,20 +1151,19 @@
    "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png",
    "categoria": "scenari",
    "tipo": "png",
-   "byte": 178,
+   "byte": 176,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "A",
    "w": 32,
-   "h": 32,
-   "sha1": "ba113432f0fbec9839054050717d5adf6f119b14",
-   "mtime": 1792242280,
+   "h": 128,
+   "sha1": "5a3854f90bf0378ba42a54c993361171ebf9d7b6",
+   "mtime": 1793127892,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
-    "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png"
+    "minuscolo_probabile_segnaposto"
    ]
   },
   {
@@ -1124,7 +1176,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "B",
-   "mtime": 1792242282,
+   "mtime": 1792235082,
    "flag": []
   },
   {
@@ -1137,7 +1189,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "B",
-   "mtime": 1792242284,
+   "mtime": 1792235084,
    "flag": []
   },
   {
@@ -1153,7 +1205,7 @@
    "w": 256,
    "h": 16,
    "sha1": "fba4414ec45969a1befe4d5a3ac8328254548da2",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/palette.png"
    ]
@@ -1171,11 +1223,11 @@
    "w": 256,
    "h": 128,
    "sha1": "66f17486d58afc2efdbd8db042db7a23266c4d3e",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": []
   },
   {
-   "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone copy.png",
+   "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png",
    "categoria": "scenari",
    "tipo": "png",
    "byte": 1886,
@@ -1187,29 +1239,8 @@
    "w": 32,
    "h": 32,
    "sha1": "e6b6fe9d81962563895c8f0422870c59cf2e48d7",
-   "mtime": 1792242284,
-   "flag": [
-    "copia_o_backup"
-   ]
-  },
-  {
-   "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png",
-   "categoria": "scenari",
-   "tipo": "png",
-   "byte": 167,
-   "licenza": "CC0-1.0",
-   "stato": "generato",
-   "originale": true,
-   "livello": "lv_01_neon",
-   "variante": "B",
-   "w": 32,
-   "h": 32,
-   "sha1": "07b9e7723b3c6bfc43099909f1c563603de6b062",
-   "mtime": 1792242284,
-   "flag": [
-    "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png"
-   ]
+   "mtime": 1793161435,
+   "flag": []
   },
   {
    "percorso": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_insegna_neon.png",
@@ -1224,7 +1255,7 @@
    "w": 32,
    "h": 32,
    "sha1": "749e2771bcf3787f14d960ad8ec288309f989eb5",
-   "mtime": 1792242284,
+   "mtime": 1792235084,
    "flag": []
   },
   {
@@ -1240,10 +1271,9 @@
    "w": 32,
    "h": 32,
    "sha1": "8a0010f3117dfcf36d8b8ad5f554306510bf4e23",
-   "mtime": 1792242284,
+   "mtime": 1792235084,
    "flag": [
-    "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png"
+    "minuscolo_probabile_segnaposto"
    ]
   },
   {
@@ -1259,10 +1289,10 @@
    "w": 32,
    "h": 32,
    "sha1": "ba113432f0fbec9839054050717d5adf6f119b14",
-   "mtime": 1792242284,
+   "mtime": 1792235084,
    "flag": [
     "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png"
+    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png"
    ]
   },
   {
@@ -1278,7 +1308,7 @@
    "w": 32,
    "h": 32,
    "sha1": "d3961f2baae2646a0fcc9751a03ca4578844ebe1",
-   "mtime": 1792242284,
+   "mtime": 1792235084,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png"
@@ -1294,7 +1324,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "C",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": []
   },
   {
@@ -1307,7 +1337,7 @@
    "originale": true,
    "livello": "lv_01_neon",
    "variante": "C",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "flag": []
   },
   {
@@ -1323,7 +1353,7 @@
    "w": 256,
    "h": 16,
    "sha1": "fba4414ec45969a1befe4d5a3ac8328254548da2",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/palette.png"
    ]
@@ -1341,7 +1371,7 @@
    "w": 256,
    "h": 128,
    "sha1": "0757fa33a6528348213c5c699ec186fd79760bae",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "flag": []
   },
   {
@@ -1357,7 +1387,7 @@
    "w": 32,
    "h": 32,
    "sha1": "07b9e7723b3c6bfc43099909f1c563603de6b062",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_bidone.png"
@@ -1376,7 +1406,7 @@
    "w": 32,
    "h": 32,
    "sha1": "8398a26cd3bb692dc9b0459acb01c29225a67ba9",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cassetta.png"
@@ -1395,10 +1425,10 @@
    "w": 32,
    "h": 32,
    "sha1": "ba113432f0fbec9839054050717d5adf6f119b14",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": [
     "minuscolo_probabile_segnaposto",
-    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png"
+    "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png"
    ]
   },
   {
@@ -1414,7 +1444,7 @@
    "w": 32,
    "h": 32,
    "sha1": "d3961f2baae2646a0fcc9751a03ca4578844ebe1",
-   "mtime": 1792242286,
+   "mtime": 1792235086,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png"
@@ -1429,7 +1459,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "flag": []
   },
   {
@@ -1442,7 +1472,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "A",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1456,7 +1486,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "A",
-   "mtime": 1792242334,
+   "mtime": 1792235134,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1473,7 +1503,7 @@
    "w": 64,
    "h": 32,
    "sha1": "25aa21cb792df147a5fe77e54cf4bcc3b1883ec3",
-   "mtime": 1792242334,
+   "mtime": 1792235134,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/palette.png"
@@ -1492,7 +1522,7 @@
    "w": 256,
    "h": 128,
    "sha1": "28160ca121ce6e78fb6404d2e17f3516f9aad9d4",
-   "mtime": 1792242334,
+   "mtime": 1792235134,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/skyline.png"
@@ -1511,7 +1541,7 @@
    "w": 31,
    "h": 20,
    "sha1": "c7e20831b61edab1db04ddc9c87f55bb61077a91",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -1531,7 +1561,7 @@
    "w": 44,
    "h": 37,
    "sha1": "562c62d6b427678ef18956c3f5554bfc225d12c9",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_01.png"
@@ -1550,7 +1580,7 @@
    "w": 26,
    "h": 33,
    "sha1": "58402ba44ab22f8739718ad64b47f7b1387f9dfd",
-   "mtime": 1792242288,
+   "mtime": 1792235088,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -1570,7 +1600,7 @@
    "w": 39,
    "h": 29,
    "sha1": "5150f4a92371f95c710fda5d280669d01796f74e",
-   "mtime": 1792242290,
+   "mtime": 1792235090,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -1590,7 +1620,7 @@
    "w": 21,
    "h": 25,
    "sha1": "429bac0ff216f2c5b4639b4a6d48f8beb7ad3859",
-   "mtime": 1792242290,
+   "mtime": 1792235090,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -1607,7 +1637,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "B",
-   "mtime": 1792242336,
+   "mtime": 1792235136,
    "flag": []
   },
   {
@@ -1620,7 +1650,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "B",
-   "mtime": 1792242344,
+   "mtime": 1792235144,
    "flag": []
   },
   {
@@ -1636,7 +1666,7 @@
    "w": 64,
    "h": 32,
    "sha1": "25aa21cb792df147a5fe77e54cf4bcc3b1883ec3",
-   "mtime": 1792242340,
+   "mtime": 1792235140,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/palette.png"
    ]
@@ -1654,7 +1684,7 @@
    "w": 256,
    "h": 128,
    "sha1": "28160ca121ce6e78fb6404d2e17f3516f9aad9d4",
-   "mtime": 1792242338,
+   "mtime": 1792235138,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/skyline.png"
    ]
@@ -1672,7 +1702,7 @@
    "w": 31,
    "h": 20,
    "sha1": "c7e20831b61edab1db04ddc9c87f55bb61077a91",
-   "mtime": 1792242336,
+   "mtime": 1792235136,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_00.png"
@@ -1691,7 +1721,7 @@
    "w": 44,
    "h": 37,
    "sha1": "562c62d6b427678ef18956c3f5554bfc225d12c9",
-   "mtime": 1792242336,
+   "mtime": 1792235136,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_01.png"
    ]
@@ -1709,7 +1739,7 @@
    "w": 26,
    "h": 33,
    "sha1": "58402ba44ab22f8739718ad64b47f7b1387f9dfd",
-   "mtime": 1792242338,
+   "mtime": 1792235138,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_02.png"
@@ -1728,7 +1758,7 @@
    "w": 39,
    "h": 29,
    "sha1": "5150f4a92371f95c710fda5d280669d01796f74e",
-   "mtime": 1792242338,
+   "mtime": 1792235138,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_03.png"
@@ -1747,7 +1777,7 @@
    "w": 21,
    "h": 25,
    "sha1": "429bac0ff216f2c5b4639b4a6d48f8beb7ad3859",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_04.png"
@@ -1763,7 +1793,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "C",
-   "mtime": 1792242340,
+   "mtime": 1792235140,
    "flag": []
   },
   {
@@ -1776,7 +1806,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "C",
-   "mtime": 1792242342,
+   "mtime": 1792235142,
    "flag": []
   },
   {
@@ -1792,7 +1822,7 @@
    "w": 64,
    "h": 32,
    "sha1": "25aa21cb792df147a5fe77e54cf4bcc3b1883ec3",
-   "mtime": 1792242344,
+   "mtime": 1792235144,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/palette.png"
    ]
@@ -1810,7 +1840,7 @@
    "w": 256,
    "h": 128,
    "sha1": "28160ca121ce6e78fb6404d2e17f3516f9aad9d4",
-   "mtime": 1792242344,
+   "mtime": 1792235144,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/skyline.png"
    ]
@@ -1828,7 +1858,7 @@
    "w": 31,
    "h": 20,
    "sha1": "c7e20831b61edab1db04ddc9c87f55bb61077a91",
-   "mtime": 1792242340,
+   "mtime": 1792235140,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_00.png"
@@ -1847,7 +1877,7 @@
    "w": 44,
    "h": 37,
    "sha1": "562c62d6b427678ef18956c3f5554bfc225d12c9",
-   "mtime": 1792242340,
+   "mtime": 1792235140,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_01.png"
    ]
@@ -1865,7 +1895,7 @@
    "w": 26,
    "h": 33,
    "sha1": "58402ba44ab22f8739718ad64b47f7b1387f9dfd",
-   "mtime": 1792242342,
+   "mtime": 1792235142,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_02.png"
@@ -1884,7 +1914,7 @@
    "w": 39,
    "h": 29,
    "sha1": "5150f4a92371f95c710fda5d280669d01796f74e",
-   "mtime": 1792242342,
+   "mtime": 1792235142,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_03.png"
@@ -1903,7 +1933,7 @@
    "w": 21,
    "h": 25,
    "sha1": "429bac0ff216f2c5b4639b4a6d48f8beb7ad3859",
-   "mtime": 1792242342,
+   "mtime": 1792235142,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_04.png"
@@ -1913,13 +1943,13 @@
    "percorso": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/manifest.json",
    "categoria": "scenari",
    "tipo": "json",
-   "byte": 987,
+   "byte": 1114,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "A",
-   "mtime": 1792242344,
+   "mtime": 1793127923,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1933,7 +1963,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "A",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1950,7 +1980,7 @@
    "w": 256,
    "h": 16,
    "sha1": "4b18717d2f5b98fccdf4ec97dd322e378758bb35",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/palette.png"
@@ -1969,7 +1999,24 @@
    "w": 256,
    "h": 128,
    "sha1": "f188723a2a0648e23fa6755ad3c27635b321bb55",
-   "mtime": 1792242348,
+   "mtime": 1792235148,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/skyline_trama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 3591,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_02_atomico",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "0a0ad6eedf804de0b5c49552a3bdd67256d7835b",
+   "mtime": 1793311053,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -1986,7 +2033,7 @@
    "w": 32,
    "h": 32,
    "sha1": "fbc764a01494beba8f018548630a6ad655a00a3e",
-   "mtime": 1792242344,
+   "mtime": 1792235144,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_bancone_drive_in.png"
@@ -2005,7 +2052,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f5358d1f7bea1ddf243a337f95af0bca762a48cc",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2025,7 +2072,7 @@
    "w": 32,
    "h": 32,
    "sha1": "a2bc2d02774012e9f51a26ae910ecade22eac3ad",
-   "mtime": 1792242344,
+   "mtime": 1792235144,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_freccia.png"
@@ -2044,7 +2091,7 @@
    "w": 32,
    "h": 32,
    "sha1": "435ca779a686f05e3fa15726dc243a2e2df76286",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2064,7 +2111,7 @@
    "w": 32,
    "h": 32,
    "sha1": "96464b6f3b4a6a0e460c15617a20823959515d6d",
-   "mtime": 1792242346,
+   "mtime": 1792235146,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2075,20 +2122,18 @@
    "percorso": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png",
    "categoria": "scenari",
    "tipo": "png",
-   "byte": 224,
+   "byte": 310,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "A",
-   "w": 32,
-   "h": 32,
-   "sha1": "8c896a2a54ed44f9c636ad45e50f0554fdc48ca4",
-   "mtime": 1792242346,
+   "w": 64,
+   "h": 144,
+   "sha1": "9a74dd998e3687682175b099078c14921ffb6267",
+   "mtime": 1793127892,
    "scelta": "D6: variante A per tutti i livelli",
-   "flag": [
-    "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_torre_razzo.png"
-   ]
+   "flag": []
   },
   {
    "percorso": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/manifest.json",
@@ -2100,7 +2145,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "B",
-   "mtime": 1792242348,
+   "mtime": 1792235148,
    "flag": []
   },
   {
@@ -2113,7 +2158,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "B",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": []
   },
   {
@@ -2129,7 +2174,7 @@
    "w": 256,
    "h": 16,
    "sha1": "4b18717d2f5b98fccdf4ec97dd322e378758bb35",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/palette.png"
    ]
@@ -2147,7 +2192,7 @@
    "w": 256,
    "h": 128,
    "sha1": "be9f4fb9bcb9aef0e71d1b57323453ec1aaa0626",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": []
   },
   {
@@ -2163,7 +2208,7 @@
    "w": 32,
    "h": 32,
    "sha1": "fbc764a01494beba8f018548630a6ad655a00a3e",
-   "mtime": 1792242348,
+   "mtime": 1792235148,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png"
    ]
@@ -2181,7 +2226,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f5358d1f7bea1ddf243a337f95af0bca762a48cc",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png"
@@ -2200,7 +2245,7 @@
    "w": 32,
    "h": 32,
    "sha1": "a2bc2d02774012e9f51a26ae910ecade22eac3ad",
-   "mtime": 1792242348,
+   "mtime": 1792235148,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png"
    ]
@@ -2218,7 +2263,7 @@
    "w": 32,
    "h": 32,
    "sha1": "435ca779a686f05e3fa15726dc243a2e2df76286",
-   "mtime": 1792242348,
+   "mtime": 1792235148,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png"
@@ -2237,7 +2282,7 @@
    "w": 32,
    "h": 32,
    "sha1": "61acbea84ac65f5912c073afc1781910ec7171da",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_stop.png"
    ]
@@ -2255,7 +2300,7 @@
    "w": 32,
    "h": 32,
    "sha1": "5e8c784d619e7f53e1aa3e73b2ac9c0acde18a4a",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png"
    ]
@@ -2270,7 +2315,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "C",
-   "mtime": 1792242350,
+   "mtime": 1792235150,
    "flag": []
   },
   {
@@ -2283,7 +2328,7 @@
    "originale": true,
    "livello": "lv_02_atomico",
    "variante": "C",
-   "mtime": 1792242392,
+   "mtime": 1792235192,
    "flag": []
   },
   {
@@ -2299,7 +2344,7 @@
    "w": 256,
    "h": 16,
    "sha1": "4b18717d2f5b98fccdf4ec97dd322e378758bb35",
-   "mtime": 1792242392,
+   "mtime": 1792235192,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/palette.png"
    ]
@@ -2317,7 +2362,7 @@
    "w": 256,
    "h": 128,
    "sha1": "ca328f5da0c47284bbca47f66d43a3b705d03b59",
-   "mtime": 1792242392,
+   "mtime": 1792235192,
    "flag": []
   },
   {
@@ -2333,7 +2378,7 @@
    "w": 32,
    "h": 32,
    "sha1": "fbc764a01494beba8f018548630a6ad655a00a3e",
-   "mtime": 1792242352,
+   "mtime": 1792235152,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_bancone_drive_in.png"
    ]
@@ -2351,7 +2396,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f5358d1f7bea1ddf243a337f95af0bca762a48cc",
-   "mtime": 1792242352,
+   "mtime": 1792235152,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cupola.png"
@@ -2370,7 +2415,7 @@
    "w": 32,
    "h": 32,
    "sha1": "a2bc2d02774012e9f51a26ae910ecade22eac3ad",
-   "mtime": 1792242352,
+   "mtime": 1792235152,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png"
    ]
@@ -2388,7 +2433,7 @@
    "w": 32,
    "h": 32,
    "sha1": "435ca779a686f05e3fa15726dc243a2e2df76286",
-   "mtime": 1792242354,
+   "mtime": 1792235154,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png"
@@ -2407,7 +2452,7 @@
    "w": 32,
    "h": 32,
    "sha1": "96464b6f3b4a6a0e460c15617a20823959515d6d",
-   "mtime": 1792242354,
+   "mtime": 1792235154,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png"
@@ -2426,7 +2471,7 @@
    "w": 32,
    "h": 32,
    "sha1": "61acbea84ac65f5912c073afc1781910ec7171da",
-   "mtime": 1792242354,
+   "mtime": 1792235154,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_segnale_stop.png"
    ]
@@ -2444,10 +2489,8 @@
    "w": 32,
    "h": 32,
    "sha1": "8c896a2a54ed44f9c636ad45e50f0554fdc48ca4",
-   "mtime": 1792242354,
-   "flag": [
-    "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png"
-   ]
+   "mtime": 1792235154,
+   "flag": []
   },
   {
    "percorso": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png",
@@ -2462,7 +2505,7 @@
    "w": 32,
    "h": 32,
    "sha1": "5e8c784d619e7f53e1aa3e73b2ac9c0acde18a4a",
-   "mtime": 1792242354,
+   "mtime": 1792235154,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png"
    ]
@@ -2476,7 +2519,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
-   "mtime": 1792242392,
+   "mtime": 1792235192,
    "flag": []
   },
   {
@@ -2491,7 +2534,7 @@
    "w": 256,
    "h": 40,
    "sha1": "0cf2c0d6c3e3ea22398077411f2091725d403b99",
-   "mtime": 1792242392,
+   "mtime": 1792235192,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_02/palette.png"
    ]
@@ -2508,7 +2551,7 @@
    "w": 256,
    "h": 128,
    "sha1": "adc25a02e31e612f14dfdcb9fa27606c207c48b9",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_02/sfondo.png"
    ]
@@ -2522,7 +2565,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": []
   },
   {
@@ -2537,7 +2580,7 @@
    "w": 256,
    "h": 40,
    "sha1": "0cf2c0d6c3e3ea22398077411f2091725d403b99",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_01/palette.png"
    ]
@@ -2554,7 +2597,7 @@
    "w": 256,
    "h": 128,
    "sha1": "adc25a02e31e612f14dfdcb9fa27606c207c48b9",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_01/sfondo.png"
    ]
@@ -2568,7 +2611,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_02_atomico",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": []
   },
   {
@@ -2583,7 +2626,7 @@
    "w": 256,
    "h": 40,
    "sha1": "0cf2c0d6c3e3ea22398077411f2091725d403b99",
-   "mtime": 1792242394,
+   "mtime": 1792235194,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_01/palette.png"
    ]
@@ -2600,7 +2643,7 @@
    "w": 256,
    "h": 128,
    "sha1": "adc25a02e31e612f14dfdcb9fa27606c207c48b9",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_lv_02_atomico_01/sfondo.png"
    ]
@@ -2614,7 +2657,7 @@
    "stato": "generato",
    "originale": true,
    "livello": "lv_03_foglie",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "flag": []
   },
   {
@@ -2627,7 +2670,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "A",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -2641,7 +2684,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "A",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -2658,7 +2701,7 @@
    "w": 64,
    "h": 32,
    "sha1": "22719882e9b544ef325e2aff449545183c4e0e25",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/palette.png"
@@ -2677,7 +2720,7 @@
    "w": 256,
    "h": 128,
    "sha1": "04d1a1b906a56448f6597fd692f28f754d92b2bf",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/skyline.png"
@@ -2696,7 +2739,7 @@
    "w": 31,
    "h": 20,
    "sha1": "ceedcab5efa8da443dc9f2791bad52c1d5afe26e",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2716,7 +2759,7 @@
    "w": 44,
    "h": 37,
    "sha1": "5a9159a68e7dc9900231446c65256348a6dd74b2",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_01.png"
@@ -2735,7 +2778,7 @@
    "w": 26,
    "h": 33,
    "sha1": "69ecfef6d4f520f10aab9f8da437503932cd2eb6",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2755,7 +2798,7 @@
    "w": 39,
    "h": 29,
    "sha1": "7cdb5ebc3210f419e78f106d3b1e2eec0e86e852",
-   "mtime": 1792242396,
+   "mtime": 1792235196,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -2772,7 +2815,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "B",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "flag": []
   },
   {
@@ -2785,7 +2828,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "B",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": []
   },
   {
@@ -2801,7 +2844,7 @@
    "w": 64,
    "h": 32,
    "sha1": "22719882e9b544ef325e2aff449545183c4e0e25",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/palette.png"
    ]
@@ -2819,7 +2862,7 @@
    "w": 256,
    "h": 128,
    "sha1": "04d1a1b906a56448f6597fd692f28f754d92b2bf",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/skyline.png"
    ]
@@ -2837,7 +2880,7 @@
    "w": 31,
    "h": 20,
    "sha1": "ceedcab5efa8da443dc9f2791bad52c1d5afe26e",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_00.png"
@@ -2856,7 +2899,7 @@
    "w": 44,
    "h": 37,
    "sha1": "5a9159a68e7dc9900231446c65256348a6dd74b2",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_01.png"
    ]
@@ -2874,7 +2917,7 @@
    "w": 26,
    "h": 33,
    "sha1": "69ecfef6d4f520f10aab9f8da437503932cd2eb6",
-   "mtime": 1792242398,
+   "mtime": 1792235198,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_02.png"
@@ -2893,7 +2936,7 @@
    "w": 39,
    "h": 29,
    "sha1": "7cdb5ebc3210f419e78f106d3b1e2eec0e86e852",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_03.png"
@@ -2912,7 +2955,7 @@
    "w": 21,
    "h": 25,
    "sha1": "94b9e01f5908b2ec18b401fcce4238ee27014de0",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": [
     "minuscolo_probabile_segnaposto"
    ]
@@ -2930,7 +2973,7 @@
    "w": 34,
    "h": 21,
    "sha1": "59db1043002ab1c450d7316fa39b5c3f7851c574",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": []
   },
   {
@@ -2946,7 +2989,7 @@
    "w": 47,
    "h": 38,
    "sha1": "335aa9c0ae6d6835664f2271f38adc5c5c0d1c8f",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": []
   },
   {
@@ -2962,7 +3005,7 @@
    "w": 29,
    "h": 34,
    "sha1": "516611b6a332c24f364ad8b0692c34d1fd5e5b64",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": [
     "minuscolo_probabile_segnaposto"
    ]
@@ -2977,7 +3020,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "C",
-   "mtime": 1792242400,
+   "mtime": 1792235200,
    "flag": []
   },
   {
@@ -2990,7 +3033,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "C",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": []
   },
   {
@@ -3006,7 +3049,7 @@
    "w": 64,
    "h": 32,
    "sha1": "22719882e9b544ef325e2aff449545183c4e0e25",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/palette.png"
    ]
@@ -3024,7 +3067,7 @@
    "w": 256,
    "h": 128,
    "sha1": "04d1a1b906a56448f6597fd692f28f754d92b2bf",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/skyline.png"
    ]
@@ -3042,7 +3085,7 @@
    "w": 31,
    "h": 20,
    "sha1": "ceedcab5efa8da443dc9f2791bad52c1d5afe26e",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_00.png"
@@ -3061,7 +3104,7 @@
    "w": 44,
    "h": 37,
    "sha1": "5a9159a68e7dc9900231446c65256348a6dd74b2",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_01.png"
    ]
@@ -3079,7 +3122,7 @@
    "w": 26,
    "h": 33,
    "sha1": "69ecfef6d4f520f10aab9f8da437503932cd2eb6",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_02.png"
@@ -3098,7 +3141,7 @@
    "w": 39,
    "h": 29,
    "sha1": "7cdb5ebc3210f419e78f106d3b1e2eec0e86e852",
-   "mtime": 1792242402,
+   "mtime": 1792235202,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_03.png"
@@ -3114,7 +3157,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "A",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -3128,7 +3171,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "A",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -3145,7 +3188,7 @@
    "w": 256,
    "h": 16,
    "sha1": "61e5687e633e752b70699bd1d1da611a91277b82",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/palette.png"
@@ -3164,7 +3207,24 @@
    "w": 256,
    "h": 128,
    "sha1": "cbf501420ceeba4b0b89c095bd1304f82628055f",
-   "mtime": 1792242406,
+   "mtime": 1792235206,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/skyline_trama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 2495,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_03_foglie",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "ba226520e899fad0de6a625fb53c10f685abde2a",
+   "mtime": 1793311053,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": []
   },
@@ -3181,7 +3241,7 @@
    "w": 32,
    "h": 32,
    "sha1": "988766ae165eb042e0aa32789cfff41584794f0a",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_foglia_gigante.png"
@@ -3200,7 +3260,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f65643b49fe500a028e128125ab51920c195f2fb",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_fungo_psico.png"
@@ -3219,7 +3279,7 @@
    "w": 32,
    "h": 32,
    "sha1": "1498a73852b27d2138ef19618c9e4d55a9eb07c7",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_insegna_fumosa.png"
@@ -3238,7 +3298,7 @@
    "w": 32,
    "h": 32,
    "sha1": "0169d834e9983557a94cab109e2947bb930628e1",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -3258,7 +3318,7 @@
    "w": 32,
    "h": 32,
    "sha1": "3d1fb7c51ec53607408d892b63a786e5ad8ed896",
-   "mtime": 1792242404,
+   "mtime": 1792235204,
    "scelta": "D6: variante A per tutti i livelli",
    "flag": [
     "minuscolo_probabile_segnaposto",
@@ -3275,7 +3335,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "B",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": []
   },
   {
@@ -3288,7 +3348,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "B",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": []
   },
   {
@@ -3304,7 +3364,7 @@
    "w": 256,
    "h": 16,
    "sha1": "61e5687e633e752b70699bd1d1da611a91277b82",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/palette.png"
    ]
@@ -3322,7 +3382,7 @@
    "w": 256,
    "h": 128,
    "sha1": "f4096c64b769c9b6741b294cfbce6bd78191850d",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": []
   },
   {
@@ -3338,7 +3398,7 @@
    "w": 32,
    "h": 32,
    "sha1": "a4e8e683de4ffd158ce84c1b5d7865ce125d08c2",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_albero_mini.png"
    ]
@@ -3356,7 +3416,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f65643b49fe500a028e128125ab51920c195f2fb",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_fungo_psico.png"
    ]
@@ -3374,7 +3434,7 @@
    "w": 32,
    "h": 32,
    "sha1": "0169d834e9983557a94cab109e2947bb930628e1",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_curva.png"
@@ -3393,7 +3453,7 @@
    "w": 32,
    "h": 32,
    "sha1": "3d1fb7c51ec53607408d892b63a786e5ad8ed896",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_fumo.png"
@@ -3412,7 +3472,7 @@
    "w": 32,
    "h": 32,
    "sha1": "b71f9bbbc4d307cf148d78200cccbdfef00fcc6c",
-   "mtime": 1792242442,
+   "mtime": 1792235242,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_segnale_foglia.png"
    ]
@@ -3427,7 +3487,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "C",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": []
   },
   {
@@ -3440,7 +3500,7 @@
    "originale": true,
    "livello": "lv_03_foglie",
    "variante": "C",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": []
   },
   {
@@ -3456,7 +3516,7 @@
    "w": 256,
    "h": 16,
    "sha1": "61e5687e633e752b70699bd1d1da611a91277b82",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/palette.png"
    ]
@@ -3474,7 +3534,7 @@
    "w": 256,
    "h": 128,
    "sha1": "2e2566f4941da80ec80b7ac1c420e7ed9e904931",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": []
   },
   {
@@ -3490,7 +3550,7 @@
    "w": 32,
    "h": 32,
    "sha1": "a4e8e683de4ffd158ce84c1b5d7865ce125d08c2",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_albero_mini.png"
    ]
@@ -3508,7 +3568,7 @@
    "w": 32,
    "h": 32,
    "sha1": "988766ae165eb042e0aa32789cfff41584794f0a",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_foglia_gigante.png"
    ]
@@ -3526,7 +3586,7 @@
    "w": 32,
    "h": 32,
    "sha1": "adb1b0dcd2fef10d2156b05bacda898a05447936",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": []
   },
   {
@@ -3542,7 +3602,7 @@
    "w": 32,
    "h": 32,
    "sha1": "f65643b49fe500a028e128125ab51920c195f2fb",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_fungo_psico.png"
    ]
@@ -3560,7 +3620,7 @@
    "w": 32,
    "h": 32,
    "sha1": "1498a73852b27d2138ef19618c9e4d55a9eb07c7",
-   "mtime": 1792242444,
+   "mtime": 1792235244,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_insegna_fumosa.png"
    ]
@@ -3578,7 +3638,7 @@
    "w": 32,
    "h": 32,
    "sha1": "0169d834e9983557a94cab109e2947bb930628e1",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_curva.png"
@@ -3597,7 +3657,7 @@
    "w": 32,
    "h": 32,
    "sha1": "3d1fb7c51ec53607408d892b63a786e5ad8ed896",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": [
     "minuscolo_probabile_segnaposto",
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_panchina_fumo.png"
@@ -3616,10 +3676,451 @@
    "w": 32,
    "h": 32,
    "sha1": "b71f9bbbc4d307cf148d78200cccbdfef00fcc6c",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": [
     "duplicato_di:assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_segnale_foglia.png"
    ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/manifest.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 948,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "mtime": 1793127923,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/finale/finale.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 2932,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "w": 320,
+   "h": 224,
+   "sha1": "edbf5651c74fe34ee2748d8e4dea817181d66c6b",
+   "mtime": 1792910735,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_guard_rail_cromo.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 181,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "9899bef008a991aa921fb6ded664c191329d00d5",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_lampione_lama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 225,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "w": 40,
+   "h": 128,
+   "sha1": "dacf81914f3016db4859797f48bee37f534a68ad",
+   "mtime": 1793127892,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_pilone_cromo.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 236,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "w": 48,
+   "h": 144,
+   "sha1": "a331c2ac03af030ce843b31e9d7dbc33b2fb060d",
+   "mtime": 1793127892,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_robot_servizio.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 232,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_04_cromo",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "27753670f2b6212a954b6b3720cecdc653c2ad94",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/manifest.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 805,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/palette.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 1196,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/palette.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 164,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 64,
+   "h": 16,
+   "sha1": "c587b913231f20692153e110195822f51e9be3b3",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/skyline.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 612,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "ec80afb59ebfc25e38cbf67b6ddf6e10f1fa5db1",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/skyline_trama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 1846,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "902be474947f2668fa2595450ed882f225f51008",
+   "mtime": 1793311053,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/finale/finale.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 2995,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 320,
+   "h": 224,
+   "sha1": "f7818752e6a1b0b2e4269fffb26766d3ab44fd0c",
+   "mtime": 1792910735,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_bidone.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 204,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "9caad876b5c70e2a559d4613a869a5abdc7b2e98",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_cassonetto.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 221,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "c197cb83da14057d06932049a55487a8740e4bbe",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_serranda_spray.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 217,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "bc082f569ee6970f3ee78bca2d947854827793b4",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_transenna.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 177,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_05_spray",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "117494e1a4e50d5a374c38294f3c483d0a11e573",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/manifest.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 962,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "mtime": 1793127923,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/palette.json",
+   "categoria": "scenari",
+   "tipo": "json",
+   "byte": 1187,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/palette.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 145,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 64,
+   "h": 16,
+   "sha1": "79ffe22bbca5c096a040569d1279c632e6a6cd69",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 915,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "141e8edf39bbbf90df6309c7a6eaef026a5cc9f0",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline_trama.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 1608,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "82ce2ff140526dfc2f8c9037c589bc1c594d4e12",
+   "mtime": 1793311053,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/finale/finale.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 3529,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 320,
+   "h": 224,
+   "sha1": "47e23f3c7b09ea2e88067c05c25800ab18fb1134",
+   "mtime": 1792910735,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_case_computer.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 192,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "a88903cfc7a6253947807964f4e09cf7d6975eef",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_delfino_cartone.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 192,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "b7bc556f94fe55518859ea7aaa8c43e04199d0ea",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_icona_cartella.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 187,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 48,
+   "h": 32,
+   "sha1": "08f2d1b07e22c134c4616653610de8115aaa250f",
+   "mtime": 1792908174,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png",
+   "categoria": "scenari",
+   "tipo": "png",
+   "byte": 267,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "livello": "lv_06_desktop",
+   "variante": "A",
+   "w": 56,
+   "h": 128,
+   "sha1": "29b422a81a713f91a963c3f69c0efc4f1b44e85b",
+   "mtime": 1793127892,
+   "scelta": "D6: variante A per tutti i livelli",
+   "flag": []
   },
   {
    "percorso": "assets_originali/skyline/varianteA_futurista/manifest.json",
@@ -3630,22 +4131,37 @@
    "stato": "generato",
    "originale": true,
    "variante": "A",
-   "mtime": 1792242446,
+   "mtime": 1792235246,
    "flag": []
   },
   {
    "percorso": "assets_originali/skyline/varianteA_futurista/skyline.png",
    "categoria": "skyline",
    "tipo": "png",
-   "byte": 3476,
+   "byte": 2451,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "variante": "A",
    "w": 256,
    "h": 128,
-   "sha1": "ff0626fe3628825b5fb2748c69e3a5ff203fc078",
-   "mtime": 1792242446,
+   "sha1": "fb2d0bcbaafa29e95fda55c28ad73bfbfe45e490",
+   "mtime": 1793306313,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/skyline/varianteA_futurista/skyline_trama.png",
+   "categoria": "skyline",
+   "tipo": "png",
+   "byte": 5575,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "variante": "A",
+   "w": 256,
+   "h": 128,
+   "sha1": "f40559d8eb59f7a40d27d18c4c432f3d6463e604",
+   "mtime": 1793446500,
    "flag": []
   },
   {
@@ -3657,7 +4173,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "B",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "flag": []
   },
   {
@@ -3672,7 +4188,7 @@
    "w": 256,
    "h": 128,
    "sha1": "773d793ddb0d583402d8b00fc35085e7da6e53a6",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "flag": []
   },
   {
@@ -3684,7 +4200,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "C",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "flag": []
   },
   {
@@ -3699,7 +4215,7 @@
    "w": 256,
    "h": 128,
    "sha1": "93b4be2eb7f20067fc068b4fe7213c6c78645c53",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "flag": []
   },
   {
@@ -3710,7 +4226,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3722,7 +4238,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3734,7 +4250,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242454,
+   "mtime": 1792235254,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3749,7 +4265,7 @@
    "w": 128,
    "h": 64,
    "sha1": "9477747ea593050a0afb1c52960b0519fc4c8941",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3766,7 +4282,7 @@
    "w": 128,
    "h": 64,
    "sha1": "7fa73c657245e9fd676a20b306e484241836568f",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3783,7 +4299,7 @@
    "w": 128,
    "h": 64,
    "sha1": "aae097c43ce2c9b80e1494887240775a18ba4ec6",
-   "mtime": 1792242448,
+   "mtime": 1792235248,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3797,7 +4313,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3812,7 +4328,7 @@
    "w": 128,
    "h": 64,
    "sha1": "1b4f74848ae889f184ee6761afeda10e8127534b",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3829,7 +4345,7 @@
    "w": 128,
    "h": 64,
    "sha1": "0bd8328f444b3707f497d38228b29654e60f08d4",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3846,7 +4362,7 @@
    "w": 128,
    "h": 64,
    "sha1": "eea5b1b049aab6b133b19cf04de35516a24fee2a",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3860,7 +4376,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3875,7 +4391,7 @@
    "w": 128,
    "h": 64,
    "sha1": "b764bebcff21126683077ac06cb2bae492353779",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3892,7 +4408,7 @@
    "w": 128,
    "h": 64,
    "sha1": "0fc765b1a744a1bc195280e7f679c257698e7ea6",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3909,7 +4425,7 @@
    "w": 128,
    "h": 64,
    "sha1": "bbae26f39eafb324e85f485f7b9554f72eeec608",
-   "mtime": 1792242450,
+   "mtime": 1792235250,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": [
     "da_rigenerare"
@@ -3923,7 +4439,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3938,7 +4454,7 @@
    "w": 128,
    "h": 64,
    "sha1": "92112dcb06af2338be10cfe7b724bc7d541d5eb2",
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3953,7 +4469,7 @@
    "w": 128,
    "h": 64,
    "sha1": "e89256457ebc1d42236a8fe9e2f5227437c8184c",
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3968,7 +4484,7 @@
    "w": 128,
    "h": 64,
    "sha1": "f749c43cb64d5c07916987e7708256f78e926173",
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3980,7 +4496,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -3995,7 +4511,7 @@
    "w": 128,
    "h": 64,
    "sha1": "486f4025acd355fb1a630c5c6f38503e78f5cc61",
-   "mtime": 1792242452,
+   "mtime": 1792235252,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4010,7 +4526,7 @@
    "w": 128,
    "h": 64,
    "sha1": "352bcc076ba0e4eea244acf50f77a60fe52dab96",
-   "mtime": 1792242456,
+   "mtime": 1792235256,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4025,7 +4541,7 @@
    "w": 128,
    "h": 64,
    "sha1": "d3810cdeca6c9e39d2ba9c71966d4ec8c8a285bc",
-   "mtime": 1792242454,
+   "mtime": 1792235254,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4037,7 +4553,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242454,
+   "mtime": 1792235254,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4052,7 +4568,7 @@
    "w": 128,
    "h": 64,
    "sha1": "efe46627fb2e31dd6982dc16a401e63a30e4a505",
-   "mtime": 1792242486,
+   "mtime": 1792235286,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4067,7 +4583,7 @@
    "w": 128,
    "h": 64,
    "sha1": "c32509b047ef643dfdea98398ff0914e2b507d17",
-   "mtime": 1792242486,
+   "mtime": 1792235286,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4082,7 +4598,7 @@
    "w": 128,
    "h": 64,
    "sha1": "db9b5576a337b55dddbf269ecf0c2a499be5108e",
-   "mtime": 1792242486,
+   "mtime": 1792235286,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4094,7 +4610,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4109,7 +4625,7 @@
    "w": 128,
    "h": 64,
    "sha1": "e66e0547b1861f88bfa6aee62d2b2c0af8b22048",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4124,7 +4640,7 @@
    "w": 128,
    "h": 64,
    "sha1": "6e47b61bc95d0ca5c60c8be59c90e2701ea2dca6",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4139,7 +4655,7 @@
    "w": 128,
    "h": 64,
    "sha1": "82a160d3e0efb8a9e84cf759ac06030e073e42c6",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4151,7 +4667,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "scelta": "D2b: Curve Pericolose, Brinis Udine e altri sponsor inventati",
    "flag": []
   },
@@ -4167,7 +4683,7 @@
    "w": 64,
    "h": 32,
    "sha1": "7f5a342a6170e51d235bf456e7f73a85fb542c0a",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "flag": []
   },
   {
@@ -4179,7 +4695,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "A",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "flag": []
   },
   {
@@ -4194,7 +4710,7 @@
    "w": 64,
    "h": 32,
    "sha1": "bc6cf284f2ec1445430f88dba564e3952b88c002",
-   "mtime": 1792242488,
+   "mtime": 1792235288,
    "flag": []
   },
   {
@@ -4206,7 +4722,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "B",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "flag": []
   },
   {
@@ -4221,7 +4737,7 @@
    "w": 64,
    "h": 32,
    "sha1": "f8296c951c26c96fa328b24d1eae32452731f14f",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "flag": []
   },
   {
@@ -4233,7 +4749,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "C",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "flag": []
   },
   {
@@ -4247,11 +4763,116 @@
    "w": 64,
    "h": 32,
    "sha1": "8c6fa0293b46ffe775d8ca9338da348bed71d925",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": [
     "da_rigenerare"
    ]
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_discesa.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 525,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "efbf29f1913159907beaecea3607867f6ac5531b",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_dritta.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 624,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "9d39e4fda28bc052cc015b320c4e1b252e08aabd",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_salita.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 626,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "1b0a8c2a1d5114abf73efd49ad907a4c8c1cac1c",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_forte.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 1002,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "93c3814f7381847ff9237feb77f659e093ae8cbe",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_leggero.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 825,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "d94847bf1bc3b119b6030262d041514c6957dfe4",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_forte.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 927,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "d6287c85addd665b4beafcf180fafd8704a10011",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_leggero.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 773,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "9497c0bf3981100761303b566c1851b9d50474ad",
+   "mtime": 1793932813,
+   "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
   },
   {
    "percorso": "assets_originali/sprite/auto_gt/auto_neon_cyan.png",
@@ -4264,7 +4885,7 @@
    "w": 64,
    "h": 32,
    "sha1": "ccabdd5dcb1cb4ff98de13098b2924721b7b63ce",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": [
     "da_rigenerare"
@@ -4281,7 +4902,7 @@
    "w": 64,
    "h": 32,
    "sha1": "1805b5ee90e178267e5474717ff0a63904083999",
-   "mtime": 1792242490,
+   "mtime": 1792235290,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": [
     "da_rigenerare"
@@ -4295,7 +4916,7 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242492,
+   "mtime": 1792235292,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4307,42 +4928,364 @@
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242492,
+   "mtime": 1792235292,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/pubblico/pubblico_a_giu.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 568,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 26,
+   "sha1": "3289325520a4b1e842c02394b9bc9c267e0af3b0",
+   "mtime": 1793261694,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/pubblico/pubblico_a_su.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 705,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 26,
+   "sha1": "769b2f369605e551c0189131c522602cd291cf50",
+   "mtime": 1793261694,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/pubblico/pubblico_b_giu.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 511,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 26,
+   "sha1": "ddbfecb53dbbf5677cb76a39f54cca181d57ce26",
+   "mtime": 1793261694,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/pubblico/pubblico_b_su.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 677,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 26,
+   "sha1": "eb3310236dad7bc5e7b8eff67e862aa5c4b16dff",
+   "mtime": 1793261694,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_giocatore_sbandata.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 391,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 64,
+   "h": 32,
+   "sha1": "f407c661490e09af6a691da248134461cbd8b798",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_arancio_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 341,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "2210f4c04765e7e4cdac316471fcbb097656c9e9",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_arancio_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 513,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "d3544bc8423ad2f2d38d34cb2355b8f7d0463bab",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_azzurro_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 337,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "309fe1b2440249707d562046b391e3683dec016e",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_azzurro_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 486,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "ee2a513f54ee7b264d59bd993c8e5f16e9a491f2",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_bianco_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 340,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "6eeb54bc8877b0e69bf2158c27327600e2e2524c",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_bianco_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 533,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "b33796481babbae8c2d79c9e71d27d509bf9f4bf",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_giallo_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 349,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "7fd7f42b8681ba8b991965424883b297b26b906d",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_giallo_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 538,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "356e85e4f5141fa341f201f4dc7359bba5a372f3",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_rosso_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 350,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "83297a7ab665d967aebb4fef081ffbc4c63d5f82",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_rosso_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 533,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "0da4b2122c37819136a94d782510184340bfaf40",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_verde_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 346,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "4884db2f3589ad7862b1b28f65d3b3c5dc5e9979",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_verde_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 485,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "82f1fe1a0995300070badf41d766ab18500e4c3c",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_viola_lato.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 349,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 44,
+   "h": 16,
+   "sha1": "7cda2515fcca5e627b6f12e35fe7d5decd99a807",
+   "mtime": 1793935667,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/rivali/auto_rivale_viola_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 487,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 48,
+   "h": 24,
+   "sha1": "5e744ac69ce7f97979593bccff20e68c9377f70c",
+   "mtime": 1793311053,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/traffico/traffico_berlina_blu_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 318,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 22,
+   "sha1": "005d2a66485043f78a44afe5bb1b43bbcaf57874",
+   "mtime": 1793134148,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/traffico/traffico_camioncino_beige_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 343,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 28,
+   "sha1": "4097a9fe04ccea9b19fb0d90aa2038ab40be0a71",
+   "mtime": 1793134148,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/traffico/traffico_furgone_grigio_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 355,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 40,
+   "h": 32,
+   "sha1": "087cc19a3af97dcca102d4b9f44a3b4ea05545f4",
+   "mtime": 1793134148,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/traffico/traffico_utilitaria_bianca_retro.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 340,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 34,
+   "h": 26,
+   "sha1": "3d8d28335ee51c7681caa8c243e0994923d14b24",
+   "mtime": 1793134148,
    "flag": []
   },
   {
    "percorso": "assets_originali/ui/genera_ui_b.py",
    "categoria": "ui",
    "tipo": "py",
-   "byte": 18711,
+   "byte": 19029,
    "licenza": "MIT",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242496,
+   "mtime": 1793294578,
    "flag": []
   },
   {
    "percorso": "assets_originali/ui/manifest.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 581,
+   "byte": 557,
    "licenza": "MIT",
    "stato": "generato",
    "originale": true,
-   "mtime": 1792242498,
+   "mtime": 1792451642,
    "flag": []
   },
   {
    "percorso": "assets_originali/ui/font/varianteA/font.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 9882,
+   "byte": 9880,
    "licenza": "CC-BY-4.0",
    "stato": "proposta",
    "originale": null,
    "variante": "A",
-   "mtime": 1792242492,
+   "mtime": 1792449911,
    "flag": []
   },
   {
@@ -4357,7 +5300,7 @@
    "w": 60,
    "h": 56,
    "sha1": "760727570f2ddf667bb96e5e2b63774807a31b8d",
-   "mtime": 1792242494,
+   "mtime": 1792235294,
    "flag": [
     "da_rigenerare"
    ]
@@ -4371,19 +5314,19 @@
    "stato": "proposta",
    "originale": null,
    "variante": "A",
-   "mtime": 1792242494,
+   "mtime": 1792449912,
    "flag": []
   },
   {
    "percorso": "assets_originali/ui/font/varianteB/font.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 9988,
+   "byte": 9986,
    "licenza": "CC-BY-4.0",
    "stato": "bozza",
    "originale": null,
    "variante": "B",
-   "mtime": 1792242494,
+   "mtime": 1792449901,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4399,22 +5342,20 @@
    "w": 60,
    "h": 56,
    "sha1": "41c3aeb774de92982525526fdcbd9ad0e1a92ee4",
-   "mtime": 1792242494,
+   "mtime": 1793608846,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
-   "flag": [
-    "da_rigenerare"
-   ]
+   "flag": []
   },
   {
    "percorso": "assets_originali/ui/font/varianteB/manifest.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 1031,
+   "byte": 1029,
    "licenza": "CC-BY-4.0",
    "stato": "bozza",
    "originale": null,
    "variante": "B",
-   "mtime": 1792242494,
+   "mtime": 1792449906,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4422,12 +5363,12 @@
    "percorso": "assets_originali/ui/font/varianteC/font.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 9882,
+   "byte": 9880,
    "licenza": "CC-BY-4.0",
    "stato": "proposta",
    "originale": null,
    "variante": "C",
-   "mtime": 1792242496,
+   "mtime": 1792449892,
    "flag": []
   },
   {
@@ -4442,61 +5383,36 @@
    "w": 60,
    "h": 56,
    "sha1": "0bc615e45742cea751c8d0c92a0ffd49a87fb25e",
-   "mtime": 1792242496,
-   "flag": []
+   "mtime": 1792235296,
+   "flag": [
+    "da_rigenerare"
+   ]
   },
   {
    "percorso": "assets_originali/ui/font/varianteC/manifest.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 474,
+   "byte": 472,
    "licenza": "CC-BY-4.0",
    "stato": "proposta",
    "originale": null,
    "variante": "C",
-   "mtime": 1792242496,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/hud/varianteA/hud_preview.png",
-   "categoria": "ui",
-   "tipo": "png",
-   "byte": 1412,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "A",
-   "w": 320,
-   "h": 224,
-   "sha1": "1ec2c1bbd22086e9cd0ad6d680fde4dde7d80186",
-   "mtime": 1792242496,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/hud/varianteA/manifest.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 484,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "A",
-   "mtime": 1792242496,
+   "mtime": 1792449897,
    "flag": []
   },
   {
    "percorso": "assets_originali/ui/hud/varianteB/hud_preview.png",
    "categoria": "ui",
    "tipo": "png",
-   "byte": 1381,
+   "byte": 1771,
    "licenza": "CC-BY-4.0",
    "stato": "bozza",
    "originale": null,
    "variante": "B",
    "w": 320,
    "h": 224,
-   "sha1": "cc5a8482be4b8fb2719dbc141ed39b919c56bfee",
-   "mtime": 1792242496,
+   "sha1": "c3505bb943b28d761706d07791b16209ee3fa571",
+   "mtime": 1793608846,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4509,35 +5425,8 @@
    "stato": "bozza",
    "originale": null,
    "variante": "B",
-   "mtime": 1792242496,
+   "mtime": 1792449863,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/hud/varianteC/hud_preview.png",
-   "categoria": "ui",
-   "tipo": "png",
-   "byte": 1444,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "C",
-   "w": 320,
-   "h": 224,
-   "sha1": "de1e47def852a2f67d5f203e7dfabf088475a8d0",
-   "mtime": 1792242496,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/hud/varianteC/manifest.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 484,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "C",
-   "mtime": 1792242498,
    "flag": []
   },
   {
@@ -4549,7 +5438,7 @@
    "stato": "proposta",
    "originale": null,
    "variante": "A",
-   "mtime": 1792242498,
+   "mtime": 1792449914,
    "flag": []
   },
   {
@@ -4564,8 +5453,10 @@
    "w": 320,
    "h": 224,
    "sha1": "7e88a86c3d341b943919dd249f4c6509c79db5ef",
-   "mtime": 1792242498,
-   "flag": []
+   "mtime": 1792235298,
+   "flag": [
+    "da_rigenerare"
+   ]
   },
   {
    "percorso": "assets_originali/ui/menu/varianteB/manifest.json",
@@ -4576,7 +5467,7 @@
    "stato": "bozza",
    "originale": null,
    "variante": "B",
-   "mtime": 1792242498,
+   "mtime": 1792449914,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4592,7 +5483,7 @@
    "w": 320,
    "h": 224,
    "sha1": "e22bd5e84afbc914857bdf375c97bedf67e1f817",
-   "mtime": 1792242500,
+   "mtime": 1793608846,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4605,7 +5496,7 @@
    "stato": "proposta",
    "originale": null,
    "variante": "C",
-   "mtime": 1792242500,
+   "mtime": 1792449913,
    "flag": []
   },
   {
@@ -4620,71 +5511,21 @@
    "w": 320,
    "h": 224,
    "sha1": "ac651f422d4bb82a9d18b941963c121d1bfef227",
-   "mtime": 1792242500,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteA/manifest.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 506,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "A",
-   "mtime": 1792242500,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteA/title.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 467,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "A",
-   "mtime": 1792242500,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteA/title.png",
-   "categoria": "ui",
-   "tipo": "png",
-   "byte": 1097,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "A",
-   "w": 304,
-   "h": 18,
-   "sha1": "c2fb05b3b70d383c540e4cf214a5a4bb2f0f8dca",
-   "mtime": 1792242500,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteB/manifest.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 1127,
-   "licenza": "CC-BY-4.0",
-   "stato": "bozza",
-   "originale": null,
-   "variante": "B",
-   "mtime": 1792242500,
-   "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
-   "flag": []
+   "mtime": 1792235300,
+   "flag": [
+    "da_rigenerare"
+   ]
   },
   {
    "percorso": "assets_originali/ui/titolo/varianteB/title.json",
    "categoria": "ui",
    "tipo": "json",
-   "byte": 1126,
-   "licenza": "CC-BY-4.0",
-   "stato": "bozza",
-   "originale": null,
+   "byte": 237,
+   "licenza": "MIT",
+   "stato": "generato",
+   "originale": true,
    "variante": "B",
-   "mtime": 1792242500,
+   "mtime": 1793608846,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -4693,54 +5534,15 @@
    "categoria": "ui",
    "tipo": "png",
    "byte": 911,
-   "licenza": "CC-BY-4.0",
-   "stato": "bozza",
-   "originale": null,
+   "licenza": "MIT",
+   "stato": "generato",
+   "originale": true,
    "variante": "B",
    "w": 299,
    "h": 42,
    "sha1": "b1f216f52ebfc9f8f6eb5fa7e42e13424b18de8f",
-   "mtime": 1792242500,
+   "mtime": 1793608846,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteC/manifest.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 506,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "C",
-   "mtime": 1792242502,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteC/title.json",
-   "categoria": "ui",
-   "tipo": "json",
-   "byte": 467,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "C",
-   "mtime": 1792242502,
-   "flag": []
-  },
-  {
-   "percorso": "assets_originali/ui/titolo/varianteC/title.png",
-   "categoria": "ui",
-   "tipo": "png",
-   "byte": 1102,
-   "licenza": "CC-BY-4.0",
-   "stato": "proposta",
-   "originale": null,
-   "variante": "C",
-   "w": 304,
-   "h": 18,
-   "sha1": "89744aa88a04c4d09b55f7f6c1e89620ea10c980",
-   "mtime": 1792242530,
    "flag": []
   }
  ]

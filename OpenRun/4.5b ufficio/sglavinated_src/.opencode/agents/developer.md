@@ -1,6 +1,6 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
-model: opencode/nemotron-3.5-super-vl-free
+model: opencode/nemotron-3.5-lightning-free
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:

@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-10-31 13:42
+# Pacchetto per Claude — 2026-11-06 05:24
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -68,7 +68,7 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 252:## BLOCCO PROVA27 — @developer + @developer-junior + @grafico — prova di Andrea 27/10 sera: corsa singola, cartelloni, oggetti, bivio (PRIMA di RIV b/c e di PIST1)
 262:| Stato | [x] | (Andrea 27/10 sera; codice di Claude, review incrociata aperta) |
 266:## BLOCCO PIST1 — @developer + @developer-junior + @grafico — percorsi piu' vari: ponti, colline, chicane, autostrada, citta' (Andrea 23 ott, dopo la prova su Mac; dopo DECO1, prima di RIV)
-276:| Stato | [~] | (Claude 29/10 sera: punti 1-2 solo dati; il ponte non si vede ancora: passi P1-P3 qui sopra) |
+276:| Stato | [~] | (Claude 31/10, Andrea: "il ponte in mezzo a dei livelli, non a tutti": P1 e P2 FATTI da Claude. Ponte a meta' di lv_01_neon, lv_04_cromo e lv_06_desktop (dopo `curva_larga_dx`); lv_02, lv_03, lv_05 senza ponte. Acqua ai lati, parapetto grigio/bianco al posto del rumble, niente oggetti e cartelloni sui segmenti con acqua. NON spostare il ponte e non aggiungerlo ad altri livelli. Ponte ALTO (Andrea 31/10, "piu' cinematografico e inaspettato"): tratti `rampa_ponte` (sale in curva a collina 1.0, curva e cresta nascondono il ponte), `ponte` (impalcato a collina 1.0, acqua a `acqua_quota` 0, torri a portale ogni 60 segmenti in `Renderer::drawPilone`), `discesa_ponte` (curva opposta); nei tre livelli tolto un `rettilineo_corto` (lv_01, lv_04) per la durata. Non cambiare altezza o forma senza una prova di Andrea. Restano: @grafico G-P1 (PNG parapetto e guardrail, voci NUOVE nel catalogo), @developer P3 (parapetti del grafico come oggetti), @developer-junior J1 e J2.) |
 280:## BLOCCO RIV — @developer + @developer-junior + @grafico — rivali veri e urto con sbandata (Andrea 22 ott; dopo F60, prima di R2)
 292:| Stato | [~] | (Claude 29/10: a, b, c, 2 fatti; restano 1 e 3) |
 296:## BLOCCO FIN — @developer + @developer-junior + @grafico — finale animato a fine corsa (Andrea 22 ott; dopo R2 e RIV)
@@ -97,41 +97,22 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 287:## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
 
 ## Ultime righe di SCAMBIO.md
-GATE FREQUENZA 50 Hz OK
-screenshot P1: curva frame 1688 (scarto 184 px), sponsor frame 409 (40045 px), personaggio+fumetto frame 446
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: out/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/prova_gate_avvolgimento.log (nessuna)
-  senza licenza aperta: out/prova_gate_avvolgimento.ppm (nessuna)
-  senza licenza aperta: out/prova_gate.log (nessuna)
-  senza licenza aperta: out/prova_gate_partenza.ppm (nessuna)
-  senza licenza aperta: out/developer/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/developer/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/developer/prova_gate_avvolgimento.log (nessuna)
-  senza licenza aperta: out/developer/prova_gate_avvolgimento.ppm (nessuna)
-  senza licenza aperta: out/developer/prova_gate.log (nessuna)
-  senza licenza aperta: out/developer/prova_gate_partenza.ppm (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_personaggio_fumetto.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_curva.png (nessuna)
-  senza licenza aperta: out/developer/screenshot_p1/p1_cartelloni_sponsor.png (nessuna)
-  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_curva.ppm (nessuna)
-  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_fuoristrada.ppm (nessuna)
-  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_avvolgimento.log (nessuna)
-  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate_avvolgimento.ppm (nessuna)
-  senza licenza aperta: out/test_smoke/lv_01_neon/prova_gate.log (nessuna)
-quota open: 49.7% (9601049 di 19299833 byte), soglia 50.0%
+quota open: 100.0% (6960223 di 6960223 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 28
 blocchi da fare [ ]: 6
 
-[0m
-> developer-junior · nemotron-3.5-lightning-free
-CORREGGI: quota_open 49.7% sotto soglia 50.0% -> @developer
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 1 | REVIEWER | 2026-10-31 13:41 | [APERTA]
+### CHECKPOINT 3 | REVIEWER | 2026-11-06 03:29 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
@@ -144,16 +125,35 @@ OK      nessuna ROM Sega presente
 OK      opencode installato
 OK      comando claude presente (review automatica possibile)
 == TUTTO OK ==
-GATE FREQUENZA 50 Hz OK
-screenshot P1: curva frame 1688 (scarto 184 px), sponsor frame 358 (38915 px), personaggio+fumetto frame 446
 GATE SCREENSHOT P1 OK
-GATE T1: FALLITO (exit 13)
+GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-quota open: 100.0% (6917302 di 6917302 byte), soglia 50.0%
+quota open: 100.0% (6960223 di 6960223 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 28
 blocchi da fare [ ]: 6
 
-[0m
-> developer-junior · nemotron-3.5-lightning-free
-CORREGGI: gate_t1 -> @developer
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 4 | REVIEWER | 2026-11-06 05:22 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (7076816 di 7076816 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 6
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

@@ -2207,21 +2207,34 @@ bool verificaTratti(const std::string& outDir) {
             if (!presente[kv.first]) tuttiPresenti = false;
         // PIST1 J2 (@developer-junior): il tratto `ponte` deve esistere su
         // lv_01_neon e lv_04_cromo e ogni suo segmento deve avere acqua = 1.
+        // P2 (31/10) ha messo il ponte anche in lv_06_desktop: l'acqua va
+        // verificata su ogni livello che dichiara `ponte`, non solo i due di J2.
+        // Claude 02/11: i livelli che NON dichiarano `ponte` (lv_02, lv_03,
+        // lv_05) non devono averne nessuno, e l'acqua deve stare SOLO sui
+        // segmenti di `ponte` (Andrea 31/10: "il ponte in mezzo a dei livelli,
+        // non a tutti").
         const bool vuolePonte = (std::string(livello) == "lv_01_neon" ||
-                                 std::string(livello) == "lv_04_cromo");
+                                 std::string(livello) == "lv_04_cromo" ||
+                                 dichiarato.count("ponte") > 0);
         bool ponteTrovato = false;
-        i32 ponteSeg = 0, ponteAcquaSeg = 0;
+        i32 ponteSeg = 0, ponteAcquaSeg = 0, acquaFuoriPonteSeg = 0;
         for (i32 i = 0; i < n; ++i) {
             std::string nome;
             i32 inizio = -1;
-            if (!trattoDiSegmento(i, nomi, lunghezze, nome, inizio)) continue;
-            if (nome != "ponte") continue;
-            ponteTrovato = true;
-            ++ponteSeg;
-            if (segs[i].acqua > 0.5f) ++ponteAcquaSeg;
+            const bool inTratto = trattoDiSegmento(i, nomi, lunghezze, nome, inizio);
+            const bool suPonte = inTratto && (nome == "ponte");
+            if (suPonte) {
+                ponteTrovato = true;
+                ++ponteSeg;
+                if (segs[i].acqua > 0.5f) ++ponteAcquaSeg;
+            } else if (segs[i].acqua > 0.5f) {
+                ++acquaFuoriPonteSeg;
+            }
         }
-        bool ponteOk = !vuolePonte || (ponteTrovato && ponteSeg > 0 &&
-                                       ponteAcquaSeg == ponteSeg);
+        bool ponteOk = vuolePonte
+            ? (ponteTrovato && ponteSeg > 0 && ponteAcquaSeg == ponteSeg &&
+               acquaFuoriPonteSeg == 0)
+            : (!ponteTrovato && ponteSeg == 0 && acquaFuoriPonteSeg == 0);
         // salti per segmento consecutivo
         f32 maxDC = 0.0f, maxDCol = 0.0f, maxDL = 0.0f;
         for (i32 i = 1; i < n; ++i) {
@@ -2278,10 +2291,10 @@ bool verificaTratti(const std::string& outDir) {
         }
         giroFinito = percorso >= giro;
         std::printf("tratti %s: segmenti=%d espansione=%s dichiarati=%zu presenti=%zu mismatchCuore=%d "
-                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f ponte=%d/%d acqua giro=%s | %s\n",
+                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f ponte=%d/%d acquaFuoriPonte=%d giro=%s | %s\n",
                     livello, n, espansioneOk ? "OK" : "NO", dichiarato.size(),
                     presente.size(), mismatchCuore, maxDC, maxDCol, maxDL, msMed,
-                    ponteAcquaSeg, ponteSeg,
+                    ponteAcquaSeg, ponteSeg, acquaFuoriPonteSeg,
                     giroFinito ? "finito" : "NO",
                     (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito && ponteOk) ? "OK" : "FALLITO");
         bool lvOk = espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk &&
