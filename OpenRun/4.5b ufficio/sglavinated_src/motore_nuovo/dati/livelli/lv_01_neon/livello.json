@@ -135,6 +135,32 @@
     "stile_cartellone": "neon",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. notte di neon: si parte in periferia, campagna con palme, autostrada illuminata, citta' sul viale largo, ponte, curve in campagna.",
+    "base": "aperto",
+    "tratti": {
+      "rettilineo_lungo": "periferia",
+      "rettilineo_largo": "citta",
+      "curva_larga_sx": "citta",
+      "curva_larga_dx": "periferia",
+      "curva_dolce_sx": "periferia"
+    },
+    "ciuffi": [
+      "oggetto.lv_01_neon.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_01_neon.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_01_neon.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_01_neon.edificio_alto",
+      "oggetto.lv_01_neon.edificio_medio",
+      "oggetto.lv_01_neon.edificio_basso"
+    ],
+    "densita_alberi": 0.8
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,

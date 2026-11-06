@@ -139,6 +139,32 @@
     "stile_cartellone": "atomico",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. deserto anni 50: cactus e sterpi, un paese pastello sul rettilineo largo.",
+    "base": "aperto",
+    "tratti": {
+      "rettilineo_lungo": "periferia",
+      "curva_dolce_sx": "periferia",
+      "rettilineo_largo": "citta",
+      "curva_larga_dx": "citta",
+      "curva_larga_sx": "periferia"
+    },
+    "ciuffi": [
+      "oggetto.lv_02_atomico.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_02_atomico.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_02_atomico.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_02_atomico.edificio_alto",
+      "oggetto.lv_02_atomico.edificio_medio",
+      "oggetto.lv_02_atomico.edificio_basso"
+    ],
+    "densita_alberi": 0.7
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 8,

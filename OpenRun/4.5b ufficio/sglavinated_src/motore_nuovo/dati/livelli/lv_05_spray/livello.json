@@ -136,6 +136,35 @@
     "stile_cartellone": "atomico",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): bidoni, transenne, cassonetti, serranda spray. Skyline e PNG/raw da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. periferia industriale: capannoni a tratti, erbacce, un pezzo di campagna sulle dune.",
+    "base": "periferia",
+    "tratti": {
+      "rettilineo_corto#1": "citta",
+      "chicane_dx": "citta",
+      "chicane_sx": "citta",
+      "dune": "aperto",
+      "curva_stretta_dx#2": "aperto",
+      "rettilineo_largo": "autostrada",
+      "rettilineo_lungo": "citta",
+      "rettilineo_corto#3": "citta"
+    },
+    "ciuffi": [
+      "oggetto.lv_05_spray.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_05_spray.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_05_spray.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_05_spray.edificio_alto",
+      "oggetto.lv_05_spray.edificio_medio",
+      "oggetto.lv_05_spray.edificio_basso"
+    ],
+    "densita_alberi": 0.6
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,

@@ -16,7 +16,9 @@
 #include "gameplay/disegno_show.h" // scena show: personaggio/fumetto/UFO in px
 #include "gameplay/testi_frasi.h"  // testi frasi.json per i fumetti
 #include "game/fasi.h"             // blocco R2: macchina a stati di gioco
+#include "game/paesaggio.h"        // paesaggio a zone (Andrea 06/11)
 #include <array>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -92,6 +94,12 @@ public:
     size_t numeroCartelloni() const { return cartelloni_.size(); }
     // Oggetti decorativi della tappa (posizioni fisse; per i gate).
     const std::vector<SpriteInstance>& oggettiStrada() const { return oggettiStrada_; }
+    // Zona del paesaggio alla posizione z (Nessuna se il livello non ha zone).
+    Zona zonaPaesaggioAt(f32 z) const {
+        if (zonaSeg_.empty()) return Zona::Nessuna;
+        const i32 i = road_.indiceSegmento(z);
+        return (i >= 0 && i < (i32)zonaSeg_.size()) ? (Zona)zonaSeg_[(size_t)i] : Zona::Nessuna;
+    }
 
     // Traffico comune in gara (Andrea 27/10): pochi veicoli civili lenti nelle
     // corsie, deterministici (seme fisso). x e' laterale in unita' mondo dal
@@ -339,6 +347,14 @@ private:
     void leggiTemaDaFile(const JsonValue* radice);
     void leggiHud(); // dati/ui/hud.json -> Renderer (una volta)
     void caricaOggettiStrada(const std::string& livelloId); // DECO1 2c: carica sprite oggetti bordo strada
+    // Paesaggio a zone (Andrea 06/11): livello.json "paesaggio" (paesaggio.h).
+    void leggiPaesaggio(const JsonValue* radice);
+    bool paesaggioAttivo_ = false;
+    Zona paesaggioBase_ = Zona::Aperto;
+    std::map<std::string, Zona> paesaggioTratti_;        // "tratto" o "tratto#n" -> zona
+    std::array<std::vector<std::string>, 4> paesaggioPezzi_; // id: ciuffi, cespugli, alberi, edifici
+    f32 paesaggioDensitaAlberi_ = 1.0f;
+    std::vector<u8> zonaSeg_;                              // zona di ogni segmento della Road
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
