@@ -135,6 +135,33 @@
     "stile_cartellone": "foglie",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. viale delle foglie: tanti alberi a macchie, due paesi viola.",
+    "base": "aperto",
+    "tratti": {
+      "rettilineo_lungo": "periferia",
+      "rettilineo_corto#1": "citta",
+      "curva_dolce_sx": "periferia",
+      "rettilineo_largo": "citta",
+      "curva_larga_sx": "periferia",
+      "rettilineo_corto#2": "periferia"
+    },
+    "ciuffi": [
+      "oggetto.lv_03_foglie.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_03_foglie.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_03_foglie.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_03_foglie.edificio_alto",
+      "oggetto.lv_03_foglie.edificio_medio",
+      "oggetto.lv_03_foglie.edificio_basso"
+    ],
+    "densita_alberi": 1.6
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 6,

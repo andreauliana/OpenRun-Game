@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
+#include "game/paesaggio.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
 #include "render/sprite_raw.h" // caricaSpriteRaw: skyline raw del livello, core senza SDL
 #include <algorithm> // std::min/max
@@ -251,7 +252,10 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     if (jsonGet(o, "sospeso", sv) && jsonIsNumber(sv)) d.sospeso = (f32)jsonAsNumber(sv);
 }
 
-bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
+// nomi (facoltativo): il nome di ogni tratto letto, nello stesso ordine di out
+// (serve al paesaggio a zone).
+bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out,
+                    std::vector<std::string>* nomi = nullptr) {
     if (!jsonIsArray(campoTracciato)) return false;
     const JsonArray& arr = jsonAsArray(campoTracciato);
     if (arr.empty()) return false;
@@ -274,6 +278,7 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
     }
 
     out.clear();
+    if (nomi) nomi->clear();
     for (const JsonValue& v : arr) {
         Road::SegmentDesc d;
         const JsonObject* o = nullptr;
@@ -292,7 +297,10 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
         if (it == libreria.end()) continue;
         d = it->second;
         if (o) leggiCampiTratto(*o, d); // override del livello
-        if (d.lunghezza > 0) out.push_back(d);
+        if (d.lunghezza > 0) {
+            out.push_back(d);
+            if (nomi) nomi->push_back(nome);
+        }
     }
     return !out.empty();
 }
@@ -322,16 +330,35 @@ void Game::caricaLivello(const std::string& livelloId) {
     leggiTemaDaFile(radiceLivello); // colori di ambiente e stile dei cartelloni
 
     std::vector<Road::SegmentDesc> descs;
+    std::vector<std::string> nomiTratti; // per il paesaggio a zone
     bool daFile = false;
     if (radiceLivello && jsonIsObject(*radiceLivello)) {
         const JsonObject& rootLivello = jsonAsObject(*radiceLivello);
         JsonValue campoTracciato;
         if (jsonGet(rootLivello, "tracciato", campoTracciato) && jsonIsArray(campoTracciato)) {
-            daFile = leggiTracciato(campoTracciato, descs) && !descs.empty();
+            daFile = leggiTracciato(campoTracciato, descs, &nomiTratti) && !descs.empty();
         }
     }
     if (!daFile) {
+        nomiTratti.clear();
         daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
+    }
+    // Paesaggio a zone (Andrea 06/11): zona di ogni tratto da livello.json
+    // "paesaggio" (base + tratti, "nome#2" = seconda volta che il tratto
+    // compare). Senza il campo resta il posizionamento sparso di prima.
+    leggiPaesaggio(radiceLivello);
+    zonaSeg_.clear();
+    std::vector<u8> zonePattern;
+    if (paesaggioAttivo_ && nomiTratti.size() == descs.size()) {
+        std::map<std::string, i32> volte;
+        for (const std::string& nome : nomiTratti) {
+            const i32 n = ++volte[nome];
+            Zona z = zonaPredefinitaTratto(nome, paesaggioBase_);
+            auto it = paesaggioTratti_.find(nome + "#" + std::to_string(n));
+            if (it == paesaggioTratti_.end()) it = paesaggioTratti_.find(nome);
+            if (it != paesaggioTratti_.end()) z = it->second;
+            zonePattern.push_back((u8)z);
+        }
     }
     if (daFile) {
         // Ripeti il pattern finche' il giro ha almeno 2*DRAW_DIST segmenti
@@ -342,12 +369,17 @@ void Game::caricaLivello(const std::string& livelloId) {
         i32 segTotali = 0;
         const i32 minSeg = Road::DRAW_DIST * 2;
         while (segTotali < minSeg) {
-            for (const Road::SegmentDesc& d : pattern) {
+            for (size_t p = 0; p < pattern.size(); ++p) {
+                const Road::SegmentDesc& d = pattern[p];
                 descs.push_back(d);
-                segTotali += d.lunghezza > 0 ? d.lunghezza : 1;
+                const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
+                segTotali += n;
+                if (!zonePattern.empty()) zonaSeg_.insert(zonaSeg_.end(), (size_t)n, zonePattern[p]);
             }
         }
         road_.build(descs, seed_);
+        // Una zona per segmento della Road (stesso conteggio di build()).
+        if (!zonaSeg_.empty()) zonaSeg_.resize(road_.segments().size(), (u8)paesaggioBase_);
     } else {
         // Fallback deterministico (hardcoded): 400 segmenti con pattern inventato.
         std::vector<f32> curves, hills;
@@ -459,6 +491,39 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // Ponte (Andrea 06/11): niente pannelli o ringhiere ai lati. Il ponte
     // resta aperto sull'acqua, "l'emozione di correre sospesi": il bordo e'
     // solo il filo grigio/bianco del parapetto basso (Renderer).
+    const bool conBivio = tappaConBivio(livelloId);
+    const f32 zBivioInizio = conBivio ? road_.bivioInizioZ() : giro;
+    if (paesaggioAttivo_ && !zonaSeg_.empty() && giro > 0.0f) {
+        // Paesaggio a zone (Andrea 06/11): prima si registrano tutti gli sprite
+        // (i puntatori del Renderer restano validi), poi si dispongono.
+        auto carica = [&](const std::string& cartella, const std::string& nome) {
+            Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + cartella + "/" + nome + ".sglraw"));
+            return s.width > 0 ? ren_.aggiungiOggettoSprite(std::move(s)) : -1;
+        };
+        std::vector<std::vector<i32>> idxRuolo(4);
+        for (size_t r = 0; r < 4; ++r)
+            for (const std::string& id : paesaggioPezzi_[r]) {
+                const i32 idx = carica(livelloId, nomeOggettoDaId(id));
+                if (idx >= 0) idxRuolo[r].push_back(idx);
+            }
+        const i32 idxDx = carica("comuni", "freccia_curva_dx");
+        const i32 idxSx = carica("comuni", "freccia_curva_sx");
+        PezziPaesaggio pz;
+        for (i32 j = 0; j < nOggetti; ++j) {
+            const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
+            if (!s) continue;
+            (s->height >= 96 ? pz.lampioni : pz.arredo).push_back(s); // alti = lampioni e pali
+        }
+        std::vector<const Sprite*>* ruoli[4] = {&pz.ciuffi, &pz.cespugli, &pz.alberi, &pz.edifici};
+        for (size_t r = 0; r < 4; ++r)
+            for (i32 idx : idxRuolo[r]) ruoli[r]->push_back(ren_.oggettoSprite(idx));
+        pz.frecciaDx = idxDx >= 0 ? ren_.oggettoSprite(idxDx) : nullptr;
+        pz.frecciaSx = idxSx >= 0 ? ren_.oggettoSprite(idxSx) : nullptr;
+        pz.densitaAlberi = paesaggioDensitaAlberi_;
+        disponiPaesaggio(road_, zonaSeg_, pz, zBivioInizio, seed_, oggettiStrada_);
+        std::printf("paesaggio %s: %zu oggetti a zone\n", livelloId.c_str(), oggettiStrada_.size());
+        return;
+    }
     if (giro <= 0.0f || nOggetti == 0) return;
     // Posizioni (Andrea 27/10 sera): mai sul tracciato. Per ogni fila, un
     // oggetto a bordo strada (lato alternato) e uno nel paesaggio dal lato
@@ -466,8 +531,6 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // misura dal bordo della carreggiata al bordo dello sprite, quindi anche gli
     // oggetti larghi restano fuori strada. Nella zona del bivio la carreggiata e'
     // larga quanto i due rami: lo stesso margine parte dal bordo esterno dei rami.
-    const bool conBivio = tappaConBivio(livelloId);
-    const f32 zBivioInizio = conBivio ? road_.bivioInizioZ() : giro;
     const f32 bordo = Road::ROAD_WIDTH * 0.5f;
     const f32 bordoBivio = Road::BIVIO_DIST + bordo;
     Rng rnd(seed_ ^ 0x4F474745u);
@@ -496,6 +559,37 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             oggettiStrada_.push_back(o);
         }
     }
+}
+
+void Game::leggiPaesaggio(const JsonValue* radice) {
+    // livello.json "paesaggio": {"base": "aperto", "tratti": {"autostrada":
+    // "autostrada", "rettilineo_corto#2": "citta", ...}, "ciuffi": [id],
+    // "cespugli": [id], "alberi": [id], "edifici": [id] (dal piu' alto),
+    // "densita_alberi": 1.0}. Id del catalogo grafico, come oggetti_bordo_strada.
+    paesaggioAttivo_ = false;
+    paesaggioBase_ = Zona::Aperto;
+    paesaggioTratti_.clear();
+    for (auto& v : paesaggioPezzi_) v.clear();
+    paesaggioDensitaAlberi_ = 1.0f;
+    if (!radice || !jsonIsObject(*radice)) return;
+    JsonValue pv;
+    if (!jsonGet(jsonAsObject(*radice), "paesaggio", pv) || !jsonIsObject(pv)) return;
+    const JsonObject& p = jsonAsObject(pv);
+    paesaggioAttivo_ = true;
+    JsonValue v;
+    if (jsonGet(p, "base", v) && jsonIsString(v)) paesaggioBase_ = zonaDaNome(jsonAsString(v), Zona::Aperto);
+    if (jsonGet(p, "tratti", v) && jsonIsObject(v))
+        for (const auto& kv : jsonAsObject(v))
+            if (jsonIsString(kv.second)) paesaggioTratti_[kv.first] = zonaDaNome(jsonAsString(kv.second), paesaggioBase_);
+    static const char* kRuoli[4] = {"ciuffi", "cespugli", "alberi", "edifici"};
+    for (size_t r = 0; r < 4; ++r) {
+        JsonValue a;
+        if (!jsonGet(p, kRuoli[r], a) || !jsonIsArray(a)) continue;
+        for (const JsonValue& id : jsonAsArray(a))
+            if (jsonIsString(id)) paesaggioPezzi_[r].push_back(jsonAsString(id));
+    }
+    if (jsonGet(p, "densita_alberi", v) && jsonIsNumber(v))
+        paesaggioDensitaAlberi_ = std::clamp((f32)jsonAsNumber(v), 0.0f, 3.0f);
 }
 
 void Game::caricaMusica() {
