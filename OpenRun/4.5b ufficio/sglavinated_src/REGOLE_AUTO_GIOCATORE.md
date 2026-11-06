@@ -34,3 +34,29 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   gomme, scintille, fumo dal cofano, ammaccature (fino a 8), stop accesi in
   frenata. Niente lampo bianco sugli urti, niente luci disegnate dal motore.
 - Frequenza 60 Hz (config.json `frequenza_hz`).
+
+## Guida e reazioni (Andrea 06/11 sera)
+- **Curve:** spingono fuori col quadrato della velocita':
+  `CURVA_SPINTA_V2 = 1200` (game.cpp, unita'/s a curva 1 e punta). Fuori
+  strada la spinta e' un quarto. A solo gas l'auto esce nelle curve; sterzando
+  le curve si tengono, nelle piu' strette conviene alzare il piede.
+- **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 700`, pieno da 1/4
+  della punta, `STEER_CALO_PUNTA = 0.35` (alla punta ~455 unita'/s): piano si
+  gira di piu', forte di meno.
+- **Fuori strada:** rallenta, l'auto trema sul terreno; rientrando
+  sull'asfalto un piccolo sobbalzo (`RIENTRO_S = 0.35`). Incidente solo dopo
+  2 s fuori strada **e** sopra il 30% della punta (`OFFROAD_INCIDENTE_V`);
+  piano nell'erba rallenta e basta. Il ciglio resta: primo tocco rallenta e
+  si ricorda, il secondo forte e' incidente.
+- **Sportellate ripetute:** memoria `colpiMemoria_` (+1 rivale, +1.5
+  traffico, -1 ogni 5 s); a 3.5 e sopra il 40% della punta l'auto vola e fa
+  l'incidente.
+- **Incidente:** l'auto sale fino a 30 px girando in aria, atterra, scivola al
+  centro della corsia e riparte da ferma nello stesso punto della pista.
+- **Rivali con memoria dei danni:** ogni botta del giocatore -3% di punta (fino
+  a 3), alla 4a KO per 4 s (si fa da parte quasi fermo, poi riparte). Il
+  triangolo si accende a ogni botta.
+- **Oggetti:** i paletti del bordo si abbattono passandoci sopra (oltre
+  `PALO_X = 860` dal centro corsia): volano via girando, -3% di velocita',
+  piccolo sobbalzo. Cartelloni: sopra meta' punta incidente, sotto botta secca
+  (-40%).

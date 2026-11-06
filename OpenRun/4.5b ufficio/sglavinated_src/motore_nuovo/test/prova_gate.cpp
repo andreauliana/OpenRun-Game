@@ -426,7 +426,14 @@ bool verificaAccelerazione(const std::string& livello) {
     f32 avanzamentoPrimi1s2 = 0.0f;
     f32 avanzamentoStrada = 0.0f;
     for (i32 frame = 0; frame < framesTotali; ++frame) {
-        game.setInput(gas);
+        // Tiene la corsia (06/11 sera: le curve spingono fuori col quadrato
+        // della velocita', a solo gas l'auto finirebbe sul bordo e frenerebbe).
+        // Lo sterzo non cambia la spinta: si misura sempre l'accelerazione.
+        Pad pad = gas;
+        const f32 xCorsia = game.state().playerX;
+        if (xCorsia > 120.0f) pad.held |= Pad::Left;
+        else if (xCorsia < -120.0f) pad.held |= Pad::Right;
+        game.setInput(pad);
         game.update();
         game.render();
         const f32 speed = game.state().playerSpeed;

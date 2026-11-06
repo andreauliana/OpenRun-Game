@@ -215,6 +215,9 @@ public:
     // dello stesso lato, poi lo specchio dell'altro lato, poi la dritta.
     // `specchia` = disegnare a specchio; `sterzoResiduo` (-1..1) = sterzo che il
     // fotogramma scelto non mostra (lo rende l'inclinazione del motore).
+    // Pezzo che vola via (paletto abbattuto): rettangolo w x h ruotato di
+    // `angolo` attorno al centro (x, y), con il cappuccio scuro in cima.
+    void drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore);
     const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
