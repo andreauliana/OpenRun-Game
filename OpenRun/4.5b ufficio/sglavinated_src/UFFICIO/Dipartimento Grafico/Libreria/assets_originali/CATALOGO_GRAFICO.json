@@ -2132,6 +2132,62 @@
          "file": "assets_originali/sprite/auto_gt/auto_giocatore_discesa.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_discesa.sglraw",
          "nota": "RIV punto 3: auto giocatore in discesa (schiacciata del 10% in verticale, ancorata a terra), 64x32. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.pezzo.carrozzeria",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/carrozzeria.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/carrozzeria.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.abitacolo",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/abitacolo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/abitacolo.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.alettone",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/alettone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/alettone.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.ruota_1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_1.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.ruota_2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_2.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.ruota_3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_3.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
+      },
+      {
+         "id": "auto.giocatore.pezzo.fanale_acceso",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/fanale_acceso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/fanale_acceso.sglraw",
+         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
       }
    ]
 }

@@ -515,6 +515,104 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
+void Renderer::drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 sollevamentoPx, bool frena,
+                              const DanniAuto* danni, i32 posa, i32& cx, i32& cy, i32& w, i32& h) {
+    // Auto a pezzi (Andrea 06/11): la struttura del vecchio modello a
+    // rettangoli (carrozzeria, abitacolo, ruote, alettone, fanali), ma ogni
+    // pezzo e' un piccolo PNG. Finto 3D con la parallasse: sterzando
+    // l'abitacolo (piu' avanti nell'auto) scivola verso la curva piu' della
+    // carrozzeria; in salita/discesa l'abitacolo scende/sale di 1 px. Le ruote
+    // girano col battistrada (3 passi) e restano a terra, mentre la scocca
+    // rimbalza di 1 px sulle sospensioni ad alta velocita'. rollAngle
+    // (ribaltamento, scodata) ruota tutta l'auto attorno al suo centro.
+    f32 sterzo = 0.0f;
+    if (posa == POSA_GIOCATORE_STERZO_SX_FORTE) sterzo = -1.0f;
+    else if (posa == POSA_GIOCATORE_STERZO_SX_LEGGERO) sterzo = -0.5f;
+    else if (posa == POSA_GIOCATORE_STERZO_DX_LEGGERO) sterzo = 0.5f;
+    else if (posa == POSA_GIOCATORE_STERZO_DX_FORTE) sterzo = 1.0f;
+    const i32 pendenza = posa == POSA_GIOCATORE_SALITA ? 1 : (posa == POSA_GIOCATORE_DISCESA ? -1 : 0);
+    const Sprite& corpo = pezziAuto_[PEZZO_CARROZZERIA];
+    w = corpo.width;
+    h = corpo.height + 8;
+    cx = 160 + (i32)(offsetX * 0.035f);
+    const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
+    cy = 200 - sollevamento;
+    // Ombra sempre a terra (anche quando l'auto si solleva).
+    fb_.fillRect(cx - w / 2 - 2, 199, cx + w / 2 + 1, 200, pal_[0]);
+    ruotaFase_ += speed * 0.0025f;
+    if (ruotaFase_ > 3000.0f) ruotaFase_ -= 3000.0f;
+    const i32 passo = (i32)ruotaFase_ % 3;
+    const i32 rimbalzo = (speed > 150.0f && (((i32)(ruotaFase_ * 0.5f)) & 1)) ? -1 : 0;
+    const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
+    const bool ruotata = std::abs(rollAngle) >= 0.01f;
+    const f32 perno = (f32)cy - 8.0f; // centro di rotazione dell'auto
+    // Disegna un pezzo con l'angolo in alto a sinistra in (x0, y0) schermo,
+    // ruotato attorno al perno (cx, perno) se l'auto e' ruotata.
+    auto pezzo = [&](const Sprite& p, i32 x0, i32 y0) {
+        if (p.width <= 0) return;
+        const bool propria = !p.palette.empty();
+        const i32 nPal = (i32)p.palette.size();
+        auto texel = [&](i32 tx, i32 ty) -> u32 {
+            const u8 idx = p.pixels[ty * p.width + tx];
+            if (propria) return p.palette[idx % nPal];
+            return idx == 0 ? 0u : pal_[idx];
+        };
+        if (!ruotata) {
+            for (i32 y = 0; y < p.height; ++y)
+                for (i32 x = 0; x < p.width; ++x) {
+                    const u32 col = texel(x, y);
+                    if ((col >> 24) != 0) fb_.put(x0 + x, y0 + y, col);
+                }
+            return;
+        }
+        // Rotazione attorno al perno con campionamento inverso sul riquadro ruotato.
+        const f32 qx = (f32)x0 + p.width * 0.5f - (f32)cx, qy = (f32)y0 + p.height * 0.5f - perno;
+        const f32 rx = co * qx - si * qy + (f32)cx, ry = si * qx + co * qy + perno; // centro ruotato
+        const i32 r = (i32)(0.5f * std::sqrt((f32)(p.width * p.width + p.height * p.height))) + 1;
+        for (i32 y = (i32)ry - r; y <= (i32)ry + r; ++y)
+            for (i32 x = (i32)rx - r; x <= (i32)rx + r; ++x) {
+                const f32 dx = (f32)x - rx, dy = (f32)y - ry;
+                const f32 lx = co * dx + si * dy + p.width * 0.5f;
+                const f32 ly = -si * dx + co * dy + p.height * 0.5f;
+                if (lx < 0.0f || ly < 0.0f || lx >= (f32)p.width || ly >= (f32)p.height) continue;
+                const u32 col = texel((i32)lx, (i32)ly);
+                if ((col >> 24) != 0) fb_.put(x, y, col);
+            }
+    };
+    const Sprite& ruota = pezziAuto_[PEZZO_RUOTA_1 + passo].width > 0 ? pezziAuto_[PEZZO_RUOTA_1 + passo]
+                                                                       : pezziAuto_[PEZZO_RUOTA_1];
+    const i32 corpoX = cx - w / 2 + (i32)std::lround(1.0f * sterzo);
+    const i32 corpoY = cy - 1 - corpo.height + rimbalzo;
+    // Ruote ai lati, appena fuori dalla scocca, appoggiate a terra.
+    if (ruota.width > 0) {
+        pezzo(ruota, cx - w / 2 - ruota.width / 2 - 1, cy - ruota.height);
+        pezzo(ruota, cx + w / 2 - ruota.width / 2 + 1, cy - ruota.height);
+    }
+    // Abitacolo dietro la carrozzeria: parallasse piu' forte e pendenza.
+    const Sprite& tetto = pezziAuto_[PEZZO_ABITACOLO];
+    if (tetto.width > 0)
+        pezzo(tetto, cx - tetto.width / 2 + (i32)std::lround(3.0f * sterzo),
+              corpoY - tetto.height + 1 + pendenza);
+    pezzo(corpo, corpoX, corpoY);
+    const Sprite& ala = pezziAuto_[PEZZO_ALETTONE];
+    if (ala.width > 0) pezzo(ala, cx - ala.width / 2, corpoY + 1);
+    if (frena && pezziAuto_[PEZZO_FANALE_ACCESO].width > 0) {
+        const Sprite& f = pezziAuto_[PEZZO_FANALE_ACCESO];
+        pezzo(f, corpoX + 4, corpoY + 5);
+        pezzo(f, corpoX + w - 13, corpoY + 5);
+    }
+    if (danni && danni->segni > 0 && !ruotata) {
+        // Ammaccature (una per botta, restano tutta la gara), sulla scocca.
+        static constexpr i32 SEGNI[DanniAuto::DANNI_MAX][2] = {
+            {-18, 4}, {16, 2}, {-8, 9}, {9, 8}, {-21, 7}, {20, 9}, {-2, 3}, {4, 10}};
+        for (i32 k = 0; k < std::min(danni->segni, DanniAuto::DANNI_MAX); ++k) {
+            const i32 sx = cx + SEGNI[k][0], sy = corpoY + SEGNI[k][1];
+            fb_.fillRect(sx, sy, sx + 2, sy + 1, 0xFF402020u);
+            fb_.put(sx + 1, sy, 0xFFE0D0C0u);
+        }
+    }
+}
+
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
                              bool frena, f32 fumoS, const DanniAuto* danni, i32 posa) {
     // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
@@ -526,7 +624,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     i32 cx = 160, cy = 200, w = 34, h = 18;
     const Sprite* s = giocatoreSprite(posa);
     if (s->width <= 0) s = giocatoreSprite(POSA_GIOCATORE_DRITTA);
-    if (s->width > 0) {
+    if (pezziAuto_[PEZZO_CARROZZERIA].width > 0) {
+        drawAutoAPezzi(speed, offsetX, rollAngle, sollevamentoPx, frena, danni, posa, cx, cy, w, h);
+    } else if (s->width > 0) {
         // Sprite vero (AUTO1 A4-A5, Claude 06/11): disegnato a grandezza piena
         // (64x32, scala 1, niente rimpicciolimento a 18 px); l'auto resta
         // centrata (cx=160), e' la strada che si muove sotto di lei. offsetX

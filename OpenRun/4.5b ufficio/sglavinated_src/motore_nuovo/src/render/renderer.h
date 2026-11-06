@@ -38,6 +38,21 @@ struct DanniAuto {
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
 // tutti 64x32 con la stessa sagoma e l'ancoraggio a terra.
+// Auto del giocatore A PEZZI (Andrea 06/11, scelta "pezzi sulla vecchia
+// struttura"): ogni rettangolo del vecchio modello e' un piccolo PNG in
+// sprite/giocatore/ (UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py),
+// posizionato, inclinato, sollevato e ruotato dal motore come prima.
+enum PezzoAuto : i32 {
+    PEZZO_CARROZZERIA = 0,
+    PEZZO_ABITACOLO,
+    PEZZO_ALETTONE,
+    PEZZO_RUOTA_1,
+    PEZZO_RUOTA_2,
+    PEZZO_RUOTA_3,
+    PEZZO_FANALE_ACCESO,
+    PEZZO_COUNT
+};
+
 // Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 
@@ -196,6 +211,11 @@ public:
         if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) posa = POSA_GIOCATORE_DRITTA;
         return &giocatoreSprites_[posa];
     }
+    // Pezzi dell'auto del giocatore (PezzoAuto); con la carrozzeria caricata
+    // drawPlayerCar usa i pezzi al posto dei fotogrammi interi.
+    void impostaPezzoAuto(i32 pezzo, Sprite sprite) {
+        if (pezzo >= 0 && pezzo < PEZZO_COUNT) pezziAuto_[pezzo] = std::move(sprite);
+    }
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
     }
@@ -259,6 +279,10 @@ private:
     void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
+    Sprite pezziAuto_[PEZZO_COUNT];           // auto a pezzi (Andrea 06/11)
+    f32 ruotaFase_ = 0.0f;                    // giro delle ruote (passo 0..2 del battistrada)
+    void drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 sollevamentoPx, bool frena,
+                        const DanniAuto* danni, i32 posa, i32& cx, i32& cy, i32& w, i32& h);
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune

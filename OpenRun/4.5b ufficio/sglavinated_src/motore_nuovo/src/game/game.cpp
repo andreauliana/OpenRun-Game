@@ -651,6 +651,13 @@ void Game::init(const std::string& livelloId) {
             std::string("motore_nuovo/dati/sprite_raw/giocatore/") + f.nome + ".sglraw"));
         ren_.impostaGiocatoreSprite(f.posa, std::move(s));
     }
+    // Auto a pezzi (Andrea 06/11): se c'e' la carrozzeria il Renderer usa i
+    // pezzi al posto dei fotogrammi interi (che restano come riserva).
+    static const char* const PEZZI_AUTO[PEZZO_COUNT] = {
+        "carrozzeria", "abitacolo", "alettone", "ruota_1", "ruota_2", "ruota_3", "fanale_acceso"};
+    for (i32 k = 0; k < PEZZO_COUNT; ++k)
+        ren_.impostaPezzoAuto(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/pezzi/") + PEZZI_AUTO[k] + ".sglraw")));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         // Compatibilita': raw storico con la sola auto dritta (auto_giocatore.sglraw).
         Sprite vecchio = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));

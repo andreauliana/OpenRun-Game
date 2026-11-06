@@ -12,6 +12,20 @@ Gli agenti non sovrascrivono mai un tuo PNG.
 
 ## 1. Auto del giocatore (da fare per prima, blocco AUTO1)
 
+**Decisione 06/11: l'auto e' fatta A PEZZI** (come il vecchio modello a rettangoli). I pezzi sono in `sprite/giocatore/`:
+
+| File | Misura | Cosa e' |
+|---|---|---|
+| `carrozzeria.png` | 52x15 | retro dell'auto senza tetto e senza ruote (fanali spenti, targa, paraurti) |
+| `abitacolo.png` | 30x7 | tetto e lunotto, sta dietro la carrozzeria |
+| `alettone.png` | 46x3 | alettone sopra il baule |
+| `ruota_1.png`, `ruota_2.png`, `ruota_3.png` | 7x12 | ruota posteriore, 3 passi del battistrada |
+| `fanale_acceso.png` | 9x2 | fanale stop acceso (frenata), usato a sinistra e a destra |
+
+Ridisegna uno di questi (stesso nome e misura), poi lancia
+`python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py"`: tiene i tuoi PNG e rifa' i raw.
+Il motore li muove, li inclina e li ruota. Le tabelle qui sotto (fotogrammi interi) sono superate e restano solo come riferimento.
+
 **Aggiornamento 06/11:** il grafico ha gia' fatto le 7 pose della carrozzeria in `sprite/auto_gt/`, con questi nomi:
 `auto_giocatore_dritta.png`, `auto_giocatore_sterzo_sx_leggero.png`, `auto_giocatore_sterzo_sx_forte.png`,
 `auto_giocatore_sterzo_dx_leggero.png`, `auto_giocatore_sterzo_dx_forte.png`, `auto_giocatore_salita.png`,
