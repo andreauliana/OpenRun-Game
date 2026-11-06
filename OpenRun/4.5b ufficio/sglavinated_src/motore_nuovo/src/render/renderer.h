@@ -42,6 +42,10 @@ struct DanniAuto {
 // struttura"): ogni rettangolo del vecchio modello e' un piccolo PNG in
 // sprite/giocatore/ (UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py),
 // posizionato, inclinato, sollevato e ruotato dal motore come prima.
+// Quanto si vede lo sterzo sull'auto a pezzi (Andrea 06/11: piu' marcato).
+constexpr f32 STERZO_IMBARDATA = 0.09f;         // radianti di inclinazione a sterzo pieno
+constexpr f32 STERZO_PARALLASSE_TETTO = 6.0f;   // px di scivolamento dell'abitacolo
+
 enum PezzoAuto : i32 {
     PEZZO_CARROZZERIA = 0,
     PEZZO_ABITACOLO,
@@ -50,6 +54,7 @@ enum PezzoAuto : i32 {
     PEZZO_RUOTA_2,
     PEZZO_RUOTA_3,
     PEZZO_FANALE_ACCESO,
+    PEZZO_FIANCO, // fianco visto di sbieco in curva (specchiato per l'altro lato)
     PEZZO_COUNT
 };
 

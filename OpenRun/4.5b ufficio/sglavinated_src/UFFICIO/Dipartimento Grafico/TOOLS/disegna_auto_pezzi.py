@@ -126,6 +126,30 @@ def ruota(passo):
     return im
 
 
+def fianco():
+    # Fianco destro dell'auto visto di sbieco (si vede in curva), 20x16: dal
+    # retro (colonna 0, alto come la carrozzeria) verso il muso (a destra), che
+    # si rimpicciolisce in prospettiva. Ruota anteriore in fondo, appoggiata a
+    # terra. Il motore lo specchia per il fianco sinistro e ne mostra solo una
+    # parte quando lo sterzo e' leggero.
+    w, h = 20, 16
+    im = nuova(w, h)
+    for x in range(w):
+        top = 1 + x // 4                               # il tetto/cofano scende verso il muso
+        bot = h - 2 - x // 7                           # la linea di terra sale in lontananza
+        rett(im, x, top, x, bot, ROSSO)
+        rett(im, x, bot - 1, x, bot, ROSSO_SC)         # ombra della fiancata
+        rett(im, x, top, x, top, ROSSO_CH if x % 5 else ROSSO_SC)
+        if 2 <= x < w - 7:
+            rett(im, x, top + 1, x, top + 2, VETRO)    # finestrino laterale
+        rett(im, x, bot + 1, x, bot + 1, NERO)         # sottoporta
+    rett(im, 0, 1, 0, h - 2, ROSSO_SC)                 # spigolo col retro
+    for x in range(w - 8, w - 2):                      # ruota anteriore, a terra
+        bot = h - 2 - x // 7
+        rett(im, x, bot - 3, x, bot + 1, GOMMA)
+    return im
+
+
 def fanale_acceso():
     w, h = 9, 2
     im = nuova(w, h)
@@ -153,3 +177,4 @@ salva("alettone", alettone())
 for p in range(3):
     salva(f"ruota_{p + 1}", ruota(p))
 salva("fanale_acceso", fanale_acceso())
+salva("fianco", fianco())

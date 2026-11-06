@@ -21,6 +21,7 @@ Gli agenti non sovrascrivono mai un tuo PNG.
 | `alettone.png` | 46x3 | alettone sopra il baule |
 | `ruota_1.png`, `ruota_2.png`, `ruota_3.png` | 7x12 | ruota posteriore, 3 passi del battistrada |
 | `fanale_acceso.png` | 9x2 | fanale stop acceso (frenata), usato a sinistra e a destra |
+| `fianco.png` | 20x16 | fianco destro visto di sbieco (retro a sinistra, muso a destra), si vede in curva; per la sinistra il gioco lo specchia |
 
 Ridisegna uno di questi (stesso nome e misura), poi lancia
 `python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py"`: tiene i tuoi PNG e rifa' i raw.

@@ -537,52 +537,69 @@ void Renderer::drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 solleva
     cx = 160 + (i32)(offsetX * 0.035f);
     const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
     cy = 200 - sollevamento;
-    // Ombra sempre a terra (anche quando l'auto si solleva).
-    fb_.fillRect(cx - w / 2 - 2, 199, cx + w / 2 + 1, 200, pal_[0]);
+    // Ombra a terra (anche quando l'auto si solleva); niente ombra durante
+    // l'incidente: una barra piatta sotto l'auto ruotata sembrava una riga.
     ruotaFase_ += speed * 0.0025f;
     if (ruotaFase_ > 3000.0f) ruotaFase_ -= 3000.0f;
     const i32 passo = (i32)ruotaFase_ % 3;
     const i32 rimbalzo = (speed > 150.0f && (((i32)(ruotaFase_ * 0.5f)) & 1)) ? -1 : 0;
-    const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
-    const bool ruotata = std::abs(rollAngle) >= 0.01f;
+    // Sterzo ben visibile (schizzo di Andrea 06/11): in curva l'auto si gira
+    // (il retro ruota di qualche grado), mostra il fianco esterno e l'abitacolo
+    // scivola verso la curva. Il ribaltamento si somma all'inclinazione.
+    const f32 angolo = rollAngle - STERZO_IMBARDATA * sterzo;
+    const bool incidente = std::abs(rollAngle) >= 0.01f;
+    const f32 co = std::cos(angolo), si = std::sin(angolo);
+    const bool ruotata = std::abs(angolo) >= 0.01f;
+    if (!incidente) fb_.fillRect(cx - w / 2 - 2, 199, cx + w / 2 + 1, 200, pal_[0]);
     const f32 perno = (f32)cy - 8.0f; // centro di rotazione dell'auto
     // Disegna un pezzo con l'angolo in alto a sinistra in (x0, y0) schermo,
     // ruotato attorno al perno (cx, perno) se l'auto e' ruotata.
-    auto pezzo = [&](const Sprite& p, i32 x0, i32 y0) {
+    auto pezzo = [&](const Sprite& p, i32 x0, i32 y0, bool specchia = false, i32 colonne = -1) {
         if (p.width <= 0) return;
+        const i32 pw = colonne < 0 ? p.width : std::min(colonne, p.width); // colonne visibili dal bordo del retro
         const bool propria = !p.palette.empty();
         const i32 nPal = (i32)p.palette.size();
         auto texel = [&](i32 tx, i32 ty) -> u32 {
+            if (specchia) tx = pw - 1 - tx;
             const u8 idx = p.pixels[ty * p.width + tx];
             if (propria) return p.palette[idx % nPal];
             return idx == 0 ? 0u : pal_[idx];
         };
         if (!ruotata) {
             for (i32 y = 0; y < p.height; ++y)
-                for (i32 x = 0; x < p.width; ++x) {
+                for (i32 x = 0; x < pw; ++x) {
                     const u32 col = texel(x, y);
                     if ((col >> 24) != 0) fb_.put(x0 + x, y0 + y, col);
                 }
             return;
         }
         // Rotazione attorno al perno con campionamento inverso sul riquadro ruotato.
-        const f32 qx = (f32)x0 + p.width * 0.5f - (f32)cx, qy = (f32)y0 + p.height * 0.5f - perno;
+        const f32 qx = (f32)x0 + pw * 0.5f - (f32)cx, qy = (f32)y0 + p.height * 0.5f - perno;
         const f32 rx = co * qx - si * qy + (f32)cx, ry = si * qx + co * qy + perno; // centro ruotato
-        const i32 r = (i32)(0.5f * std::sqrt((f32)(p.width * p.width + p.height * p.height))) + 1;
+        const i32 r = (i32)(0.5f * std::sqrt((f32)(pw * pw + p.height * p.height))) + 1;
         for (i32 y = (i32)ry - r; y <= (i32)ry + r; ++y)
             for (i32 x = (i32)rx - r; x <= (i32)rx + r; ++x) {
                 const f32 dx = (f32)x - rx, dy = (f32)y - ry;
-                const f32 lx = co * dx + si * dy + p.width * 0.5f;
+                const f32 lx = co * dx + si * dy + pw * 0.5f;
                 const f32 ly = -si * dx + co * dy + p.height * 0.5f;
-                if (lx < 0.0f || ly < 0.0f || lx >= (f32)p.width || ly >= (f32)p.height) continue;
+                if (lx < 0.0f || ly < 0.0f || lx >= (f32)pw || ly >= (f32)p.height) continue;
                 const u32 col = texel((i32)lx, (i32)ly);
                 if ((col >> 24) != 0) fb_.put(x, y, col);
             }
     };
     const Sprite& ruota = pezziAuto_[PEZZO_RUOTA_1 + passo].width > 0 ? pezziAuto_[PEZZO_RUOTA_1 + passo]
                                                                        : pezziAuto_[PEZZO_RUOTA_1];
-    const i32 corpoX = cx - w / 2 + (i32)std::lround(1.0f * sterzo);
+    const i32 corpoX = cx - w / 2 + (i32)std::lround(2.0f * sterzo);
     const i32 corpoY = cy - 1 - corpo.height + rimbalzo;
+    // Fianco esterno alla curva (sterzo a sinistra: si vede il fianco destro
+    // che corre verso il muso, a sinistra e un po' piu' in alto del retro).
+    const Sprite& fianco = pezziAuto_[PEZZO_FIANCO];
+    if (fianco.width > 0 && std::abs(sterzo) > 0.01f) {
+        const i32 vis = (i32)std::lround(std::abs(sterzo) * (f32)fianco.width);
+        const i32 fy = corpoY + corpo.height - fianco.height;
+        if (sterzo < 0.0f) pezzo(fianco, corpoX - vis + 3, fy, true, vis);   // muso a sinistra
+        else pezzo(fianco, corpoX + w - 3, fy, false, vis);                   // muso a destra
+    }
     // Ruote ai lati, appena fuori dalla scocca, appoggiate a terra.
     if (ruota.width > 0) {
         pezzo(ruota, cx - w / 2 - ruota.width / 2 - 1, cy - ruota.height);
@@ -591,7 +608,7 @@ void Renderer::drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 solleva
     // Abitacolo dietro la carrozzeria: parallasse piu' forte e pendenza.
     const Sprite& tetto = pezziAuto_[PEZZO_ABITACOLO];
     if (tetto.width > 0)
-        pezzo(tetto, cx - tetto.width / 2 + (i32)std::lround(3.0f * sterzo),
+        pezzo(tetto, cx - tetto.width / 2 + (i32)std::lround(STERZO_PARALLASSE_TETTO * sterzo),
               corpoY - tetto.height + 1 + pendenza);
     pezzo(corpo, corpoX, corpoY);
     const Sprite& ala = pezziAuto_[PEZZO_ALETTONE];

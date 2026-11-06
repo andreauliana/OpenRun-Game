@@ -654,7 +654,7 @@ void Game::init(const std::string& livelloId) {
     // Auto a pezzi (Andrea 06/11): se c'e' la carrozzeria il Renderer usa i
     // pezzi al posto dei fotogrammi interi (che restano come riserva).
     static const char* const PEZZI_AUTO[PEZZO_COUNT] = {
-        "carrozzeria", "abitacolo", "alettone", "ruota_1", "ruota_2", "ruota_3", "fanale_acceso"};
+        "carrozzeria", "abitacolo", "alettone", "ruota_1", "ruota_2", "ruota_3", "fanale_acceso", "fianco"};
     for (i32 k = 0; k < PEZZO_COUNT; ++k)
         ren_.impostaPezzoAuto(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pezzi/") + PEZZI_AUTO[k] + ".sglraw")));
