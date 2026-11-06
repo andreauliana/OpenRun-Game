@@ -1,1 +1,1 @@
-06/11/2026 07:23 developer: RIV punto 1 percorso deterministico per ramo: ogni rivale usa RNG seed per index, scelte bivio differenti ma coerenti, gate percorso 6/6 OK
+06/11/2026 07:51 developer: aggiunto campo 'larghezza':1.0 a rettilineo_corto in tratti.json, gate T1 6/6 OK exit 0

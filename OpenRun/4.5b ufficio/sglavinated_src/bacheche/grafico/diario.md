@@ -1,2 +1,1 @@
-[06/11 07:09] Turno @grafico: G-P1 completato (parapetto 32x48 + guardrail 48x32 generati, catalogo aggiornato con 2 voci pronto).
-[06/11 07:37] Turno @grafico: generati parapetto.png e guardrail.png, catalogo voce pronto aggiunta, raw pending.
+[06/11 08:03] Turno @grafico: G-P1 completato (parapetto 32x48 + guardrail 48x32 generati, catalogo con voci pronto + raw OK). Verificato catalocco check_catalogo_grafico.py exit 0, "PNG non catalogati: 0". UI variante B asset confermati (font, titolo, menu, HUD preview rigenerati 6/11).
