@@ -532,8 +532,8 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         // centrata (cx=160), e' la strada che si muove sotto di lei. offsetX
         // accenna lo sterzo, sollevamentoPx la solleva alle alte velocita' e
         // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
-        // centro, come faceva la sagoma a rettangoli. Il lampo dell'urto
-        // schiarisce i pixel dell'auto invece di coprirla con un riquadro.
+        // centro, come faceva la sagoma a rettangoli. Nessun lampo sull'urto
+        // (Andrea 06/11: non realistico).
         const f32 scala = AUTO_GIOCATORE_SCALA;
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
@@ -548,17 +548,13 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             if (palettePropria) return s->palette[idx % nPal];
             return idx == 0 ? 0u : pal_[idx];
         };
-        auto schiarisci = [](u32 col) -> u32 {
-            const u32 r = ((col >> 16) & 0xFF), g = ((col >> 8) & 0xFF), b = (col & 0xFF);
-            return 0xFF000000u | ((r + (255 - r) * 3 / 4) << 16) | ((g + (255 - g) * 3 / 4) << 8) | (b + (255 - b) * 3 / 4);
-        };
         if (std::abs(rollAngle) < 0.01f) {
             const i32 x0 = cx - w / 2, y0 = cy - h;
             for (i32 y = 0; y < h; ++y)
                 for (i32 x = 0; x < w; ++x) {
                     u32 col = texel((i32)(x / scala), (i32)(y / scala));
                     if ((col >> 24) == 0) continue;
-                    fb_.put(x0 + x, y0 + y, lampo ? schiarisci(col) : col);
+                    fb_.put(x0 + x, y0 + y, col);
                 }
         } else {
             // Rotazione con campionamento inverso: per ogni pixel dello schermo
@@ -574,11 +570,11 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     if (lx < 0.0f || ly < 0.0f || lx >= (f32)w || ly >= (f32)h) continue;
                     u32 col = texel((i32)(lx / scala), (i32)(ly / scala));
                     if ((col >> 24) == 0) continue;
-                    fb_.put(x, y, lampo ? schiarisci(col) : col);
+                    fb_.put(x, y, col);
                 }
         }
         if (lampo || std::abs(rollAngle) >= 0.01f) {
-            // Lampo o auto ruotata: niente luci sopra (non seguirebbero la rotazione).
+            // Subito dopo l'urto o auto ruotata: niente luci sopra (non seguirebbero la rotazione).
         } else if (frena) {
             // Stop accesi ai due lati del retro.
             fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 7, cy - h / 2 + 4, 0xFFFF2020u);
@@ -591,7 +587,7 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     } else {
         // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
         u32 body = offroad ? pal_[12] : pal_[9];
-        if (lampo) body = 0xFFFFFFFFu;
+        // Nessun lampo bianco sull'urto (Andrea 06/11).
         u32 cabin = pal_[10];
         // La carrozzeria segue visibilmente la linea scelta, restando nel framebuffer.
         cx = 160 + (i32)(offsetX * 0.035f);
