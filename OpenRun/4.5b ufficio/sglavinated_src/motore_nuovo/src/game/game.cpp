@@ -2170,15 +2170,26 @@ void Game::ribalta() {
 void Game::calcolaClassifica() {
     // Tempo di ognuno sul traguardo. Il giocatore ha il suo cronometro; ogni
     // rivale registra il proprio tempo quando arriva alla fine del suo percorso
-    // (RIV punto 1). Chi non arriva entro il tempo limite esce dalla classifica:
-    // nessun tempo stimato per chi e' ancora in corsa.
+    // (RIV punto 1). Chi e' ancora in corsa quando il giocatore arriva entra
+    // in classifica con il tempo stimato (Andrea 06/11: prima si vedevano solo
+    // quelli davanti): strada che gli manca diviso la sua media fin qui.
     const f32 tempo = tempoTotaleS();
     classifica_.clear();
     classifica_.push_back({"YOU", tempo, true});
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
-        if (r.tempoArrivoS < 0.0f) continue; // non arrivato entro il tempo limite: escluso
-        classifica_.push_back({NOMI_RIVALI[i], r.tempoArrivoS, false});
+        f32 tempoR = r.tempoArrivoS;
+        if (tempoR < 0.0f) {
+            f32 manca = -r.progressoTappa;
+            for (i32 k = std::max(0, r.passoPercorso); k < r.nPercorso; ++k) {
+                const i32 idx = r.percorso[k];
+                if (idx >= 0 && idx < (i32)lunghezzeTappe_.size()) manca += lunghezzeTappe_[(size_t)idx];
+            }
+            const f32 media = tempo > 0.0f ? r.progresso / tempo : 0.0f;
+            const f32 passo = media > 1.0f ? media : std::max(r.passoMax, 1.0f);
+            tempoR = tempo + std::max(manca, 0.0f) / passo;
+        }
+        classifica_.push_back({NOMI_RIVALI[i], tempoR, false});
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });
