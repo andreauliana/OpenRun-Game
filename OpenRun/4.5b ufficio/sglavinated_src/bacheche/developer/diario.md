@@ -1,1 +1,1 @@
-06/11/2026 08:43 developer: fix double integration colline in road.cpp, gate smoke OK lv_01-03 exit 0
+06/11/2026 08:59 developer: AUTO1 A5 renderer.cpp scale 1.0 for player car sprite, gate_t1.sh smoke exit 0

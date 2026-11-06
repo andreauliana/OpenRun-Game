@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06 04:28",
- "n_file": 345,
+ "generato": "2026-11-06 09:16",
+ "n_file": 347,
  "lacune": [
   {
    "serve": "auto giocatore",
@@ -74,11 +74,11 @@
    "percorso": "assets_originali/CATALOGO_GRAFICO.json",
    "categoria": "(radice)",
    "tipo": "json",
-   "byte": 90452,
+   "byte": 91516,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1793935550,
+   "mtime": 1793951381,
    "flag": []
   },
   {
@@ -365,7 +365,7 @@
    "w": 48,
    "h": 32,
    "sha1": "cb7582c9d08c94cdfc723bad3adbc3a00142315d",
-   "mtime": 1793907642,
+   "mtime": 1793947102,
    "flag": []
   },
   {
@@ -379,7 +379,7 @@
    "w": 32,
    "h": 48,
    "sha1": "d0bcf1812d4cc7e30e6287e41b6f5464758ade8d",
-   "mtime": 1793907642,
+   "mtime": 1793947102,
    "flag": []
   },
   {
@@ -4933,6 +4933,36 @@
    "flag": []
   },
   {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_dritta.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 1235,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "616b1d3389ea29b9ee94533043aa90e93215570c",
+   "mtime": 1793950898,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_stop.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 164,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "e72998ace7159b595e967a96ab2a81b6151a36d9",
+   "mtime": 1793951381,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
    "percorso": "assets_originali/sprite/pubblico/pubblico_a_giu.png",
    "categoria": "sprite",
    "tipo": "png",
@@ -5342,7 +5372,7 @@
    "w": 60,
    "h": 56,
    "sha1": "41c3aeb774de92982525526fdcbd9ad0e1a92ee4",
-   "mtime": 1793608846,
+   "mtime": 1793951670,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -5412,7 +5442,7 @@
    "w": 320,
    "h": 224,
    "sha1": "c3505bb943b28d761706d07791b16209ee3fa571",
-   "mtime": 1793608846,
+   "mtime": 1793951670,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -5483,7 +5513,7 @@
    "w": 320,
    "h": 224,
    "sha1": "e22bd5e84afbc914857bdf375c97bedf67e1f817",
-   "mtime": 1793608846,
+   "mtime": 1793951670,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -5525,7 +5555,7 @@
    "stato": "generato",
    "originale": true,
    "variante": "B",
-   "mtime": 1793608846,
+   "mtime": 1793951670,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   },
@@ -5541,7 +5571,7 @@
    "w": 299,
    "h": 42,
    "sha1": "b1f216f52ebfc9f8f6eb5fa7e42e13424b18de8f",
-   "mtime": 1793608846,
+   "mtime": 1793951670,
    "scelta": "D7: UI variante B (Lofi Jungle, bianco e nero)",
    "flag": []
   }

@@ -1,6 +1,6 @@
-Turno 1 @developer — blocco P1 punto 2 (colline)
-Passo: fix double integration colline in road.cpp - collina quota assoluta per segmento invece che cumulativa
-File cambiati: motore_nuovo/src/road/road.cpp
-Comando: cmake --build UFFICIO/Officina/build --target prova_gate
+Turno 1 @developer — blocco AUTO1 punto A5
+Passo: renderer.cpp scala player car sprite a 1.0 (full 64x32, no scaling down a 18px), uso AUTO_GIOCATORE_SCALA=1.0f
+File cambiati: motore_nuovo/src/render/renderer.cpp
+Comando: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/lv_01_neon" lv_01_neon smoke
 Exit code: 0
-Esito: gate smoke OK lv_01_neon, lv_02_atomico, lv_03_foglie (GATE PERCORSO OK). Le prime 3 porte passano con collina assolta, ms/frame ~1.0 max 4.4 (soglia 20). Timeout soak test.
+Esito: gate_t1.sh smoke GATE T1: TUTTO OK, tutte e 6 le piste OK (smoke, percorso, accelerazione, ribaltamento, sterzo, curve, gara, screenshot P1). Replay IDENTICO.
