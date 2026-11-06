@@ -1,6 +1,1 @@
-Turno 1 | 06/11/2026 08:56
-Blocco: PIST1 [x] - completato
-Passo: gate non eseguito (blocco PIST1 gia' [x], non richiesto)
-Comando: none
-Exit code: N/A
-File modificati: diario.md, RIASSUNTO.md, ULTIMO_TURNO.md questo turno
+Turno 1 @developer-junior ore 09:21: gate T1 eseguito GATE T1: TUTTO OK. Tutti e 6 i livelli passano con replay IDENTICO, ms/frame <= 20. Exit code 0. Lavorato su blocco AUTO1 gate J-A1 (raccolta screenshot pose auto player). Diario e RIASSUNTO aggiornati.

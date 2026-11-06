@@ -1,1 +1,1 @@
-[06/11 08:56] Turno developer-junior | PIST1 [x] | gate non eseguito | checkpoint @capo PIST1 registrato | stop
+[06/11 09:21] Turno developer-junior | gate T1 eseguito: GATE T1: TUTTO OK, tutti 6 livelli passano con replay IDENTICO, ms/frame <= 20 | checkpoint @capo PIST1 registrato | lavoro AUTO1 gate J-A1: tentato capture screenshot pose auto con prova_gate screenshot (exit 0), screenshots P1 generati in auto1/ (da specificare poses dritto/sx2/dx2/ribaltamento successivamente)
