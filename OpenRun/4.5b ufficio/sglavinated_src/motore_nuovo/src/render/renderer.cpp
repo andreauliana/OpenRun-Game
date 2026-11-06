@@ -515,119 +515,28 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
 }
 
-void Renderer::drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 sollevamentoPx, bool frena,
-                              const DanniAuto* danni, i32 posa, i32& cx, i32& cy, i32& w, i32& h) {
-    // Auto a pezzi (Andrea 06/11): la struttura del vecchio modello a
-    // rettangoli (carrozzeria, abitacolo, ruote, alettone, fanali), ma ogni
-    // pezzo e' un piccolo PNG. Finto 3D con la parallasse: sterzando
-    // l'abitacolo (piu' avanti nell'auto) scivola verso la curva piu' della
-    // carrozzeria; in salita/discesa l'abitacolo scende/sale di 1 px. Le ruote
-    // girano col battistrada (3 passi) e restano a terra, mentre la scocca
-    // rimbalza di 1 px sulle sospensioni ad alta velocita'. rollAngle
-    // (ribaltamento, scodata) ruota tutta l'auto attorno al suo centro.
-    f32 sterzo = 0.0f;
-    if (posa == POSA_GIOCATORE_STERZO_SX_FORTE) sterzo = -1.0f;
-    else if (posa == POSA_GIOCATORE_STERZO_SX_LEGGERO) sterzo = -0.5f;
-    else if (posa == POSA_GIOCATORE_STERZO_DX_LEGGERO) sterzo = 0.5f;
-    else if (posa == POSA_GIOCATORE_STERZO_DX_FORTE) sterzo = 1.0f;
-    const i32 pendenza = posa == POSA_GIOCATORE_SALITA ? 1 : (posa == POSA_GIOCATORE_DISCESA ? -1 : 0);
-    const Sprite& corpo = pezziAuto_[PEZZO_CARROZZERIA];
-    w = corpo.width;
-    h = corpo.height + 8;
-    cx = 160 + (i32)(offsetX * 0.035f);
-    const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
-    cy = 200 - sollevamento;
-    // Ombra a terra (anche quando l'auto si solleva); niente ombra durante
-    // l'incidente: una barra piatta sotto l'auto ruotata sembrava una riga.
-    ruotaFase_ += speed * 0.0025f;
-    if (ruotaFase_ > 3000.0f) ruotaFase_ -= 3000.0f;
-    const i32 passo = (i32)ruotaFase_ % 3;
-    const i32 rimbalzo = (speed > 150.0f && (((i32)(ruotaFase_ * 0.5f)) & 1)) ? -1 : 0;
-    // Sterzo ben visibile (schizzo di Andrea 06/11): in curva l'auto si gira
-    // (il retro ruota di qualche grado), mostra il fianco esterno e l'abitacolo
-    // scivola verso la curva. Il ribaltamento si somma all'inclinazione.
-    const f32 angolo = rollAngle - STERZO_IMBARDATA * sterzo;
-    const bool incidente = std::abs(rollAngle) >= 0.01f;
-    const f32 co = std::cos(angolo), si = std::sin(angolo);
-    const bool ruotata = std::abs(angolo) >= 0.01f;
-    if (!incidente) fb_.fillRect(cx - w / 2 - 2, 199, cx + w / 2 + 1, 200, pal_[0]);
-    const f32 perno = (f32)cy - 8.0f; // centro di rotazione dell'auto
-    // Disegna un pezzo con l'angolo in alto a sinistra in (x0, y0) schermo,
-    // ruotato attorno al perno (cx, perno) se l'auto e' ruotata.
-    auto pezzo = [&](const Sprite& p, i32 x0, i32 y0, bool specchia = false, i32 colonne = -1) {
-        if (p.width <= 0) return;
-        const i32 pw = colonne < 0 ? p.width : std::min(colonne, p.width); // colonne visibili dal bordo del retro
-        const bool propria = !p.palette.empty();
-        const i32 nPal = (i32)p.palette.size();
-        auto texel = [&](i32 tx, i32 ty) -> u32 {
-            if (specchia) tx = pw - 1 - tx;
-            const u8 idx = p.pixels[ty * p.width + tx];
-            if (propria) return p.palette[idx % nPal];
-            return idx == 0 ? 0u : pal_[idx];
-        };
-        if (!ruotata) {
-            for (i32 y = 0; y < p.height; ++y)
-                for (i32 x = 0; x < pw; ++x) {
-                    const u32 col = texel(x, y);
-                    if ((col >> 24) != 0) fb_.put(x0 + x, y0 + y, col);
-                }
-            return;
+const Sprite* Renderer::risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const {
+    specchia = false;
+    sterzoResiduo = 0.0f;
+    auto c = [this](i32 p) { return giocatoreSprites_[p].width > 0 ? &giocatoreSprites_[p] : nullptr; };
+    const bool sx = posa >= POSA_GIOCATORE_SX_1 && posa <= POSA_GIOCATORE_SX_4;
+    const bool dx = posa >= POSA_GIOCATORE_DX_1 && posa <= POSA_GIOCATORE_DX_4;
+    if (sx || dx) {
+        const i32 livello = sx ? posa - POSA_GIOCATORE_SX_1 + 1 : posa - POSA_GIOCATORE_DX_1 + 1; // 1..4
+        const i32 base = sx ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1;
+        const i32 altro = sx ? POSA_GIOCATORE_DX_1 : POSA_GIOCATORE_SX_1;
+        const f32 segno = sx ? -1.0f : 1.0f;
+        for (i32 k = livello; k >= 1; --k) {
+            const Sprite* p = c(base + k - 1);
+            bool sp = false;
+            if (!p && (p = c(altro + k - 1))) sp = true;
+            if (p) { specchia = sp; sterzoResiduo = segno * (f32)(livello - k) / 4.0f; return p; }
         }
-        // Rotazione attorno al perno con campionamento inverso sul riquadro ruotato.
-        const f32 qx = (f32)x0 + pw * 0.5f - (f32)cx, qy = (f32)y0 + p.height * 0.5f - perno;
-        const f32 rx = co * qx - si * qy + (f32)cx, ry = si * qx + co * qy + perno; // centro ruotato
-        const i32 r = (i32)(0.5f * std::sqrt((f32)(pw * pw + p.height * p.height))) + 1;
-        for (i32 y = (i32)ry - r; y <= (i32)ry + r; ++y)
-            for (i32 x = (i32)rx - r; x <= (i32)rx + r; ++x) {
-                const f32 dx = (f32)x - rx, dy = (f32)y - ry;
-                const f32 lx = co * dx + si * dy + pw * 0.5f;
-                const f32 ly = -si * dx + co * dy + p.height * 0.5f;
-                if (lx < 0.0f || ly < 0.0f || lx >= (f32)pw || ly >= (f32)p.height) continue;
-                const u32 col = texel((i32)lx, (i32)ly);
-                if ((col >> 24) != 0) fb_.put(x, y, col);
-            }
-    };
-    const Sprite& ruota = pezziAuto_[PEZZO_RUOTA_1 + passo].width > 0 ? pezziAuto_[PEZZO_RUOTA_1 + passo]
-                                                                       : pezziAuto_[PEZZO_RUOTA_1];
-    const i32 corpoX = cx - w / 2 + (i32)std::lround(2.0f * sterzo);
-    const i32 corpoY = cy - 1 - corpo.height + rimbalzo;
-    // Fianco esterno alla curva (sterzo a sinistra: si vede il fianco destro
-    // che corre verso il muso, a sinistra e un po' piu' in alto del retro).
-    const Sprite& fianco = pezziAuto_[PEZZO_FIANCO];
-    if (fianco.width > 0 && std::abs(sterzo) > 0.01f) {
-        const i32 vis = (i32)std::lround(std::abs(sterzo) * (f32)fianco.width);
-        const i32 fy = corpoY + corpo.height - fianco.height;
-        if (sterzo < 0.0f) pezzo(fianco, corpoX - vis + 3, fy, true, vis);   // muso a sinistra
-        else pezzo(fianco, corpoX + w - 3, fy, false, vis);                   // muso a destra
+        sterzoResiduo = segno * (f32)livello / 4.0f;
+    } else if (const Sprite* p = c(posa)) {
+        return p;
     }
-    // Ruote ai lati, appena fuori dalla scocca, appoggiate a terra.
-    if (ruota.width > 0) {
-        pezzo(ruota, cx - w / 2 - ruota.width / 2 - 1, cy - ruota.height);
-        pezzo(ruota, cx + w / 2 - ruota.width / 2 + 1, cy - ruota.height);
-    }
-    // Abitacolo dietro la carrozzeria: parallasse piu' forte e pendenza.
-    const Sprite& tetto = pezziAuto_[PEZZO_ABITACOLO];
-    if (tetto.width > 0)
-        pezzo(tetto, cx - tetto.width / 2 + (i32)std::lround(STERZO_PARALLASSE_TETTO * sterzo),
-              corpoY - tetto.height + 1 + pendenza);
-    pezzo(corpo, corpoX, corpoY);
-    const Sprite& ala = pezziAuto_[PEZZO_ALETTONE];
-    if (ala.width > 0) pezzo(ala, cx - ala.width / 2, corpoY + 1);
-    if (frena && pezziAuto_[PEZZO_FANALE_ACCESO].width > 0) {
-        const Sprite& f = pezziAuto_[PEZZO_FANALE_ACCESO];
-        pezzo(f, corpoX + 4, corpoY + 5);
-        pezzo(f, corpoX + w - 13, corpoY + 5);
-    }
-    if (danni && danni->segni > 0 && !ruotata) {
-        // Ammaccature (una per botta, restano tutta la gara), sulla scocca.
-        static constexpr i32 SEGNI[DanniAuto::DANNI_MAX][2] = {
-            {-18, 4}, {16, 2}, {-8, 9}, {9, 8}, {-21, 7}, {20, 9}, {-2, 3}, {4, 10}};
-        for (i32 k = 0; k < std::min(danni->segni, DanniAuto::DANNI_MAX); ++k) {
-            const i32 sx = cx + SEGNI[k][0], sy = corpoY + SEGNI[k][1];
-            fb_.fillRect(sx, sy, sx + 2, sy + 1, 0xFF402020u);
-            fb_.put(sx + 1, sy, 0xFFE0D0C0u);
-        }
-    }
+    return &giocatoreSprites_[POSA_GIOCATORE_DRITTA];
 }
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
@@ -639,11 +548,10 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     // Nessun materiale Sega.
     const bool lampo = danni && danni->dallUrtoS >= 0.0f && danni->dallUrtoS < 0.1f;
     i32 cx = 160, cy = 200, w = 34, h = 18;
-    const Sprite* s = giocatoreSprite(posa);
-    if (s->width <= 0) s = giocatoreSprite(POSA_GIOCATORE_DRITTA);
-    if (pezziAuto_[PEZZO_CARROZZERIA].width > 0) {
-        drawAutoAPezzi(speed, offsetX, rollAngle, sollevamentoPx, frena, danni, posa, cx, cy, w, h);
-    } else if (s->width > 0) {
+    bool specchia = false;
+    f32 sterzoResiduo = 0.0f;
+    const Sprite* s = risolviPosa(posa, specchia, sterzoResiduo);
+    if (s->width > 0) {
         // Sprite vero (AUTO1 A4-A5, Claude 06/11): disegnato a grandezza piena
         // (64x32, scala 1, niente rimpicciolimento a 18 px); l'auto resta
         // centrata (cx=160), e' la strada che si muove sotto di lei. offsetX
@@ -651,16 +559,21 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
         // centro, come faceva la sagoma a rettangoli. Nessun lampo sull'urto
         // (Andrea 06/11: non realistico).
-        const f32 scala = AUTO_GIOCATORE_SCALA;
+        // Scala intera (pixel netti) per arrivare a circa AUTO_GIOCATORE_LARGHEZZA px:
+        // la posa di Andrea (25 px) e' disegnata x4, i fotogrammi da 64 px x1.
+        const f32 scala = (f32)std::max(1, (i32)std::lround((f32)AUTO_GIOCATORE_LARGHEZZA / (f32)s->width));
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
-        cy = 200 - sollevamento;
-        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, 199, cx + w / 2 - 4, 201, pal_[0]); // ombra a terra
+        cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
+        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
         const bool palettePropria = !s->palette.empty();
         const i32 nPal = (i32)s->palette.size();
+        // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
+        rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         auto texel = [&](i32 tx, i32 ty) -> u32 {
+            if (specchia) tx = s->width - 1 - tx;
             const u8 idx = s->pixels[ty * s->width + tx];
             if (palettePropria) return s->palette[idx % nPal];
             return idx == 0 ? 0u : pal_[idx];
@@ -690,17 +603,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     fb_.put(x, y, col);
                 }
         }
-        if (lampo || std::abs(rollAngle) >= 0.01f) {
-            // Subito dopo l'urto o auto ruotata: niente luci sopra (non seguirebbero la rotazione).
-        } else if (frena) {
-            // Stop accesi ai due lati del retro.
-            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 7, cy - h / 2 + 4, 0xFFFF2020u);
-            fb_.fillRect(cx + w / 2 - 7, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 4, 0xFFFF2020u);
-        } else if (speed > 0.0f && !offroad) {
-            // Retromarcia accesa in marcia (piccoli quadratini).
-            fb_.fillRect(cx - w / 2 + 4, cy - h / 2 + 2, cx - w / 2 + 6, cy - h / 2 + 3, 0xFFFFF4B0u);
-            fb_.fillRect(cx + w / 2 - 6, cy - h / 2 + 2, cx + w / 2 - 4, cy - h / 2 + 3, 0xFFFFF4B0u);
-        }
+        // Niente luci disegnate dal motore sopra la posa: fanali e stop sono
+        // nel disegno (Andrea 06/11). Lo stop acceso arrivera' come pezzo.
+        (void)frena;
     } else {
         // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
         u32 body = offroad ? pal_[12] : pal_[9];

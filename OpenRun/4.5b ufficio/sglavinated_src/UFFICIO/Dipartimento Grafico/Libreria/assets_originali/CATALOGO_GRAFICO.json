@@ -2134,68 +2134,12 @@
          "nota": "RIV punto 3: auto giocatore in discesa (schiacciata del 10% in verticale, ancorata a terra), 64x32. Originale, TOOLS/disegna_auto_giocatore.py, nessun materiale Sega."
       },
       {
-         "id": "auto.giocatore.pezzo.carrozzeria",
+         "id": "auto.giocatore.posa.dritta",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/carrozzeria.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/carrozzeria.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.abitacolo",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/abitacolo.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/abitacolo.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.alettone",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/alettone.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/alettone.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.ruota_1",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/ruota_1.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_1.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.ruota_2",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/ruota_2.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_2.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.ruota_3",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/ruota_3.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/ruota_3.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.fanale_acceso",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/fanale_acceso.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/fanale_acceso.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): pezzo dell'auto del giocatore a pezzi, TOOLS/disegna_auto_pezzi.py. Originale, disegnato da zero, nessun materiale Sega. CC0-1.0."
-      },
-      {
-         "id": "auto.giocatore.pezzo.fianco",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/giocatore/fianco.png",
-         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pezzi/fianco.sglraw",
-         "nota": "AUTO1 (Andrea 06/11): fianco visto di sbieco in curva, specchiato per l'altro lato. TOOLS/disegna_auto_pezzi.py. Originale, nessun materiale Sega. CC0-1.0."
+         "stato": "approvato",
+         "file": "assets_originali/sprite/giocatore_pose/auto_dritta.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw",
+         "nota": "Disegnata da Andrea (06/11): posa dritta dell'auto del giocatore, tre quarti dall'alto. Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
       }
    ]
 }

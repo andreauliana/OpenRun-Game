@@ -38,38 +38,32 @@ struct DanniAuto {
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
 // tutti 64x32 con la stessa sagoma e l'ancoraggio a terra.
-// Auto del giocatore A PEZZI (Andrea 06/11, scelta "pezzi sulla vecchia
-// struttura"): ogni rettangolo del vecchio modello e' un piccolo PNG in
-// sprite/giocatore/ (UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py),
-// posizionato, inclinato, sollevato e ruotato dal motore come prima.
-// Quanto si vede lo sterzo sull'auto a pezzi (Andrea 06/11: piu' marcato).
-constexpr f32 STERZO_IMBARDATA = 0.09f;         // radianti di inclinazione a sterzo pieno
-constexpr f32 STERZO_PARALLASSE_TETTO = 6.0f;   // px di scivolamento dell'abitacolo
-
-enum PezzoAuto : i32 {
-    PEZZO_CARROZZERIA = 0,
-    PEZZO_ABITACOLO,
-    PEZZO_ALETTONE,
-    PEZZO_RUOTA_1,
-    PEZZO_RUOTA_2,
-    PEZZO_RUOTA_3,
-    PEZZO_FANALE_ACCESO,
-    PEZZO_FIANCO, // fianco visto di sbieco in curva (specchiato per l'altro lato)
-    PEZZO_COUNT
-};
+// Andrea 06/11: le pose sono quelle disegnate da lui (sprite/giocatore_pose/,
+// TOOLS/converti_pose_auto.py); i fotogrammi degli agenti restano come riserva.
+// Inclinazione in curva quando manca la posa di sterzo (radianti a sterzo pieno).
+constexpr f32 STERZO_IMBARDATA = 0.09f;
 
 // Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
+// Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 218; // riga dello schermo dove appoggiano le ruote (224 = fondo)
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 96; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
 
 enum PosaGiocatore : i32 {
+    // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena
+    // girata, 4 = sterzo pieno) + salita/discesa. Le pose destre, se mancano,
+    // sono lo specchio delle sinistre.
     POSA_GIOCATORE_DRITTA = 0,
-    POSA_GIOCATORE_STERZO_SX_LEGGERO,
-    POSA_GIOCATORE_STERZO_SX_FORTE,
-    POSA_GIOCATORE_STERZO_DX_LEGGERO,
-    POSA_GIOCATORE_STERZO_DX_FORTE,
+    POSA_GIOCATORE_SX_1, POSA_GIOCATORE_SX_2, POSA_GIOCATORE_SX_3, POSA_GIOCATORE_SX_4,
+    POSA_GIOCATORE_DX_1, POSA_GIOCATORE_DX_2, POSA_GIOCATORE_DX_3, POSA_GIOCATORE_DX_4,
     POSA_GIOCATORE_SALITA,
     POSA_GIOCATORE_DISCESA,
-    POSA_GIOCATORE_COUNT
+    POSA_GIOCATORE_COUNT,
+    // Nomi delle pose del 05-06/11 (agenti), tenuti come alias.
+    POSA_GIOCATORE_STERZO_SX_LEGGERO = POSA_GIOCATORE_SX_2,
+    POSA_GIOCATORE_STERZO_SX_FORTE = POSA_GIOCATORE_SX_4,
+    POSA_GIOCATORE_STERZO_DX_LEGGERO = POSA_GIOCATORE_DX_2,
+    POSA_GIOCATORE_STERZO_DX_FORTE = POSA_GIOCATORE_DX_4,
 };
 
 // Colori di ambiente della tappa (da livello.json "colori"); i default sono
@@ -216,11 +210,11 @@ public:
         if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) posa = POSA_GIOCATORE_DRITTA;
         return &giocatoreSprites_[posa];
     }
-    // Pezzi dell'auto del giocatore (PezzoAuto); con la carrozzeria caricata
-    // drawPlayerCar usa i pezzi al posto dei fotogrammi interi.
-    void impostaPezzoAuto(i32 pezzo, Sprite sprite) {
-        if (pezzo >= 0 && pezzo < PEZZO_COUNT) pezziAuto_[pezzo] = std::move(sprite);
-    }
+    // Fotogramma da disegnare per una posa: se manca usa la posa piu' vicina
+    // dello stesso lato, poi lo specchio dell'altro lato, poi la dritta.
+    // `specchia` = disegnare a specchio; `sterzoResiduo` (-1..1) = sterzo che il
+    // fotogramma scelto non mostra (lo rende l'inclinazione del motore).
+    const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
     }
@@ -284,10 +278,6 @@ private:
     void drawSegnalino(const Segnalino& e);
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
-    Sprite pezziAuto_[PEZZO_COUNT];           // auto a pezzi (Andrea 06/11)
-    f32 ruotaFase_ = 0.0f;                    // giro delle ruote (passo 0..2 del battistrada)
-    void drawAutoAPezzi(f32 speed, f32 offsetX, f32 rollAngle, f32 sollevamentoPx, bool frena,
-                        const DanniAuto* danni, i32 posa, i32& cx, i32& cy, i32& w, i32& h);
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune

@@ -633,31 +633,31 @@ void Game::init(const std::string& livelloId) {
     // "pronto", @grafico): dritta, sterzo leggero/forte a sinistra e destra,
     // salita, discesa. Caricati una volta all'avvio; se un raw manca resta il
     // rettangolo sintetico, mai un crash.
-    struct FrameGiocatore {
-        i32 posa;
-        const char* nome;
-    };
-    static const FrameGiocatore FRAME_GIOCATORE[] = {
-        {POSA_GIOCATORE_DRITTA, "auto_giocatore_dritta"},
-        {POSA_GIOCATORE_STERZO_SX_LEGGERO, "auto_giocatore_sterzo_sx_leggero"},
-        {POSA_GIOCATORE_STERZO_SX_FORTE, "auto_giocatore_sterzo_sx_forte"},
-        {POSA_GIOCATORE_STERZO_DX_LEGGERO, "auto_giocatore_sterzo_dx_leggero"},
-        {POSA_GIOCATORE_STERZO_DX_FORTE, "auto_giocatore_sterzo_dx_forte"},
-        {POSA_GIOCATORE_SALITA, "auto_giocatore_salita"},
-        {POSA_GIOCATORE_DISCESA, "auto_giocatore_discesa"},
-    };
-    for (const FrameGiocatore& f : FRAME_GIOCATORE) {
-        Sprite s = caricaSpriteRaw(percorsoDati(
-            std::string("motore_nuovo/dati/sprite_raw/giocatore/") + f.nome + ".sglraw"));
-        ren_.impostaGiocatoreSprite(f.posa, std::move(s));
+    // Pose dell'auto (Andrea 06/11): prima quelle di Andrea in
+    // sprite_raw/giocatore/pose/ (TOOLS/converti_pose_auto.py); se manca la
+    // sua dritta si usano i fotogrammi degli agenti del 06/11 come riserva.
+    // Gli stili non si mischiano: con la dritta di Andrea si caricano solo le sue.
+    static const char* const POSE[POSA_GIOCATORE_COUNT] = {
+        "auto_dritta", "auto_sx1", "auto_sx2", "auto_sx3", "auto_sx4",
+        "auto_dx1", "auto_dx2", "auto_dx3", "auto_dx4", "auto_salita", "auto_discesa"};
+    for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
+        ren_.impostaGiocatoreSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/") + POSE[k] + ".sglraw")));
+    if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
+        struct FrameGiocatore { i32 posa; const char* nome; };
+        static const FrameGiocatore AGENTI[] = {
+            {POSA_GIOCATORE_DRITTA, "auto_giocatore_dritta"},
+            {POSA_GIOCATORE_SX_2, "auto_giocatore_sterzo_sx_leggero"},
+            {POSA_GIOCATORE_SX_4, "auto_giocatore_sterzo_sx_forte"},
+            {POSA_GIOCATORE_DX_2, "auto_giocatore_sterzo_dx_leggero"},
+            {POSA_GIOCATORE_DX_4, "auto_giocatore_sterzo_dx_forte"},
+            {POSA_GIOCATORE_SALITA, "auto_giocatore_salita"},
+            {POSA_GIOCATORE_DISCESA, "auto_giocatore_discesa"},
+        };
+        for (const FrameGiocatore& f : AGENTI)
+            ren_.impostaGiocatoreSprite(f.posa, caricaSpriteRaw(percorsoDati(
+                std::string("motore_nuovo/dati/sprite_raw/giocatore/") + f.nome + ".sglraw")));
     }
-    // Auto a pezzi (Andrea 06/11): se c'e' la carrozzeria il Renderer usa i
-    // pezzi al posto dei fotogrammi interi (che restano come riserva).
-    static const char* const PEZZI_AUTO[PEZZO_COUNT] = {
-        "carrozzeria", "abitacolo", "alettone", "ruota_1", "ruota_2", "ruota_3", "fanale_acceso", "fianco"};
-    for (i32 k = 0; k < PEZZO_COUNT; ++k)
-        ren_.impostaPezzoAuto(k, caricaSpriteRaw(percorsoDati(
-            std::string("motore_nuovo/dati/sprite_raw/giocatore/pezzi/") + PEZZI_AUTO[k] + ".sglraw")));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         // Compatibilita': raw storico con la sola auto dritta (auto_giocatore.sglraw).
         Sprite vecchio = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));
@@ -1969,10 +1969,10 @@ void Game::render() {
         const f32 sterzo = player_.sterzo();
         const f32 dz = 2.0f * (f32)Road::SEG_LEN;
         const f32 pendenza = road_.quotaAt(road_.playerZ + dz) - road_.quotaAt(road_.playerZ - dz);
-        if (sterzo <= -0.55f) posaGiocatore = POSA_GIOCATORE_STERZO_SX_FORTE;
-        else if (sterzo <= -0.15f) posaGiocatore = POSA_GIOCATORE_STERZO_SX_LEGGERO;
-        else if (sterzo >= 0.55f) posaGiocatore = POSA_GIOCATORE_STERZO_DX_FORTE;
-        else if (sterzo >= 0.15f) posaGiocatore = POSA_GIOCATORE_STERZO_DX_LEGGERO;
+        // 4 livelli di sterzo per lato (Andrea 06/11).
+        const f32 a = std::abs(sterzo);
+        const i32 livello = a >= 0.9f ? 4 : a >= 0.65f ? 3 : a >= 0.4f ? 2 : a >= 0.15f ? 1 : 0;
+        if (livello > 0) posaGiocatore = (sterzo < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + livello - 1;
         else if (pendenza > SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_SALITA;
         else if (pendenza < -SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_DISCESA;
     }

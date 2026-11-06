@@ -10,57 +10,23 @@ Tutti i percorsi qui sotto partono da `UFFICIO/Dipartimento Grafico/Libreria/ass
 Stile: palette piccola (max 16 colori per sprite) + dithering (Bayer, Atkinson, halftone), pixel art.
 Gli agenti non sovrascrivono mai un tuo PNG.
 
-## 1. Auto del giocatore (da fare per prima, blocco AUTO1)
+## 1. Auto del giocatore (pose disegnate da Andrea, decisione 06/11)
 
-**Decisione 06/11: l'auto e' fatta A PEZZI** (come il vecchio modello a rettangoli). I pezzi sono in `sprite/giocatore/`:
+Cartella: `sprite/giocatore_pose/`. Auto vista **da dietro e un po' dall'alto** (tre quarti), come le referenze.
+Tutte le pose hanno la **stessa misura del PNG della dritta** (oggi 42x25: i margini vuoti vengono tagliati da soli).
+Il gioco le ingrandisce a scala intera fino a circa 52 px di larghezza (la tua rossa oggi e' x2).
 
-| File | Misura | Cosa e' |
+| File | Cosa disegnare | Obbligatoria |
 |---|---|---|
-| `carrozzeria.png` | 52x15 | retro dell'auto senza tetto e senza ruote (fanali spenti, targa, paraurti) |
-| `abitacolo.png` | 30x7 | tetto e lunotto, sta dietro la carrozzeria |
-| `alettone.png` | 46x3 | alettone sopra il baule |
-| `ruota_1.png`, `ruota_2.png`, `ruota_3.png` | 7x12 | ruota posteriore, 3 passi del battistrada |
-| `fanale_acceso.png` | 9x2 | fanale stop acceso (frenata), usato a sinistra e a destra |
-| `fianco.png` | 20x16 | fianco destro visto di sbieco (retro a sinistra, muso a destra), si vede in curva; per la sinistra il gioco lo specchia |
+| `auto_dritta.png` | auto dritta (c'e' gia': la tua rossa) | si' |
+| `auto_sx1.png` ... `auto_sx4.png` | curva a sinistra, da appena girata (1) a sterzo pieno (4): si vede sempre di piu' il fianco destro e il muso va a sinistra | consigliate |
+| `auto_dx1.png` ... `auto_dx4.png` | curva a destra | no (se mancano il gioco specchia le sx) |
+| `auto_salita.png`, `auto_discesa.png` | dritta in salita / in discesa | no |
 
-Ridisegna uno di questi (stesso nome e misura), poi lancia
-`python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_pezzi.py"`: tiene i tuoi PNG e rifa' i raw.
-Il motore li muove, li inclina e li ruota. Le tabelle qui sotto (fotogrammi interi) sono superate e restano solo come riferimento.
-
-**Aggiornamento 06/11:** il grafico ha gia' fatto le 7 pose della carrozzeria in `sprite/auto_gt/`, con questi nomi:
-`auto_giocatore_dritta.png`, `auto_giocatore_sterzo_sx_leggero.png`, `auto_giocatore_sterzo_sx_forte.png`,
-`auto_giocatore_sterzo_dx_leggero.png`, `auto_giocatore_sterzo_dx_forte.png`, `auto_giocatore_salita.png`,
-`auto_giocatore_discesa.png` (tutte 64x32). Per ridisegnarle tu, sostituisci QUESTI file (stesso nome, stessa misura).
-La tabella qui sotto resta valida per cosa disegnare in ogni posa; i componenti (ruote, stop, fumo) vanno in `sprite/giocatore/`.
-
-Cartella dei componenti: `sprite/giocatore/` (se non c'e' ancora, creala). Auto vista da dietro e un po' dall'alto,
-centrata, ruote appoggiate al bordo basso del PNG.
-
-| File | Misura | Cosa disegnare | Obbligatorio |
-|---|---|---|---|
-| `auto_dritto.png` | 64x32 | auto dritta | si' |
-| `auto_sx1.png` | 64x32 | sterzo leggero a sinistra: muso un po' girato, si intravede il fianco destro | si' |
-| `auto_sx2.png` | 64x32 | sterzo pieno a sinistra: fianco piu' visibile | si' |
-| `auto_dx1.png`, `auto_dx2.png` | 64x32 | come sopra a destra | no (se mancano il gioco specchia sx1/sx2) |
-| `auto_salita.png` | 64x32 | dritta in salita (si vede piu' il tetto) | no |
-| `auto_discesa.png` | 64x32 | dritta in discesa (si vede piu' il paraurti) | no |
-| `auto_sbandata.png` | 64x32 | auto di traverso dopo un urto | no |
-| `auto_ribalta_1.png` ... `auto_ribalta_4.png` | 64x48 | quattro pose del ribaltamento | no (senza: il gioco ruota il fotogramma) |
-
-L'auto e' **a componenti**: i fotogrammi qui sopra sono solo la carrozzeria, **senza le ruote posteriori**.
-Le parti animate si disegnano una volta sola e il gioco le riusa su tutti i fotogrammi:
-
-| File | Misura | Cosa disegnare |
-|---|---|---|
-| `ruota_1.png`, `ruota_2.png`, `ruota_3.png` | 12x10 | ruota posteriore sinistra vista da dietro, 3 passi di rotazione (la destra e' specchiata) |
-| `luci_stop.png` | 12x4 | fanale posteriore sinistro acceso (il destro e' specchiato) |
-| `fumo_1.png`, `fumo_2.png`, `fumo_3.png` | 16x16 | sbuffo di fumo in 3 passi |
-
-Dove va ogni ruota e ogni fanale per ogni fotogramma lo dice `auto_giocatore.json` nella stessa cartella
-(lo prepara il @grafico; se sposti le ruote nel tuo disegno, cambia li' i numeri in pixel).
-Il gioco sceglie da solo il fotogramma in base a sterzo, salita/discesa, velocita' e incidente;
-la carrozzeria rimbalza leggermente mentre le ruote restano a terra. Se un componente manca, il gioco
-usa il disegno semplice di oggi. Ombra e lampo dell'urto li aggiunge il motore.
+Se una posa manca il gioco usa la piu' vicina e inclina un po' l'auto. Dopo aver salvato i PNG lancia
+`python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_pose_auto.py"`.
+Il motore aggiunge da solo: ombra, sollevamento in velocita', rotazione nel ribaltamento, scodata, fumo e scintille.
+Fanali e stop sono nel tuo disegno; lo stop acceso in frenata potra' diventare un piccolo PNG sopra la posa (`auto_stop.png`, da decidere).
 
 ## 2. Il resto che si vede gia' in gioco
 
