@@ -266,6 +266,18 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
     }
 }
 
+void Renderer::drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore) {
+    const f32 co = std::cos(angolo), si = std::sin(angolo);
+    const i32 r = (w + h) / 2 + 1;
+    for (i32 py = y - r; py <= y + r; ++py)
+        for (i32 px = x - r; px <= x + r; ++px) {
+            const f32 dx = (f32)(px - x), dy = (f32)(py - y);
+            const f32 lx = co * dx + si * dy, ly = -si * dx + co * dy;
+            if (std::abs(lx) > w * 0.5f || std::abs(ly) > h * 0.5f) continue;
+            fb_.put(px, py, ly < -h * 0.5f + 2.0f ? pal_[5] : colore);
+        }
+}
+
 void Renderer::drawSkyline(const Sprite& s) {
     // Skyline: largo quanto lo schermo, ancorato all'orizzonte, proporzioni
     // della fonte. Indice 0 = trasparente (resta il colore del cielo).
@@ -586,7 +598,14 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
+        if (sollevamento > 0) {
+            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
+            // piu' stretta della carrozzeria, niente barra nera piena.
+            const i32 mezza = w / 2 - w / 8;
+            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
+                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
+                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        }
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         // Stop accesi: disegno della posa con i soli fanali accesi (stessa misura).

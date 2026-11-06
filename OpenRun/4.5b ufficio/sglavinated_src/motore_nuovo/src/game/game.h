@@ -233,6 +233,12 @@ private:
     bool offroadPrec_ = false;
     f32 ciglioMemoriaS_ = 0.0f;  // > 0: il tocco precedente e' ancora "ricordato"
     void toccaCiglio();
+    void abbattiPali(f32 zPrima); // paletti del bordo abbattuti (Andrea 06/11 sera)
+    f32 colpiMemoria_ = 0.0f;     // memoria delle sportellate (incidente a COLPI_INCIDENTE)
+    f32 rientroS_ = -1.0f;        // secondi dal rientro in strada (sobbalzo), -1 = niente
+    bool cartelloneToccato_ = false;
+    struct Detrito { f32 t = -1.0f; i32 lato = 1; f32 v = 0.0f; }; // paletto che vola via
+    Detrito detriti_[4];
     void ribalta();
     void liberaRipartenza();
     f32 ciglioRallenta_ = 0.7f;      // config.json ciglio_rallenta
@@ -389,6 +395,8 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         // alla partenza e per qualche secondo quando il rivale arriva vicino.
         f32 segnalinoS = 0.0f; // secondi rimasti di triangolo acceso
         bool vicino = false;   // era gia' vicino al frame prima (accende solo all'ingresso)
+        i32 urti = 0;          // botte ricevute dal giocatore (memoria dei danni, Andrea 06/11 sera)
+        f32 koS = 0.0f;        // secondi di KO rimasti (alla 4a botta)
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;

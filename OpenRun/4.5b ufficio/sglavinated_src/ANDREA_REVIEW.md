@@ -2,6 +2,10 @@
 
 Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
 
+## AUTO DEL GIOCATORE — REGOLE BLOCCATE (Andrea 06/11)
+
+Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, salti, inclinazione, arrivo) sono in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente le modifica: niente cambi a quei valori, a quel codice o ai file in `giocatore_pose/`. Andrea ridisegna l'auto a mano in Pixelorama.
+
 ## Uso nel ciclo v4.6
 
 - Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
