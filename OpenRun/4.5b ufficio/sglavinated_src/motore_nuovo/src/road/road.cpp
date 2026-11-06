@@ -153,14 +153,16 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
     const f32 correzione =
         lunghezzaCurva > 0 ? residuo / ((f32)lunghezzaCurva * CURVE_SCALE) : 0.0f;
 
-    // Passata 2: posizioni assolute del tracciato.
-    f32 quotaPrima = collinaInizioTappaSet_ ? collinaInizioTappa_ * HILL_HEIGHT : descs.back().collina * HILL_HEIGHT;
+    // Passata 2: posizioni assolute del tracciota.
+    // Collina: quota assoluta per segmento (non cumulativa), evitando che
+    // la strada salga indefinitamente ("salire nel cielo"). Ogni segmento
+    // ha p2y = quota sotto l'auto + CAM_HEIGHT, con raccordo morbido.
     f32 direzione = 0.0f; // pendenza laterale del mondo (solo per p1x/p2x)
-    curY = quotaPrima;
+    curY = 0.0f;
     size_t at = 0;
     for (const SegmentDesc& d : descs) {
         const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
-        const f32 quota = d.collina * HILL_HEIGHT;
+        const f32 segCollina = d.collina * HILL_HEIGHT;
         for (i32 k = 1; k <= n; ++k) {
             RoadSegment& seg = segs_[at];
             if (seg.curve != 0.0f) seg.curve -= correzione;
@@ -172,7 +174,9 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.p1x = curX; seg.p1y = curY; seg.p1z = curZ;
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
-            seg.p2y = quotaPrima + (quota - quotaPrima) * raccordo((f32)k / (f32)n);
+            // Quota assoluta per questo segmento: collina * HILL_HEIGHT + CAM_HEIGHT
+            // per avere la camera che segue la quota sotto l'auto.
+            seg.p2y = segCollina + CAM_HEIGHT;
             if (d.dune != 0.0f && d.onde > 0) {
                 // sin^2: dossi morbidi, pendenza zero ai capi del tratto.
                 const f32 onda = std::sin(PI * (f32)d.onde * (f32)k / (f32)n);
@@ -184,7 +188,6 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             curY = seg.p2y;
             curZ = seg.p2z;
         }
-        quotaPrima = quota;
     }
     // Rettilineo del bivio: anche in piano, alla quota che la strada ha dove
     // il rettilineo comincia (colline e dune raccordate, niente salti).

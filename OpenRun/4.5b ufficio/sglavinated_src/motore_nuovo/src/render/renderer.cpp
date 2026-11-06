@@ -559,9 +559,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         // rollAngle (ribaltamento, scodata) RUOTA il fotogramma attorno al suo
         // centro, come faceva la sagoma a rettangoli. Nessun lampo sull'urto
         // (Andrea 06/11: non realistico).
-        // Scala intera (pixel netti) per arrivare a circa AUTO_GIOCATORE_LARGHEZZA px:
-        // la posa di Andrea (25 px) e' disegnata x4, i fotogrammi da 64 px x1.
-        const f32 scala = (f32)std::max(1, (i32)std::lround((f32)AUTO_GIOCATORE_LARGHEZZA / (f32)s->width));
+        // Scala 1.0 a schermo (AUTO1 A5): fotogrammi 64x32 disegnati a grandezza piena,
+        // nessun rimpicciolimento a 18 px. Ombre e componenti agganciati al rect del frame.
+        const f32 scala = AUTO_GIOCATORE_SCALA;
         w = std::max(1, (i32)(s->width * scala));
         h = std::max(1, (i32)(s->height * scala));
         cx = 160 + (i32)(offsetX * 0.035f);

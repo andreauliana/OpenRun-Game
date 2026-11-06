@@ -1,1 +1,2 @@
 [06/11 08:03] Turno @grafico: G-P1 completato (parapetto 32x48 + guardrail 48x32 generati, catalogo con voci pronto + raw OK). Verificato catalocco check_catalogo_grafico.py exit 0, "PNG non catalogati: 0". UI variante B asset confermati (font, titolo, menu, HUD preview rigenerati 6/11).
+[06/11 08:52] Turno @grafico: Blocco M - asset UI variant B rigenerati/verificati con genera_ui_b.py: font.png, title.png, menu_preview.png, hud_preview.png. Exit code 0, tutti i PNG confermano palette bianco/nero max 16 colori.

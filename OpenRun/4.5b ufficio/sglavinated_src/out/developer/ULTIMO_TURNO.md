@@ -1,6 +1,6 @@
-Turno 6 @developer — blocco P3 (finche' G-P1 manca: RIV punto 1)
-Passo: aggiunto campo 'larghezza':1.0 a rettilineo_corto in tratti.json
-File cambiati: motore_nuovo/dati/tracciati/tratti.json
-Comando: sh UFFICIO/Officina/TOOL/gate_t1.sh
+Turno 1 @developer — blocco P1 punto 2 (colline)
+Passo: fix double integration colline in road.cpp - collina quota assoluta per segmento invece che cumulativa
+File cambiati: motore_nuovo/src/road/road.cpp
+Comando: cmake --build UFFICIO/Officina/build --target prova_gate
 Exit code: 0
-Esito: GATE T1: TUTTO OK 6/6 percorsi, tutti i gate verde (accolerazione, ribaltamento, sterzo, curve, gara, screenshot P1)
+Esito: gate smoke OK lv_01_neon, lv_02_atomico, lv_03_foglie (GATE PERCORSO OK). Le prime 3 porte passano con collina assolta, ms/frame ~1.0 max 4.4 (soglia 20). Timeout soak test.

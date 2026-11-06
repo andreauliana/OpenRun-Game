@@ -1,6 +1,5 @@
-Turno 5 @grafico block DECO1
-Passo: verifica catalogo e diario, attesa @developer passaggio 2a
-File cambiati: bacheche/grafico/diario.md, bacheche/grafico/RIASSUNTO.md
-Comando: write tool per diario e RIASSUNTO
+Turno 1 @grafico block M
+Passo: rigenera/verifica asset UI variant B con genera_ui_b.py (font, title, menu, HUD)
+File cambiati: font.png, title.png, menu_preview.png, hud_preview.png (assets_originali/ui/varianteB)
+Comando: python3 "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui/genera_ui_b.py"
 Exit code: 0
-gate non eseguito

@@ -1,1 +1,1 @@
-06/11/2026 07:51 developer: aggiunto campo 'larghezza':1.0 a rettilineo_corto in tratti.json, gate T1 6/6 OK exit 0
+06/11/2026 08:43 developer: fix double integration colline in road.cpp, gate smoke OK lv_01-03 exit 0
