@@ -2140,6 +2140,14 @@
          "file": "assets_originali/sprite/giocatore_pose/auto_dritta.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw",
          "nota": "Disegnata da Andrea (06/11): posa dritta dell'auto del giocatore, tre quarti dall'alto. Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
+      },
+      {
+         "id": "auto.giocatore.stop.dritta",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore_pose/auto_stop.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
+         "nota": "Stop accesi sopra la posa dritta, sovrapposti in frenata (06/11). Prima versione di Claude ricavata dai fanali di Andrea; Andrea puo' ridisegnarla. Stessa misura della posa, il resto trasparente. Solo Andrea disegna l'auto del giocatore."
       }
    ]
 }

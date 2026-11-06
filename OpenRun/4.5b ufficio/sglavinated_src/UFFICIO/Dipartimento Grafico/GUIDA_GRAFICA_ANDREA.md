@@ -26,7 +26,7 @@ Il gioco le ingrandisce a scala intera fino a circa 52 px di larghezza (la tua r
 Se una posa manca il gioco usa la piu' vicina e inclina un po' l'auto. Dopo aver salvato i PNG lancia
 `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_pose_auto.py"`.
 Il motore aggiunge da solo: ombra, sollevamento in velocita', rotazione nel ribaltamento, scodata, fumo e scintille.
-Fanali e stop sono nel tuo disegno; lo stop acceso in frenata potra' diventare un piccolo PNG sopra la posa (`auto_stop.png`, da decidere).
+Fanali e stop sono nel tuo disegno. Lo stop acceso in frenata e' un PNG a parte, `auto_stop.png`: stessa misura della posa dritta, solo i pixel dei fanali accesi, tutto il resto trasparente. Il gioco lo sovrappone quando freni. Per le altre pose: `auto_stop_sx1.png` ecc. (facoltativi; senza, quella posa frena senza stop accesi). La prima versione l'ha fatta Claude dai tuoi fanali: ridisegnala pure. Le ammaccature le aggiunge il motore (puntini scuri e graffi chiari), non vanno disegnate.
 
 ## 2. Il resto che si vede gia' in gioco
 

@@ -568,15 +568,49 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
         if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
-        const bool palettePropria = !s->palette.empty();
-        const i32 nPal = (i32)s->palette.size();
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
-        auto texel = [&](i32 tx, i32 ty) -> u32 {
-            if (specchia) tx = s->width - 1 - tx;
-            const u8 idx = s->pixels[ty * s->width + tx];
-            if (palettePropria) return s->palette[idx % nPal];
+        // Stop accesi: disegno della posa con i soli fanali accesi (stessa misura).
+        const Sprite* stop = nullptr;
+        if (frena) {
+            const Sprite* st = &stopSprites_[s - giocatoreSprites_];
+            if (st->width == s->width && st->height == s->height) stop = st;
+        }
+        auto grezzo = [&](const Sprite* sp, i32 tx, i32 ty) -> u32 {
+            const u8 idx = sp->pixels[ty * sp->width + tx];
+            if (!sp->palette.empty()) return sp->palette[idx % (i32)sp->palette.size()];
             return idx == 0 ? 0u : pal_[idx];
+        };
+        // Ammaccature (Andrea 29/10 e 06/11): restano per tutta la gara, una per
+        // botta fino a DANNI_MAX, in punti fissi della carrozzeria (in texel
+        // della posa, quindi grandi come i pixel del disegno e ruotano con lei):
+        // texel scurito + graffio chiaro in alto a destra. Solo sulla carrozzeria.
+        static constexpr f32 SEGNI[DanniAuto::DANNI_MAX][2] = {
+            {0.18f, 0.62f}, {0.80f, 0.55f}, {0.34f, 0.80f}, {0.66f, 0.76f},
+            {0.12f, 0.45f}, {0.88f, 0.70f}, {0.50f, 0.66f}, {0.42f, 0.50f}};
+        const i32 nSegni = danni ? std::min(danni->segni, DanniAuto::DANNI_MAX) : 0;
+        auto texel = [&](i32 tx, i32 ty) -> u32 {
+            const i32 sx = tx;
+            if (specchia) tx = s->width - 1 - tx;
+            u32 col = grezzo(s, tx, ty);
+            if ((col >> 24) == 0) return col;
+            if (stop) {
+                const u32 acceso = grezzo(stop, tx, ty);
+                if ((acceso >> 24) != 0) col = acceso;
+            }
+            for (i32 k = 0; k < nSegni; ++k) {
+                const i32 dx = (i32)(SEGNI[k][0] * (f32)(s->width - 1) + 0.5f);
+                const i32 dy = (i32)(SEGNI[k][1] * (f32)(s->height - 1) + 0.5f);
+                if (sx == dx && ty == dy) {
+                    const u32 r = ((col >> 16) & 0xFF) * 30 / 100, g = ((col >> 8) & 0xFF) * 30 / 100, b = (col & 0xFF) * 30 / 100;
+                    return 0xFF000000u | (r << 16) | (g << 8) | b;
+                }
+                if (sx == dx + 1 && ty == dy - 1) {
+                    const u32 r = (((col >> 16) & 0xFF) + 3 * 0xEC) / 4, g = (((col >> 8) & 0xFF) + 3 * 0xE0) / 4, b = ((col & 0xFF) + 3 * 0xD4) / 4;
+                    return 0xFF000000u | (r << 16) | (g << 8) | b;
+                }
+            }
+            return col;
         };
         if (std::abs(rollAngle) < 0.01f) {
             const i32 x0 = cx - w / 2, y0 = cy - h;
@@ -603,9 +637,6 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     fb_.put(x, y, col);
                 }
         }
-        // Niente luci disegnate dal motore sopra la posa: fanali e stop sono
-        // nel disegno (Andrea 06/11). Lo stop acceso arrivera' come pezzo.
-        (void)frena;
     } else {
         // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
         u32 body = offroad ? pal_[12] : pal_[9];
