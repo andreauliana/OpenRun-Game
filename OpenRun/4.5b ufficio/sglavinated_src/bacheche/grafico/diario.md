@@ -1,1 +1,2 @@
 [06/11 07:09] Turno @grafico: G-P1 completato (parapetto 32x48 + guardrail 48x32 generati, catalogo aggiornato con 2 voci pronto).
+[06/11 07:37] Turno @grafico: generati parapetto.png e guardrail.png, catalogo voce pronto aggiunta, raw pending.
