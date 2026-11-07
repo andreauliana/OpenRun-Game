@@ -1439,40 +1439,16 @@ void Renderer::drawHudDati(const HudDati& d) {
     // Niente box ne' cornici: solo testo con ombra di 1 px, la scena resta libera.
     char buf[32];
     for (const HudElemento& e : hud_) {
-        if (e.tipo == "barra" && e.id == "giri") {
-            // Contagiri (Andrea 07/11): tacche da 2 px con 1 px d'aria che
-            // crescono verso destra (da barra_h a barra_h + 2 px, allineate in
-            // basso), colori neon dello spettro (ciano, viola, magenta, passaggi
-            // a trama Bayer), punta bianca, zona limite gialla che lampeggia al
-            // massimo. Tacche spente: solo un filo scuro sulla riga di fondo.
-            static constexpr u32 SCALA[3] = {0xFF00E6FFu, 0xFF963CFFu, 0xFFFF28B4u};
-            static constexpr u8 BAYER[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
-            const f32 pieno = d.giri < 0.0f ? 0.0f : (d.giri > 1.0f ? 1.0f : d.giri);
-            const i32 n = std::max(2, (e.w + 1) / 3);
-            const i32 limite = n - std::max(1, n / 6);
-            const i32 accese = (i32)(pieno * (f32)n + 0.5f);
-            const bool alMassimo = pieno > 0.92f;
-            const i32 fondo = e.y + e.h - 1;
-            for (i32 i = 0; i < n; ++i) {
-                const i32 x = e.x + i * 3;
-                const i32 alto = e.h + (i * 3) / n; // 2, 3, 4 px
-                if (i >= accese) {
-                    fb_.fillRect(x, fondo, x + 1, fondo, i >= limite ? 0xFF5A2048u : 0xFF3C3C54u);
-                    continue;
-                }
-                fb_.fillRect(x + 1, fondo - alto + 2, x + 2, fondo + 1, 0xFF000000u); // ombra
-                for (i32 y = fondo - alto + 1; y <= fondo; ++y)
-                    for (i32 k = 0; k < 2; ++k) {
-                        u32 col;
-                        if (i == accese - 1 && !alMassimo) col = 0xFFFFFFFFu; // punta
-                        else if (i >= limite) col = alMassimo && (d.frame / 3) % 2 ? 0xFFFFFFFFu : 0xFFE6FF32u;
-                        else {
-                            const f32 t = (f32)i / (f32)std::max(1, limite - 1) * 2.0f; // 0..2 lungo la scala
-                            const i32 c = std::min(1, (i32)t);
-                            const f32 s = ((f32)BAYER[y & 3][(x + k) & 3] + 0.5f) / 16.0f;
-                            col = (t - (f32)c) > s ? SCALA[c + 1] : SCALA[c];
-                        }
-                        fb_.put(x + k, y, col);
+        if (d.premiazione && e.id == "show") continue; // la scritta della premiazione passa di li'
+        if (e.tipo == "cornice") {
+            if (e.oscuraSfondo > 0) {
+                // Vetro scuro: l'interno resta leggibile sopra cielo e skyline.
+                const u32 k = (u32)(100 - std::min(e.oscuraSfondo, 100));
+                for (i32 y = e.y + e.spessore; y < e.y + e.h - e.spessore; ++y)
+                    for (i32 x = e.x + e.spessore; x < e.x + e.w - e.spessore; ++x) {
+                        const u32 c = fb_.get(x, y);
+                        const u32 r = ((c >> 16) & 0xFFu) * k / 100, g = ((c >> 8) & 0xFFu) * k / 100, b = (c & 0xFFu) * k / 100;
+                        fb_.put(x, y, 0xFF000000u | (r << 16) | (g << 8) | b);
                     }
             }
             continue;

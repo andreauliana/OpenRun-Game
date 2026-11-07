@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
+#include "render/premiazione.h" // festa all'arrivo (Andrea 07/11)
 #include "game/paesaggio.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
 #include "render/sprite_raw.h" // caricaSpriteRaw: skyline raw del livello, core senza SDL
@@ -2229,6 +2230,17 @@ void Game::render() {
         }
     }
     const f32 sollevamentoPx = playerFlipping_ ? flipPx : sollevamento_ * ondeggio * SOLLEVAMENTO_MAX_PX + saltoPx + sobbalzoPx;
+    // Premiazione (Andrea 07/11): quando l'auto e' ferma sul traguardo, festa
+    // a tema della tappa d'arrivo e per posizione (render/premiazione.*).
+    DatiPremiazione premio;
+    if (arrivo_ && fermoS_ >= 0.0f) {
+        premio.tema = temaPremioDaLivello(tappaId_);
+        premio.posizione = posizioneArrivo_;
+        premio.tempoS = fermoS_;
+        premio.autoX = 160 + (i32)((player_.x - player_.centroCorsia) * 0.035f);
+        premio.soloAmbiente = fasi_.attuale() == FaseId::Risultati;
+    }
+    disegnaPremiazioneDietro(fb_, premio);
     DanniAuto danni;
     danni.segni = std::min(urtiGara_ + toccateCiglio_, DanniAuto::DANNI_MAX);
     danni.dallUrtoS = dallUrtoS_;
@@ -2293,6 +2305,7 @@ void Game::render() {
         const i32 y = 214 - (i32)(std::sin(3.14159f * k) * (18.0f + 14.0f * d.v)) + (i32)(k * 6.0f);
         ren_.drawDetrito(x, y, 4, 16, (f32)d.lato * k * 9.0f, d.lato < 0 ? pal_[1] : pal_[14]);
     }
+    disegnaPremiazioneDavanti(fb_, ren_, premio);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
@@ -2329,7 +2342,8 @@ void Game::render() {
         h.show = showManager_.showAttivo();
         h.fuoristrada = player_.offroad;
         h.bivio = (road_.bivioAttivo() && latoBivio_ == 0 && player_.z > road_.bivioInizioZ() - 30000.0f) ? 1 : 0;
-        h.arrivo = arrivo_;
+        h.arrivo = arrivo_ && premio.tempoS < 0.0f; // da fermo la scritta e' quella della premiazione
+        h.premiazione = premio.tempoS >= 0.0f;
         h.tempoScaduto = tempoScaduto_;
         h.frame = clock_.frame;
         ren_.drawHudDati(h);
