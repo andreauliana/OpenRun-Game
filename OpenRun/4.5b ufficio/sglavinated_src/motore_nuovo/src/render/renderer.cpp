@@ -796,7 +796,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                 const i32 px = (i32)(baseX + (f32)lato * (k * 10.0f)) + ((n & 1) ? 2 : -2);
                 const i32 py = (i32)(baseY - k * 12.0f);
                 const Sprite& fs = fumoSprites_[(n + (lato > 0 ? 1 : 0)) % 3];
-                if (fs.width > 0 && fs.height > 0 && !fs.palette.empty()) {
+                // Solo sui fotogrammi della griglia degli agenti: le pose di
+                // Andrea tengono il fumo di sempre (REGOLE_AUTO_GIOCATORE.md).
+                if (fotogrammaGriglia && fs.width > 0 && fs.height > 0 && !fs.palette.empty()) {
                     // Fotogramma del @grafico, centrato sullo sbuffo, che si
                     // dirada come il disegno sintetico mentre l'eta' avanza.
                     const i32 hx = fs.width / 2, hy = fs.height / 2;
@@ -1043,13 +1045,6 @@ void Renderer::drawHudDati(const HudDati& d) {
     }
     // Fuori strada: nessuna scritta (Andrea 29/10, ridondante): lo dicono gia'
     // l'erba, il sobbalzo e le scintille.
-}
-
-void Renderer::disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore) {
-    // Scena show in attesa degli sprite veri del @grafico (blocco AUTO1).
-    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
-    if (w <= 0 || h <= 0) return;
-    fb_.fillRect(x, y, x + w - 1, y + h - 1, colore);
 }
 
 } // namespace sgl

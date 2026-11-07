@@ -383,23 +383,19 @@ public:
             std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
             ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
             ren.drawTesto(96, y, c.nome, col, 1, true);
-            if (c.fuori) { // KO1: rivale messo fuori gara
-                ren.drawTesto(170, y, "OUT", col, 1, true);
-            } else {
-                formattaTempo(tempo, sizeof(tempo), c.tempoS);
-                ren.drawTesto(170, y, tempo, col, 1, true);
-            }
-            if (i > 0 && !c.fuori) {
+            formattaTempo(tempo, sizeof(tempo), c.tempoS);
+            ren.drawTesto(170, y, tempo, col, 1, true);
+            if (i > 0) {
                 std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
                 ren.drawTesto(226, y, buf, col, 1, true);
             }
         }
         if (righe < arrivo_.size()) return;
-        std::snprintf(buf, sizeof(buf), "SCORE %d", punteggio_);
+        std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
         ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 178, buf, 0xFFFFE080u, 1, true);
         // URTI / CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano
         // nel gioco (ammaccature, fumo), non in tabella.
-        const char* aiuto = "PRESS START";
+        const char* aiuto = "START TORNA AL MENU";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 202, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
