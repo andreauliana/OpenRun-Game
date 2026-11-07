@@ -1,1 +1,12 @@
-Turno 1 @developer-junior ore 09:21: gate T1 eseguito GATE T1: TUTTO OK. Tutti e 6 i livelli passano con replay IDENTICO, ms/frame <= 20. Exit code 0. Lavorato su blocco AUTO1 gate J-A1 (raccolta screenshot pose auto player). Diario e RIASSUNTO aggiornati.
+# ULTIMO TURNO @developer-junior — 07/11/2026 08:20
+- Blocco/passo: AUTO1 J-A1 (gate pose auto del giocatore) — completato; nessuna review richiesta dal blocco.
+- File cambiati: motore_nuovo/test/prova_gate.cpp (nuova verificaPoseAuto agganciata al gate `urto`, +250 righe), bacheche/developer-junior/diario.md, bacheche/developer-junior/RIASSUNTO.md, out/developer-junior/ULTIMO_TURNO.md.
+- Scrittura: solo percorsi del ruolo (test + documenti di turno); nessun codice di prodotto toccato.
+- Comando 1: `cmake --build UFFICIO/Officina/build --target prova_gate` -> exit 0 (build ok).
+- Comando 2: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/build/test-results/urto" lv_01_neon urto` -> exit 0, GATE URTO OK (07/11 08:15).
+- Comando 3: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0, ctest 27/27 passati, 524.51 s (07/11 08:18).
+- Misure J-A1: mismatch centro/dritto 0 su 6875 px, sterzo pieno sx 0 su 8875 (ang -0.48), destra 0 su 8875 (ang 0.48), ritorno 0; pendenza partenza 0.0; ribaltamento 8555 px cambiati (soglia 772) e 6484 vs dritto (soglia 1718).
+- Gate storico `urto` invariato: replay 2x IDENTICO, nessun ribaltamento dopo urto, controlli attivi entro 1.5 s, ms/frame 4.68/3.91 (limite 20).
+- Output: UFFICIO/Officina/Test area/auto1/auto1_{dritto,sx2,dx2,ribaltamento}.ppm (07/11 08:16) + p1_* del 06/11.
+- Problemi residui: nessuno. gate_t1.sh non eseguito in questo turno (coperto da ctest completo).
+- Prossimo passo: ENG1 + ARC1 (testi in inglese, nome salvato) nel gate `ciclo`, poi KO1.

@@ -11,6 +11,9 @@
 #   auto_giocatore_sterzo_sx_leggero.png / _forte.png
 #   auto_giocatore_sterzo_dx_leggero.png / _forte.png
 #   auto_giocatore_salita.png / auto_giocatore_discesa.png
+# AUTO1 G-A1 (07/11): SENZA ruote posteriori cucite: le ruote, lo stop e il
+# fumo sono i componenti separati di TOOLS/disegna_componenti_auto.py
+# (sprite/giocatore/), sovrapposti dal Renderer.
 # e i raw che il motore legge in
 #   motore_nuovo/dati/sprite_raw/giocatore/<nome>.sglraw
 # Formato raw: "SGLR" + u32 LE w + u32 LE h + RGBA8888 (come png_a_raw.py).
@@ -55,13 +58,10 @@ def base():
     d = ImageDraw.Draw(img)
     # Ombra a terra.
     d.ellipse([8, 27, 56, 31], fill=(0, 0, 0, 95))
-    # Gomme posteriori, sporgono ai lati.
-    d.rectangle([2, 16, 11, 29], fill=GOMMA)
-    d.rectangle([53, 16, 62, 29], fill=GOMMA)
-    d.line([3, 17, 3, 28], fill=(56, 56, 62))
-    d.line([54, 17, 54, 28], fill=(56, 56, 62))
-    d.rectangle([6, 20, 7, 25], fill=CERCHIO)   # cerchio sinistro
-    d.rectangle([57, 20, 58, 25], fill=CERCHIO)  # cerchio destro
+    # AUTO1 G-A1 (07/11): le ruote posteriori NON sono piu' cucite qui.
+    # Sono i componenti separati ruota_1..3.png (12x10) in
+    # sprite/giocatore/, disegnati dal Renderer sotto la carrozzeria con le
+    # posizioni di sprite/giocatore/auto_giocatore.json.
     # Carrozzeria: fianchi larghi in basso, spalle che rientrano.
     d.polygon([(5, 13), (9, 8), (55, 8), (59, 13), (59, 23), (5, 23)],
               fill=BODY, outline=DARK)

@@ -1,8 +1,12 @@
-# RIASSUNTO @developer-junior — turno 06/11 ore 09:21
-- Ruolo: Developer Junior (4.6); scrittura: bacheche/developer-junior/, out/developer-junior.
-- Blocco: PIST1 [x]. J2 gate tratti ponte acqua completato (lv_01_neon/lv_04_cromo). J1 review PR44 completata osservazioni only.
-- Turno 1: gate T1 eseguito GATE T1: TUTTO OK, tutti 6 livelli passano con replay IDENTICO, ms/frame <= 20.
-- Verifica: tutti i 6 livelli passano prova_gate con exit 0, replay IDENTICO, ms/frame <= 20 (max 1.069).
-- Passo J1: review PR44 osservazioni only, nessun modifica codice. J2 tratti ponte acqua completato.
-- Prossimo passo: checkpoint @capo PIST1; gate T1 verde registrato in STATUS_OFFICINA.
-- File modificati: diario.md, RIASSUNTO.md, ULTIMO_TURNO.md questo turno.
+# RIASSUNTO @developer-junior — turno 07/11 ore 08:20
+- Ruolo: Developer Junior (4.6); scrivo solo in bacheche/developer-junior/, out/developer-junior e test in motore_nuovo/test/.
+- Blocchi: PIST1 [x] (J1 review PR44, J2 ponte acqua fatti il 06/11); AUTO1 [~] -> J-A1 FATTO in questo turno; poi ENG1+ARC1, KO1.
+- Passo: gate `urto` esteso con J-A1: a fermi (speed 0) i pixel dell'auto si confrontano con un riferimento disegnato dallo stesso Renderer con le pose caricate come da Game::init.
+- Esito pose (mismatch su maschera auto): centro->dritto 0/6875 px (ang 0.00), sterzo pieno sx->SX_4 0/8875 (ang -0.48), destra->dx specchio 0/8875 (ang 0.48), ritorno al centro 0; pendenza partenza 0.0.
+- Esito ribaltamento: 8555 px cambiati fra due frame (soglia 772), 6484 rispetto al dritto (soglia 1718); nessun ribaltamento nel bump (gate storico invariato), replay 2x IDENTICO.
+- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> ctest 27/27 passati, exit 0 (07/11 08:18, 524 s).
+- Prova singola: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/build/test-results/urto" lv_01_neon urto` -> GATE URTO OK, exit 0 (07/11 08:15).
+- Screenshot: UFFICIO/Officina/Test area/auto1/auto1_{dritto,sx2,dx2,ribaltamento}.ppm (piu' p1_* del 06/11). gate_t1.sh non eseguito in questo turno.
+- Problemi residui: nessuno (ms/frame urto 4.68/3.91; i raw dx mancano per disegno -> specchio di sx, previsto dal blocco).
+- Prossimo passo: ENG1 + ARC1 (testi in inglese, nome salvato nel gate `ciclo`), poi KO1.
+- File modificati: motore_nuovo/test/prova_gate.cpp (+250 righe), diario.md, RIASSUNTO.md, ULTIMO_TURNO.md.

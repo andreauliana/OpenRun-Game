@@ -212,6 +212,65 @@ std::string leggiFileTesto(const std::string& path) {
     return testo;
 }
 
+// AUTO1 A2: posizioni dei componenti dell'auto da auto_giocatore.json
+// (dati/sprite_raw/giocatore/, G-A1 del @grafico). Ogni voce di "fotogrammi"
+// da' i centri in texel della griglia "griglia" (64x32); i nomi sono quelli
+// dei fotogrammi d'agente e si mappano sulle pose del motore. Se il file
+// manca o e' illeggibile i componenti restano senza posizioni: il Renderer
+// usa il disegno sintetico di oggi, mai un crash.
+void caricaPuntiComponentiGiocatore(Renderer& ren, const std::string& percorso) {
+    JsonReader j(leggiFileTesto(percorso));
+    if (!j.parse() || !jsonIsObject(j.valore())) {
+        std::printf("giocatore: %s illeggibile: componenti senza posizioni\n", percorso.c_str());
+        return;
+    }
+    const JsonObject& radice = jsonAsObject(j.valore());
+    JsonValue gv, fv;
+    if (jsonGet(radice, "griglia", gv) && jsonIsObject(gv)) {
+        const JsonObject& g = jsonAsObject(gv);
+        JsonValue wv, hv;
+        if (jsonGet(g, "w", wv) && jsonIsNumber(wv) && jsonGet(g, "h", hv) && jsonIsNumber(hv))
+            ren.impostaGrigliaComponenti((i32)jsonAsNumber(wv), (i32)jsonAsNumber(hv));
+    }
+    if (!jsonGet(radice, "fotogrammi", fv) || !jsonIsObject(fv)) return;
+    const JsonObject& fotogrammi = jsonAsObject(fv);
+    auto leggiPunto = [](const JsonObject& o, const char* chiave, f32 out[2]) {
+        JsonValue v;
+        if (!jsonGet(o, chiave, v) || !jsonIsArray(v)) return false;
+        const JsonArray& a = jsonAsArray(v);
+        if (a.size() < 2 || !jsonIsNumber(a[0]) || !jsonIsNumber(a[1])) return false;
+        out[0] = (f32)jsonAsNumber(a[0]);
+        out[1] = (f32)jsonAsNumber(a[1]);
+        return true;
+    };
+    struct Mappa { const char* nome; i32 posa; };
+    static const Mappa MAPPA[] = {
+        {"auto_giocatore_dritta", POSA_GIOCATORE_DRITTA},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_1},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_2},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_3},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_4},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_1},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_2},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_3},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_4},
+        {"auto_giocatore_salita", POSA_GIOCATORE_SALITA},
+        {"auto_giocatore_discesa", POSA_GIOCATORE_DISCESA},
+    };
+    for (const Mappa& m : MAPPA) {
+        JsonValue vo;
+        if (!jsonGet(fotogrammi, m.nome, vo) || !jsonIsObject(vo)) continue;
+        const JsonObject& o = jsonAsObject(vo);
+        Renderer::PuntiComponenti p;
+        if (leggiPunto(o, "ruota_sx", p.ruotaSx) && leggiPunto(o, "ruota_dx", p.ruotaDx) &&
+            leggiPunto(o, "fanale_sx", p.fanaleSx) && leggiPunto(o, "fanale_dx", p.fanaleDx) &&
+            leggiPunto(o, "scarico_sx", p.scaricoSx) && leggiPunto(o, "scarico_dx", p.scaricoDx)) {
+            p.validi = true;
+            ren.impostaPuntiComponenti(m.posa, p);
+        }
+    }
+}
+
 // Espande il campo "tracciato" di livello.json in descrittori di strada.
 // Ogni voce e' una stringa (nome tratto) oppure un oggetto
 // {"tratto": "nome", "lunghezza": 500, ...override...}; le definizioni base
@@ -606,6 +665,20 @@ void Game::init(const std::string& livelloId) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         ren_.impostaStopSprite(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_") + (POSE[k] + 5) + ".sglraw")));
+    // AUTO1 A2: componenti dell'auto (G-A1, @grafico): ruote, luci stop e
+    // fumo, piu' le posizioni per fotogramma di auto_giocatore.json. Caricati
+    // una volta per partita; se un raw o il file mancano vale il disegno
+    // sintetico di oggi, mai un crash.
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaRuotaSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/ruota_") + std::to_string(k + 1) + ".sglraw")));
+    ren_.impostaLuciStopSprite(caricaSpriteRaw(percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/luci_stop.sglraw")));
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaFumoSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/fumo_") + std::to_string(k + 1) + ".sglraw")));
+    caricaPuntiComponentiGiocatore(ren_, percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.json"));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         struct FrameGiocatore { i32 posa; const char* nome; };
         static const FrameGiocatore AGENTI[] = {
@@ -1947,7 +2020,7 @@ void Game::render() {
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
-                       posaGiocatore);
+                       posaGiocatore, km_ * 1000.0f);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;

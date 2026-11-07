@@ -1,1 +1,2 @@
 [06/11 09:13] Turno @grafico: BLOCCO M completato - CREDITI.md creato con licenze asset UI, font Antonio Bold OFL-1.1, CC-BY-4.0 per pixel, MIT per HUD. Catalogo verificato exit 0, quota open 100%. PNG variante B rigenerati e audit passati.
+[07/11 07:41] Turno @grafico: AUTO1 G-A1 - 7 componenti auto (ruota_1..3, luci_stop, fumo_1..3 Bayer) + auto_giocatore.json (posizioni 7 fotogrammi) in sprite/giocatore/; fotogrammi auto_gt ridisegnati senza ruote; catalogo +7 voci, check_catalogo exit 0, PNG non catalogati 0.

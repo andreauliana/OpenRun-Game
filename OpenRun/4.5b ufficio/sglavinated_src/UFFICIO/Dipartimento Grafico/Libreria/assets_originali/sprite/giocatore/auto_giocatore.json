@@ -1,0 +1,223 @@
+{
+ "versione": 1,
+ "griglia": {
+  "w": 64,
+  "h": 32
+ },
+ "nota": "AUTO1 G-A1 (@grafico): centri in pixel dentro il fotogramma 64x32 di sprite/auto_gt/. ruota_dx e fanale_dx sono lo specchio di sx (Renderer con flag specchia); scarico_* e' dove parte il fumo. Le pose di Andrea (sprite/giocatore_pose/, 42x25) hanno ruote e fanali gia' disegnati: per esse non servono ruota/luci_stop, solo fumo verso il basso.",
+ "componenti": {
+  "ruota": {
+   "file": [
+    "ruota_1.png",
+    "ruota_2.png",
+    "ruota_3.png"
+   ],
+   "misura": [
+    12,
+    10
+   ]
+  },
+  "luci_stop": {
+   "file": "luci_stop.png",
+   "misura": [
+    12,
+    4
+   ]
+  },
+  "fumo": {
+   "file": [
+    "fumo_1.png",
+    "fumo_2.png",
+    "fumo_3.png"
+   ],
+   "misura": [
+    16,
+    16
+   ]
+  }
+ },
+ "fotogrammi": {
+  "auto_giocatore_dritta": {
+   "ruota_sx": [
+    6.5,
+    24.0
+   ],
+   "ruota_dx": [
+    57.5,
+    24.0
+   ],
+   "fanale_sx": [
+    12.0,
+    15.5
+   ],
+   "fanale_dx": [
+    52.0,
+    15.5
+   ],
+   "scarico_sx": [
+    23.5,
+    25.5
+   ],
+   "scarico_dx": [
+    39.5,
+    25.5
+   ]
+  },
+  "auto_giocatore_sterzo_sx_leggero": {
+   "ruota_sx": [
+    6.2,
+    26.7
+   ],
+   "ruota_dx": [
+    56.9,
+    21.4
+   ],
+   "fanale_sx": [
+    10.8,
+    17.7
+   ],
+   "fanale_dx": [
+    50.6,
+    13.5
+   ],
+   "scarico_sx": [
+    23.3,
+    26.4
+   ],
+   "scarico_dx": [
+    39.2,
+    24.7
+   ]
+  },
+  "auto_giocatore_sterzo_sx_forte": {
+   "ruota_sx": [
+    6.2,
+    29.4
+   ],
+   "ruota_dx": [
+    56.1,
+    18.8
+   ],
+   "fanale_sx": [
+    9.8,
+    19.9
+   ],
+   "fanale_dx": [
+    49.0,
+    11.6
+   ],
+   "scarico_sx": [
+    23.2,
+    27.3
+   ],
+   "scarico_dx": [
+    38.8,
+    24.0
+   ]
+  },
+  "auto_giocatore_sterzo_dx_leggero": {
+   "ruota_sx": [
+    7.1,
+    21.4
+   ],
+   "ruota_dx": [
+    57.8,
+    26.7
+   ],
+   "fanale_sx": [
+    13.4,
+    13.5
+   ],
+   "fanale_dx": [
+    53.2,
+    17.7
+   ],
+   "scarico_sx": [
+    23.8,
+    24.6
+   ],
+   "scarico_dx": [
+    39.7,
+    26.3
+   ]
+  },
+  "auto_giocatore_sterzo_dx_forte": {
+   "ruota_sx": [
+    7.9,
+    18.8
+   ],
+   "ruota_dx": [
+    57.8,
+    29.4
+   ],
+   "fanale_sx": [
+    15.0,
+    11.6
+   ],
+   "fanale_dx": [
+    54.2,
+    19.9
+   ],
+   "scarico_sx": [
+    24.2,
+    23.8
+   ],
+   "scarico_dx": [
+    39.9,
+    27.1
+   ]
+  },
+  "auto_giocatore_salita": {
+   "ruota_sx": [
+    6.5,
+    23.0
+   ],
+   "ruota_dx": [
+    57.5,
+    23.0
+   ],
+   "fanale_sx": [
+    12.0,
+    13.4
+   ],
+   "fanale_dx": [
+    52.0,
+    13.4
+   ],
+   "scarico_sx": [
+    23.5,
+    24.7
+   ],
+   "scarico_dx": [
+    39.5,
+    24.7
+   ]
+  },
+  "auto_giocatore_discesa": {
+   "ruota_sx": [
+    6.5,
+    24.8
+   ],
+   "ruota_dx": [
+    57.5,
+    24.8
+   ],
+   "fanale_sx": [
+    12.0,
+    17.0
+   ],
+   "fanale_dx": [
+    52.0,
+    17.0
+   ],
+   "scarico_sx": [
+    23.5,
+    26.1
+   ],
+   "scarico_dx": [
+    39.5,
+    26.1
+   ]
+  }
+ }
+}
