@@ -1,6 +1,6 @@
 {
   "id": "hud_gioco",
-  "descrizione": "HUD di gioco come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con assets_originali/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: assets_originali/ui/font/varianteB/font.png (+ font.json). Elementi posizionati come riferimento strutturale all'originale (distanza in alto a sinistra, velocita in alto a destra), nessun asset Sega copiato. Dal 18 ott il motore disegna questo file in gioco (Renderer::drawHudDati): ogni 'id' e' legato a un dato vivo (distanza, giri, velocita, tempo, tappa, posizione, marcia, show).",
+  "descrizione": "HUD di gioco come dati (Renderer::drawHudDati). Dal 7 nov (Andrea): tre gruppi compatti in alto, larghi 88 px e con la stessa griglia, senza box ne' cornici (solo testo con ombra di 1 px), cosi' la scena resta libera. Sinistra x 8..95: VELOCITA'. Centro x 116..203: RADIO (spettro stile WinAmp, disegnato da Game::drawMusica). Destra x 224..311: TEMPO e gara. Griglia di ogni gruppo: riga etichette y 6 (font mini, a sinistra e a destra), numero grande y 13 (scala 2) a sinistra, valori piccoli allineati a destra (y 13, y 21), riga sottile y 31 (2 px). Risoluzione 320x224.",
   "stato": "bozza",
   "licenza": "MIT",
   "autore": "@grafico (Dipartimento Grafico)",
@@ -12,130 +12,22 @@
     320,
     224
   ],
-  "tema": "bianco_e_nero",
   "font_sheet": "font/varianteB/font.png",
   "font_meta": "font/varianteB/font.json",
   "elementi": [
     {
-      "id": "cornice",
-      "tipo": "cornice",
-      "nota": "box informazioni (Andrea 29/10): bordo da 1 px, interno scurito del 10% (Andrea 29/10: sugli sfondi chiari il nero appesantiva), divisorio al centro; dentro tempo, totale, tappa, posizione e distanza. Fuori solo velocita' e giri.",
-      "x": 8,
-      "y": 8,
-      "w": 124,
-      "h": 62,
-      "spessore": 1,
-      "colore": [
-        210,
-        210,
-        210
-      ],
-      "oscura_sfondo": 10
-    },
-    {
-      "id": "divisorio",
-      "tipo": "linea",
-      "x": 70,
-      "y": 13,
-      "w": 1,
-      "h": 52,
-      "colore": [
-        110,
-        110,
-        110
-      ]
-    },
-    {
-      "id": "tempo",
+      "id": "velocita",
       "tipo": "testo",
-      "nota": "residuo, secondi contati all'indietro, in alto a sinistra, sotto velocità, a sinistra (D8: tempo residuo sotto velocità, a sinistra); conto alla rovescia, il dato principale; a ogni checkpoint si aggiunge il tempo della tappa",
-      "label": "TEMPO",
-      "valore": "75",
+      "label": "KM/H",
       "label_pos": [
-        14,
+        8,
+        6
+      ],
+      "valore_pos": [
+        8,
         13
       ],
-      "valore_pos": [
-        14,
-        22
-      ],
-      "scala_valore": 3,
-      "colore": [
-        255,
-        255,
-        255
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ]
-    },
-    {
-      "id": "tappa",
-      "tipo": "testo",
-      "label": "TAPPA",
-      "valore": "1/3",
-      "label_pos": [
-        14,
-        50
-      ],
-      "valore_pos": [
-        14,
-        57
-      ],
-      "scala_valore": 1,
-      "colore": [
-        255,
-        255,
-        255
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ]
-    },
-    {
-      "id": "totale",
-      "tipo": "testo",
-      "nota": "tempo totale di gara, allineato al conto alla rovescia",
-      "label": "TOTALE",
-      "valore": "0'00\"00",
-      "label_pos": [
-        76,
-        13
-      ],
-      "valore_pos": [
-        76,
-        20
-      ],
-      "scala_valore": 1,
-      "colore": [
-        255,
-        255,
-        255
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ]
-    },
-    {
-      "id": "posizione",
-      "tipo": "testo",
-      "label": "POS",
-      "valore": "8/8",
-      "label_pos": [
-        76,
-        31
-      ],
-      "valore_pos": [
-        76,
-        38
-      ],
-      "scala_valore": 1,
+      "scala_valore": 2,
       "colore": [
         255,
         255,
@@ -150,16 +42,14 @@
     {
       "id": "distanza",
       "tipo": "testo",
-      "nota": "distanza in metri",
       "label": "DIST",
-      "valore": "000",
       "label_pos": [
-        76,
-        50
+        96,
+        6
       ],
       "valore_pos": [
-        76,
-        57
+        96,
+        13
       ],
       "scala_valore": 1,
       "colore": [
@@ -171,22 +61,33 @@
         160,
         160,
         160
-      ]
+      ],
+      "allinea": "destra"
     },
     {
-      "id": "velocita",
+      "id": "giri",
+      "tipo": "barra",
+      "nota": "contagiri: 29 tacche da 2 px che crescono verso destra (barra_h -> barra_h+2, allineate in basso); colori neon dello spettro, punta bianca, ultime tacche gialle (limite) che lampeggiano al massimo; spente = filo scuro",
+      "barra_pos": [
+        8,
+        31
+      ],
+      "barra_w": 86,
+      "barra_h": 2
+    },
+    {
+      "id": "tempo",
       "tipo": "testo",
-      "label": "VEL",
-      "valore": "120",
+      "label": "TIME",
       "label_pos": [
-        200,
-        12
+        224,
+        6
       ],
       "valore_pos": [
-        200,
-        20
+        224,
+        13
       ],
-      "scala_valore": 3,
+      "scala_valore": 2,
       "colore": [
         255,
         255,
@@ -196,71 +97,108 @@
         160,
         160,
         160
-      ]
+      ],
+      "nota": "conto alla rovescia, lampeggia negli ultimi 10 s"
     },
     {
-      "id": "unita_vel",
+      "id": "posizione",
       "tipo": "testo",
-      "testo": "KM/H",
-      "pos": [
-        258,
-        39
-      ],
-      "scala": 0,
-      "colore": [
-        160,
-        160,
-        160
-      ]
-    },
-    {
-      "id": "giri",
-      "tipo": "barra",
-      "label": "GIRI",
+      "label": "POS",
       "label_pos": [
-        200,
-        50
+        312,
+        6
       ],
-      "barra_pos": [
-        200,
-        57
+      "valore_pos": [
+        312,
+        13
       ],
-      "barra_w": 72,
-      "barra_h": 5,
-      "spessore_bordo": 1,
-      "colore_bordo": [
-        230,
-        230,
-        230
-      ],
-      "colore_riempimento": [
-        120,
-        120,
-        120
+      "scala_valore": 1,
+      "colore": [
+        255,
+        255,
+        255
       ],
       "colore_label": [
         160,
         160,
         160
+      ],
+      "allinea": "destra"
+    },
+    {
+      "id": "totale",
+      "tipo": "testo",
+      "valore_pos": [
+        312,
+        21
+      ],
+      "scala_valore": 1,
+      "colore": [
+        160,
+        160,
+        160
+      ],
+      "colore_label": [
+        160,
+        160,
+        160
+      ],
+      "allinea": "destra",
+      "nota": "tempo totale di gara"
+    },
+    {
+      "id": "tappe",
+      "tipo": "barra",
+      "nota": "un segmento per tappa: fatte piene, in corso lampeggia, da fare un filo scuro",
+      "barra_pos": [
+        225,
+        31
+      ],
+      "barra_w": 87,
+      "barra_h": 2,
+      "colore_riempimento": [
+        235,
+        235,
+        235
       ]
     },
     {
       "id": "show",
       "tipo": "testo",
-      "testo": "SHOW OFF",
+      "testo": "SHOW ON",
       "pos": [
-        200,
-        100
+        312,
+        37
       ],
-      "scala": 1,
+      "scala": 0,
+      "allinea": "destra",
       "colore": [
         255,
         255,
         255
       ],
-      "nota": "SHOW ON quando Gianni/Gesu' sono in scena"
+      "nota": "solo quando lo show e' in scena, sotto il gruppo di destra"
     }
   ],
-  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'cornice' = rettangolo con bordo di 'spessore' px; tipo 'testo' con label/valore = etichetta in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala'; tipo 'barra' = etichetta a label_pos, bordo rettangolo (barra_pos, barra_w, barra_h) di 'spessore_bordo' px in colore_bordo, riempimento pieno in colore_riempimento di 'riempimento_px' px di larghezza e barra_h-2*spessore_bordo di altezza, partendo da barra_pos+spessore_bordo. In gioco i testi hanno un'ombra nera di 1 px per restare leggibili sul cielo chiaro.",
-  "note_tema": "Tema bianco e nero (decisione D7): solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Testo primario bianco [255,255,255], etichette/secondario grigio [160,160,160], barra riempimento grigio [120,120,120], bordo barra bianco [255,255,255], cornice grigio [160,160,160]. Preview hud/varianteB/hud_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti."
+  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'testo' con label/valore = etichetta (font mini 3x5) in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala' (0 = font mini); \"allinea\": \"destra\" = le x sono il bordo destro del testo (etichetta e valore); tipo 'barra' = riga sottile senza cornice: contagiri a tacche (giri) o un segmento per tappa (tappe); accese piene, spente un filo scuro. Ogni testo ha un'ombra nera di 1 px.",
+  "griglia": {
+    "gruppi_x": [
+      [
+        8,
+        96
+      ],
+      [
+        116,
+        204
+      ],
+      [
+        224,
+        312
+      ]
+    ],
+    "riga_etichette_y": 6,
+    "riga_numeri_y": 13,
+    "riga_piccola_2_y": 21,
+    "riga_sottile_y": 31
+  }
 }

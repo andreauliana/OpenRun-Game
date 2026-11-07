@@ -31,3 +31,6 @@ sglavinated_src/out/collaudatore/**/prova_gate*.log
 sglavinated_src/.auto_rosso
 sglavinated_src/.auto_verifica.tmp
 sglavinated_src/.auto_*.tmp
+# Output gate finiti fuori posto (07/11): vanno in UFFICIO/Officina/Test area/
+sglavinated_src/test_area/
+sglavinated_src/test_smoke/

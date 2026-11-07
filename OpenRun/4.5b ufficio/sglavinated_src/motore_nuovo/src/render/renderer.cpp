@@ -15,11 +15,14 @@ constexpr f32 LANE_DASH_CYCLE = 2000.0f;
 constexpr f32 LANE_DASH_LENGTH = 1000.0f;
 constexpr f32 LINEA_ARRIVO_PROF = 600.0f; // traguardo: 3 file di scacchi da 200 unita'
 constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
+// Trama ordinata Bayer 4x4 (regole palette/dithering 29/10): riva del ponte.
+constexpr u8 BAYER4[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
 }
 
 Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     // Preallocato una volta: zero allocazioni per frame nel ciclo di gioco.
     projs_.reserve(Road::DRAW_DIST);
+    copertura_.reserve((size_t)Road::DRAW_DIST * 4);
 }
 
 i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
@@ -71,18 +74,79 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     // Disegna i segmenti dal piu' LONTANO al piu' VICINO: projs_ e' ordinato
     // vicino->lontano (i=0 e' il segmento piu' vicino), quindi si itera a ritroso.
     // Il vicino, disegnato per ultimo, copre correttamente il lontano (painter).
+    // Oggetti a terra (boe, barche, faro): ordinati dal piu' lontano, si
+    // disegnano man mano che la strada arriva alla loro profondita'.
+    terraOrdine_.clear();
+    if (oggettiTerra_ && giro_ > 0.0f) {
+        const f32 zMax = projs_.back().worldZ;
+        for (const SpriteInstance& o : *oggettiTerra_) {
+            // Il motoscafo naviga avanti e indietro lungo il suo tratto di mare.
+            const f32 corsa = o.anima == 2 ? 5000.0f * std::sin(tempoS_ * 0.22f + o.fase) : 0.0f;
+            f32 zr = std::fmod(o.worldZ + corsa - playerZ, giro_);
+            if (zr < 0.0f) zr += giro_;
+            if (zr > projs_.front().worldZ && zr < zMax) terraOrdine_.push_back({zr, &o});
+        }
+        std::sort(terraOrdine_.begin(), terraOrdine_.end(),
+                  [](const auto& a, const auto& b) { return a.first > b.first; });
+    }
+    // Copertura: per ogni campione, la riga piu' alta raggiunta dalla strada
+    // piu' vicina (da li' in giu' lo schermo e' gia' strada o terreno vicino).
+    copertura_.resize(projs_.size());
+    f32 cop = (f32)Framebuffer::HEIGHT;
+    for (size_t k = 0; k < projs_.size(); ++k) {
+        copertura_[k] = cop;
+        cop = std::min(cop, projs_[k].screenY);
+    }
+    size_t prossimoTerra = 0;
     for (size_t i = projs_.size() - 1; i > 0; --i) {
         const auto& vicino = projs_[i - 1];
         const auto& lontano = projs_[i];
+        const bool confine = lontano.index != vicino.index;
         // Salta se il segmento vicino non e' sotto il lontano (degenero/contigui).
-        if (lontano.screenY >= vicino.screenY) continue;
-        // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
-        drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+        if (lontano.screenY < vicino.screenY) {
+            // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
+            drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+            // Ponte e rampe: il fianco dell'impalcato sotto il bordo vicino
+            // (le fette piu' vicine lo coprono dove la strada passa davanti).
+            // Solo da vicino: lontano, visto di taglio, sembrava una sbarra scura.
+            if (vicino.sospeso && lontano.sospeso && vicino.worldZ < VIADOTTO_VISTA_Z &&
+                vicino.screenY <= copertura_[i - 1] + 1.0f)
+                drawFianco(vicino);
+        }
+        // Oggetti a terra in questa fetta: sopra il loro terreno, sotto la
+        // strada piu' vicina (disegnata dopo).
+        while (prossimoTerra < terraOrdine_.size() && terraOrdine_[prossimoTerra].first >= vicino.worldZ) {
+            const f32 zr = terraOrdine_[prossimoTerra].first;
+            const SpriteInstance& o = *terraOrdine_[prossimoTerra].second;
+            ++prossimoTerra;
+            const f32 a = 1.0f / lontano.worldZ, b = 1.0f / vicino.worldZ;
+            const f32 t = b > a ? std::clamp((1.0f / zr - a) / (b - a), 0.0f, 1.0f) : 1.0f;
+            const f32 base = lontano.acquaY + (vicino.acquaY - lontano.acquaY) * t;
+            const f32 cx = lontano.screenX + (vicino.screenX - lontano.screenX) * t;
+            const f32 scl = Road::DEPTH / zr;
+            if (base < (f32)HORIZON_Y - 1.0f) continue;
+            drawOggettoTerra(o, cx, base, scl);
+        }
+        if (!confine) continue;
+        // Andrea 07/11 sera: all'uscita dal ponte comparivano rettangoli neri.
+        // Erano pile di tratti nascosti dietro la cresta della discesa: il
+        // pittore dal lontano al vicino non le copriva. Una struttura si
+        // disegna solo se la sua base e' visibile (sopra la strada piu' vicina),
+        // e le colonne si tagliano alla riga dove comincia la strada vicina.
+        const f32 coperto = copertura_[i - 1];
+        const bool visibile = vicino.screenY <= coperto + 1.0f;
         // Piloni del ponte: al confine fra due segmenti, ogni PILONE_OGNI_SEG,
         // dai bordi dell'impalcato giu' fino all'acqua.
-        if (vicino.acqua && lontano.acqua && lontano.index != vicino.index &&
-            (lontano.index % PILONE_OGNI_SEG) == 0)
-            drawPilone(vicino);
+        if (vicino.acqua && lontano.acqua && (lontano.index % PILONE_OGNI_SEG) == 0) {
+            if (visibile) drawPilone(vicino);
+        }
+        // Rampe del ponte: pile del viadotto fino al terreno basso.
+        else if (visibile && vicino.worldZ < VIADOTTO_VISTA_Z && vicino.sospeso && lontano.sospeso && !lontano.acqua &&
+                 (lontano.index % PILA_OGNI_SEG) == 0)
+            drawPila(vicino);
+        if (visibile && lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
+            drawLuciTerra(vicino);
+        if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
     }
     drawRoadsideMarkers(playerZ);
 }
@@ -105,12 +169,37 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     if (sospeso) {
         const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
         const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
-        const u32 acqua = ponte ? (band ? tema_.acqua : tema_.acquaAlt) : (band ? tema_.erba : tema_.erbaAlt);
+        // Riva sotto le rampe (Andrea 07/11): avvicinandosi al ponte il prato
+        // diventa spiaggia (trama Bayer dove sfuma), poi la schiuma e il mare;
+        // si vola sopra la costa prima di arrivare sull'acqua.
+        const i32 riva = cur.riva;
+        const bool mare = ponte || (riva >= 0 && riva < RIVA_ACQUA);
+        const bool schiuma = !ponte && riva == RIVA_ACQUA;
+        const bool spiaggia = !mare && riva >= 0 && riva < RIVA_ACQUA + RIVA_SABBIA + RIVA_SFUMA;
+        const f32 sfuma = spiaggia ? std::clamp((f32)(riva - RIVA_ACQUA - RIVA_SABBIA) / (f32)RIVA_SFUMA, 0.0f, 1.0f) : 1.0f;
+        const u32 prato = band ? tema_.erba : tema_.erbaAlt;
+        const u32 sabbia = band ? tema_.sabbia : lerpColore(tema_.sabbia, 0xFF000000u, 0.1f);
+        const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
         const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
         const f32 ya = next.acquaY, yb = cur.acquaY;
         for (i32 y = a0; y <= a1; ++y) {
+            if (spiaggia && !schiuma) {
+                if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
+                else {
+                    u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                    for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                        riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < sfuma ? prato : sabbia;
+                }
+                continue;
+            }
+            if (schiuma) { // battigia: schiuma bianca a trama sul mare
+                u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                    riga[x] = BAYER4[y & 3][(x + (i32)(tempoS_ * 4.0f)) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
+                continue;
+            }
             fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
-            if (!ponte) continue; // erba sotto le rampe: niente onde
+            if (!mare) continue; // erba sotto le rampe: niente onde
             // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
             // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
             const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
@@ -235,6 +324,230 @@ void Renderer::drawPilone(const Road::ProjectedSeg& p) {
     const i32 trave = std::max(1, (i32)(TORRE_TRAVE * pxY));
     fb_.fillRect(xs[0] - w / 2, cima, xs[1] + w / 2, cima + trave, 0xFF2E2E3Cu);
     fb_.hline(xs[0] + w / 2, xs[1] - w / 2, cima + trave, tema_.rumbleAlt);
+}
+
+void Renderer::drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa) {
+    // Lampada pixel: spenta = punto scuro del colore; accesa = nucleo bianco,
+    // alone del colore e croce di luce corta (niente sfumature: pochi colori).
+    if (r < 1) r = 1;
+    if (!accesa) {
+        fb_.fillRect(x - r / 2, y - r / 2, x + (r - 1) / 2, y + (r - 1) / 2, lerpColore(colore, 0xFF000000u, 0.55f));
+        return;
+    }
+    const i32 alone = r + std::max(1, r / 2);
+    fb_.fillRect(x - alone, y, x + alone, y, colore);
+    fb_.fillRect(x, y - alone, x, y + alone, colore);
+    fb_.fillRect(x - r / 2 - 1, y - r / 2 - 1, x + (r - 1) / 2 + 1, y + (r - 1) / 2 + 1, colore);
+    fb_.fillRect(x - r / 2, y - r / 2, x + (r - 1) / 2, y + (r - 1) / 2, 0xFFFFFFFFu);
+}
+
+void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl) {
+    // Mare vivo (Andrea 07/11: barche che si muovono, elementi inattesi e
+    // dinamici). Movimenti lenti e piccoli, orologio logico (deterministico).
+    const f32 pxMondo = scl * (f32)Framebuffer::WIDTH / 2;   // pixel per unita' mondo
+    const f32 t = tempoS_;
+    f32 x = o.worldX, dy = 0.0f;
+    switch (o.anima) {
+    case 1: x += 700.0f * std::sin(t * 0.13f + o.fase); dy = 70.0f * std::sin(t * 1.5f + o.fase); break;
+    case 2: dy = 40.0f * std::sin(t * 4.0f + o.fase); break;
+    case 3: dy = 50.0f * std::sin(t * 2.1f + o.fase); break;
+    default: break;
+    }
+    const f32 sx = cx + x * pxMondo;
+    const f32 sy = base + dy * pxMondo;
+    if (o.anima == 5) {
+        // Gabbiano: una V che sbatte le ali, gira in tondo sopra l'acqua.
+        const f32 gx = sx + 1800.0f * pxMondo * std::sin(t * 0.45f + o.fase);
+        const f32 gy = base - (o.scale + 300.0f * std::sin(t * 0.9f + o.fase * 2.0f)) * pxMondo;
+        const i32 a = std::clamp((i32)(260.0f * pxMondo), 2, 16);
+        const bool su = ((i32)(t * 7.0f + o.fase * 3.0f) & 1) != 0;
+        const i32 X = (i32)gx, Y = (i32)gy;
+        if (Y < 0) return;
+        for (i32 k = 0; k <= a; ++k) {
+            const i32 h = su ? -(k * 2) / 3 : (k < a / 2 ? -k / 2 : -(a - k) / 2);
+            fb_.put(X - k, Y + h, 0xFFF2F2EEu);
+            fb_.put(X + k, Y + h, 0xFFF2F2EEu);
+            if (a >= 6) { fb_.put(X - k, Y + h + 1, 0xFF7C7C8Cu); fb_.put(X + k, Y + h + 1, 0xFF7C7C8Cu); }
+        }
+        fb_.put(X, Y, 0xFF1C1C28u);
+        return;
+    }
+    if (o.anima == 6) {
+        // Pesce che salta ogni tanto: arco, spruzzo all'entrata e all'uscita.
+        const f32 ciclo = 4.5f, salto = 0.7f;
+        const f32 p = std::fmod(t + o.fase, ciclo);
+        const i32 X0 = (i32)sx, Y0 = (i32)base;
+        const i32 r = std::clamp((i32)(90.0f * pxMondo), 1, 8);
+        if (p < salto) {
+            const f32 u = p / salto;
+            const i32 X = X0 + (i32)((u - 0.5f) * 900.0f * pxMondo);
+            const i32 Y = Y0 - (i32)(std::sin(u * 3.14159f) * 650.0f * pxMondo);
+            const i32 l = std::max(2, r * 2);
+            const i32 inc = u < 0.5f ? -1 : 1; // muso in su all'andata, in giu' al ritorno
+            for (i32 k = -l / 2; k <= l / 2; ++k) {
+                fb_.put(X + k, Y + inc * k / 2, 0xFFC8D8E8u);
+                if (r > 1) fb_.put(X + k, Y + inc * k / 2 + 1, 0xFF5A7A9Au);
+            }
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 - 1, 0xFFC8D8E8u); // coda
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 + 1, 0xFFC8D8E8u);
+        }
+        if (p < 0.12f || (p > salto - 0.05f && p < salto + 0.15f)) { // spruzzi
+            const i32 X = X0 + (p < 0.12f ? -1 : 1) * (i32)(450.0f * pxMondo);
+            for (i32 k = -r; k <= r; k += std::max(1, r / 2)) fb_.put(X + k, Y0 - std::abs(k) / 2 - 1, 0xFFF0F4F8u);
+        }
+        return;
+    }
+    drawSprite(o, sx, sy, pxMondo * SPRITE_WORLD_PX * o.scale);
+    if (o.anima == 4 && o.sprite) {
+        // Faro: la lanterna pulsa e il fascio ruota (si allunga a destra e a sinistra).
+        const f32 sc = pxMondo * SPRITE_WORLD_PX * o.scale;
+        const i32 lx = (i32)sx, ly = (i32)(sy - (f32)o.sprite->height * sc + 11.0f * sc);
+        const f32 giro = std::sin(t * 1.8f + o.fase);
+        const i32 len = (i32)(std::abs(giro) * 60.0f * sc);
+        const i32 dir = giro > 0.0f ? 1 : -1;
+        for (i32 k = 0; k < len; ++k)
+            if (((k + (i32)(t * 20.0f)) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
+        drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, std::abs(giro) > 0.3f);
+    }
+}
+
+void Renderer::drawFianco(const Road::ProjectedSeg& p) {
+    // Spessore dell'impalcato (Andrea 07/11 sera, transizioni pulite): una
+    // fascia scura sotto la strada con il filo di luce del tema, cosi' il
+    // viadotto in curva si legge come una struttura unica.
+    const i32 cy = (i32)p.screenY;
+    const i32 terra = std::min((i32)p.acquaY, Framebuffer::HEIGHT) - 1;
+    if (cy + 1 > terra) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+    const i32 th = std::max(1, (i32)(p.scale * 112.0f * 260.0f));
+    const i32 y1 = std::min(cy + th, terra);
+    const i32 x0 = (i32)(p.screenX - hw), x1 = (i32)(p.screenX + hw);
+    fb_.fillRect(x0, cy + 1, x1, y1, 0xFF4A4A58u);
+    if (th >= 3 && y1 == cy + th) fb_.hline(x0, x1, y1, tema_.rumbleAlt);
+}
+
+void Renderer::drawPila(const Road::ProjectedSeg& p) {
+    // Rampe del ponte (Andrea 07/11): l'impalcato poggia su una pila centrale
+    // che scende fino al terreno basso (prato, spiaggia, mare). Una sola
+    // colonna chiara, senza travi: vista di lato si legge come un viadotto,
+    // non come una fila di portali scuri.
+    const i32 deck = (i32)p.screenY;
+    const i32 base = std::min((i32)p.acquaY, Framebuffer::HEIGHT - 1);
+    if (base <= deck + 3) return; // impalcato quasi a terra: niente moncherini
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const i32 w = std::clamp((i32)(pxUnita * 300.0f), 1, 36);
+    const i32 cx = (i32)p.screenX;
+    if (cx + w < 0 || cx - w >= Framebuffer::WIDTH) return;
+    fb_.fillRect(cx - w / 2, deck, cx + (w - 1) / 2, base, 0xFF5E5E6Cu);
+    if (w >= 3) fb_.fillRect(cx - w / 2, deck, cx - w / 2 + w / 3, base, 0xFF8E8E9Eu); // lato in luce
+}
+
+void Renderer::drawLuciTerra(const Road::ProjectedSeg& p) {
+    // Luci di avvicinamento (Andrea 07/11): una fila di lampade basse ai due
+    // lati; una luce piu' viva corre verso il ponte (o se ne allontana dopo la
+    // discesa, o corre verso il bivio). Come le luci di una pista.
+    if (p.screenY < HORIZON_Y || p.screenY >= (f32)Framebuffer::HEIGHT) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+    const i32 n = p.luci / LUCI_OGNI_SEG;
+    const i32 corsa = (i32)(tempoS_ * 14.0f);
+    const i32 fase = p.versoLuci >= 0 ? (n + corsa) % 6 : ((n - corsa) % 6 + 6) % 6;
+    const bool accesa = fase == 0 || (fase == 1 && (corsa & 1));
+    const i32 r = std::clamp((i32)(pxUnita * 150.0f), 1, 8);
+    const i32 palo = std::clamp((i32)(pxUnita * 420.0f), 2, 26);
+    const i32 y = (i32)p.screenY;
+    for (i32 lato : {-1, 1}) {
+        const i32 x = (i32)(p.screenX + lato * (hw + pxUnita * 380.0f));
+        if (x < -8 || x > Framebuffer::WIDTH + 8) continue;
+        fb_.fillRect(x, y - palo, x, y, 0xFF505060u);
+        drawLampada(x, y - palo, r, tema_.rumbleAlt, accesa);
+    }
+}
+
+void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
+    // Strutture sopra la strada nei punti di passaggio (Andrea 07/11:
+    // "transizioni dei diversi tracciati piu' interessanti"). Disegnate a
+    // codice, pochi colori + il colore del tema, come le torri del ponte.
+    if (p.screenY < HORIZON_Y - 40 || p.scale <= 0.0f) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 pxY = p.scale * 112.0f;
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * std::max(p.carr.fattore, 0.5f);
+    // Piedi delle colonne nascosti dietro una cresta: si tagliano dove
+    // comincia la strada piu' vicina; se e' nascosto anche il portale, niente.
+    const i32 terra = std::min((i32)p.screenY, (i32)coperto);
+    const bool lampo = ((i32)(tempoS_ * 2.5f) & 1) != 0;
+    auto colonna = [&](i32 cx, i32 w, i32 cima, u32 scuro, u32 luce) {
+        fb_.fillRect(cx - w / 2, cima, cx + (w - 1) / 2, terra, scuro);
+        if (w >= 3) fb_.fillRect(cx - w / 2, cima, cx - w / 2 + w / 3, terra, luce);
+    };
+    if (tipo == 1) {
+        // Porta del ponte: due torri alte, doppia trave, luci rosse in cima
+        // che lampeggiano e una fila di lampade del tema sulla trave.
+        const i32 w = std::clamp((i32)(pxUnita * 300.0f), 1, 70);
+        const i32 cima = terra - (i32)(3600.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.32f), x1 = (i32)(p.screenX + hw * 1.32f);
+        colonna(x0, w, cima, 0xFF2E2E3Au, 0xFF6E6E84u);
+        colonna(x1, w, cima, 0xFF2E2E3Au, 0xFF6E6E84u);
+        const i32 t1 = cima + (i32)(500.0f * pxY), sp = std::max(1, (i32)(220.0f * pxY));
+        fb_.fillRect(x0, t1, x1, t1 + sp, 0xFF22222Cu);
+        const i32 t2 = cima + (i32)(1100.0f * pxY);
+        fb_.fillRect(x0, t2, x1, t2 + std::max(1, sp / 2), 0xFF22222Cu);
+        fb_.hline(x0, x1, t1 + sp, tema_.rumbleAlt);
+        const i32 r = std::clamp((i32)(pxUnita * 110.0f), 1, 7);
+        for (i32 k = 1; k < 8; ++k) {
+            const i32 lx = x0 + (x1 - x0) * k / 8;
+            drawLampada(lx, t1 + sp / 2, r, tema_.rumbleAlt, ((k + (i32)(tempoS_ * 8.0f)) % 4) == 0);
+        }
+        drawLampada(x0, cima - r, r + 1, 0xFFFF3030u, lampo);
+        drawLampada(x1, cima - r, r + 1, 0xFFFF3030u, lampo);
+    } else if (tipo == 2) {
+        // Portale dell'autostrada: pali grigi, trave a traliccio e un pannello
+        // per corsia con la freccia bianca in giu' (niente testi).
+        const i32 w = std::clamp((i32)(pxUnita * 120.0f), 1, 30);
+        const i32 cima = terra - (i32)(2300.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.12f), x1 = (i32)(p.screenX + hw * 1.12f);
+        colonna(x0, w, cima, 0xFF5A5A66u, 0xFF9A9AA8u);
+        colonna(x1, w, cima, 0xFF5A5A66u, 0xFF9A9AA8u);
+        const i32 sp = std::max(1, (i32)(140.0f * pxY));
+        fb_.fillRect(x0, cima, x1, cima + sp, 0xFF5A5A66u);
+        if (sp >= 4) // traliccio: diagonali a passo fisso
+            for (i32 x = x0; x < x1; x += sp) fb_.fillRect(x, cima + 1, x + std::max(1, sp / 4), cima + sp - 1, 0xFF34343Cu);
+        const i32 corsie = p.carr.fattore > 1.5f ? 4 : 2;
+        const f32 corsia = 2.0f * hw / (f32)corsie;
+        const i32 ph = std::max(2, (i32)(520.0f * pxY));
+        const i32 pw = std::max(2, (i32)(corsia * 0.7f));
+        for (i32 c = 0; c < corsie; ++c) {
+            const i32 cx = (i32)(p.screenX - hw + corsia * ((f32)c + 0.5f));
+            const i32 y0 = cima + sp;
+            fb_.fillRect(cx - pw / 2, y0, cx + pw / 2, y0 + ph, 0xFFF0F0F0u);
+            fb_.fillRect(cx - pw / 2 + 1, y0 + 1, cx + pw / 2 - 1, y0 + ph - 1, 0xFF0E5A34u);
+            if (ph >= 6) { // freccia in giu'
+                const i32 aw = std::max(1, pw / 5);
+                fb_.fillRect(cx - aw / 2, y0 + ph / 5, cx + aw / 2, y0 + ph * 3 / 5, 0xFFF0F0F0u);
+                for (i32 r = 0; r <= ph / 4; ++r)
+                    fb_.hline(cx - ph / 4 + r, cx + ph / 4 - r, y0 + ph * 3 / 5 + r, 0xFFF0F0F0u);
+            }
+        }
+    } else if (tipo == 3) {
+        // Arco della citta': piloni del colore del tema, trave con file di
+        // lampadine che si rincorrono (insegna da luna park, senza scritte).
+        const i32 w = std::clamp((i32)(pxUnita * 200.0f), 1, 48);
+        const i32 cima = terra - (i32)(2700.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.18f), x1 = (i32)(p.screenX + hw * 1.18f);
+        const u32 scuro = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.6f);
+        colonna(x0, w, cima, scuro, tema_.rumbleAlt);
+        colonna(x1, w, cima, scuro, tema_.rumbleAlt);
+        const i32 sp = std::max(2, (i32)(420.0f * pxY));
+        fb_.fillRect(x0 - w / 2, cima, x1 + w / 2, cima + sp, 0xFF1A1A22u);
+        fb_.hline(x0 - w / 2, x1 + w / 2, cima, tema_.rumbleAlt);
+        fb_.hline(x0 - w / 2, x1 + w / 2, cima + sp, tema_.rumbleAlt);
+        const i32 r = std::clamp((i32)(pxUnita * 70.0f), 1, 4);
+        const i32 passo = std::max(r * 3, 3);
+        const i32 corsa = (i32)(tempoS_ * 10.0f);
+        for (i32 x = x0, k = 0; x <= x1; x += passo, ++k)
+            drawLampada(x, cima + sp / 2, r, (k & 1) ? 0xFFFFD040u : tema_.rumbleAlt, ((k + corsa) % 3) == 0);
+    }
 }
 
 void Renderer::drawRoadsideMarkers(f32 playerZ) {
@@ -386,6 +699,7 @@ bool Renderer::aggiornaTransizioneTema(f32 dt) {
     tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, temaA_.rumbleAlt, transizioneT_);
     tema_.acqua = lerpColore(temaDa_.acqua, temaA_.acqua, transizioneT_);
     tema_.acquaAlt = lerpColore(temaDa_.acquaAlt, temaA_.acquaAlt, transizioneT_);
+    tema_.sabbia = lerpColore(temaDa_.sabbia, temaA_.sabbia, transizioneT_);
     return transizioneT_ < 1.0f;
 }
 
@@ -559,7 +873,7 @@ const Sprite* Renderer::risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
                              bool frena, f32 fumoS, const DanniAuto* danni, i32 posa,
-                             f32 distanzaM) {
+                             f32 distanzaM, const EffettiAuto* fx) {
     // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
     // auto.giocatore.* (finto 3D alla OutRun). Game sceglie il fotogramma con
     // `posa` (sterzo leggero/forte, salita, discesa); se il fotogramma chiesto
@@ -604,14 +918,30 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) {
-            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
-            // piu' stretta della carrozzeria, niente barra nera piena.
-            const i32 mezza = w / 2 - w / 8;
-            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
-                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
-                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        {
+            // Ombra di contatto (Andrea 07/11: "deve sembrare piu' sulla strada"):
+            // sempre presente, scurisce la strada sotto l'auto (niente barra nera
+            // piena), sporge sotto le ruote con i bordi arrotondati. Quando l'auto
+            // salta resta a terra, si stringe e si schiarisce.
+            const f32 alto = std::min(1.0f, (f32)sollevamento / 12.0f);
+            const i32 mezza = (i32)((f32)w * (0.52f - 0.14f * alto));
+            u32* px = fb_.data();
+            for (i32 r = -3; r <= AUTO_OMBRA_RIGHE; ++r) {
+                const i32 y = AUTO_GIOCATORE_TERRA_Y + r;
+                if (y < 0 || y >= Framebuffer::HEIGHT) continue;
+                const i32 m = r <= 0 ? mezza : mezza - (r * r * w) / 36; // righe in basso piu' corte
+                u32 luce = r >= AUTO_OMBRA_RIGHE ? 70u : 45u;           // % di luce rimasta
+                if (alto > 0.0f) luce += (u32)(30.0f * alto);
+                for (i32 x = cx - m; x <= cx + m; ++x) {
+                    if (x < 0 || x >= Framebuffer::WIDTH) continue;
+                    if ((x <= cx - m + 1 || x >= cx + m - 1) && ((x + y) & 1)) continue; // bordo a scacchiera
+                    u32& c = px[y * Framebuffer::WIDTH + x];
+                    c = (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+                        ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+                }
+            }
         }
+        if (fx) drawEffettiAuto(*fx, cx, cy, w, h, true);
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         // Geometria del disegno (AUTO1 A2): rettangolo del fotogramma e
@@ -791,6 +1121,7 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
         }
     }
+    if (fx) drawEffettiAuto(*fx, cx, cy, w, h, false);
     if (fumoS >= 0.0f) {
         // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s
         // per ruota posteriore, sale, si allarga e si dirada (pixel a
@@ -872,6 +1203,149 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     if (dx * dx + dy * dy <= r * r && (k < 0.6f || ((px + dx + py + dy) & 1) == 0))
                         fb_.put(px + dx, py + dy, col);
         }
+    }
+}
+
+namespace {
+// Numero pseudo-casuale 0..1 fisso per indice (niente stato, deterministico).
+f32 casoFx(u32 n) {
+    n = (n ^ 61u) ^ (n >> 16); n *= 9u; n ^= n >> 4; n *= 0x27d4eb2du; n ^= n >> 15;
+    return (f32)(n & 0xFFFFu) / 65535.0f;
+}
+u32 scuroFx(u32 c, u32 luce) {
+    return (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+           ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+}
+} // namespace
+
+void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32 h, bool sotto) {
+    const f32 t = fx.tempoS;
+    const i32 frame = (i32)(t * 60.0f);
+    auto cerchio = [&](i32 px, i32 py, i32 r, u32 col, bool rado) {
+        for (i32 dy = -r; dy <= r; ++dy)
+            for (i32 dx = -r; dx <= r; ++dx)
+                if (dx * dx + dy * dy <= r * r && (!rado || ((px + dx + py + dy) & 1) == 0))
+                    fb_.put(px + dx, py + dy, col);
+    };
+    if (sotto) {
+        // Razzo: due getti di spinta dalla pancia dell'auto fino a terra
+        // (Andrea 07/11, "elevazione a mo' di razzo"). Nucleo bianco, alone
+        // ciano, bordo magenta a scacchiera; la lunghezza sfarfalla.
+        if (fx.razzo <= 0.05f) return;
+        const i32 terra = AUTO_GIOCATORE_TERRA_Y + 1;
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 gx = cx + lato * (w * 3 / 10);
+            const i32 fondo = terra - (((frame >> 1) + (lato > 0 ? 1 : 0)) & 1);
+            for (i32 y = cy - 2; y <= fondo; ++y) {
+                const f32 k = fondo > cy ? (f32)(y - cy) / (f32)(fondo - cy + 1) : 1.0f; // 0 in alto, 1 a terra
+                const i32 r = 1 + (k > 0.6f ? 1 : 0);
+                for (i32 dx = -r - 1; dx <= r + 1; ++dx) {
+                    const i32 ax = std::abs(dx);
+                    u32 col;
+                    if (ax == 0 && k < 0.8f) col = 0xFFFFFFFFu;
+                    else if (ax <= r) col = 0xFF70F0FFu;
+                    else { if (((gx + dx + y + frame) & 1) != 0) continue; col = 0xFFFF40C8u; }
+                    fb_.put(gx + dx, y, col);
+                }
+            }
+            // Riverbero a terra: un ventaglio di pixel chiari che sfarfalla.
+            for (i32 dx = -5; dx <= 5; ++dx)
+                if (((dx + frame) & 1) == 0) fb_.put(gx + dx, terra + 1, 0xFF70F0FFu);
+        }
+        return;
+    }
+
+    // Scie di velocita' nel razzo: righe che corrono dal punto di fuga verso
+    // gli angoli bassi, ai lati dell'auto.
+    if (fx.razzo > 0.5f) {
+        const f32 a = (fx.razzo - 0.5f) * 2.0f;
+        for (u32 n = 0; n < 12; ++n) {
+            const f32 lato = (n & 1) ? 1.0f : -1.0f;
+            const f32 ang = 0.18f + 0.55f * casoFx(n * 7u + 1u);            // pendenza della riga
+            const f32 p = std::fmod(t * (1.6f + casoFx(n * 3u + 2u)) + casoFx(n), 1.0f);
+            if (casoFx(n * 11u + 5u) > a) continue;
+            const f32 l0 = 60.0f + p * 160.0f, l1 = l0 + 10.0f + p * 18.0f;
+            for (f32 l = l0; l < l1; l += 1.0f) {
+                const i32 x = 160 + (i32)(lato * l * std::cos(ang));
+                const i32 y = 118 + (i32)(l * std::sin(ang) * 0.75f);
+                if (y < 120 || y >= Framebuffer::HEIGHT) continue;
+                if (x > cx - w / 2 - 4 && x < cx + w / 2 + 4 && y > cy - h - 4) continue;
+                if (p > 0.6f && ((x + y) & 1)) continue;
+                fb_.put(x, y, 0xFFE8F8FFu);
+            }
+        }
+    }
+    // Fiamme dagli scarichi nel razzo: due lingue arancio/gialle che sfarfallano.
+    if (fx.razzo > 0.3f) {
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 sx = cx + lato * (w / 5);
+            const i32 sy = cy - 3;
+            const i32 l = 1 + (i32)(casoFx((u32)frame * 2u + (lato > 0 ? 1u : 0u)) * 3.0f * fx.razzo);
+            for (i32 k = 0; k <= l; ++k) {
+                fb_.put(sx, sy + k, k == 0 ? 0xFFFFFFA0u : (k < l ? 0xFFFFC020u : 0xFFFF5020u));
+                if (k < l - 1) { fb_.put(sx - 1, sy + k, 0xFFFF8020u); fb_.put(sx + 1, sy + k, 0xFFFF8020u); }
+            }
+        }
+    }
+    // Sgommata in curva: sbuffi dalla ruota esterna (piu' grandi) e da quella
+    // interna, che vengono verso lo schermo e si allargano; segni scuri a terra.
+    if (fx.sgommata > 0.05f && fx.latoSgommata != 0) {
+        constexpr f32 OGNI_S = 0.07f, VITA_S = 0.45f;
+        const f32 fase = std::fmod(t, OGNI_S);
+        for (i32 n = 0; n < 7; ++n) {
+            const f32 eta = fase + (f32)n * OGNI_S;
+            if (eta > VITA_S) continue;
+            const f32 k = eta / VITA_S;
+            for (i32 ruota = 0; ruota < 2; ++ruota) {
+                const i32 lato = ruota == 0 ? fx.latoSgommata : -fx.latoSgommata;
+                const f32 forza = ruota == 0 ? fx.sgommata : fx.sgommata * 0.4f;
+                if (forza < 0.15f) continue;
+                const i32 r = 1 + (i32)(k * 5.0f * forza);
+                const i32 px = cx + lato * (w * 2 / 5) + (i32)((f32)lato * k * 10.0f) + ((n & 1) ? 1 : -1);
+                const i32 py = cy - 2 + (i32)(k * 5.0f) - (i32)(k * k * 8.0f);
+                cerchio(px, py, r, k < 0.35f ? 0xFFF0F0F0u : 0xFFB8B8C8u, k >= 0.5f);
+            }
+        }
+        // Segni delle gomme: due file di pixel scuri sotto le ruote.
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 gx = cx + lato * (w * 2 / 5);
+            for (i32 y = cy + 1; y <= std::min(cy + 4, Framebuffer::HEIGHT - 1); ++y)
+                if (((y + frame) & 1) == 0) fb_.put(gx, y, 0xFF202028u);
+        }
+    }
+    // Fuori strada: zolle d'erba e terra che schizzano dalle ruote posteriori.
+    if (fx.polvere > 0.05f) {
+        const u32 erba = scuroFx(tema_.erba, 70u);
+        for (u32 n = 0; n < 14; ++n) {
+            if (casoFx(n * 13u + 3u) > fx.polvere) continue;
+            const f32 k = std::fmod(t * 2.8f + casoFx(n), 1.0f);
+            const i32 lato = (n & 1) ? 1 : -1;
+            const f32 vx = (f32)lato * (14.0f + 30.0f * casoFx(n * 5u + 1u));
+            const f32 vy = -(30.0f + 45.0f * casoFx(n * 9u + 4u));
+            const i32 px = cx + lato * (w * 2 / 5) + (i32)(vx * k * 0.6f);
+            const i32 py = cy - 1 + (i32)((vy * k + 110.0f * k * k) * 0.6f);
+            const u32 col = (n % 3 == 0) ? 0xFF6B4A2Au : erba;
+            fb_.put(px, py, col);
+            if (n % 4 == 0) { fb_.put(px + 1, py, col); fb_.put(px, py + 1, col); }
+        }
+    }
+    // Atterraggio di un salto: polvere che scappa ai lati lungo la strada,
+    // scintille sotto la pancia se il salto era alto.
+    if (fx.atterraggioS >= 0.0f && fx.atterraggioS < 0.4f) {
+        const f32 k = fx.atterraggioS / 0.4f;
+        for (i32 lato = -1; lato <= 1; lato += 2)
+            for (i32 j = 0; j < 3; ++j) {
+                const i32 px = cx + lato * (w / 2 - 2 + (i32)(k * (14.0f + 6.0f * fx.forzaAtterraggio)) + j * 4);
+                const i32 py = AUTO_GIOCATORE_TERRA_Y - j - (i32)(k * 4.0f);
+                cerchio(px, py, 1 + (i32)(k * 3.0f), k < 0.4f ? 0xFFE0E0E0u : 0xFFA8A8B0u, k >= 0.45f);
+            }
+        if (fx.forzaAtterraggio > 0.5f && k < 0.5f)
+            for (u32 n = 0; n < 8; ++n) {
+                const i32 lato = (n & 1) ? 1 : -1;
+                const i32 px = cx + lato * (2 + (i32)(casoFx(n) * (f32)(w / 2)) + (i32)(k * 30.0f * casoFx(n + 9u)));
+                const i32 py = AUTO_GIOCATORE_TERRA_Y - (i32)(k * 10.0f * casoFx(n + 20u));
+                fb_.put(px, py, (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u);
+            }
     }
 }
 
@@ -959,18 +1433,10 @@ void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala,
     }
 }
 
-namespace {
-void cornicePiena(Framebuffer& fb, i32 x, i32 y, i32 w, i32 h, i32 sp, u32 col) {
-    fb.fillRect(x, y, x + w - 1, y + sp - 1, col);
-    fb.fillRect(x, y + h - sp, x + w - 1, y + h - 1, col);
-    fb.fillRect(x, y, x + sp - 1, y + h - 1, col);
-    fb.fillRect(x + w - sp, y, x + w - 1, y + h - 1, col);
-}
-} // namespace
-
 void Renderer::drawHudDati(const HudDati& d) {
-    // Disposizione da hud.json (riferimento strutturale all'originale: distanza
-    // in alto a sinistra, velocita' e tempo in alto a destra). Tema bianco e nero.
+    // Striscia compatta in alto da hud.json (Andrea 07/11): velocita' a
+    // sinistra, radio al centro (Game::drawMusica), tempo e gara a destra.
+    // Niente box ne' cornici: solo testo con ombra di 1 px, la scena resta libera.
     char buf[32];
     for (const HudElemento& e : hud_) {
         if (d.premiazione && e.id == "show") continue; // la scritta della premiazione passa di li'
@@ -985,33 +1451,31 @@ void Renderer::drawHudDati(const HudDati& d) {
                         fb_.put(x, y, 0xFF000000u | (r << 16) | (g << 8) | b);
                     }
             }
-            cornicePiena(fb_, e.x + 1, e.y + 1, e.w, e.h, e.spessore, 0xFF000000u); // ombra
-            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.colore);
-            continue;
-        }
-        if (e.tipo == "linea") { // divisorio sottile dentro il box
-            fb_.fillRect(e.x, e.y, e.x + std::max(e.w, 1) - 1, e.y + std::max(e.h, 1) - 1, e.colore);
             continue;
         }
         if (e.tipo == "barra") {
-            f32 pieno = e.id == "giri" ? d.giri : 0.0f;
-            pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
-            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
-            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.coloreBordo);
-            const i32 interno = e.w - 2 * e.spessore;
-            const i32 px = (i32)(pieno * (f32)interno);
-            fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.w - e.spessore - 1, e.y + e.h - e.spessore - 1, 0xFF000000u);
-            if (px > 0)
-                fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.spessore + px - 1, e.y + e.h - e.spessore - 1,
-                             pieno > 0.9f ? e.coloreBordo : e.coloreRiempimento);
+            // Tappe: un segmento per tappa sulla riga di fondo, senza cornice.
+            // Fatte piene, in corso lampeggia piano, da fare un filo scuro.
+            if (!d.gara) continue;
+            const i32 n = std::max(1, d.tappe);
+            const i32 passo = (e.w + 1) / n, largo = passo - 1;
+            const i32 fondo = e.y + e.h - 1;
+            for (i32 i = 0; i < n; ++i) {
+                const i32 x = e.x + i * passo;
+                const bool spenta = i >= d.tappa || (i == d.tappa - 1 && (d.frame / 30) % 2);
+                if (spenta) { fb_.fillRect(x, fondo, x + largo - 1, fondo, 0xFF3C3C54u); continue; }
+                fb_.fillRect(x + 1, e.y + 1, x + largo, e.y + e.h, 0xFF000000u); // ombra
+                fb_.fillRect(x, e.y, x + largo - 1, fondo, e.coloreRiempimento);
+            }
             continue;
         }
         // testo: valore vivo per id; gli elementi di gara spariscono fuori gara.
         const bool soloGara = e.id == "tempo" || e.id == "totale" || e.id == "tappa" || e.id == "posizione";
+        if (e.id == "show" && !d.show) continue; // SHOW ON solo quando lo show e' in scena
         if (soloGara && !d.gara) continue;
         const char* valore = nullptr;
         u32 coloreValore = e.colore;
-        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%d M", (i32)(d.km * 1000.0f)); valore = buf; }
+        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%dM", (i32)(d.km * 1000.0f)); valore = buf; }
         else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
         else if (e.id == "tempo") {
             std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);
@@ -1025,24 +1489,28 @@ void Renderer::drawHudDati(const HudDati& d) {
         }
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
-        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
+        // allinea "destra": label_pos e valore_pos sono il bordo destro del testo.
+        const auto xa = [&e](i32 x, const char* t, i32 scala) { return e.destra ? x - larghezzaTesto(t, scala) : x; };
+        if (e.lx >= 0) drawTesto(xa(e.lx, e.label.c_str(), e.scalaLabel), e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
         if (e.id == "posizione" && d.sorpasso > 0.0f && valore && e.vx >= 0) {
             // Sorpasso (Andrea 29/10): la posizione fa un saltello, lampeggia
             // giallo/bianco con una freccia in su accanto, poi torna normale.
             const f32 t = 1.0f - d.sorpasso; // 0 all'inizio del sorpasso
             const i32 su = t < 0.2f ? (i32)(3.0f * std::sin(t / 0.2f * 3.14159f) + 0.5f) : 0;
             const u32 col = (d.frame / 4) % 2 ? 0xFFFFE040u : 0xFFFFFFFFu;
-            drawTesto(e.vx, e.vy - su, valore, col, e.scalaValore);
-            const i32 fx = e.vx + larghezzaTesto(valore, e.scalaValore) + 3;
+            const i32 vx = xa(e.vx, valore, e.scalaValore);
+            drawTesto(vx, e.vy - su, valore, col, e.scalaValore);
+            // Freccia verde accanto, verso l'interno dello schermo.
+            const i32 fx = e.destra ? vx - 8 : vx + larghezzaTesto(valore, e.scalaValore) + 3;
             const i32 fy = e.vy - su + 1;
             for (i32 r = 0; r <= 2; ++r) fb_.hline(fx + 2 - r, fx + 2 + r, fy + r, 0xFF40E060u);
             fb_.fillRect(fx + 1, fy + 3, fx + 3, fy + 5, 0xFF40E060u);
             continue;
         }
-        if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
+        if (valore && e.vx >= 0) drawTesto(xa(e.vx, valore, e.scalaValore), e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
-            const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();
-            drawTesto(e.tx, e.ty, t, e.colore, e.scala);
+            const char* t = e.id == "show" ? "SHOW ON" : e.testo.c_str();
+            drawTesto(xa(e.tx, t, e.scala), e.ty, t, e.colore, e.scala);
         }
     }
 

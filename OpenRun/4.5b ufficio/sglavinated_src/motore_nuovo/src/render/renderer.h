@@ -20,6 +20,12 @@ struct SpriteInstance {
     // Rivali (Andrea 29/10, "piu' evidenti"): freccia del colore dell'auto
     // sopra il tetto, niente nomi. 0 = nessuna freccia.
     u32 segnalino = 0;
+    // Oggetti a terra del ponte (Andrea 07/11, "che si muovano leggermente"):
+    // 0 fermo, 1 barca a vela (deriva e dondola), 2 motoscafo (naviga),
+    // 3 boa (ondeggia), 4 faro (luce che lampeggia e fascio), 5 gabbiano (vola,
+    // senza sprite; scale = quota in unita' mondo), 6 pesce che salta (senza sprite).
+    u8 anima = 0;
+    f32 fase = 0.0f;
 };
 
 // Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
@@ -32,6 +38,19 @@ struct DanniAuto {
     bool fumo = false;      // fumo dal cofano
     f32 tempoS = 0.0f;      // orologio per animare il fumo
     static constexpr i32 DANNI_MAX = 8;
+};
+
+// Animazioni dell'auto del giocatore (Andrea 07/11: "curve, ponti, salti,
+// velocita' massima, elevazione a mo' di razzo"). Le calcola Game, le disegna
+// drawPlayerCar attorno all'auto; nessuno stato nel Renderer (tutto da tempoS).
+struct EffettiAuto {
+    f32 tempoS = 0.0f;       // orologio di gioco (sfarfallii, sbuffi)
+    f32 razzo = 0.0f;        // 0..1 modalita' razzo: getti sotto l'auto, fiamme, scie
+    f32 sgommata = 0.0f;     // 0..1 fumo dalle gomme in curva veloce
+    i32 latoSgommata = 0;    // lato esterno della curva: -1 sinistra, +1 destra
+    f32 polvere = 0.0f;      // 0..1 fuori strada: zolle che schizzano dalle ruote
+    f32 atterraggioS = -1.0f;// secondi dall'atterraggio di un salto (< 0 = nessuno)
+    f32 forzaAtterraggio = 0.0f; // 0..1 quanto era alto il salto
 };
 
 // RIV punto 3 (finto 3D alla OutRun): fotogrammi dell'auto del giocatore,
@@ -47,8 +66,9 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
 // BLOCCATO (Andrea 06/11): valori dell'auto del giocatore in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
-constexpr i32 AUTO_GIOCATORE_TERRA_Y = 222; // riga dello schermo dove appoggiano le ruote (224 = fondo)
-constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 100; // Andrea 06/11 sera: 125 px era troppo grande; ~1/3 dello schermo, appoggiata in basso
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 219; // riga delle ruote; Andrea 07/11: 3 righe piu' su per far vedere l'ombra di contatto sotto
+constexpr i32 AUTO_OMBRA_RIGHE = 3;        // righe d'ombra sotto la riga delle ruote
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 50;  // Andrea 07/11: 100 px era il doppio dei rivali; 50 = grande come un rivale alla stessa riga (44 px x 1.1), scala intera 2
 
 enum PosaGiocatore : i32 {
     // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena
@@ -76,17 +96,18 @@ struct TemaColori {
     u32 rumbleAlt = 0xFFFF00FF;
     u32 acqua = 0xFF1A3A8C;     // ponte (tratto "ponte"): acqua ai lati
     u32 acquaAlt = 0xFF14306E;
+    u32 sabbia = 0xFFD8C08Au;   // riva sotto le rampe del ponte (Andrea 07/11)
 };
 
-// Un elemento dell'HUD da dati/ui/hud.json (variante B, bianco e nero).
-// tipo: "cornice" | "testo" | "barra"; l'id lega l'elemento a un dato vivo.
+// Un elemento dell'HUD da dati/ui/hud.json (striscia in alto, senza box).
+// tipo: "testo" | "barra"; l'id lega l'elemento a un dato vivo.
 struct HudElemento {
     std::string id, tipo, label, testo;
-    i32 x = 0, y = 0, w = 0, h = 0, spessore = 2;   // cornice / barra (barra_pos, barra_w, barra_h)
+    i32 x = 0, y = 0, w = 0, h = 0;   // barra (barra_pos, barra_w, barra_h)
     i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
     i32 scalaValore = 1, scala = 1;
     i32 scalaLabel = 0;     // 0 = font mini 3x5 (etichette piccole e coerenti)
-    i32 oscuraSfondo = 0;   // cornice: % di scurimento dell'interno (0 = trasparente)
+    bool destra = false;    // "allinea": "destra": le x sono il bordo destro del testo
     u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
 };
 
@@ -136,6 +157,13 @@ public:
     // Interpolazione lineare di due colori 0xAARRGGBB, canale per canale.
     static u32 lerpColore(u32 da, u32 a, f32 t);
 
+    // Orologio dei lampeggi (luci del ponte, porte, archi): avanzato da
+    // Game::update con il dt logico, quindi deterministico.
+    void avanzaTempo(f32 dt) { tempoS_ += dt; }
+    // Oggetti appoggiati al terreno basso del ponte (boe, barche, scogli, faro;
+    // Andrea 07/11): disegnati dentro drawRoad nell'ordine dei segmenti, cosi'
+    // l'impalcato piu' vicino li copre. Il vettore resta del Game.
+    void impostaOggettiTerra(const std::vector<SpriteInstance>* v) { oggettiTerra_ = v; }
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
@@ -146,11 +174,16 @@ public:
     // distanzaM: metri percorsi (AUTO1 A2: passo delle ruote del componente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
                        bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr,
-                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f);
+                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f,
+                       const EffettiAuto* fx = nullptr);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
     void drawHud(f32 speedPct, i32 gear, bool offroad);
+    // Effetti attorno all'auto (EffettiAuto): getti del razzo sotto la
+    // carrozzeria (sotto=true, prima dell'auto) oppure fumo, zolle, polvere
+    // dell'atterraggio, fiamme e scie (sotto=false, dopo l'auto).
+    void drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32 h, bool sotto);
 
     // HUD da hud.json: se impostato, sostituisce drawHud/drawGara.
     void impostaHud(std::vector<HudElemento> elementi) { hud_ = std::move(elementi); }
@@ -306,6 +339,24 @@ private:
     static constexpr f32 ONDA_PASSO_Z = 260.0f;     // righe di onde sull'acqua (unita' mondo)
     static constexpr f32 ONDA_PASSO_X = 520.0f;     // larghezza di una cella di riflesso
     void drawRoadsideMarkers(f32 playerZ);
+    // Dintorni del ponte e transizioni (Andrea 07/11).
+    void drawPila(const Road::ProjectedSeg& p);                 // pila del viadotto sotto le rampe
+    void drawFianco(const Road::ProjectedSeg& p);               // spessore dell'impalcato
+    void drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto);     // porta del ponte, autostrada, citta'
+    void drawLuciTerra(const Road::ProjectedSeg& p);            // luci di avvicinamento a terra
+    void drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa);
+    // Oggetto a terra del ponte alla profondita' zr: base e centro gia' proiettati.
+    void drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl);
+    static constexpr i32 PILA_OGNI_SEG = 12;        // pile del viadotto sotto le rampe
+    static constexpr f32 VIADOTTO_VISTA_Z = 9000.0f; // pile e fianco dell'impalcato solo entro questa distanza
+    static constexpr i32 LUCI_OGNI_SEG = 3;         // una coppia di luci a terra ogni 3 segmenti
+    static constexpr i32 RIVA_ACQUA = Road::RIVA_ACQUA;
+    static constexpr i32 RIVA_SABBIA = Road::RIVA_SABBIA;
+    static constexpr i32 RIVA_SFUMA = Road::RIVA_SFUMA;
+    f32 tempoS_ = 0.0f;
+    const std::vector<SpriteInstance>* oggettiTerra_ = nullptr;
+    std::vector<std::pair<f32, const SpriteInstance*>> terraOrdine_; // riusato (zero alloc a regime)
+    std::vector<f32> copertura_; // per campione: riga piu' alta della strada piu' vicina (riusato)
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s);
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

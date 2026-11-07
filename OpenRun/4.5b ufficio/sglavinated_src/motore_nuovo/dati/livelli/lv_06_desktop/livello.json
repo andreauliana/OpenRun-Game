@@ -148,10 +148,13 @@
       "oggetto.lv_06_desktop.ciuffo"
     ],
     "cespugli": [
-      "oggetto.lv_06_desktop.cespuglio"
+      "oggetto.lv_06_desktop.cespuglio",
+      "oggetto.lv_06_desktop.cespuglio_fiori"
     ],
     "alberi": [
-      "oggetto.lv_06_desktop.albero"
+      "oggetto.lv_06_desktop.albero",
+      "oggetto.lv_06_desktop.albero_pino",
+      "oggetto.lv_06_desktop.albero_fiori"
     ],
     "edifici": [
       "oggetto.lv_06_desktop.edificio_alto",

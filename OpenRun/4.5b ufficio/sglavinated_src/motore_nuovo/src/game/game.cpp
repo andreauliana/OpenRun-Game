@@ -80,6 +80,7 @@ constexpr f32 CURVA_SPINTA = 0.015f; // (storico, lineare: non piu' usato)
 // le curve dolci si tengono a gas pieno, quelle forti chiedono di alzare il
 // piede o frenare un attimo. Bloccato: REGOLE_AUTO_GIOCATORE.md.
 constexpr f32 CURVA_SPINTA_V2 = 1200.0f;
+constexpr f32 CURVA_DERIVA_SCHERMO = 140.0f; // Andrea 07/11: scivolata visiva verso l'esterno in curva (unita' di offsetX)
 // Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
 // senza essere contrastato dalla spinta centrifuga.
@@ -110,7 +111,7 @@ constexpr f32 SCALA_AUTO = 1.4f;
 // colore sopra il tetto (renderer drawSegnalino). Niente nomi di piloti: in
 // classifica ogni rivale e' il colore della sua auto. Stesso ordine degli
 // sprite caricati da runner e test (auto_rivale_<colore>_retro).
-constexpr f32 SCALA_RIVALE = 1.4f;
+constexpr f32 SCALA_RIVALE = 1.7f; // Andrea 07/11: rivali un po' piu' grandi (prima 1.4); alla riga delle ruote ~57 px, giocatore 50
 // Andrea 05/11 notte: nomi inventati da 6 lettere al posto dei colori.
 const char* const NOMI_RIVALI[] = {"KARVEN", "MIRADO", "TOVESK", "BRANZI", "OKUMAR", "SELVIN", "DAROKA"};
 // Triangolo sopra i rivali (Andrea 05/11 sera): acceso nei primi
@@ -201,7 +202,9 @@ constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza str
 // BLOCCATO (Andrea 06/11): sollevamento e salti dell'auto in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
 constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
 constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
-constexpr f32 SOLLEVAMENTO_MAX_PX = 0.0f; // Andrea 06/11 sera: l'auto resta sempre appoggiata alla strada
+constexpr f32 SOLLEVAMENTO_MAX_PX = 7.0f; // Andrea 07/11: alla punta l'auto si alza "a mo' di razzo" (06/11 era 0)
+constexpr f32 RAZZO_ATTESA_S = 1.0f;      // secondi alla punta in rettilineo prima del decollo
+constexpr f32 PONTE_GIUNTO_M = 12.0f;     // giunti del ponte: un "tac" ogni 12 m (~7 al secondo alla punta)
 constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
 constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
 // Passaggio assistito al bivio (feedback Andrea 23/10): niente spinta delle
@@ -405,6 +408,7 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
     audioBuf_.resize(AUDIO_FRAME_SAMPLES * 2, 0);
     sprites_.reserve(6); // niente allocazioni per traffico dopo il primo frame
     scenaSprites_.reserve(16); // cresce a init() con i cartelloni
+    ren_.impostaOggettiTerra(&oggettiTerra_); // boe, barche, faro sotto il ponte (Andrea 07/11)
 }
 
 void Game::caricaLivello(const std::string& livelloId) {
@@ -469,6 +473,20 @@ void Game::caricaLivello(const std::string& livelloId) {
         road_.build(descs, seed_);
         // Una zona per segmento della Road (stesso conteggio di build()).
         if (!zonaSeg_.empty()) zonaSeg_.resize(road_.segments().size(), (u8)paesaggioBase_);
+        // Portali nei passaggi di zona (Andrea 07/11, transizioni piu'
+        // interessanti): portale con pannelli entrando e uscendo
+        // dall'autostrada, arco di luci entrando e uscendo dalla citta'.
+        // Mai nella zona del bivio (due carreggiate) ne' sul ponte.
+        const i32 nZ = (i32)zonaSeg_.size();
+        const i32 limite = nZ - Road::BIVIO_SEG - Road::BIVIO_RETTILINEO_PRIMA;
+        for (i32 i = 1; i < nZ && i < limite; ++i) {
+            const Zona prima = (Zona)zonaSeg_[(size_t)(i - 1)], ora = (Zona)zonaSeg_[(size_t)i];
+            if (prima == ora || road_.segments()[(size_t)i].sospeso) continue;
+            u8 tipo = 0;
+            if (ora == Zona::Autostrada || prima == Zona::Autostrada) tipo = 2;
+            else if (ora == Zona::Citta || prima == Zona::Citta) tipo = 3;
+            if (tipo) road_.impostaPortale(i, tipo);
+        }
     } else {
         // Fallback deterministico (hardcoded): 400 segmenti con pattern inventato.
         std::vector<f32> curves, hills;
@@ -565,6 +583,7 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // (seme fisso, zero alloc nel ciclo di gioco).
     // Sono puramente decorativi: NON generano collisione (oggetti non solidi).
     oggettiStrada_.clear();
+    oggettiTerra_.clear();
     ren_.clearOggettoSprites();
     const i32 nOggetti = (i32)oggettiBordoStrada_.size();
     const f32 giro = (f32)road_.totalLength();
@@ -597,6 +616,10 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             }
         const i32 idxDx = carica("comuni", "freccia_curva_dx");
         const i32 idxSx = carica("comuni", "freccia_curva_sx");
+        // Pezzi comuni del ponte: registrati prima di prendere i puntatori.
+        const char* kPonte[6] = {"boa", "barca", "scoglio", "faro", "ombrellone", "motoscafo"};
+        i32 idxPonte[6];
+        for (i32 q = 0; q < 6; ++q) idxPonte[q] = carica("comuni", kPonte[q]);
         PezziPaesaggio pz;
         for (i32 j = 0; j < nOggetti; ++j) {
             const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
@@ -610,6 +633,12 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         pz.frecciaSx = idxSx >= 0 ? ren_.oggettoSprite(idxSx) : nullptr;
         pz.densitaAlberi = paesaggioDensitaAlberi_;
         disponiPaesaggio(road_, zonaSeg_, pz, zBivioInizio, seed_, oggettiStrada_);
+        // Dintorni del ponte (Andrea 07/11): boe, barche, scogli e faro sul
+        // mare, alberi e cespugli sul prato basso sotto le rampe.
+        PezziPonte pp;
+        const Sprite** dest[6] = {&pp.boa, &pp.barca, &pp.scoglio, &pp.faro, &pp.ombrellone, &pp.motoscafo};
+        for (i32 q = 0; q < 6; ++q) *dest[q] = idxPonte[q] >= 0 ? ren_.oggettoSprite(idxPonte[q]) : nullptr;
+        disponiTerraPonte(road_, pz, pp, seed_, oggettiTerra_);
         std::printf("paesaggio %s: %zu oggetti a zone\n", livelloId.c_str(), oggettiStrada_.size());
         return;
     }
@@ -833,6 +862,12 @@ void Game::init(const std::string& livelloId) {
     tempoGiocoS_ = 0; // secondo contatore di gioco riparte con la partita
     playerFlipping_ = false;
     sollevamento_ = 0.0f;
+    razzoAttesaS_ = 0.0f;
+    sgommata_ = 0.0f;
+    latoSgommata_ = 0;
+    saltoMaxAltezza_ = 0.0f;
+    atterraggioS_ = -1.0f;
+    forzaAtterraggio_ = 0.0f;
     sollevamentoFaseS_ = 0.0f;
     saltoAltezza_ = 0.0f;
     saltoVY_ = 0.0f;
@@ -961,7 +996,6 @@ void Game::leggiHud() {
         e.testo = stringa(o, "testo");
         e.x = numero(o, "x", 0); e.y = numero(o, "y", 0);
         e.w = numero(o, "w", 0); e.h = numero(o, "h", 0);
-        e.spessore = numero(o, "spessore", numero(o, "spessore_bordo", 2));
         coppia(o, "barra_pos", e.x, e.y);
         e.w = numero(o, "barra_w", e.w); e.h = numero(o, "barra_h", e.h);
         coppia(o, "label_pos", e.lx, e.ly);
@@ -970,12 +1004,12 @@ void Game::leggiHud() {
         e.scalaValore = numero(o, "scala_valore", 1);
         e.scala = numero(o, "scala", 1);
         e.scalaLabel = numero(o, "scala_label", 0);
-        e.oscuraSfondo = numero(o, "oscura_sfondo", 0);
+        e.destra = stringa(o, "allinea") == "destra";
         rgb(o, "colore", e.colore);
         rgb(o, "colore_label", e.coloreLabel);
         rgb(o, "colore_bordo", e.coloreBordo);
         rgb(o, "colore_riempimento", e.coloreRiempimento);
-        if (e.tipo == "cornice" || e.tipo == "testo" || e.tipo == "barra" || e.tipo == "linea") elementi.push_back(std::move(e));
+        if (e.tipo == "testo" || e.tipo == "barra") elementi.push_back(std::move(e));
     }
     ren_.impostaHud(std::move(elementi));
 }
@@ -983,6 +1017,7 @@ void Game::leggiHud() {
 void Game::leggiTemaDaFile(const JsonValue* radice) {
     // Default storici: livelli senza "colori" o "tema_grafico" restano come prima.
     TemaColori tema;
+    tema.sabbia = 0; // 0 = non indicata nel livello: si ricava dal prato sotto
     stileCartellone_.clear();
     if (radice && jsonIsObject(*radice)) {
         const JsonObject& root = jsonAsObject(*radice);
@@ -995,6 +1030,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "rumble", tema.rumbleAlt);
             leggiColore(c, "acqua", tema.acqua);
             leggiColore(c, "acqua_alt", tema.acquaAlt);
+            leggiColore(c, "sabbia", tema.sabbia); // riva sotto le rampe del ponte (facoltativo)
         }
         tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
         sollevamentoAttivo_ = false;
@@ -1015,6 +1051,9 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
                 if (jsonIsString(o)) oggettiBordoStrada_.push_back(jsonAsString(o));
         }
     }
+    // Spiaggia sotto le rampe del ponte: se il livello non la indica, un
+    // beige spinto verso il prato del tema (di notte resta scura).
+    if (tema.sabbia == 0) tema.sabbia = Renderer::lerpColore(0xFFD8C08Au, tema.erba, 0.35f);
     ren_.impostaTema(tema);
 }
 
@@ -1716,6 +1755,7 @@ void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
     f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
+    ren_.avanzaTempo(dt);             // lampeggi delle luci del ponte e dei portali (Andrea 07/11)
     fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
     aggiornaRadio();
     if (scenaStrada()) {
@@ -1917,14 +1957,33 @@ void Game::aggiornaGuida(f32 dt) {
         player_.vincolaAllaCorsia();
 
         // All'arrivo l'auto torna giu' e resta a terra (Andrea 06/11).
-        const bool inVolo = sollevamentoAttivo_ && !player_.offroad && !arrivo_ &&
+        const bool allaPunta = sollevamentoAttivo_ && !player_.offroad && !arrivo_ && !playerFlipping_ &&
             player_.speed >= SOLLEVAMENTO_SOGLIA_V * player_.maxSpeed() &&
             std::abs(curvaQui) <= SOLLEVAMENTO_CURVA_MAX;
+        razzoAttesaS_ = allaPunta ? razzoAttesaS_ + dt : 0.0f;
+        const bool inVolo = allaPunta && razzoAttesaS_ >= RAZZO_ATTESA_S;
         const f32 obiettivo = inVolo ? 1.0f : 0.0f;
         const f32 passoSoll = dt / (inVolo ? SOLLEVAMENTO_SALITA_S : SOLLEVAMENTO_DISCESA_S);
         sollevamento_ = sollevamento_ < obiettivo ? std::min(obiettivo, sollevamento_ + passoSoll)
                                                   : std::max(obiettivo, sollevamento_ - passoSoll);
         sollevamentoFaseS_ = sollevamento_ > 0.0f ? sollevamentoFaseS_ + dt : 0.0f;
+        // Sgommata (Andrea 07/11): sterzando forte dentro una curva veloce le
+        // gomme fumano dal lato esterno; anche a sterzo pieno alla punta.
+        {
+            const f32 sterzo = player_.sterzo();
+            const f32 forza = curvaQui * vRel * vRel; // + = spinta verso destra
+            f32 obiettivoSg = 0.0f;
+            if (!player_.offroad && !playerFlipping_ && !arrivo_) {
+                if (std::abs(sterzo) > 0.4f && sterzo * forza < 0.0f)
+                    obiettivoSg = std::clamp((std::abs(forza) - 0.25f) / 0.45f, 0.0f, 1.0f);
+                if (std::abs(sterzo) > 0.9f && vRel > 0.8f) obiettivoSg = std::max(obiettivoSg, 0.45f);
+            }
+            if (obiettivoSg > 0.0f)
+                latoSgommata_ = forza > 0.05f ? 1 : forza < -0.05f ? -1 : (sterzo < 0.0f ? 1 : -1);
+            sgommata_ = obiettivoSg > sgommata_ ? std::min(obiettivoSg, sgommata_ + dt / 0.15f)
+                                                : std::max(obiettivoSg, sgommata_ - dt / 0.3f);
+        }
+        if (atterraggioS_ >= 0.0f) atterraggioS_ = atterraggioS_ + dt > 1.0f ? -1.0f : atterraggioS_ + dt;
         aggiornaSalto(dt);
         if (tempoExtraS_ > 0.0f) tempoExtraS_ -= dt;
         if (urtoEffettoS_ > 0.0f) urtoEffettoS_ = std::max(0.0f, urtoEffettoS_ - dt);
@@ -2055,6 +2114,8 @@ void Game::aggiornaGuida(f32 dt) {
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
+    // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
+    mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
@@ -2074,7 +2135,8 @@ void Game::aggiornaMenu(f32 dt) {
     gi.offRoad = false;
     showManager_.aggiorna(gi);
     disegnoShow_.aggiorna(tempoGiocoS_, showManager_);
-    // Menu e risultati: solo la radio (motore spento).
+    // Menu e risultati: solo la radio (motore spento), piena.
+    mixer_.setOvattato(0.0f);
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, 0.0f);
 }
 
@@ -2132,7 +2194,8 @@ void Game::render() {
         ? 6.2831853f * kGiro * kGiro * (3.0f - 2.0f * kGiro)
         : (conPose ? 0.0f : steeringLean * 1.5f) +
           (player_.offroad ? (player_.x < 0.0f ? -1.0f : 1.0f) * (conPose ? 0.05f : 0.18f) : 0.0f);
-    const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
+    // Razzo: galleggia su e giu' piano (Andrea 07/11).
+    const f32 ondeggio = 0.8f + 0.2f * std::sin(sollevamentoFaseS_ * 4.0f);
     const f32 saltoPx = std::min(SALTO_MAX_PX, saltoAltezza_ * SALTO_PX_PER_UNITA);
     // Urto: sobbalzo e scodata (piu' forti col traffico), poi la scena trema.
     f32 urtoK = 0.0f, sobbalzoPx = 0.0f, scodata = 0.0f;
@@ -2146,6 +2209,13 @@ void Game::render() {
     if (player_.offroad && !playerFlipping_ && player_.speed > 0.05f * player_.maxSpeed())
         sobbalzoPx += (f32)(((u32)(tempoGiocoS_ * 30.0f)) & 1u) * (1.0f + player_.speed / player_.maxSpeed());
     if (rientroS_ >= 0.0f) sobbalzoPx += 4.0f * std::sin(3.14159f * rientroS_ / RIENTRO_S);
+    // Atterraggio di un salto: l'auto schiaccia le sospensioni per 0.2 s.
+    if (atterraggioS_ >= 0.0f && atterraggioS_ < 0.2f)
+        sobbalzoPx -= (1.0f + 2.0f * forzaAtterraggio_) * std::sin(3.14159f * atterraggioS_ / 0.2f);
+    // Ponte: i giunti di dilatazione danno un "tac" ritmato sotto le ruote.
+    if (road_.sospesoAt(road_.playerZ) && !playerFlipping_ && saltoAltezza_ <= 0.0f && sollevamento_ < 0.2f &&
+        player_.speed > 0.3f * player_.maxSpeed() && std::fmod(km_ * 1000.0f, PONTE_GIUNTO_M) < 1.5f)
+        sobbalzoPx += 1.0f;
     // Arrivo: frenata con il muso che si abbassa e una scodata, poi un
     // rimbalzo quando l'auto si ferma.
     bool frena = false;
@@ -2181,6 +2251,14 @@ void Game::render() {
     // sterzo (leggero/forte a sinistra e destra); senza sterzo la salita o la
     // discesa, misurata sulla quota a due segmenti davanti e dietro (non sui
     // sobbalzi). Durante l'incidente resta il fotogramma dritto.
+    // Forza della curva sotto l'auto (+ = spinta verso destra), media su tre
+    // punti per non scattare tra un segmento e l'altro; pesa col quadrato della
+    // velocita' come la spinta vera (CURVA_SPINTA_V2).
+    const f32 vRelCurva = player_.maxSpeed() > 0.0f ? player_.speed / player_.maxSpeed() : 0.0f;
+    const f32 curvaMedia = (road_.curvaAt(player_.z - (f32)Road::SEG_LEN) + road_.curvaAt(player_.z) +
+                            road_.curvaAt(player_.z + (f32)Road::SEG_LEN)) / 3.0f;
+    const f32 forzaCurva = playerFlipping_ || arrivo_ ? 0.0f
+        : std::clamp(curvaMedia / 0.8f, -1.0f, 1.0f) * vRelCurva * vRelCurva;
     i32 posaGiocatore = POSA_GIOCATORE_DRITTA;
     if (!playerFlipping_) {
         constexpr f32 SOGLIA_PENDENZA = 80.0f; // unita' di quota su 4 segmenti (~10% di pendenza)
@@ -2190,14 +2268,34 @@ void Game::render() {
         // 4 livelli di sterzo per lato (Andrea 06/11).
         const f32 a = std::abs(sterzo);
         const i32 livello = a >= 0.9f ? 4 : a >= 0.65f ? 3 : a >= 0.4f ? 2 : a >= 0.15f ? 1 : 0;
-        if (livello > 0) posaGiocatore = (sterzo < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + livello - 1;
+        // Curve (Andrea 07/11, "reagire bene alle curve"): sterzando dentro una
+        // curva veloce l'auto mostra una posa piu' girata dello sterzo da solo,
+        // come se la carrozzeria lavorasse contro la spinta.
+        i32 livelloCurva = livello;
+        if (livello > 0 && sterzo * forzaCurva < 0.0f) {
+            const f32 f = std::abs(forzaCurva);
+            livelloCurva = std::min(4, livello + (f > 0.55f ? 2 : f > 0.2f ? 1 : 0));
+        }
+        if (livello > 0) posaGiocatore = (sterzo < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + livelloCurva - 1;
         else if (pendenza > SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_SALITA;
         else if (pendenza < -SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_DISCESA;
     }
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
+    EffettiAuto fx;
+    fx.tempoS = tempoGiocoS_;
+    fx.razzo = playerFlipping_ ? 0.0f : sollevamento_;
+    fx.sgommata = sgommata_;
+    fx.latoSgommata = latoSgommata_;
+    fx.polvere = player_.offroad && !playerFlipping_ && player_.maxSpeed() > 0.0f
+        ? std::min(1.0f, 1.4f * player_.speed / player_.maxSpeed()) : 0.0f;
+    fx.atterraggioS = atterraggioS_;
+    fx.forzaAtterraggio = forzaAtterraggio_;
+    // In curva l'auto scivola di qualche pixel verso l'esterno sullo schermo
+    // (fino a ~5 px, CURVA_DERIVA_SCHERMO unita' * 0.035), poi torna al centro.
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia + forzaCurva * CURVA_DERIVA_SCHERMO,
+                       player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
-                       posaGiocatore, km_ * 1000.0f);
+                       posaGiocatore, km_ * 1000.0f, &fx);
     // Paletti abbattuti: volano via di lato, girando, dal fianco dell'auto.
     for (const Detrito& d : detriti_) {
         if (d.t < 0.0f) continue;
@@ -2283,7 +2381,15 @@ void Game::aggiornaSalto(f32 dt) {
     } else {
         saltoVY_ -= SALTO_GRAVITA * dt;
         saltoAltezza_ += (saltoVY_ - vStrada) * dt;
-        if (saltoAltezza_ <= 0.0f || playerFlipping_) saltoAltezza_ = 0.0f; // atterraggio
+        saltoMaxAltezza_ = std::max(saltoMaxAltezza_, saltoAltezza_);
+        if (saltoAltezza_ <= 0.0f || playerFlipping_) { // atterraggio
+            saltoAltezza_ = 0.0f;
+            if (!playerFlipping_) {
+                atterraggioS_ = 0.0f;
+                forzaAtterraggio_ = std::min(1.0f, saltoMaxAltezza_ * SALTO_PX_PER_UNITA / SALTO_MAX_PX);
+            }
+            saltoMaxAltezza_ = 0.0f;
+        }
     }
     saltoVStradaPrec_ = vStrada;
 }
@@ -2473,6 +2579,7 @@ void Game::ribalta() {
     playerXIncidente_ = player_.x;
     player_.speed = 0.0f;
     offroadFrames_ = 0;
+    mixer_.scuotiMusica(Mixer::URTO_FORZA_INCIDENTE); // la radio quasi si ferma (Andrea 07/11)
 }
 
 void Game::calcolaClassifica() {
@@ -2506,16 +2613,13 @@ void Game::calcolaClassifica() {
 }
 
 void Game::drawMusica() {
+    // Gruppo RADIO al centro dell'HUD (Andrea 07/11): solo lo spettro stile
+    // WinAmp, sulla stessa griglia dei gruppi ai lati (hud.json): barre nella
+    // fascia dei numeri grandi (y 13..28), linea di base nella riga sottile
+    // in fondo (y 31). Niente titolo del brano (Andrea 07/11).
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
-    visualizzatore_.disegna(fb_, 8, Framebuffer::HEIGHT - 10); // spettro in basso a sinistra
-    // Battito: due tacche ai lati dello schermo che si accendono sul primo tempo.
-    if (m.battito > 0.05f) {
-        const i32 h = (i32)(m.battito * 40.0f);
-        const u32 col = 0xFF000000u | ((u32)(80 + 175 * m.battito) << 16) | ((u32)(40 + 60 * m.battito) << 8) | 0xC0u;
-        fb_.fillRect(0, 112 - h, 2, 112 + h, col);
-        fb_.fillRect(Framebuffer::WIDTH - 3, 112 - h, Framebuffer::WIDTH - 1, 112 + h, col);
-    }
+    visualizzatore_.disegna(fb_, (Framebuffer::WIDTH - Visualizzatore::LARGHEZZA_TOT) / 2, 28);
 }
 
 void Game::scuotiScena(i32 dx, i32 dy) {

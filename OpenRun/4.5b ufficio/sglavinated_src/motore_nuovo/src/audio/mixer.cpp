@@ -14,6 +14,16 @@ xmp_context ctx(void* p) { return static_cast<xmp_context>(p); }
 constexpr f32 DECADIMENTO_CANALE_S = 0.18f;
 constexpr f32 DECADIMENTO_BATTITO_S = 0.12f;
 constexpr i32 RIGHE_PER_BATTITO = 4; // convenzione tracker: un quarto ogni 4 righe
+
+// Musica che reagisce (Andrea 07/11). Tutto dal vivo sul .xm: il canale si
+// spegne col volume di canale di libxmp, tono e filtro sono interpolazioni
+// del segnale gia' mixato. Costo: poche moltiplicazioni a campione.
+constexpr f32 MUTE_SPEGNI_S = 0.03f;       // dissolvenza in uscita del canale
+constexpr f32 MUTE_RIENTRO_S = 0.10f;      // dissolvenza in entrata
+constexpr f32 MUTE_LIVELLO_SUONA = 0.15f;  // InfoMusica::livello sopra cui un canale "sta suonando"
+constexpr f32 OVATTATO_FC_PIENA = 18000.0f; // Hz: filtro aperto
+constexpr f32 OVATTATO_FC_CHIUSA = 650.0f;  // Hz: tutto ovattato
+constexpr f32 OVATTATO_TEMPO_S = 0.12f;     // quanto ci mette ad aprirsi/chiudersi
 } // namespace
 
 Mixer::Mixer(u32 sampleRate) : sampleRate_(sampleRate) {}
@@ -59,6 +69,11 @@ void Mixer::avviaBrano() {
     if (suona_) { xmp_end_player(ctx(xmp_)); xmp_release_module(ctx(xmp_)); suona_ = false; }
     info_ = InfoMusica{};
     rigaPrec_ = -1;
+    sorgente_.clear();
+    letturaPos_ = 0.0;
+    muteCanale_ = -1;
+    muteVol_ = 100.0f;
+    muteRientro_ = false;
     const Brano& b = brani_[(size_t)curTrack_];
     if (xmp_load_module_from_memory(ctx(xmp_), b.dati.data(), (long)b.dati.size()) != 0) return;
     if (xmp_start_player(ctx(xmp_), (int)sampleRate_, 0) != 0) { xmp_release_module(ctx(xmp_)); return; }
@@ -114,6 +129,96 @@ void Mixer::aggiornaInfo(const i16* musica, i32 frames) {
     info_.energia = e > info_.energia ? e : info_.energia * kCanale + e * (1.0f - kCanale);
 }
 
+void Mixer::scuotiMusica(f32 forza) {
+    if (!suona_) return;
+    forza = std::clamp(forza, 0.0f, 1.0f);
+
+    // 1) Calo di tono: un urto piu' forte di quello in corso lo fa ripartire
+    //    dalla velocita' attuale del nastro (niente scatti).
+    if (tonoT_ < 0.0f || forza >= tonoForza_) {
+        tonoR0_ = tonoT_ < 0.0f ? 1.0f : rapportoTono(tonoT_);
+        tonoT_ = 0.0f;
+        tonoForza_ = forza;
+        const f32 f2 = forza * forza;
+        tonoDurata_ = (0.05f + 0.40f * f2 * f2) + (0.10f + 0.25f * f2 * f2) + (0.45f + 0.45f * f2);
+    }
+
+    // 2) Un canale a caso si spegne. Solo tra quelli che stanno suonando (se
+    //    no non si sente) e mai il piu' forte, cosi' il ritmo resta. Se uno e'
+    //    gia' spento, resta lui e dura di piu'.
+    const f32 durata = 0.9f + 0.9f * forza;
+    if (muteCanale_ >= 0 && !muteRientro_) { muteS_ = std::max(muteS_, durata); return; }
+    i32 forte = -1;
+    for (i32 c = 0; c < info_.canali; ++c)
+        if (forte < 0 || info_.livello[c] > info_.livello[forte]) forte = c;
+    i32 candidati[InfoMusica::MAX_CANALI];
+    i32 n = 0;
+    for (i32 c = 0; c < info_.canali; ++c)
+        if (c != forte && info_.livello[c] > MUTE_LIVELLO_SUONA) candidati[n++] = c;
+    if (n == 0) return;
+    caso_ = caso_ * 1664525u + 1013904223u;
+    const i32 scelto = candidati[(caso_ >> 16) % (u32)n];
+    if (muteCanale_ >= 0 && muteCanale_ != scelto) xmp_channel_vol(ctx(xmp_), muteCanale_, 100);
+    if (muteCanale_ != scelto) muteVol_ = 100.0f;
+    muteCanale_ = scelto;
+    muteS_ = durata;
+    muteRientro_ = false;
+}
+
+f32 Mixer::rapportoTono(f32 t) const {
+    // Nastro schiacciato: rallenta (tono e tempo scendono insieme), resta giu'
+    // un attimo e torna con un tremolio. A forza 1 (incidente) e' quasi un
+    // "tape stop". Tempi in secondi.
+    const f32 f = tonoForza_;
+    const f32 f2 = f * f, f4 = f2 * f2;
+    const f32 fondo = 1.0f - (0.15f + 0.70f * f2 * f); // 0.45 -> 0.79, 0.7 -> 0.61, 1 -> 0.15
+    const f32 attacco = 0.05f + 0.40f * f4;
+    const f32 tenuta = 0.10f + 0.25f * f4;
+    const f32 rilascio = 0.45f + 0.45f * f2;
+    auto morbido = [](f32 x) { return x * x * (3.0f - 2.0f * x); };
+    if (t < attacco) return tonoR0_ + (fondo - tonoR0_) * morbido(t / attacco);
+    t -= attacco;
+    if (t < tenuta) return fondo;
+    t -= tenuta;
+    if (t < rilascio) {
+        const f32 x = t / rilascio;
+        const f32 tremolio = 0.025f * f * std::sin(2.0f * PI * 7.0f * t) * (1.0f - x);
+        return fondo + (1.0f - fondo) * morbido(x) + tremolio;
+    }
+    return 1.0f;
+}
+
+void Mixer::aggiornaMute(f32 dt) {
+    if (muteCanale_ < 0) return;
+    if (!muteRientro_) {
+        muteVol_ = std::max(0.0f, muteVol_ - 100.0f * dt / MUTE_SPEGNI_S);
+        muteS_ -= dt;
+        if (muteS_ <= 0.0f && muteRiga_ < 0) muteRiga_ = info_.riga;
+        // Torna su a riga nuova del brano, cosi' rientra a tempo.
+        if (muteRiga_ >= 0 && info_.riga != muteRiga_) { muteRientro_ = true; muteRiga_ = -1; }
+    } else {
+        muteVol_ += 100.0f * dt / MUTE_RIENTRO_S;
+        if (muteVol_ >= 100.0f) {
+            xmp_channel_vol(ctx(xmp_), muteCanale_, 100);
+            muteCanale_ = -1;
+            muteVol_ = 100.0f;
+            muteRientro_ = false;
+            return;
+        }
+    }
+    xmp_channel_vol(ctx(xmp_), muteCanale_, (int)muteVol_);
+}
+
+void Mixer::renderMusica(i32 frames) {
+    bufMusica_.resize((size_t)frames * 2);
+    // loop 0: il brano ricomincia da capo all'infinito, come la radio di OutRun.
+    if (xmp_play_buffer(ctx(xmp_), bufMusica_.data(), frames * 4, 0) != 0)
+        std::fill(bufMusica_.begin(), bufMusica_.end(), (i16)0);
+    else
+        aggiornaInfo(bufMusica_.data(), frames);
+    sorgente_.insert(sorgente_.end(), bufMusica_.begin(), bufMusica_.end());
+}
+
 f32 Mixer::sfxUrto() {
     // Botta: rumore e tonfo grave che si spengono in un attimo. Col traffico
     // segue il clacson (due note in onda quadra); coi rivali un colpo di lamiera.
@@ -141,15 +246,21 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         return;
     }
 
-    const i16* musica = nullptr;
+    const f32 dt = (f32)frames / (f32)sampleRate_;
+    const f32 dtCampione = 1.0f / (f32)sampleRate_;
     if (suona_) {
-        bufMusica_.resize((size_t)frames * 2);
-        // loop 0: il brano ricomincia da capo all'infinito, come la radio di OutRun.
-        if (xmp_play_buffer(ctx(xmp_), bufMusica_.data(), frames * 4, 0) == 0) {
-            musica = bufMusica_.data();
-            aggiornaInfo(musica, frames);
-        }
+        aggiornaMute(dt);
+        // Il nastro corre al massimo a ~1.03 (tremolio): basta avere davanti
+        // frames * 1.05 campioni di musica, piu' due per l'interpolazione.
+        const i32 servono = (i32)std::ceil(letturaPos_ + (f64)frames * 1.05) + 2;
+        const i32 ci = (i32)(sorgente_.size() / 2);
+        if (servono > ci) renderMusica(servono - ci);
     }
+    // Filtro "ovattato": si apre e si chiude in modo graduale.
+    ovattato_ += (ovattatoVoluto_ - ovattato_) * (1.0f - std::exp(-dt / OVATTATO_TEMPO_S));
+    const bool filtra = ovattato_ > 0.002f;
+    const f32 fc = OVATTATO_FC_PIENA * std::pow(OVATTATO_FC_CHIUSA / OVATTATO_FC_PIENA, ovattato_);
+    const f32 aFiltro = 1.0f - std::exp(-2.0f * PI * fc / (f32)sampleRate_);
 
     // Suono motore: due oscillatori con fase accumulata (niente click tra frame).
     f32 base = 40.0f + engineRpm * 0.6f; // Hz fondamentale
@@ -163,15 +274,46 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
                          0.4f * std::sin(2.0f * PI * phase_ * 2.0f));
         f32 l = eng * engineVol_, r = l;
         if (urtoN_ >= 0) { const f32 u = sfxUrto(); l += u; r += u; }
-        if (musica) {
-            l += (f32)musica[i * 2] * musicVol_;
-            r += (f32)musica[i * 2 + 1] * musicVol_;
+        if (suona_) {
+            // Lettura del nastro con interpolazione lineare tra due campioni.
+            const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;
+            const size_t i0 = (size_t)letturaPos_;
+            const f32 fr = (f32)(letturaPos_ - (f64)i0);
+            f32 ml = 0.0f, mr = 0.0f;
+            if ((i0 + 1) * 2 + 1 < sorgente_.size()) {
+                ml = (f32)sorgente_[i0 * 2] + ((f32)sorgente_[i0 * 2 + 2] - (f32)sorgente_[i0 * 2]) * fr;
+                mr = (f32)sorgente_[i0 * 2 + 1] + ((f32)sorgente_[i0 * 2 + 3] - (f32)sorgente_[i0 * 2 + 1]) * fr;
+            }
+            letturaPos_ += (f64)passo;
+            if (tonoT_ >= 0.0f) {
+                tonoT_ += dtCampione;
+                if (tonoT_ >= tonoDurata_) tonoT_ = -1.0f;
+            }
+            if (filtra) {
+                filtro_[0] += aFiltro * (ml - filtro_[0]);
+                filtro_[1] += aFiltro * (mr - filtro_[1]);
+                filtro_[2] += aFiltro * (filtro_[0] - filtro_[2]);
+                filtro_[3] += aFiltro * (filtro_[1] - filtro_[3]);
+                ml = filtro_[2]; mr = filtro_[3];
+            } else {
+                filtro_[0] = filtro_[2] = ml;
+                filtro_[1] = filtro_[3] = mr;
+            }
+            l += ml * musicVol_;
+            r += mr * musicVol_;
         }
         out[i * 2]     = (i16)std::max(-32000.0f, std::min(32000.0f, l));
         out[i * 2 + 1] = (i16)std::max(-32000.0f, std::min(32000.0f, r));
 
         phase_ += phaseInc;
         if (phase_ > 1.0f) phase_ -= 1.0f;
+    }
+
+    // Butta la musica gia' letta (tiene il campione corrente per l'interpolazione).
+    if (suona_) {
+        const size_t letti = std::min((size_t)letturaPos_, sorgente_.size() / 2);
+        sorgente_.erase(sorgente_.begin(), sorgente_.begin() + (std::ptrdiff_t)(letti * 2));
+        letturaPos_ -= (f64)letti;
     }
 }
 
