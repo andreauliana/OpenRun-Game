@@ -199,6 +199,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             prima = seg.p2y;
         }
     }
+    calcolaDintorni();
     // I valori di inizio tappa vengono consumati una sola volta.
     curvaInizioTappaSet_ = false;
     collinaInizioTappaSet_ = false;
@@ -235,6 +236,60 @@ f32 Road::quotaAt(f32 z) const {
     if (t < 0.0f) t += (f32)totalLen_;
     t = std::clamp(t / (f32)SEG_LEN - (f32)i, 0.0f, 1.0f);
     return s.p1y + (s.p2y - s.p1y) * t;
+}
+
+void Road::calcolaDintorni() {
+    // Andrea 07/11: entrata e uscita dal ponte piu' interessanti. Tutto qui al
+    // build (zero lavoro per frame): distanza dall'acqua sotto le rampe, luci a
+    // terra prima della rampa e dopo la discesa, porte del ponte ai due capi.
+    const i32 n = (i32)segs_.size();
+    if (n == 0) return;
+    for (RoadSegment& s : segs_) {
+        s.riva = -1;
+        s.luci = -1;
+        s.versoLuci = 0;
+        if (s.portale == 1) s.portale = 0; // le porte del ponte si ricalcolano
+    }
+    auto at = [&](i32 i) -> RoadSegment& { return segs_[(size_t)(((i % n) + n) % n)]; };
+    for (i32 i = 0; i < n; ++i) {
+        RoadSegment& s = segs_[(size_t)i];
+        if (!s.sospeso || s.acqua) continue;
+        for (i32 d = 0; d <= RIVA_SEG; ++d)
+            if (at(i + d).acqua || at(i - d).acqua) { s.riva = (i16)d; break; }
+    }
+    for (i32 i = 0; i < n; ++i) {
+        const bool qui = segs_[(size_t)i].sospeso;
+        if (qui && !at(i - 1).sospeso) {
+            // Inizio della rampa: porta del ponte e luci che ci corrono incontro.
+            at(i - 1).portale = 1;
+            for (i32 d = 1; d <= LUCI_PONTE_SEG; ++d) {
+                RoadSegment& s = at(i - d);
+                if (s.sospeso) break;
+                s.luci = (i16)d;
+                s.versoLuci = 1;
+            }
+        }
+        if (!qui && at(i - 1).sospeso) {
+            // Fine della discesa: porta d'uscita e luci che si allontanano.
+            segs_[(size_t)i].portale = 1;
+            for (i32 d = 0; d < LUCI_PONTE_SEG; ++d) {
+                RoadSegment& s = at(i + d);
+                if (s.sospeso || s.versoLuci > 0) break;
+                s.luci = (i16)(d + 1);
+                s.versoLuci = -1;
+            }
+        }
+    }
+    // Prima del bivio (solo in gara): le luci annunciano la scelta.
+    if (bivio_) {
+        const i32 inizio = n - BIVIO_SEG;
+        for (i32 d = 1; d <= LUCI_BIVIO_SEG && inizio - d >= 0; ++d) {
+            RoadSegment& s = segs_[(size_t)(inizio - d)];
+            if (s.sospeso) break;
+            s.luci = (i16)d;
+            s.versoLuci = 1;
+        }
+    }
 }
 
 bool Road::acquaAt(f32 z) const {
@@ -351,6 +406,10 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.acqua = seg.acqua;
             ps.sospeso = seg.sospeso;
             ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
+            ps.riva = seg.riva;
+            ps.luci = seg.luci;
+            ps.versoLuci = seg.versoLuci;
+            ps.portale = seg.portale;
             out.push_back(ps);
         }
     }

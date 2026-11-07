@@ -15,11 +15,14 @@ constexpr f32 LANE_DASH_CYCLE = 2000.0f;
 constexpr f32 LANE_DASH_LENGTH = 1000.0f;
 constexpr f32 LINEA_ARRIVO_PROF = 600.0f; // traguardo: 3 file di scacchi da 200 unita'
 constexpr f32 ROADSIDE_MARKER_SPACING = 600.0f;
+// Trama ordinata Bayer 4x4 (regole palette/dithering 29/10): riva del ponte.
+constexpr u8 BAYER4[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
 }
 
 Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     // Preallocato una volta: zero allocazioni per frame nel ciclo di gioco.
     projs_.reserve(Road::DRAW_DIST);
+    copertura_.reserve((size_t)Road::DRAW_DIST * 4);
 }
 
 i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
@@ -71,18 +74,79 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     // Disegna i segmenti dal piu' LONTANO al piu' VICINO: projs_ e' ordinato
     // vicino->lontano (i=0 e' il segmento piu' vicino), quindi si itera a ritroso.
     // Il vicino, disegnato per ultimo, copre correttamente il lontano (painter).
+    // Oggetti a terra (boe, barche, faro): ordinati dal piu' lontano, si
+    // disegnano man mano che la strada arriva alla loro profondita'.
+    terraOrdine_.clear();
+    if (oggettiTerra_ && giro_ > 0.0f) {
+        const f32 zMax = projs_.back().worldZ;
+        for (const SpriteInstance& o : *oggettiTerra_) {
+            // Il motoscafo naviga avanti e indietro lungo il suo tratto di mare.
+            const f32 corsa = o.anima == 2 ? 5000.0f * std::sin(tempoS_ * 0.22f + o.fase) : 0.0f;
+            f32 zr = std::fmod(o.worldZ + corsa - playerZ, giro_);
+            if (zr < 0.0f) zr += giro_;
+            if (zr > projs_.front().worldZ && zr < zMax) terraOrdine_.push_back({zr, &o});
+        }
+        std::sort(terraOrdine_.begin(), terraOrdine_.end(),
+                  [](const auto& a, const auto& b) { return a.first > b.first; });
+    }
+    // Copertura: per ogni campione, la riga piu' alta raggiunta dalla strada
+    // piu' vicina (da li' in giu' lo schermo e' gia' strada o terreno vicino).
+    copertura_.resize(projs_.size());
+    f32 cop = (f32)Framebuffer::HEIGHT;
+    for (size_t k = 0; k < projs_.size(); ++k) {
+        copertura_[k] = cop;
+        cop = std::min(cop, projs_[k].screenY);
+    }
+    size_t prossimoTerra = 0;
     for (size_t i = projs_.size() - 1; i > 0; --i) {
         const auto& vicino = projs_[i - 1];
         const auto& lontano = projs_[i];
+        const bool confine = lontano.index != vicino.index;
         // Salta se il segmento vicino non e' sotto il lontano (degenero/contigui).
-        if (lontano.screenY >= vicino.screenY) continue;
-        // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
-        drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+        if (lontano.screenY < vicino.screenY) {
+            // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
+            drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+            // Ponte e rampe: il fianco dell'impalcato sotto il bordo vicino
+            // (le fette piu' vicine lo coprono dove la strada passa davanti).
+            // Solo da vicino: lontano, visto di taglio, sembrava una sbarra scura.
+            if (vicino.sospeso && lontano.sospeso && vicino.worldZ < VIADOTTO_VISTA_Z &&
+                vicino.screenY <= copertura_[i - 1] + 1.0f)
+                drawFianco(vicino);
+        }
+        // Oggetti a terra in questa fetta: sopra il loro terreno, sotto la
+        // strada piu' vicina (disegnata dopo).
+        while (prossimoTerra < terraOrdine_.size() && terraOrdine_[prossimoTerra].first >= vicino.worldZ) {
+            const f32 zr = terraOrdine_[prossimoTerra].first;
+            const SpriteInstance& o = *terraOrdine_[prossimoTerra].second;
+            ++prossimoTerra;
+            const f32 a = 1.0f / lontano.worldZ, b = 1.0f / vicino.worldZ;
+            const f32 t = b > a ? std::clamp((1.0f / zr - a) / (b - a), 0.0f, 1.0f) : 1.0f;
+            const f32 base = lontano.acquaY + (vicino.acquaY - lontano.acquaY) * t;
+            const f32 cx = lontano.screenX + (vicino.screenX - lontano.screenX) * t;
+            const f32 scl = Road::DEPTH / zr;
+            if (base < (f32)HORIZON_Y - 1.0f) continue;
+            drawOggettoTerra(o, cx, base, scl);
+        }
+        if (!confine) continue;
+        // Andrea 07/11 sera: all'uscita dal ponte comparivano rettangoli neri.
+        // Erano pile di tratti nascosti dietro la cresta della discesa: il
+        // pittore dal lontano al vicino non le copriva. Una struttura si
+        // disegna solo se la sua base e' visibile (sopra la strada piu' vicina),
+        // e le colonne si tagliano alla riga dove comincia la strada vicina.
+        const f32 coperto = copertura_[i - 1];
+        const bool visibile = vicino.screenY <= coperto + 1.0f;
         // Piloni del ponte: al confine fra due segmenti, ogni PILONE_OGNI_SEG,
         // dai bordi dell'impalcato giu' fino all'acqua.
-        if (vicino.acqua && lontano.acqua && lontano.index != vicino.index &&
-            (lontano.index % PILONE_OGNI_SEG) == 0)
-            drawPilone(vicino);
+        if (vicino.acqua && lontano.acqua && (lontano.index % PILONE_OGNI_SEG) == 0) {
+            if (visibile) drawPilone(vicino);
+        }
+        // Rampe del ponte: pile del viadotto fino al terreno basso.
+        else if (visibile && vicino.worldZ < VIADOTTO_VISTA_Z && vicino.sospeso && lontano.sospeso && !lontano.acqua &&
+                 (lontano.index % PILA_OGNI_SEG) == 0)
+            drawPila(vicino);
+        if (visibile && lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
+            drawLuciTerra(vicino);
+        if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
     }
     drawRoadsideMarkers(playerZ);
 }
@@ -105,12 +169,37 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     if (sospeso) {
         const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
         const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
-        const u32 acqua = ponte ? (band ? tema_.acqua : tema_.acquaAlt) : (band ? tema_.erba : tema_.erbaAlt);
+        // Riva sotto le rampe (Andrea 07/11): avvicinandosi al ponte il prato
+        // diventa spiaggia (trama Bayer dove sfuma), poi la schiuma e il mare;
+        // si vola sopra la costa prima di arrivare sull'acqua.
+        const i32 riva = cur.riva;
+        const bool mare = ponte || (riva >= 0 && riva < RIVA_ACQUA);
+        const bool schiuma = !ponte && riva == RIVA_ACQUA;
+        const bool spiaggia = !mare && riva >= 0 && riva < RIVA_ACQUA + RIVA_SABBIA + RIVA_SFUMA;
+        const f32 sfuma = spiaggia ? std::clamp((f32)(riva - RIVA_ACQUA - RIVA_SABBIA) / (f32)RIVA_SFUMA, 0.0f, 1.0f) : 1.0f;
+        const u32 prato = band ? tema_.erba : tema_.erbaAlt;
+        const u32 sabbia = band ? tema_.sabbia : lerpColore(tema_.sabbia, 0xFF000000u, 0.1f);
+        const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
         const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
         const f32 ya = next.acquaY, yb = cur.acquaY;
         for (i32 y = a0; y <= a1; ++y) {
+            if (spiaggia && !schiuma) {
+                if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
+                else {
+                    u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                    for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                        riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < sfuma ? prato : sabbia;
+                }
+                continue;
+            }
+            if (schiuma) { // battigia: schiuma bianca a trama sul mare
+                u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                    riga[x] = BAYER4[y & 3][(x + (i32)(tempoS_ * 4.0f)) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
+                continue;
+            }
             fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
-            if (!ponte) continue; // erba sotto le rampe: niente onde
+            if (!mare) continue; // erba sotto le rampe: niente onde
             // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
             // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
             const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
@@ -235,6 +324,230 @@ void Renderer::drawPilone(const Road::ProjectedSeg& p) {
     const i32 trave = std::max(1, (i32)(TORRE_TRAVE * pxY));
     fb_.fillRect(xs[0] - w / 2, cima, xs[1] + w / 2, cima + trave, 0xFF2E2E3Cu);
     fb_.hline(xs[0] + w / 2, xs[1] - w / 2, cima + trave, tema_.rumbleAlt);
+}
+
+void Renderer::drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa) {
+    // Lampada pixel: spenta = punto scuro del colore; accesa = nucleo bianco,
+    // alone del colore e croce di luce corta (niente sfumature: pochi colori).
+    if (r < 1) r = 1;
+    if (!accesa) {
+        fb_.fillRect(x - r / 2, y - r / 2, x + (r - 1) / 2, y + (r - 1) / 2, lerpColore(colore, 0xFF000000u, 0.55f));
+        return;
+    }
+    const i32 alone = r + std::max(1, r / 2);
+    fb_.fillRect(x - alone, y, x + alone, y, colore);
+    fb_.fillRect(x, y - alone, x, y + alone, colore);
+    fb_.fillRect(x - r / 2 - 1, y - r / 2 - 1, x + (r - 1) / 2 + 1, y + (r - 1) / 2 + 1, colore);
+    fb_.fillRect(x - r / 2, y - r / 2, x + (r - 1) / 2, y + (r - 1) / 2, 0xFFFFFFFFu);
+}
+
+void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl) {
+    // Mare vivo (Andrea 07/11: barche che si muovono, elementi inattesi e
+    // dinamici). Movimenti lenti e piccoli, orologio logico (deterministico).
+    const f32 pxMondo = scl * (f32)Framebuffer::WIDTH / 2;   // pixel per unita' mondo
+    const f32 t = tempoS_;
+    f32 x = o.worldX, dy = 0.0f;
+    switch (o.anima) {
+    case 1: x += 700.0f * std::sin(t * 0.13f + o.fase); dy = 70.0f * std::sin(t * 1.5f + o.fase); break;
+    case 2: dy = 40.0f * std::sin(t * 4.0f + o.fase); break;
+    case 3: dy = 50.0f * std::sin(t * 2.1f + o.fase); break;
+    default: break;
+    }
+    const f32 sx = cx + x * pxMondo;
+    const f32 sy = base + dy * pxMondo;
+    if (o.anima == 5) {
+        // Gabbiano: una V che sbatte le ali, gira in tondo sopra l'acqua.
+        const f32 gx = sx + 1800.0f * pxMondo * std::sin(t * 0.45f + o.fase);
+        const f32 gy = base - (o.scale + 300.0f * std::sin(t * 0.9f + o.fase * 2.0f)) * pxMondo;
+        const i32 a = std::clamp((i32)(260.0f * pxMondo), 2, 16);
+        const bool su = ((i32)(t * 7.0f + o.fase * 3.0f) & 1) != 0;
+        const i32 X = (i32)gx, Y = (i32)gy;
+        if (Y < 0) return;
+        for (i32 k = 0; k <= a; ++k) {
+            const i32 h = su ? -(k * 2) / 3 : (k < a / 2 ? -k / 2 : -(a - k) / 2);
+            fb_.put(X - k, Y + h, 0xFFF2F2EEu);
+            fb_.put(X + k, Y + h, 0xFFF2F2EEu);
+            if (a >= 6) { fb_.put(X - k, Y + h + 1, 0xFF7C7C8Cu); fb_.put(X + k, Y + h + 1, 0xFF7C7C8Cu); }
+        }
+        fb_.put(X, Y, 0xFF1C1C28u);
+        return;
+    }
+    if (o.anima == 6) {
+        // Pesce che salta ogni tanto: arco, spruzzo all'entrata e all'uscita.
+        const f32 ciclo = 4.5f, salto = 0.7f;
+        const f32 p = std::fmod(t + o.fase, ciclo);
+        const i32 X0 = (i32)sx, Y0 = (i32)base;
+        const i32 r = std::clamp((i32)(90.0f * pxMondo), 1, 8);
+        if (p < salto) {
+            const f32 u = p / salto;
+            const i32 X = X0 + (i32)((u - 0.5f) * 900.0f * pxMondo);
+            const i32 Y = Y0 - (i32)(std::sin(u * 3.14159f) * 650.0f * pxMondo);
+            const i32 l = std::max(2, r * 2);
+            const i32 inc = u < 0.5f ? -1 : 1; // muso in su all'andata, in giu' al ritorno
+            for (i32 k = -l / 2; k <= l / 2; ++k) {
+                fb_.put(X + k, Y + inc * k / 2, 0xFFC8D8E8u);
+                if (r > 1) fb_.put(X + k, Y + inc * k / 2 + 1, 0xFF5A7A9Au);
+            }
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 - 1, 0xFFC8D8E8u); // coda
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 + 1, 0xFFC8D8E8u);
+        }
+        if (p < 0.12f || (p > salto - 0.05f && p < salto + 0.15f)) { // spruzzi
+            const i32 X = X0 + (p < 0.12f ? -1 : 1) * (i32)(450.0f * pxMondo);
+            for (i32 k = -r; k <= r; k += std::max(1, r / 2)) fb_.put(X + k, Y0 - std::abs(k) / 2 - 1, 0xFFF0F4F8u);
+        }
+        return;
+    }
+    drawSprite(o, sx, sy, pxMondo * SPRITE_WORLD_PX * o.scale);
+    if (o.anima == 4 && o.sprite) {
+        // Faro: la lanterna pulsa e il fascio ruota (si allunga a destra e a sinistra).
+        const f32 sc = pxMondo * SPRITE_WORLD_PX * o.scale;
+        const i32 lx = (i32)sx, ly = (i32)(sy - (f32)o.sprite->height * sc + 11.0f * sc);
+        const f32 giro = std::sin(t * 1.8f + o.fase);
+        const i32 len = (i32)(std::abs(giro) * 60.0f * sc);
+        const i32 dir = giro > 0.0f ? 1 : -1;
+        for (i32 k = 0; k < len; ++k)
+            if (((k + (i32)(t * 20.0f)) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
+        drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, std::abs(giro) > 0.3f);
+    }
+}
+
+void Renderer::drawFianco(const Road::ProjectedSeg& p) {
+    // Spessore dell'impalcato (Andrea 07/11 sera, transizioni pulite): una
+    // fascia scura sotto la strada con il filo di luce del tema, cosi' il
+    // viadotto in curva si legge come una struttura unica.
+    const i32 cy = (i32)p.screenY;
+    const i32 terra = std::min((i32)p.acquaY, Framebuffer::HEIGHT) - 1;
+    if (cy + 1 > terra) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+    const i32 th = std::max(1, (i32)(p.scale * 112.0f * 260.0f));
+    const i32 y1 = std::min(cy + th, terra);
+    const i32 x0 = (i32)(p.screenX - hw), x1 = (i32)(p.screenX + hw);
+    fb_.fillRect(x0, cy + 1, x1, y1, 0xFF4A4A58u);
+    if (th >= 3 && y1 == cy + th) fb_.hline(x0, x1, y1, tema_.rumbleAlt);
+}
+
+void Renderer::drawPila(const Road::ProjectedSeg& p) {
+    // Rampe del ponte (Andrea 07/11): l'impalcato poggia su una pila centrale
+    // che scende fino al terreno basso (prato, spiaggia, mare). Una sola
+    // colonna chiara, senza travi: vista di lato si legge come un viadotto,
+    // non come una fila di portali scuri.
+    const i32 deck = (i32)p.screenY;
+    const i32 base = std::min((i32)p.acquaY, Framebuffer::HEIGHT - 1);
+    if (base <= deck + 3) return; // impalcato quasi a terra: niente moncherini
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const i32 w = std::clamp((i32)(pxUnita * 300.0f), 1, 36);
+    const i32 cx = (i32)p.screenX;
+    if (cx + w < 0 || cx - w >= Framebuffer::WIDTH) return;
+    fb_.fillRect(cx - w / 2, deck, cx + (w - 1) / 2, base, 0xFF5E5E6Cu);
+    if (w >= 3) fb_.fillRect(cx - w / 2, deck, cx - w / 2 + w / 3, base, 0xFF8E8E9Eu); // lato in luce
+}
+
+void Renderer::drawLuciTerra(const Road::ProjectedSeg& p) {
+    // Luci di avvicinamento (Andrea 07/11): una fila di lampade basse ai due
+    // lati; una luce piu' viva corre verso il ponte (o se ne allontana dopo la
+    // discesa, o corre verso il bivio). Come le luci di una pista.
+    if (p.screenY < HORIZON_Y || p.screenY >= (f32)Framebuffer::HEIGHT) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
+    const i32 n = p.luci / LUCI_OGNI_SEG;
+    const i32 corsa = (i32)(tempoS_ * 14.0f);
+    const i32 fase = p.versoLuci >= 0 ? (n + corsa) % 6 : ((n - corsa) % 6 + 6) % 6;
+    const bool accesa = fase == 0 || (fase == 1 && (corsa & 1));
+    const i32 r = std::clamp((i32)(pxUnita * 150.0f), 1, 8);
+    const i32 palo = std::clamp((i32)(pxUnita * 420.0f), 2, 26);
+    const i32 y = (i32)p.screenY;
+    for (i32 lato : {-1, 1}) {
+        const i32 x = (i32)(p.screenX + lato * (hw + pxUnita * 380.0f));
+        if (x < -8 || x > Framebuffer::WIDTH + 8) continue;
+        fb_.fillRect(x, y - palo, x, y, 0xFF505060u);
+        drawLampada(x, y - palo, r, tema_.rumbleAlt, accesa);
+    }
+}
+
+void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
+    // Strutture sopra la strada nei punti di passaggio (Andrea 07/11:
+    // "transizioni dei diversi tracciati piu' interessanti"). Disegnate a
+    // codice, pochi colori + il colore del tema, come le torri del ponte.
+    if (p.screenY < HORIZON_Y - 40 || p.scale <= 0.0f) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 pxY = p.scale * 112.0f;
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * std::max(p.carr.fattore, 0.5f);
+    // Piedi delle colonne nascosti dietro una cresta: si tagliano dove
+    // comincia la strada piu' vicina; se e' nascosto anche il portale, niente.
+    const i32 terra = std::min((i32)p.screenY, (i32)coperto);
+    const bool lampo = ((i32)(tempoS_ * 2.5f) & 1) != 0;
+    auto colonna = [&](i32 cx, i32 w, i32 cima, u32 scuro, u32 luce) {
+        fb_.fillRect(cx - w / 2, cima, cx + (w - 1) / 2, terra, scuro);
+        if (w >= 3) fb_.fillRect(cx - w / 2, cima, cx - w / 2 + w / 3, terra, luce);
+    };
+    if (tipo == 1) {
+        // Porta del ponte: due torri alte, doppia trave, luci rosse in cima
+        // che lampeggiano e una fila di lampade del tema sulla trave.
+        const i32 w = std::clamp((i32)(pxUnita * 300.0f), 1, 70);
+        const i32 cima = terra - (i32)(3600.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.32f), x1 = (i32)(p.screenX + hw * 1.32f);
+        colonna(x0, w, cima, 0xFF2E2E3Au, 0xFF6E6E84u);
+        colonna(x1, w, cima, 0xFF2E2E3Au, 0xFF6E6E84u);
+        const i32 t1 = cima + (i32)(500.0f * pxY), sp = std::max(1, (i32)(220.0f * pxY));
+        fb_.fillRect(x0, t1, x1, t1 + sp, 0xFF22222Cu);
+        const i32 t2 = cima + (i32)(1100.0f * pxY);
+        fb_.fillRect(x0, t2, x1, t2 + std::max(1, sp / 2), 0xFF22222Cu);
+        fb_.hline(x0, x1, t1 + sp, tema_.rumbleAlt);
+        const i32 r = std::clamp((i32)(pxUnita * 110.0f), 1, 7);
+        for (i32 k = 1; k < 8; ++k) {
+            const i32 lx = x0 + (x1 - x0) * k / 8;
+            drawLampada(lx, t1 + sp / 2, r, tema_.rumbleAlt, ((k + (i32)(tempoS_ * 8.0f)) % 4) == 0);
+        }
+        drawLampada(x0, cima - r, r + 1, 0xFFFF3030u, lampo);
+        drawLampada(x1, cima - r, r + 1, 0xFFFF3030u, lampo);
+    } else if (tipo == 2) {
+        // Portale dell'autostrada: pali grigi, trave a traliccio e un pannello
+        // per corsia con la freccia bianca in giu' (niente testi).
+        const i32 w = std::clamp((i32)(pxUnita * 120.0f), 1, 30);
+        const i32 cima = terra - (i32)(2300.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.12f), x1 = (i32)(p.screenX + hw * 1.12f);
+        colonna(x0, w, cima, 0xFF5A5A66u, 0xFF9A9AA8u);
+        colonna(x1, w, cima, 0xFF5A5A66u, 0xFF9A9AA8u);
+        const i32 sp = std::max(1, (i32)(140.0f * pxY));
+        fb_.fillRect(x0, cima, x1, cima + sp, 0xFF5A5A66u);
+        if (sp >= 4) // traliccio: diagonali a passo fisso
+            for (i32 x = x0; x < x1; x += sp) fb_.fillRect(x, cima + 1, x + std::max(1, sp / 4), cima + sp - 1, 0xFF34343Cu);
+        const i32 corsie = p.carr.fattore > 1.5f ? 4 : 2;
+        const f32 corsia = 2.0f * hw / (f32)corsie;
+        const i32 ph = std::max(2, (i32)(520.0f * pxY));
+        const i32 pw = std::max(2, (i32)(corsia * 0.7f));
+        for (i32 c = 0; c < corsie; ++c) {
+            const i32 cx = (i32)(p.screenX - hw + corsia * ((f32)c + 0.5f));
+            const i32 y0 = cima + sp;
+            fb_.fillRect(cx - pw / 2, y0, cx + pw / 2, y0 + ph, 0xFFF0F0F0u);
+            fb_.fillRect(cx - pw / 2 + 1, y0 + 1, cx + pw / 2 - 1, y0 + ph - 1, 0xFF0E5A34u);
+            if (ph >= 6) { // freccia in giu'
+                const i32 aw = std::max(1, pw / 5);
+                fb_.fillRect(cx - aw / 2, y0 + ph / 5, cx + aw / 2, y0 + ph * 3 / 5, 0xFFF0F0F0u);
+                for (i32 r = 0; r <= ph / 4; ++r)
+                    fb_.hline(cx - ph / 4 + r, cx + ph / 4 - r, y0 + ph * 3 / 5 + r, 0xFFF0F0F0u);
+            }
+        }
+    } else if (tipo == 3) {
+        // Arco della citta': piloni del colore del tema, trave con file di
+        // lampadine che si rincorrono (insegna da luna park, senza scritte).
+        const i32 w = std::clamp((i32)(pxUnita * 200.0f), 1, 48);
+        const i32 cima = terra - (i32)(2700.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.18f), x1 = (i32)(p.screenX + hw * 1.18f);
+        const u32 scuro = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.6f);
+        colonna(x0, w, cima, scuro, tema_.rumbleAlt);
+        colonna(x1, w, cima, scuro, tema_.rumbleAlt);
+        const i32 sp = std::max(2, (i32)(420.0f * pxY));
+        fb_.fillRect(x0 - w / 2, cima, x1 + w / 2, cima + sp, 0xFF1A1A22u);
+        fb_.hline(x0 - w / 2, x1 + w / 2, cima, tema_.rumbleAlt);
+        fb_.hline(x0 - w / 2, x1 + w / 2, cima + sp, tema_.rumbleAlt);
+        const i32 r = std::clamp((i32)(pxUnita * 70.0f), 1, 4);
+        const i32 passo = std::max(r * 3, 3);
+        const i32 corsa = (i32)(tempoS_ * 10.0f);
+        for (i32 x = x0, k = 0; x <= x1; x += passo, ++k)
+            drawLampada(x, cima + sp / 2, r, (k & 1) ? 0xFFFFD040u : tema_.rumbleAlt, ((k + corsa) % 3) == 0);
+    }
 }
 
 void Renderer::drawRoadsideMarkers(f32 playerZ) {
@@ -386,6 +699,7 @@ bool Renderer::aggiornaTransizioneTema(f32 dt) {
     tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, temaA_.rumbleAlt, transizioneT_);
     tema_.acqua = lerpColore(temaDa_.acqua, temaA_.acqua, transizioneT_);
     tema_.acquaAlt = lerpColore(temaDa_.acquaAlt, temaA_.acquaAlt, transizioneT_);
+    tema_.sabbia = lerpColore(temaDa_.sabbia, temaA_.sabbia, transizioneT_);
     return transizioneT_ < 1.0f;
 }
 

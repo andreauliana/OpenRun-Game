@@ -45,4 +45,22 @@ struct PezziPaesaggio {
 void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const PezziPaesaggio& pezzi,
                       f32 zBivioInizio, u32 seme, std::vector<SpriteInstance>& out);
 
+// Pezzi comuni dei dintorni del ponte (Andrea 07/11), da
+// dati/sprite_raw/scenari/comuni/ (TOOLS/disegna_ponte.py). nullptr = assente.
+struct PezziPonte {
+    const Sprite* boa = nullptr;
+    const Sprite* barca = nullptr;
+    const Sprite* motoscafo = nullptr;
+    const Sprite* scoglio = nullptr;
+    const Sprite* faro = nullptr;
+    const Sprite* ombrellone = nullptr;
+};
+
+// Oggetti sul terreno basso sotto il ponte e le sue rampe: boe, barche e
+// scogli sul mare, un faro per ponte, ombrelloni e scogli sulla spiaggia,
+// alberi e cespugli del livello sul prato. Il Renderer li disegna dentro
+// drawRoad alla quota del terreno (SpriteInstance in out, worldX dal centro).
+void disponiTerraPonte(const Road& road, const PezziPaesaggio& pz, const PezziPonte& pp, u32 seme,
+                       std::vector<SpriteInstance>& out);
+
 } // namespace sgl

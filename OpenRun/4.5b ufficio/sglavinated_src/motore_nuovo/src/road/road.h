@@ -111,6 +111,23 @@ public:
     // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
     i32 indiceSegmento(f32 z) const;
 
+    // Dintorni del ponte (Andrea 07/11): segmenti di spiaggia/mare sotto le
+    // rampe, luci di avvicinamento a terra prima e dopo il ponte e prima del bivio.
+    static constexpr i32 RIVA_SEG = 90;        // fin dove la riva cambia il terreno sotto le rampe
+    static constexpr i32 LUCI_PONTE_SEG = 90;  // luci a terra prima della rampa e dopo la discesa
+    static constexpr i32 LUCI_BIVIO_SEG = 120; // luci prima che la strada si apra al bivio
+    // Terreno sotto le rampe secondo riva: mare entro RIVA_ACQUA segmenti dal
+    // ponte (a RIVA_ACQUA la battigia), poi spiaggia, poi spiaggia che sfuma nel prato.
+    static constexpr i32 RIVA_ACQUA = 34;
+    static constexpr i32 RIVA_SABBIA = 22;
+    static constexpr i32 RIVA_SFUMA = 18;
+    // Portale sopra la strada all'inizio del segmento idx (tipo come RoadSegment::portale).
+    void impostaPortale(i32 idx, u8 tipo) {
+        if (idx >= 0 && idx < (i32)segs_.size()) segs_[(size_t)idx].portale = tipo;
+    }
+    // Ricalcola riva, luci e porte del ponte (fine di build; bivio cambia le luci).
+    void calcolaDintorni();
+
     // Proietta i segmenti visibili a partire da playerZ e riempie out (max DRAW_DIST).
     // Carreggiate a una posizione del tracciato: una sola, o i due rami del bivio.
     // centro[] e' lo spostamento laterale dal centro strada (unita' mondo),
@@ -122,7 +139,9 @@ public:
     };
     // Attiva il bivio sugli ultimi BIVIO_SEG segmenti (gara a tappe). La scelta
     // si blocca a bivioBloccoZ(): da li' i rami sono separati dallo spartitraffico.
-    void impostaBivio(bool attivo) { bivio_ = attivo; }
+    void impostaBivio(bool attivo) {
+        if (bivio_ != attivo) { bivio_ = attivo; calcolaDintorni(); }
+    }
     bool bivioAttivo() const { return bivio_; }
     f32 bivioInizioZ() const { return (f32)(totalLen_ - BIVIO_SEG * SEG_LEN); }
     f32 bivioBloccoZ() const { return bivioInizioZ() + 0.6f * (f32)(BIVIO_SEG * SEG_LEN); }
@@ -140,6 +159,10 @@ public:
         bool acqua = false;          // ponte: acqua ai lati
         f32 acquaY = 0.0f;           // riga dello schermo del pelo dell'acqua a questa distanza
         bool sospeso = false;        // terreno in basso (a acquaY): ponte o rampe
+        i16 riva = -1;               // copie di RoadSegment (dintorni del ponte)
+        i16 luci = -1;
+        i8 versoLuci = 0;
+        u8 portale = 0;
     };
     void project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio = 0) const;
 
