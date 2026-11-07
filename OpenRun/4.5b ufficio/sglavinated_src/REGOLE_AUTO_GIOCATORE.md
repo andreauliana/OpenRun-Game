@@ -33,7 +33,16 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)
-- Nessun sollevamento ad alta velocita': `SOLLEVAMENTO_MAX_PX = 0`.
+- **Razzo alla punta** (Andrea 07/11, sostituisce il "niente sollevamento"
+  del 06/11): dopo `RAZZO_ATTESA_S = 1` s alla punta in rettilineo l'auto si
+  alza fino a `SOLLEVAMENTO_MAX_PX = 7` px e galleggia; due getti ciano sotto
+  la pancia, fiammelle dagli scarichi, scie di velocita' ai lati. Ricade in
+  0.3 s in curva, frenando o fuori strada. L'ombra resta a terra.
+- **Animazioni** (`EffettiAuto`, renderer): sgommata con fumo dalla ruota
+  esterna e segni a terra sterzando forte dentro una curva veloce; zolle
+  d'erba/terra fuori strada; all'atterraggio dei salti le sospensioni si
+  schiacciano (1-3 px) e la polvere scappa ai lati (scintille se il salto era
+  alto); sul ponte un "tac" di 1 px ogni `PONTE_GIUNTO_M = 12` m.
 - Salti sui dossi piccoli: `SALTO_PX_PER_UNITA = 0.02`, `SALTO_MAX_PX = 6`.
 - All'arrivo l'auto resta a terra (niente sollevamento ne' salti).
 - Con le pose disegnate l'auto **non si inclina** in curva: la curva la mostra

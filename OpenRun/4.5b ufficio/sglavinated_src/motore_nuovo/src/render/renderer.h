@@ -34,6 +34,19 @@ struct DanniAuto {
     static constexpr i32 DANNI_MAX = 8;
 };
 
+// Animazioni dell'auto del giocatore (Andrea 07/11: "curve, ponti, salti,
+// velocita' massima, elevazione a mo' di razzo"). Le calcola Game, le disegna
+// drawPlayerCar attorno all'auto; nessuno stato nel Renderer (tutto da tempoS).
+struct EffettiAuto {
+    f32 tempoS = 0.0f;       // orologio di gioco (sfarfallii, sbuffi)
+    f32 razzo = 0.0f;        // 0..1 modalita' razzo: getti sotto l'auto, fiamme, scie
+    f32 sgommata = 0.0f;     // 0..1 fumo dalle gomme in curva veloce
+    i32 latoSgommata = 0;    // lato esterno della curva: -1 sinistra, +1 destra
+    f32 polvere = 0.0f;      // 0..1 fuori strada: zolle che schizzano dalle ruote
+    f32 atterraggioS = -1.0f;// secondi dall'atterraggio di un salto (< 0 = nessuno)
+    f32 forzaAtterraggio = 0.0f; // 0..1 quanto era alto il salto
+};
+
 // RIV punto 3 (finto 3D alla OutRun): fotogrammi dell'auto del giocatore,
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
@@ -146,11 +159,16 @@ public:
     // distanzaM: metri percorsi (AUTO1 A2: passo delle ruote del componente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
                        bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr,
-                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f);
+                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f,
+                       const EffettiAuto* fx = nullptr);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
     void drawHud(f32 speedPct, i32 gear, bool offroad);
+    // Effetti attorno all'auto (EffettiAuto): getti del razzo sotto la
+    // carrozzeria (sotto=true, prima dell'auto) oppure fumo, zolle, polvere
+    // dell'atterraggio, fiamme e scie (sotto=false, dopo l'auto).
+    void drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32 h, bool sotto);
 
     // HUD da hud.json: se impostato, sostituisce drawHud/drawGara.
     void impostaHud(std::vector<HudElemento> elementi) { hud_ = std::move(elementi); }

@@ -312,6 +312,14 @@ private:
     bool sollevamentoAttivo_ = false;
     f32 sollevamento_ = 0.0f;      // 0..1, segue l'obiettivo con un ritardo
     f32 sollevamentoFaseS_ = 0.0f; // tempo per l'ondeggio mentre l'auto e' sollevata
+    // Animazioni dell'auto (Andrea 07/11): razzo alla punta, sgommata in curva,
+    // atterraggio dei salti. Solo grafica, non toccano la guida.
+    f32 razzoAttesaS_ = 0.0f;      // secondi passati alla punta in rettilineo
+    f32 sgommata_ = 0.0f;          // 0..1, segue l'obiettivo con un ritardo
+    i32 latoSgommata_ = 0;         // lato esterno della curva
+    f32 saltoMaxAltezza_ = 0.0f;   // quota massima del salto in corso
+    f32 atterraggioS_ = -1.0f;     // secondi dall'ultimo atterraggio (< 0 = nessuno)
+    f32 forzaAtterraggio_ = 0.0f;  // 0..1 altezza del salto appena finito
     u32 playerFlipFrame_ = 0;
     u32 offroadFrames_ = 0;
     bool playerBump_ = false;     // stato di bump dopo urto con un avversario (nessun ribaltamento)
