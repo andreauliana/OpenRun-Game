@@ -6,7 +6,7 @@ Tappa attiva: **1 — Gate T1-RUN** ("Il gioco parte, si visualizza il player ch
 
 Ruoli 4.6: **developer, developer-junior, grafico**. Consegne: `out/developer/`, `out/developer-junior/`, `out/grafico/`.
 
-Data: 2026-11-06.
+Data: 2026-11-07.
 
 ## Verifica chiusure checkpoint
 
