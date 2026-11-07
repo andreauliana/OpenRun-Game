@@ -157,7 +157,6 @@ public:
         const char* nome = "";
         f32 tempoS = 0.0f;
         bool giocatore = false;
-        bool fuori = false; // KO1: rivale messo fuori gara (OUT dopo gli arrivati)
     };
     const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
     f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
@@ -242,6 +241,12 @@ private:
     bool offroadPrec_ = false;
     f32 ciglioMemoriaS_ = 0.0f;  // > 0: il tocco precedente e' ancora "ricordato"
     void toccaCiglio();
+    void abbattiPali(f32 zPrima); // paletti del bordo abbattuti (Andrea 06/11 sera)
+    f32 colpiMemoria_ = 0.0f;     // memoria delle sportellate (incidente a COLPI_INCIDENTE)
+    f32 rientroS_ = -1.0f;        // secondi dal rientro in strada (sobbalzo), -1 = niente
+    bool cartelloneToccato_ = false;
+    struct Detrito { f32 t = -1.0f; i32 lato = 1; f32 v = 0.0f; }; // paletto che vola via
+    Detrito detriti_[4];
     void ribalta();
     void liberaRipartenza();
     f32 ciglioRallenta_ = 0.7f;      // config.json ciglio_rallenta
@@ -314,8 +319,6 @@ private:
     f32 playerBumpSpintaX_ = 0.0f; // spinta laterale residua del bump (unita'/s)
     static constexpr f32 FLIP_ANIMATION_S = 1.5f;    // durata ribaltamento in secondi (indipendente dalla frequenza)
     static constexpr f32 OFFROAD_CRASH_S = 2.0f;     // secondi fuori strada prima del ribaltamento
-    static constexpr f32 RIVALE_KO_SEGNALINO_S = 2.5f; // triangolo acceso 2.5 s a ogni botta sul rivale (KO1)
-    static constexpr f32 RIVALE_KO_ANIM_S = 3.0f;    // durata uscita del rivale KO, poi sparisce (secondi)
 
     // Dati cartelloni da livello.json (letto una volta in init).
     // radice: livello.json gia' analizzato (nullptr se il file manca o non e' valido).
@@ -367,9 +370,6 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     f32 bumpRallentaFattore_ = 0.85f; // fattore velocita' dopo urto con rivale (0.85 = -15%, config.json)
     f32 bumpDurataS_ = 1.0f;          // durata stato bump (secondi, config.json)
     f32 bumpSpintaLaterale_ = 200.0f; // spinta laterale urto rivale (unita'/s, config.json)
-    // KO1 (Andrea 05/11): quante botte del giocatore mettono un rivale fuori gara;
-    // 0 = disattivato. Letto da dati/config.json ("rivale_urti_ko").
-    f32 rivaleUrtiKo_ = 4.0f;
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
     f32 tempoGiocoS_ = 0;        // secondi di gioco accumulati (frequenza indipendente)
     std::string stileCartellone_; // "neon" | "atomico" | "foglie" (tema_grafico.stile_cartellone)
@@ -411,10 +411,8 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         // alla partenza e per qualche secondo quando il rivale arriva vicino.
         f32 segnalinoS = 0.0f; // secondi rimasti di triangolo acceso
         bool vicino = false;   // era gia' vicino al frame prima (accende solo all'ingresso)
-        // KO1 (Andrea 05/11): urti subiti dal giocatore e stato fuori gara.
-        i32 urti = 0;          // quante botte ha preso dal giocatore (solo urti del giocatore)
-        bool fuoriGara = false; // vero dopo il KO (rivale_urti_ko botte)
-        f32 koTimerS = 0.0f;   // secondi di uscita prima di sparire dalla strada
+        i32 urti = 0;          // botte ricevute dal giocatore (memoria dei danni, Andrea 06/11 sera)
+        f32 koS = 0.0f;        // secondi di KO rimasti (alla 4a botta)
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;

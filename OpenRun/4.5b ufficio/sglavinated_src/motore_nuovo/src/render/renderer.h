@@ -46,8 +46,9 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 // Scala a schermo dei fotogrammi dell'auto del giocatore (64x32 -> 64x32 px).
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
-constexpr i32 AUTO_GIOCATORE_TERRA_Y = 218; // riga dello schermo dove appoggiano le ruote (224 = fondo)
-constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 120; // Andrea 06/11: grande e in basso, circa un terzo dello schermo
+// BLOCCATO (Andrea 06/11): valori dell'auto del giocatore in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 222; // riga dello schermo dove appoggiano le ruote (224 = fondo)
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 100; // Andrea 06/11 sera: 125 px era troppo grande; ~1/3 dello schermo, appoggiata in basso
 
 enum PosaGiocatore : i32 {
     // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena
@@ -165,11 +166,6 @@ public:
 
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
-    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
-    // Usato per la scena show (personaggio verde 0xFF00FF00, fumetto blu
-    // 0xFF0000FF) in attesa degli sprite veri del @grafico (blocco AUTO1);
-    // i colori sono quelli misurati dal gate screenshot P1.
-    void disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore);
 
     // Aggiunge uno sprite sponsor caricato una volta all'avvio (dal runner,
     // che decodifica i PNG; il core resta senza SDL). Ritorna l'indice da
@@ -246,6 +242,9 @@ public:
     // dello stesso lato, poi lo specchio dell'altro lato, poi la dritta.
     // `specchia` = disegnare a specchio; `sterzoResiduo` (-1..1) = sterzo che il
     // fotogramma scelto non mostra (lo rende l'inclinazione del motore).
+    // Pezzo che vola via (paletto abbattuto): rettangolo w x h ruotato di
+    // `angolo` attorno al centro (x, y), con il cappuccio scuro in cima.
+    void drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore);
     const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};

@@ -56,9 +56,9 @@ private:
     // Sterzo: spostamento laterale massimo 600 unita'/secondo, zero da fermi,
     // pieno a STEER_V_PIENA * MAX_SPEED, -15% alla punta (510 > spinta curva 0.8
     // a velocita' massima, ~356). Gate: >= +/-200 in 0.6 s partendo da fermi.
-    static constexpr f32 STEER_MAX = 600.0f;
+    static constexpr f32 STEER_MAX = 700.0f; // Andrea 06/11 sera: piano si gira di piu' (era 600)
     static constexpr f32 STEER_V_PIENA = 0.25f;
-    static constexpr f32 STEER_CALO_PUNTA = 0.15f;
+    static constexpr f32 STEER_CALO_PUNTA = 0.35f; // Andrea 06/11 sera: alla punta si sterza meno (era 0.15)
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.

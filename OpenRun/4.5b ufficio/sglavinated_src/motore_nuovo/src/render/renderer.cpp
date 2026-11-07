@@ -266,6 +266,18 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
     }
 }
 
+void Renderer::drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore) {
+    const f32 co = std::cos(angolo), si = std::sin(angolo);
+    const i32 r = (w + h) / 2 + 1;
+    for (i32 py = y - r; py <= y + r; ++py)
+        for (i32 px = x - r; px <= x + r; ++px) {
+            const f32 dx = (f32)(px - x), dy = (f32)(py - y);
+            const f32 lx = co * dx + si * dy, ly = -si * dx + co * dy;
+            if (std::abs(lx) > w * 0.5f || std::abs(ly) > h * 0.5f) continue;
+            fb_.put(px, py, ly < -h * 0.5f + 2.0f ? pal_[5] : colore);
+        }
+}
+
 void Renderer::drawSkyline(const Sprite& s) {
     // Skyline: largo quanto lo schermo, ancorato all'orizzonte, proporzioni
     // della fonte. Indice 0 = trasparente (resta il colore del cielo).
@@ -592,7 +604,14 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) fb_.fillRect(cx - w / 2 + 4, AUTO_GIOCATORE_TERRA_Y - 1, cx + w / 2 - 4, AUTO_GIOCATORE_TERRA_Y + 1, pal_[0]); // ombra a terra
+        if (sollevamento > 0) {
+            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
+            // piu' stretta della carrozzeria, niente barra nera piena.
+            const i32 mezza = w / 2 - w / 8;
+            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
+                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
+                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        }
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         // Geometria del disegno (AUTO1 A2): rettangolo del fotogramma e
@@ -796,7 +815,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                 const i32 px = (i32)(baseX + (f32)lato * (k * 10.0f)) + ((n & 1) ? 2 : -2);
                 const i32 py = (i32)(baseY - k * 12.0f);
                 const Sprite& fs = fumoSprites_[(n + (lato > 0 ? 1 : 0)) % 3];
-                if (fs.width > 0 && fs.height > 0 && !fs.palette.empty()) {
+                // Solo sui fotogrammi della griglia degli agenti: le pose di
+                // Andrea tengono il fumo di sempre (REGOLE_AUTO_GIOCATORE.md).
+                if (fotogrammaGriglia && fs.width > 0 && fs.height > 0 && !fs.palette.empty()) {
                     // Fotogramma del @grafico, centrato sullo sbuffo, che si
                     // dirada come il disegno sintetico mentre l'eta' avanza.
                     const i32 hx = fs.width / 2, hy = fs.height / 2;
@@ -1043,13 +1064,6 @@ void Renderer::drawHudDati(const HudDati& d) {
     }
     // Fuori strada: nessuna scritta (Andrea 29/10, ridondante): lo dicono gia'
     // l'erba, il sobbalzo e le scintille.
-}
-
-void Renderer::disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore) {
-    // Scena show in attesa degli sprite veri del @grafico (blocco AUTO1).
-    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
-    if (w <= 0 || h <= 0) return;
-    fb_.fillRect(x, y, x + w - 1, y + h - 1, colore);
 }
 
 } // namespace sgl
