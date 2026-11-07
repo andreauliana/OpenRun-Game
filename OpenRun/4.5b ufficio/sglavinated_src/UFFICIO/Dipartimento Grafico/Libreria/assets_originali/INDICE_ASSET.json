@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06 09:16",
- "n_file": 347,
+ "generato": "2026-11-07 07:42",
+ "n_file": 363,
  "lacune": [
   {
    "serve": "auto giocatore",
@@ -74,11 +74,11 @@
    "percorso": "assets_originali/CATALOGO_GRAFICO.json",
    "categoria": "(radice)",
    "tipo": "json",
-   "byte": 91516,
+   "byte": 98659,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
-   "mtime": 1793951381,
+   "mtime": 1794033725,
    "flag": []
   },
   {
@@ -4773,14 +4773,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_discesa.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 525,
+   "byte": 436,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "efbf29f1913159907beaecea3607867f6ac5531b",
-   "mtime": 1793932813,
+   "sha1": "23356af4ff38834aebc06e6e5cf2c3e5fed9fd1c",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4788,14 +4788,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_dritta.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 624,
+   "byte": 533,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "9d39e4fda28bc052cc015b320c4e1b252e08aabd",
-   "mtime": 1793932813,
+   "sha1": "79a8f02eed2604375fd5326c22ccab77b60f2cd6",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4803,14 +4803,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_salita.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 626,
+   "byte": 533,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "1b0a8c2a1d5114abf73efd49ad907a4c8c1cac1c",
-   "mtime": 1793932813,
+   "sha1": "bd424d71f0ed44c81d9416c3c0267fcec18b24a6",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4818,14 +4818,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_forte.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 1002,
+   "byte": 903,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "93c3814f7381847ff9237feb77f659e093ae8cbe",
-   "mtime": 1793932813,
+   "sha1": "2f5ff29dd3202ad6f85be0d8d23728a6664083fe",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4833,14 +4833,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_dx_leggero.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 825,
+   "byte": 752,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "d94847bf1bc3b119b6030262d041514c6957dfe4",
-   "mtime": 1793932813,
+   "sha1": "bd87af6bc2fbb41d9a370a3b32b74b2631db72cb",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4848,14 +4848,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_forte.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 927,
+   "byte": 827,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "d6287c85addd665b4beafcf180fafd8704a10011",
-   "mtime": 1793932813,
+   "sha1": "df508c8a193ade82c67155dd1ac09fad0c99b8cd",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4863,14 +4863,14 @@
    "percorso": "assets_originali/sprite/auto_gt/auto_giocatore_sterzo_sx_leggero.png",
    "categoria": "sprite",
    "tipo": "png",
-   "byte": 773,
+   "byte": 692,
    "licenza": "CC0-1.0",
    "stato": "generato",
    "originale": true,
    "w": 64,
    "h": 32,
-   "sha1": "9497c0bf3981100761303b566c1851b9d50474ad",
-   "mtime": 1793932813,
+   "sha1": "9163ba84248b96512bed041c46e28f72ba8e4699",
+   "mtime": 1794033649,
    "scelta": "D5: auto GT europea anni 70-90, 3 colori",
    "flag": []
   },
@@ -4933,6 +4933,129 @@
    "flag": []
   },
   {
+   "percorso": "assets_originali/sprite/giocatore/auto_giocatore.json",
+   "categoria": "sprite",
+   "tipo": "json",
+   "byte": 2860,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "mtime": 1794033643,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/fumo_1.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 114,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 16,
+   "h": 16,
+   "sha1": "bcfc4a15e19a1a29dc36e3420b33e029635f213d",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/fumo_2.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 131,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 16,
+   "h": 16,
+   "sha1": "538cb57d6ecf6d449da972e3fbd3b576de191289",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/fumo_3.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 138,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 16,
+   "h": 16,
+   "sha1": "844a425dfcc992eed3b39d50c9c75dd9078f6946",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/luci_stop.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 103,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 12,
+   "h": 4,
+   "sha1": "76319124dc6bd71e9604d0aaaef2519bcfda2749",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/ruota_1.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 159,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 12,
+   "h": 10,
+   "sha1": "9f31d246d32db4f3e664e1033b87c860dbfdf66e",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/ruota_2.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 159,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 12,
+   "h": 10,
+   "sha1": "7c7da442e1d35c58e33af2aa32e4bcea8f09302a",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore/ruota_3.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 156,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 12,
+   "h": 10,
+   "sha1": "a9cc8be9646aa81b1b52b04e533a147290b5cec1",
+   "mtime": 1794033643,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
    "percorso": "assets_originali/sprite/giocatore_pose/auto_dritta.png",
    "categoria": "sprite",
    "tipo": "png",
@@ -4961,6 +5084,126 @@
    "flag": [
     "minuscolo_probabile_segnaposto"
    ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_stop_sx1.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 166,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "5124883bf04440d9fe7108881e89ff4a220819fd",
+   "mtime": 1793979816,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_stop_sx2.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 165,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "727b33ca0519130d652195ce1ea4700156bab9c6",
+   "mtime": 1793979816,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_stop_sx3.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 166,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "648424097da8acb2ac82138fdc0b8cae3aabffc7",
+   "mtime": 1793979816,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_stop_sx4.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 167,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "07639b866824849459d627836ce4db84b17ae1eb",
+   "mtime": 1793979816,
+   "flag": [
+    "minuscolo_probabile_segnaposto"
+   ]
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_sx1.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 910,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "8f77c555a7baa30c5cfc1c6695da1f2ad4877558",
+   "mtime": 1793979816,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_sx2.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 908,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "673235dcecefd997a869c252df4b6d76d6ebfa2b",
+   "mtime": 1793979816,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_sx3.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 903,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "65ff4f5cfc90aff5cf52f620fc30adfcf9a205ae",
+   "mtime": 1793979816,
+   "flag": []
+  },
+  {
+   "percorso": "assets_originali/sprite/giocatore_pose/auto_sx4.png",
+   "categoria": "sprite",
+   "tipo": "png",
+   "byte": 912,
+   "licenza": "CC0-1.0",
+   "stato": "generato",
+   "originale": true,
+   "w": 42,
+   "h": 25,
+   "sha1": "fd7452625ca27a7ca960397fb3465c08638e5547",
+   "mtime": 1793979816,
+   "flag": []
   },
   {
    "percorso": "assets_originali/sprite/pubblico/pubblico_a_giu.png",

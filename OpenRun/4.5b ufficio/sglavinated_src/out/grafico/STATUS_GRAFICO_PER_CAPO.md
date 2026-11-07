@@ -1,10 +1,14 @@
 # Status grafico per il Capo — OpenRun 4.6
 
-**Aggiornato:** 2026-11-06 07:09
-**Stato:** RIV punto 3 (grafica) completo: 7 viste di lato rivali 44x16 (tutti i 7 modelli, prima solo rosso/azzurro) + 7 raw, 7 fotogrammi auto giocatore 64x32 + 7 raw, sbandata giocatore presente. PIST1 G-P1 [x] (parapetto 32x48, guardrail 48x32 + raw). G1 [x]. M [~] bloccato da Andrea. DECO1 [~] in attesa integrazione @developer e review/@capo.
+**Aggiornato:** 2026-11-07 12:04
+**Stato:** Turno 07/11 12:04 — nessun blocco grafico azionabile (G-A1 [x] e G-P1 [x] gia' chiusi; M [~] attesa ok Andrea PNG B/N/manifest bozza, DECO1 [~] attesa review @capo, PIST1 [~]/R2 [~]/AUTO1 [ ] attesa developer/developer-junior). Nessun file cambiato, nessun comando eseguito.
 
-**File creati/modificati:** `UFFICIO/Dipartimento Grafico/TOOLS/disegna_parapetti.py` (genera parapetto 32x48 + guardrail 48x32, palette piccola + Bayer, CC0-1.0); `UFFICIO/Dipartimento Grafico/TOOLS/disegna_rivali.py` (esteso: 7 viste lato, scrittura raw, salto dei retro esistenti); `Libreria/assets_originali/sprite/rivali/auto_rivale_{rosso,azzurro,giallo,verde,bianco,arancio,viola}_lato.png`; `motore_nuovo/dati/sprite_raw/rivali/*_lato.sglraw` (7 nuovi) e `*_retro.sglraw` (7 riscritti identici); `Libreria/assets_originali/CATALOGO_GRAFICO.json` (+5 voci 'pronto', campo `raw` sulle 2 voci lato esistenti); `INDICE_ASSET.json/.md` rigenerati; diario/RIASSUNTO/questo status.
-**Catalogo/licenze:** 201 elementi (approvato 30, pronto 67, mancante 3, scartato 101), CC0-1.0, tutte originali, nessun materiale Sega; nessuna risorsa esterna.
-**Controlli/esiti:** `python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_parapetti.py"` exit 0 (parapetto 32x48 + guardrail 48x32 generati, catalogo aggiornato); `python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_rivali.py"` exit 0 (ogni lato con bbox pieno, 424-442 px opachi su 704); `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0"; `python3 motore_nuovo/strumenti_py/indice_assets.py` exit 0 (345 file). gate_t1.sh non eseguito.
-**Lacune/blocchi:** @developer deve caricare le viste lato rivali in curva (RIV punto 3) e scegliere i fotogrammi del giocatore in `Renderer::drawPlayerCar`; RIV punto 1 ancora a @developer; DECO1 attende integrazione @developer + review/@capo.
-**Review richiesta:** nessuna da @grafico; quando @developer integra gli sprite, il gate RIV chiede che @grafico riveda gli screenshot in gioco.
+**File creati/modificati:** nessuno (turno senza produzione grafica).
+
+**Catalogo/licenze:** nessun nuovo elemento; tutto originale CC0-1.0/OFL-1.1/MIT/CC-BY-4.0, nessun materiale Sega, nessuna risorsa esterna.
+
+**Controlli/esiti:** nessun comando eseguito in questo turno; gate non eseguito (gate_t1.sh e' di @developer).
+
+**Lacune/blocchi:** M [~] in attesa ok Andrea (manifest bozza); DECO1 [~] in attesa review @capo; PIST1 [~] (P3, J1, J2 in attesa developer/developer-junior); KO1 [ ] (in attesa developer/developer-junior); R2 [~] (fasi di gioco in attesa developer); AUTO1 [ ] (G-A1 [x], A2/J-A1 in attesa developer/developer-junior); menu/logo segnaposto Andrea per LOOP1.
+
+**Review richiesta:** nessuna in attesa mia (J-A1 in out/grafico/REVIEW_AUTO1.md, chiusura AUTO1 a @capo + Andrea).

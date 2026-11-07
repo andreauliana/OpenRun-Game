@@ -1,1 +1,1 @@
-[06/11 09:13] Turno @grafico: BLOCCO M completato - CREDITI.md creato con licenze asset UI, font Antonio Bold OFL-1.1, CC-BY-4.0 per pixel, MIT per HUD. Catalogo verificato exit 0, quota open 100%. PNG variante B rigenerati e audit passati.
+[07/11 12:13] Turno @grafico: nessun blocco grafico azionabile (M [~] attesa ok Andrea PNG B/N/manifest bozza, DECO1 [~] attesa review @capo, PIST1 [~]/R2 [~]/AUTO1 [ ]/KO1 [ ] attesa developer/developer-junior; G-A1 [x], G-P1 [x] chiusi; nessun comando eseguito, gate non eseguito).
