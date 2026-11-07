@@ -141,9 +141,10 @@ public:
 
     // Disegna l'auto del giocatore al centro dello schermo (proporzionale alla velocita').
     // frena: luci rosse accese. fumoS: secondi di frenata con fumo dalle gomme (< 0 = niente).
+    // distanzaM: metri percorsi (AUTO1 A2: passo delle ruote del componente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
                        bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr,
-                       i32 posa = POSA_GIOCATORE_DRITTA);
+                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
@@ -164,6 +165,11 @@ public:
 
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
+    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
+    // Usato per la scena show (personaggio verde 0xFF00FF00, fumetto blu
+    // 0xFF0000FF) in attesa degli sprite veri del @grafico (blocco AUTO1);
+    // i colori sono quelli misurati dal gate screenshot P1.
+    void disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore);
 
     // Aggiunge uno sprite sponsor caricato una volta all'avvio (dal runner,
     // che decodifica i PNG; il core resta senza SDL). Ritorna l'indice da
@@ -210,6 +216,32 @@ public:
         if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) posa = POSA_GIOCATORE_DRITTA;
         return &giocatoreSprites_[posa];
     }
+    // AUTO1 A2 (componenti, G-A1 @grafico): ruote, luci stop e fumo sono
+    // sprite separati caricati una volta in Game::init; le posizioni per
+    // fotogramma (centri in texel della griglia di auto_giocatore.json)
+    // arrivano con impostaPuntiComponenti. Le pose di Andrea hanno ruote e
+    // fanali gia' disegnati: per esse valgono solo le posizioni dello scarico,
+    // per il fumo. Se un componente manca vale il disegno sintetico di oggi.
+    void impostaRuotaSprite(i32 passo, Sprite sprite) {
+        if (passo >= 0 && passo < 3) ruotaSprites_[passo] = std::move(sprite);
+    }
+    void impostaLuciStopSprite(Sprite sprite) { luciStopSprite_ = std::move(sprite); }
+    void impostaFumoSprite(i32 passo, Sprite sprite) {
+        if (passo >= 0 && passo < 3) fumoSprites_[passo] = std::move(sprite);
+    }
+    // Posizioni di un fotogramma: centri in texel della griglia (oggi 64x32).
+    struct PuntiComponenti {
+        f32 ruotaSx[2] = {0.0f, 0.0f}, ruotaDx[2] = {0.0f, 0.0f};
+        f32 fanaleSx[2] = {0.0f, 0.0f}, fanaleDx[2] = {0.0f, 0.0f};
+        f32 scaricoSx[2] = {0.0f, 0.0f}, scaricoDx[2] = {0.0f, 0.0f};
+        bool validi = false;
+    };
+    void impostaPuntiComponenti(i32 posa, const PuntiComponenti& p) {
+        if (posa >= 0 && posa < POSA_GIOCATORE_COUNT) punti_[posa] = p;
+    }
+    void impostaGrigliaComponenti(i32 w, i32 h) {
+        if (w > 0 && h > 0) { grigliaW_ = w; grigliaH_ = h; }
+    }
     // Fotogramma da disegnare per una posa: se manca usa la posa piu' vicina
     // dello stesso lato, poi lo specchio dell'altro lato, poi la dritta.
     // `specchia` = disegnare a specchio; `sterzoResiduo` (-1..1) = sterzo che il
@@ -218,6 +250,10 @@ public:
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
         for (Sprite& s : stopSprites_) s = Sprite{};
+        for (Sprite& s : ruotaSprites_) s = Sprite{};
+        luciStopSprite_ = Sprite{};
+        for (Sprite& s : fumoSprites_) s = Sprite{};
+        for (PuntiComponenti& p : punti_) p = PuntiComponenti{};
     }
     // Stop accesi (Andrea 06/11): per ogni posa un disegno della stessa misura
     // con solo i fanali accesi, sovrapposto quando si frena. Facoltativo: se
@@ -288,6 +324,11 @@ private:
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
+    Sprite ruotaSprites_[3];                        // componenti ruota_1..3 (AUTO1 A2)
+    Sprite luciStopSprite_;                         // componente luci_stop (AUTO1 A2)
+    Sprite fumoSprites_[3];                         // componenti fumo_1..3 dello scarico (AUTO1 A2)
+    PuntiComponenti punti_[POSA_GIOCATORE_COUNT];   // posizioni componenti per fotogramma (auto_giocatore.json)
+    i32 grigliaW_ = 64, grigliaH_ = 32;             // griglia dei componenti (auto_giocatore.json)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)

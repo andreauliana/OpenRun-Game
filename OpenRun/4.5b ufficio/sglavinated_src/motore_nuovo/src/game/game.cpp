@@ -213,6 +213,65 @@ std::string leggiFileTesto(const std::string& path) {
     return testo;
 }
 
+// AUTO1 A2: posizioni dei componenti dell'auto da auto_giocatore.json
+// (dati/sprite_raw/giocatore/, G-A1 del @grafico). Ogni voce di "fotogrammi"
+// da' i centri in texel della griglia "griglia" (64x32); i nomi sono quelli
+// dei fotogrammi d'agente e si mappano sulle pose del motore. Se il file
+// manca o e' illeggibile i componenti restano senza posizioni: il Renderer
+// usa il disegno sintetico di oggi, mai un crash.
+void caricaPuntiComponentiGiocatore(Renderer& ren, const std::string& percorso) {
+    JsonReader j(leggiFileTesto(percorso));
+    if (!j.parse() || !jsonIsObject(j.valore())) {
+        std::printf("giocatore: %s illeggibile: componenti senza posizioni\n", percorso.c_str());
+        return;
+    }
+    const JsonObject& radice = jsonAsObject(j.valore());
+    JsonValue gv, fv;
+    if (jsonGet(radice, "griglia", gv) && jsonIsObject(gv)) {
+        const JsonObject& g = jsonAsObject(gv);
+        JsonValue wv, hv;
+        if (jsonGet(g, "w", wv) && jsonIsNumber(wv) && jsonGet(g, "h", hv) && jsonIsNumber(hv))
+            ren.impostaGrigliaComponenti((i32)jsonAsNumber(wv), (i32)jsonAsNumber(hv));
+    }
+    if (!jsonGet(radice, "fotogrammi", fv) || !jsonIsObject(fv)) return;
+    const JsonObject& fotogrammi = jsonAsObject(fv);
+    auto leggiPunto = [](const JsonObject& o, const char* chiave, f32 out[2]) {
+        JsonValue v;
+        if (!jsonGet(o, chiave, v) || !jsonIsArray(v)) return false;
+        const JsonArray& a = jsonAsArray(v);
+        if (a.size() < 2 || !jsonIsNumber(a[0]) || !jsonIsNumber(a[1])) return false;
+        out[0] = (f32)jsonAsNumber(a[0]);
+        out[1] = (f32)jsonAsNumber(a[1]);
+        return true;
+    };
+    struct Mappa { const char* nome; i32 posa; };
+    static const Mappa MAPPA[] = {
+        {"auto_giocatore_dritta", POSA_GIOCATORE_DRITTA},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_1},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_2},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_3},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_4},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_1},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_2},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_3},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_4},
+        {"auto_giocatore_salita", POSA_GIOCATORE_SALITA},
+        {"auto_giocatore_discesa", POSA_GIOCATORE_DISCESA},
+    };
+    for (const Mappa& m : MAPPA) {
+        JsonValue vo;
+        if (!jsonGet(fotogrammi, m.nome, vo) || !jsonIsObject(vo)) continue;
+        const JsonObject& o = jsonAsObject(vo);
+        Renderer::PuntiComponenti p;
+        if (leggiPunto(o, "ruota_sx", p.ruotaSx) && leggiPunto(o, "ruota_dx", p.ruotaDx) &&
+            leggiPunto(o, "fanale_sx", p.fanaleSx) && leggiPunto(o, "fanale_dx", p.fanaleDx) &&
+            leggiPunto(o, "scarico_sx", p.scaricoSx) && leggiPunto(o, "scarico_dx", p.scaricoDx)) {
+            p.validi = true;
+            ren.impostaPuntiComponenti(m.posa, p);
+        }
+    }
+}
+
 // Espande il campo "tracciato" di livello.json in descrittori di strada.
 // Ogni voce e' una stringa (nome tratto) oppure un oggetto
 // {"tratto": "nome", "lunghezza": 500, ...override...}; le definizioni base
@@ -659,6 +718,11 @@ void Game::init(const std::string& livelloId) {
             f32 val = (f32)jsonAsNumber(vs);
             if (val >= 0.0f) bumpSpintaLaterale_ = val;
         }
+        JsonValue vk;
+        if (jsonGet(jsonAsObject(cfg.valore()), "rivale_urti_ko", vk) && jsonIsNumber(vk)) {
+            f32 val = (f32)jsonAsNumber(vk);
+            if (val >= 0.0f) rivaleUrtiKo_ = val; // 0 = disattivato
+        }
         // Ciglio (Andrea 29/10): quanto rallenta il primo tocco, per quanti
         // secondi lo si ricorda, da che velocita' il tocco seguente e' un incidente.
         auto leggi = [&cfg](const char* chiave, f32& dove, f32 minimo, f32 massimo) {
@@ -700,6 +764,20 @@ void Game::init(const std::string& livelloId) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         ren_.impostaStopSprite(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_") + (POSE[k] + 5) + ".sglraw")));
+    // AUTO1 A2: componenti dell'auto (G-A1, @grafico): ruote, luci stop e
+    // fumo, piu' le posizioni per fotogramma di auto_giocatore.json. Caricati
+    // una volta per partita; se un raw o il file mancano vale il disegno
+    // sintetico di oggi, mai un crash.
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaRuotaSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/ruota_") + std::to_string(k + 1) + ".sglraw")));
+    ren_.impostaLuciStopSprite(caricaSpriteRaw(percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/luci_stop.sglraw")));
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaFumoSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/fumo_") + std::to_string(k + 1) + ".sglraw")));
+    caricaPuntiComponentiGiocatore(ren_, percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.json"));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         struct FrameGiocatore { i32 posa; const char* nome; };
         static const FrameGiocatore AGENTI[] = {
@@ -1092,6 +1170,10 @@ void Game::inizializzaRivali() {
         r.tempoArrivoS = -1.0f;
         r.segnalinoS = 0.0f;
         r.vicino = false;
+        // KO1: il rivale parte senza urti e in gara.
+        r.urti = 0;
+        r.fuoriGara = false;
+        r.koTimerS = 0.0f;
         // Sorgente RNG per le scelte del bivio di questo rivale (deterministico
         // per index di rivale, garantisce percorsi differenti ma coerenti).
         Rng rndBivio(seed_ ^ 0x52495641u ^ (u32)i);
@@ -1253,7 +1335,7 @@ void Game::aggiornaRivali() {
     const i32 tappaGiocatore = indiceTappa(tappaId_);
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
-        if (r.tempoArrivoS >= 0.0f) continue; // gia' al traguardo: fuori dalla corsa
+        if (r.tempoArrivoS >= 0.0f || (r.fuoriGara && r.koTimerS <= 0.0f)) continue; // gia' arrivato o KO uscito: fuori dalla corsa
         const bool sullaTappa = r.passoPercorso < r.nPercorso &&
                                 r.percorso[r.passoPercorso] == tappaGiocatore;
         if (!sullaTappa) {
@@ -1268,6 +1350,15 @@ void Game::aggiornaRivali() {
             r.progressoTappa += distanza;
             avanzaTappaRivale(r);
             continue;
+        }
+        // KO1: un rivale messo fuori gara esce di scena (sbanda, frena fino a
+        // fermarsi a bordo strada, poi sparisce). Durante l'uscita continua a
+        // disegnarsi ma non guida piu' normalmente.
+        if (r.fuoriGara && r.koTimerS > 0.0f) {
+            r.koTimerS -= dt;
+            r.passo *= 0.5f; // freno forte
+            if (r.passo < 0.5f) r.passo = 0.0f;
+            r.x += std::sin((f32)clock_.frame * 0.5f + (f32)i) * 30.0f * dt; // sbandata
         }
         const f32 zLocale = r.progressoTappa; // dentro la tappa (la strada del giocatore)
         // Rallenta in curva in base alla curvatura del segmento (piu' curva = piu' lento),
@@ -1287,7 +1378,8 @@ void Game::aggiornaRivali() {
             elastico = 1.0f + 0.25f * std::min(1.0f, (-distaccoS - RIVALE_LIBERO_S) / RIVALE_ELASTICO_RAMPA_S);
         r.ritmoFase += r.ritmoVel * dt;
         const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
-        r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
+        if (!r.fuoriGara) // KO1: il rivale in uscita non riprende velocita'
+            r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e resta
         // alla sua velocita' solo finche' e' ancora dritto dietro di lui.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
@@ -1350,8 +1442,10 @@ void Game::aggiornaRivali() {
             r.passo = std::min(r.passo, velocitaGiocatore);
         }
         const f32 laterale = (schiva ? RIVALE_SCHIVA_PER_S : RIVALE_LATERALE_PER_S) * dt;
-        if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
-        if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
+        if (!r.fuoriGara) { // KO1: il rivale in uscita sbanda liberamente, non rientra in corsia
+            if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
+            if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
+        }
 
         const f32 zRel = zLocale - road_.playerZ;
         // Triangolo: si accende quando il rivale entra nella fascia vicina.
@@ -1366,6 +1460,9 @@ void Game::aggiornaRivali() {
         SpriteInstance s;
         s.worldZ = road_.playerZ + zRel;
         s.worldX = c.centro[indice] + r.x * c.fattore;
+        // KO1: danni visibili dalla 2a botta - tremolio laterale dell'auto danneggiata.
+        if (r.urti >= 2)
+            s.worldX += std::sin((f32)clock_.frame * 0.35f + (f32)i) * (f32)(r.urti - 1) * 6.0f;
         s.scale = SCALA_RIVALE;
         s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
         s.paletteBase = r.colore;
@@ -2041,7 +2138,7 @@ void Game::render() {
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
-                       posaGiocatore);
+                       posaGiocatore, km_ * 1000.0f);
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
@@ -2088,6 +2185,12 @@ void Game::render() {
     }
     drawMusica();
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
+    // Scena show (personaggio + fumetto): disegnata qui in attesa degli sprite
+    // veri del @grafico (blocco AUTO1). Colori uguali a quelli attesi dal gate
+    // screenshot P1: verde personaggio (0xFF00FF00), blu fumetto (0xFF0000FF).
+    const ScenaShow& sc = scenaShow();
+    if (sc.personaggioVisibile) ren_.disegnaRiquadro(sc.persX, sc.persY, sc.persW, sc.persH, 0xFF00FF00u);
+    if (sc.bollaVisibile) ren_.disegnaRiquadro(sc.bollaX, sc.bollaY, sc.bollaW, sc.bollaH, 0xFF0000FFu);
 }
 
 void Game::aggiornaSalto(f32 dt) {
@@ -2191,6 +2294,14 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         v.x = std::clamp(v.x - lato * 260.0f, -RIVALE_X_MAX * 2.5f, RIVALE_X_MAX * 2.5f);
     } else {
         Rivale& r = rivali_[fonte];
+        if (r.fuoriGara) return; // nessuna collisione dopo il KO
+        ++r.urti;
+        r.segnalinoS = RIVALE_KO_SEGNALINO_S; // triangolo acceso 2.5 s a ogni botta
+        const bool ko = rivaleUrtiKo_ > 0.0f && r.urti >= (i32)rivaleUrtiKo_;
+        if (ko) {
+            r.fuoriGara = true;
+            r.koTimerS = RIVALE_KO_ANIM_S; // esce: sbanda, rallenta fino a fermarsi, poi sparisce
+        }
         r.x = std::clamp(r.x - lato * 160.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.xObiettivo = std::clamp(r.x - lato * 200.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
@@ -2274,7 +2385,13 @@ void Game::calcolaClassifica() {
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
         f32 tempoR = r.tempoArrivoS;
+        bool fuori = false;
         if (tempoR < 0.0f) {
+            if (r.fuoriGara) {
+                // KO1: rivale messo fuori gara, OUT (dopo gli arrivati).
+                fuori = true;
+                tempoR = 1e9f;
+            } else {
             f32 manca = -r.progressoTappa;
             for (i32 k = std::max(0, r.passoPercorso); k < r.nPercorso; ++k) {
                 const i32 idx = r.percorso[k];
@@ -2283,8 +2400,9 @@ void Game::calcolaClassifica() {
             const f32 media = tempo > 0.0f ? r.progresso / tempo : 0.0f;
             const f32 passo = media > 1.0f ? media : std::max(r.passoMax, 1.0f);
             tempoR = tempo + std::max(manca, 0.0f) / passo;
-        }
-        classifica_.push_back({NOMI_RIVALI[i], tempoR, false});
+            } // chiude else (rivale ancora in corsa: tempo stimato)
+        }     // chiude if (tempoR < 0.0f)
+        classifica_.push_back({NOMI_RIVALI[i], tempoR, false, fuori});
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });

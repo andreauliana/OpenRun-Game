@@ -1,19 +1,20 @@
-# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
+# STATI PROPOSTI — Turno 3 (ora 4 di 12) — @capo
 
-Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
+Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md (ultimo report 2026-10-19 09:39), out/grafico/STATUS_GRAFICO_PER_CAPO.md (2026-11-07 11:29).
 
 Tappa attiva: **1 — Gate T1-RUN** ("Il gioco parte, si visualizza il player che si muove, si pilota": strada che scorre, auto che accelera (A), frena (B), sterza sinistra/destra).
 
 Ruoli 4.6: **developer, developer-junior, grafico**. Consegne: `out/developer/`, `out/developer-junior/`, `out/grafico/`.
 
-Data: 2026-11-06.
+Data: 2026-11-07.
 
 ## Verifica chiusure checkpoint
 
-- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate verde registrato (`sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde 22/10; prova runner Mac Andrea 23/10 ok, ctest 17/17, runner ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente). Si procede senza aspettare. Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale (D12/D14 = A).
+- **CP-006 (chiusura T1-RUN, Tappa 1, Gate T1): APERTO** — gate verde registrato in precedenza (soak exit 0, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20; ctest 17/17 verde 22/10; prova runner Mac Andrea 23/10 ok), ma `ANDREA_REVIEW.md` D19 ha `RISPOSTA DI ANDREA: B` → T1-RUN resta `[~]`. Chiudere CP-006 richiede decisione di Andrea (regola 8); DEFAULT non applicabile (risposta Andrea presente). Si procede senza aspettare. Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale (D12/D14 = A).
+- **Novità 07/11 (SCAMBIO_RECENTE):** Checkpoint 1 (09:41): `sh UFFICIO/Officina/TOOL/gate_t1.sh` FALLITO exit 12, screenshot P1 incompleti (personaggio+fumetto frame -1); review developer-junior NEGATIVA: `CORREGGI: gate_t1.sh -> @developer`. Checkpoint 2 (11:50): `GATE T1: TUTTO OK`, frequenza 60/50 Hz OK, GATE GARA OK, replay IDENTICO; screenshot P1 incompleti ancora presenti nel log tail (personaggio+fumetto frame -1). Rilievo registrato in CP-006 e REGISTRO_REVISIONI; correzione assegnata a **@developer**; nuova review indipendente richiesta dopo correzione (revisore diverso dall'autore). CP-006 resta APERTO. Nessun cambiamento agli stati [x]/[~].
 - **CP-007 (FORK1 bivio e transizione di tema): CHIUSO** 2026-10-27 (review incrociate indipendenti positive, ctest 20/20 verde). Non si riapre.
 - **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
-- **CP-002 (G1 inventario grafico): APERTO** — G1 `[x]` per handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` (201 elementi, PNG non catalogati: 0, licenza CC0-1.0, `check_catalogo_grafico.py` exit 0), ma review indipendente ancora da assegnare (regola AGENTS 9): revisore diverso da @grafico (cand. @developer-junior). CP-002 si chiude solo dopo review indipendente positiva.
+- **CP-002 (G1 inventario grafico): APERTO** — G1 `[x]` per handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` (220 elementi, PNG non catalogati: 0, licenza CC0-1.0, `check_catalogo_grafico.py` exit 0), ma review indipendente ancora da assegnare (regola AGENTS 9): revisore diverso da @grafico (cand. @developer-junior). CP-002 si chiude solo dopo review indipendente positiva.
 - **CP-003 e CP-004 restano APERTO** (review indipendente da assegnare, contesto storico).
 - Nessun altro checkpoint ha gate + review indipendente registrati da chiudere in questo turno.
 
@@ -21,23 +22,23 @@ Data: 2026-11-06.
 
 | Blocco | Stato | Responsabile | Revisore indipendente | Percorso consegna | Criterio di chiusura | Note |
 |---|---|---|---|---|---|---|
-| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). |
+| T1-RUN | [~] | @developer + @developer-junior | incrociata CP-005 già positiva | `out/developer/`, `out/developer-junior/` | soak exit 0 6/6 piste, replay 2x IDENTICO, ms/frame <= 20, ctest verde | CP-006 APERTO (D19 = B). DEFAULT non applicabile. Nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Nessun lavoro Pi 400/RetroPie prima di ok Mac (D12/D14 = A). Novità 07/11: gate exit 12 poi TUTTO OK, screenshot P1 incompleti, correzione a @developer. |
 | P1 | [x] | @developer | — | `out/developer/` | build CMake, screenshot gameplay (prova differita) | T1-Q2 sì (Andrea). |
-| G1 | [x] | @grafico | da assegnare (cand. @developer-junior, diverso da @grafico) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. Handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md`: 201 elementi, 0 non catalogati, CC0-1.0. CP-002 APERTO in attesa review indipendente. |
+| G1 | [x] | @grafico | da assegnare (cand. @developer-junior, diverso da @grafico) | `out/grafico/` | `check_catalogo_grafico.py` exit 0, "PNG non catalogati: 0", solo `pronto`/`approvato` | D15 = A, T1-Q4 attivare. Handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md`: 220 elementi, 0 non catalogati, CC0-1.0. CP-002 APERTO in attesa review indipendente. |
 | H | [~] | Andrea | — | — | v91 runner Mac su build corretta, poi fps/temp Pi 400 | Prova Mac 23/10 ok (ctest 17/17, runner ok); prima Mac poi Pi (D12/D14 = A). |
 | FORK1 | [x] | @developer + @developer-junior | incrociata positiva (CP-007) | `out/developer/`, `out/developer-junior/` | ctest verde, gate `bivio_*` / `tema_transizione` verdi, replay 2x IDENTICO | CP-007 CHIUSO. Dopo FORK1: DECO1. |
 | DECO1 | [~] | @developer (passi piccoli 2a-2f; 2a-2d FATTO, 2e parallasse prossimo) + @grafico (asset; 2f FATTO; skyline e oggetti 6 livelli nel catalogo) | da assegnare per gate `decorazioni` (cand. @developer-junior) | `out/developer/`, `out/grafico/` | ctest verde con `decorazioni` (21 test OK, developer-junior 27/10 06:37); screenshot PPM 6 livelli; ms/frame <= 20; check exit 0 | DECO1 [x] prima di ogni prova Pi 400/RetroPie. @grafico fornisce asset e rivede screenshot in `Test area/`. Resta: review incrociata + CP DECO1 (@capo, CP-008 da aprire). |
 | F60 | [x] gate / [~] review | @developer | @developer-junior (incrociata pendente) | `out/developer/` | ctest verde 60/50 Hz, replay 2x IDENTICO | Gate verde registrato 22/10 20:06; manca review incrociata developer→developer-junior e apertura CP F60. |
 | R2 | [~] | @developer | @developer-junior (incrociata) | `out/developer/` | ctest verde con gate `ciclo`; tutte le 5 fasi | In corso (passi 1/1b/1c fatti, ctest 22/22 verde gate `ciclo`). NON subordinato a D18/D19 (Andrea 27/10). Prossimo: 1d nome a 3 lettere, poi RIV punti a-c, poi PIST1 punto 1. |
-| RIV | [~] | @developer + @grafico | @developer-junior (gate `urto`, `gara`) | `out/developer/`, `out/grafico/` | ctest verde con `gara` e `urto`; sprite rivali catalogo (7 sprite rivali "pronto"); nessun ribaltamento su urto | Dopo R2 1b-1c e DECO1 2f. Punti a,b,c (bump, sprite rivali, comportamento realistico). Punto 1 (percorso_gara.json per ogni rivale) dopo PIST1. |
+| RIV | [~] | @developer + @grafico | @developer-junior (gate `urto`, `gara`) | `out/developer/`, `out/grafico/` | ctest verde con `gara` e `urto`; sprite rivali catalogo; nessun ribaltamento su urto | Dopo R2 1b-1c e DECO1 2f. Punti a,b,c (bump, sprite rivali, comportamento realistico) lato codice fatti; grafica rivali in attesa. Punto 1 (percorso_gara.json per ogni rivale) dopo PIST1. |
 | PIST1 | [ ] | @developer + @grafico | @developer-junior (gate `tratti`) | `out/developer/`, `out/grafico/` | ctest verde con `tratti`; screenshot ogni tipo tratto | G-P1 [x] per handoff grafico 2026-11-05 20:46 (parapetto.png 32x48 + guardrail.png 48x32 su disco, raw, 2 voci `pronto`, catalogo exit 0). Ora: @developer P3 (parapetti oggetti ai due lati ogni ~400 unità sui segmenti con `acqua`), poi `sh UFFICIO/Officina/TOOL/gate_t1.sh`; poi @developer-junior J2 e J1 (gate `tratti`). |
 | FIN | [ ] | @developer + @grafico | @developer-junior (gate `gara` finale) | `out/developer/`, `out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. 3 scene arrivo "pronto" per @grafico, varianti per posizione da definire con Andrea. |
 
 ## Deleghe 4.6 (tappa 1)
 
-- **@developer**: codice C++, integrazione, CMake, build multipiattaforma; DECO1 passi piccoli (ogni passo compila e lascia ctest verde); R2 passo 1d poi RIV punti a-c; PIST1 passo P3 (parapetti oggetti su segmenti `acqua`, dopo G-P1 [x]); nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Consegna `out/developer/`.
-- **@developer-junior**: test, strumenti, diagnosi; revisore incrociato di @developer (FORK1 fatto); revisore indipendente CP-002 e gate `decorazioni` di DECO1; gate `urto`, `tratti`, `gara`; PIST1 J2 poi J1. Consegna `out/developer-junior/`.
-- **@grafico**: asset e catalogo unico; G1 [x] (201 elementi, CC0-1.0, 0 non catalogati); DECO1 fornisce skyline e oggetti per i 6 livelli (nessun prestito, stile proprio lv_04/lv_05/lv_06), converte PNG->raw, passo 2f FATTO e PIST1 G-P1 FATTO (parapetto/guardrail); RIV 7 sprite rivali "pronto"; FIN 3 scene arrivo "pronto". Unico handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md`. Consegna `out/grafico/`.
+- **@developer**: codice C++, integrazione, CMake, build multipiattaforma; DECO1 passi piccoli (ogni passo compila e lascia ctest verde); R2 passo 1d poi RIV punti a-c; PIST1 passo P3 (parapetti oggetti su segmenti `acqua`, dopo G-P1 [x]); **correzione gate_t1.sh (novità 07/11 exit 12)**; nessun tocco `src/runner/` prima di ok Andrea Mac (D16). Consegna `out/developer/`.
+- **@developer-junior**: test, strumenti, diagnosi; revisore incrociato di @developer (FORK1 fatto); revisore indipendente CP-002 e gate `decorazioni` di DECO1; gate `urto`, `tratti`, `gara`; PIST1 J2 poi J1; nuova review indipendente di gate_t1.sh dopo correzione @developer. Consegna `out/developer-junior/`.
+- **@grafico**: asset e catalogo unico; G1 [x] (220 elementi, CC0-1.0, 0 non catalogati); DECO1 fornisce skyline e oggetti per i 6 livelli (nessun prestito, stile proprio lv_04/lv_05/lv_06), converte PNG->raw, passo 2f FATTO e PIST1 G-P1 FATTO (parapetto/guardrail); RIV 7 sprite rivali "pronto"; FIN 3 scene arrivo "pronto". Unico handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md`. Consegna `out/grafico/`.
 
 ## Decisioni Andrea (`ANDREA_REVIEW.md` — DEFAULT solo se mancante; si prosegue senza aspettare)
 
@@ -53,9 +54,11 @@ Non tutti i blocchi della tappa sono `[x]` (T1-RUN [~], H [~], DECO1 [~], R2 [~]
 
 ## Prossime azioni
 
-1. CP-006 resta APERTO: attendere nuova prova/decisione Andrea su runner Mac (D19 = B; D12/D14 = A: prima Mac, poi Pi 400/RetroPie). DEFAULT non applicabile (risposta Andrea presente). Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale. CP-006 si chiude solo con decisione Andrea (regola 8).
-2. PIST1: G-P1 [x] (handoff grafico 2026-11-05 20:46). @developer P3 (parapetti come oggetti ai due lati ogni ~400 unità sui segmenti con `acqua`), poi `sh UFFICIO/Officina/TOOL/gate_t1.sh`; poi @developer-junior J2 e J1 (gate `tratti`). @capo: riga di registro (questa operazione).
-3. DECO1: review incrociata (developer → developer-junior e viceversa), @grafico rivede screenshot in `Test area/`, poi @capo apre CP-008 e chiude quando review positive.
-4. R2: @developer passo 1d (nome a 3 lettere nei Risultati, gate `ciclo` verde), poi RIV punti a-c, poi PIST1 punto 1.
-5. F60: review incrociata developer→developer-junior, poi apertura CP F60.
-6. G1: CP-002 review indipendente da assegnare (revisore diverso da @grafico, cand. @developer-junior).
+1. CP-006 resta APERTO: attendere nuova prova/decisione Andrea su runner Mac (D19 = B; D12/D14 = A: prima Mac, poi Pi 400/RetroPie). DEFAULT non applicabile.
+2. **@developer: correggere gate_t1.sh (novità 07/11 exit 12, screenshot P1 incompleto personaggio+fumetto frame -1), poi rieseguire `sh UFFICIO/Officina/TOOL/gate_t1.sh`.**
+3. Dopo correzione: **@developer-junior esegue nuova review indipendente di gate_t1.sh** (diverso dall'autore), esito in `out/developer-junior/`.
+4. PIST1: G-P1 [x] (handoff grafico 2026-11-05 20:46). @developer P3 (parapetti come oggetti ai due lati ogni ~400 unità sui segmenti con `acqua`), poi `sh UFFICIO/Officina/TOOL/gate_t1.sh`; poi @developer-junior J2 e J1 (gate `tratti`). @capo: riga di registro (questa operazione).
+5. DECO1: review incrociata (developer → developer-junior e viceversa), @grafico rivede screenshot in `Test area/`, poi @capo apre CP-008 e chiude quando review positive.
+6. R2: @developer passo 1d (nome a 3 lettere nei Risultati, gate `ciclo` verde), poi RIV punti a-c, poi PIST1 punto 1.
+7. F60: review incrociata developer→developer-junior, poi apertura CP F60.
+8. G1: CP-002 review indipendente da assegnare (revisore diverso da @grafico, cand. @developer-junior).

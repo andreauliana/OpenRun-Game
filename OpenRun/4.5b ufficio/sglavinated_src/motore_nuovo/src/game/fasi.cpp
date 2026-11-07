@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 #include "game/fasi.h"
 #include "game/game.h"
+#include "game/salvataggi.h" // blocco ARC1: nome del giocatore salvato in salvataggi/giocatore.json
 #include "core/json_mini.h"
 #include "render/renderer.h"
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 #include <vector>
 #include <utility>
@@ -40,6 +42,23 @@ std::string leggiFileTesto(const std::string& path) {
 i32 jsonNumero(const JsonObject& o, const char* chiave, i32 def) {
     JsonValue v;
     return jsonGet(o, chiave, v) && jsonIsNumber(v) ? (i32)jsonAsNumber(v) : def;
+}
+
+// Vero se il nome (fino a 6 caratteri, spazi = posto libero) e' vuoto.
+bool nomeVuoto(const char nome[7]) {
+    for (i32 i = 0; i < 6; ++i)
+        if (nome[i] != ' ') return false;
+    return true;
+}
+
+// Nome da visualizzare: caratteri fino al primo spazio.
+std::string nomeVisibile(const char nome[7]) {
+    std::string out;
+    for (i32 i = 0; i < 6; ++i) {
+        if (nome[i] == ' ') break;
+        out.push_back(nome[i]);
+    }
+    return out;
 }
 
 // Scurisce un rettangolo del framebuffer (pannello sopra la scena di gioco).
@@ -79,7 +98,7 @@ public:
         const i32 w = ren.larghezzaTesto(titolo, 2);
         fb.fillRect(160 - w / 2 - 8, 76, 160 + w / 2 + 8, 116, 0xFF6060A0u);
         ren.drawTesto(160 - w / 2, 90, titolo, 0xFFFFFFFFu, 2, true);
-        const char* premi = "PREMI START";
+        const char* premi = "PRESS START";
         ren.drawTesto(160 - ren.larghezzaTesto(premi, 1) / 2, 136, premi, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
@@ -121,14 +140,14 @@ public:
         const char* titolo = "MENU";
         const i32 w = ren.larghezzaTesto(titolo, 2);
         ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFFFFFFu, 2, true);
-        static const char* voci[3] = { "CORSA SINGOLA", "GARA A TAPPE", "ESCI" };
+        static const char* voci[3] = { "SINGLE RACE", "RACE SERIES", "EXIT" };
         for (i32 i = 0; i < 3; ++i) {
             i32 wi = ren.larghezzaTesto(voci[i], 1);
             u32 colore = (i == sel_) ? 0xFFFFFFFFu : 0xFFA0A0A0u;
             ren.drawTesto(160 - wi / 2, 104 + i * 14, voci[i], colore, 1, true);
             if (i == sel_) ren.drawTesto(160 - wi / 2 - 12, 104 + i * 14, ">", 0xFFFFFFFFu, 1, true);
         }
-        const char* aiuto = "SU/GIU SCEGLI   START CONFERMA";
+        const char* aiuto = "UP/DOWN CHOOSE   START OK";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
@@ -175,7 +194,7 @@ public:
     }
     void disegna(Renderer& ren, Framebuffer&) const override {
         if (arrivo_) return; // la scena d'arrivo e' la strada (scacchi, pubblico, frenata)
-        const char* testo = "TEMPO SCADUTO";
+        const char* testo = "TIME UP";
         const i32 w = ren.larghezzaTesto(testo, 2);
         ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
     }
@@ -202,12 +221,17 @@ class RisultatiFase : public Fase {
 public:
     RisultatiFase() : timerS_(0.0f), punteggio_(0), posizione_(0), finita_(false),
                       nomePos_(0) {
-        nome_[0] = 'A'; nome_[1] = 'A'; nome_[2] = 'A'; nome_[3] = '\0';
+        std::strcpy(nome_, "PLAYER");
     }
     void entra(Game& gioco) override {
         timerS_ = 0.0f; finita_ = false;
         nomePos_ = 0;
-        nome_[0] = 'A'; nome_[1] = 'A'; nome_[2] = 'A'; nome_[3] = '\0';
+        // ARC1: il nome di questa partita parte da quello salvato (file mancante
+        // o rotto -> default "PLAYER", ricreato senza errori).
+        GiocatoreDati salvato = SalvataggiGiocatore::carica();
+        std::strncpy(nome_, salvato.nome, 6);
+        nome_[6] = '\0';
+        if (nomeVuoto(nome_)) std::strcpy(nome_, "PLAYER");
         // Formula punteggio (dati/punteggio.json, valori default se manca il file).
         i32 puntiPerKm = PUNTI_PER_KM_DEFAULT;
         i32 bonusTempo = BONUS_TEMPO_RESIDUO_DEFAULT;
@@ -267,29 +291,62 @@ public:
         (void)dt;
         timerS_ += dt;
         const Pad& p = gioco.input();
-        // Inserimento nome a 3 lettere: SU/GIU cambia lettera, Left/Right sposta il cursore.
-        if (p.pressed & Pad::Up)   { nome_[nomePos_] = (nome_[nomePos_] == 'Z') ? 'A' : char(nome_[nomePos_] + 1); }
-        if (p.pressed & Pad::Down) { nome_[nomePos_] = (nome_[nomePos_] == 'A') ? 'Z' : char(nome_[nomePos_] - 1); }
-        if (p.pressed & Pad::Right) nomePos_ = (nomePos_ + 1) % 3;
-        if (p.pressed & Pad::Left)  nomePos_ = (nomePos_ + 2) % 3;
-        // Start conferma il nome e torna al menu; timeout di sicurezza a 30 s.
-        if ((p.pressed & Pad::Start) || timerS_ > 30.0f) finita_ = true;
+        // ARC1: inserimento nome fino a 6 caratteri (A-Z, 0-9, '.', spazio).
+        // SU/GIU cambia il carattere sotto il cursore, DESTRA/SINISTRA sposta il
+        // cursore, START conferma e salva in salvataggi/giocatore.json.
+        static const char* CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. ";
+        constexpr i32 CHARSET_N = 38;
+        auto indiceChar = [](char c, const char* cs, i32 n) -> i32 {
+            for (i32 i = 0; i < n; ++i) if (cs[i] == c) return i;
+            return 0;
+        };
+        if (p.pressed & Pad::Up) {
+            i32 k = indiceChar(nome_[nomePos_], CHARSET, CHARSET_N);
+            nome_[nomePos_] = CHARSET[(k + 1) % CHARSET_N];
+        }
+        if (p.pressed & Pad::Down) {
+            i32 k = indiceChar(nome_[nomePos_], CHARSET, CHARSET_N);
+            nome_[nomePos_] = CHARSET[(k + CHARSET_N - 1) % CHARSET_N];
+        }
+        if (p.pressed & Pad::Right) nomePos_ = (nomePos_ + 1) % 6;
+        if (p.pressed & Pad::Left)  nomePos_ = (nomePos_ + 5) % 6;
+        // Start conferma: salva nome e classifica Top-10 (atomico: temp + rename),
+        // poi torna al menu. Timeout di sicurezza a 30 s.
+        if (p.pressed & Pad::Start) {
+            char nomeVis[7];
+            i32 j = 0;
+            for (i32 i = 0; i < 6; ++i) if (nome_[i] != ' ') nomeVis[j++] = nome_[i];
+            nomeVis[j] = '\0';
+            if (nomeVis[0] == '\0') std::strcpy(nomeVis, "PLAYER");
+            GiocatoreDati g = SalvataggiGiocatore::carica();
+            ClassificaEntry e;
+            e.nome = nomeVis; e.punti = punteggio_; e.data = "0000-00-00"; // core senza orologio di sistema
+            g.classifica.push_back(e);
+            std::sort(g.classifica.begin(), g.classifica.end(),
+                      [](const ClassificaEntry& a, const ClassificaEntry& b) { return a.punti > b.punti; });
+            if (g.classifica.size() > 10) g.classifica.resize(10);
+            std::strncpy(nome_, nomeVis, 6); nome_[6] = '\0';
+            SalvataggiGiocatore::salva(g);
+            finita_ = true;
+        }
+        if (timerS_ > 30.0f) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer& fb) const override {
         char buf[96];
         if (!arrivo_.empty()) { disegnaArrivo(ren, fb); return; }
-        const char* titolo = "RISULTATI";
+        const char* titolo = "RESULTS";
         const i32 w = ren.larghezzaTesto(titolo, 2);
         ren.drawTesto(160 - w / 2, 40, titolo, 0xFFFFFFFFu, 2, true);
         char nomeVis[8];
-        std::snprintf(nomeVis, sizeof(nomeVis), "%c%c%c", nome_[0], nome_[1], nome_[2]);
-        // Riga nome: cursore visibile sulla lettera in editing.
+        std::snprintf(nomeVis, sizeof(nomeVis), "%s", nomeVisibile(nome_).c_str());
+        // Riga nome: cursore visibile sulla lettera in editing (fino a 6 caratteri).
         char nomeCursore[8];
-        std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c", nome_[0], nome_[1], nome_[2]);
+        std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c%c%c%c",
+                      nome_[0], nome_[1], nome_[2], nome_[3], nome_[4], nome_[5]);
         nomeCursore[nomePos_] = '_';
-        std::snprintf(buf, sizeof(buf), "NOME: %s   SU/GIU CAMBIA  START OK", nomeCursore);
+        std::snprintf(buf, sizeof(buf), "NAME: %s   LEFT/RIGHT MOVE   START OK", nomeCursore);
         ren.drawTesto(64, 72, buf, 0xFFFFFFFFu, 1, true);
-        std::snprintf(buf, sizeof(buf), "%s %d PUNTI   POSIZIONE %d", nomeVis, punteggio_, posizione_);
+        std::snprintf(buf, sizeof(buf), "%s %d SCORE   POS %d", nomeVis, punteggio_, posizione_);
         ren.drawTesto(64, 88, buf, 0xFFA0A0A0u, 1, true);
         i32 y = 110;
         for (size_t i = 0; i < classifica_.size(); ++i) {
@@ -297,7 +354,7 @@ public:
             std::snprintf(buf, sizeof(buf), "%c %-3s %6d", (e.nome == nomeVis ? '>' : ' '), e.nome.c_str(), e.punti);
             ren.drawTesto(64, y + (i32)i * 11, buf, e.nome == nomeVis ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
         }
-        const char* aiuto = "START TORNA AL MENU";
+        const char* aiuto = "PRESS START";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
     // Classifica d'arrivo sopra la scena della strada (auto ferma, pubblico):
@@ -309,12 +366,12 @@ public:
         fb.fillRect(48, 217, 271, 217, 0xFF909090u);
         fb.fillRect(48, 14, 48, 217, 0xFF909090u);
         fb.fillRect(271, 14, 271, 217, 0xFF909090u);
-        const char* titolo = "CLASSIFICA";
+        const char* titolo = "RANKING";
         ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
         ren.drawTesto(64, 48, "POS", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(96, 48, "AUTO", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(170, 48, "TEMPO", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(226, 48, "DISTACCO", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(96, 48, "DRIVER", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(170, 48, "TIME", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(226, 48, "GAP", 0xFFA0A0A0u, 0, true);
         static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
         char buf[32], tempo[24];
         const size_t righe = std::min(arrivo_.size(), (size_t)(timerS_ / RIGA_CLASSIFICA_S) + 1);
@@ -326,19 +383,23 @@ public:
             std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
             ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
             ren.drawTesto(96, y, c.nome, col, 1, true);
-            formattaTempo(tempo, sizeof(tempo), c.tempoS);
-            ren.drawTesto(170, y, tempo, col, 1, true);
-            if (i > 0) {
+            if (c.fuori) { // KO1: rivale messo fuori gara
+                ren.drawTesto(170, y, "OUT", col, 1, true);
+            } else {
+                formattaTempo(tempo, sizeof(tempo), c.tempoS);
+                ren.drawTesto(170, y, tempo, col, 1, true);
+            }
+            if (i > 0 && !c.fuori) {
                 std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
                 ren.drawTesto(226, y, buf, col, 1, true);
             }
         }
         if (righe < arrivo_.size()) return;
-        std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
+        std::snprintf(buf, sizeof(buf), "SCORE %d", punteggio_);
         ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 178, buf, 0xFFFFE080u, 1, true);
         // URTI / CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano
         // nel gioco (ammaccature, fumo), non in tabella.
-        const char* aiuto = "START TORNA AL MENU";
+        const char* aiuto = "PRESS START";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 202, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
@@ -350,8 +411,8 @@ private:
     i32 punteggio_;
     i32 posizione_;
     bool finita_;
-    char nome_[4];       // nome giocatore a 3 lettere (inserito con SU/GIU)
-    i32 nomePos_;        // cursore 0..2 sulla lettera in editing
+    char nome_[7];       // nome giocatore fino a 6 caratteri (ARC1: da salvataggi/giocatore.json)
+    i32 nomePos_;        // cursore 0..5 sulla lettera in editing
     std::vector<PunteggioEntry> classifica_;
     std::vector<Game::Classificato> arrivo_; // classifica sul tempo, solo dopo l'arrivo
 };

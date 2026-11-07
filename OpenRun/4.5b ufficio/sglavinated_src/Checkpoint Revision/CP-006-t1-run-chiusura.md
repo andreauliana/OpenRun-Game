@@ -36,4 +36,15 @@ PERCORSI SCRITTURA:
 - `Checkpoint Revision/REGISTRO_REVISIONI.md` — nuova riga 2026-10-31 registrata
 - `Checkpoint Revision/CP-006-t1-run-chiusura.md` — rimane APERTO
 
-STATO CORRENTE: APERTO (CP-006). Nessun blocco richiede PER_CLAUDE.md. Si prosegue autonomamente.
+## Evento 2026-11-07 (Turno 2, ora 3 di 12) — review negativa gate T1
+
+- Fonte: SCAMBIO_RECENTE.md, CHECKPOINT 1 | REVIEWER | 2026-11-07 09:41 | [APERTA] (revisore @developer-junior).
+- Comando: `sh UFFICIO/Officina/TOOL/gate_t1.sh` → exit 12.
+- Esito: GATE T1 FALLITO. screenshot P1 incompleti (personaggio+fumetto frame -1); GARA e FREQUENZA 60/50 Hz OK, replay 2x IDENTICO.
+- Rilievo: personaggio+fumetto non catturato (frame -1) → screenshot P1 incompleto.
+- Correzione assegnata a: @developer (autore di gate_t1.sh).
+- Nuova review indipendente richiesta dopo correzione: revisore @developer-junior (diverso dall'autore).
+- CP-006 resta APERTO. T1-RUN [~] (D19 RISPOSTA DI ANDREA: B; DEFAULT non applicabile). Nuova prova/decisione Andrea su runner Mac richiesta prima della chiusura (D12/D14 = A: prima Mac, poi Pi 400/RetroPie).
+- Nessun cambiamento agli stati [x]/[~]. Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale.
+
+STATO CORRENTE: APERTO (CP-006). Rilievo gate T1 registrato in CP-006 e REGISTRO_REVISIONI; correzione assegnata a @developer; nuova review indipendente richiesta dopo correzione. Nessun blocco richiede PER_CLAUDE.md. Si prosegue autonomamente.
