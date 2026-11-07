@@ -1,1 +1,0 @@
-Test diary entry for 02/11 09:43 turno developer-junior
