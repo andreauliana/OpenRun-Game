@@ -7,7 +7,6 @@
 #include <cctype> // std::isdigit
 #include <cmath> // std::fmod
 #include <cstdio> // std::fopen/fread/fclose
-#include <cstring> // std::strlen (titolo della radio)
 #include <map> // std::map per la libreria di tratti
 #include <utility> // std::move
 
@@ -2492,34 +2491,13 @@ void Game::calcolaClassifica() {
 }
 
 void Game::drawMusica() {
-    // Gruppo RADIO al centro dell'HUD (Andrea 07/11): stessa griglia dei gruppi
-    // ai lati (hud.json): titolo del brano nella riga delle etichette (y 6),
-    // spettro stile WinAmp nella fascia dei numeri grandi (y 13..28), linea di
-    // base nella riga sottile in fondo (y 31).
+    // Gruppo RADIO al centro dell'HUD (Andrea 07/11): solo lo spettro stile
+    // WinAmp, sulla stessa griglia dei gruppi ai lati (hud.json): barre nella
+    // fascia dei numeri grandi (y 13..28), linea di base nella riga sottile
+    // in fondo (y 31). Niente titolo del brano (Andrea 07/11).
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
-    constexpr i32 W = Visualizzatore::LARGHEZZA_TOT;
-    const i32 x0 = (Framebuffer::WIDTH - W) / 2;
-    visualizzatore_.disegna(fb_, x0, 28);
-    if (!m.titolo || !*m.titolo) return;
-    // Titolo nel font mini (4 px per carattere): se e' piu' largo del gruppo
-    // scorre a scatti di un carattere (come il display di un'autoradio).
-    constexpr i32 VISIBILI = (W + 1) / 4;
-    char riga[VISIBILI + 1] = {};
-    const i32 n = (i32)std::strlen(m.titolo);
-    if (n <= VISIBILI) {
-        std::snprintf(riga, sizeof(riga), "%s", m.titolo);
-    } else {
-        static constexpr char SEP[] = "  -  ";
-        const i32 giro = n + (i32)sizeof(SEP) - 1;
-        const i32 inizio = (i32)(clock_.frame * 5 / (u64)std::max(1, frequenzaHz_)) % giro; // 5 caratteri al secondo
-        for (i32 i = 0; i < VISIBILI; ++i) {
-            const i32 k = (inizio + i) % giro;
-            riga[i] = k < n ? m.titolo[k] : SEP[k - n];
-        }
-    }
-    const i32 w = Renderer::larghezzaTesto(riga, 0);
-    ren_.drawTesto(x0 + (W - w) / 2, 6, riga, 0xFFA0A0A0u, 0);
+    visualizzatore_.disegna(fb_, (Framebuffer::WIDTH - Visualizzatore::LARGHEZZA_TOT) / 2, 28);
 }
 
 void Game::scuotiScena(i32 dx, i32 dy) {

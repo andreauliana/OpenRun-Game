@@ -1000,7 +1000,6 @@ void Renderer::drawHudDati(const HudDati& d) {
         const char* valore = nullptr;
         u32 coloreValore = e.colore;
         if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%dM", (i32)(d.km * 1000.0f)); valore = buf; }
-        else if (e.id == "marcia") valore = d.marciaAlta ? "HIGH" : "LOW";
         else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
         else if (e.id == "tempo") {
             std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);

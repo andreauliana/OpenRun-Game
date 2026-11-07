@@ -1,6 +1,6 @@
 {
   "id": "hud_gioco",
-  "descrizione": "HUD di gioco come dati (Renderer::drawHudDati). Dal 7 nov (Andrea): tre gruppi compatti in alto, larghi 88 px e con la stessa griglia, senza box ne' cornici (solo testo con ombra di 1 px), cosi' la scena resta libera. Sinistra x 8..95: VELOCITA'. Centro x 116..203: RADIO (titolo + spettro stile WinAmp, disegnati da Game::drawMusica). Destra x 224..311: TEMPO e gara. Griglia di ogni gruppo: riga etichette y 6 (font mini, a sinistra e a destra), numero grande y 13 (scala 2) a sinistra, due valori piccoli allineati a destra y 13 e y 21, riga sottile y 31 (2 px). Risoluzione 320x224.",
+  "descrizione": "HUD di gioco come dati (Renderer::drawHudDati). Dal 7 nov (Andrea): tre gruppi compatti in alto, larghi 88 px e con la stessa griglia, senza box ne' cornici (solo testo con ombra di 1 px), cosi' la scena resta libera. Sinistra x 8..95: VELOCITA'. Centro x 116..203: RADIO (spettro stile WinAmp, disegnato da Game::drawMusica). Destra x 224..311: TEMPO e gara. Griglia di ogni gruppo: riga etichette y 6 (font mini, a sinistra e a destra), numero grande y 13 (scala 2) a sinistra, valori piccoli allineati a destra (y 13, y 21), riga sottile y 31 (2 px). Risoluzione 320x224.",
   "stato": "bozza",
   "licenza": "MIT",
   "autore": "@grafico (Dipartimento Grafico)",
@@ -63,27 +63,6 @@
         160
       ],
       "allinea": "destra"
-    },
-    {
-      "id": "marcia",
-      "tipo": "testo",
-      "valore_pos": [
-        96,
-        21
-      ],
-      "scala_valore": 1,
-      "colore": [
-        160,
-        160,
-        160
-      ],
-      "colore_label": [
-        160,
-        160,
-        160
-      ],
-      "allinea": "destra",
-      "nota": "marcia del cambio a due marce: LOW / HIGH"
     },
     {
       "id": "giri",
