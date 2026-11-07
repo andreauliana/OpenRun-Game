@@ -40,7 +40,23 @@ public:
     void selezionaBrano(i32 indice);
 
     // Effetto di un urto: botta secca; con clacson = il traffico suona (Andrea 29/10).
-    void suonaUrto(bool clacson) { urtoN_ = 0; clacson_ = clacson; }
+    // Anche la musica reagisce (Andrea 07/11): un canale a caso si spegne per
+    // un attimo e il brano cala di tono come un nastro schiacciato.
+    void suonaUrto(bool clacson) {
+        urtoN_ = 0; clacson_ = clacson;
+        scuotiMusica(clacson ? URTO_FORZA_TRAFFICO : URTO_FORZA_LEGGERO);
+    }
+
+    // Musica che reagisce alla guida, tutto dal vivo sul .xm che suona.
+    // forza 0..1: 1 = incidente (calo di tono lungo, "tape stop" quasi fermo).
+    void scuotiMusica(f32 forza);
+    // 0 = musica piena, 1 = ovattata (fuori strada, incidente). Il mixer ci
+    // arriva in modo graduale, senza scatti.
+    void setOvattato(f32 q) { ovattatoVoluto_ = q; }
+
+    static constexpr f32 URTO_FORZA_LEGGERO = 0.45f;  // rivale, ciglio
+    static constexpr f32 URTO_FORZA_TRAFFICO = 0.7f;  // traffico, cartellone piano
+    static constexpr f32 URTO_FORZA_INCIDENTE = 1.0f; // ribaltamento
 
     // Riempie `out` (interleaved L/R, int16) per `frames` campioni stereo.
     void mix(i16* out, i32 frames, f32 engineRpm);
@@ -80,6 +96,25 @@ private:
     f32 sfxUrto();
     i32 rigaPrec_ = -1;
     InfoMusica info_;
+
+    // --- Musica che reagisce (Andrea 07/11) ---
+    void renderMusica(i32 frames);         // riempie bufMusica_ con frames campioni stereo
+    void aggiornaMute(f32 dt);             // dissolvenza e ritorno del canale spento
+    f32 rapportoTono(f32 t) const;         // velocita' di lettura del nastro all'istante t
+    std::vector<i16> sorgente_;            // musica di libxmp non ancora letta (L/R)
+    f64 letturaPos_ = 0.0;                 // posizione frazionaria in sorgente_ (campioni stereo)
+    f32 tonoT_ = -1.0f;                    // secondi dall'inizio del calo (-1 = nastro normale)
+    f32 tonoForza_ = 0.0f;
+    f32 tonoDurata_ = 0.0f;                // attacco + tenuta + rilascio
+    f32 tonoR0_ = 1.0f;                    // velocita' del nastro quando e' partito il calo
+    i32 muteCanale_ = -1;                  // canale spento adesso (-1 = nessuno)
+    f32 muteS_ = 0.0f;                     // secondi che restano prima di riaccenderlo
+    f32 muteVol_ = 100.0f;                 // volume del canale spento/che si riaccende (0..100)
+    i32 muteRiga_ = -1;                    // riga quando e' scaduto: si riaccende alla riga dopo
+    bool muteRientro_ = false;             // sta tornando su
+    u32 caso_ = 0x9E3779B9u;               // generatore per il canale a caso
+    f32 ovattatoVoluto_ = 0.0f, ovattato_ = 0.0f;
+    f32 filtro_[4] = {};                   // passa-basso a due poli: L1, R1, L2, R2
 };
 
 } // namespace sgl

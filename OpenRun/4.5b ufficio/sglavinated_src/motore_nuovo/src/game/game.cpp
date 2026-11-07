@@ -2054,6 +2054,8 @@ void Game::aggiornaGuida(f32 dt) {
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
+    // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
+    mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
@@ -2073,7 +2075,8 @@ void Game::aggiornaMenu(f32 dt) {
     gi.offRoad = false;
     showManager_.aggiorna(gi);
     disegnoShow_.aggiorna(tempoGiocoS_, showManager_);
-    // Menu e risultati: solo la radio (motore spento).
+    // Menu e risultati: solo la radio (motore spento), piena.
+    mixer_.setOvattato(0.0f);
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, 0.0f);
 }
 
@@ -2459,6 +2462,7 @@ void Game::ribalta() {
     playerXIncidente_ = player_.x;
     player_.speed = 0.0f;
     offroadFrames_ = 0;
+    mixer_.scuotiMusica(Mixer::URTO_FORZA_INCIDENTE); // la radio quasi si ferma (Andrea 07/11)
 }
 
 void Game::calcolaClassifica() {
