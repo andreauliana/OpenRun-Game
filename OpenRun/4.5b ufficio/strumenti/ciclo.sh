@@ -146,19 +146,6 @@ manutenzione() {
       mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $nome in $q/ (fuori posto)" | tee -a .fuori_posto.log
     done
   done
-  # Copie fuori da sglavinated_src (Andrea 07/11): uno script con il percorso sbagliato (es. parents[5]
-  # invece di parents[3]) scrive UFFICIO/, motore_nuovo/, bacheche/ o out/ nelle cartelle sopra
-  # (4.5b ufficio/, OpenRun/, radice repo). Se non sono file di git, vanno in fuori_posto e se ne parla in CONTROLLO.md.
-  su="$P"
-  for liv in 1 2 3; do
-    su=$(dirname "$su")
-    for nome in UFFICIO motore_nuovo bacheche out; do
-      x="$su/$nome"; [ -e "$x" ] || continue
-      [ -n "$(git -C "$su" ls-files -- "$nome" 2>/dev/null | head -1)" ] && continue
-      q="archivio_v4/fuori_posto/$(date +%Y%m%d)/sopra_sglavinated_src_$liv"; mkdir -p "$q"
-      mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') fuori cartella: spostato $x in $q/ (scritto sopra sglavinated_src: percorso sbagliato in uno script)" | tee -a .fuori_posto.log
-    done
-  done
   # Log: un file al giorno per agente; i giorni precedenti vanno in log_agenti/vecchi/ e restano 3 giorni (minimo 24 ore).
   mkdir -p log_agenti/vecchi; oggi=$(date +%Y%m%d); ieri=$(cat log_agenti/.giorno 2>/dev/null || echo "$oggi")
   if [ "$oggi" != "$ieri" ]; then
