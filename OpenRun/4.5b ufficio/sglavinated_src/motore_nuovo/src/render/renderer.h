@@ -76,6 +76,7 @@ struct TemaColori {
     u32 rumbleAlt = 0xFFFF00FF;
     u32 acqua = 0xFF1A3A8C;     // ponte (tratto "ponte"): acqua ai lati
     u32 acquaAlt = 0xFF14306E;
+    u32 sabbia = 0xFFD8C08Au;   // riva sotto le rampe del ponte (Andrea 07/11)
 };
 
 // Un elemento dell'HUD da dati/ui/hud.json (variante B, bianco e nero).
@@ -135,6 +136,13 @@ public:
     // Interpolazione lineare di due colori 0xAARRGGBB, canale per canale.
     static u32 lerpColore(u32 da, u32 a, f32 t);
 
+    // Orologio dei lampeggi (luci del ponte, porte, archi): avanzato da
+    // Game::update con il dt logico, quindi deterministico.
+    void avanzaTempo(f32 dt) { tempoS_ += dt; }
+    // Oggetti appoggiati al terreno basso del ponte (boe, barche, scogli, faro;
+    // Andrea 07/11): disegnati dentro drawRoad nell'ordine dei segmenti, cosi'
+    // l'impalcato piu' vicino li copre. Il vettore resta del Game.
+    void impostaOggettiTerra(const std::vector<SpriteInstance>* v) { oggettiTerra_ = v; }
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
@@ -305,6 +313,19 @@ private:
     static constexpr f32 ONDA_PASSO_Z = 260.0f;     // righe di onde sull'acqua (unita' mondo)
     static constexpr f32 ONDA_PASSO_X = 520.0f;     // larghezza di una cella di riflesso
     void drawRoadsideMarkers(f32 playerZ);
+    // Dintorni del ponte e transizioni (Andrea 07/11).
+    void drawPila(const Road::ProjectedSeg& p);                 // pila del viadotto sotto le rampe
+    void drawPortale(const Road::ProjectedSeg& p, u8 tipo);     // porta del ponte, autostrada, citta'
+    void drawLuciTerra(const Road::ProjectedSeg& p);            // luci di avvicinamento a terra
+    void drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa);
+    static constexpr i32 PILA_OGNI_SEG = 12;        // pile del viadotto sotto le rampe
+    static constexpr i32 LUCI_OGNI_SEG = 3;         // una coppia di luci a terra ogni 3 segmenti
+    static constexpr i32 RIVA_ACQUA = Road::RIVA_ACQUA;
+    static constexpr i32 RIVA_SABBIA = Road::RIVA_SABBIA;
+    static constexpr i32 RIVA_SFUMA = Road::RIVA_SFUMA;
+    f32 tempoS_ = 0.0f;
+    const std::vector<SpriteInstance>* oggettiTerra_ = nullptr;
+    std::vector<std::pair<f32, const SpriteInstance*>> terraOrdine_; // riusato (zero alloc a regime)
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s);
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

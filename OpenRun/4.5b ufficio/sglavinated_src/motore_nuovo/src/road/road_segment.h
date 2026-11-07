@@ -25,6 +25,21 @@ struct RoadSegment {
     // resta in basso a quotaAcqua (erba, o acqua se acqua) invece di salire
     // con la strada. Il ponte (acqua) e' sempre sospeso.
     bool sospeso = false;
+    // Dintorni del ponte e transizioni (Andrea 07/11, "entrata e uscita dal
+    // ponte piu' interessanti"), calcolati da Road::build:
+    // riva: sotto le rampe (sospeso, non acqua), segmenti dal piu' vicino
+    //   segmento d'acqua (-1 = lontano): il terreno passa da prato a spiaggia
+    //   a mare man mano che ci si avvicina al ponte.
+    // luci: segmenti dall'inizio della rampa (verso +1, ci si arriva) o dalla
+    //   fine della discesa (verso -1, ci si allontana); -1 = nessuna luce.
+    //   Luci di avvicinamento a terra che corrono verso il ponte. Anche prima
+    //   del bivio (verso +1): annunciano la scelta.
+    // portale: struttura sopra la strada al confine del segmento (0 nessuno,
+    //   1 porta del ponte, 2 portale autostrada, 3 arco della citta').
+    i16 riva = -1;
+    i16 luci = -1;
+    i8 versoLuci = 0;
+    u8 portale = 0;
     u32 colorRoad = 0xFF808080;  // colore asfalto (palette index -> render)
     u32 colorRumble = 0xFFFFFFFF; // colore strisce laterali
     // world coordinates del primo punto (calcolati da Road al build)

@@ -291,6 +291,7 @@ private:
     void aggiungiVisibili(const std::vector<SpriteInstance>& fissi);
     std::vector<SpriteInstance> scenaSprites_; // riutilizzato per merge traffico + cartelloni
     std::vector<SpriteInstance> oggettiStrada_; // oggetti bordo strada (DECO1 2c), posizioni fisse
+    std::vector<SpriteInstance> oggettiTerra_;  // sul terreno basso del ponte (Andrea 07/11), li disegna drawRoad
     bool inCollision_ = false; // fronte di salita collisione giocatore/traffico
     bool trafficoAttivo_ = true; // traffico sintetico visibile e collisioni nel percorso
     bool playerFlipping_ = false;

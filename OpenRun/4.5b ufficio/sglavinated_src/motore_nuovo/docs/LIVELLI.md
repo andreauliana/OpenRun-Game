@@ -85,6 +85,25 @@ Gli oggetti ai lati non sono piu' sparsi a caso: seguono la zona di ogni tratto
   (non sovrascrive mai un PNG esistente). Andrea li ridisegna con lo stesso nome e
   la stessa misura, poi rilancia lo strumento per aggiornare i raw.
 
+## Dintorni del ponte e transizioni (Andrea 07/11)
+
+Tutto automatico, nessun campo nuovo obbligatorio in livello.json:
+- Sotto le rampe del ponte (tratti `sospeso`) il terreno basso passa da prato a
+  spiaggia (trama Bayer dove sfuma) alla battigia e al mare, man mano che ci si
+  avvicina all'acqua. Colore della spiaggia: `colori.sabbia` (facoltativo; senza,
+  un beige spinto verso il prato del tema).
+- Le rampe poggiano su pile del viadotto; ai due capi del ponte c'e' una porta con
+  luci rosse in cima e lampade del tema sulla trave.
+- Luci a terra prima della rampa e dopo la discesa (una luce corre verso il ponte o
+  se ne allontana) e prima del bivio; lungo queste luci un boschetto piu' fitto
+  (le zone aperto, periferia, autostrada), cosi' i lati all'uscita non restano spogli.
+- Sul mare e sulla riva: boe, barche, scogli, un faro per ponte, ombrelloni
+  (comuni a tutti i temi, `TOOLS/disegna_ponte.py`); sul prato basso gli alberi e
+  i cespugli del livello. Andrea li ridisegna con lo stesso nome e la stessa misura.
+- Cambi di zona del paesaggio: portale con pannelli e frecce entrando e uscendo
+  dall'autostrada, arco di lampadine entrando e uscendo dalla citta' (mai nella
+  zona del bivio ne' sul ponte).
+
 ## Note di conformita
 
 - Regola 16: i 3 livelli usano 3 stili diversi (synthwave/C-wave, sci-fi anni '50, psichedelico/cannabinoidi); tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso (l'albero completo, default 5 tappe/bivi, e' definito nel blocco FED/D3; questi 3 sono i livelli di prova).

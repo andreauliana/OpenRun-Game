@@ -404,6 +404,7 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
     audioBuf_.resize(AUDIO_FRAME_SAMPLES * 2, 0);
     sprites_.reserve(6); // niente allocazioni per traffico dopo il primo frame
     scenaSprites_.reserve(16); // cresce a init() con i cartelloni
+    ren_.impostaOggettiTerra(&oggettiTerra_); // boe, barche, faro sotto il ponte (Andrea 07/11)
 }
 
 void Game::caricaLivello(const std::string& livelloId) {
@@ -468,6 +469,20 @@ void Game::caricaLivello(const std::string& livelloId) {
         road_.build(descs, seed_);
         // Una zona per segmento della Road (stesso conteggio di build()).
         if (!zonaSeg_.empty()) zonaSeg_.resize(road_.segments().size(), (u8)paesaggioBase_);
+        // Portali nei passaggi di zona (Andrea 07/11, transizioni piu'
+        // interessanti): portale con pannelli entrando e uscendo
+        // dall'autostrada, arco di luci entrando e uscendo dalla citta'.
+        // Mai nella zona del bivio (due carreggiate) ne' sul ponte.
+        const i32 nZ = (i32)zonaSeg_.size();
+        const i32 limite = nZ - Road::BIVIO_SEG - Road::BIVIO_RETTILINEO_PRIMA;
+        for (i32 i = 1; i < nZ && i < limite; ++i) {
+            const Zona prima = (Zona)zonaSeg_[(size_t)(i - 1)], ora = (Zona)zonaSeg_[(size_t)i];
+            if (prima == ora || road_.segments()[(size_t)i].sospeso) continue;
+            u8 tipo = 0;
+            if (ora == Zona::Autostrada || prima == Zona::Autostrada) tipo = 2;
+            else if (ora == Zona::Citta || prima == Zona::Citta) tipo = 3;
+            if (tipo) road_.impostaPortale(i, tipo);
+        }
     } else {
         // Fallback deterministico (hardcoded): 400 segmenti con pattern inventato.
         std::vector<f32> curves, hills;
@@ -564,6 +579,7 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // (seme fisso, zero alloc nel ciclo di gioco).
     // Sono puramente decorativi: NON generano collisione (oggetti non solidi).
     oggettiStrada_.clear();
+    oggettiTerra_.clear();
     ren_.clearOggettoSprites();
     const i32 nOggetti = (i32)oggettiBordoStrada_.size();
     const f32 giro = (f32)road_.totalLength();
@@ -596,6 +612,10 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             }
         const i32 idxDx = carica("comuni", "freccia_curva_dx");
         const i32 idxSx = carica("comuni", "freccia_curva_sx");
+        // Pezzi comuni del ponte: registrati prima di prendere i puntatori.
+        const char* kPonte[5] = {"boa", "barca", "scoglio", "faro", "ombrellone"};
+        i32 idxPonte[5];
+        for (i32 q = 0; q < 5; ++q) idxPonte[q] = carica("comuni", kPonte[q]);
         PezziPaesaggio pz;
         for (i32 j = 0; j < nOggetti; ++j) {
             const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
@@ -609,6 +629,12 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         pz.frecciaSx = idxSx >= 0 ? ren_.oggettoSprite(idxSx) : nullptr;
         pz.densitaAlberi = paesaggioDensitaAlberi_;
         disponiPaesaggio(road_, zonaSeg_, pz, zBivioInizio, seed_, oggettiStrada_);
+        // Dintorni del ponte (Andrea 07/11): boe, barche, scogli e faro sul
+        // mare, alberi e cespugli sul prato basso sotto le rampe.
+        PezziPonte pp;
+        const Sprite** dest[5] = {&pp.boa, &pp.barca, &pp.scoglio, &pp.faro, &pp.ombrellone};
+        for (i32 q = 0; q < 5; ++q) *dest[q] = idxPonte[q] >= 0 ? ren_.oggettoSprite(idxPonte[q]) : nullptr;
+        disponiTerraPonte(road_, pz, pp, seed_, oggettiTerra_);
         std::printf("paesaggio %s: %zu oggetti a zone\n", livelloId.c_str(), oggettiStrada_.size());
         return;
     }
@@ -982,6 +1008,7 @@ void Game::leggiHud() {
 void Game::leggiTemaDaFile(const JsonValue* radice) {
     // Default storici: livelli senza "colori" o "tema_grafico" restano come prima.
     TemaColori tema;
+    tema.sabbia = 0; // 0 = non indicata nel livello: si ricava dal prato sotto
     stileCartellone_.clear();
     if (radice && jsonIsObject(*radice)) {
         const JsonObject& root = jsonAsObject(*radice);
@@ -994,6 +1021,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
             leggiColore(c, "rumble", tema.rumbleAlt);
             leggiColore(c, "acqua", tema.acqua);
             leggiColore(c, "acqua_alt", tema.acquaAlt);
+            leggiColore(c, "sabbia", tema.sabbia); // riva sotto le rampe del ponte (facoltativo)
         }
         tempoLimiteTappaS_ = numero(root, "tempo_limite_s", 60);
         sollevamentoAttivo_ = false;
@@ -1014,6 +1042,9 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
                 if (jsonIsString(o)) oggettiBordoStrada_.push_back(jsonAsString(o));
         }
     }
+    // Spiaggia sotto le rampe del ponte: se il livello non la indica, un
+    // beige spinto verso il prato del tema (di notte resta scura).
+    if (tema.sabbia == 0) tema.sabbia = Renderer::lerpColore(0xFFD8C08Au, tema.erba, 0.35f);
     ren_.impostaTema(tema);
 }
 
@@ -1715,6 +1746,7 @@ void Game::update() {
     // Logica deterministica, nessun orologio di sistema.
     f32 dt = 1.0f / (f32)frequenzaHz_; // un frame di gioco, in secondi (frequenza da config.json)
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
+    ren_.avanzaTempo(dt);             // lampeggi delle luci del ponte e dei portali (Andrea 07/11)
     fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
     aggiornaRadio();
     if (scenaStrada()) {

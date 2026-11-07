@@ -2710,6 +2710,86 @@
             "lv_06_desktop"
          ],
          "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.boa",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/boa.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/boa.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 16x32 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.barca",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/barca.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/barca.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 48x48 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.scoglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/scoglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/scoglio.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 48x24 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.faro",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/faro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/faro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 32x128 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.ombrellone",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/ombrellone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/ombrellone.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 32x32 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       }
    ]
 }
