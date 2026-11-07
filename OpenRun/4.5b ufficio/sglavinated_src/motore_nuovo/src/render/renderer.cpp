@@ -559,7 +559,7 @@ const Sprite* Renderer::risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
                              bool frena, f32 fumoS, const DanniAuto* danni, i32 posa,
-                             f32 distanzaM) {
+                             f32 distanzaM, const EffettiAuto* fx) {
     // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
     // auto.giocatore.* (finto 3D alla OutRun). Game sceglie il fotogramma con
     // `posa` (sterzo leggero/forte, salita, discesa); se il fotogramma chiesto
@@ -604,14 +604,30 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) {
-            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
-            // piu' stretta della carrozzeria, niente barra nera piena.
-            const i32 mezza = w / 2 - w / 8;
-            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
-                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
-                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        {
+            // Ombra di contatto (Andrea 07/11: "deve sembrare piu' sulla strada"):
+            // sempre presente, scurisce la strada sotto l'auto (niente barra nera
+            // piena), sporge sotto le ruote con i bordi arrotondati. Quando l'auto
+            // salta resta a terra, si stringe e si schiarisce.
+            const f32 alto = std::min(1.0f, (f32)sollevamento / 12.0f);
+            const i32 mezza = (i32)((f32)w * (0.52f - 0.14f * alto));
+            u32* px = fb_.data();
+            for (i32 r = -3; r <= AUTO_OMBRA_RIGHE; ++r) {
+                const i32 y = AUTO_GIOCATORE_TERRA_Y + r;
+                if (y < 0 || y >= Framebuffer::HEIGHT) continue;
+                const i32 m = r <= 0 ? mezza : mezza - (r * r * w) / 36; // righe in basso piu' corte
+                u32 luce = r >= AUTO_OMBRA_RIGHE ? 70u : 45u;           // % di luce rimasta
+                if (alto > 0.0f) luce += (u32)(30.0f * alto);
+                for (i32 x = cx - m; x <= cx + m; ++x) {
+                    if (x < 0 || x >= Framebuffer::WIDTH) continue;
+                    if ((x <= cx - m + 1 || x >= cx + m - 1) && ((x + y) & 1)) continue; // bordo a scacchiera
+                    u32& c = px[y * Framebuffer::WIDTH + x];
+                    c = (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+                        ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+                }
+            }
         }
+        if (fx) drawEffettiAuto(*fx, cx, cy, w, h, true);
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
         // Geometria del disegno (AUTO1 A2): rettangolo del fotogramma e
@@ -791,6 +807,7 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             drawRotatedRect(cx + 10, cy - h / 2 + 2, 3, 2, 0xFFFFF4B0u);
         }
     }
+    if (fx) drawEffettiAuto(*fx, cx, cy, w, h, false);
     if (fumoS >= 0.0f) {
         // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s
         // per ruota posteriore, sale, si allarga e si dirada (pixel a
@@ -872,6 +889,149 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     if (dx * dx + dy * dy <= r * r && (k < 0.6f || ((px + dx + py + dy) & 1) == 0))
                         fb_.put(px + dx, py + dy, col);
         }
+    }
+}
+
+namespace {
+// Numero pseudo-casuale 0..1 fisso per indice (niente stato, deterministico).
+f32 casoFx(u32 n) {
+    n = (n ^ 61u) ^ (n >> 16); n *= 9u; n ^= n >> 4; n *= 0x27d4eb2du; n ^= n >> 15;
+    return (f32)(n & 0xFFFFu) / 65535.0f;
+}
+u32 scuroFx(u32 c, u32 luce) {
+    return (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+           ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+}
+} // namespace
+
+void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32 h, bool sotto) {
+    const f32 t = fx.tempoS;
+    const i32 frame = (i32)(t * 60.0f);
+    auto cerchio = [&](i32 px, i32 py, i32 r, u32 col, bool rado) {
+        for (i32 dy = -r; dy <= r; ++dy)
+            for (i32 dx = -r; dx <= r; ++dx)
+                if (dx * dx + dy * dy <= r * r && (!rado || ((px + dx + py + dy) & 1) == 0))
+                    fb_.put(px + dx, py + dy, col);
+    };
+    if (sotto) {
+        // Razzo: due getti di spinta dalla pancia dell'auto fino a terra
+        // (Andrea 07/11, "elevazione a mo' di razzo"). Nucleo bianco, alone
+        // ciano, bordo magenta a scacchiera; la lunghezza sfarfalla.
+        if (fx.razzo <= 0.05f) return;
+        const i32 terra = AUTO_GIOCATORE_TERRA_Y + 1;
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 gx = cx + lato * (w * 3 / 10);
+            const i32 fondo = terra - (((frame >> 1) + (lato > 0 ? 1 : 0)) & 1);
+            for (i32 y = cy - 2; y <= fondo; ++y) {
+                const f32 k = fondo > cy ? (f32)(y - cy) / (f32)(fondo - cy + 1) : 1.0f; // 0 in alto, 1 a terra
+                const i32 r = 1 + (k > 0.6f ? 1 : 0);
+                for (i32 dx = -r - 1; dx <= r + 1; ++dx) {
+                    const i32 ax = std::abs(dx);
+                    u32 col;
+                    if (ax == 0 && k < 0.8f) col = 0xFFFFFFFFu;
+                    else if (ax <= r) col = 0xFF70F0FFu;
+                    else { if (((gx + dx + y + frame) & 1) != 0) continue; col = 0xFFFF40C8u; }
+                    fb_.put(gx + dx, y, col);
+                }
+            }
+            // Riverbero a terra: un ventaglio di pixel chiari che sfarfalla.
+            for (i32 dx = -5; dx <= 5; ++dx)
+                if (((dx + frame) & 1) == 0) fb_.put(gx + dx, terra + 1, 0xFF70F0FFu);
+        }
+        return;
+    }
+
+    // Scie di velocita' nel razzo: righe che corrono dal punto di fuga verso
+    // gli angoli bassi, ai lati dell'auto.
+    if (fx.razzo > 0.5f) {
+        const f32 a = (fx.razzo - 0.5f) * 2.0f;
+        for (u32 n = 0; n < 12; ++n) {
+            const f32 lato = (n & 1) ? 1.0f : -1.0f;
+            const f32 ang = 0.18f + 0.55f * casoFx(n * 7u + 1u);            // pendenza della riga
+            const f32 p = std::fmod(t * (1.6f + casoFx(n * 3u + 2u)) + casoFx(n), 1.0f);
+            if (casoFx(n * 11u + 5u) > a) continue;
+            const f32 l0 = 60.0f + p * 160.0f, l1 = l0 + 10.0f + p * 18.0f;
+            for (f32 l = l0; l < l1; l += 1.0f) {
+                const i32 x = 160 + (i32)(lato * l * std::cos(ang));
+                const i32 y = 118 + (i32)(l * std::sin(ang) * 0.75f);
+                if (y < 120 || y >= Framebuffer::HEIGHT) continue;
+                if (x > cx - w / 2 - 4 && x < cx + w / 2 + 4 && y > cy - h - 4) continue;
+                if (p > 0.6f && ((x + y) & 1)) continue;
+                fb_.put(x, y, 0xFFE8F8FFu);
+            }
+        }
+    }
+    // Fiamme dagli scarichi nel razzo: due lingue arancio/gialle che sfarfallano.
+    if (fx.razzo > 0.3f) {
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 sx = cx + lato * (w / 5);
+            const i32 sy = cy - 3;
+            const i32 l = 1 + (i32)(casoFx((u32)frame * 2u + (lato > 0 ? 1u : 0u)) * 3.0f * fx.razzo);
+            for (i32 k = 0; k <= l; ++k) {
+                fb_.put(sx, sy + k, k == 0 ? 0xFFFFFFA0u : (k < l ? 0xFFFFC020u : 0xFFFF5020u));
+                if (k < l - 1) { fb_.put(sx - 1, sy + k, 0xFFFF8020u); fb_.put(sx + 1, sy + k, 0xFFFF8020u); }
+            }
+        }
+    }
+    // Sgommata in curva: sbuffi dalla ruota esterna (piu' grandi) e da quella
+    // interna, che vengono verso lo schermo e si allargano; segni scuri a terra.
+    if (fx.sgommata > 0.05f && fx.latoSgommata != 0) {
+        constexpr f32 OGNI_S = 0.07f, VITA_S = 0.45f;
+        const f32 fase = std::fmod(t, OGNI_S);
+        for (i32 n = 0; n < 7; ++n) {
+            const f32 eta = fase + (f32)n * OGNI_S;
+            if (eta > VITA_S) continue;
+            const f32 k = eta / VITA_S;
+            for (i32 ruota = 0; ruota < 2; ++ruota) {
+                const i32 lato = ruota == 0 ? fx.latoSgommata : -fx.latoSgommata;
+                const f32 forza = ruota == 0 ? fx.sgommata : fx.sgommata * 0.4f;
+                if (forza < 0.15f) continue;
+                const i32 r = 1 + (i32)(k * 5.0f * forza);
+                const i32 px = cx + lato * (w * 2 / 5) + (i32)((f32)lato * k * 10.0f) + ((n & 1) ? 1 : -1);
+                const i32 py = cy - 2 + (i32)(k * 5.0f) - (i32)(k * k * 8.0f);
+                cerchio(px, py, r, k < 0.35f ? 0xFFF0F0F0u : 0xFFB8B8C8u, k >= 0.5f);
+            }
+        }
+        // Segni delle gomme: due file di pixel scuri sotto le ruote.
+        for (i32 lato = -1; lato <= 1; lato += 2) {
+            const i32 gx = cx + lato * (w * 2 / 5);
+            for (i32 y = cy + 1; y <= std::min(cy + 4, Framebuffer::HEIGHT - 1); ++y)
+                if (((y + frame) & 1) == 0) fb_.put(gx, y, 0xFF202028u);
+        }
+    }
+    // Fuori strada: zolle d'erba e terra che schizzano dalle ruote posteriori.
+    if (fx.polvere > 0.05f) {
+        const u32 erba = scuroFx(tema_.erba, 70u);
+        for (u32 n = 0; n < 14; ++n) {
+            if (casoFx(n * 13u + 3u) > fx.polvere) continue;
+            const f32 k = std::fmod(t * 2.8f + casoFx(n), 1.0f);
+            const i32 lato = (n & 1) ? 1 : -1;
+            const f32 vx = (f32)lato * (14.0f + 30.0f * casoFx(n * 5u + 1u));
+            const f32 vy = -(30.0f + 45.0f * casoFx(n * 9u + 4u));
+            const i32 px = cx + lato * (w * 2 / 5) + (i32)(vx * k * 0.6f);
+            const i32 py = cy - 1 + (i32)((vy * k + 110.0f * k * k) * 0.6f);
+            const u32 col = (n % 3 == 0) ? 0xFF6B4A2Au : erba;
+            fb_.put(px, py, col);
+            if (n % 4 == 0) { fb_.put(px + 1, py, col); fb_.put(px, py + 1, col); }
+        }
+    }
+    // Atterraggio di un salto: polvere che scappa ai lati lungo la strada,
+    // scintille sotto la pancia se il salto era alto.
+    if (fx.atterraggioS >= 0.0f && fx.atterraggioS < 0.4f) {
+        const f32 k = fx.atterraggioS / 0.4f;
+        for (i32 lato = -1; lato <= 1; lato += 2)
+            for (i32 j = 0; j < 3; ++j) {
+                const i32 px = cx + lato * (w / 2 - 2 + (i32)(k * (14.0f + 6.0f * fx.forzaAtterraggio)) + j * 4);
+                const i32 py = AUTO_GIOCATORE_TERRA_Y - j - (i32)(k * 4.0f);
+                cerchio(px, py, 1 + (i32)(k * 3.0f), k < 0.4f ? 0xFFE0E0E0u : 0xFFA8A8B0u, k >= 0.45f);
+            }
+        if (fx.forzaAtterraggio > 0.5f && k < 0.5f)
+            for (u32 n = 0; n < 8; ++n) {
+                const i32 lato = (n & 1) ? 1 : -1;
+                const i32 px = cx + lato * (2 + (i32)(casoFx(n) * (f32)(w / 2)) + (i32)(k * 30.0f * casoFx(n + 9u)));
+                const i32 py = AUTO_GIOCATORE_TERRA_Y - (i32)(k * 10.0f * casoFx(n + 20u));
+                fb_.put(px, py, (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u);
+            }
     }
 }
 

@@ -19,13 +19,30 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   cartella ne' i raw in `motore_nuovo/dati/sprite_raw/giocatore/pose/`.
 
 ## Posizione e grandezza (motore_nuovo/src/render/renderer.h)
-- `AUTO_GIOCATORE_LARGHEZZA = 100`: larghezza a schermo cercata, scala intera
-  calcolata sulla carrozzeria della posa dritta (pixel netti).
-- `AUTO_GIOCATORE_TERRA_Y = 222`: le ruote appoggiano sulla strada in basso.
+- `AUTO_GIOCATORE_LARGHEZZA = 50` (Andrea 07/11: 100 era il doppio dei rivali):
+  grande come un rivale sulla stessa riga. Larghezza a schermo cercata, scala intera
+  calcolata sulla carrozzeria della posa dritta (pixel netti): con la posa
+  di oggi (carrozzeria 25 px) le misure possibili sono 50, 75 o 100 px.
+- `AUTO_GIOCATORE_TERRA_Y = 219`: le ruote appoggiano sulla strada in basso;
+  sotto c'e' sempre l'ombra di contatto (`AUTO_OMBRA_RIGHE = 3`, scurisce la
+  strada, bordi a scacchiera; nei salti resta a terra e si stringe).
+- Rivali: `SCALA_RIVALE = 1.7` (game.cpp), un po' piu' grandi del giocatore
+  alla stessa riga (Andrea 07/11).
+- Curve: sterzando dentro una curva veloce la posa sale di 1-2 livelli e
+  l'auto scivola fino a ~5 px verso l'esterno (`CURVA_DERIVA_SCHERMO = 140`).
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)
-- Nessun sollevamento ad alta velocita': `SOLLEVAMENTO_MAX_PX = 0`.
+- **Razzo alla punta** (Andrea 07/11, sostituisce il "niente sollevamento"
+  del 06/11): dopo `RAZZO_ATTESA_S = 1` s alla punta in rettilineo l'auto si
+  alza fino a `SOLLEVAMENTO_MAX_PX = 7` px e galleggia; due getti ciano sotto
+  la pancia, fiammelle dagli scarichi, scie di velocita' ai lati. Ricade in
+  0.3 s in curva, frenando o fuori strada. L'ombra resta a terra.
+- **Animazioni** (`EffettiAuto`, renderer): sgommata con fumo dalla ruota
+  esterna e segni a terra sterzando forte dentro una curva veloce; zolle
+  d'erba/terra fuori strada; all'atterraggio dei salti le sospensioni si
+  schiacciano (1-3 px) e la polvere scappa ai lati (scintille se il salto era
+  alto); sul ponte un "tac" di 1 px ogni `PONTE_GIUNTO_M = 12` m.
 - Salti sui dossi piccoli: `SALTO_PX_PER_UNITA = 0.02`, `SALTO_MAX_PX = 6`.
 - All'arrivo l'auto resta a terra (niente sollevamento ne' salti).
 - Con le pose disegnate l'auto **non si inclina** in curva: la curva la mostra

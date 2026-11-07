@@ -34,6 +34,19 @@ struct DanniAuto {
     static constexpr i32 DANNI_MAX = 8;
 };
 
+// Animazioni dell'auto del giocatore (Andrea 07/11: "curve, ponti, salti,
+// velocita' massima, elevazione a mo' di razzo"). Le calcola Game, le disegna
+// drawPlayerCar attorno all'auto; nessuno stato nel Renderer (tutto da tempoS).
+struct EffettiAuto {
+    f32 tempoS = 0.0f;       // orologio di gioco (sfarfallii, sbuffi)
+    f32 razzo = 0.0f;        // 0..1 modalita' razzo: getti sotto l'auto, fiamme, scie
+    f32 sgommata = 0.0f;     // 0..1 fumo dalle gomme in curva veloce
+    i32 latoSgommata = 0;    // lato esterno della curva: -1 sinistra, +1 destra
+    f32 polvere = 0.0f;      // 0..1 fuori strada: zolle che schizzano dalle ruote
+    f32 atterraggioS = -1.0f;// secondi dall'atterraggio di un salto (< 0 = nessuno)
+    f32 forzaAtterraggio = 0.0f; // 0..1 quanto era alto il salto
+};
+
 // RIV punto 3 (finto 3D alla OutRun): fotogrammi dell'auto del giocatore,
 // scelti dal Game in base allo sterzo e alla pendenza del tratto. L'ordine e'
 // quello dell'array in Renderer; cataloghi auto.giocatore.* (stato "pronto"),
@@ -47,8 +60,9 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
 // BLOCCATO (Andrea 06/11): valori dell'auto del giocatore in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
-constexpr i32 AUTO_GIOCATORE_TERRA_Y = 222; // riga dello schermo dove appoggiano le ruote (224 = fondo)
-constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 100; // Andrea 06/11 sera: 125 px era troppo grande; ~1/3 dello schermo, appoggiata in basso
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 219; // riga delle ruote; Andrea 07/11: 3 righe piu' su per far vedere l'ombra di contatto sotto
+constexpr i32 AUTO_OMBRA_RIGHE = 3;        // righe d'ombra sotto la riga delle ruote
+constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 50;  // Andrea 07/11: 100 px era il doppio dei rivali; 50 = grande come un rivale alla stessa riga (44 px x 1.1), scala intera 2
 
 enum PosaGiocatore : i32 {
     // Andrea 06/11: pose in tre quarti dall'alto, 4 per lato (1 = appena
@@ -145,11 +159,16 @@ public:
     // distanzaM: metri percorsi (AUTO1 A2: passo delle ruote del componente).
     void drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle = 0.0f, f32 sollevamentoPx = 0.0f,
                        bool frena = false, f32 fumoS = -1.0f, const DanniAuto* danni = nullptr,
-                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f);
+                       i32 posa = POSA_GIOCATORE_DRITTA, f32 distanzaM = 0.0f,
+                       const EffettiAuto* fx = nullptr);
 
     // Pannello di info (tappa 1): velocita (barra 0..1), marcia (quadrati),
     // fuoristrada (rosso). Nessun font: solo barre della palette HUD.
     void drawHud(f32 speedPct, i32 gear, bool offroad);
+    // Effetti attorno all'auto (EffettiAuto): getti del razzo sotto la
+    // carrozzeria (sotto=true, prima dell'auto) oppure fumo, zolle, polvere
+    // dell'atterraggio, fiamme e scie (sotto=false, dopo l'auto).
+    void drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32 h, bool sotto);
 
     // HUD da hud.json: se impostato, sostituisce drawHud/drawGara.
     void impostaHud(std::vector<HudElemento> elementi) { hud_ = std::move(elementi); }
