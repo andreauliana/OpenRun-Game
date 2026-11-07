@@ -335,6 +335,15 @@ bool verificaPoseAuto(const std::string& livello) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         renRef.impostaGiocatoreSprite(k, pose[k]);
     const u32 FONDO = 0xFF010203u;
+    // Ombra di contatto (Andrea 07/11): sotto l'auto il fondo e' scurito al 45%
+    // o al 70%; quei pixel sono strada in ombra, non auto, e restano fuori
+    // dalla maschera come il fondo.
+    auto ombra = [](u32 c, u32 luce) {
+        return (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+               ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+    };
+    const u32 FONDO_OMBRA_A = ombra(FONDO, 45u), FONDO_OMBRA_B = ombra(FONDO, 70u);
+    auto eFondo = [&](u32 c) { return c == FONDO || c == FONDO_OMBRA_A || c == FONDO_OMBRA_B; };
     auto riferimento = [&](i32 posa, i32 g) {
         fbRef.clear(FONDO);
         renRef.drawPlayerCar(0.0f, 0.0f, false, (f32)g * 0.02f, 0.0f, false, -1.0f, nullptr, posa);
@@ -345,7 +354,7 @@ bool verificaPoseAuto(const std::string& livello) {
         for (i32 y = by0; y <= by1; ++y)
             for (i32 x = bx0; x <= bx1; ++x) {
                 const size_t i = (size_t)y * W + x;
-                if (ref[i] == FONDO) continue;
+                if (eFondo(ref[i])) continue;
                 if (cap[i] != ref[i]) ++n;
             }
         return n;
@@ -354,7 +363,7 @@ bool verificaPoseAuto(const std::string& livello) {
         i32 n = 0;
         for (i32 y = by0; y <= by1; ++y)
             for (i32 x = bx0; x <= bx1; ++x)
-                if (ref[(size_t)y * W + x] != FONDO) ++n;
+                if (!eFondo(ref[(size_t)y * W + x])) ++n;
         return n;
     };
     // Miglior confronto su una griglia di inclinazioni (-0.60..+0.60 rad).
@@ -454,7 +463,7 @@ bool verificaPoseAuto(const std::string& livello) {
     for (i32 y = by0; y <= by1; ++y)
         for (i32 x = bx0; x <= bx1; ++x) {
             const size_t i = (size_t)y * W + x;
-            if (refDritta[i] == FONDO) continue;
+            if (eFondo(refDritta[i])) continue;
             if (flip2[i] != refDritta[i]) ++flipVsDritto;
         }
 
