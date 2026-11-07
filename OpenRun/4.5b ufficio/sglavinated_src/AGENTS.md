@@ -45,6 +45,8 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 - Gli sviluppatori scrivono solo il codice, i test e gli strumenti assegnati. Il Grafico e il Capo leggono i materiali pertinenti, ma non scrivono codice di prodotto.
 - `build/` e gli output in `Test area/` sono generati: nessuno li modifica manualmente. Gli @developer possono eseguire build e test consentiti; il revisore legge diff, log ed esiti.
 - Nessun ruolo cancella file o modifica aree fuori dal proprio incarico. Le allowlist OpenCode negano le scritture fuori dai percorsi del ruolo.
+- Le allowlist valgono solo per Write/Edit di OpenCode, non per i file che scrive uno script Python lanciato da un agente. Ogni script calcola i percorsi dalla radice `sglavinated_src/` (per `UFFICIO/Dipartimento Grafico/TOOLS/*.py`: `parents[3]`) e non scrive mai sopra `sglavinated_src/`. Il 07/11 uno script con `parents[5]` ha creato una copia in `OpenRun/UFFICIO/`: ora il ciclo sposta queste copie in `archivio_v4/fuori_posto/` e lo segnala in CONTROLLO.md. Se `git status` mostra percorsi con `../`, scrivilo nel diario.
+- Gli output dei gate (log, .ppm) vanno solo in `UFFICIO/Officina/Test area/<nome>/`, mai in cartelle nuove nella radice di sglavinated_src (come `test_area/` o `test_smoke/`, tolte il 07/11).
 - L'accesso web del Grafico richiede approvazione della richiesta. Non scaricare né pubblicare risorse non verificate o non approvate.
 
 ## Review e checkpoint
