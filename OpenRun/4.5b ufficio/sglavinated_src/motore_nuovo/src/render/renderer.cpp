@@ -604,13 +604,28 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         cx = 160 + (i32)(offsetX * 0.035f);
         const i32 sollevamento = (i32)(sollevamentoPx + 0.5f);
         cy = AUTO_GIOCATORE_TERRA_Y - sollevamento; // in basso come nelle referenze di Andrea
-        if (sollevamento > 0) {
-            // Ombra a terra solo quando l'auto e' staccata (salto): a scacchiera,
-            // piu' stretta della carrozzeria, niente barra nera piena.
-            const i32 mezza = w / 2 - w / 8;
-            for (i32 y = AUTO_GIOCATORE_TERRA_Y - 1; y <= AUTO_GIOCATORE_TERRA_Y; ++y)
-                for (i32 x = cx - mezza; x <= cx + mezza; ++x)
-                    if (((x + y) & 1) == 0) fb_.put(x, y, pal_[0]);
+        {
+            // Ombra di contatto (Andrea 07/11: "deve sembrare piu' sulla strada"):
+            // sempre presente, scurisce la strada sotto l'auto (niente barra nera
+            // piena), sporge sotto le ruote con i bordi arrotondati. Quando l'auto
+            // salta resta a terra, si stringe e si schiarisce.
+            const f32 alto = std::min(1.0f, (f32)sollevamento / 12.0f);
+            const i32 mezza = (i32)((f32)w * (0.52f - 0.14f * alto));
+            u32* px = fb_.data();
+            for (i32 r = -3; r <= AUTO_OMBRA_RIGHE; ++r) {
+                const i32 y = AUTO_GIOCATORE_TERRA_Y + r;
+                if (y < 0 || y >= Framebuffer::HEIGHT) continue;
+                const i32 m = r <= 0 ? mezza : mezza - (r * r * w) / 36; // righe in basso piu' corte
+                u32 luce = r >= AUTO_OMBRA_RIGHE ? 70u : 45u;           // % di luce rimasta
+                if (alto > 0.0f) luce += (u32)(30.0f * alto);
+                for (i32 x = cx - m; x <= cx + m; ++x) {
+                    if (x < 0 || x >= Framebuffer::WIDTH) continue;
+                    if ((x <= cx - m + 1 || x >= cx + m - 1) && ((x + y) & 1)) continue; // bordo a scacchiera
+                    u32& c = px[y * Framebuffer::WIDTH + x];
+                    c = (c & 0xFF000000u) | ((((c >> 16) & 0xFFu) * luce / 100u) << 16) |
+                        ((((c >> 8) & 0xFFu) * luce / 100u) << 8) | ((c & 0xFFu) * luce / 100u);
+                }
+            }
         }
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;

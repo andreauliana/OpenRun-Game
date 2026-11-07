@@ -23,7 +23,13 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   grande come un rivale sulla stessa riga. Larghezza a schermo cercata, scala intera
   calcolata sulla carrozzeria della posa dritta (pixel netti): con la posa
   di oggi (carrozzeria 25 px) le misure possibili sono 50, 75 o 100 px.
-- `AUTO_GIOCATORE_TERRA_Y = 222`: le ruote appoggiano sulla strada in basso.
+- `AUTO_GIOCATORE_TERRA_Y = 219`: le ruote appoggiano sulla strada in basso;
+  sotto c'e' sempre l'ombra di contatto (`AUTO_OMBRA_RIGHE = 3`, scurisce la
+  strada, bordi a scacchiera; nei salti resta a terra e si stringe).
+- Rivali: `SCALA_RIVALE = 1.7` (game.cpp), un po' piu' grandi del giocatore
+  alla stessa riga (Andrea 07/11).
+- Curve: sterzando dentro una curva veloce la posa sale di 1-2 livelli e
+  l'auto scivola fino a ~5 px verso l'esterno (`CURVA_DERIVA_SCHERMO = 140`).
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)

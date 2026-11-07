@@ -47,7 +47,8 @@ constexpr f32 STERZO_IMBARDATA = 0.09f;
 constexpr f32 AUTO_GIOCATORE_SCALA = 1.0f;
 // Larghezza a schermo cercata per le pose dell'auto (scala intera piu' vicina).
 // BLOCCATO (Andrea 06/11): valori dell'auto del giocatore in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
-constexpr i32 AUTO_GIOCATORE_TERRA_Y = 222; // riga dello schermo dove appoggiano le ruote (224 = fondo)
+constexpr i32 AUTO_GIOCATORE_TERRA_Y = 219; // riga delle ruote; Andrea 07/11: 3 righe piu' su per far vedere l'ombra di contatto sotto
+constexpr i32 AUTO_OMBRA_RIGHE = 3;        // righe d'ombra sotto la riga delle ruote
 constexpr i32 AUTO_GIOCATORE_LARGHEZZA = 50;  // Andrea 07/11: 100 px era il doppio dei rivali; 50 = grande come un rivale alla stessa riga (44 px x 1.1), scala intera 2
 
 enum PosaGiocatore : i32 {
