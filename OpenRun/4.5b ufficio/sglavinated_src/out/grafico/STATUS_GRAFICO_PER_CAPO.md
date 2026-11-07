@@ -1,10 +1,14 @@
 # Status grafico per il Capo — OpenRun 4.6
 
-**Aggiornato:** 2026-11-07 07:41
-**Stato:** AUTO1 G-A1 [x]: componenti dell'auto del giocatore consegnati (ruota_1..3 12x10, luci_stop 12x4, fumo_1..3 16x16 con Bayer) + `auto_giocatore.json` con i centri per i 7 fotogrammi; fotogrammi `auto_gt` ridisegnati senza ruote posteriori (ora sono componenti del Renderer). Restano A2/A3/A4/A5 lato @developer e J-A1; G-P1 [x], RIV punto 3 [x], M [~] (manifest bozza, approvazione PNG a Andrea), DECO1 [~] (attesa review @capo).
+**Aggiornato:** 2026-11-07 12:04
+**Stato:** Turno 07/11 12:04 — nessun blocco grafico azionabile (G-A1 [x] e G-P1 [x] gia' chiusi; M [~] attesa ok Andrea PNG B/N/manifest bozza, DECO1 [~] attesa review @capo, PIST1 [~]/R2 [~]/AUTO1 [ ] attesa developer/developer-junior). Nessun file cambiato, nessun comando eseguito.
 
-**File creati/modificati:** `UFFICIO/Dipartimento Grafico/TOOLS/disegna_componenti_auto.py` (nuovo, CC0-1.0); `UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_giocatore.py` (carrozzeria senza ruote); `Libreria/assets_originali/sprite/giocatore/` (7 PNG + `auto_giocatore.json`); `motore_nuovo/dati/sprite_raw/giocatore/` (7 raw + copia json); `Libreria/assets_originali/CATALOGO_GRAFICO.json` (+7 voci `auto.giocatore.componente.*` pronto); `INDICE_ASSET.json/.md`; diario/RIASSUNTO/ULTIMO_TURNO/questo status.
-**Catalogo/licenze:** 218 elementi (approvato 31, pronto 83, mancante 3, scartato 101), tutte originali CC0-1.0, nessun materiale Sega, nessuna risorsa esterna; `giocatore_pose/` di Andrea non toccato.
-**Controlli/esiti:** `python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_componenti_auto.py"` exit 0; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_auto_giocatore.py"` exit 0; `python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py` exit 0 ("PNG non catalogati: 0"); `python3 motore_nuovo/strumenti_py/indice_assets.py` exit 0 (363 file); `ls` confermato. gate_t1.sh non eseguito in questo turno.
-**Lacune/blocchi:** niente in attesa mia per AUTO1 — A2 (posizioni/componenti nel Renderer) e A3 sono di @developer, J-A1 di @developer-junior; pose `auto_dx*`/`auto_salita`/`auto_discesa` sono di Andrea; lacune catalogo Gianni/Gesù/UFO (RIV/FIN) non mie; DECO1 chiude con review @capo.
-**Review richiesta:** nessuna da @grafico; quando @developer integra i componenti (A2), il gate AUTO1 chiede che @grafico riveda gli screenshot in gioco in `UFFICIO/Officina/Test area/auto1/`.
+**File creati/modificati:** nessuno (turno senza produzione grafica).
+
+**Catalogo/licenze:** nessun nuovo elemento; tutto originale CC0-1.0/OFL-1.1/MIT/CC-BY-4.0, nessun materiale Sega, nessuna risorsa esterna.
+
+**Controlli/esiti:** nessun comando eseguito in questo turno; gate non eseguito (gate_t1.sh e' di @developer).
+
+**Lacune/blocchi:** M [~] in attesa ok Andrea (manifest bozza); DECO1 [~] in attesa review @capo; PIST1 [~] (P3, J1, J2 in attesa developer/developer-junior); KO1 [ ] (in attesa developer/developer-junior); R2 [~] (fasi di gioco in attesa developer); AUTO1 [ ] (G-A1 [x], A2/J-A1 in attesa developer/developer-junior); menu/logo segnaposto Andrea per LOOP1.
+
+**Review richiesta:** nessuna in attesa mia (J-A1 in out/grafico/REVIEW_AUTO1.md, chiusura AUTO1 a @capo + Andrea).

@@ -1455,3 +1455,80 @@ blocchi fatti [x]: 28
 blocchi da fare [ ]: 6
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 1 | REVIEWER | 2026-11-07 09:41 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+screenshot P1: curva frame 387 (scarto 146 px), sponsor frame 1596 (55079 px), personaggio+fumetto frame -1
+FALLITO: screenshot P1 incompleti
+FALLITO: screenshot P1 incompleti
+GATE T1: FALLITO (exit 12)
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (7167964 di 7167964 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 9
+
+[0m
+> developer-junior · nemotron-3.5-super-vl-free
+[0m$ [0mtail -n 25 UFFICIO/Officina/Test\ area/gate_t1.log
+cartelloni sulla pista: 509 (da file sì, densita ~11.3% del percorso)
+cartelloni sulla pista: 469 (da file sì, densita ~10.8% del percorso)
+sprite rivali caricati: 7/7
+cartelloni sulla pista: 419 (da file sì, densita ~9.2% del percorso)
+cartelloni sulla pista: 509 (da file sì, densita ~11.3% del percorso)
+cartelloni sulla pista: 469 (da file sì, densita ~10.8% del percorso)
+gara DS: lv_01_neon -> lv_03_foglie -> lv_05_spray, arrivo si in 114.1 s, posizione 2/8, incidenti 0, sovrapposizioni 0, replay IDENTICO
+sprite rivali caricati: 7/7
+cartelloni sulla pista: 419 (da file sì, densita ~9.2% del percorso)
+cartelloni sulla pista: 509 (da file sì, densita ~11.3% del percorso)
+cartelloni sulla pista: 437 (da file sì, densita ~9.0% del percorso)
+sprite rivali caricati: 7/7
+cartelloni sulla pista: 419 (da file sì, densita ~9.2% del percorso)
+cartelloni sulla pista: 509 (da file sì, densita ~11.3% del percorso)
+cartelloni sulla pista: 437 (da file sì, densita ~9.0% del percorso)
+gara DD: lv_01_neon -> lv_03_foglie -> lv_06_desktop, arrivo si in 118.2 s, posizione 5/8, incidenti 0, sovrapposizioni 0, replay IDENTICO
+GATE GARA OK
+frequenza 60 Hz: runA=32.35 s (ms/frame medio=1.19 max=5.56) runB=32.35 s (ms/frame medio=1.18 max=2.49) replay IDENTICO diff=0.00%
+GATE FREQUENZA 60 Hz OK
+frequenza 50 Hz: runA=32.34 s (ms/frame medio=1.18 max=3.40) runB=32.34 s (ms/frame medio=1.18 max=2.45) replay IDENTICO diff=0.00%
+GATE FREQUENZA 50 Hz OK
+sprite rivali caricati: 7/7
+cartelloni sulla pista: 419 (da file sì, densita ~9.2% del percorso)
+screenshot P1: curva frame 387 (scarto 146 px), sponsor frame 1596 (55079 px), personaggio+fumetto frame -1
+FALLITO: screenshot P1 incompleti
+> developer-junior · nemotron-3.5-super-vl-free
+CORREGGI: gate_t1.sh -> @developer.
+
+### CHECKPOINT 2 | REVIEWER | 2026-11-07 11:50 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+quota open: 100.0% (7172171 di 7172171 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 28
+blocchi da fare [ ]: 9
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

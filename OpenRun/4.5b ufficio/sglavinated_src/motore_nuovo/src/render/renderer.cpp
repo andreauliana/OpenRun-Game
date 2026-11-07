@@ -1028,21 +1028,28 @@ void Renderer::drawHudDati(const HudDati& d) {
     auto centro = [this](i32 y, const char* t, i32 scala) {
         drawTesto((Framebuffer::WIDTH - larghezzaTesto(t, scala)) / 2, y, t, 0xFFFFFFFFu, scala);
     };
-    if (d.tempoScaduto) centro(96, "TEMPO SCADUTO", 2);
+    if (d.tempoScaduto) centro(96, "TIME UP", 2);
     else if (d.arrivo) {
-        centro(70, "ARRIVO", 3);
-        std::snprintf(buf, sizeof(buf), "POSIZIONE %d/%d", d.posizione, d.concorrenti);
+        centro(70, "GOAL", 3);
+        std::snprintf(buf, sizeof(buf), "POS %d/%d", d.posizione, d.concorrenti);
         centro(100, buf, 1);
     } else if (d.tempoExtra > 0) {
-        if ((d.frame / 8) % 2 == 0) centro(70, "TEMPO EXTRA", 2);
+        if ((d.frame / 8) % 2 == 0) centro(70, "TIME EXTRA", 2);
         std::snprintf(buf, sizeof(buf), "+%d", d.tempoExtra);
         centro(92, buf, 2);
     } else if (d.bivio && (d.frame / 15) % 2 == 0) {
-        drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
-        drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);
+        drawTesto(16, 112, "<< LEFT", 0xFFFFFFFFu, 1);
+        drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("RIGHT >>"), 112, "RIGHT >>", 0xFFFFFFFFu, 1);
     }
     // Fuori strada: nessuna scritta (Andrea 29/10, ridondante): lo dicono gia'
     // l'erba, il sobbalzo e le scintille.
+}
+
+void Renderer::disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore) {
+    // Scena show in attesa degli sprite veri del @grafico (blocco AUTO1).
+    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
+    if (w <= 0 || h <= 0) return;
+    fb_.fillRect(x, y, x + w - 1, y + h - 1, colore);
 }
 
 } // namespace sgl

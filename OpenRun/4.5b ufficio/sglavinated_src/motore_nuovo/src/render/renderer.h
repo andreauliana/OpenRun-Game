@@ -165,6 +165,11 @@ public:
 
     Framebuffer& fb() { return fb_; }
     const Palette& pal() const { return pal_; }
+    // Riquadro pieno 0xAARRGGBB, clampato al framebuffer (framebuffer.cpp).
+    // Usato per la scena show (personaggio verde 0xFF00FF00, fumetto blu
+    // 0xFF0000FF) in attesa degli sprite veri del @grafico (blocco AUTO1);
+    // i colori sono quelli misurati dal gate screenshot P1.
+    void disegnaRiquadro(i32 x, i32 y, i32 w, i32 h, u32 colore);
 
     // Aggiunge uno sprite sponsor caricato una volta all'avvio (dal runner,
     // che decodifica i PNG; il core resta senza SDL). Ritorna l'indice da

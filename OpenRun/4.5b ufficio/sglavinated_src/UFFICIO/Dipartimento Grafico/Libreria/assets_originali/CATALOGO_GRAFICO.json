@@ -533,6 +533,20 @@
          "nota": "D7: variante C - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
       },
       {
+         "id": "ui.splash",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/splash/splash_avvio.png",
+         "nota": "Schermata splash/avvio (Loading) B/N 320x224, prima bozza R2 punto 3, da approvare da Andrea (LOOP1). Nessun materiale Sega."
+      },
+      {
+         "id": "ui.risultati",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/risultati/varianteB/risultati_preview.png",
+         "nota": "Schermata risultati variante B B/N 320x224, R2 punto 3, da approvare da Andrea. Dati in motore_nuovo/dati/ui/risultati.json. Nessun materiale Sega."
+      },
+      {
          "id": "font.antonio",
          "tipo": "font",
          "stato": "approvato",

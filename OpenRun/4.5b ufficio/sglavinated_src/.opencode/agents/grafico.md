@@ -1,6 +1,6 @@
 ---
 description: "Grafico e Creativo del progetto: crea e cataloga asset, verifica licenze e provenienza, integra ricerca risorse libere e approva gli asset condivisi."
-model: opencode/mimo-v2.6-flash-free
+model: opencode/nemotron-3.5-lightning-free
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:

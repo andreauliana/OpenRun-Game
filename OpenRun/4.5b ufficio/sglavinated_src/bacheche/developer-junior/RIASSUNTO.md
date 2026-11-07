@@ -1,12 +1,8 @@
-# RIASSUNTO @developer-junior — turno 07/11 ore 08:20
-- Ruolo: Developer Junior (4.6); scrivo solo in bacheche/developer-junior/, out/developer-junior e test in motore_nuovo/test/.
-- Blocchi: PIST1 [x] (J1 review PR44, J2 ponte acqua fatti il 06/11); AUTO1 [~] -> J-A1 FATTO in questo turno; poi ENG1+ARC1, KO1.
-- Passo: gate `urto` esteso con J-A1: a fermi (speed 0) i pixel dell'auto si confrontano con un riferimento disegnato dallo stesso Renderer con le pose caricate come da Game::init.
-- Esito pose (mismatch su maschera auto): centro->dritto 0/6875 px (ang 0.00), sterzo pieno sx->SX_4 0/8875 (ang -0.48), destra->dx specchio 0/8875 (ang 0.48), ritorno al centro 0; pendenza partenza 0.0.
-- Esito ribaltamento: 8555 px cambiati fra due frame (soglia 772), 6484 rispetto al dritto (soglia 1718); nessun ribaltamento nel bump (gate storico invariato), replay 2x IDENTICO.
-- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> ctest 27/27 passati, exit 0 (07/11 08:18, 524 s).
-- Prova singola: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/build/test-results/urto" lv_01_neon urto` -> GATE URTO OK, exit 0 (07/11 08:15).
-- Screenshot: UFFICIO/Officina/Test area/auto1/auto1_{dritto,sx2,dx2,ribaltamento}.ppm (piu' p1_* del 06/11). gate_t1.sh non eseguito in questo turno.
-- Problemi residui: nessuno (ms/frame urto 4.68/3.91; i raw dx mancano per disegno -> specchio di sx, previsto dal blocco).
-- Prossimo passo: ENG1 + ARC1 (testi in inglese, nome salvato nel gate `ciclo`), poi KO1.
-- File modificati: motore_nuovo/test/prova_gate.cpp (+250 righe), diario.md, RIASSUNTO.md, ULTIMO_TURNO.md.
+# RIASSUNTO @developer-junior — turno 07/11 12:07
+- Ruolo: Developer Junior (4.6); scrivo in bacheche/developer-junior/, out/developer-junior e test in motore_nuovo/test/.
+- Blocchi: PIST1 [x]; AUTO1 [~] (J-A1 fatto; attende G-A1 @grafico e A1-A5 @developer); ENG1+ARC1 [~] (fatti, attende ENG1 @developer); KO1 [x].
+- KO1: gate urto esteso: 4 urti sullo stesso rivale -> KO, classifica OUT, nessun ribaltamento, velocita' > 0, controlli attivi entro 1.5 s; ctest 27/27 exit 0.
+- J-A1: pose auto sx2/dx2/dritto/ribaltamento nel gate urto/gara; screenshot in Test area/auto1/.
+- ENG1+ARC1: gate ciclo salvataggi (nome giocatore, file creato/rilettura/ricreato se rotto); ctest 27/27 exit 0.
+- Prossimo: nessun blocco mio in attesa; RIV punto 3 (sprite rivali) spetta al @grafico.
+- gate: non eseguito in questo turno (nessun blocco [ ]/[~] mio).
