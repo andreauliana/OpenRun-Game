@@ -106,6 +106,7 @@ struct HudDati {
     bool fuoristrada = false;
     i32 bivio = 0;        // 1 = bivio in vista e scelta aperta: frecce SX / DX
     bool arrivo = false, tempoScaduto = false;
+    bool premiazione = false; // festa all'arrivo: niente scritta SHOW in mezzo (premiazione.h)
     u64 frame = 0;        // per i lampeggi
 };
 

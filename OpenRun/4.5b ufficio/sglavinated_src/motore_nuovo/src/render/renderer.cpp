@@ -973,6 +973,7 @@ void Renderer::drawHudDati(const HudDati& d) {
     // in alto a sinistra, velocita' e tempo in alto a destra). Tema bianco e nero.
     char buf[32];
     for (const HudElemento& e : hud_) {
+        if (d.premiazione && e.id == "show") continue; // la scritta della premiazione passa di li'
         if (e.tipo == "cornice") {
             if (e.oscuraSfondo > 0) {
                 // Vetro scuro: l'interno resta leggibile sopra cielo e skyline.

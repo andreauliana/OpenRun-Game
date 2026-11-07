@@ -4,6 +4,7 @@
 #include "game/salvataggi.h" // blocco ARC1: nome del giocatore salvato in salvataggi/giocatore.json
 #include "core/json_mini.h"
 #include "render/renderer.h"
+#include "render/premiazione.h" // PREMIAZIONE_S: festa a tema prima della classifica
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
@@ -18,8 +19,11 @@ constexpr f32 SPLASH_DURATA_S = 2.0f;   // logo, poi menu da solo o con un tasto
 constexpr f32 FINE_TEMPO_DURATA_S = 4.0f; // "TEMPO SCADUTO" visibile prima dei risultati
 // Arrivo (Andrea 29/10): l'auto frena e si ferma sulla strada, poi la
 // classifica compare sopra la scena. Tetto di sicurezza alla frenata.
-constexpr f32 FERMO_PRIMA_DEI_RISULTATI_S = 0.8f;
-constexpr f32 ARRIVO_MAX_S = 6.0f;
+// Andrea 07/11: da ferma parte la premiazione a tema (render/premiazione.*);
+// la classifica arriva alla fine, o prima con START/A dopo un secondo.
+constexpr f32 FERMO_PRIMA_DEI_RISULTATI_S = PREMIAZIONE_S;
+constexpr f32 PREMIAZIONE_SALTA_DOPO_S = 1.0f;
+constexpr f32 ARRIVO_MAX_S = 10.0f;
 constexpr f32 RIGA_CLASSIFICA_S = 0.12f; // le righe della classifica entrano una alla volta
 
 // Score: distanza + bonus tempo residuo + bonus checkpoint (dati/punteggio.json).
@@ -189,7 +193,11 @@ public:
     void aggiorna(Game& gioco, f32 dt) override {
         timerS_ += dt;
         // Arrivo: si aspetta che l'auto si fermi in mezzo al pubblico.
-        if (arrivo_) finita_ = gioco.fermoDopoArrivoS() >= FERMO_PRIMA_DEI_RISULTATI_S || timerS_ >= ARRIVO_MAX_S;
+        if (arrivo_) {
+            const f32 fermo = gioco.fermoDopoArrivoS();
+            const bool salta = fermo >= PREMIAZIONE_SALTA_DOPO_S && (gioco.input().pressed & (Pad::Start | Pad::A));
+            finita_ = fermo >= FERMO_PRIMA_DEI_RISULTATI_S || salta || timerS_ >= ARRIVO_MAX_S;
+        }
         else if (timerS_ >= FINE_TEMPO_DURATA_S) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer&) const override {

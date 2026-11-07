@@ -58,6 +58,8 @@ add_library(sglavinated_core
     src/render/visualizzatore.cpp
     src/render/crt.h
     src/render/crt.cpp
+    src/render/premiazione.h
+    src/render/premiazione.cpp
     src/input/pad.h
     src/audio/mixer.h
     src/audio/mixer.cpp
