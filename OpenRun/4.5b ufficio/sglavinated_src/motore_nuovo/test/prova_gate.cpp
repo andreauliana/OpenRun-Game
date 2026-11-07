@@ -1784,7 +1784,7 @@ bool verificaBivioUscita(const std::string& outDir) {
 // che finisce al tema della tappa nuova in transizione_tema_s secondi
 // (dati/config.json, default 1.0 s), NON in un singolo frame.
 // Guida la gara su lv_01_neon fino al primo cambio tappa e campiona il
-// colore del cielo (framebuffer riga 8 < HORIZON_Y 112, colonna centrale)
+// colore del cielo (framebuffer riga 2 < HORIZON_Y 112, colonna centrale: sopra il titolo della radio dell'HUD)
 // a ogni frame. Verifica: cambio raggiunto, variazione per canale tra due
 // frame consecutivi <= soglia (graduale, niente scatto), cielo finale
 // diverso da quello iniziale, transizione completata entro transizione_tema_s
@@ -1841,7 +1841,7 @@ static void leggiTransizioneDaConfig(f32& durataS, i32& hz) {
 
 static u32 cieloPixel(Game& game) {
     const u32* d = game.fb().data();
-    return d[8 * Framebuffer::WIDTH + Framebuffer::WIDTH / 2]; // riga 8 < HORIZON_Y (112): cielo
+    return d[2 * Framebuffer::WIDTH + Framebuffer::WIDTH / 2]; // riga 2: cielo sopra l'HUD (titolo radio a y 6)
 }
 
 static i32 deltaCanaleMax(u32 a, u32 b) {

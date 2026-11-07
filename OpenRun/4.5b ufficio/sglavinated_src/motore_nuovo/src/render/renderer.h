@@ -78,15 +78,15 @@ struct TemaColori {
     u32 acquaAlt = 0xFF14306E;
 };
 
-// Un elemento dell'HUD da dati/ui/hud.json (variante B, bianco e nero).
-// tipo: "cornice" | "testo" | "barra"; l'id lega l'elemento a un dato vivo.
+// Un elemento dell'HUD da dati/ui/hud.json (striscia in alto, senza box).
+// tipo: "testo" | "barra"; l'id lega l'elemento a un dato vivo.
 struct HudElemento {
     std::string id, tipo, label, testo;
-    i32 x = 0, y = 0, w = 0, h = 0, spessore = 2;   // cornice / barra (barra_pos, barra_w, barra_h)
+    i32 x = 0, y = 0, w = 0, h = 0;   // barra (barra_pos, barra_w, barra_h)
     i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
     i32 scalaValore = 1, scala = 1;
     i32 scalaLabel = 0;     // 0 = font mini 3x5 (etichette piccole e coerenti)
-    i32 oscuraSfondo = 0;   // cornice: % di scurimento dell'interno (0 = trasparente)
+    bool destra = false;    // "allinea": "destra": le x sono il bordo destro del testo
     u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
 };
 
