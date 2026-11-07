@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "game/game.h"
+#include "game/paesaggio.h"
 #include "core/json_mini.h" // lettura livello.json (campo cartelloni_sponsor)
 #include "render/sprite_raw.h" // caricaSpriteRaw: skyline raw del livello, core senza SDL
 #include <algorithm> // std::min/max
@@ -241,6 +242,65 @@ std::string leggiFileTesto(const std::string& path) {
     return testo;
 }
 
+// AUTO1 A2: posizioni dei componenti dell'auto da auto_giocatore.json
+// (dati/sprite_raw/giocatore/, G-A1 del @grafico). Ogni voce di "fotogrammi"
+// da' i centri in texel della griglia "griglia" (64x32); i nomi sono quelli
+// dei fotogrammi d'agente e si mappano sulle pose del motore. Se il file
+// manca o e' illeggibile i componenti restano senza posizioni: il Renderer
+// usa il disegno sintetico di oggi, mai un crash.
+void caricaPuntiComponentiGiocatore(Renderer& ren, const std::string& percorso) {
+    JsonReader j(leggiFileTesto(percorso));
+    if (!j.parse() || !jsonIsObject(j.valore())) {
+        std::printf("giocatore: %s illeggibile: componenti senza posizioni\n", percorso.c_str());
+        return;
+    }
+    const JsonObject& radice = jsonAsObject(j.valore());
+    JsonValue gv, fv;
+    if (jsonGet(radice, "griglia", gv) && jsonIsObject(gv)) {
+        const JsonObject& g = jsonAsObject(gv);
+        JsonValue wv, hv;
+        if (jsonGet(g, "w", wv) && jsonIsNumber(wv) && jsonGet(g, "h", hv) && jsonIsNumber(hv))
+            ren.impostaGrigliaComponenti((i32)jsonAsNumber(wv), (i32)jsonAsNumber(hv));
+    }
+    if (!jsonGet(radice, "fotogrammi", fv) || !jsonIsObject(fv)) return;
+    const JsonObject& fotogrammi = jsonAsObject(fv);
+    auto leggiPunto = [](const JsonObject& o, const char* chiave, f32 out[2]) {
+        JsonValue v;
+        if (!jsonGet(o, chiave, v) || !jsonIsArray(v)) return false;
+        const JsonArray& a = jsonAsArray(v);
+        if (a.size() < 2 || !jsonIsNumber(a[0]) || !jsonIsNumber(a[1])) return false;
+        out[0] = (f32)jsonAsNumber(a[0]);
+        out[1] = (f32)jsonAsNumber(a[1]);
+        return true;
+    };
+    struct Mappa { const char* nome; i32 posa; };
+    static const Mappa MAPPA[] = {
+        {"auto_giocatore_dritta", POSA_GIOCATORE_DRITTA},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_1},
+        {"auto_giocatore_sterzo_sx_leggero", POSA_GIOCATORE_SX_2},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_3},
+        {"auto_giocatore_sterzo_sx_forte", POSA_GIOCATORE_SX_4},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_1},
+        {"auto_giocatore_sterzo_dx_leggero", POSA_GIOCATORE_DX_2},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_3},
+        {"auto_giocatore_sterzo_dx_forte", POSA_GIOCATORE_DX_4},
+        {"auto_giocatore_salita", POSA_GIOCATORE_SALITA},
+        {"auto_giocatore_discesa", POSA_GIOCATORE_DISCESA},
+    };
+    for (const Mappa& m : MAPPA) {
+        JsonValue vo;
+        if (!jsonGet(fotogrammi, m.nome, vo) || !jsonIsObject(vo)) continue;
+        const JsonObject& o = jsonAsObject(vo);
+        Renderer::PuntiComponenti p;
+        if (leggiPunto(o, "ruota_sx", p.ruotaSx) && leggiPunto(o, "ruota_dx", p.ruotaDx) &&
+            leggiPunto(o, "fanale_sx", p.fanaleSx) && leggiPunto(o, "fanale_dx", p.fanaleDx) &&
+            leggiPunto(o, "scarico_sx", p.scaricoSx) && leggiPunto(o, "scarico_dx", p.scaricoDx)) {
+            p.validi = true;
+            ren.impostaPuntiComponenti(m.posa, p);
+        }
+    }
+}
+
 // Espande il campo "tracciato" di livello.json in descrittori di strada.
 // Ogni voce e' una stringa (nome tratto) oppure un oggetto
 // {"tratto": "nome", "lunghezza": 500, ...override...}; le definizioni base
@@ -280,7 +340,10 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     if (jsonGet(o, "sospeso", sv) && jsonIsNumber(sv)) d.sospeso = (f32)jsonAsNumber(sv);
 }
 
-bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out) {
+// nomi (facoltativo): il nome di ogni tratto letto, nello stesso ordine di out
+// (serve al paesaggio a zone).
+bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDesc>& out,
+                    std::vector<std::string>* nomi = nullptr) {
     if (!jsonIsArray(campoTracciato)) return false;
     const JsonArray& arr = jsonAsArray(campoTracciato);
     if (arr.empty()) return false;
@@ -303,6 +366,7 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
     }
 
     out.clear();
+    if (nomi) nomi->clear();
     for (const JsonValue& v : arr) {
         Road::SegmentDesc d;
         const JsonObject* o = nullptr;
@@ -321,7 +385,10 @@ bool leggiTracciato(const JsonValue& campoTracciato, std::vector<Road::SegmentDe
         if (it == libreria.end()) continue;
         d = it->second;
         if (o) leggiCampiTratto(*o, d); // override del livello
-        if (d.lunghezza > 0) out.push_back(d);
+        if (d.lunghezza > 0) {
+            out.push_back(d);
+            if (nomi) nomi->push_back(nome);
+        }
     }
     return !out.empty();
 }
@@ -351,16 +418,35 @@ void Game::caricaLivello(const std::string& livelloId) {
     leggiTemaDaFile(radiceLivello); // colori di ambiente e stile dei cartelloni
 
     std::vector<Road::SegmentDesc> descs;
+    std::vector<std::string> nomiTratti; // per il paesaggio a zone
     bool daFile = false;
     if (radiceLivello && jsonIsObject(*radiceLivello)) {
         const JsonObject& rootLivello = jsonAsObject(*radiceLivello);
         JsonValue campoTracciato;
         if (jsonGet(rootLivello, "tracciato", campoTracciato) && jsonIsArray(campoTracciato)) {
-            daFile = leggiTracciato(campoTracciato, descs) && !descs.empty();
+            daFile = leggiTracciato(campoTracciato, descs, &nomiTratti) && !descs.empty();
         }
     }
     if (!daFile) {
+        nomiTratti.clear();
         daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
+    }
+    // Paesaggio a zone (Andrea 06/11): zona di ogni tratto da livello.json
+    // "paesaggio" (base + tratti, "nome#2" = seconda volta che il tratto
+    // compare). Senza il campo resta il posizionamento sparso di prima.
+    leggiPaesaggio(radiceLivello);
+    zonaSeg_.clear();
+    std::vector<u8> zonePattern;
+    if (paesaggioAttivo_ && nomiTratti.size() == descs.size()) {
+        std::map<std::string, i32> volte;
+        for (const std::string& nome : nomiTratti) {
+            const i32 n = ++volte[nome];
+            Zona z = zonaPredefinitaTratto(nome, paesaggioBase_);
+            auto it = paesaggioTratti_.find(nome + "#" + std::to_string(n));
+            if (it == paesaggioTratti_.end()) it = paesaggioTratti_.find(nome);
+            if (it != paesaggioTratti_.end()) z = it->second;
+            zonePattern.push_back((u8)z);
+        }
     }
     if (daFile) {
         // Ripeti il pattern finche' il giro ha almeno 2*DRAW_DIST segmenti
@@ -371,12 +457,17 @@ void Game::caricaLivello(const std::string& livelloId) {
         i32 segTotali = 0;
         const i32 minSeg = Road::DRAW_DIST * 2;
         while (segTotali < minSeg) {
-            for (const Road::SegmentDesc& d : pattern) {
+            for (size_t p = 0; p < pattern.size(); ++p) {
+                const Road::SegmentDesc& d = pattern[p];
                 descs.push_back(d);
-                segTotali += d.lunghezza > 0 ? d.lunghezza : 1;
+                const i32 n = d.lunghezza > 0 ? d.lunghezza : 1;
+                segTotali += n;
+                if (!zonePattern.empty()) zonaSeg_.insert(zonaSeg_.end(), (size_t)n, zonePattern[p]);
             }
         }
         road_.build(descs, seed_);
+        // Una zona per segmento della Road (stesso conteggio di build()).
+        if (!zonaSeg_.empty()) zonaSeg_.resize(road_.segments().size(), (u8)paesaggioBase_);
     } else {
         // Fallback deterministico (hardcoded): 400 segmenti con pattern inventato.
         std::vector<f32> curves, hills;
@@ -488,6 +579,39 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // Ponte (Andrea 06/11): niente pannelli o ringhiere ai lati. Il ponte
     // resta aperto sull'acqua, "l'emozione di correre sospesi": il bordo e'
     // solo il filo grigio/bianco del parapetto basso (Renderer).
+    const bool conBivio = tappaConBivio(livelloId);
+    const f32 zBivioInizio = conBivio ? road_.bivioInizioZ() : giro;
+    if (paesaggioAttivo_ && !zonaSeg_.empty() && giro > 0.0f) {
+        // Paesaggio a zone (Andrea 06/11): prima si registrano tutti gli sprite
+        // (i puntatori del Renderer restano validi), poi si dispongono.
+        auto carica = [&](const std::string& cartella, const std::string& nome) {
+            Sprite s = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/scenari/" + cartella + "/" + nome + ".sglraw"));
+            return s.width > 0 ? ren_.aggiungiOggettoSprite(std::move(s)) : -1;
+        };
+        std::vector<std::vector<i32>> idxRuolo(4);
+        for (size_t r = 0; r < 4; ++r)
+            for (const std::string& id : paesaggioPezzi_[r]) {
+                const i32 idx = carica(livelloId, nomeOggettoDaId(id));
+                if (idx >= 0) idxRuolo[r].push_back(idx);
+            }
+        const i32 idxDx = carica("comuni", "freccia_curva_dx");
+        const i32 idxSx = carica("comuni", "freccia_curva_sx");
+        PezziPaesaggio pz;
+        for (i32 j = 0; j < nOggetti; ++j) {
+            const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
+            if (!s) continue;
+            (s->height >= 96 ? pz.lampioni : pz.arredo).push_back(s); // alti = lampioni e pali
+        }
+        std::vector<const Sprite*>* ruoli[4] = {&pz.ciuffi, &pz.cespugli, &pz.alberi, &pz.edifici};
+        for (size_t r = 0; r < 4; ++r)
+            for (i32 idx : idxRuolo[r]) ruoli[r]->push_back(ren_.oggettoSprite(idx));
+        pz.frecciaDx = idxDx >= 0 ? ren_.oggettoSprite(idxDx) : nullptr;
+        pz.frecciaSx = idxSx >= 0 ? ren_.oggettoSprite(idxSx) : nullptr;
+        pz.densitaAlberi = paesaggioDensitaAlberi_;
+        disponiPaesaggio(road_, zonaSeg_, pz, zBivioInizio, seed_, oggettiStrada_);
+        std::printf("paesaggio %s: %zu oggetti a zone\n", livelloId.c_str(), oggettiStrada_.size());
+        return;
+    }
     if (giro <= 0.0f || nOggetti == 0) return;
     // Posizioni (Andrea 27/10 sera): mai sul tracciato. Per ogni fila, un
     // oggetto a bordo strada (lato alternato) e uno nel paesaggio dal lato
@@ -495,8 +619,6 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
     // misura dal bordo della carreggiata al bordo dello sprite, quindi anche gli
     // oggetti larghi restano fuori strada. Nella zona del bivio la carreggiata e'
     // larga quanto i due rami: lo stesso margine parte dal bordo esterno dei rami.
-    const bool conBivio = tappaConBivio(livelloId);
-    const f32 zBivioInizio = conBivio ? road_.bivioInizioZ() : giro;
     const f32 bordo = Road::ROAD_WIDTH * 0.5f;
     const f32 bordoBivio = Road::BIVIO_DIST + bordo;
     Rng rnd(seed_ ^ 0x4F474745u);
@@ -525,6 +647,37 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             oggettiStrada_.push_back(o);
         }
     }
+}
+
+void Game::leggiPaesaggio(const JsonValue* radice) {
+    // livello.json "paesaggio": {"base": "aperto", "tratti": {"autostrada":
+    // "autostrada", "rettilineo_corto#2": "citta", ...}, "ciuffi": [id],
+    // "cespugli": [id], "alberi": [id], "edifici": [id] (dal piu' alto),
+    // "densita_alberi": 1.0}. Id del catalogo grafico, come oggetti_bordo_strada.
+    paesaggioAttivo_ = false;
+    paesaggioBase_ = Zona::Aperto;
+    paesaggioTratti_.clear();
+    for (auto& v : paesaggioPezzi_) v.clear();
+    paesaggioDensitaAlberi_ = 1.0f;
+    if (!radice || !jsonIsObject(*radice)) return;
+    JsonValue pv;
+    if (!jsonGet(jsonAsObject(*radice), "paesaggio", pv) || !jsonIsObject(pv)) return;
+    const JsonObject& p = jsonAsObject(pv);
+    paesaggioAttivo_ = true;
+    JsonValue v;
+    if (jsonGet(p, "base", v) && jsonIsString(v)) paesaggioBase_ = zonaDaNome(jsonAsString(v), Zona::Aperto);
+    if (jsonGet(p, "tratti", v) && jsonIsObject(v))
+        for (const auto& kv : jsonAsObject(v))
+            if (jsonIsString(kv.second)) paesaggioTratti_[kv.first] = zonaDaNome(jsonAsString(kv.second), paesaggioBase_);
+    static const char* kRuoli[4] = {"ciuffi", "cespugli", "alberi", "edifici"};
+    for (size_t r = 0; r < 4; ++r) {
+        JsonValue a;
+        if (!jsonGet(p, kRuoli[r], a) || !jsonIsArray(a)) continue;
+        for (const JsonValue& id : jsonAsArray(a))
+            if (jsonIsString(id)) paesaggioPezzi_[r].push_back(jsonAsString(id));
+    }
+    if (jsonGet(p, "densita_alberi", v) && jsonIsNumber(v))
+        paesaggioDensitaAlberi_ = std::clamp((f32)jsonAsNumber(v), 0.0f, 3.0f);
 }
 
 void Game::caricaMusica() {
@@ -635,6 +788,20 @@ void Game::init(const std::string& livelloId) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         ren_.impostaStopSprite(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_") + (POSE[k] + 5) + ".sglraw")));
+    // AUTO1 A2: componenti dell'auto (G-A1, @grafico): ruote, luci stop e
+    // fumo, piu' le posizioni per fotogramma di auto_giocatore.json. Caricati
+    // una volta per partita; se un raw o il file mancano vale il disegno
+    // sintetico di oggi, mai un crash.
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaRuotaSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/ruota_") + std::to_string(k + 1) + ".sglraw")));
+    ren_.impostaLuciStopSprite(caricaSpriteRaw(percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/luci_stop.sglraw")));
+    for (i32 k = 0; k < 3; ++k)
+        ren_.impostaFumoSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/fumo_") + std::to_string(k + 1) + ".sglraw")));
+    caricaPuntiComponentiGiocatore(ren_, percorsoDati(
+        "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.json"));
     if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
         struct FrameGiocatore { i32 posa; const char* nome; };
         static const FrameGiocatore AGENTI[] = {
@@ -2074,6 +2241,9 @@ void Game::render() {
     }
     drawMusica();
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
+    // Scena show (personaggio + fumetto): NON si disegnano rettangoli
+    // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).
+    // Si disegnera' solo con gli sprite veri; i gate leggono scenaShow().
 }
 
 void Game::aggiornaSalto(f32 dt) {

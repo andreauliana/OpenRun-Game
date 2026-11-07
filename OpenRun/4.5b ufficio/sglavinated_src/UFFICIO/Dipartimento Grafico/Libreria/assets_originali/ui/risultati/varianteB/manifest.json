@@ -1,0 +1,15 @@
+{
+  "id": "ui_risultati_b",
+  "tipo": "ui",
+  "variante": "B",
+  "descrizione": "schermata risultati variante B - UI 320x224, tema bianco e nero (BOZZA in attesa di approvazione)",
+  "stato": "bozza",
+  "licenza": "CC-BY-4.0",
+  "autore": "@grafico (reparto grafico, progetto Sglavinated)",
+  "url": "interno al progetto: assets_originali/ui/risultati/varianteB/ (disegnato da zero, nessun asset Sega)",
+  "risoluzione": [320, 224],
+  "colori_max": 3,
+  "file": ["risultati_preview.png"],
+  "generato_da": "../TOOLS/disegna_risultati.py",
+  "note": "Mockup schermata risultati tema bianco e nero: 3 colori tutti acromatici (R=G=B) misurati su risultati_preview.png - nero [0,0,0] sfondo, bianco [255,255,255] valori, grigio [160,160,160] etichette e cornice (max 16 consentiti). Dati reali in motore_nuovo/dati/ui/risultati.json (variante B, stato bozza). Font: font/varianteB/font.png. Generato da TOOLS/disegna_risultati.py (R2 punto 3) leggendo risultati.json."
+}

@@ -132,6 +132,35 @@
     "stile_cartellone": "neon",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): guard-rail cromati, lampioni a lama, robot di servizio, pilone cromo. Skyline skyline.futurista gia' presente (pronto, ok Andrea pendente). PNG e raw degli oggetti da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. cromo: si parte in citta' tra grattacieli, autostrada, ponte, poi conifere.",
+    "base": "aperto",
+    "tratti": {
+      "rettilineo_lungo": "citta",
+      "curva_dolce_dx": "periferia",
+      "rettilineo_largo#1": "citta",
+      "curva_larga_sx": "citta",
+      "curva_larga_dx": "periferia",
+      "rettilineo_largo#2": "autostrada",
+      "curva_stretta_sx": "periferia",
+      "curva_dolce_sx": "periferia"
+    },
+    "ciuffi": [
+      "oggetto.lv_04_cromo.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_04_cromo.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_04_cromo.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_04_cromo.edificio_alto",
+      "oggetto.lv_04_cromo.edificio_medio",
+      "oggetto.lv_04_cromo.edificio_basso"
+    ],
+    "densita_alberi": 0.9
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,

@@ -533,6 +533,20 @@
          "nota": "D7: variante C - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
       },
       {
+         "id": "ui.splash",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/splash/splash_avvio.png",
+         "nota": "Schermata splash/avvio (Loading) B/N 320x224, prima bozza R2 punto 3, da approvare da Andrea (LOOP1). Nessun materiale Sega."
+      },
+      {
+         "id": "ui.risultati",
+         "tipo": "ui",
+         "stato": "pronto",
+         "file": "assets_originali/ui/risultati/varianteB/risultati_preview.png",
+         "nota": "Schermata risultati variante B B/N 320x224, R2 punto 3, da approvare da Andrea. Dati in motore_nuovo/dati/ui/risultati.json. Nessun materiale Sega."
+      },
+      {
          "id": "font.antonio",
          "tipo": "font",
          "stato": "approvato",
@@ -2212,6 +2226,62 @@
          "file": "assets_originali/sprite/giocatore_pose/auto_stop_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
          "nota": "Stop accesi per la posa sx4, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_1.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore sinistra vista da dietro, passo 1 di rotazione, 12x10; la destra e' questa specchiata. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega. Posizioni in sprite/giocatore/auto_giocatore.json."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_2.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore passo 2 di rotazione, 12x10. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/ruota_3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_3.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore passo 3 di rotazione, 12x10. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.luci_stop",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/luci_stop.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/luci_stop.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fanale stop acceso 12x4 con riga luminosa, specchiato a destra, sovrapposto in frenata. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/fumo_1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_1.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo scarico/danni passo 1 (compatto), 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/fumo_2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_2.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo passo 2, 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "assets_originali/sprite/giocatore/fumo_3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_3.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo passo 3 (disperso), 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
       }
    ]
 }

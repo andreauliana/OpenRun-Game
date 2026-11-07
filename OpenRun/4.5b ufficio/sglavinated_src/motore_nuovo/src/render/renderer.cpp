@@ -558,7 +558,8 @@ const Sprite* Renderer::risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo
 }
 
 void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle, f32 sollevamentoPx,
-                             bool frena, f32 fumoS, const DanniAuto* danni, i32 posa) {
+                             bool frena, f32 fumoS, const DanniAuto* danni, i32 posa,
+                             f32 distanzaM) {
     // P1 punto 4 + RIV punto 3: sprite vero dell'auto del giocatore dal catalogo
     // auto.giocatore.* (finto 3D alla OutRun). Game sceglie il fotogramma con
     // `posa` (sterzo leggero/forte, salita, discesa); se il fotogramma chiesto
@@ -569,6 +570,11 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     bool specchia = false;
     f32 sterzoResiduo = 0.0f;
     const Sprite* s = risolviPosa(posa, specchia, sterzoResiduo);
+    // AUTO1 A2: rettangolo del fotogramma e componenti da auto_giocatore.json.
+    // Restano a default nel ramo sintetico (li usa solo il fumo, senza punti).
+    i32 x0 = 0, y0 = 0;
+    bool fotogrammaGriglia = false;
+    const PuntiComponenti* pt = nullptr;
     if (s->width > 0) {
         // Sprite vero (AUTO1 A4-A5, Claude 06/11): disegnato a grandezza piena
         // (64x32, scala 1, niente rimpicciolimento a 18 px); l'auto resta
@@ -608,10 +614,61 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         }
         // Sterzo che la posa non mostra (pose mancanti): leggera inclinazione.
         rollAngle -= STERZO_IMBARDATA * sterzoResiduo;
+        // Geometria del disegno (AUTO1 A2): rettangolo del fotogramma e
+        // centro di rotazione, usati sia dai componenti sia dai due rami qui
+        // sotto (dritto e ruotato).
+        x0 = cx - w / 2;
+        y0 = cy - h;
+        const f32 pcx = (f32)cx, pcy = (f32)cy - h * 0.5f;
+        const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
+        // Componenti (ruote, luci stop): valgono per i fotogrammi della
+        // griglia di auto_giocatore.json (64x32, disegno separato); le pose
+        // di Andrea hanno ruote e fanali gia' nella carrozzeria (nota in
+        // auto_giocatore.json) e usano solo il fumo dello scarico.
+        const i32 idxPosa = (i32)(s - giocatoreSprites_);
+        pt = (idxPosa >= 0 && idxPosa < POSA_GIOCATORE_COUNT) ? &punti_[idxPosa] : nullptr;
+        fotogrammaGriglia = pt && pt->validi && s->width == grigliaW_ && s->height == grigliaH_;
+        // Componente centrato su un punto della griglia e ruotato con la
+        // carrozzeria attorno a (pcx, pcy), con lo stesso campionamento
+        // inverso del fotogramma qui sotto; `specchiaC` = lato destro.
+        auto disegnaComponente = [&](const Sprite& cp, f32 gx, f32 gy, bool specchiaC) {
+            if (cp.width <= 0 || cp.height <= 0 || cp.palette.empty()) return;
+            const f32 cw = (f32)cp.width * (f32)scala, ch = (f32)cp.height * (f32)scala;
+            const f32 lx = (f32)x0 + gx / (f32)grigliaW_ * (f32)w - pcx;
+            const f32 ly = (f32)y0 + gy / (f32)grigliaH_ * (f32)h - pcy;
+            const f32 cxs = pcx + co * lx - si * ly;
+            const f32 cys = pcy + si * lx + co * ly;
+            const i32 r = (i32)(0.5f * std::sqrt(cw * cw + ch * ch)) + 1;
+            for (i32 y = (i32)cys - r; y <= (i32)cys + r; ++y)
+                for (i32 x = (i32)cxs - r; x <= (i32)cxs + r; ++x) {
+                    const f32 dx = (f32)x - cxs, dy = (f32)y - cys;
+                    const f32 ul = co * dx + si * dy + cw * 0.5f;
+                    const f32 vl = -si * dx + co * dy + ch * 0.5f;
+                    if (ul < 0.0f || vl < 0.0f || ul >= cw || vl >= ch) continue;
+                    i32 u = (i32)(ul / (f32)scala), v = (i32)(vl / (f32)scala);
+                    if (u < 0 || v < 0 || u >= cp.width || v >= cp.height) continue;
+                    if (specchiaC) u = cp.width - 1 - u;
+                    const u32 col = cp.palette[(u32)cp.pixels[(i32)v * cp.width + u] % cp.palette.size()];
+                    if ((col >> 24) == 0) continue;
+                    fb_.put(x, y, col);
+                }
+        };
+        // Ruote del componente SOTTO la carrozzeria: il passo 1-2-3 avanza
+        // con la distanza percorsa (a ferme non cambia), la destra e' la
+        // sinistra specchiata. Sul fotogramma della griglia la carrozzeria
+        // le ricopre dove sono gia' disegnate.
+        if (fotogrammaGriglia) {
+            const i32 passo = distanzaM > 0.0f ? ((i32)(distanzaM * 2.0f) % 3) : 0;
+            const Sprite& ruota = ruotaSprites_[passo];
+            if (ruota.width > 0) {
+                disegnaComponente(ruota, pt->ruotaSx[0], pt->ruotaSx[1], false);
+                disegnaComponente(ruota, pt->ruotaDx[0], pt->ruotaDx[1], true);
+            }
+        }
         // Stop accesi: disegno della posa con i soli fanali accesi (stessa misura).
         const Sprite* stop = nullptr;
         if (frena) {
-            const Sprite* st = &stopSprites_[s - giocatoreSprites_];
+            const Sprite* st = &stopSprites_[idxPosa];
             if (st->width == s->width && st->height == s->height) stop = st;
         }
         auto grezzo = [&](const Sprite* sp, i32 tx, i32 ty) -> u32 {
@@ -651,7 +708,6 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             return col;
         };
         if (std::abs(rollAngle) < 0.01f) {
-            const i32 x0 = cx - w / 2, y0 = cy - h;
             for (i32 y = 0; y < h; ++y)
                 for (i32 x = 0; x < w; ++x) {
                     u32 col = texel((i32)(x / scala), (i32)(y / scala));
@@ -661,8 +717,7 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         } else {
             // Rotazione con campionamento inverso: per ogni pixel dello schermo
             // nel quadrato che contiene l'auto ruotata si cerca il texel.
-            const f32 co = std::cos(rollAngle), si = std::sin(rollAngle);
-            const f32 pcx = (f32)cx, pcy = (f32)cy - h * 0.5f;
+            // (co, si, pcx, pcy sono calcolati sopra per i componenti.)
             const i32 r = (i32)(0.5f * std::sqrt((f32)(w * w + h * h))) + 1;
             for (i32 y = (i32)pcy - r; y <= (i32)pcy + r; ++y)
                 for (i32 x = (i32)pcx - r; x <= (i32)pcx + r; ++x) {
@@ -674,6 +729,14 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                     if ((col >> 24) == 0) continue;
                     fb_.put(x, y, col);
                 }
+        }
+        // Luci stop del componente (AUTO1 A2): quando la posa non ha la
+        // variante con i fanali accesi, il fanale del @grafico sui punti
+        // della griglia, destra specchiata. Ordine: ombra, ruote, carrozzeria,
+        // stop, fumo.
+        if (fotogrammaGriglia && frena && !stop && luciStopSprite_.width > 0) {
+            disegnaComponente(luciStopSprite_, pt->fanaleSx[0], pt->fanaleSx[1], false);
+            disegnaComponente(luciStopSprite_, pt->fanaleDx[0], pt->fanaleDx[1], true);
         }
     } else {
         // Sagoma sintetica (nessun asset Sega): corpo, abitacolo, ruote, ombra.
@@ -731,7 +794,9 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
     if (fumoS >= 0.0f) {
         // Fumo delle gomme nel primo secondo di frenata: uno sbuffo ogni 0,1 s
         // per ruota posteriore, sale, si allarga e si dirada (pixel a
-        // scacchiera, niente trasparenze).
+        // scacchiera, niente trasparenze). AUTO1 A2: con i componenti di
+        // auto_giocatore.json lo sbuffo e' il fotogramma fumo_1..3 sullo
+        // scarico; senza componenti vale il disegno sintetico di oggi.
         constexpr f32 OGNI_S = 0.1f, VITA_S = 0.6f, FUMO_S = 1.0f;
         for (i32 n = 0; (f32)n * OGNI_S <= std::min(fumoS, FUMO_S); ++n) {
             const f32 eta = fumoS - (f32)n * OGNI_S;
@@ -739,13 +804,37 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const f32 k = eta / VITA_S;
             const i32 r = 2 + (i32)(k * 6.0f);
             for (i32 lato = -1; lato <= 1; lato += 2) {
-                const i32 px = cx + lato * (13 + (i32)(k * 10.0f)) + ((n & 1) ? 2 : -2);
-                const i32 py = cy - 1 - (i32)(k * 12.0f);
-                const u32 col = k < 0.4f ? 0xFFE8E8E8u : 0xFFB8B8C0u;
-                for (i32 dy = -r; dy <= r; ++dy)
-                    for (i32 dx = -r; dx <= r; ++dx)
-                        if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
-                            fb_.put(px + dx, py + dy, col);
+                // Punto di partenza: lo scarico della griglia (fotogrammi con
+                // componenti) oppure la posizione di sempre (cx +/- 13).
+                f32 baseX = (f32)cx + (f32)lato * 13.0f, baseY = (f32)cy - 1.0f;
+                if (fotogrammaGriglia && pt) {
+                    const f32* sc = lato < 0 ? pt->scaricoSx : pt->scaricoDx;
+                    baseX = (f32)x0 + sc[0] / (f32)grigliaW_ * (f32)w;
+                    baseY = (f32)y0 + sc[1] / (f32)grigliaH_ * (f32)h;
+                }
+                const i32 px = (i32)(baseX + (f32)lato * (k * 10.0f)) + ((n & 1) ? 2 : -2);
+                const i32 py = (i32)(baseY - k * 12.0f);
+                const Sprite& fs = fumoSprites_[(n + (lato > 0 ? 1 : 0)) % 3];
+                // Solo sui fotogrammi della griglia degli agenti: le pose di
+                // Andrea tengono il fumo di sempre (REGOLE_AUTO_GIOCATORE.md).
+                if (fotogrammaGriglia && fs.width > 0 && fs.height > 0 && !fs.palette.empty()) {
+                    // Fotogramma del @grafico, centrato sullo sbuffo, che si
+                    // dirada come il disegno sintetico mentre l'eta' avanza.
+                    const i32 hx = fs.width / 2, hy = fs.height / 2;
+                    for (i32 yy = 0; yy < fs.height; ++yy)
+                        for (i32 xx = 0; xx < fs.width; ++xx) {
+                            if (k >= 0.5f && ((px + xx + py + yy) & 1) != 0) continue;
+                            const u32 col = fs.palette[(u32)fs.pixels[yy * fs.width + xx] % fs.palette.size()];
+                            if ((col >> 24) == 0) continue;
+                            fb_.put(px - hx + xx, py - hy + yy, col);
+                        }
+                } else {
+                    const u32 col = k < 0.4f ? 0xFFE8E8E8u : 0xFFB8B8C0u;
+                    for (i32 dy = -r; dy <= r; ++dy)
+                        for (i32 dx = -r; dx <= r; ++dx)
+                            if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
+                                fb_.put(px + dx, py + dy, col);
+                }
             }
         }
     }
@@ -960,18 +1049,18 @@ void Renderer::drawHudDati(const HudDati& d) {
     auto centro = [this](i32 y, const char* t, i32 scala) {
         drawTesto((Framebuffer::WIDTH - larghezzaTesto(t, scala)) / 2, y, t, 0xFFFFFFFFu, scala);
     };
-    if (d.tempoScaduto) centro(96, "TEMPO SCADUTO", 2);
+    if (d.tempoScaduto) centro(96, "TIME UP", 2);
     else if (d.arrivo) {
-        centro(70, "ARRIVO", 3);
-        std::snprintf(buf, sizeof(buf), "POSIZIONE %d/%d", d.posizione, d.concorrenti);
+        centro(70, "GOAL", 3);
+        std::snprintf(buf, sizeof(buf), "POS %d/%d", d.posizione, d.concorrenti);
         centro(100, buf, 1);
     } else if (d.tempoExtra > 0) {
-        if ((d.frame / 8) % 2 == 0) centro(70, "TEMPO EXTRA", 2);
+        if ((d.frame / 8) % 2 == 0) centro(70, "TIME EXTRA", 2);
         std::snprintf(buf, sizeof(buf), "+%d", d.tempoExtra);
         centro(92, buf, 2);
     } else if (d.bivio && (d.frame / 15) % 2 == 0) {
-        drawTesto(16, 112, "<< SINISTRA", 0xFFFFFFFFu, 1);
-        drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("DESTRA >>"), 112, "DESTRA >>", 0xFFFFFFFFu, 1);
+        drawTesto(16, 112, "<< LEFT", 0xFFFFFFFFu, 1);
+        drawTesto(Framebuffer::WIDTH - 16 - larghezzaTesto("RIGHT >>"), 112, "RIGHT >>", 0xFFFFFFFFu, 1);
     }
     // Fuori strada: nessuna scritta (Andrea 29/10, ridondante): lo dicono gia'
     // l'erba, il sobbalzo e le scintille.

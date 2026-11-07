@@ -1,6 +1,6 @@
 # Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)
 
-Aggiornato: 2026-11-06 09:16 — 347 file in assets_originali/.
+Aggiornato: 2026-11-07 07:42 — 363 file in assets_originali/.
 
 ## Cosa serve per il primo livello giocabile
 
@@ -22,17 +22,17 @@ Aggiornato: 2026-11-06 09:16 — 347 file in assets_originali/.
 
 | Categoria | File | PNG | Byte | Con avvisi |
 |---|---|---|---|---|
-| (radice) | 6 | 0 | 124933 | 0 |
+| (radice) | 6 | 0 | 132076 | 0 |
 | font | 2 | 0 | 37761 | 0 |
 | palette | 9 | 3 | 7801 | 0 |
 | ricerca | 6 | 0 | 12435 | 0 |
 | scenari | 222 | 171 | 122733 | 135 |
 | skyline | 7 | 4 | 19101 | 0 |
 | sponsor | 31 | 21 | 63907 | 9 |
-| sprite | 43 | 38 | 25871 | 4 |
+| sprite | 59 | 53 | 33362 | 15 |
 | ui | 21 | 8 | 66790 | 4 |
 
-## Avvisi (152)
+## Avvisi (163)
 
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/palette.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/palette.png
 - `assets_originali/scenari/lv_01_neon/scenario_01_01_varianteA/skyline.png`: duplicato_di:assets_originali/scenari/lv_01_neon/scenario_01_01_varianteB/skyline.png
@@ -114,7 +114,7 @@ Aggiornato: 2026-11-06 09:16 — 347 file in assets_originali/.
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_freccia.png`: duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_freccia.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_panchina_cromata.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_panchina_cromata.png
 - `assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png`: minuscolo_probabile_segnaposto, duplicato_di:assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_segnale_atomico.png
-- ... altri 72 nel JSON
+- ... altri 83 nel JSON
 
 ## Scelte di Andrea in uso
 

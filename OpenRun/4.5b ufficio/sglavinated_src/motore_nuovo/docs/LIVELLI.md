@@ -54,6 +54,37 @@ tappa con rami, quindi quelle tappe devono finire con un rettilineo. Il gate
 `prova_gate <out> lv_01_neon gara` percorre le 4 combinazioni di scelte. Il flusso completo
 (intro, menu, finali, risultati) e' proposto in `FLUSSO_GIOCO.md`.
 
+## Paesaggio a zone (Andrea 06/11)
+
+Gli oggetti ai lati non sono piu' sparsi a caso: seguono la zona di ogni tratto
+(src/game/paesaggio.cpp). Campo `paesaggio` di livello.json:
+
+```json
+"paesaggio": {
+  "base": "aperto",
+  "tratti": { "rettilineo_largo": "citta", "rettilineo_corto#2": "periferia" },
+  "ciuffi": ["oggetto.<lv>.ciuffo"], "cespugli": ["oggetto.<lv>.cespuglio"],
+  "alberi": ["oggetto.<lv>.albero"],
+  "edifici": ["oggetto.<lv>.edificio_alto", "oggetto.<lv>.edificio_medio", "oggetto.<lv>.edificio_basso"],
+  "densita_alberi": 1.0
+}
+```
+
+- Zone: `aperto` (erba vicino al bordo, cespugli, alberi a macchie), `periferia`
+  (arredo del tema ogni 1600 come prima, qualche casa lontana), `citta` (file di
+  palazzi vicino alla strada, lampioni a coppie; ai capi della zona si diradano),
+  `autostrada` (lampioni a ritmo regolare, poca erba), `nessuna`.
+- Tratti non elencati: `autostrada` e `citta` hanno la loro zona, ponte e rampe
+  nessuna (il ponte resta aperto sull'acqua), gli altri la `base`.
+  `nome#2` = la seconda volta che il tratto compare nel tracciato.
+- Curve strette (|curva| >= 0.6): cartello a freccia sul lato esterno ogni 2000 unita'.
+- Arredo del tema (`tema_grafico.oggetti_bordo_strada`): gli sprite alti almeno
+  96 px fanno da lampioni, gli altri da arredo basso.
+- Senza il campo `paesaggio` il livello usa il posizionamento sparso di prima.
+- Sprite segnaposto: `UFFICIO/Dipartimento Grafico/TOOLS/disegna_paesaggio.py`
+  (non sovrascrive mai un PNG esistente). Andrea li ridisegna con lo stesso nome e
+  la stessa misura, poi rilancia lo strumento per aggiornare i raw.
+
 ## Note di conformita
 
 - Regola 16: i 3 livelli usano 3 stili diversi (synthwave/C-wave, sci-fi anni '50, psichedelico/cannabinoidi); tutte le varianti dell'albero di tappe vanno considerate, ciascuna con stile diverso (l'albero completo, default 5 tappe/bivi, e' definito nel blocco FED/D3; questi 3 sono i livelli di prova).

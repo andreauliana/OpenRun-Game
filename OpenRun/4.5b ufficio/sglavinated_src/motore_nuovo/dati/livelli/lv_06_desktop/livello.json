@@ -134,6 +134,32 @@
     "stile_cartellone": "foglie",
     "nota": "id di assets_originali/CATALOGO_GRAFICO.json; oggetti propri variante A (grafico): pali con cavi, case-computer, delfini di cartone, icona cartella. Skyline e PNG/raw da disegnare/convertire (python3 non disponibile questo turno); stati catalogo da portare a pronto dopo ok Andrea."
   },
+  "paesaggio": {
+    "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. collina verde: prati e alberi, una citta' a finestre sul rettilineo largo.",
+    "base": "aperto",
+    "tratti": {
+      "rettilineo_lungo#1": "periferia",
+      "rettilineo_largo": "citta",
+      "curva_larga_sx": "citta",
+      "curva_larga_dx": "periferia",
+      "rettilineo_lungo#2": "periferia"
+    },
+    "ciuffi": [
+      "oggetto.lv_06_desktop.ciuffo"
+    ],
+    "cespugli": [
+      "oggetto.lv_06_desktop.cespuglio"
+    ],
+    "alberi": [
+      "oggetto.lv_06_desktop.albero"
+    ],
+    "edifici": [
+      "oggetto.lv_06_desktop.edificio_alto",
+      "oggetto.lv_06_desktop.edificio_medio",
+      "oggetto.lv_06_desktop.edificio_basso"
+    ],
+    "densita_alberi": 1.2
+  },
   "cartelloni_sponsor": [
     {
       "segmento": 0,
