@@ -6,6 +6,10 @@ Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel check
 
 Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, salti, inclinazione, arrivo) sono in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente le modifica: niente cambi a quei valori, a quel codice o ai file in `giocatore_pose/`. Andrea ridisegna l'auto a mano in Pixelorama.
 
+## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
+
+Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
+
 ## Uso nel ciclo v4.6
 
 - Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
