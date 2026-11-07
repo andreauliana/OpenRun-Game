@@ -67,28 +67,13 @@
     {
       "id": "giri",
       "tipo": "barra",
-      "nota": "contagiri: 22 tacche da 3 px; spente a puntini, le ultime nel colore_bordo (limite)",
+      "nota": "contagiri: 29 tacche da 2 px che crescono verso destra (barra_h -> barra_h+2, allineate in basso); colori neon dello spettro, punta bianca, ultime tacche gialle (limite) che lampeggiano al massimo; spente = filo scuro",
       "barra_pos": [
         8,
         31
       ],
-      "barra_w": 87,
-      "barra_h": 2,
-      "colore_bordo": [
-        255,
-        40,
-        180
-      ],
-      "colore_riempimento": [
-        235,
-        235,
-        235
-      ],
-      "colore_label": [
-        110,
-        110,
-        120
-      ]
+      "barra_w": 86,
+      "barra_h": 2
     },
     {
       "id": "tempo",
@@ -164,27 +149,17 @@
     {
       "id": "tappe",
       "tipo": "barra",
-      "nota": "un segmento per tappa: fatte piene, in corso lampeggia, da fare a puntini",
+      "nota": "un segmento per tappa: fatte piene, in corso lampeggia, da fare un filo scuro",
       "barra_pos": [
         225,
         31
       ],
       "barra_w": 87,
       "barra_h": 2,
-      "colore_bordo": [
-        235,
-        235,
-        235
-      ],
       "colore_riempimento": [
         235,
         235,
         235
-      ],
-      "colore_label": [
-        110,
-        110,
-        120
       ]
     },
     {
@@ -205,7 +180,7 @@
       "nota": "solo quando lo show e' in scena, sotto il gruppo di destra"
     }
   ],
-  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'testo' con label/valore = etichetta (font mini 3x5) in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala' (0 = font mini); \"allinea\": \"destra\" = le x sono il bordo destro del testo (etichetta e valore); tipo 'barra' = riga sottile senza cornice: tacche da 3 px con 1 px d'aria (giri) o un segmento per tappa (tappe), accese piene, spente a puntini. Ogni testo ha un'ombra nera di 1 px.",
+  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'testo' con label/valore = etichetta (font mini 3x5) in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala' (0 = font mini); \"allinea\": \"destra\" = le x sono il bordo destro del testo (etichetta e valore); tipo 'barra' = riga sottile senza cornice: contagiri a tacche (giri) o un segmento per tappa (tappe); accese piene, spente un filo scuro. Ogni testo ha un'ombra nera di 1 px.",
   "griglia": {
     "gruppi_x": [
       [

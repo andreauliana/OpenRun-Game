@@ -965,31 +965,57 @@ void Renderer::drawHudDati(const HudDati& d) {
     // Niente box ne' cornici: solo testo con ombra di 1 px, la scena resta libera.
     char buf[32];
     for (const HudElemento& e : hud_) {
+        if (e.tipo == "barra" && e.id == "giri") {
+            // Contagiri (Andrea 07/11): tacche da 2 px con 1 px d'aria che
+            // crescono verso destra (da barra_h a barra_h + 2 px, allineate in
+            // basso), colori neon dello spettro (ciano, viola, magenta, passaggi
+            // a trama Bayer), punta bianca, zona limite gialla che lampeggia al
+            // massimo. Tacche spente: solo un filo scuro sulla riga di fondo.
+            static constexpr u32 SCALA[3] = {0xFF00E6FFu, 0xFF963CFFu, 0xFFFF28B4u};
+            static constexpr u8 BAYER[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
+            const f32 pieno = d.giri < 0.0f ? 0.0f : (d.giri > 1.0f ? 1.0f : d.giri);
+            const i32 n = std::max(2, (e.w + 1) / 3);
+            const i32 limite = n - std::max(1, n / 6);
+            const i32 accese = (i32)(pieno * (f32)n + 0.5f);
+            const bool alMassimo = pieno > 0.92f;
+            const i32 fondo = e.y + e.h - 1;
+            for (i32 i = 0; i < n; ++i) {
+                const i32 x = e.x + i * 3;
+                const i32 alto = e.h + (i * 3) / n; // 2, 3, 4 px
+                if (i >= accese) {
+                    fb_.fillRect(x, fondo, x + 1, fondo, i >= limite ? 0xFF5A2048u : 0xFF3C3C54u);
+                    continue;
+                }
+                fb_.fillRect(x + 1, fondo - alto + 2, x + 2, fondo + 1, 0xFF000000u); // ombra
+                for (i32 y = fondo - alto + 1; y <= fondo; ++y)
+                    for (i32 k = 0; k < 2; ++k) {
+                        u32 col;
+                        if (i == accese - 1 && !alMassimo) col = 0xFFFFFFFFu; // punta
+                        else if (i >= limite) col = alMassimo && (d.frame / 3) % 2 ? 0xFFFFFFFFu : 0xFFE6FF32u;
+                        else {
+                            const f32 t = (f32)i / (f32)std::max(1, limite - 1) * 2.0f; // 0..2 lungo la scala
+                            const i32 c = std::min(1, (i32)t);
+                            const f32 s = ((f32)BAYER[y & 3][(x + k) & 3] + 0.5f) / 16.0f;
+                            col = (t - (f32)c) > s ? SCALA[c + 1] : SCALA[c];
+                        }
+                        fb_.put(x + k, y, col);
+                    }
+            }
+            continue;
+        }
         if (e.tipo == "barra") {
-            // Riga sottile in fondo al gruppo, senza cornice: tacche da 3 px con
-            // 1 px d'aria (contagiri) o un segmento per tappa (tappe); spente a
-            // puntini, accese piene. Contagiri: le ultime tacche nel colore del limite.
-            const bool tappe = e.id == "tappe";
-            if (tappe && !d.gara) continue;
-            const i32 n = tappe ? std::max(1, d.tappe) : std::max(1, (e.w + 1) / 4);
+            // Tappe: un segmento per tappa sulla riga di fondo, senza cornice.
+            // Fatte piene, in corso lampeggia piano, da fare un filo scuro.
+            if (!d.gara) continue;
+            const i32 n = std::max(1, d.tappe);
             const i32 passo = (e.w + 1) / n, largo = passo - 1;
-            f32 pieno = tappe ? 0.0f : d.giri;
-            pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
-            const i32 accese = tappe ? d.tappa : (i32)(pieno * (f32)n + 0.5f);
-            const i32 limite = tappe ? n : n - std::max(1, n / 6);
+            const i32 fondo = e.y + e.h - 1;
             for (i32 i = 0; i < n; ++i) {
                 const i32 x = e.x + i * passo;
-                const u32 col = i >= limite ? e.coloreBordo : e.coloreRiempimento;
-                // Tappa in corso: lampeggia piano tra pieno e puntini.
-                const bool corrente = tappe && i == d.tappa - 1 && (d.frame / 30) % 2;
-                if (i < accese && !corrente) {
-                    fb_.fillRect(x + 1, e.y + 1, x + largo, e.y + e.h, 0xFF000000u); // ombra
-                    fb_.fillRect(x, e.y, x + largo - 1, e.y + e.h - 1, col);
-                } else {
-                    for (i32 y = e.y; y < e.y + e.h; ++y)
-                        for (i32 k = 0; k < largo; ++k)
-                            if (((x + k + y) & 1) == 0) fb_.put(x + k, y, i >= limite ? e.coloreBordo : e.coloreLabel);
-                }
+                const bool spenta = i >= d.tappa || (i == d.tappa - 1 && (d.frame / 30) % 2);
+                if (spenta) { fb_.fillRect(x, fondo, x + largo - 1, fondo, 0xFF3C3C54u); continue; }
+                fb_.fillRect(x + 1, e.y + 1, x + largo, e.y + e.h, 0xFF000000u); // ombra
+                fb_.fillRect(x, e.y, x + largo - 1, fondo, e.coloreRiempimento);
             }
             continue;
         }
