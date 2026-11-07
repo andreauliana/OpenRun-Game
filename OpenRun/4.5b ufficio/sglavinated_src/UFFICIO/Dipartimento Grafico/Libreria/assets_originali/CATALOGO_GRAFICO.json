@@ -2622,7 +2622,7 @@
          "livelli": [
             "lv_06_desktop"
          ],
-         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       },
       {
          "id": "oggetto.lv_06_desktop.cespuglio",
@@ -2633,7 +2633,7 @@
          "livelli": [
             "lv_06_desktop"
          ],
-         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       },
       {
          "id": "oggetto.lv_06_desktop.albero",
@@ -2644,7 +2644,7 @@
          "livelli": [
             "lv_06_desktop"
          ],
-         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       },
       {
          "id": "oggetto.lv_06_desktop.edificio_alto",
@@ -2806,6 +2806,39 @@
             "lv_06_desktop"
          ],
          "nota": "Dintorni del ponte (07/11): segnaposto 64x32, motoscafo che naviga avanti e indietro sul mare sotto il ponte, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero_pino",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_albero_pino.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero_pino.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero_fiori",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_albero_fiori.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero_fiori.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.cespuglio_fiori",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_cespuglio_fiori.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/cespuglio_fiori.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       }
    ]
 }

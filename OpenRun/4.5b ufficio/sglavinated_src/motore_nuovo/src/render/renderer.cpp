@@ -22,6 +22,7 @@ constexpr u8 BAYER4[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 
 Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     // Preallocato una volta: zero allocazioni per frame nel ciclo di gioco.
     projs_.reserve(Road::DRAW_DIST);
+    copertura_.reserve((size_t)Road::DRAW_DIST * 4);
 }
 
 i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
@@ -88,6 +89,14 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         std::sort(terraOrdine_.begin(), terraOrdine_.end(),
                   [](const auto& a, const auto& b) { return a.first > b.first; });
     }
+    // Copertura: per ogni campione, la riga piu' alta raggiunta dalla strada
+    // piu' vicina (da li' in giu' lo schermo e' gia' strada o terreno vicino).
+    copertura_.resize(projs_.size());
+    f32 cop = (f32)Framebuffer::HEIGHT;
+    for (size_t k = 0; k < projs_.size(); ++k) {
+        copertura_[k] = cop;
+        cop = std::min(cop, projs_[k].screenY);
+    }
     size_t prossimoTerra = 0;
     for (size_t i = projs_.size() - 1; i > 0; --i) {
         const auto& vicino = projs_[i - 1];
@@ -97,6 +106,12 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         if (lontano.screenY < vicino.screenY) {
             // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
             drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+            // Ponte e rampe: il fianco dell'impalcato sotto il bordo vicino
+            // (le fette piu' vicine lo coprono dove la strada passa davanti).
+            // Solo da vicino: lontano, visto di taglio, sembrava una sbarra scura.
+            if (vicino.sospeso && lontano.sospeso && vicino.worldZ < VIADOTTO_VISTA_Z &&
+                vicino.screenY <= copertura_[i - 1] + 1.0f)
+                drawFianco(vicino);
         }
         // Oggetti a terra in questa fetta: sopra il loro terreno, sotto la
         // strada piu' vicina (disegnata dopo).
@@ -113,16 +128,25 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             drawOggettoTerra(o, cx, base, scl);
         }
         if (!confine) continue;
+        // Andrea 07/11 sera: all'uscita dal ponte comparivano rettangoli neri.
+        // Erano pile di tratti nascosti dietro la cresta della discesa: il
+        // pittore dal lontano al vicino non le copriva. Una struttura si
+        // disegna solo se la sua base e' visibile (sopra la strada piu' vicina),
+        // e le colonne si tagliano alla riga dove comincia la strada vicina.
+        const f32 coperto = copertura_[i - 1];
+        const bool visibile = vicino.screenY <= coperto + 1.0f;
         // Piloni del ponte: al confine fra due segmenti, ogni PILONE_OGNI_SEG,
         // dai bordi dell'impalcato giu' fino all'acqua.
-        if (vicino.acqua && lontano.acqua && (lontano.index % PILONE_OGNI_SEG) == 0)
-            drawPilone(vicino);
+        if (vicino.acqua && lontano.acqua && (lontano.index % PILONE_OGNI_SEG) == 0) {
+            if (visibile) drawPilone(vicino);
+        }
         // Rampe del ponte: pile del viadotto fino al terreno basso.
-        else if (vicino.sospeso && lontano.sospeso && !lontano.acqua && (lontano.index % PILA_OGNI_SEG) == 0)
+        else if (visibile && vicino.worldZ < VIADOTTO_VISTA_Z && vicino.sospeso && lontano.sospeso && !lontano.acqua &&
+                 (lontano.index % PILA_OGNI_SEG) == 0)
             drawPila(vicino);
-        if (lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
+        if (visibile && lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
             drawLuciTerra(vicino);
-        if (lontano.portale) drawPortale(vicino, lontano.portale);
+        if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
     }
     drawRoadsideMarkers(playerZ);
 }
@@ -387,25 +411,36 @@ void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 s
     }
 }
 
-void Renderer::drawPila(const Road::ProjectedSeg& p) {
-    // Rampe del ponte (Andrea 07/11): l'impalcato poggia su pile che scendono
-    // fino al terreno basso (prato, spiaggia, mare): si capisce che si sale.
-    const i32 deck = (i32)p.screenY;
-    const i32 base = std::min((i32)p.acquaY, Framebuffer::HEIGHT - 1);
-    if (base <= deck + 2) return;
+void Renderer::drawFianco(const Road::ProjectedSeg& p) {
+    // Spessore dell'impalcato (Andrea 07/11 sera, transizioni pulite): una
+    // fascia scura sotto la strada con il filo di luce del tema, cosi' il
+    // viadotto in curva si legge come una struttura unica.
+    const i32 cy = (i32)p.screenY;
+    const i32 terra = std::min((i32)p.acquaY, Framebuffer::HEIGHT) - 1;
+    if (cy + 1 > terra) return;
     const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
-    const i32 w = std::clamp((i32)(pxUnita * 180.0f), 1, 40);
-    const i32 trave = std::max(1, (i32)(p.scale * 112.0f * 160.0f));
-    for (f32 lato : {-0.72f, 0.72f}) {
-        const i32 cx = (i32)(p.screenX + hw * lato);
-        if (cx + w < 0 || cx - w >= Framebuffer::WIDTH) continue;
-        fb_.fillRect(cx - w / 2, deck, cx + w / 2, base, 0xFF34343Eu);
-        fb_.fillRect(cx - w / 2, deck, cx - w / 2 + std::max(0, w / 3), base, 0xFF6A6A7Au);
-    }
-    // Pulvino sotto l'impalcato e filo di luce del tema.
-    fb_.fillRect((i32)(p.screenX - hw * 0.95f), deck, (i32)(p.screenX + hw * 0.95f), deck + trave, 0xFF26262Eu);
-    if (w >= 3) fb_.hline((i32)(p.screenX - hw * 0.95f), (i32)(p.screenX + hw * 0.95f), deck + trave, tema_.rumbleAlt);
+    const i32 th = std::max(1, (i32)(p.scale * 112.0f * 260.0f));
+    const i32 y1 = std::min(cy + th, terra);
+    const i32 x0 = (i32)(p.screenX - hw), x1 = (i32)(p.screenX + hw);
+    fb_.fillRect(x0, cy + 1, x1, y1, 0xFF4A4A58u);
+    if (th >= 3 && y1 == cy + th) fb_.hline(x0, x1, y1, tema_.rumbleAlt);
+}
+
+void Renderer::drawPila(const Road::ProjectedSeg& p) {
+    // Rampe del ponte (Andrea 07/11): l'impalcato poggia su una pila centrale
+    // che scende fino al terreno basso (prato, spiaggia, mare). Una sola
+    // colonna chiara, senza travi: vista di lato si legge come un viadotto,
+    // non come una fila di portali scuri.
+    const i32 deck = (i32)p.screenY;
+    const i32 base = std::min((i32)p.acquaY, Framebuffer::HEIGHT - 1);
+    if (base <= deck + 3) return; // impalcato quasi a terra: niente moncherini
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const i32 w = std::clamp((i32)(pxUnita * 300.0f), 1, 36);
+    const i32 cx = (i32)p.screenX;
+    if (cx + w < 0 || cx - w >= Framebuffer::WIDTH) return;
+    fb_.fillRect(cx - w / 2, deck, cx + (w - 1) / 2, base, 0xFF5E5E6Cu);
+    if (w >= 3) fb_.fillRect(cx - w / 2, deck, cx - w / 2 + w / 3, base, 0xFF8E8E9Eu); // lato in luce
 }
 
 void Renderer::drawLuciTerra(const Road::ProjectedSeg& p) {
@@ -430,7 +465,7 @@ void Renderer::drawLuciTerra(const Road::ProjectedSeg& p) {
     }
 }
 
-void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo) {
+void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
     // Strutture sopra la strada nei punti di passaggio (Andrea 07/11:
     // "transizioni dei diversi tracciati piu' interessanti"). Disegnate a
     // codice, pochi colori + il colore del tema, come le torri del ponte.
@@ -438,7 +473,9 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo) {
     const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 pxY = p.scale * 112.0f;
     const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * std::max(p.carr.fattore, 0.5f);
-    const i32 terra = (i32)p.screenY;
+    // Piedi delle colonne nascosti dietro una cresta: si tagliano dove
+    // comincia la strada piu' vicina; se e' nascosto anche il portale, niente.
+    const i32 terra = std::min((i32)p.screenY, (i32)coperto);
     const bool lampo = ((i32)(tempoS_ * 2.5f) & 1) != 0;
     auto colonna = [&](i32 cx, i32 w, i32 cima, u32 scuro, u32 luce) {
         fb_.fillRect(cx - w / 2, cima, cx + (w - 1) / 2, terra, scuro);

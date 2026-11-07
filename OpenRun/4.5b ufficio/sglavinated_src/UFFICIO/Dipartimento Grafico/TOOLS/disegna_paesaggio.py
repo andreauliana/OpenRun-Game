@@ -298,6 +298,8 @@ def main():
             "edificio_basso": edificio(s, rnd, 96, 64, 9, "edificio_basso"),
         }
         for nome, tela in pezzi.items():
+            if livello == "lv_06_desktop" and nome in ("ciuffo", "cespuglio", "albero"):
+                continue  # stile Windows 98: TOOLS/disegna_paesaggio_w98.py (07/11)
             salva(tela, base / f"obj_{nome}.png", RAW / livello / f"{nome}.sglraw", forza)
     comuni = SCENARI / "comuni" / "oggetti"
     salva(freccia(True), comuni / "freccia_curva_dx.png", RAW / "comuni" / "freccia_curva_dx.sglraw", forza)

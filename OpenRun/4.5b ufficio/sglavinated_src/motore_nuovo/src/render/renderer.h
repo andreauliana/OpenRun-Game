@@ -321,12 +321,14 @@ private:
     void drawRoadsideMarkers(f32 playerZ);
     // Dintorni del ponte e transizioni (Andrea 07/11).
     void drawPila(const Road::ProjectedSeg& p);                 // pila del viadotto sotto le rampe
-    void drawPortale(const Road::ProjectedSeg& p, u8 tipo);     // porta del ponte, autostrada, citta'
+    void drawFianco(const Road::ProjectedSeg& p);               // spessore dell'impalcato
+    void drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto);     // porta del ponte, autostrada, citta'
     void drawLuciTerra(const Road::ProjectedSeg& p);            // luci di avvicinamento a terra
     void drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa);
     // Oggetto a terra del ponte alla profondita' zr: base e centro gia' proiettati.
     void drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl);
     static constexpr i32 PILA_OGNI_SEG = 12;        // pile del viadotto sotto le rampe
+    static constexpr f32 VIADOTTO_VISTA_Z = 9000.0f; // pile e fianco dell'impalcato solo entro questa distanza
     static constexpr i32 LUCI_OGNI_SEG = 3;         // una coppia di luci a terra ogni 3 segmenti
     static constexpr i32 RIVA_ACQUA = Road::RIVA_ACQUA;
     static constexpr i32 RIVA_SABBIA = Road::RIVA_SABBIA;
@@ -334,6 +336,7 @@ private:
     f32 tempoS_ = 0.0f;
     const std::vector<SpriteInstance>* oggettiTerra_ = nullptr;
     std::vector<std::pair<f32, const SpriteInstance*>> terraOrdine_; // riusato (zero alloc a regime)
+    std::vector<f32> copertura_; // per campione: riga piu' alta della strada piu' vicina (riusato)
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s);
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo
