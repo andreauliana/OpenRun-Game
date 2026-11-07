@@ -7,6 +7,5 @@
   "filtro_crt": false,
   "ciglio_rallenta": 0.7,
   "ciglio_memoria_s": 6.0,
-  "ciglio_crash_velocita": 0.45,
-  "rivale_urti_ko": 4
+  "ciglio_crash_velocita": 0.45
 }
