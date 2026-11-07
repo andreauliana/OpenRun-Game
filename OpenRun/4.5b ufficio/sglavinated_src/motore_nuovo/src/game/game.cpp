@@ -995,7 +995,6 @@ void Game::leggiHud() {
         e.testo = stringa(o, "testo");
         e.x = numero(o, "x", 0); e.y = numero(o, "y", 0);
         e.w = numero(o, "w", 0); e.h = numero(o, "h", 0);
-        e.spessore = numero(o, "spessore", numero(o, "spessore_bordo", 2));
         coppia(o, "barra_pos", e.x, e.y);
         e.w = numero(o, "barra_w", e.w); e.h = numero(o, "barra_h", e.h);
         coppia(o, "label_pos", e.lx, e.ly);
@@ -1004,12 +1003,12 @@ void Game::leggiHud() {
         e.scalaValore = numero(o, "scala_valore", 1);
         e.scala = numero(o, "scala", 1);
         e.scalaLabel = numero(o, "scala_label", 0);
-        e.oscuraSfondo = numero(o, "oscura_sfondo", 0);
+        e.destra = stringa(o, "allinea") == "destra";
         rgb(o, "colore", e.colore);
         rgb(o, "colore_label", e.coloreLabel);
         rgb(o, "colore_bordo", e.coloreBordo);
         rgb(o, "colore_riempimento", e.coloreRiempimento);
-        if (e.tipo == "cornice" || e.tipo == "testo" || e.tipo == "barra" || e.tipo == "linea") elementi.push_back(std::move(e));
+        if (e.tipo == "testo" || e.tipo == "barra") elementi.push_back(std::move(e));
     }
     ren_.impostaHud(std::move(elementi));
 }
@@ -2596,16 +2595,13 @@ void Game::calcolaClassifica() {
 }
 
 void Game::drawMusica() {
+    // Gruppo RADIO al centro dell'HUD (Andrea 07/11): solo lo spettro stile
+    // WinAmp, sulla stessa griglia dei gruppi ai lati (hud.json): barre nella
+    // fascia dei numeri grandi (y 13..28), linea di base nella riga sottile
+    // in fondo (y 31). Niente titolo del brano (Andrea 07/11).
     const InfoMusica& m = mixer_.info();
     if (!m.attiva) return;
-    visualizzatore_.disegna(fb_, 8, Framebuffer::HEIGHT - 10); // spettro in basso a sinistra
-    // Battito: due tacche ai lati dello schermo che si accendono sul primo tempo.
-    if (m.battito > 0.05f) {
-        const i32 h = (i32)(m.battito * 40.0f);
-        const u32 col = 0xFF000000u | ((u32)(80 + 175 * m.battito) << 16) | ((u32)(40 + 60 * m.battito) << 8) | 0xC0u;
-        fb_.fillRect(0, 112 - h, 2, 112 + h, col);
-        fb_.fillRect(Framebuffer::WIDTH - 3, 112 - h, Framebuffer::WIDTH - 1, 112 + h, col);
-    }
+    visualizzatore_.disegna(fb_, (Framebuffer::WIDTH - Visualizzatore::LARGHEZZA_TOT) / 2, 28);
 }
 
 void Game::scuotiScena(i32 dx, i32 dy) {

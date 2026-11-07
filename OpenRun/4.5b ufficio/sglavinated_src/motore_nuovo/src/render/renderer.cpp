@@ -1433,58 +1433,73 @@ void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala,
     }
 }
 
-namespace {
-void cornicePiena(Framebuffer& fb, i32 x, i32 y, i32 w, i32 h, i32 sp, u32 col) {
-    fb.fillRect(x, y, x + w - 1, y + sp - 1, col);
-    fb.fillRect(x, y + h - sp, x + w - 1, y + h - 1, col);
-    fb.fillRect(x, y, x + sp - 1, y + h - 1, col);
-    fb.fillRect(x + w - sp, y, x + w - 1, y + h - 1, col);
-}
-} // namespace
-
 void Renderer::drawHudDati(const HudDati& d) {
-    // Disposizione da hud.json (riferimento strutturale all'originale: distanza
-    // in alto a sinistra, velocita' e tempo in alto a destra). Tema bianco e nero.
+    // Striscia compatta in alto da hud.json (Andrea 07/11): velocita' a
+    // sinistra, radio al centro (Game::drawMusica), tempo e gara a destra.
+    // Niente box ne' cornici: solo testo con ombra di 1 px, la scena resta libera.
     char buf[32];
     for (const HudElemento& e : hud_) {
-        if (e.tipo == "cornice") {
-            if (e.oscuraSfondo > 0) {
-                // Vetro scuro: l'interno resta leggibile sopra cielo e skyline.
-                const u32 k = (u32)(100 - std::min(e.oscuraSfondo, 100));
-                for (i32 y = e.y + e.spessore; y < e.y + e.h - e.spessore; ++y)
-                    for (i32 x = e.x + e.spessore; x < e.x + e.w - e.spessore; ++x) {
-                        const u32 c = fb_.get(x, y);
-                        const u32 r = ((c >> 16) & 0xFFu) * k / 100, g = ((c >> 8) & 0xFFu) * k / 100, b = (c & 0xFFu) * k / 100;
-                        fb_.put(x, y, 0xFF000000u | (r << 16) | (g << 8) | b);
+        if (e.tipo == "barra" && e.id == "giri") {
+            // Contagiri (Andrea 07/11): tacche da 2 px con 1 px d'aria che
+            // crescono verso destra (da barra_h a barra_h + 2 px, allineate in
+            // basso), colori neon dello spettro (ciano, viola, magenta, passaggi
+            // a trama Bayer), punta bianca, zona limite gialla che lampeggia al
+            // massimo. Tacche spente: solo un filo scuro sulla riga di fondo.
+            static constexpr u32 SCALA[3] = {0xFF00E6FFu, 0xFF963CFFu, 0xFFFF28B4u};
+            static constexpr u8 BAYER[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
+            const f32 pieno = d.giri < 0.0f ? 0.0f : (d.giri > 1.0f ? 1.0f : d.giri);
+            const i32 n = std::max(2, (e.w + 1) / 3);
+            const i32 limite = n - std::max(1, n / 6);
+            const i32 accese = (i32)(pieno * (f32)n + 0.5f);
+            const bool alMassimo = pieno > 0.92f;
+            const i32 fondo = e.y + e.h - 1;
+            for (i32 i = 0; i < n; ++i) {
+                const i32 x = e.x + i * 3;
+                const i32 alto = e.h + (i * 3) / n; // 2, 3, 4 px
+                if (i >= accese) {
+                    fb_.fillRect(x, fondo, x + 1, fondo, i >= limite ? 0xFF5A2048u : 0xFF3C3C54u);
+                    continue;
+                }
+                fb_.fillRect(x + 1, fondo - alto + 2, x + 2, fondo + 1, 0xFF000000u); // ombra
+                for (i32 y = fondo - alto + 1; y <= fondo; ++y)
+                    for (i32 k = 0; k < 2; ++k) {
+                        u32 col;
+                        if (i == accese - 1 && !alMassimo) col = 0xFFFFFFFFu; // punta
+                        else if (i >= limite) col = alMassimo && (d.frame / 3) % 2 ? 0xFFFFFFFFu : 0xFFE6FF32u;
+                        else {
+                            const f32 t = (f32)i / (f32)std::max(1, limite - 1) * 2.0f; // 0..2 lungo la scala
+                            const i32 c = std::min(1, (i32)t);
+                            const f32 s = ((f32)BAYER[y & 3][(x + k) & 3] + 0.5f) / 16.0f;
+                            col = (t - (f32)c) > s ? SCALA[c + 1] : SCALA[c];
+                        }
+                        fb_.put(x + k, y, col);
                     }
             }
-            cornicePiena(fb_, e.x + 1, e.y + 1, e.w, e.h, e.spessore, 0xFF000000u); // ombra
-            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.colore);
-            continue;
-        }
-        if (e.tipo == "linea") { // divisorio sottile dentro il box
-            fb_.fillRect(e.x, e.y, e.x + std::max(e.w, 1) - 1, e.y + std::max(e.h, 1) - 1, e.colore);
             continue;
         }
         if (e.tipo == "barra") {
-            f32 pieno = e.id == "giri" ? d.giri : 0.0f;
-            pieno = pieno < 0.0f ? 0.0f : (pieno > 1.0f ? 1.0f : pieno);
-            if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
-            cornicePiena(fb_, e.x, e.y, e.w, e.h, e.spessore, e.coloreBordo);
-            const i32 interno = e.w - 2 * e.spessore;
-            const i32 px = (i32)(pieno * (f32)interno);
-            fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.w - e.spessore - 1, e.y + e.h - e.spessore - 1, 0xFF000000u);
-            if (px > 0)
-                fb_.fillRect(e.x + e.spessore, e.y + e.spessore, e.x + e.spessore + px - 1, e.y + e.h - e.spessore - 1,
-                             pieno > 0.9f ? e.coloreBordo : e.coloreRiempimento);
+            // Tappe: un segmento per tappa sulla riga di fondo, senza cornice.
+            // Fatte piene, in corso lampeggia piano, da fare un filo scuro.
+            if (!d.gara) continue;
+            const i32 n = std::max(1, d.tappe);
+            const i32 passo = (e.w + 1) / n, largo = passo - 1;
+            const i32 fondo = e.y + e.h - 1;
+            for (i32 i = 0; i < n; ++i) {
+                const i32 x = e.x + i * passo;
+                const bool spenta = i >= d.tappa || (i == d.tappa - 1 && (d.frame / 30) % 2);
+                if (spenta) { fb_.fillRect(x, fondo, x + largo - 1, fondo, 0xFF3C3C54u); continue; }
+                fb_.fillRect(x + 1, e.y + 1, x + largo, e.y + e.h, 0xFF000000u); // ombra
+                fb_.fillRect(x, e.y, x + largo - 1, fondo, e.coloreRiempimento);
+            }
             continue;
         }
         // testo: valore vivo per id; gli elementi di gara spariscono fuori gara.
         const bool soloGara = e.id == "tempo" || e.id == "totale" || e.id == "tappa" || e.id == "posizione";
+        if (e.id == "show" && !d.show) continue; // SHOW ON solo quando lo show e' in scena
         if (soloGara && !d.gara) continue;
         const char* valore = nullptr;
         u32 coloreValore = e.colore;
-        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%d M", (i32)(d.km * 1000.0f)); valore = buf; }
+        if (e.id == "distanza") { std::snprintf(buf, sizeof(buf), "%dM", (i32)(d.km * 1000.0f)); valore = buf; }
         else if (e.id == "velocita") { std::snprintf(buf, sizeof(buf), "%3d", d.kmh); valore = buf; }
         else if (e.id == "tempo") {
             std::snprintf(buf, sizeof(buf), "%2d", d.tempoS);
@@ -1498,24 +1513,28 @@ void Renderer::drawHudDati(const HudDati& d) {
         }
         else if (e.id == "tappa") { std::snprintf(buf, sizeof(buf), "%d/%d", d.tappa, d.tappe); valore = buf; }
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
-        if (e.lx >= 0) drawTesto(e.lx, e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
+        // allinea "destra": label_pos e valore_pos sono il bordo destro del testo.
+        const auto xa = [&e](i32 x, const char* t, i32 scala) { return e.destra ? x - larghezzaTesto(t, scala) : x; };
+        if (e.lx >= 0) drawTesto(xa(e.lx, e.label.c_str(), e.scalaLabel), e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
         if (e.id == "posizione" && d.sorpasso > 0.0f && valore && e.vx >= 0) {
             // Sorpasso (Andrea 29/10): la posizione fa un saltello, lampeggia
             // giallo/bianco con una freccia in su accanto, poi torna normale.
             const f32 t = 1.0f - d.sorpasso; // 0 all'inizio del sorpasso
             const i32 su = t < 0.2f ? (i32)(3.0f * std::sin(t / 0.2f * 3.14159f) + 0.5f) : 0;
             const u32 col = (d.frame / 4) % 2 ? 0xFFFFE040u : 0xFFFFFFFFu;
-            drawTesto(e.vx, e.vy - su, valore, col, e.scalaValore);
-            const i32 fx = e.vx + larghezzaTesto(valore, e.scalaValore) + 3;
+            const i32 vx = xa(e.vx, valore, e.scalaValore);
+            drawTesto(vx, e.vy - su, valore, col, e.scalaValore);
+            // Freccia verde accanto, verso l'interno dello schermo.
+            const i32 fx = e.destra ? vx - 8 : vx + larghezzaTesto(valore, e.scalaValore) + 3;
             const i32 fy = e.vy - su + 1;
             for (i32 r = 0; r <= 2; ++r) fb_.hline(fx + 2 - r, fx + 2 + r, fy + r, 0xFF40E060u);
             fb_.fillRect(fx + 1, fy + 3, fx + 3, fy + 5, 0xFF40E060u);
             continue;
         }
-        if (valore && e.vx >= 0) drawTesto(e.vx, e.vy, valore, coloreValore, e.scalaValore);
+        if (valore && e.vx >= 0) drawTesto(xa(e.vx, valore, e.scalaValore), e.vy, valore, coloreValore, e.scalaValore);
         if (e.tx >= 0) {
-            const char* t = e.id == "show" ? (d.show ? "SHOW ON" : "SHOW OFF") : e.testo.c_str();
-            drawTesto(e.tx, e.ty, t, e.colore, e.scala);
+            const char* t = e.id == "show" ? "SHOW ON" : e.testo.c_str();
+            drawTesto(xa(e.tx, t, e.scala), e.ty, t, e.colore, e.scala);
         }
     }
 
