@@ -9,8 +9,8 @@ namespace sgl {
 namespace {
 constexpr i32 LARGHEZZA = 3;
 constexpr i32 NOTA_BASSA = 30, NOTE = 54; // da F#-2 a C-7: dove stanno quasi tutte le note
-constexpr f32 SALITA = 30.0f;             // attacco rapido (1/s)
-constexpr f32 CADUTA = 1.8f;              // altezza persa al secondo
+constexpr f32 MOLLA = 900.0f;             // rigidezza (omega 30 rad/s): reattiva
+constexpr f32 SMORZA = 36.0f;             // smorzamento (zeta ~0,6): un filo di rimbalzo, poi ferma
 constexpr f32 FERMO_PICCO_S = 0.35f;      // il cappello resta in cima, poi cade
 constexpr f32 GRAVITA_PICCO = 2.4f;       // e ricade accelerando
 constexpr u32 BIANCO = 0xFFFFFFFFu;
@@ -44,16 +44,33 @@ void Visualizzatore::aggiorna(const InfoMusica& m, f32 dt) {
                 if (vicino > 0.0f) obiettivo[b] += m.livello[c] * vicino;
             }
         }
-        // Un'onda leggera che segue il volume, cosi' lo spettro non sta mai fermo.
+        // Un'onda leggera che segue il volume e scorre da sinistra a destra,
+        // cosi' lo spettro non sta mai fermo.
         for (i32 b = 0; b < BARRE; ++b)
-            obiettivo[b] = std::min(1.0f, obiettivo[b] + m.energia * (0.10f + 0.08f * std::sin(fase_ + (f32)b * 0.8f)));
+            obiettivo[b] += m.energia * (0.12f + 0.10f * std::sin(fase_ - (f32)b * 0.55f));
         battito_ = m.battito;
     } else {
         battito_ = 0.0f;
     }
+    // Smussatura con le vicine (1-2-3-2-1): niente denti, una curva continua.
+    f32 liscio[BARRE];
     for (i32 b = 0; b < BARRE; ++b) {
-        if (obiettivo[b] > barra_[b]) barra_[b] += (obiettivo[b] - barra_[b]) * std::min(1.0f, SALITA * dt);
-        else barra_[b] = std::max(obiettivo[b], barra_[b] - CADUTA * dt);
+        f32 somma = 0.0f, peso = 0.0f;
+        for (i32 d = -2; d <= 2; ++d) {
+            const i32 j = b + d;
+            if (j < 0 || j >= BARRE) continue;
+            const f32 w = (f32)(3 - std::abs(d));
+            somma += obiettivo[j] * w;
+            peso += w;
+        }
+        liscio[b] = std::min(1.0f, somma / peso * 1.4f); // 1.4: la smussatura abbassa i picchi
+    }
+    const f32 passo = std::min(dt, 1.0f / 30.0f); // molla stabile anche a 50 Hz
+    for (i32 b = 0; b < BARRE; ++b) {
+        vBarra_[b] += (MOLLA * (liscio[b] - barra_[b]) - SMORZA * vBarra_[b]) * passo;
+        barra_[b] += vBarra_[b] * passo;
+        if (barra_[b] < 0.0f) { barra_[b] = 0.0f; vBarra_[b] = 0.0f; }
+        if (barra_[b] > 1.0f) { barra_[b] = 1.0f; vBarra_[b] = std::min(vBarra_[b], 0.0f); }
         if (barra_[b] >= picco_[b]) { picco_[b] = barra_[b]; vPicco_[b] = 0.0f; fermoPicco_[b] = FERMO_PICCO_S; }
         else if (fermoPicco_[b] > 0.0f) fermoPicco_[b] -= dt;
         else {
