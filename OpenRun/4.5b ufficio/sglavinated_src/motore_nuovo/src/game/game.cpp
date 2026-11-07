@@ -2185,7 +2185,7 @@ void Game::render() {
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
-                       posaGiocatore);
+                       posaGiocatore, km_ * 1000.0f);
     // Paletti abbattuti: volano via di lato, girando, dal fianco dell'auto.
     for (const Detrito& d : detriti_) {
         if (d.t < 0.0f) continue;

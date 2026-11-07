@@ -2282,6 +2282,434 @@
          "file": "assets_originali/sprite/giocatore/fumo_3.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_3.sglraw",
          "nota": "AUTO1 G-A1 (07/11): fumo passo 3 (disperso), 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_01_neon.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/ciuffo.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/cespuglio.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/albero.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_alto.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_medio.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_basso.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/ciuffo.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/cespuglio.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/albero.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_alto.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_medio.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_basso.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/ciuffo.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/cespuglio.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/albero.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_alto.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_medio.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_basso.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/ciuffo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/cespuglio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/albero.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_alto.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_medio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_basso.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/ciuffo.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/cespuglio.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/albero.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_alto.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_medio.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_05_spray/scenario_spray_05_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_basso.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/ciuffo.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/cespuglio.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_alto.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_medio.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_basso.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_curva_dx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/freccia_curva_dx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_curva_dx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_curva_sx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/freccia_curva_sx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_curva_sx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       }
    ]
 }
