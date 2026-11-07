@@ -65,6 +65,9 @@ permission:
     "pwd": allow
   webfetch: deny
 ---
+
+**REGOLA BLOCCATA (Andrea 06/11):** l'auto del giocatore segue `REGOLE_AUTO_GIOCATORE.md`. Non modificare quei valori, quel codice (drawPlayerCar, risolviPosa, costanti AUTO_GIOCATORE_*, SOLLEVAMENTO_*, SALTO_*, inclinazione in curva) ne' i file in `giocatore_pose/` e `sprite_raw/giocatore/pose/`. Se serve, scrivilo in PER_CLAUDE.md e fermati.
+
 Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configurazione e build delle task decise da @capo. In questa fase i sorgenti attivi restano in `motore_nuovo/` e gli strumenti esistenti in `UFFICIO/Officina/TOOL/`: non duplicarli in nuove folder. Tutti i file di produzione Engine Grafico vanno in `motore_nuovo/` ordinatamente.
 
 - Mantieni il core indipendente da SDL, compatibile architettura multipiattaforma per futuri possibili porting per Windows Xp, in seguito a test positivi su MacOs, Raspberry Pi 400/RetroPie.

@@ -72,7 +72,13 @@ namespace {
 constexpr f32 ROAD_SCROLL_SCALE = 72.0f;
 constexpr f32 ROAD_SCROLL_SPEED_BOOST = 0.65f;
 // Forza centrifuga in curva (dimensionless, si applica a speed*dt = unità/frame).
-constexpr f32 CURVA_SPINTA = 0.015f;
+constexpr f32 CURVA_SPINTA = 0.015f; // (storico, lineare: non piu' usato)
+// Guida (Andrea 06/11 sera: "col solo gas la curva si fa da sola"): la curva
+// spinge fuori col QUADRATO della velocita' (forza centrifuga), unita'/s a
+// curva 1 e velocita' piena. Con lo sterzo pieno alla punta (~400 unita'/s)
+// le curve dolci si tengono a gas pieno, quelle forti chiedono di alzare il
+// piede o frenare un attimo. Bloccato: REGOLE_AUTO_GIOCATORE.md.
+constexpr f32 CURVA_SPINTA_V2 = 1200.0f;
 // Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
 // senza essere contrastato dalla spinta centrifuga.
@@ -139,6 +145,28 @@ constexpr f32 URTO_EFFETTO_TRAFFICO_S = 0.55f, URTO_EFFETTO_RIVALE_S = 0.35f;
 constexpr f32 CIGLIO_V_MIN = 0.2f;
 // Botte da cui l'auto fuma dal cofano.
 constexpr i32 DANNI_FUMO = 5;
+// Memoria degli urti di fianco (Andrea 06/11 sera): ogni sportellata pesa 1
+// (traffico 1.5) e si dimentica di 1 ogni COLPI_OBLIO_S secondi; a
+// COLPI_INCIDENTE, se si va ancora forte, l'auto vola e fa un incidente.
+constexpr f32 COLPI_INCIDENTE = 3.5f;
+constexpr f32 COLPI_OBLIO_S = 5.0f;
+constexpr f32 COLPI_V_MIN = 0.4f;
+// Rivali con memoria dei danni: ogni botta del giocatore toglie RIVALE_DANNO
+// alla loro punta (fino a 3 botte); alla 4a vanno KO per RIVALE_KO_S secondi.
+constexpr f32 RIVALE_DANNO = 0.03f;
+constexpr i32 RIVALE_KO_URTI = 4;
+constexpr f32 RIVALE_KO_S = 4.0f;
+// Cartelloni: toccarli forte e' un incidente, piano una botta.
+constexpr f32 CARTELLONE_V_INCIDENTE = 0.5f;
+// Paletti a bordo strada (renderer, ogni 600 unita'): con l'auto oltre
+// PALO_X dal centro corsia si abbattono e volano via.
+constexpr f32 PALO_PASSO = 600.0f;
+constexpr f32 PALO_X = 860.0f;
+constexpr f32 PALO_VOLO_S = 0.7f;
+// Rientro in strada dal fuori strada: piccolo sobbalzo.
+constexpr f32 RIENTRO_S = 0.35f;
+// Sotto questa frazione della punta il fuori strada non porta all'incidente.
+constexpr f32 OFFROAD_INCIDENTE_V = 0.3f;
 // Rivali (Andrea 29/10): nessuna fuga impossibile e nessuno "appiccicato".
 // Entro +-RIVALE_LIBERO_S secondi di distacco ognuno va del suo ritmo; oltre,
 // chi e' davanti cala fino a -15% e chi e' dietro spinge fino a +25%.
@@ -169,9 +197,10 @@ constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza str
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
 // nulla, sale in ~0.8 s fino a SOLLEVAMENTO_MAX_PX, ondeggia piano e ricade
 // in ~0.3 s appena si frena, si curva o si esce di strada.
+// BLOCCATO (Andrea 06/11): sollevamento e salti dell'auto in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
 constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
 constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
-constexpr f32 SOLLEVAMENTO_MAX_PX = 2.0f; // Andrea 06/11: troppo alta dal suolo, ora solo un accenno
+constexpr f32 SOLLEVAMENTO_MAX_PX = 0.0f; // Andrea 06/11 sera: l'auto resta sempre appoggiata alla strada
 constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
 constexpr f32 SOLLEVAMENTO_DISCESA_S = 0.3f;
 // Passaggio assistito al bivio (feedback Andrea 23/10): niente spinta delle
@@ -198,7 +227,7 @@ constexpr f32 TEMPO_EXTRA_AVVISO_S = 2.5f; // "TEMPO EXTRA" a schermo dopo un ch
 constexpr f32 SALTO_GRAVITA = 7000.0f;     // unita' mondo / s^2 (piu' bassa = salti piu' frequenti)
 constexpr f32 SALTO_SOGLIA_V = 0.6f;       // sotto il 60% della velocita' massima resta incollata
 constexpr f32 SALTO_PX_PER_UNITA = 0.02f;  // quota sopra la strada -> pixel a schermo (06/11: dimezzato)
-constexpr f32 SALTO_MAX_PX = 10.0f;
+constexpr f32 SALTO_MAX_PX = 6.0f;
 constexpr f32 SALTO_V_DISCONTINUITA = 60000.0f; // oltre: salto di quota del tracciato, non un dosso
 
 // Legge un file intero (vuoto se manca): solo in init, mai nel ciclo di gioco.
@@ -1160,6 +1189,8 @@ void Game::inizializzaRivali() {
         // r.percorso[] e i rami scelti in r.ramiPercorso[], con nPercorso
         // elementi. Tempo d'arrivo registrato in r.tempoArrivoS (>=0 quando
         // finito).
+        r.urti = 0;
+        r.koS = 0.0f;
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
@@ -1361,6 +1392,11 @@ void Game::aggiornaRivali() {
         r.ritmoFase += r.ritmoVel * dt;
         const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
         r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
+        if (r.koS > 0.0f) {
+            // KO (4a botta): quasi fermo a bordo strada, poi riparte piano.
+            r.koS = std::max(0.0f, r.koS - dt);
+            r.passo = std::min(r.passo, r.passoMax * (0.25f + 0.5f * (1.0f - r.koS / RIVALE_KO_S)));
+        }
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e resta
         // alla sua velocita' solo finche' e' ancora dritto dietro di lui.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
@@ -1852,8 +1888,9 @@ void Game::aggiornaGuida(f32 dt) {
         assistenzaBivio_ = nelBivio ? std::min(1.0f, assistenzaBivio_ + dt / ASSIST_ENTRATA_S)
                                     : std::max(0.0f, assistenzaBivio_ - dt / ASSIST_USCITA_S);
         const f32 curvaQui = road_.curvaAt(player_.z);
-        const f32 spinta = player_.offroad ? CURVA_SPINTA * CURVA_SPINTA_OFFROAD_FACTOR : CURVA_SPINTA;
-        player_.x += curvaQui * player_.speed * spinta * dt * roadScrollScale * (1.0f - assistenzaBivio_);
+        const f32 vRel = player_.speed / player_.maxSpeed();
+        const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f);
+        player_.x += curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
         if (assistenzaBivio_ > 0.0f) {
             // Richiamo morbido verso il centro del ramo piu' vicino.
             const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
@@ -1893,8 +1930,15 @@ void Game::aggiornaGuida(f32 dt) {
         if (dallUrtoS_ >= 0.0f) dallUrtoS_ = dallUrtoS_ + dt > 5.0f ? -1.0f : dallUrtoS_ + dt;
         // Il tocco del ciglio si dimentica solo guidando in strada.
         if (ciglioMemoriaS_ > 0.0f && !player_.offroad) ciglioMemoriaS_ = std::max(0.0f, ciglioMemoriaS_ - dt);
+        colpiMemoria_ = std::max(0.0f, colpiMemoria_ - dt / COLPI_OBLIO_S);
+        if (rientroS_ >= 0.0f) rientroS_ = rientroS_ + dt > RIENTRO_S ? -1.0f : rientroS_ + dt;
+        for (Detrito& d : detriti_) if (d.t >= 0.0f) d.t = d.t + dt > PALO_VOLO_S ? -1.0f : d.t + dt;
+        abbattiPali(zPrima);
 
-        if (player_.offroad && assistenzaBivio_ <= 0.0f) ++offroadFrames_;
+        // Fuori strada a lungo e ancora forte: incidente. Piano nell'erba
+        // l'auto rallenta e basta (Andrea 06/11 sera), il conteggio riparte.
+        if (player_.offroad && assistenzaBivio_ <= 0.0f && player_.speed >= OFFROAD_INCIDENTE_V * player_.maxSpeed())
+            ++offroadFrames_;
         else offroadFrames_ = 0;
 
         if (gara_) {
@@ -1911,6 +1955,22 @@ void Game::aggiornaGuida(f32 dt) {
         const bool toccaRivale = assistenzaBivio_ <= 0.0f && collisioneRivaleVicino();
         const bool toccaCartellone = assistenzaBivio_ <= 0.0f && collisioneCartelloneVicino();
         const bool toccaQualcosa = toccaRivale || toccaCartellone;
+        if (toccaCartellone && !cartelloneToccato_ && !playerFlipping_ && !arrivo_) {
+            // Cartellone (Andrea 06/11 sera: gli oggetti reagiscono): forte = incidente,
+            // piano = botta secca, si perde velocita'.
+            ++urtiGara_;
+            const i32 lato = player_.x - player_.centroCorsia > 0.0f ? 1 : -1;
+            segnaBotta(lato);
+            if (player_.speed >= CARTELLONE_V_INCIDENTE * player_.maxSpeed()) ribalta();
+            else {
+                player_.speed *= 0.6f;
+                urtoTraffico_ = true;
+                urtoEffettoDurataS_ = URTO_EFFETTO_TRAFFICO_S;
+                urtoEffettoS_ = urtoEffettoDurataS_;
+                mixer_.suonaUrto(true);
+            }
+        }
+        cartelloneToccato_ = toccaCartellone;
 
         if (toccaRivale && !inCollision_ && !playerFlipping_ && !playerBump_ && !arrivo_) {
             // Contatto di fianco (o rimasto dopo un tamponamento): urto con
@@ -1965,6 +2025,8 @@ void Game::aggiornaGuida(f32 dt) {
         // primo rallenta e resta in memoria; il seguente, se si va ancora forte,
         // e' un incidente. Al bivio l'aiuto tiene l'auto: nessun tocco.
         const bool entraFuori = player_.offroad && !offroadPrec_;
+        if (!player_.offroad && offroadPrec_ && !playerFlipping_ && player_.speed > 0.15f * player_.maxSpeed())
+            rientroS_ = 0.0f; // si torna sull'asfalto: piccolo sobbalzo
         offroadPrec_ = player_.offroad;
         if (entraFuori && assistenzaBivio_ <= 0.0f && !playerFlipping_ && !arrivo_ &&
             player_.speed >= CIGLIO_V_MIN * player_.maxSpeed())
@@ -2058,13 +2120,17 @@ void Game::render() {
     const f32 kGiro = std::min(1.0f, kFlip / 0.4f);
     f32 flipPx = 0.0f;
     if (playerFlipping_)
-        flipPx = kFlip < 0.4f ? 16.0f * std::sin(3.14159f * kGiro)
+        flipPx = kFlip < 0.4f ? 30.0f * std::sin(3.14159f * kGiro) // vola e gira in aria (Andrea 06/11 sera)
                               : (kFlip < 0.5f ? 3.0f * std::sin(3.14159f * (kFlip - 0.4f) / 0.1f) : 0.0f);
     const f32 fumoFlipS = playerFlipping_ && kFlip >= 0.4f ? (kFlip - 0.4f) * FLIP_ANIMATION_S : -1.0f;
+    // Con le pose disegnate (Andrea 06/11) la curva la mostra la posa: l'auto
+    // resta orizzontale, appoggiata alla strada. L'inclinazione forte serve
+    // solo alla vecchia sagoma a rettangoli.
+    const bool conPose = ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width > 0;
     const f32 rollAngle = playerFlipping_
         ? 6.2831853f * kGiro * kGiro * (3.0f - 2.0f * kGiro)
-        : steeringLean * 1.5f +
-          (player_.offroad ? (player_.x < 0.0f ? -0.18f : 0.18f) : 0.0f);
+        : (conPose ? 0.0f : steeringLean * 1.5f) +
+          (player_.offroad ? (player_.x < 0.0f ? -1.0f : 1.0f) * (conPose ? 0.05f : 0.18f) : 0.0f);
     const f32 ondeggio = 0.85f + 0.15f * std::sin(sollevamentoFaseS_ * 5.0f);
     const f32 saltoPx = std::min(SALTO_MAX_PX, saltoAltezza_ * SALTO_PX_PER_UNITA);
     // Urto: sobbalzo e scodata (piu' forti col traffico), poi la scena trema.
@@ -2074,6 +2140,11 @@ void Game::render() {
         sobbalzoPx = (urtoTraffico_ ? 9.0f : 5.0f) * std::sin(3.14159f * (1.0f - urtoK));
         scodata = (urtoTraffico_ ? 0.35f : 0.18f) * urtoK * std::sin(urtoEffettoS_ * 45.0f);
     }
+    // Fuori strada: l'auto trema sul terreno; rientrando sull'asfalto un
+    // piccolo sobbalzo (Andrea 06/11 sera).
+    if (player_.offroad && !playerFlipping_ && player_.speed > 0.05f * player_.maxSpeed())
+        sobbalzoPx += (f32)(((u32)(tempoGiocoS_ * 30.0f)) & 1u) * (1.0f + player_.speed / player_.maxSpeed());
+    if (rientroS_ >= 0.0f) sobbalzoPx += 4.0f * std::sin(3.14159f * rientroS_ / RIENTRO_S);
     // Arrivo: frenata con il muso che si abbassa e una scodata, poi un
     // rimbalzo quando l'auto si ferma.
     bool frena = false;
@@ -2114,7 +2185,16 @@ void Game::render() {
     // Durante l'incidente la carrozzeria resta del suo colore (non quello del fuori strada).
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia, player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
-                       posaGiocatore, km_ * 1000.0f);
+                       posaGiocatore);
+    // Paletti abbattuti: volano via di lato, girando, dal fianco dell'auto.
+    for (const Detrito& d : detriti_) {
+        if (d.t < 0.0f) continue;
+        const f32 k = d.t / PALO_VOLO_S;
+        const i32 cx = 160 + (i32)((player_.x - player_.centroCorsia) * 0.035f);
+        const i32 x = cx + d.lato * (40 + (i32)(k * (60.0f + 60.0f * d.v)));
+        const i32 y = 214 - (i32)(std::sin(3.14159f * k) * (18.0f + 14.0f * d.v)) + (i32)(k * 6.0f);
+        ren_.drawDetrito(x, y, 4, 16, (f32)d.lato * k * 9.0f, d.lato < 0 ? pal_[1] : pal_[14]);
+    }
     if (urtoK > 0.0f) {
         const i32 dx = (i32)((urtoTraffico_ ? 4.0f : 2.0f) * urtoK * std::sin(urtoEffettoS_ * 70.0f));
         const i32 dy = urtoTraffico_ ? (i32)(2.0f * urtoK * std::cos(urtoEffettoS_ * 55.0f)) : 0;
@@ -2277,6 +2357,49 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
     urtoEffettoDurataS_ = traffico ? URTO_EFFETTO_TRAFFICO_S : URTO_EFFETTO_RIVALE_S;
     urtoEffettoS_ = urtoEffettoDurataS_;
     mixer_.suonaUrto(traffico);
+    if (!traffico) {
+        // Il rivale si ricorda le botte: un po' piu' lento a ognuna, KO alla 4a.
+        Rivale& r = rivali_[fonte];
+        ++r.urti;
+        if (r.urti < RIVALE_KO_URTI) r.passoMax *= 1.0f - RIVALE_DANNO;
+        else if (r.koS <= 0.0f) {
+            r.koS = RIVALE_KO_S;
+            r.passo *= 0.3f;
+            r.xObiettivo = r.x < 0.0f ? -RIVALE_X_MAX : RIVALE_X_MAX; // si fa da parte
+        }
+        r.segnalinoS = std::max(r.segnalinoS, SEGNALINO_DURATA_S);
+    }
+    // Troppe sportellate di fila: l'auto vola via (Andrea 06/11 sera).
+    colpiMemoria_ += traffico ? 1.5f : 1.0f;
+    if (colpiMemoria_ >= COLPI_INCIDENTE && player_.speed >= COLPI_V_MIN * player_.maxSpeed() && !arrivo_) {
+        colpiMemoria_ = 0.0f;
+        playerBump_ = false;
+        ribalta();
+    }
+}
+
+void Game::abbattiPali(f32 zPrima) {
+    // Paletti bianchi del bordo (Renderer::drawRoadsideMarkers, uno ogni
+    // PALO_PASSO): con l'auto oltre PALO_X dal centro corsia, ogni paletto
+    // passato viene abbattuto e vola via di lato. Si perde un poco.
+    if (playerFlipping_ || arrivo_ || road_.sospesoAt(road_.playerZ) ||
+        (road_.bivioAttivo() && road_.playerZ >= road_.bivioInizioZ())) return;
+    const f32 xRel = player_.x - player_.centroCorsia;
+    if (std::abs(xRel) < PALO_X * std::max(1.0f, player_.larghezzaCorsia)) return;
+    const f32 z = road_.playerZ;
+    if (z <= zPrima) return;
+    const i32 nPrima = (i32)std::floor(zPrima / PALO_PASSO), nOra = (i32)std::floor(z / PALO_PASSO);
+    if (nOra <= nPrima) return;
+    for (Detrito& d : detriti_) {
+        if (d.t >= 0.0f) continue;
+        d.t = 0.0f;
+        d.lato = xRel > 0.0f ? 1 : -1;
+        d.v = player_.speed / player_.maxSpeed();
+        break;
+    }
+    player_.speed *= 0.97f;
+    rientroS_ = 0.0f; // piccolo sobbalzo, niente scodata: l'auto resta dritta
+    mixer_.suonaUrto(false);
 }
 
 void Game::segnaBotta(i32 lato) {
