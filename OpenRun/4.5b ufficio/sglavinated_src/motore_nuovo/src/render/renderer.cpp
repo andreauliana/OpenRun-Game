@@ -79,7 +79,9 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     if (oggettiTerra_ && giro_ > 0.0f) {
         const f32 zMax = projs_.back().worldZ;
         for (const SpriteInstance& o : *oggettiTerra_) {
-            f32 zr = std::fmod(o.worldZ - playerZ, giro_);
+            // Il motoscafo naviga avanti e indietro lungo il suo tratto di mare.
+            const f32 corsa = o.anima == 2 ? 5000.0f * std::sin(tempoS_ * 0.22f + o.fase) : 0.0f;
+            f32 zr = std::fmod(o.worldZ + corsa - playerZ, giro_);
             if (zr < 0.0f) zr += giro_;
             if (zr > projs_.front().worldZ && zr < zMax) terraOrdine_.push_back({zr, &o});
         }
@@ -107,9 +109,8 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             const f32 base = lontano.acquaY + (vicino.acquaY - lontano.acquaY) * t;
             const f32 cx = lontano.screenX + (vicino.screenX - lontano.screenX) * t;
             const f32 scl = Road::DEPTH / zr;
-            const f32 sx = cx + scl * o.worldX * (f32)Framebuffer::WIDTH / 2;
             if (base < (f32)HORIZON_Y - 1.0f) continue;
-            drawSprite(o, sx, base, scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * o.scale);
+            drawOggettoTerra(o, cx, base, scl);
         }
         if (!confine) continue;
         // Piloni del ponte: al confine fra due segmenti, ogni PILONE_OGNI_SEG,
@@ -314,6 +315,76 @@ void Renderer::drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa) {
     fb_.fillRect(x, y - alone, x, y + alone, colore);
     fb_.fillRect(x - r / 2 - 1, y - r / 2 - 1, x + (r - 1) / 2 + 1, y + (r - 1) / 2 + 1, colore);
     fb_.fillRect(x - r / 2, y - r / 2, x + (r - 1) / 2, y + (r - 1) / 2, 0xFFFFFFFFu);
+}
+
+void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl) {
+    // Mare vivo (Andrea 07/11: barche che si muovono, elementi inattesi e
+    // dinamici). Movimenti lenti e piccoli, orologio logico (deterministico).
+    const f32 pxMondo = scl * (f32)Framebuffer::WIDTH / 2;   // pixel per unita' mondo
+    const f32 t = tempoS_;
+    f32 x = o.worldX, dy = 0.0f;
+    switch (o.anima) {
+    case 1: x += 700.0f * std::sin(t * 0.13f + o.fase); dy = 70.0f * std::sin(t * 1.5f + o.fase); break;
+    case 2: dy = 40.0f * std::sin(t * 4.0f + o.fase); break;
+    case 3: dy = 50.0f * std::sin(t * 2.1f + o.fase); break;
+    default: break;
+    }
+    const f32 sx = cx + x * pxMondo;
+    const f32 sy = base + dy * pxMondo;
+    if (o.anima == 5) {
+        // Gabbiano: una V che sbatte le ali, gira in tondo sopra l'acqua.
+        const f32 gx = sx + 1800.0f * pxMondo * std::sin(t * 0.45f + o.fase);
+        const f32 gy = base - (o.scale + 300.0f * std::sin(t * 0.9f + o.fase * 2.0f)) * pxMondo;
+        const i32 a = std::clamp((i32)(260.0f * pxMondo), 2, 16);
+        const bool su = ((i32)(t * 7.0f + o.fase * 3.0f) & 1) != 0;
+        const i32 X = (i32)gx, Y = (i32)gy;
+        if (Y < 0) return;
+        for (i32 k = 0; k <= a; ++k) {
+            const i32 h = su ? -(k * 2) / 3 : (k < a / 2 ? -k / 2 : -(a - k) / 2);
+            fb_.put(X - k, Y + h, 0xFFF2F2EEu);
+            fb_.put(X + k, Y + h, 0xFFF2F2EEu);
+            if (a >= 6) { fb_.put(X - k, Y + h + 1, 0xFF7C7C8Cu); fb_.put(X + k, Y + h + 1, 0xFF7C7C8Cu); }
+        }
+        fb_.put(X, Y, 0xFF1C1C28u);
+        return;
+    }
+    if (o.anima == 6) {
+        // Pesce che salta ogni tanto: arco, spruzzo all'entrata e all'uscita.
+        const f32 ciclo = 4.5f, salto = 0.7f;
+        const f32 p = std::fmod(t + o.fase, ciclo);
+        const i32 X0 = (i32)sx, Y0 = (i32)base;
+        const i32 r = std::clamp((i32)(90.0f * pxMondo), 1, 8);
+        if (p < salto) {
+            const f32 u = p / salto;
+            const i32 X = X0 + (i32)((u - 0.5f) * 900.0f * pxMondo);
+            const i32 Y = Y0 - (i32)(std::sin(u * 3.14159f) * 650.0f * pxMondo);
+            const i32 l = std::max(2, r * 2);
+            const i32 inc = u < 0.5f ? -1 : 1; // muso in su all'andata, in giu' al ritorno
+            for (i32 k = -l / 2; k <= l / 2; ++k) {
+                fb_.put(X + k, Y + inc * k / 2, 0xFFC8D8E8u);
+                if (r > 1) fb_.put(X + k, Y + inc * k / 2 + 1, 0xFF5A7A9Au);
+            }
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 - 1, 0xFFC8D8E8u); // coda
+            fb_.put(X - l / 2 - 1, Y - inc * l / 4 + 1, 0xFFC8D8E8u);
+        }
+        if (p < 0.12f || (p > salto - 0.05f && p < salto + 0.15f)) { // spruzzi
+            const i32 X = X0 + (p < 0.12f ? -1 : 1) * (i32)(450.0f * pxMondo);
+            for (i32 k = -r; k <= r; k += std::max(1, r / 2)) fb_.put(X + k, Y0 - std::abs(k) / 2 - 1, 0xFFF0F4F8u);
+        }
+        return;
+    }
+    drawSprite(o, sx, sy, pxMondo * SPRITE_WORLD_PX * o.scale);
+    if (o.anima == 4 && o.sprite) {
+        // Faro: la lanterna pulsa e il fascio ruota (si allunga a destra e a sinistra).
+        const f32 sc = pxMondo * SPRITE_WORLD_PX * o.scale;
+        const i32 lx = (i32)sx, ly = (i32)(sy - (f32)o.sprite->height * sc + 11.0f * sc);
+        const f32 giro = std::sin(t * 1.8f + o.fase);
+        const i32 len = (i32)(std::abs(giro) * 60.0f * sc);
+        const i32 dir = giro > 0.0f ? 1 : -1;
+        for (i32 k = 0; k < len; ++k)
+            if (((k + (i32)(t * 20.0f)) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
+        drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, std::abs(giro) > 0.3f);
+    }
 }
 
 void Renderer::drawPila(const Road::ProjectedSeg& p) {

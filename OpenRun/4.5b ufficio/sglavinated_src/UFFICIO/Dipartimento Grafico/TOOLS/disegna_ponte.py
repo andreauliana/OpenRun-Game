@@ -13,7 +13,7 @@
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/disegna_ponte.py"
 #
 # Misure (larghezza x altezza, pixel), tutte in scenari/comuni/oggetti/:
-#   boa 16x32, barca 48x48, scoglio 48x24, faro 32x128, ombrellone 32x32.
+#   boa 16x32, barca 64x64, motoscafo 64x32, scoglio 48x24, faro 32x128, ombrellone 32x32.
 # La misura a schermo si ricava dall'altezza del PNG (paesaggio.cpp).
 import sys
 from pathlib import Path
@@ -53,21 +53,61 @@ def boa():
 
 
 def barca():
-    t = Tela(48, 48)
-    t.rett(23, 2, 25, 36, LEGNO)            # albero
-    for y in range(4, 34):                  # vela grande (triangolo) a trama sul lato in ombra
-        w = (y - 4) * 18 // 30
-        for x in range(25, 26 + w):
-            ombra = x > 25 + w * 0.6 and (BAYER4[y % 4][x % 4] + 0.5) / 16 < 0.5
+    # Barca a vela 64x64 (Andrea 07/11: piu' grande e dettagliata): scafo
+    # bianco con riga blu e oblo', tuga, albero con sartie, randa con stecche
+    # e ombra a trama, fiocco, bandierina, scia di schiuma.
+    t = Tela(64, 64)
+    BLU, BLU_S, VETRO = c("2A4A9A"), c("1A2E66"), c("8FD8F0")
+    t.rett(31, 2, 33, 47, LEGNO)            # albero
+    t.rett(33, 2, 38, 5, ROSSO)             # bandierina
+    for y in range(6, 45):                  # sartie: un filo sottile ai due lati
+        t.p(31 - (y - 6) * 14 // 39, y, GRIGIO)
+    for y in range(5, 44):                  # randa: stecche e ombra a trama verso la balumina
+        w = (y - 5) * 24 // 39
+        for x in range(33, 34 + w):
+            ombra = x > 33 + w * 0.55 and (BAYER4[y % 4][x % 4] + 0.5) / 16 < (x - 33 - w * 0.55) / max(1, w * 0.45)
             t.p(x, y, VELA_O if ombra else VELA)
-    for y in range(10, 34):                 # fiocco
-        w = (y - 10) * 12 // 24
-        t.rett(22 - w, y, 23, y + 1, VELA)
-    t.rett(22, 26, 40, 28, ROSSO)           # riga sulla vela
-    for y in range(36, 44):                 # scafo
-        r = (y - 36) // 2
-        t.rett(6 + r, y, 44 - r, y + 1, BIANCO if y < 39 else CIANO)
-    t.rett(4, 44, 44, 46, CHIARO)           # scia
+        if y in (14, 23, 32):
+            t.rett(33, y, 34 + w, y + 1, VELA_O)
+    t.rett(33, 43, 58, 45, LEGNO)           # boma
+    for y in range(12, 44):                 # fiocco
+        w = (y - 12) * 15 // 32
+        for x in range(30 - w, 31):
+            t.p(x, y, VELA if x > 30 - w * 0.6 else VELA_O)
+    t.rett(36, 36, 56, 38, ROSSO)           # riga rossa sulla randa
+    t.rett(24, 41, 40, 47, BIANCO)          # tuga con finestrini
+    for x in (26, 31, 36):
+        t.rett(x, 43, x + 3, 45, VETRO)
+    for y in range(47, 57):                 # scafo: prua a destra, riga blu, oblo'
+        r = (y - 47) * 2 // 3
+        t.rett(4 + r, y, 62 - r * 2 // 3 - (3 if y > 52 else 0), y + 1, BIANCO if y < 51 else (BLU if y < 53 else BLU_S))
+    for x in (16, 24, 32, 40):
+        t.p(x, 49, VETRO); t.p(x + 1, 49, VETRO)
+    for x in range(2, 62):                  # scia e schiuma a trama
+        for y in range(57, 61):
+            if (BAYER4[y % 4][x % 4] + 0.5) / 16 < (0.8 if y < 59 else 0.35):
+                t.p(x, y, CHIARO if y > 58 else BIANCO)
+    t.contorno(SCURO)
+    return t
+
+
+def motoscafo():
+    # Motoscafo 64x32: scafo rosso e bianco, parabrezza, pilota, onda di prua.
+    t = Tela(64, 32)
+    VETRO, PELLE = c("8FD8F0"), c("E0A878")
+    t.rett(30, 8, 34, 11, PELLE)            # testa del pilota
+    t.rett(29, 11, 35, 16, c("2A4A9A"))
+    for y in range(8, 16):                  # parabrezza inclinato
+        t.rett(36 + (16 - y) // 2, y, 41 + (16 - y) // 2, y + 1, VETRO)
+    t.rett(14, 14, 50, 17, BIANCO)          # coperta
+    for y in range(17, 25):                 # scafo a cuneo, prua a destra
+        r = (y - 17)
+        t.rett(8 + r // 2, y, 60 - r * 2, y + 1, ROSSO if y < 20 else (BIANCO if y < 22 else c("8E2228")))
+    t.rett(4, 18, 9, 22, SCURO)             # motore fuoribordo
+    for x in range(0, 64):                  # scia bianca e onda di prua
+        for y in range(25, 31):
+            if (BAYER4[y % 4][x % 4] + 0.5) / 16 < (0.9 - x / 80 if y < 28 else 0.3):
+                t.p(x, y, BIANCO if y < 28 else CHIARO)
     t.contorno(SCURO)
     return t
 
@@ -125,7 +165,7 @@ def ombrellone():
 def main():
     forza = "--forza" in sys.argv
     comuni = SCENARI / "comuni" / "oggetti"
-    for nome, fn in (("boa", boa), ("barca", barca), ("scoglio", scoglio), ("faro", faro), ("ombrellone", ombrellone)):
+    for nome, fn in (("boa", boa), ("barca", barca), ("motoscafo", motoscafo), ("scoglio", scoglio), ("faro", faro), ("ombrellone", ombrellone)):
         salva(fn(), comuni / f"{nome}.png", RAW / "comuni" / f"{nome}.sglraw", forza)
 
 

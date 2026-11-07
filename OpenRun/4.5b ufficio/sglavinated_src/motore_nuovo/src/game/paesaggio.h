@@ -50,6 +50,7 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
 struct PezziPonte {
     const Sprite* boa = nullptr;
     const Sprite* barca = nullptr;
+    const Sprite* motoscafo = nullptr;
     const Sprite* scoglio = nullptr;
     const Sprite* faro = nullptr;
     const Sprite* ombrellone = nullptr;

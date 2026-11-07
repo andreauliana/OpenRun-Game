@@ -2741,7 +2741,7 @@
             "lv_05_spray",
             "lv_06_desktop"
          ],
-         "nota": "Dintorni del ponte (07/11): segnaposto 48x48 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+         "nota": "Dintorni del ponte (07/11): segnaposto 64x64 (barca a vela piu grande e dettagliata, dondola e deriva) sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       },
       {
          "id": "oggetto.comuni.scoglio",
@@ -2790,6 +2790,22 @@
             "lv_06_desktop"
          ],
          "nota": "Dintorni del ponte (07/11): segnaposto 32x32 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.motoscafo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/motoscafo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/motoscafo.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 64x32, motoscafo che naviga avanti e indietro sul mare sotto il ponte, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       }
    ]
 }

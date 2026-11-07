@@ -20,6 +20,12 @@ struct SpriteInstance {
     // Rivali (Andrea 29/10, "piu' evidenti"): freccia del colore dell'auto
     // sopra il tetto, niente nomi. 0 = nessuna freccia.
     u32 segnalino = 0;
+    // Oggetti a terra del ponte (Andrea 07/11, "che si muovano leggermente"):
+    // 0 fermo, 1 barca a vela (deriva e dondola), 2 motoscafo (naviga),
+    // 3 boa (ondeggia), 4 faro (luce che lampeggia e fascio), 5 gabbiano (vola,
+    // senza sprite; scale = quota in unita' mondo), 6 pesce che salta (senza sprite).
+    u8 anima = 0;
+    f32 fase = 0.0f;
 };
 
 // Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
@@ -318,6 +324,8 @@ private:
     void drawPortale(const Road::ProjectedSeg& p, u8 tipo);     // porta del ponte, autostrada, citta'
     void drawLuciTerra(const Road::ProjectedSeg& p);            // luci di avvicinamento a terra
     void drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa);
+    // Oggetto a terra del ponte alla profondita' zr: base e centro gia' proiettati.
+    void drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 scl);
     static constexpr i32 PILA_OGNI_SEG = 12;        // pile del viadotto sotto le rampe
     static constexpr i32 LUCI_OGNI_SEG = 3;         // una coppia di luci a terra ogni 3 segmenti
     static constexpr i32 RIVA_ACQUA = Road::RIVA_ACQUA;

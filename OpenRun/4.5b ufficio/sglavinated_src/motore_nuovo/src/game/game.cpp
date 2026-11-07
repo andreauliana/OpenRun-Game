@@ -613,9 +613,9 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         const i32 idxDx = carica("comuni", "freccia_curva_dx");
         const i32 idxSx = carica("comuni", "freccia_curva_sx");
         // Pezzi comuni del ponte: registrati prima di prendere i puntatori.
-        const char* kPonte[5] = {"boa", "barca", "scoglio", "faro", "ombrellone"};
-        i32 idxPonte[5];
-        for (i32 q = 0; q < 5; ++q) idxPonte[q] = carica("comuni", kPonte[q]);
+        const char* kPonte[6] = {"boa", "barca", "scoglio", "faro", "ombrellone", "motoscafo"};
+        i32 idxPonte[6];
+        for (i32 q = 0; q < 6; ++q) idxPonte[q] = carica("comuni", kPonte[q]);
         PezziPaesaggio pz;
         for (i32 j = 0; j < nOggetti; ++j) {
             const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;
@@ -632,8 +632,8 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         // Dintorni del ponte (Andrea 07/11): boe, barche, scogli e faro sul
         // mare, alberi e cespugli sul prato basso sotto le rampe.
         PezziPonte pp;
-        const Sprite** dest[5] = {&pp.boa, &pp.barca, &pp.scoglio, &pp.faro, &pp.ombrellone};
-        for (i32 q = 0; q < 5; ++q) *dest[q] = idxPonte[q] >= 0 ? ren_.oggettoSprite(idxPonte[q]) : nullptr;
+        const Sprite** dest[6] = {&pp.boa, &pp.barca, &pp.scoglio, &pp.faro, &pp.ombrellone, &pp.motoscafo};
+        for (i32 q = 0; q < 6; ++q) *dest[q] = idxPonte[q] >= 0 ? ren_.oggettoSprite(idxPonte[q]) : nullptr;
         disponiTerraPonte(road_, pz, pp, seed_, oggettiTerra_);
         std::printf("paesaggio %s: %zu oggetti a zone\n", livelloId.c_str(), oggettiStrada_.size());
         return;

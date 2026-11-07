@@ -167,9 +167,11 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
             for (i32 l = 0; l < 2; ++l) {
                 const f32 lato = l == 0 ? -1.0f : 1.0f;
                 const f32 zz = z + tra(0.0f, PASSO * 0.6f);
-                if (caso() < 0.5f) { const Sprite* s = scegli(pz.ciuffi); if (s) metti(s, lato, zz, tra(500.0f, 1400.0f), scalaPer(s, H_CIUFFO * tra(0.8f, 1.2f))); }
-                if (caso() < 0.35f) { const Sprite* s = scegli(pz.cespugli); if (s) metti(s, lato, zz, tra(700.0f, 2200.0f), scalaPer(s, H_CESPUGLIO * tra(0.9f, 1.3f))); }
-                if (caso() < 0.28f) { const Sprite* s = scegli(pz.alberi); if (s) metti(s, lato, zz, tra(1200.0f, 4200.0f), scalaPer(s, H_ALBERO * tra(0.85f, 1.15f))); }
+                // Un po' radi (Andrea 07/11 sera), con gli oggetti del tema del livello.
+                if (caso() < 0.3f) { const Sprite* s = scegli(pz.ciuffi); if (s) metti(s, lato, zz, tra(500.0f, 1400.0f), scalaPer(s, H_CIUFFO * tra(0.8f, 1.2f))); }
+                if (caso() < 0.18f) { const Sprite* s = scegli(pz.cespugli); if (s) metti(s, lato, zz, tra(700.0f, 2200.0f), scalaPer(s, H_CESPUGLIO * tra(0.9f, 1.3f))); }
+                if (caso() < 0.14f) { const Sprite* s = scegli(pz.alberi); if (s) metti(s, lato, zz, tra(1200.0f, 4200.0f), scalaPer(s, H_ALBERO * tra(0.85f, 1.15f))); }
+                if (caso() < 0.1f) mettiArredo(tuttoArredo, lato, zz, tra(300.0f, 1200.0f));
             }
         }
         // Curve strette: cartelli a freccia sul lato esterno, uno ogni 5 file (2000).
@@ -186,7 +188,10 @@ void disponiTerraPonte(const Road& road, const PezziPaesaggio& pz, const PezziPo
     const auto& segs = road.segments();
     const i32 n = (i32)segs.size();
     if (n == 0) return;
-    constexpr f32 H_BOA = 460.0f, H_BARCA = 1500.0f, H_SCOGLIO = 560.0f, H_FARO = 5600.0f, H_OMBRELLONE = 760.0f;
+    // Andrea 07/11 sera: barche piu' grandi; capi del ponte un po' radi, con
+    // gli oggetti del tema; elementi inattesi e in movimento (anima, Renderer).
+    constexpr f32 H_BOA = 460.0f, H_BARCA = 2600.0f, H_MOTOSCAFO = 1100.0f, H_SCOGLIO = 560.0f,
+                  H_FARO = 5600.0f, H_OMBRELLONE = 760.0f;
     const f32 bordo = Road::ROAD_WIDTH * 0.5f;
     Rng rnd(seme ^ 0x504F4E54u);
     auto caso = [&rnd]() { return (f32)rnd.next(10000) / 10000.0f; };
@@ -194,16 +199,25 @@ void disponiTerraPonte(const Road& road, const PezziPaesaggio& pz, const PezziPo
     auto scegli = [&rnd](const std::vector<const Sprite*>& v) -> const Sprite* {
         return v.empty() ? nullptr : v[rnd.next((u32)v.size())];
     };
-    auto metti = [&](const Sprite* s, f32 lato, f32 z, f32 distanza, f32 altezza) {
-        if (!s) return;
-        const f32 scala = scalaPer(s, altezza);
-        const f32 meta = 0.5f * (f32)s->width * Renderer::SPRITE_WORLD_PX * scala;
+    auto metti = [&](const Sprite* s, f32 lato, f32 z, f32 distanza, f32 altezza, u8 anima = 0) {
+        if (!s && anima < 5) return;
+        const f32 scala = s ? scalaPer(s, altezza) : altezza; // senza sprite: scale = quota
+        const f32 meta = s ? 0.5f * (f32)s->width * Renderer::SPRITE_WORLD_PX * scala : 0.0f;
         SpriteInstance o;
         o.worldZ = z;
         o.worldX = lato * (bordo + std::max(500.0f, distanza) + meta); // mai sotto l'impalcato
         o.scale = scala;
         o.sprite = s;
+        o.anima = anima;
+        o.fase = tra(0.0f, 6.28f);
         out.push_back(o);
+    };
+    // Oggetti del tema del livello (lampioni, insegne...) con la loro scala solita.
+    std::vector<const Sprite*> tema = pz.arredo;
+    tema.insert(tema.end(), pz.lampioni.begin(), pz.lampioni.end());
+    auto mettiTema = [&](f32 lato, f32 z, f32 distanza) {
+        const Sprite* s = scegli(tema);
+        if (s) metti(s, lato, z, distanza, (f32)s->height * Renderer::SPRITE_WORLD_PX * scalaArredo(s));
     };
     i32 ponti = 0;
     for (i32 i = 0; i < n; i += 2) {
@@ -213,31 +227,41 @@ void disponiTerraPonte(const Road& road, const PezziPaesaggio& pz, const PezziPo
         // Un faro per ponte, su uno scoglio, dove la strada lascia la costa.
         if (sg.acqua && !segs[(size_t)((i + n - 2) % n)].acqua) {
             const f32 lato = (ponti++ & 1) ? -1.0f : 1.0f;
-            metti(pp.faro, lato, z + 600.0f, 5200.0f, H_FARO);
+            metti(pp.faro, lato, z + 600.0f, 5200.0f, H_FARO, 4);
             metti(pp.scoglio, lato, z + 300.0f, 4700.0f, H_SCOGLIO * 1.6f);
         }
         const i32 riva = sg.acqua ? 0 : sg.riva;
         const bool mare = riva >= 0 && riva < Road::RIVA_ACQUA - 2;
         const bool battigia = riva >= Road::RIVA_ACQUA - 2 && riva <= Road::RIVA_ACQUA + 3;
         const bool spiaggia = riva > Road::RIVA_ACQUA + 3 && riva < Road::RIVA_ACQUA + Road::RIVA_SABBIA + Road::RIVA_SFUMA / 2;
+        // Lontano dai capi del ponte: il motoscafo naviga avanti e indietro di 5000.
+        bool largo = sg.acqua;
+        for (i32 d = 1; largo && d <= 40; ++d)
+            largo = segs[(size_t)((i + d) % n)].acqua && segs[(size_t)((i - d + n) % n)].acqua;
         for (i32 l = 0; l < 2; ++l) {
             const f32 lato = l == 0 ? -1.0f : 1.0f;
             const f32 zz = z + tra(0.0f, 300.0f);
             if (mare) {
                 // Boe a file regolari (segnano il canale), barche al largo, qualche scoglio.
-                if ((i % 16) == 0) metti(pp.boa, lato, zz, 1400.0f + tra(0.0f, 400.0f), H_BOA);
-                if (caso() < 0.035f) metti(pp.barca, lato, zz, tra(3500.0f, 15000.0f), H_BARCA * tra(0.85f, 1.15f));
-                if (caso() < 0.03f) metti(pp.scoglio, lato, zz, tra(2500.0f, 9000.0f), H_SCOGLIO * tra(0.8f, 1.4f));
+                if ((i % 16) == 0) metti(pp.boa, lato, zz, 1400.0f + tra(0.0f, 400.0f), H_BOA, 3);
+                if (caso() < 0.03f) metti(pp.barca, lato, zz, tra(3000.0f, 14000.0f), H_BARCA * tra(0.85f, 1.15f), 1);
+                if (largo && caso() < 0.012f) metti(pp.motoscafo, lato, zz, tra(2500.0f, 6000.0f), H_MOTOSCAFO, 2);
+                if (caso() < 0.025f) metti(pp.scoglio, lato, zz, tra(2500.0f, 9000.0f), H_SCOGLIO * tra(0.8f, 1.4f));
+                if (caso() < 0.03f) metti(nullptr, lato, zz, tra(1500.0f, 7000.0f), 0.0f, 6);           // pesce
+                if (caso() < 0.05f) metti(nullptr, lato, zz, tra(800.0f, 5000.0f), tra(1500.0f, 4500.0f), 5); // gabbiano
             } else if (battigia) {
-                if (caso() < 0.45f) metti(pp.scoglio, lato, zz, tra(600.0f, 9000.0f), H_SCOGLIO * tra(0.7f, 1.5f));
+                if (caso() < 0.3f) metti(pp.scoglio, lato, zz, tra(600.0f, 9000.0f), H_SCOGLIO * tra(0.7f, 1.5f));
+                if (caso() < 0.06f) metti(nullptr, lato, zz, tra(500.0f, 4000.0f), tra(900.0f, 2500.0f), 5);
             } else if (spiaggia) {
-                if (caso() < 0.3f) metti(pp.ombrellone, lato, zz, tra(700.0f, 6000.0f), H_OMBRELLONE * tra(0.9f, 1.1f));
-                if (caso() < 0.12f) metti(pp.scoglio, lato, zz, tra(900.0f, 7000.0f), H_SCOGLIO * tra(0.6f, 1.1f));
+                if (caso() < 0.18f) metti(pp.ombrellone, lato, zz, tra(700.0f, 6000.0f), H_OMBRELLONE * tra(0.9f, 1.1f));
+                if (caso() < 0.08f) metti(pp.scoglio, lato, zz, tra(900.0f, 7000.0f), H_SCOGLIO * tra(0.6f, 1.1f));
+                if (caso() < 0.05f) mettiTema(lato, zz, tra(600.0f, 3000.0f));
             } else {
-                // Prato basso sotto le rampe: la campagna del livello continua.
-                if (caso() < 0.55f) { const Sprite* s = scegli(pz.ciuffi); metti(s, lato, zz, tra(500.0f, 2500.0f), H_CIUFFO * tra(0.8f, 1.2f)); }
-                if (caso() < 0.3f) { const Sprite* s = scegli(pz.cespugli); metti(s, lato, zz, tra(600.0f, 4000.0f), H_CESPUGLIO * tra(0.9f, 1.3f)); }
-                if (caso() < 0.22f * pz.densitaAlberi) { const Sprite* s = scegli(pz.alberi); metti(s, lato, zz, tra(800.0f, 7000.0f), H_ALBERO * tra(0.85f, 1.15f)); }
+                // Prato basso sotto le rampe: la campagna e gli oggetti del tema, radi.
+                if (caso() < 0.35f) { const Sprite* s = scegli(pz.ciuffi); metti(s, lato, zz, tra(500.0f, 2500.0f), H_CIUFFO * tra(0.8f, 1.2f)); }
+                if (caso() < 0.16f) { const Sprite* s = scegli(pz.cespugli); metti(s, lato, zz, tra(600.0f, 4000.0f), H_CESPUGLIO * tra(0.9f, 1.3f)); }
+                if (caso() < 0.12f * pz.densitaAlberi) { const Sprite* s = scegli(pz.alberi); metti(s, lato, zz, tra(800.0f, 7000.0f), H_ALBERO * tra(0.85f, 1.15f)); }
+                if (caso() < 0.06f) mettiTema(lato, zz, tra(600.0f, 2500.0f));
             }
         }
     }

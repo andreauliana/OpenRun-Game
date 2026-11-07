@@ -97,9 +97,12 @@ Tutto automatico, nessun campo nuovo obbligatorio in livello.json:
 - Luci a terra prima della rampa e dopo la discesa (una luce corre verso il ponte o
   se ne allontana) e prima del bivio; lungo queste luci un boschetto piu' fitto
   (le zone aperto, periferia, autostrada), cosi' i lati all'uscita non restano spogli.
-- Sul mare e sulla riva: boe, barche, scogli, un faro per ponte, ombrelloni
-  (comuni a tutti i temi, `TOOLS/disegna_ponte.py`); sul prato basso gli alberi e
-  i cespugli del livello. Andrea li ridisegna con lo stesso nome e la stessa misura.
+- Sul mare e sulla riva: boe che ondeggiano, barche a vela che dondolano e derivano,
+  motoscafi che navigano, scogli, un faro per ponte con la luce che gira, ombrelloni,
+  gabbiani in volo e pesci che saltano (disegnati a codice). Pezzi comuni a tutti i
+  temi, `TOOLS/disegna_ponte.py`; sul prato basso e sulla spiaggia, radi, gli alberi,
+  i cespugli e gli oggetti del tema del livello. Andrea li ridisegna con lo stesso
+  nome e la stessa misura.
 - Cambi di zona del paesaggio: portale con pannelli e frecce entrando e uscendo
   dall'autostrada, arco di lampadine entrando e uscendo dalla citta' (mai nella
   zona del bivio ne' sul ponte).
