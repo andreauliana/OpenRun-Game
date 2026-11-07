@@ -19,8 +19,10 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   cartella ne' i raw in `motore_nuovo/dati/sprite_raw/giocatore/pose/`.
 
 ## Posizione e grandezza (motore_nuovo/src/render/renderer.h)
-- `AUTO_GIOCATORE_LARGHEZZA = 100`: larghezza a schermo cercata, scala intera
-  calcolata sulla carrozzeria della posa dritta (pixel netti).
+- `AUTO_GIOCATORE_LARGHEZZA = 50` (Andrea 07/11: 100 era il doppio dei rivali):
+  grande come un rivale sulla stessa riga. Larghezza a schermo cercata, scala intera
+  calcolata sulla carrozzeria della posa dritta (pixel netti): con la posa
+  di oggi (carrozzeria 25 px) le misure possibili sono 50, 75 o 100 px.
 - `AUTO_GIOCATORE_TERRA_Y = 222`: le ruote appoggiano sulla strada in basso.
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
 
