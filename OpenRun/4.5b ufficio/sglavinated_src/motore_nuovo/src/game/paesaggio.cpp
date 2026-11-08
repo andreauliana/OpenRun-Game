@@ -23,7 +23,12 @@ constexpr f32 H_ARREDO_ALTO = 1280.0f;      // come prima (OGGETTO_ALTEZZA_MONDO
 constexpr f32 MARGINE_MIN = 260.0f;
 // Ai capi di una zona citta' i palazzi si diradano e si allontanano in
 // RAMPA_CITTA segmenti: si entra in citta' passando dalla periferia.
-constexpr f32 RAMPA_CITTA = 45.0f;
+// Andrea 08/11: 45 segmenti erano un muro di palazzi "da un momento
+// all'altro"; ora ~5 s a piena velocita', prima bassi e radi poi la gola.
+constexpr f32 RAMPA_CITTA = 170.0f;
+// Inizio di ogni livello (cambio tema): palazzi radi e bassi nei primi
+// RAMPA_LIVELLO segmenti anche fuori citta', il tema entra con gradualita'.
+constexpr f32 RAMPA_LIVELLO = 260.0f;
 
 f32 scalaPer(const Sprite* s, f32 altezzaMondo) {
     return altezzaMondo / ((f32)s->height * Renderer::SPRITE_WORLD_PX);
@@ -113,7 +118,10 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
         const Zona zona = (Zona)zonaSeg[(size_t)seg];
         bordoQui = z >= zBivioInizio ? bordoBivio : bordo;
         if (zona == Zona::Nessuna) continue;
-        const f32 rampa = std::clamp((f32)dalCapo[(size_t)seg] / RAMPA_CITTA, 0.0f, 1.0f);
+        // Rampa morbida (smoothstep): ai capi cresce piano, poi accelera.
+        const f32 rampaLiv = std::clamp((f32)seg / RAMPA_LIVELLO, 0.0f, 1.0f);
+        f32 rampa = std::min(std::clamp((f32)dalCapo[(size_t)seg] / RAMPA_CITTA, 0.0f, 1.0f), rampaLiv);
+        rampa = rampa * rampa * (3.0f - 2.0f * rampa);
         // Boschetti: gli alberi vengono a macchie lungo la strada, non uniformi.
         const f32 bosco = 0.5f + 0.5f * std::sin(z / 23000.0f + (f32)(seme % 97u));
 
@@ -131,20 +139,28 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
                 if (caso() < 0.30f) { const Sprite* s = scegli(pz.ciuffi); if (s) metti(s, lato, zz, tra(260.0f, 1000.0f), scalaPer(s, H_CIUFFO * tra(0.8f, 1.2f))); }
                 // Arredo del tema come prima: una fila ogni 1600, lato alternato.
                 if (k % 4 == 0 && ((k / 4 + l) & 1)) mettiArredo(tuttoArredo, lato, zz, tra(260.0f, 900.0f));
-                if (caso() < 0.06f) { const Sprite* s = scegli(pz.edifici); if (s) metti(s, lato, zz, tra(1800.0f, 5500.0f), PX_EDIFICIO / Renderer::SPRITE_WORLD_PX); }
+                if (caso() < 0.06f * rampaLiv) { const Sprite* s = scegli(pz.edifici); if (s) metti(s, lato, zz, tra(1800.0f, 5500.0f), PX_EDIFICIO / Renderer::SPRITE_WORLD_PX); }
                 if (caso() < 0.06f * pz.densitaAlberi) { const Sprite* s = scegli(pz.alberi); if (s) metti(s, lato, zz, tra(900.0f, 5000.0f), scalaPer(s, H_ALBERO * tra(0.85f, 1.15f))); }
                 if (caso() < 0.08f) { const Sprite* s = scegli(pz.cespugli); if (s) metti(s, lato, zz, tra(400.0f, 2000.0f), scalaPer(s, H_CESPUGLIO * tra(0.8f, 1.3f))); }
                 break;
             case Zona::Citta:
                 // Palazzi in fila, vicini alla strada: una "gola" di facciate.
                 // Ai capi della zona si diradano e si allontanano (periferia).
-                if ((k & 1) == 0 && caso() < 0.35f + 0.6f * rampa && !pz.edifici.empty()) {
+                if ((k & 1) == 0 && caso() < 0.12f + 0.83f * rampa && !pz.edifici.empty()) {
                     const size_t n = pz.edifici.size();
-                    // Al centro della citta' i piu' alti, ai capi i piu' bassi.
+                    // Al centro della citta' i piu' alti, ai capi i piu' bassi:
+                    // con rampa bassa si pesca quasi sempre fra i bassi.
                     size_t idx = rnd.next((u32)n);
-                    if (rampa < 0.5f && idx + 1 < n && caso() < 0.6f) idx = n - 1;
+                    if (n > 1 && caso() > rampa) idx = n / 2 + rnd.next((u32)(n - n / 2));
+                    if (rampa < 0.3f && caso() < 0.7f) idx = n - 1;
                     metti(pz.edifici[idx], lato, z + tra(0.0f, PASSO * 0.3f),
-                          520.0f + (1.0f - rampa) * 1800.0f + tra(0.0f, 300.0f), PX_EDIFICIO / Renderer::SPRITE_WORLD_PX);
+                          520.0f + (1.0f - rampa) * 2600.0f + tra(0.0f, 300.0f), PX_EDIFICIO / Renderer::SPRITE_WORLD_PX);
+                } else if ((k & 1) == 0 && rampa < 0.8f && caso() < 0.35f * (1.0f - rampa)) {
+                    // Al posto dei palazzi mancanti: verde di periferia.
+                    const bool albero = caso() < 0.5f * pz.densitaAlberi;
+                    const Sprite* s = albero ? scegli(pz.alberi) : scegli(pz.cespugli);
+                    if (s) metti(s, lato, zz, tra(500.0f, 2400.0f),
+                                 scalaPer(s, (albero ? H_ALBERO : H_CESPUGLIO) * tra(0.85f, 1.15f)));
                 }
                 if (k % 4 == 0) mettiArredo(pz.lampioni.empty() ? pz.arredo : pz.lampioni, lato, z, 260.0f);
                 else if (k % 8 == 2 && caso() < 0.5f) mettiArredo(pz.arredo, lato, zz, tra(260.0f, 380.0f));
