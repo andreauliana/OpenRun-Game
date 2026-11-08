@@ -183,6 +183,11 @@ constexpr f32 RIVALE_SCHIVA_DIST = 12000.0f;   // traffico entro questa distanza
 constexpr f32 RIVALE_SCHIVA_LATERALE = 330.0f; // sovrapposizione laterale (unita' mondo)
 constexpr f32 RIVALE_SCHIVA_MARGINE = 480.0f;  // passa a questa distanza laterale dal veicolo
 constexpr f32 RIVALE_SCHIVA_PER_S = 1500.0f;   // cambio corsia rapido per schivare
+constexpr f32 AFFIANCATA_DX = 650.0f;          // auto "affiancata" per lo sterzo pieno della sportellata
+// Chi arriva da dietro passa accanto al giocatore a questa distanza laterale
+// (Andrea 08/11: prima si spostava sull'altro lato della strada e non lo si
+// poteva mai toccare di fianco).
+constexpr f32 RIVALE_SORPASSO_DX = 360.0f;
 constexpr f32 RIVALE_X_MAX = 650.0f;           // laterale massimo di un rivale (unita' di corsia)
 // Traffico comune (Andrea 27/10): pochi veicoli lenti, uno ogni 3-4 s a tutta
 // velocita'. Velocita' 35-55% della punta del giocatore.
@@ -1442,7 +1447,10 @@ void Game::aggiornaRivali() {
         // alla sua velocita' solo finche' e' ancora dritto dietro di lui.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
         if (distacco < Game::URTO_Z_MIN && distacco > Game::URTO_Z_MIN - 4000.0f && std::abs(dxGiocatore) < 400.0f) {
-            r.xObiettivo = (player_.x - player_.centroCorsia) > 0.0f ? -450.0f : 450.0f;
+            const f32 xGioc = player_.x - player_.centroCorsia;
+            f32 lato = dxGiocatore > 1.0f ? 1.0f : (dxGiocatore < -1.0f ? -1.0f : (xGioc > 0.0f ? -1.0f : 1.0f));
+            if (std::abs(xGioc + lato * RIVALE_SORPASSO_DX) > RIVALE_X_MAX) lato = -lato; // niente spazio: dall'altra parte
+            r.xObiettivo = std::clamp(xGioc + lato * RIVALE_SORPASSO_DX, -RIVALE_X_MAX, RIVALE_X_MAX);
             if (distacco > Game::URTO_Z_MIN - 800.0f && std::abs(dxGiocatore) < URTO_LARGHEZZA)
                 r.passo = std::min(r.passo, velocitaGiocatore);
         }
@@ -1863,6 +1871,22 @@ void Game::aggiornaGuida(f32 dt) {
         Pad comandi = input_;
         if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
         player_.input(comandi, dt);
+        // Sportellata (Andrea 08/11): sterzando verso un'auto affiancata lo
+        // sterzo resta pieno anche alla punta, cosi' la si puo' colpire di lato.
+        player_.caloPunta = Player::caloPuntaNormale();
+        if (std::abs(player_.sterzo()) > 0.1f && !playerFlipping_) {
+            const f32 giro = (f32)road_.totalLength();
+            for (const auto& s : sprites_) {
+                f32 dz = std::fmod(s.worldZ - road_.playerZ, giro);
+                if (dz < 0.0f) dz += giro;
+                const f32 dx = s.worldX - player_.x;
+                if (dz > Game::URTO_Z_MIN - 300.0f && dz < Game::URTO_Z_MAX && std::abs(dx) < AFFIANCATA_DX &&
+                    dx * player_.sterzo() > 0.0f) {
+                    player_.caloPunta = 0.0f;
+                    break;
+                }
+            }
+        }
         player_.update(dt);
         if (arrivo_) frenataArrivo(dt);
 

@@ -32,6 +32,10 @@ public:
     // assoluto; fuoristrada e limite laterale si misurano da centroCorsia.
     f32 centroCorsia = 0.0f;
     f32 larghezzaCorsia = 1.0f; // 1 = strada intera, meno sui rami del bivio
+    // Calo dello sterzo alla punta usato in questo frame: Game lo azzera quando
+    // si sterza verso un'auto affiancata (Andrea 08/11: la sportellata deve riuscire).
+    f32 caloPunta = STEER_CALO_PUNTA;
+    static constexpr f32 caloPuntaNormale() { return STEER_CALO_PUNTA; }
     // Calcola offroad e applica il limite laterale rispetto alla corsia.
     void vincolaAllaCorsia();
     static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
@@ -58,7 +62,7 @@ private:
     // a velocita' massima, ~356). Gate: >= +/-200 in 0.6 s partendo da fermi.
     static constexpr f32 STEER_MAX = 700.0f; // Andrea 06/11 sera: piano si gira di piu' (era 600)
     static constexpr f32 STEER_V_PIENA = 0.25f;
-    static constexpr f32 STEER_CALO_PUNTA = 0.35f; // Andrea 06/11 sera: alla punta si sterza meno (era 0.15)
+    static constexpr f32 STEER_CALO_PUNTA = 0.25f; // Andrea 06/11 sera 0.35 (era 0.15); 08/11: 0.25, alla punta lo sterzo deve restare un po' piu' forte della curva
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.

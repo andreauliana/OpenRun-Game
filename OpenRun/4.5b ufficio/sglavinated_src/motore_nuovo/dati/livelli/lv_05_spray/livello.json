@@ -32,7 +32,7 @@
     {"collina": 0.0, "dune": 0.09, "onde": 3, "lunghezza": 300, "tipo": "saliscendi"}
   ],
   "seme": 8812,
-  "tempo_limite_s": 50,
+  "tempo_limite_s": 54,
   "checkpoint_ogni_segmenti": 300,
   "difficolta": "facile",
   "note_difficolta": "curve ampie e dolci, colline rare, rettilinei lunghi per respirare, traffico leggero; intensita' solo nelle curve",

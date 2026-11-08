@@ -59,8 +59,22 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   strada la spinta e' un quarto. A solo gas l'auto esce nelle curve; sterzando
   le curve si tengono, nelle piu' strette conviene alzare il piede.
 - **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 700`, pieno da 1/4
-  della punta, `STEER_CALO_PUNTA = 0.35` (alla punta ~455 unita'/s): piano si
-  gira di piu', forte di meno.
+  della punta, `STEER_CALO_PUNTA = 0.25` (08/11, era 0.35; alla punta ~525
+  unita'/s): piano si gira di piu', forte di meno, ma alla punta lo sterzo
+  resta piu' forte della spinta anche nelle curve strette (lv_05 a tutto gas:
+  max 652 su 700).
+- **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
+  e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
+  a colpirla di lato. I rivali che arrivano da dietro passano a
+  `RIVALE_SORPASSO_DX = 360` dal giocatore (prima scappavano a 450 dal centro).
+- **Tempi delle tappe (Andrea 08/11: "basta schiacciare l'acceleratore e
+  arrivi alla fine"):** `tempo_limite_s` di ogni livello = circa 1.45 volte il
+  tempo del bot pulito del gate gara (lv_01 50, lv_02 48, lv_03 59, lv_04 48,
+  lv_05 54, lv_06 47); al cambio di tappa si aggiunge l'80%
+  (`tempo_extra_fattore` 0.8 in config.json). Guida pulita: arrivo con ~25 s
+  di margine; un incidente per tappa: si arriva per poco; solo acceleratore:
+  il tempo finisce alla 2a o 3a tappa. Se si allunga o accorcia un livello,
+  ricalcolare il suo `tempo_limite_s` con la stessa regola; non alzarli a caso.
 - **Fuori strada:** rallenta, l'auto trema sul terreno; rientrando
   sull'asfalto un piccolo sobbalzo (`RIENTRO_S = 0.35`). Incidente solo dopo
   2 s fuori strada **e** sopra il 30% della punta (`OFFROAD_INCIDENTE_V`);

@@ -31,7 +31,7 @@
     {"collina": 0.0, "dune": 0.09, "onde": 3, "lunghezza": 300, "tipo": "saliscendi"}
   ],
   "seme": 2098,
-  "tempo_limite_s": 65,
+  "tempo_limite_s": 59,
   "checkpoint_ogni_segmenti": 325,
   "difficolta": "facile",
   "note_difficolta": "curve piu' frequenti ma dolci, qualche collina, traffico moderato; show piu' frequenti (escalation rapida da testare)",
