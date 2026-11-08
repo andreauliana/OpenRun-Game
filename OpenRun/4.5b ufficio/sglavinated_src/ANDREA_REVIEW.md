@@ -14,6 +14,8 @@ Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json
 
 **Guida e tempi (Andrea 08/11, Claude):** le curve spingono verso l'esterno e si sterza DENTRO la curva; sterzo un po' piu' forte alla punta e pieno verso un'auto affiancata (sportellata); i `tempo_limite_s` dei livelli sono stati stretti (circa 1.45 volte il tempo del bot pulito) perche' col solo acceleratore si arrivava in fondo. Regole e numeri in `REGOLE_AUTO_GIOCATORE.md`: nessun agente alza i tempi o cambia sterzo/spinta delle curve.
 
+**Gate gara FALLITO dopo PERC1 D2 (Claude 08/11 alle 11:45):** col traffico per tratto, in lv_05 due rivali arrivati da rami diversi si disegnavano uno sopra l'altro (96 sovrapposizioni, massimo 20). Causa vecchia: la distanza fra rivali usava il progresso totale invece di quello dentro la tappa. Sistemato da Claude in `Game::aggiornaRivali` (`progressoTappa`); D2 resta [x]. Nessun agente alza il limite delle sovrapposizioni del gate.
+
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
 Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
