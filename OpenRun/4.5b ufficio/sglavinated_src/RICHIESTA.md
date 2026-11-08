@@ -362,18 +362,39 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 ---
 
-## BLOCCO MIG1 — @developer + @developer-junior + @grafico — migliorie di grafica e di gara (Andrea 08/11 sera)
-| Campo | Valore |
+## BLOCCO MIG1 — @grafico + @developer + @developer-junior — AREA MIG1: migliorie di grafica e di gara (Andrea 08/11 sera)
+
+<!-- ===== INIZIO AREA MIG1: tutto il lavoro nuovo sta qui dentro ===== -->
+
+**Base legacy 08/11 (non si tocca):** quello che c'e' oggi nel gioco e' approvato da Andrea. Elenco in ANDREA_REVIEW "AGGIORNAMENTI SERALI 08/11": auto e guida (sterzo, curve, derapata, tempi), HUD, premiazione, musica ed effetti audio, ponte, percorsi, galleria, partenza. **Si migliora aggiungendo, non si rifa'.**
+
+**Come si lavora:** un passo per turno, il primo tuo non ancora [x]. Se dipende da un altro ruolo, salta al tuo passo successivo. Niente domande ad Andrea: si procede. Nel RIASSUNTO: `MIG1 <passo> [x]` con comando ed exit code. Dopo ogni passo di codice o dati: `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0; replay 2x IDENTICO; Pi 400 <= 12 ms/frame. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
+
+### @grafico — cartelloni leggibili
+- **G1** Ridisegna i cartelloni sponsor (`UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/`, script `genera_sponsor.py`) con STESSO nome e STESSA misura: una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo. Marchi inventati, mai marchi veri. Raw con `png_a_raw.py`, catalogo aggiornato. Prima/dopo in Test area.
+- **G2** Dopo D1-D3: guarda gli screenshot e scrivi 3 osservazioni in `out/grafico/ULTIMO_TURNO.md`.
+
+### @developer — meccanica di gara
+- **D1 Paletti abbattuti** (`Game::abbattiPali`; disegno in `Game::render`, "Paletti abbattuti"). Oggi volano verso il basso e finiscono nel nero sotto lo schermo. Devono volare di lato, **atterrare sull'erba a fianco della strada** e restare li', scorrendo via con la strada secondo la velocita' (posizione nel mondo, non sullo schermo). Mai sotto la riga delle ruote, mai fuori dall'area di gioco.
+- **D2 Sportellata efficace.** Affiancati a un rivale, anche alla punta, un colpo di sterzo rapido deve andare a segno. Aperti solo `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX` (REGOLE_AUTO_GIOCATORE). Il rivale colpito sbanda un attimo, perde un po' e dopo ~5 s torna normale; resta la memoria dei danni (-3% a botta, KO alla 4a).
+- **D3 Rivali con carattere** (seme fisso, deterministico): uno aggressivo che chiude la traiettoria, uno prudente, uno vendicativo che dopo una tua sportellata ti cerca per restituirla, uno che sbaglia in curva. Mai sovrapposti, mai teletrasporti.
+- **D4 Nomi dei 7 rivali** (`NOMI_RIVALI`, game.cpp, max 6 lettere maiuscole): strani, simpatici ed estroversi, da culture e parti del mondo diverse, legati ai temi dei livelli (neon, atomico, foglie, cromo, spray, desktop). Elenco con origine e tema in `out/developer/NOMI_RIVALI.md`.
+- **D5 (facoltativo) Audio extra:** solo effetti NUOVI in aggiunta (es. paletto che vola, rivale che si vendica). Gli effetti di oggi non si cambiano.
+
+### @developer-junior — prove e review
+- **J1** Review breve dello stato attuale in `out/developer-junior/REVIEW_MIG1.md` (cosa va, cosa no, una miglioria piccola).
+- **J2** Dopo D1: prova che un paletto abbattuto resta sempre dentro lo schermo e sopra la riga delle ruote, con screenshot.
+- **J3** Dopo D2: bot affiancato a un rivale alla punta; misura in quanti secondi va a segno una sportellata (deve riuscire) e che il rivale si riprende.
+- **J4** Dopo ogni passo D: aggiorna `REVIEW_MIG1.md` (riscritto).
+
+### @capo
+- Una riga di registro per turno; `out/capo/STATI_PROPOSTI.md` allineato a MIG1. Niente richieste ad Andrea.
+
+| Chi tocca adesso | @grafico G1 · @developer D1 · @developer-junior J1 · @capo una riga di registro |
 |---|---|
-| Richiesta di Andrea | 08/11 sera: tutto quello che c'e' e' approvato e bloccato (ANDREA_REVIEW "AGGIORNAMENTI SERALI 08/11"). Ora migliorie: cartelloni piu' leggibili, paletti che volano bene, sportellate efficaci, rivali piu' interessanti, nomi simpatici. "Altrimenti non serve a niente usare gli agenti." |
-| Regola d'oro | **Si migliora, non si rifa'.** Un passo per turno, il primo tuo non ancora [x]; se dipende da un altro ruolo salta al successivo. Niente domande ad Andrea: si procede e si scrive nel RIASSUNTO `MIG1 <passo> [x]` con comando ed exit code. Fantasia ammessa dentro i limiti qui sotto. |
-| Vietato | Tutto l'elenco bloccato di ANDREA_REVIEW (auto e guida, HUD, premiazione, musica, effetti audio di oggi, ponte, percorsi, galleria, partenza). Audio: solo effetti extra NUOVI in aggiunta (es. per i paletti o per un rivale che si vendica), mai cambiare quelli esistenti. In `REGOLE_AUTO_GIOCATORE.md` e' aperta SOLO la parte sportellata/rivali/paletti. |
-| @grafico | **G1** cartelloni sponsor leggibili: i cartelloni fatti all'inizio sono simpatici ma si leggono male. Rifalli con STESSO nome e STESSA misura (`assets_originali/sponsor/`, script `genera_sponsor.py`): una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo; marchi inventati, mai marchi veri. Prima/dopo in `UFFICIO/Officina/Test area/`. **G2** guarda gli screenshot di D1-D3 e scrive 3 osservazioni in `out/grafico/ULTIMO_TURNO.md`. |
-| @developer | **D1** paletti abbattuti (`Game::abbattiPali`, disegno in `Game::render` "Paletti abbattuti"): oggi volano verso il basso e finiscono nel nero sotto lo schermo. Devono volare di lato, **atterrare sull'erba a fianco della strada** e restare li', scorrendo via con la strada secondo la velocita' (posizione nel mondo, non sullo schermo); mai sotto la riga delle ruote ne' fuori dall'area di gioco. **D2** sportellata: affiancati a un rivale, anche alla punta, un colpo di sterzo rapido deve andare a segno (la finestra di contatto e la spinta laterale, valori aperti in REGOLE). Il rivale colpito sbanda un attimo, perde un po' e dopo qualche secondo (~5 s) torna normale; la memoria dei danni (-3% a botta, KO alla 4a) resta. **D3** rivali piu' vivi, con un carattere per rivale (seme fisso, deterministico): chi e' aggressivo e ti chiude, chi e' prudente, chi dopo una tua sportellata ti cerca per restituirla, chi sbaglia in curva. Mai sovrapposti, mai teletrasporti. **D4** nomi dei 7 rivali (`NOMI_RIVALI`, game.cpp, max 6 lettere maiuscole): strani, simpatici ed estroversi, da culture e parti del mondo diverse, legati ai temi dei livelli (neon, atomico, foglie, cromo, spray, desktop). Scrivi in `out/developer/NOMI_RIVALI.md` nome, origine e tema. |
-| @developer-junior | **J1** dopo D1: gate o prova che un paletto abbattuto resta sempre dentro lo schermo e sopra la riga delle ruote, con screenshot. **J2** dopo D2: prova con bot affiancato a un rivale alla punta che misura in quanti secondi va a segno una sportellata (deve riuscire) e che il rivale si riprende. **J3** dopo ogni passo: review breve in `out/developer-junior/REVIEW_MIG1.md`: cosa va, cosa no, una miglioria piccola proposta. |
-| Vincoli | Passi piccoli; `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 dopo ogni passo di codice o dati. Replay 2x IDENTICO, budget Pi 400 <= 12 ms/frame. Log e screenshot solo in `UFFICIO/Officina/Test area/`. |
-| Chi tocca adesso | @grafico G1 · @developer D1 · @developer-junior J3 (review dello stato attuale) · @capo una riga di registro. |
 | Stato | [ ] | (Claude 08/11 sera: nuovo, da Andrea) |
+
+<!-- ===== FINE AREA MIG1 ===== -->
 
 ---
 
