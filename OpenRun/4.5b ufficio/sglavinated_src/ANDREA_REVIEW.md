@@ -16,7 +16,16 @@ Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json
 
 **Gate gara FALLITO dopo PERC1 D2 (Claude 08/11 alle 11:45):** col traffico per tratto, in lv_05 due rivali arrivati da rami diversi si disegnavano uno sopra l'altro (96 sovrapposizioni, massimo 20). Causa vecchia: la distanza fra rivali usava il progresso totale invece di quello dentro la tappa. Sistemato da Claude in `Game::aggiornaRivali` (`progressoTappa`); D2 resta [x]. Nessun agente alza il limite delle sovrapposizioni del gate.
 
-**Galleria PERC1 D4 rifatta da Claude (08/11 alle 13:45):** sul main la galleria di lv_02 e lv_05 si vedeva come uno spazio piatto di un solo colore (soffitto disegnato sopra la strada, cielo visibile; Andrea: "sembra un'area malvagia"). Ora ha pareti, soffitto a fasce, luci ogni 10 segmenti, imbocco e uscita, e fuori dall'uscita si vede solo la bocca. Codice in `Renderer::drawRoad`/`drawSegmentTrapezoid`/`drawSprite` (`GALLERIA_LARGHEZZA`, `GALLERIA_ALTEZZA`): nessun agente lo ritocca finche' Andrea non l'ha vista. Il gate tratti falliva per la curva dopo la galleria scritta come oggetto in linea: ora e' il tratto con nome `uscita_galleria` in `tratti.json` (in `tracciato` solo nomi di tratti, mai oggetti in linea). lv_02 e lv_05 sono piu' lunghi: `tempo_limite_s` 58 e 61. `REVIEW_PERC1.md` del junior e' vecchio su questi punti.
+**Galleria PERC1 D4 rifatta da Claude (08/11 alle 13:45):** sul main la galleria di lv_02 e lv_05 si vedeva come uno spazio piatto di un solo colore (soffitto disegnato sopra la strada, cielo visibile; Andrea: "sembra un'area malvagia"). Ora ha pareti, soffitto a fasce, luci ogni 10 segmenti, imbocco e uscita, e fuori dall'uscita si vede solo la bocca. Codice in `Renderer::drawRoad`/`drawSegmentTrapezoid`/`drawSprite` (`GALLERIA_LARGHEZZA`, `GALLERIA_ALTEZZA`): nessun agente lo ritocca (approvata da Andrea 08/11 sera, vedi sotto). Il gate tratti falliva per la curva dopo la galleria scritta come oggetto in linea: ora e' il tratto con nome `uscita_galleria` in `tratti.json` (in `tracciato` solo nomi di tratti, mai oggetti in linea). lv_02 e lv_05 sono piu' lunghi: `tempo_limite_s` 58 e 61. `REVIEW_PERC1.md` del junior e' vecchio su questi punti.
+
+## GALLERIA, INGRESSO CITTA' E AUTO SENZA RAZZO — APPROVATI DA ANDREA (08/11 21:31, PR #82-#83)
+
+Andrea: "segna tutto come ok per me". Fatto e bloccato, nessun agente lo ritocca:
+- **Galleria** (lv_02, lv_05): pareti e soffitto con `parete_galleria`, neon divisi per lato (tema a sinistra, ciano a destra) con qualche tubo rotto o che sfarfalla, una plafoniera ogni 10 segmenti da un lato solo, imbocco con collina del tema e fronte di cemento SENZA scritte, uscita con luce del giorno. Codice in `Renderer` (`drawSegmentTrapezoid` ramo galleria, `texGalleria`, `drawImboccoGalleria`, `drawLuceGalleria`).
+- **Graffito abusivo** dentro la galleria: "OPEN RUN" da terra al soffitto, lettere su misura (`kGlifi` in `mascheraGraffito`: O larga, P stretta, R a triangolo) con scacchiera grossa ai lati, piu' le tag RUN e OR88. Le lettere le ritocca solo Andrea.
+- **Ingresso graduale** in citta' e a inizio livello (`paesaggio.cpp`, `RAMPA_CITTA`, `RAMPA_LIVELLO`).
+- **Alta velocita'**: niente razzi ne' fiamme, solo sollevamento di 3 px e ombra piu' scura (`REGOLE_AUTO_GIOCATORE.md`).
+In sospeso, da NON fare senza Andrea: le "linee orizzontali / passaggi" sparse sul percorso e il riordino dei cartelloni.
 
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
