@@ -1369,11 +1369,35 @@ void Game::aggiornaTraffico(f32 dt) {
             const f32 dz = a.z - v.z;
             if (dz > 0.0f && dz < TRAFFICO_CODA) passo = std::min(passo, a.passo);
         }
+        // PERC1 D2: stessa regola verso i rivali sulla tappa del giocatore. Con
+        // piu' auto il traffico non deve tamponare un rivale lento (curva o KO):
+        // si accoda invece di attraversarlo.
+        {
+            const i32 tappaGiocatore = indiceTappa(tappaId_);
+            for (const Rivale& r : rivali_) {
+                if (r.tempoArrivoS >= 0.0f) continue;
+                if (!(r.passoPercorso < r.nPercorso && r.percorso[r.passoPercorso] == tappaGiocatore)) continue;
+                if (std::abs(r.x - v.x) > 300.0f) continue;
+                const f32 dz = r.progressoTappa - v.z;
+                if (dz > 0.0f && dz < TRAFFICO_CODA) passo = std::min(passo, r.passo);
+            }
+        }
         v.z += passo * dt;
         // Dove la strada si stringe la corsia esterna finisce: il veicolo
         // rientra guardando 1 s avanti, prima che il bordo lo raggiunga.
         const f32 qui = xCorsia(v.corsia, v.z), avanti = xCorsia(v.corsia, v.z + passo);
-        const f32 obiettivo = std::abs(avanti) < std::abs(qui) ? avanti : qui;
+        f32 obiettivo = std::abs(avanti) < std::abs(qui) ? avanti : qui;
+        // PERC1 D2: con il traffico piu' denso due auto affiancate non devono
+        // fondersi nella stessa corsia quando la strada si stringe. Chi deve
+        // rientrare aspetta che l'altro sia passato: chi e' dietro si accoda.
+        for (const Veicolo& a : traffico_) {
+            if (&a == &v || !a.attivo) continue;
+            if (std::abs(a.z - v.z) > TRAFFICO_CODA) continue;
+            if (std::abs(a.x - obiettivo) > 300.0f) continue; // corsia libera
+            if (a.z > v.z) passo = std::min(passo, a.passo * 0.9f);
+            obiettivo = qui; // resta largo finche' l'altro non e' lontano
+            break;
+        }
         const f32 lat = TRAFFICO_LATERALE_PER_S * dt;
         v.x = v.x < obiettivo ? std::min(obiettivo, v.x + lat) : std::max(obiettivo, v.x - lat);
     }
@@ -1479,6 +1503,25 @@ void Game::aggiornaRivali() {
                     if (std::abs(r.xObiettivo) >= RIVALE_X_MAX - 1.0f && r.xObiettivo * dir > 0.0f) dir = -dir;
                     r.xObiettivo = std::clamp(r.xObiettivo + dir * RIVALE_SPOSTAMENTO, -RIVALE_X_MAX, RIVALE_X_MAX);
                 }
+            }
+        }
+        // PERC1 D2: auto solide anche fra rivali (Andrea 29/10: "i rivali non
+        // restano appiccicati"). Il confronto usa la quota dentro la tappa
+        // (progressoTappa, la stessa del disegno): `progresso` somma anche le
+        // tappe gia' percorse, che per due rivali possono valere lunghezze
+        // diverse e quindi nascondere una coppia affiancata. Chi sta dietro
+        // resta almeno a meta' distanza minima.
+        for (i32 j = 0; j < RIVALI; ++j) {
+            if (j == i) continue;
+            const Rivale& q = rivali_[j];
+            if (!(q.passoPercorso < q.nPercorso && q.percorso[q.passoPercorso] == tappaGiocatore)) continue;
+            if (std::abs(r.x - q.x) >= RIVALE_LATERALE_MIN) continue;
+            const f32 dzTappa = q.progressoTappa - r.progressoTappa;
+            if (dzTappa > 0.0f && dzTappa < RIVALE_DISTANZA_MIN * 0.5f) {
+                const f32 sposta = RIVALE_DISTANZA_MIN * 0.5f - dzTappa;
+                r.progresso -= sposta;
+                r.progressoTappa -= sposta;
+                r.passo = std::min(r.passo, q.passo);
             }
         }
         // Traffico davanti nella stessa corsia: cambia corsia per tempo e, se
