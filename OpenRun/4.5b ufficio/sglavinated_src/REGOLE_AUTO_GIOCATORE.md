@@ -33,6 +33,7 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)
+- **Curve (Andrea 08/11):** la curva spinge l'auto verso l'ESTERNO (curva a destra -> spinta a sinistra, col quadrato della velocita'); si tiene la curva sterzando DENTRO, cioe' a destra in una curva a destra. Prima il segno era invertito e bisognava sterzare dalla parte opposta: non rimetterlo.
 - **Razzo alla punta** (Andrea 07/11, sostituisce il "niente sollevamento"
   del 06/11): dopo `RAZZO_ATTESA_S = 1` s alla punta in rettilineo l'auto si
   alza fino a `SOLLEVAMENTO_MAX_PX = 7` px e galleggia; due getti ciano sotto

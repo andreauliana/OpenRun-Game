@@ -1933,7 +1933,10 @@ void Game::aggiornaGuida(f32 dt) {
         const f32 curvaQui = road_.curvaAt(player_.z);
         const f32 vRel = player_.speed / player_.maxSpeed();
         const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f);
-        player_.x += curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
+        // Verso l'ESTERNO (Andrea 08/11): curva > 0 = curva a destra, spinge a
+        // sinistra; si tiene la curva sterzando DENTRO (destra in curva a destra).
+        // Prima il segno era invertito e la curva tirava verso l'interno.
+        player_.x -= curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
         if (assistenzaBivio_ > 0.0f) {
             // Richiamo morbido verso il centro del ramo piu' vicino.
             const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
@@ -1973,7 +1976,7 @@ void Game::aggiornaGuida(f32 dt) {
         // gomme fumano dal lato esterno; anche a sterzo pieno alla punta.
         {
             const f32 sterzo = player_.sterzo();
-            const f32 forza = curvaQui * vRel * vRel; // + = spinta verso destra
+            const f32 forza = -curvaQui * vRel * vRel; // + = spinta verso destra (verso l'esterno)
             f32 obiettivoSg = 0.0f;
             if (!player_.offroad && !playerFlipping_ && !arrivo_) {
                 if (std::abs(sterzo) > 0.4f && sterzo * forza < 0.0f)
@@ -2260,7 +2263,7 @@ void Game::render() {
     const f32 curvaMedia = (road_.curvaAt(player_.z - (f32)Road::SEG_LEN) + road_.curvaAt(player_.z) +
                             road_.curvaAt(player_.z + (f32)Road::SEG_LEN)) / 3.0f;
     const f32 forzaCurva = playerFlipping_ || arrivo_ ? 0.0f
-        : std::clamp(curvaMedia / 0.8f, -1.0f, 1.0f) * vRelCurva * vRelCurva;
+        : -std::clamp(curvaMedia / 0.8f, -1.0f, 1.0f) * vRelCurva * vRelCurva; // verso l'esterno
     i32 posaGiocatore = POSA_GIOCATORE_DRITTA;
     if (!playerFlipping_) {
         constexpr f32 SOGLIA_PENDENZA = 80.0f; // unita' di quota su 4 segmenti (~10% di pendenza)
