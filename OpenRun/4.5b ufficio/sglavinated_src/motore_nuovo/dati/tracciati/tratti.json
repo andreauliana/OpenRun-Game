@@ -11,7 +11,7 @@
     "curva_stretta_sx": {"curva": -0.85, "collina": 0.0, "lunghezza": 230, "entrata": -1, "uscita": -1},
     "collina_su": {"curva": 0.0, "collina": 0.2, "lunghezza": 300, "entrata": -1, "uscita": -1},
     "collina_giu": {"curva": 0.0, "collina": -0.2, "lunghezza": 300, "entrata": -1, "uscita": -1},
-    "rettilineo_largo": {"curva": 0.0, "collina": 0.0, "lunghezza": 480, "entrata": -1, "uscita": -1, "larghezza": 2.0, "traffico": 1.0},
+    "rettilineo_largo": {"curva": 0.0, "collina": 0.0, "lunghezza": 480, "entrata": -1, "uscita": -1, "larghezza": 2.0, "traffico": 1.6},
     "curva_larga_dx": {"curva": 0.45, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1, "larghezza": 2.0},
     "curva_larga_sx": {"curva": -0.45, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1, "larghezza": 2.0},
     "dune": {"curva": 0.0, "collina": 0.0, "lunghezza": 360, "entrata": -1, "uscita": -1, "dune": 0.06, "onde": 4},
