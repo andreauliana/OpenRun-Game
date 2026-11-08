@@ -84,24 +84,8 @@ echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== screenshot P1 (curva, cartelloni sponsor, personaggio con fumetto)"
-# Retry up to 3 times: the pad pattern in salvaScreenshotP1 alternates gas/stop
-# every 40 frames after frame 600, but the show/fumetto needs 500 consecutive idle frames.
-# The current pattern sometimes succeeds (framePers=446) but can fail (framePers=-1).
-MAX_ATTEMPTS=3
-R=1
-ATTEMPT=0
-while [ "$ATTEMPT" -lt "$MAX_ATTEMPTS" ]; do
-  ATTEMPT=$((ATTEMPT + 1))
-  ./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
-  R=$?
-  if [ "$R" -eq 0 ]; then
-    # Verify screenshot P1 has personaggio+fumetto frame > 0
-    if grep -q "personaggio+fumetto frame [1-9]" "$LOG"; then
-      break
-    fi
-    printf "Screenshot P1 attempt %d: framePers=-1, riprovo...\n" "$ATTEMPT"
-  fi
-done
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
+R=$?
 echo "   exit $R  (immagini in UFFICIO/Officina/Test area/screenshot_p1/)"
 [ "$R" -ne 0 ] && RC=$R
 
