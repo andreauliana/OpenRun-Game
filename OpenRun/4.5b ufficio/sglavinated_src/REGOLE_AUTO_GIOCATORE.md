@@ -58,11 +58,22 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   `CURVA_SPINTA_V2 = 1200` (game.cpp, unita'/s a curva 1 e punta). Fuori
   strada la spinta e' un quarto. A solo gas l'auto esce nelle curve; sterzando
   le curve si tengono, nelle piu' strette conviene alzare il piede.
-- **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 700`, pieno da 1/4
-  della punta, `STEER_CALO_PUNTA = 0.25` (08/11, era 0.35; alla punta ~525
-  unita'/s): piano si gira di piu', forte di meno, ma alla punta lo sterzo
-  resta piu' forte della spinta anche nelle curve strette (lv_05 a tutto gas:
-  max 652 su 700).
+- **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 780`, pieno da 1/4
+  della punta, `STEER_CALO_PUNTA = 0.05` (Andrea 08/11 pomeriggio: "fa fatica
+  a muoversi tra destra o sinistra ad alte velocita'"; alla punta ~740
+  unita'/s, prima 525): la strada si attraversa in meno di 2 s. A tutto gas e
+  sterzo pieno si tengono le curve fino a 0.6 (spinta 720).
+- **Derapata (Andrea 08/11: "nelle curve piu' forti un contrappeso, sgommando
+  per rimanere in carreggiata"):** curva forte (|curva| x v^2 sopra 0.5, piena
+  a 0.75), sterzo quasi pieno DENTRO la curva, velocita' sopra il 60%: le
+  gomme strisciano, la spinta verso l'esterno cala fino al 40%
+  (`DERAPATA_PRESA`) e l'auto perde velocita' (`DERAPATA_FRENO_PER_S = 0.90`,
+  a tutto gas si scende a circa 260 km/h). Si vede la posa piu' girata, la
+  coda che va fuori di qualche pixel, l'auto che trema di 1 px, fumo pieno
+  dalle gomme; si sente lo stridio (mixer, `setSgommata`). Niente rotazione
+  dello sprite. Col solo acceleratore niente derapata: la curva porta fuori.
+  Valori in game.cpp (`DERAPATA_*`); prova: curve strette di lv_05 tenute a
+  sterzo pieno (max 415 su 700), solo gas finisce il tempo alla 2a tappa.
 - **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
   e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
   a colpirla di lato. I rivali che arrivano da dietro passano a

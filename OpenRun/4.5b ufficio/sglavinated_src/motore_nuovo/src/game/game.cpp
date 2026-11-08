@@ -81,6 +81,23 @@ constexpr f32 CURVA_SPINTA = 0.015f; // (storico, lineare: non piu' usato)
 // piede o frenare un attimo. Bloccato: REGOLE_AUTO_GIOCATORE.md.
 constexpr f32 CURVA_SPINTA_V2 = 1200.0f;
 constexpr f32 CURVA_DERIVA_SCHERMO = 140.0f; // Andrea 07/11: scivolata visiva verso l'esterno in curva (unita' di offsetX)
+// Derapata (Andrea 08/11: "nelle curve piu' forti un contrappeso, sgommando
+// per rimanere in carreggiata, visto che ho pieno sterzo e massima velocita'").
+// Parte quando la spinta della curva (|curva| * v^2) supera DERAPATA_FORZA_MIN,
+// lo sterzo e' quasi pieno DENTRO la curva e la velocita' e' alta. A derapata
+// piena la spinta verso l'esterno cala di DERAPATA_PRESA e le gomme che
+// strisciano tolgono velocita' (DERAPATA_FRENO_PER_S al secondo): la curva
+// stretta (0.85) si tiene a sterzo pieno, ma si esce piu' lenti. Col solo
+// acceleratore niente derapata: la curva porta fuori come prima.
+constexpr f32 DERAPATA_FORZA_MIN = 0.50f;   // curve 0.5 e meno: niente derapata
+constexpr f32 DERAPATA_FORZA_PIENA = 0.75f;
+constexpr f32 DERAPATA_STERZO_MIN = 0.7f;
+constexpr f32 DERAPATA_V_MIN = 0.6f;
+constexpr f32 DERAPATA_PRESA = 0.40f;
+constexpr f32 DERAPATA_FRENO_PER_S = 0.90f;
+constexpr f32 DERAPATA_ENTRATA_S = 0.20f;
+constexpr f32 DERAPATA_USCITA_S = 0.35f;
+constexpr f32 DERAPATA_DERIVA_SCHERMO = 120.0f; // scivolata visiva in piu' (unita' di offsetX)
 // Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
 // senza essere contrastato dalla spinta centrifuga.
@@ -895,6 +912,7 @@ void Game::init(const std::string& livelloId) {
     razzoAttesaS_ = 0.0f;
     sgommata_ = 0.0f;
     latoSgommata_ = 0;
+    derapata_ = 0.0f;
     saltoMaxAltezza_ = 0.0f;
     atterraggioS_ = -1.0f;
     forzaAtterraggio_ = 0.0f;
@@ -2033,7 +2051,20 @@ void Game::aggiornaGuida(f32 dt) {
                                     : std::max(0.0f, assistenzaBivio_ - dt / ASSIST_USCITA_S);
         const f32 curvaQui = road_.curvaAt(player_.z);
         const f32 vRel = player_.speed / player_.maxSpeed();
-        const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f);
+        // Derapata: solo in strada, a sterzo quasi pieno dentro la curva.
+        {
+            const f32 sterzo = player_.sterzo();
+            f32 obiettivoDer = 0.0f;
+            if (!player_.offroad && !playerFlipping_ && !arrivo_ && vRel >= DERAPATA_V_MIN &&
+                std::abs(sterzo) >= DERAPATA_STERZO_MIN && sterzo * curvaQui > 0.0f)
+                obiettivoDer = std::clamp((std::abs(curvaQui) * vRel * vRel - DERAPATA_FORZA_MIN) /
+                                          (DERAPATA_FORZA_PIENA - DERAPATA_FORZA_MIN), 0.0f, 1.0f);
+            derapata_ = obiettivoDer > derapata_ ? std::min(obiettivoDer, derapata_ + dt / DERAPATA_ENTRATA_S)
+                                                 : std::max(obiettivoDer, derapata_ - dt / DERAPATA_USCITA_S);
+            if (derapata_ > 0.0f) player_.speed *= std::pow(DERAPATA_FRENO_PER_S, derapata_ * dt);
+        }
+        const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f) *
+                           (1.0f - DERAPATA_PRESA * derapata_);
         // Verso l'ESTERNO (Andrea 08/11): curva > 0 = curva a destra, spinge a
         // sinistra; si tiene la curva sterzando DENTRO (destra in curva a destra).
         // Prima il segno era invertito e la curva tirava verso l'interno.
@@ -2083,6 +2114,7 @@ void Game::aggiornaGuida(f32 dt) {
                 if (std::abs(sterzo) > 0.4f && sterzo * forza < 0.0f)
                     obiettivoSg = std::clamp((std::abs(forza) - 0.25f) / 0.45f, 0.0f, 1.0f);
                 if (std::abs(sterzo) > 0.9f && vRel > 0.8f) obiettivoSg = std::max(obiettivoSg, 0.45f);
+                obiettivoSg = std::max(obiettivoSg, derapata_); // derapata: fumo pieno
             }
             if (obiettivoSg > 0.0f)
                 latoSgommata_ = forza > 0.05f ? 1 : forza < -0.05f ? -1 : (sterzo < 0.0f ? 1 : -1);
@@ -2222,6 +2254,7 @@ void Game::aggiornaGuida(f32 dt) {
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
+    mixer_.setSgommata(playerFlipping_ ? 0.0f : derapata_); // gomme che stridono in derapata
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
@@ -2243,6 +2276,7 @@ void Game::aggiornaMenu(f32 dt) {
     disegnoShow_.aggiorna(tempoGiocoS_, showManager_);
     // Menu e risultati: solo la radio (motore spento), piena.
     mixer_.setOvattato(0.0f);
+    mixer_.setSgommata(0.0f);
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, 0.0f);
 }
 
@@ -2382,6 +2416,8 @@ void Game::render() {
             const f32 f = std::abs(forzaCurva);
             livelloCurva = std::min(4, livello + (f > 0.55f ? 2 : f > 0.2f ? 1 : 0));
         }
+        // Derapata: muso tutto dentro la curva mentre la coda va fuori.
+        if (livello > 0 && derapata_ > 0.3f) livelloCurva = 4;
         if (livello > 0) posaGiocatore = (sterzo < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + livelloCurva - 1;
         else if (pendenza > SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_SALITA;
         else if (pendenza < -SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_DISCESA;
@@ -2398,7 +2434,12 @@ void Game::render() {
     fx.forzaAtterraggio = forzaAtterraggio_;
     // In curva l'auto scivola di qualche pixel verso l'esterno sullo schermo
     // (fino a ~5 px, CURVA_DERIVA_SCHERMO unita' * 0.035), poi torna al centro.
-    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia + forzaCurva * CURVA_DERIVA_SCHERMO,
+    // Derapata (Andrea 08/11): la coda va verso l'esterno e l'auto trema di un
+    // pixel sulle gomme che strisciano. Niente rotazione: le pose disegnate da
+    // Andrea restano dritte (REGOLE_AUTO_GIOCATORE.md).
+    const f32 derivaDerapata = playerFlipping_ ? 0.0f
+        : derapata_ * ((f32)latoSgommata_ * DERAPATA_DERIVA_SCHERMO + 30.0f * std::sin(tempoGiocoS_ * 37.0f));
+    ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia + forzaCurva * CURVA_DERIVA_SCHERMO + derivaDerapata,
                        player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
                        posaGiocatore, km_ * 1000.0f, &fx);
