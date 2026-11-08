@@ -24,6 +24,7 @@ constexpr f32 MUTE_LIVELLO_SUONA = 0.15f;  // InfoMusica::livello sopra cui un c
 constexpr f32 OVATTATO_FC_PIENA = 18000.0f; // Hz: filtro aperto
 constexpr f32 OVATTATO_FC_CHIUSA = 650.0f;  // Hz: tutto ovattato
 constexpr f32 OVATTATO_TEMPO_S = 0.12f;     // quanto ci mette ad aprirsi/chiudersi
+constexpr f32 STRIDIO_VOLUME = 3600.0f;     // stridio pieno: si sente sopra il motore, sotto la musica
 } // namespace
 
 Mixer::Mixer(u32 sampleRate) : sampleRate_(sampleRate) {}
@@ -240,6 +241,25 @@ f32 Mixer::sfxUrto() {
     return s;
 }
 
+// Stridio delle gomme: due toni acuti (circa 1.2 e 1.75 kHz) che salgono e
+// scendono un po' a caso, con un tremolo veloce e un filo di fruscio. Volume
+// sotto il motore pieno; deterministico (generatore interno, niente orologi).
+f32 Mixer::sfxStridio() {
+    const f32 sr = (f32)sampleRate_;
+    rumore_ = rumore_ * 1664525u + 1013904223u;
+    const f32 n = (f32)(i32)(rumore_ >> 8 & 0xFFFF) / 32768.0f - 1.0f;
+    stridioDeriva_ += (n * 0.5f - stridioDeriva_) * 0.0004f;
+    stridioRumore_ += (n - stridioRumore_) * 0.35f;
+    const f32 f0 = 1180.0f * (1.0f + 0.35f * stridioDeriva_);
+    stridioFase_[0] += f0 / sr;
+    stridioFase_[1] += f0 * 1.47f / sr;
+    stridioFase_[2] += 23.0f / sr;
+    for (f32& f : stridioFase_) if (f > 1.0f) f -= 1.0f;
+    const f32 trem = 0.7f + 0.3f * std::sin(2.0f * PI * stridioFase_[2]);
+    const f32 tono = 0.6f * std::sin(2.0f * PI * stridioFase_[0]) + 0.4f * std::sin(2.0f * PI * stridioFase_[1]);
+    return STRIDIO_VOLUME * stridio_ * (tono * trem + 0.3f * stridioRumore_);
+}
+
 void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
     if (!enabled_) {
         for (i32 i = 0; i < frames * 2; ++i) out[i] = 0;
@@ -268,12 +288,15 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
     if (amp > 12000.0f) amp = 12000.0f;
 
     f32 phaseInc = base / (f32)sampleRate_;
+    const f32 aStridio = 1.0f - std::exp(-1.0f / (0.06f * (f32)sampleRate_)); // ~60 ms per salire o scendere
 
     for (i32 i = 0; i < frames; ++i) {
         f32 eng = amp * (std::sin(2.0f * PI * phase_) +
                          0.4f * std::sin(2.0f * PI * phase_ * 2.0f));
         f32 l = eng * engineVol_, r = l;
         if (urtoN_ >= 0) { const f32 u = sfxUrto(); l += u; r += u; }
+        stridio_ += (stridioVoluto_ - stridio_) * aStridio;
+        if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }
         if (suona_) {
             // Lettura del nastro con interpolazione lineare tra due campioni.
             const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;
