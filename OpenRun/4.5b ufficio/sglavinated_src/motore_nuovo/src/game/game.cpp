@@ -351,6 +351,9 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     JsonValue tv;
     if (jsonGet(o, "traffico", tv) && jsonIsNumber(tv))
         d.traffico = std::clamp((f32)jsonAsNumber(tv), 0.2f, 2.0f);
+    // PERC1 D4: galleria del tratto (0/1, default 0).
+    JsonValue gv;
+    if (jsonGet(o, "galleria", gv) && jsonIsNumber(gv)) d.galleria = (f32)jsonAsNumber(gv);
 }
 
 // nomi (facoltativo): il nome di ogni tratto letto, nello stesso ordine di out
@@ -557,6 +560,11 @@ void Game::caricaLivello(const std::string& livelloId) {
                     cartelloni_.size(), daFile ? "sì" : "no", densita * 100.0);
     }
     scenaSprites_.reserve(sprites_.capacity() + cartelloni_.size()); // zero alloc per frame a regime
+    // Galleria (PERC1 D4): dentro la galleria niente cartelloni sponsor.
+    cartelloni_.erase(std::remove_if(cartelloni_.begin(), cartelloni_.end(),
+                                     [&](const SpriteInstance& b) { return road_.galleriaAt(b.worldZ); }),
+                      cartelloni_.end());
+    scenaSprites_.reserve(sprites_.capacity() + cartelloni_.size());
 
     // Skyline della tappa (DECO1 2b): raw del livello da
     // motore_nuovo/dati/sprite_raw/scenari/<livello>/skyline.sglraw (id del
@@ -625,6 +633,9 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             }
         const i32 idxDx = carica("comuni", "freccia_curva_dx");
         const i32 idxSx = carica("comuni", "freccia_curva_sx");
+        // PERC1 D3: frecce con segno del dosso per curve cieche (dune > 0), se presenti.
+        const i32 idxCrestaDx = carica("comuni", "freccia_cresta_dx");
+        const i32 idxCrestaSx = carica("comuni", "freccia_cresta_sx");
         // Pezzi comuni del ponte: registrati prima di prendere i puntatori.
         const char* kPonte[6] = {"boa", "barca", "scoglio", "faro", "ombrellone", "motoscafo"};
         i32 idxPonte[6];
@@ -640,8 +651,14 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             for (i32 idx : idxRuolo[r]) ruoli[r]->push_back(ren_.oggettoSprite(idx));
         pz.frecciaDx = idxDx >= 0 ? ren_.oggettoSprite(idxDx) : nullptr;
         pz.frecciaSx = idxSx >= 0 ? ren_.oggettoSprite(idxSx) : nullptr;
+        pz.frecciaCrestaDx = idxCrestaDx >= 0 ? ren_.oggettoSprite(idxCrestaDx) : nullptr;
+        pz.frecciaCrestaSx = idxCrestaSx >= 0 ? ren_.oggettoSprite(idxCrestaSx) : nullptr;
         pz.densitaAlberi = paesaggioDensitaAlberi_;
         disponiPaesaggio(road_, zonaSeg_, pz, zBivioInizio, seed_, oggettiStrada_);
+        // PERC1 D4: niente oggetti/cartelloni/alberi dentro la galleria.
+        oggettiStrada_.erase(std::remove_if(oggettiStrada_.begin(), oggettiStrada_.end(),
+                                            [&](const SpriteInstance& o) { return road_.galleriaAt(o.worldZ); }),
+                             oggettiStrada_.end());
         // Dintorni del ponte (Andrea 07/11): boe, barche, scogli e faro sul
         // mare, alberi e cespugli sul prato basso sotto le rampe.
         PezziPonte pp;
@@ -678,7 +695,8 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
             const f32 lato = ((k + fascia) & 1) ? 1.0f : -1.0f;
             SpriteInstance o;
             o.worldZ = z + (f32)rnd.next((u32)(OGGETTI_PASSO_Z * 0.5f)); // file non allineate
-            if (road_.sospesoAt(o.worldZ)) continue; // ponte e rampe: niente oggetti nel vuoto
+            // ponte, rampe e gallerie (PERC1 D4): niente oggetti nel vuoto/dentro
+            if (road_.sospesoAt(o.worldZ) || road_.galleriaAt(o.worldZ)) continue;
             o.worldX = lato * (bordoQui + distanza + metaLarghezza);
             o.scale = scala;
             o.sprite = sprite;

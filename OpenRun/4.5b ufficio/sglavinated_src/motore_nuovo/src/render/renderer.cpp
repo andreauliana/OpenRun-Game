@@ -166,6 +166,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // lontano al vicino, quindi la strada vicina copre il terreno.
     const bool sospeso = cur.sospeso && next.sospeso;
     const bool ponte = sospeso && cur.acqua && next.acqua;
+    // PERC1 D4: galleria - pareti scure del tema ai lati, soffitto sopra la strada.
+    const bool galleria = cur.galleria && next.galleria;
     if (sospeso) {
         const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
         const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
@@ -233,17 +235,22 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // Strada sospesa: parapetto basso grigio/bianco al posto del rumble; ai
     // lati niente erba alla quota della strada (il terreno e' gia' stato
     // dipinto piu' in basso, sopra).
+    // Galleria (PERC1 D4): pareti scure del tema ai lati, soffitto sopra la strada.
+    const u32 pareteScura = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.75f);
+    const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.55f);
     const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
-    const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt); // bianco / colore della tappa
+    const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
     const u32 lane   = pal_[1];
 
     for (i32 y = ny; y <= cy; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        if (y >= HORIZON_Y && !sospeso) // sopra l'orizzonte resta il cielo (le colline non cambiano il fondale)
-            fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        if (y >= HORIZON_Y && !sospeso) {
+            if (galleria) fb_.hline(0, Framebuffer::WIDTH - 1, y, pareteScura);
+            else fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
         const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
@@ -277,6 +284,17 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const i32 lx = (i32)(cx - hw);
             const i32 rx = (i32)(cx + hw);
             if (rx < 0 || lx >= Framebuffer::WIDTH) continue; // ramo fuori schermo
+            if (galleria) {
+                // PERC1 D4: soffitto sopra la strada e pareti ai lati.
+                const i32 altezza = std::max(4, (i32)(hw * 0.55f));
+                const i32 soffittoY0 = std::max(0, y - altezza);
+                if (soffittoY0 < y) {
+                    fb_.fillRect(std::max(0, lx - rw), soffittoY0, std::min(Framebuffer::WIDTH - 1, rx + rw), y, soffitto);
+                    fb_.hline(std::max(0, lx - rw), std::min(Framebuffer::WIDTH - 1, rx + rw), y - altezza + 1, pareteScura);
+                }
+                fb_.hline(0, std::max(-1, lx - 1), y, pareteScura);
+                fb_.hline(std::min(Framebuffer::WIDTH, rx + 1), Framebuffer::WIDTH - 1, y, pareteScura);
+            }
             fb_.hline(lx, rx, y, road);
             fb_.hline(lx, lx + rw - 1, y, rumble);
             fb_.hline(rx - rw + 1, rx, y, rumble);
@@ -298,6 +316,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 }
             }
         }
+    }
+    // PERC1 D4: una luce del tema ogni 10 segmenti (al confine del segmento vicino).
+    if (galleria && cur.index % 10 == 0) {
+        const f32 pxUnita = cur.scale * (Framebuffer::WIDTH / 2.0f);
+        const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * cur.carr.fattore;
+        const i32 altezza = std::max(4, (i32)(hw * 0.55f));
+        const i32 ly = (i32)cur.screenY - altezza + std::max(1, altezza / 4);
+        const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 6);
+        drawLampada((i32)cur.screenX, ly, r, tema_.rumbleAlt, true);
     }
 }
 
@@ -547,6 +574,22 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
         const i32 corsa = (i32)(tempoS_ * 10.0f);
         for (i32 x = x0, k = 0; x <= x1; x += passo, ++k)
             drawLampada(x, cima + sp / 2, r, (k & 1) ? 0xFFFFD040u : tema_.rumbleAlt, ((k + corsa) % 3) == 0);
+    } else if (tipo == 4) {
+        // PERC1 D4: portale della galleria (entrata/uscita). Piloni scuri ai lati,
+        // architrave sopra la carreggiata e luci del tema.
+        const i32 w = std::clamp((i32)(pxUnita * 220.0f), 1, 56);
+        const i32 cima = terra - (i32)(2400.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.08f), x1 = (i32)(p.screenX + hw * 1.08f);
+        const u32 scuro = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.7f);
+        const u32 luce = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.15f);
+        colonna(x0, w, cima, scuro, luce);
+        colonna(x1, w, cima, scuro, luce);
+        const i32 sp = std::max(2, (i32)(360.0f * pxY));
+        fb_.fillRect(x0, cima, x1, cima + sp, scuro);
+        fb_.hline(x0, x1, cima, luce);
+        fb_.hline(x0, x1, cima + sp, luce);
+        const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
+        drawLampada((x0 + x1) / 2, cima + sp / 2, r, tema_.rumbleAlt, true);
     }
 }
 
@@ -562,6 +605,8 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         if (p.carr.doppia) continue;
         // Ponte e rampe (Andrea 06/11): bordo aperto sul vuoto, niente paletti.
         if (p.sospeso) continue;
+        // PERC1 D4: dentro la galleria niente paletti.
+        if (p.galleria) continue;
 
         const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
         const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;

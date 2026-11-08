@@ -22,12 +22,18 @@ struct RoadSegment {
     // Moltiplicatore della densita' di traffico (PERC1 D2): 1.0 = normale,
     // 1.6 = auto piu' ravvicinate, 0.5 = piu' distanziate. Letto da Road::trafficoAt.
     f32 traffico = 1.0f;
+    // PERC1 D3: true se il segmento appartiene a un tratto con dune > 0 (es. curva cieca).
+    bool dune = false;
     bool acqua = false;      // ponte: ai lati acqua al posto dell'erba (tratto "ponte", campo acqua)
     f32 quotaAcqua = 0.0f;   // quota del pelo dell'acqua sotto il ponte (unita' mondo)
     // Strada sospesa (rampe del ponte alto, Andrea 06/11): il terreno ai lati
     // resta in basso a quotaAcqua (erba, o acqua se acqua) invece di salire
     // con la strada. Il ponte (acqua) e' sempre sospeso.
     bool sospeso = false;
+    // Galleria (PERC1 D4): tratto con campo `galleria` 1. Il Renderer disegna
+    // pareti e soffitto del tema, niente paesaggio dentro; il portale
+    // all'entrata e all'uscita e' un RoadSegment::portale tipo 4.
+    bool galleria = false;
     // Dintorni del ponte e transizioni (Andrea 07/11, "entrata e uscita dal
     // ponte piu' interessanti"), calcolati da Road::build:
     // riva: sotto le rampe (sospeso, non acqua), segmenti dal piu' vicino
@@ -38,7 +44,8 @@ struct RoadSegment {
     //   Luci di avvicinamento a terra che corrono verso il ponte. Anche prima
     //   del bivio (verso +1): annunciano la scelta.
     // portale: struttura sopra la strada al confine del segmento (0 nessuno,
-    //   1 porta del ponte, 2 portale autostrada, 3 arco della citta').
+    //   1 porta del ponte, 2 portale autostrada, 3 arco della citta',
+    //   4 portale della galleria).
     i16 riva = -1;
     i16 luci = -1;
     i8 versoLuci = 0;

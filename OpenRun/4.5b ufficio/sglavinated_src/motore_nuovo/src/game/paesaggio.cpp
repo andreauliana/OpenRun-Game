@@ -87,7 +87,8 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
     f32 bordoQui = bordo;
     auto metti = [&](const Sprite* s, f32 lato, f32 z, f32 distanza, f32 scala) {
         if (!s || scala <= 0.0f) return;
-        if (z >= giro || road.sospesoAt(z) || road.acquaAt(z)) return; // ponte e rampe: niente nel vuoto
+        // PERC1 D4: dentro la galleria niente oggetti/cartelloni/alberi (ne' frecce).
+        if (z >= giro || road.sospesoAt(z) || road.acquaAt(z) || road.galleriaAt(z)) return;
         const f32 meta = 0.5f * (f32)s->width * Renderer::SPRITE_WORLD_PX * scala;
         SpriteInstance o;
         o.worldZ = z;
@@ -175,9 +176,13 @@ void disponiPaesaggio(const Road& road, const std::vector<u8>& zonaSeg, const Pe
             }
         }
         // Curve strette: cartelli a freccia sul lato esterno, uno ogni 5 file (2000).
+        // PERC1 D3: nelle curve cieche (dune > 0) usa la freccia con segno del dosso se presente.
         const f32 curva = road.curvaAt(z);
         if (std::abs(curva) >= 0.6f && k % 5 == 0) {
-            const Sprite* s = curva > 0.0f ? pz.frecciaDx : pz.frecciaSx;
+            const bool cieca = road.segments()[(size_t)seg].dune;
+            const Sprite* sNorm = curva > 0.0f ? pz.frecciaDx : pz.frecciaSx;
+            const Sprite* sCresta = curva > 0.0f ? pz.frecciaCrestaDx : pz.frecciaCrestaSx;
+            const Sprite* s = (cieca && sCresta) ? sCresta : sNorm;
             if (s) metti(s, curva > 0.0f ? -1.0f : 1.0f, z, MARGINE_MIN, scalaPer(s, H_FRECCIA));
         }
     }

@@ -1,10 +1,9 @@
 # RIASSUNTO @developer-junior
-Riscritto da Claude 08/11 (Andrea: ripartire puliti). Unico lavoro: BLOCCO PERC1 di RICHIESTA.md, un passo per turno, senza aspettare nessuno.
-- Ruolo: Developer Junior (4.6); percorsi test in motore_nuovo/test/, gate in UFFICIO/Officina/TOOL/
-- Stato verificato: gate_t1.sh soak exit 0, T1: TUTTO OK; PERCORSO OK su tutti i 6 livelli inclusi giro guidato; replay 2x IDENTICO; accelerazione/ribaltamento/sterzo/curva/gara/frequenza OK.
-- Blocchi: PIST1 [x]; AUTO1 [~] (regole bloccate Andrea); ENG1+ARC1 [x]; KO1 [x]; T1-RUN [x].
-- PERC1: J1 [x] gate tratti varietà OK su tutti i 6 livelli (curva_max lv_03_foglie 0.87, rettilineo_max lv_04_cromo 0.76); J2 [ ] J3 [ ] J4 [ ].
-- Test in `motore_nuovo/test/prova_gate.cpp`; ctest verde dopo ogni modifica; segna qui `PERC1 Jn [x]` con comando ed exit code.
-- Mai: HUD, `gate_t1.sh` (già a posto), `salvaScreenshotP1`.
-- Prossimo: work UNO per turno, ctest verde; fuori auto giocatore/premiazione/musica urti.
-- RIV: gate urto in attesa @developer (bump leggero, nessun ribaltamento, speed > 0, controlli 1.5 s).
+Riscritto 08/11 13:23 (turno 1). Unico lavoro: BLOCCO PERC1, un passo per turno.
+- Ruolo: Developer Junior (4.6); test in `motore_nuovo/test/`, gate in `UFFICIO/Officina/TOOL/`.
+- Gate baseline noto: `gate_t1.sh` soak exit 0 (08/11 11:42), 6/6 GATE PERCORSO OK. Questo turno: `gate_t1.sh` non eseguito.
+- PERC1: J1 [x] varietà tratti. J2 [x] verificato 08/11 13:23 `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/j2_check" lv_01_neon traffico` exit 0 (autostrada 0.0047 > ponte 0.0040 auto/1000u). J3 [x] gate `tratti` controlla galleria lv_02/lv_05 (260 seg, screenshot `UFFICIO/Officina/Test area/perc1_j3_galleria_lv_02_atomico.ppm`, `lv_05_spray.ppm`); rilievo: oggetti in galleria 187/162 (placement). J4 [x] review in `out/developer-junior/REVIEW_PERC1.md`.
+- Verifica turno: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 8 (26/27 OK); fallisce `gate_tratti` per `espansione=NO` pre-esistente lv_02/lv_05, non causato da J3.
+- File cambiato: `motore_nuovo/test/prova_gate.cpp`.
+- Prossimo: attendere D5 o nuova richiesta @capo; segnalare espansione=NO lv_02/lv_05 e oggetti in galleria.
+- Mai: HUD, `gate_t1.sh` (se non richiesto), `salvaScreenshotP1`, `motore_nuovo/src/` senza autorizzazione.

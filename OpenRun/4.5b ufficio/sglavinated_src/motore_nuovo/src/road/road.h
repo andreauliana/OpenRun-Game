@@ -81,6 +81,8 @@ public:
         // del tratto (1.0 = normale, 1.6 = piu' auto, 0.5 = meno). La distanza fra
         // un veicolo e il successivo si divide per questo valore. Default 1.0.
         f32 traffico = 1.0f;
+        // Campo `galleria` (0/1, default 0, PERC1 D4): tratto in galleria.
+        f32 galleria = 0.0f;
     };
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.
@@ -113,6 +115,8 @@ public:
     bool acquaAt(f32 z) const;
     // true se z e' su un tratto sospeso (ponte o sue rampe): niente oggetti ai lati.
     bool sospesoAt(f32 z) const;
+    // true se z e' in galleria (PERC1 D4): niente oggetti, cartelloni o alberi.
+    bool galleriaAt(f32 z) const;
     // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti
     // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
     i32 indiceSegmento(f32 z) const;
@@ -165,6 +169,7 @@ public:
         bool acqua = false;          // ponte: acqua ai lati
         f32 acquaY = 0.0f;           // riga dello schermo del pelo dell'acqua a questa distanza
         bool sospeso = false;        // terreno in basso (a acquaY): ponte o rampe
+        u8 galleria = 0;             // 1 = segmento in galleria (PERC1 D4)
         i16 riva = -1;               // copie di RoadSegment (dintorni del ponte)
         i16 luci = -1;
         i8 versoLuci = 0;

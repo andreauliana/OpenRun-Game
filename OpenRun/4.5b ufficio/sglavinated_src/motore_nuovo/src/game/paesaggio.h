@@ -36,6 +36,9 @@ struct PezziPaesaggio {
     std::vector<const Sprite*> edifici;   // ordinati dal piu' alto al piu' basso
     const Sprite* frecciaDx = nullptr;    // cartello di curva a destra (sul lato sinistro)
     const Sprite* frecciaSx = nullptr;
+    // PERC1 D3: frecce con segno del dosso per curve cieche (dune > 0). Se assenti, si usano le frecce normali.
+    const Sprite* frecciaCrestaDx = nullptr;
+    const Sprite* frecciaCrestaSx = nullptr;
     f32 densitaAlberi = 1.0f;             // livello.json paesaggio.densita_alberi
 };
 

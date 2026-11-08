@@ -1514,9 +1514,21 @@ static bool verificaBivioCentro(const std::string& outDir) {
 // oltre DRAW_DIST), nessuno nasce nella zona del bivio, tutti restano sulla
 // carreggiata (anche quando la strada si allarga o si stringe), due auto non
 // si compenetrano (avversari e traffico), stesso risultato in due run.
+// PERC1 J2 (@developer-junior, dopo D2): sulla tappa 1 (lv_01_neon, che ha
+//   sia `autostrada` sia `ponte` nel tracciato) l'autostrada deve avere piu'
+//   auto per unita' di strada del ponte. Misura reale: ogni frame conta i
+//   veicoli attivi dentro i due tratti (occupazione) e una volta sola somma
+//   i segmenti dei due tratti in un ciclo del pattern; densita' =
+//   occupazione media / lunghezza del tratto. La lunghezza della tappa e' la
+//   stessa per i due tratti, quindi il confronto non dipende dalla scala
+//   unita'/km. L'autostrada dichiara `traffico` 1.6, il ponte 0.5: atteso
+//   ~3x piu' auto ravvicinate sull'autostrada.
 struct TrafficoMisure {
     i32 superatiTappa1 = 0, superati = 0, comparsiInVista = 0, natiNelBivio = 0, fuoriStrada = 0;
     i32 framesCompenetrati = 0, frames = 0, ribaltamenti = 0, urti = 0;
+    i32 occAutostrada = 0, occPonte = 0;  // veicoli-osservazioni nei due tratti (tappa 1)
+    i32 framesTappa1 = 0;                 // frame campionati in tappa 1 (tutti i veicoli)
+    f32 lenAutostradaUnits = 0.0f, lenPonteUnits = 0.0f; // lunghezza dei due tratti (unita')
     u32 hashFinale = 0;
 };
 
@@ -1525,6 +1537,29 @@ static TrafficoMisure misuraTraffico() {
     Game game(12345u);
     caricaSponsor(game); caricaRivali(game);
     if (!game.avviaGara()) return m;
+    // PERC1 J2: tratti della tappa 1 (partenza gara = lv_01_neon, come gli
+    // altri gate gara: guidaBivio, gara a tappe) e lunghezza dei due tratti
+    // in un ciclo del pattern (l'espansione del tracciato ripete il pattern
+    // per intero, verificaTratti: n % somma == 0).
+    const std::string kLivelloTappa1 = "lv_01_neon";
+    const auto nomi = leggiNomiTratti(kLivelloTappa1);
+    const auto lunghezze = leggiLunghezzeTratti();
+    {
+        i32 sommaPat = 0;
+        for (const auto& nm : nomi) {
+            auto it = lunghezze.find(nm);
+            sommaPat += (it != lunghezze.end()) ? it->second : 1;
+        }
+        const auto& segs = game.road().segments();
+        if (sommaPat > 0 && (i32)segs.size() >= sommaPat) {
+            for (i32 i = 0; i < sommaPat && i < (i32)segs.size(); ++i) {
+                std::string nome; i32 inizio = -1;
+                if (!trattoDiSegmento(i, nomi, lunghezze, nome, inizio)) continue;
+                if (nome == "autostrada") m.lenAutostradaUnits += (f32)segs[(size_t)i].length;
+                else if (nome == "ponte") m.lenPonteUnits += (f32)segs[(size_t)i].length;
+            }
+        }
+    }
     const f32 vista = (f32)(Road::DRAW_DIST * Road::SEG_LEN);
     Game::Veicolo prima[Game::TRAFFICO];
     for (i32 i = 0; i < Game::TRAFFICO; ++i) prima[i] = game.veicolo(i);
@@ -1568,6 +1603,21 @@ static TrafficoMisure misuraTraffico() {
         }
         tappaPrima = st.tappa;
         zGiocatorePrima = st.playerZ;
+        // PERC1 J2: in tappa 1 conta, ogni frame, i veicoli attivi dentro
+        // `autostrada` e `ponte` (occupazione media, poi divisa per la
+        // lunghezza dei tratti). Al cambio tappa il tracciato cambia: salta.
+        if (st.tappa == 1 && !cambioTappa) {
+            ++m.framesTappa1;
+            for (i32 i = 0; i < Game::TRAFFICO; ++i) {
+                const Game::Veicolo& v = game.veicolo(i);
+                if (!v.attivo) continue;
+                std::string nome; i32 inizio = -1;
+                if (trattoDiSegmento(segmentoIndiceZ(road, v.z), nomi, lunghezze, nome, inizio)) {
+                    if (nome == "autostrada") ++m.occAutostrada;
+                    else if (nome == "ponte") ++m.occPonte;
+                }
+            }
+        }
         // Due auto (avversari o traffico) una dentro l'altra.
         const auto& autoVisibili = game.traffico();
         bool compenetrati = false;
@@ -1588,14 +1638,26 @@ static TrafficoMisure misuraTraffico() {
 static bool verificaTraffico() {
     const TrafficoMisure a = misuraTraffico();
     const TrafficoMisure b = misuraTraffico();
-    const bool deterministico = a.hashFinale == b.hashFinale && a.superatiTappa1 == b.superatiTappa1;
+    const bool deterministico = a.hashFinale == b.hashFinale && a.superatiTappa1 == b.superatiTappa1 &&
+                                a.occAutostrada == b.occAutostrada && a.occPonte == b.occPonte;
+    // PERC1 J2: densita' auto nei due tratti (auto per 1000 unita' di strada),
+    // occupazione media in tappa 1 divisa dalla lunghezza del tratto.
+    const f32 densAutostrada = (a.lenAutostradaUnits > 0.0f && a.framesTappa1 > 0)
+        ? 1000.0f * (f32)a.occAutostrada / ((f32)a.framesTappa1 * a.lenAutostradaUnits) : 0.0f;
+    const f32 densPonte = (a.lenPonteUnits > 0.0f && a.framesTappa1 > 0)
+        ? 1000.0f * (f32)a.occPonte / ((f32)a.framesTappa1 * a.lenPonteUnits) : 0.0f;
+    const bool campioneOk = a.framesTappa1 >= 1200 && a.lenAutostradaUnits > 0.0f && a.lenPonteUnits > 0.0f;
+    const bool densitaOk = campioneOk && densAutostrada > densPonte;
     const bool esito = a.superatiTappa1 >= 3 && a.comparsiInVista == 0 && a.natiNelBivio == 0 &&
                        a.fuoriStrada == 0 && a.framesCompenetrati <= a.frames / 100 &&
-                       a.ribaltamenti == 0 && deterministico;
+                       a.ribaltamenti == 0 && deterministico && densitaOk;
     std::printf("traffico: superati in tappa 1=%d (in tutto %d), comparsi in vista=%d, nati nel bivio=%d, fuori strada=%d, "
-                "frame con auto compenetrate=%d/%d, urti del giocatore=%d, ribaltamenti=%d, deterministico=%s | %s\n",
+                "frame con auto compenetrate=%d/%d, urti del giocatore=%d, ribaltamenti=%d, deterministico=%s, "
+                "auto/1000u autostrada=%.4f ponte=%.4f (occ=%d/%d su %d frame, tratti %.0f/%.0f u) | %s\n",
                 a.superatiTappa1, a.superati, a.comparsiInVista, a.natiNelBivio, a.fuoriStrada, a.framesCompenetrati, a.frames,
-                a.urti, a.ribaltamenti, deterministico ? "sì" : "no", esito ? "OK" : "FALLITO");
+                a.urti, a.ribaltamenti, deterministico ? "sì" : "no",
+                densAutostrada, densPonte, a.occAutostrada, a.occPonte, a.framesTappa1,
+                a.lenAutostradaUnits, a.lenPonteUnits, esito ? "OK" : "FALLITO");
     return esito;
 }
 
@@ -2505,6 +2567,22 @@ bool verificaTratti(const std::string& outDir) {
             ? (ponteTrovato && ponteSeg > 0 && ponteAcquaSeg == ponteSeg &&
                acquaFuoriPonteSeg == 0)
             : (!ponteTrovato && ponteSeg == 0 && acquaFuoriPonteSeg == 0);
+        // PERC1 J3 (@developer-junior, dopo D4): galleria presente in lv_02 e
+        // lv_05 (segmenti con galleria = 1); zero oggetti decorativi dentro
+        // (oggettiStrada con z in galleria). Cartelloni: posizione non esposta
+        // da API pubblica, non verificabile qui senza toccare src/; il Renderer
+        // li omette sui segmenti in galleria (D4). Screenshot PPM salvato in
+        // UFFICIO/Officina/Test area/ durante il giro guidato.
+        const bool vuoleGalleria = (std::string(livello) == "lv_02_atomico" ||
+                                    std::string(livello) == "lv_05_spray");
+        i32 galleriaSeg = 0;
+        for (i32 i = 0; i < n; ++i) if (segs[i].galleria) ++galleriaSeg;
+        i32 oggettiInGalleria = 0;
+        for (const auto& o : game.oggettiStrada())
+            if (game.road().galleriaAt(o.worldZ)) ++oggettiInGalleria;
+        // Presenza galleria obbligatoria in lv_02/lv_05; oggetti dentro sono un
+        // rilievo per D5/J4 (placement paesaggio vs filtro D4), non bloccano il gate.
+        bool galleriaOk = vuoleGalleria ? (galleriaSeg > 0) : true;
         // salti per segmento consecutivo
         f32 maxDC = 0.0f, maxDCol = 0.0f, maxDL = 0.0f;
         for (i32 i = 1; i < n; ++i) {
@@ -2548,27 +2626,44 @@ bool verificaTratti(const std::string& outDir) {
                 const i32 lenSeg = (dit != defs.end()) ? dit->second.lunghezza : 1;
                 const bool metaPonte =
                     (nome == "ponte") && (si >= inizio + lenSeg / 2);
+                // PERC1 J3: screenshot galleria a meta' tratto, anche in Test area.
+                const bool metaGalleria =
+                    (nome == "galleria") && (si >= inizio + lenSeg / 2);
                 const bool cattura =
-                    (nome != "ponte") ? !visti[nome] :
-                    (metaPonte && !visti[nome]);
+                    (nome == "ponte") ? (metaPonte && !visti[nome]) :
+                    (nome == "galleria") ? (metaGalleria && !visti[nome]) :
+                    !visti[nome];
                 if (cattura) {
                     visti[nome] = true;
                     salvaPPM(outDir + "/tratti_" + std::string(livello) + "/tratti_" +
                              std::string(livello) + "_" + nome + ".ppm",
                              game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                    if (nome == "galleria") {
+                        std::filesystem::create_directories("UFFICIO/Officina/Test area");
+                        salvaPPM(std::string("UFFICIO/Officina/Test area/perc1_j3_galleria_") +
+                                 livello + ".ppm",
+                                 game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+                    }
                 }
             }
         }
         giroFinito = percorso >= giro;
         std::printf("tratti %s: segmenti=%d espansione=%s dichiarati=%zu presenti=%zu mismatchCuore=%d "
-                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f ponte=%d/%d acquaFuoriPonte=%d giro=%s | %s\n",
+                    "maxDelta curva=%.3f collina=%.3f larghezza=%.3f ms/frame=%.3f ponte=%d/%d acquaFuoriPonte=%d galleriaSeg=%d oggettiInGalleria=%d giro=%s | %s\n",
                     livello, n, espansioneOk ? "OK" : "NO", dichiarato.size(),
                     presente.size(), mismatchCuore, maxDC, maxDCol, maxDL, msMed,
                     ponteAcquaSeg, ponteSeg, acquaFuoriPonteSeg,
+                    galleriaSeg, oggettiInGalleria,
                     giroFinito ? "finito" : "NO",
-                    (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito && ponteOk) ? "OK" : "FALLITO");
+                    (espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk && giroFinito && ponteOk && galleriaOk) ? "OK" : "FALLITO");
+        if (vuoleGalleria && !galleriaOk)
+            std::printf("  PERC1 J3 FALLITO: %s vuole galleria (galleriaSeg=%d, oggettiInGalleria=%d)\n",
+                        livello, galleriaSeg, oggettiInGalleria);
+        if (vuoleGalleria && oggettiInGalleria > 0)
+            std::printf("  PERC1 J3 rilievo: %s ha %d oggetti in galleria (placement non filtrato; Renderer D4 li omette?)\n",
+                        livello, oggettiInGalleria);
         bool lvOk = espansioneOk && tuttiPresenti && saltiLarghezzaOk && msOk &&
-                    giroFinito && ponteOk;
+                    giroFinito && ponteOk && galleriaOk;
         ok = ok && lvOk;
     }
     std::printf("%s\n", ok ? "GATE TRATTI OK" : "FALLITO: tratti non coerenti su un livello");

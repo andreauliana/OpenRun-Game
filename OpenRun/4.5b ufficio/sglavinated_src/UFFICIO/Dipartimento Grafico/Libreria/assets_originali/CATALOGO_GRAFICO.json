@@ -2712,6 +2712,70 @@
          "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
       },
       {
+         "id": "oggetto.comuni.freccia_cresta_dx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/freccia_cresta_dx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_cresta_dx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G1 (08/11): cartello freccia curva cieca con segno del dosso, 32x40 come freccia_curva_dx, da TOOLS/genera_freccia_cresta.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_cresta_sx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/freccia_cresta_sx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_cresta_sx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G1 (08/11): cartello freccia curva cieca con segno del dosso, 32x40 come freccia_curva_sx, da TOOLS/genera_freccia_cresta.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.parete_galleria",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/parete_galleria.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/parete_galleria.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G2 (08/11): parete galleria 32x32 tile ripetibile, palette piccola + Bayer 4x4, da TOOLS/genera_galleria.py, originale CC0-1.0, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.luce_galleria",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "assets_originali/scenari/comuni/oggetti/luce_galleria.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/luce_galleria.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G2 (08/11): luce plafoniera galleria 16x8, palette piccola + Bayer 4x4, da TOOLS/genera_galleria.py, originale CC0-1.0, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
          "id": "oggetto.comuni.boa",
          "tipo": "oggetto_paesaggio",
          "stato": "pronto",

@@ -103,6 +103,7 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.traffico = desc.traffico > 0.1f ? desc.traffico : 1.0f;
             seg.acqua = desc.acqua > 0.5f;
             seg.sospeso = seg.acqua || desc.sospeso > 0.5f;
+            seg.galleria = desc.galleria > 0.5f;
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
@@ -177,7 +178,8 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             direzione += seg.curve * CURVE_SCALE * (f32)SEG_LEN;
             seg.p2x = curX + direzione * (f32)SEG_LEN;
             seg.p2y = quotaPrima + (quota - quotaPrima) * raccordo((f32)k / (f32)n);
-            if (d.dune != 0.0f && d.onde > 0) {
+            seg.dune = (d.dune != 0.0f && d.onde > 0); // PERC1 D3: marca curva cieca/dosso
+            if (seg.dune) {
                 // sin^2: dossi morbidi, pendenza zero ai capi del tratto.
                 const f32 onda = std::sin(PI * (f32)d.onde * (f32)k / (f32)n);
                 seg.p2y += d.dune * HILL_HEIGHT * onda * onda;
@@ -252,6 +254,7 @@ void Road::calcolaDintorni() {
         s.luci = -1;
         s.versoLuci = 0;
         if (s.portale == 1) s.portale = 0; // le porte del ponte si ricalcolano
+        if (s.portale == 4) s.portale = 0; // i portali della galleria si ricalcolano
     }
     auto at = [&](i32 i) -> RoadSegment& { return segs_[(size_t)(((i % n) + n) % n)]; };
     for (i32 i = 0; i < n; ++i) {
@@ -283,9 +286,14 @@ void Road::calcolaDintorni() {
             }
         }
     }
+    // Galleria (PERC1 D4): portale all'entrata e all'uscita.
+    for (i32 i = 0; i < n; ++i) {
+        const bool qui = segs_[(size_t)i].galleria;
+        if (qui && !at(i - 1).galleria) at(i - 1).portale = 4;
+        else if (!qui && at(i - 1).galleria) segs_[(size_t)i].portale = 4;
+    }
     // Prima del bivio (solo in gara): le luci annunciano la scelta.
-    if (bivio_) {
-        const i32 inizio = n - BIVIO_SEG;
+    if (bivio_) {        const i32 inizio = n - BIVIO_SEG;
         for (i32 d = 1; d <= LUCI_BIVIO_SEG && inizio - d >= 0; ++d) {
             RoadSegment& s = segs_[(size_t)(inizio - d)];
             if (s.sospeso) break;
@@ -303,6 +311,11 @@ bool Road::acquaAt(f32 z) const {
 bool Road::sospesoAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 && segs_[i].sospeso;
+}
+
+bool Road::galleriaAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 && segs_[i].galleria;
 }
 
 f32 Road::larghezzaAt(f32 z) const {
@@ -413,6 +426,7 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.carr = carreggiate(z0 + z, latoBivio);
             ps.acqua = seg.acqua;
             ps.sospeso = seg.sospeso;
+            ps.galleria = seg.galleria ? 1 : 0;
             ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
             ps.riva = seg.riva;
             ps.luci = seg.luci;
