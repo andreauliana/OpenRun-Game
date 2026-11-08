@@ -438,6 +438,7 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
     sprites_.reserve(6); // niente allocazioni per traffico dopo il primo frame
     scenaSprites_.reserve(16); // cresce a init() con i cartelloni
     ren_.impostaOggettiTerra(&oggettiTerra_); // boe, barche, faro sotto il ponte (Andrea 07/11)
+    ren_.impostaLogo(caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw"))); // logo menu (segnaposto)
 }
 
 void Game::caricaLivello(const std::string& livelloId) {

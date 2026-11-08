@@ -305,6 +305,11 @@ public:
     const Sprite* oggettoSprite(i32 indice) const {
         return indice >= 0 && indice < (i32)oggettoSprites_.size() ? &oggettoSprites_[indice] : nullptr;
     }
+    // Logo del menu (Andrea 08/11): sprite a schermo, centrato in cx, alto y.
+    // Vuoto = il menu scrive solo il testo di riserva.
+    void impostaLogo(Sprite s) { logo_ = std::move(s); }
+    bool haLogo() const { return logo_.width > 0; }
+    void drawLogo(i32 cx, i32 y);
     void clearOggettoSprites() { oggettoSprites_.clear(); galleriaParete_ = galleriaLuce_ = -1; }
     // Imposta lo skyline della tappa in corso (DECO1 2b): sprite vuoto = cielo piatto.
     // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
@@ -407,6 +412,7 @@ private:
     Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     Sprite ruotaSprites_[3];                        // componenti ruota_1..3 (AUTO1 A2)
+    Sprite logo_;                                   // logo del menu (segnaposto OPEN RUN)
     Sprite luciStopSprite_;                         // componente luci_stop (AUTO1 A2)
     Sprite fumoSprites_[3];                         // componenti fumo_1..3 dello scarico (AUTO1 A2)
     PuntiComponenti punti_[POSA_GIOCATORE_COUNT];   // posizioni componenti per fotogramma (auto_giocatore.json)

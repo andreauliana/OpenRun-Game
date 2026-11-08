@@ -141,9 +141,14 @@ public:
         }
     }
     void disegna(Renderer& ren, Framebuffer&) const override {
-        const char* titolo = "MENU";
-        const i32 w = ren.larghezzaTesto(titolo, 2);
-        ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFFFFFFu, 2, true);
+        // Logo segnaposto OPEN RUN (Andrea 08/11): solo la scritta, nient'altro.
+        // Il PNG e' in Libreria/assets_originali/ui/logo/logo_openrun.png.
+        if (ren.haLogo()) ren.drawLogo(160, 50);
+        else {
+            const char* titolo = "OPEN RUN";
+            const i32 w = ren.larghezzaTesto(titolo, 2);
+            ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFFFFFFu, 2, true);
+        }
         static const char* voci[3] = { "SINGLE RACE", "RACE SERIES", "EXIT" };
         for (i32 i = 0; i < 3; ++i) {
             i32 wi = ren.larghezzaTesto(voci[i], 1);

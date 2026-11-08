@@ -2903,6 +2903,15 @@
             "lv_06_desktop"
          ],
          "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "ui.logo.openrun",
+         "tipo": "logo",
+         "stato": "segnaposto",
+         "file": "assets_originali/ui/logo/logo_openrun.png",
+         "raw": "motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw",
+         "livelli": [],
+         "nota": "Andrea 08/11: logo del menu SEGNAPOSTO, solo la scritta OPEN RUN, niente decorazioni. Andrea lo ridisegna (stesso nome) e lancia genera_logo_placeholder.py --solo-raw."
       }
    ]
 }

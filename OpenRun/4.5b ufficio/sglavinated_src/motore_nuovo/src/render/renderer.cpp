@@ -2046,5 +2046,14 @@ void Renderer::drawHudDati(const HudDati& d) {
     // l'erba, il sobbalzo e le scintille.
 }
 
-} // namespace sgl
+void Renderer::drawLogo(i32 cx, i32 y) {
+    if (logo_.width <= 0 || logo_.palette.empty()) return;
+    const i32 x0 = cx - logo_.width / 2;
+    for (i32 j = 0; j < logo_.height; ++j)
+        for (i32 i = 0; i < logo_.width; ++i) {
+            const u8 idx = logo_.pixels[(size_t)j * logo_.width + i];
+            if (idx != 0) fb_.put(x0 + i, y + j, logo_.palette[idx % logo_.palette.size()]);
+        }
+}
 
+} // namespace sgl
