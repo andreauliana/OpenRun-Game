@@ -27,6 +27,7 @@
     "curva_cieca_dx": {"curva": 0.6, "dune": 0.12, "onde": 1, "lunghezza": 220, "nota": "curva cieca a dx: la cresta nasconde la curva"},
     "curva_cieca_sx": {"curva": -0.6, "dune": 0.12, "onde": 1, "lunghezza": 220, "nota": "curva cieca a sx: la cresta nasconde la curva"},
     "saliscendi": {"dune": 0.09, "onde": 3, "lunghezza": 300, "nota": "alternanza dune e onde per saliscendi"},
-    "galleria": {"curva": 0.3, "collina": 0.0, "lunghezza": 260, "entrata": -1, "uscita": -1, "galleria": 1, "nota": "galleria nel percorso: pareti e soffitto del tema, una luce ogni 10 segmenti, portali ai due capi (PERC1 D4)"}
+    "galleria": {"curva": 0.3, "collina": 0.0, "lunghezza": 260, "entrata": -1, "uscita": -1, "galleria": 1, "nota": "galleria nel percorso: pareti e soffitto del tema, una luce ogni 10 segmenti, portali ai due capi (PERC1 D4)"},
+    "uscita_galleria": {"curva": -0.26, "collina": 0.0, "lunghezza": 300, "entrata": -1, "uscita": -1, "nota": "curva dopo la galleria che la compensa (0.3 x 260 = 0.26 x 300): somma curve del livello ~0. Tratto con nome (Claude 08/11): il gate tratti non legge gli override in linea"}
   }
 }
