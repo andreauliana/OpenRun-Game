@@ -6,6 +6,10 @@ Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel check
 
 Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, salti, inclinazione, arrivo) sono in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente le modifica: niente cambi a quei valori, a quel codice o ai file in `giocatore_pose/`. Andrea ridisegna l'auto a mano in Pixelorama.
 
+## HUD NON SI TOCCA, SI LAVORA SUL PERCORSO (Andrea 08/11)
+
+Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json`, `Renderer::drawHudDati`, contagiri, spettro radio, ne' alle varianti UI in `assets_originali/ui/`. Gli agenti lavorano sul percorso (tracciati, curve, salite, bivi, strada, traffico e rivali sul percorso) e su tutto il resto, sempre a passi piccoli con ctest verde. Restano fuori: l'auto del giocatore (la disegna Andrea), premiazione e musica degli urti (bloccate qui sotto).
+
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
 Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
