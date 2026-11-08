@@ -73,7 +73,8 @@
         31
       ],
       "barra_w": 86,
-      "barra_h": 2
+      "barra_h": 2,
+      "colore_bordo": [160, 160, 160]
     },
     {
       "id": "tempo",
@@ -156,6 +157,7 @@
       ],
       "barra_w": 87,
       "barra_h": 2,
+      "colore_bordo": [160, 160, 160],
       "colore_riempimento": [
         235,
         235,
