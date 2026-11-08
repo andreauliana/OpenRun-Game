@@ -8,7 +8,7 @@ Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, 
 
 ## HUD NON SI TOCCA, SI LAVORA SUL PERCORSO (Andrea 08/11)
 
-Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json`, `Renderer::drawHudDati`, contagiri, spettro radio, ne' alle varianti UI in `assets_originali/ui/`. Gli agenti lavorano sul percorso (tracciati, curve, salite, bivi, strada, traffico e rivali sul percorso) e su tutto il resto, sempre a passi piccoli con ctest verde. Restano fuori: l'auto del giocatore (la disegna Andrea), premiazione e musica degli urti (bloccate qui sotto).
+Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json`, `Renderer::drawHudDati`, contagiri, spettro radio, ne' alle varianti UI in `assets_originali/ui/`. Gli agenti lavorano sul percorso (tracciati, curve, salite, bivi, strada, traffico e rivali sul percorso) e su tutto il resto, sempre a passi piccoli con ctest verde. Restano fuori: l'auto del giocatore (la disegna Andrea), premiazione e musica degli urti (bloccate qui sotto). **Parapetti sul ponte: P3 annullato per sempre** (Andrea 06/11, confermato 08/11): il ponte resta aperto, con il filo basso grigio/bianco al posto del rumble; niente `parapetto.png`/`guardrail.png` sulla pista. Il lavoro e' nel BLOCCO PERC1 di RICHIESTA.md.
 
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
@@ -51,6 +51,8 @@ DEFAULT usato nel frattempo: sì — promuovi P1 a [x] (screenshot bloccati da s
 Risposta di Andrea: sì.
 
 ### T1-Q3 | Prova manuale su Mac e Pi 400/RetroPie
+
+CHIUSA per il Mac (Claude 08/11): Andrea prova il gioco sul Mac dal 06/11 e i 6 giri guidati passano. La parte Pi 400 resta ad Andrea quando vorra' (blocco H sospeso [-]): non e' una decisione aperta e non blocca nessuno.
 
 Richiesta storica: provare `sglavinated_runner` su Mac con SDL2 e registrare guida, FPS e temperatura/throttling su Pi 400/RetroPie.
 DEFAULT usato nel frattempo: sì — Andrea esegue appena possibile (v91 + misure chiudono H); intanto il gate headless resta verde.
@@ -296,7 +298,9 @@ AGGIORNAMENTO DI ANDREA 27/10: D18 e' chiusa. R2 e i blocchi dopo (DECO1 2f, RIV
 
 **Important:** 23/10 test Mac: ctest 17/17, runner ok, al bivio, in alcuni livelli, glitch di ricalcolo e la tappa dopo parte con posizionamento percorso sbagliato, senza un transizione graduale, incrementare leggermente la curvatura dei due Fork, perche la macchina puo andare in crush toccando i bordi della parte centrale (FORK1). The other players are going a bit too fast and far, they should act a bit more realistically, as in a race.
 
-## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [APERTA]
+## D19 | T1-RUN chiusura dopo prova Mac 23/10 | capo | [CHIUSA 2026-11-08: Andrea ha chiesto a Claude di sbloccare gli agenti]
+
+CHIUSA da Claude su mandato di Andrea (08/11): il gioco gira sul Mac di Andrea (prove del 06 e 07/11) e il gate T1 e' TUTTO OK (08/11). T1-RUN [x]. Il @capo chiude CP-006. Non riaprirla.
 
 Domanda:
 Confermare chiusura di T1-RUN a [x] ora che il gate e' verde (`sh UFFICIO/Officina/TOOL/gate_t1.sh soak` exit 0, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame <= 20, ctest 17/17 verde 22/10), CP-005 chiusa con review incrociata indipendente positiva registrata, e Andrea ha provato il runner Mac il 23/10 (ctest 17/17, runner ok, registrato in ANDREA_REVIEW.md)?
