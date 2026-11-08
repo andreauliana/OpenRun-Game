@@ -7,6 +7,7 @@ Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel check
 Andrea: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco e' approvato. **Non si tocca, non si rifa', non si "sistema":**
 - **Auto del giocatore e guida**: pose di Andrea, sterzo, curve che spingono fuori, derapata con fumo e stridio, sollevamento leggero alla punta (niente razzo), fuori strada, ciglio, incidenti, tempi delle tappe. Valori in `REGOLE_AUTO_GIOCATORE.md`.
 - **HUD** (`dati/ui/`, `drawHudDati`), **premiazione**, **musica e reazioni della musica**, **ponte aperto** (niente parapetti, mai).
+- **Effetti audio di oggi = standard** (urti, sportellate, paletti, stridio della derapata, clacson, bip della partenza, musica che reagisce agli urti; `mixer.*`): non si cambiano ne' si tolgono. Si possono solo AGGIUNGERE effetti extra nuovi, senza toccare quelli che ci sono.
 - **Percorsi**: tratti, curve cieche, saliscendi, traffico per tratto, galleria di lv_02 e lv_05 (neon, luci rotte, graffito "OPEN RUN" dentro, imbocco senza scritte), ingresso graduale nelle citta'. Niente curve tolte, niente tratti spostati.
 - **Partenza** (se la PR #84 e' nel main): griglia, pubblico, 3-2-1-START, classifica finale.
 
