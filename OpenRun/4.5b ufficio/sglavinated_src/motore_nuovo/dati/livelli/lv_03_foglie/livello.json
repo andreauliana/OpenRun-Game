@@ -11,7 +11,7 @@
     "segmenti": 5900,
     "durata_stimata_s": 42
   },
-  "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "valle", "chicane_dx", "chicane_sx", "dune", "curva_dolce_sx", "rettilineo_corto", "curva_stretta_dx", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "rettilineo_corto", "curva_stretta_sx", "rettilineo_corto"],
+  "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "valle", "chicane_dx", "chicane_sx", "dune", "curva_dolce_sx", "rettilineo_corto", "curva_stretta_dx", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "rettilineo_corto", "curva_stretta_sx", "rettilineo_corto", "curva_cieca_dx", "curva_cieca_sx", "saliscendi"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.0, "lunghezza": 800},
     {"curva": 0.6, "collina": 0.0, "lunghezza": 350},
@@ -25,7 +25,10 @@
     {"curva": 0.0, "collina": 0.15, "lunghezza": 1100},
     {"curva": 0.0, "collina": -0.2, "lunghezza": 600},
     {"curva": 0.0, "collina": 0.0, "lunghezza": 350},
-    {"curva": 0.7, "collina": -0.15, "lunghezza": 350}
+    {"curva": 0.7, "collina": -0.15, "lunghezza": 350},
+    {"curva": 0.6, "collina": 0.0, "dune": 0.12, "onde": 1, "lunghezza": 220, "tipo": "curva_cieca_dx"},
+    {"curva": -0.6, "collina": 0.0, "dune": 0.12, "onde": 1, "lunghezza": 220, "tipo": "curva_cieca_sx"},
+    {"collina": 0.0, "dune": 0.09, "onde": 3, "lunghezza": 300, "tipo": "saliscendi"}
   ],
   "seme": 2098,
   "tempo_limite_s": 65,
