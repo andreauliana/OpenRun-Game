@@ -402,39 +402,34 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 neonDx = 0xFF60F0FFu;
         const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
         // Graffiti (Andrea: "OPEN RUN" stile graffito sui muri enormi): una
-        // scritta ogni 90 segmenti, lato alternato, lunga 40 segmenti.
-        constexpr i32 GRAF_OGNI = 90, GRAF_LUNGO = 40, GRAF_INIZIO = 20;
+        // tag ogni 60 segmenti, lato alternato, lungo 22 segmenti.
+        constexpr i32 GRAF_OGNI = 60, GRAF_LUNGO = 22, GRAF_INIZIO = 14;
         const i32 gPos = cur.index % GRAF_OGNI - GRAF_INIZIO;
         const bool grafQui = gPos >= 0 && gPos < GRAF_LUNGO;
         const i32 grafLato = ((cur.index / GRAF_OGNI) & 1) ? 1 : -1;
-        static const char* kGraf[2] = {"OPEN RUN", "OPENRUN 88"};
+        static const char* kGraf[2] = {"RUN", "OR88"}; // tag corti: di sbieco si leggono meglio
         const char* testo = kGraf[(cur.index / (GRAF_OGNI * 2)) & 1];
-        const i32 nCar = (i32)std::char_traits<char>::length(testo);
-        const u32 sprayA = (cur.index / GRAF_OGNI) % 3 == 0 ? 0xFFFF4FD8u
-                         : (cur.index / GRAF_OGNI) % 3 == 1 ? 0xFFFFD040u : 0xFF50FF9Au;
-        const u32 sprayB = lerpColore(sprayA, 0xFFFFFFFFu, 0.45f);
-        // Colore del graffito in (gu, gv) (0..1 sulla scritta), 0 = muro.
+        // Throw-up a bolle (Andrea 08/11 sera): lettere gonfie che si toccano,
+        // riempimento fluo a due toni, contorno di colore, bordo nero, lucido
+        // in alto a sinistra ed estrusione scura in basso a destra.
+        const i32 variante = (cur.index / GRAF_OGNI) % 3;
+        const u32 rosa = 0xFFFF2FB4u, ciano = 0xFF40F0FFu;
+        const u32 riempi = variante == 0 ? rosa : variante == 1 ? ciano : lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.2f);
+        const u32 contorno = variante == 0 ? ciano : rosa;
+        const u32 riempiScuro = lerpColore(riempi, 0xFF200030u, 0.35f);
+        const MascheraGraffito& mg = mascheraGraffito(testo);
         auto graffito = [&](f32 gu, f32 gv, i32 px, i32 py) -> u32 {
-            gu += (0.5f - gv) * 0.04f; // corsivo
-            const f32 colF = gu * (f32)(nCar * FONT_MINI_W) - 0.5f, rigaF = gv * 7.0f - 1.0f;
-            auto pieno = [&](i32 c, i32 r) {
-                if (c < 0 || r < 0 || r >= FONT_MINI_H || c >= nCar * FONT_MINI_W) return false;
-                const i32 k = c / FONT_MINI_W, cc = c % FONT_MINI_W;
-                if (cc >= 3) return false;
-                return ((fontMini(testo[k])[r] >> (2 - cc)) & 1) != 0;
-            };
-            const i32 c = (i32)std::floor(colF), r = (i32)std::floor(rigaF);
-            if (pieno(c, r)) return (BAYER4[py & 3][px & 3] < (u8)(16.0f * (rigaF - (f32)r))) ? sprayA : sprayB;
-            // Bordo scuro attorno alle lettere (il contorno dello spray).
-            const f32 fc = colF - (f32)c, fr = rigaF - (f32)r;
-            if ((fc < 0.35f && pieno(c - 1, r)) || (fc > 0.65f && pieno(c + 1, r)) ||
-                (fr < 0.35f && pieno(c, r - 1)) || (fr > 0.65f && pieno(c, r + 1)))
-                return 0xFF14101Cu;
-            // Colature sotto l'ultima riga, a colonne sparse.
-            if (r >= FONT_MINI_H && r < FONT_MINI_H + 1 && pieno(c, FONT_MINI_H - 1) && ((c * 7) % 5) == 1 &&
-                fc > 0.4f && fc < 0.6f && fr < 0.8f)
-                return sprayA;
-            return 0u;
+            gu += (0.5f - gv) * 0.05f; // un filo di corsivo
+            const i32 mx = (i32)(gu * (f32)mg.w), my = (i32)(gv * (f32)mg.h);
+            if (mx < 0 || my < 0 || mx >= mg.w || my >= mg.h) return 0u;
+            switch (mg.px[(size_t)(my * mg.w + mx)]) {
+            case 1: return 0xFF0C0814u;                                  // bordo nero
+            case 2: return contorno;                                     // contorno colore
+            case 3: return (BAYER4[py & 3][px & 3] < (u8)(16.0f * gv)) ? riempiScuro : riempi;
+            case 4: return 0xFFFFFFFFu;                                  // lucido
+            case 5: return 0xFF2A1438u;                                  // estrusione
+            default: return 0u;
+            }
         };
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
@@ -770,6 +765,57 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
     }
 }
 
+const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) {
+    for (const auto& m : graffiti_) if (m.testo == testo) return m;
+    // Lettere del font HUD 6x8 (tratto di 1 cella) gonfiate a bolla: per ogni
+    // punto la distanza dal quadratino pieno piu' vicino (unita' cella).
+    // < 0.45 riempimento, < 0.78 contorno di colore, < 1.05 bordo nero;
+    // estrusione = bordo spostato in basso a destra. Le lettere si toccano.
+    constexpr i32 R = 6, PAD = 2;
+    const i32 n = (i32)std::char_traits<char>::length(testo);
+    const i32 cw = n * FONT_HUD_W + 2 * PAD, ch = FONT_HUD_H + 2 * PAD;
+    MascheraGraffito m;
+    m.testo = testo;
+    m.w = cw * R;
+    m.h = ch * R;
+    m.px.assign((size_t)(m.w * m.h), 0);
+    auto pieno = [&](i32 c, i32 r) {
+        c -= PAD; r -= PAD;
+        if (c < 0 || r < 0 || r >= FONT_HUD_H || c >= n * FONT_HUD_W) return false;
+        const i32 k = c / FONT_HUD_W, cc = c % FONT_HUD_W;
+        const i32 codice = (u8)testo[k];
+        if (codice < 32 || codice > 126) return false;
+        return ((FONT_HUD[codice - 32][r] >> (5 - cc)) & 1) != 0;
+    };
+    auto dist = [&](f32 x, f32 y) {
+        f32 best = 9.0f;
+        const i32 c0 = (i32)x, r0 = (i32)y;
+        for (i32 r = r0 - 2; r <= r0 + 2; ++r)
+            for (i32 c = c0 - 2; c <= c0 + 2; ++c) {
+                if (!pieno(c, r)) continue;
+                const f32 dx = std::max({(f32)c - x, 0.0f, x - (f32)(c + 1)});
+                const f32 dy = std::max({(f32)r - y, 0.0f, y - (f32)(r + 1)});
+                best = std::min(best, std::sqrt(dx * dx + dy * dy));
+            }
+        return best;
+    };
+    for (i32 y = 0; y < m.h; ++y)
+        for (i32 x = 0; x < m.w; ++x) {
+            const f32 fx = ((f32)x + 0.5f) / R, fy = ((f32)y + 0.5f) / R;
+            const f32 d = dist(fx, fy);
+            u8 v = 0;
+            if (d < 0.45f) {
+                v = 3;
+                if (dist(fx + 0.3f, fy + 0.3f) > 0.45f && d > 0.05f) v = 4; // lucido in alto a sinistra
+            } else if (d < 0.78f) v = 2;
+            else if (d < 1.05f) v = 1;
+            else if (dist(fx - 0.6f, fy - 0.6f) < 1.05f) v = 5;
+            m.px[(size_t)(y * m.w + x)] = v;
+        }
+    graffiti_.push_back(std::move(m));
+    return graffiti_.back();
+}
+
 u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
     u32 c;
     const Sprite* t = oggettoSprite(galleriaParete_);
@@ -829,7 +875,7 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
     const f32 bx0 = cx - hw * GALLERIA_LARGHEZZA, bx1 = cx + hw * GALLERIA_LARGHEZZA;
     const f32 bocca = p.screenY - GALLERIA_ALTEZZA * pxY;        // soffitto della bocca
     const f32 fronteW = hw * 1.75f;                              // fronte di cemento
-    const f32 fronteTop = p.screenY - 2900.0f * pxY;
+    const f32 fronteTop = p.screenY - 3500.0f * pxY;
     const f32 collinaW = hw * 7.0f;                              // mezza larghezza della collina
     const f32 collinaH = 5200.0f * pxY;
     // Collina: profilo a campana con gobbe. Cresta d'erba chiara, poi strati
@@ -849,6 +895,11 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
     const u32 neon = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.3f);
     const f32 rim = std::max(1.0f, 160.0f * pxUnita);
     const f32 pil = std::max(1.0f, 260.0f * pxUnita);
+    // Andrea 08/11 sera: throw-up "OPEN RUN" rosa shock/ciano sulla fronte.
+    const MascheraGraffito& mg = mascheraGraffito("OPEN RUN");
+    const f32 grafY0 = fronteTop + std::max(1.0f, 90.0f * pxY);
+    const f32 grafH = std::max(1.0f, (bocca - rim) - grafY0 - std::max(0.0f, 40.0f * pxY));
+    const f32 grafW = grafH * (f32)mg.w / (f32)mg.h;
     const i32 xa = std::max(0, (i32)(cx - collinaW)), xb = std::min(Framebuffer::WIDTH - 1, (i32)(cx + collinaW));
     for (i32 x = xa; x <= xb; ++x) {
         const f32 d = ((f32)x - cx) / collinaW;
@@ -880,6 +931,22 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     // Sporco: dal basso sale una fascia piu' scura a trama.
                     if (c != giunto && wv < 700.0f && (f32)BAYER4[y & 3][x & 3] > wv / 700.0f * 16.0f)
                         c = lerpColore(c, 0xFF000000u, 0.25f);
+                }
+                // Throw-up sulla fronte, sopra la bocca: qui si legge di faccia.
+                if (sopraBocca && !bordoBocca && std::abs((f32)x - cx) < grafW * 0.5f &&
+                    (f32)y >= grafY0 && (f32)y < grafY0 + grafH) {
+                    const i32 mx = (i32)(((f32)x - (cx - grafW * 0.5f)) / grafW * (f32)mg.w);
+                    const i32 my = (i32)(((f32)y - grafY0) / grafH * (f32)mg.h);
+                    if (mx >= 0 && my >= 0 && mx < mg.w && my < mg.h) {
+                        switch (mg.px[(size_t)(my * mg.w + mx)]) {
+                        case 1: c = 0xFF0C0814u; break;
+                        case 2: c = 0xFF40F0FFu; break;
+                        case 3: c = (BAYER4[y & 3][x & 3] < (u8)(16.0f * (f32)my / (f32)mg.h)) ? 0xFFB01C80u : 0xFFFF2FB4u; break;
+                        case 4: c = 0xFFFFFFFFu; break;
+                        case 5: c = 0xFF2A1438u; break;
+                        default: break;
+                        }
+                    }
                 }
                 fb_.put(x, y, c);
                 continue;

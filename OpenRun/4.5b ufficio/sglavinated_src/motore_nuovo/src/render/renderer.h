@@ -351,6 +351,11 @@ private:
     // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
     // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).
     u32 texGalleria(i32 u, i32 v, f32 buio) const;
+    // Graffiti throw-up: maschera a bolle del testo (0 muro, 1 bordo nero,
+    // 2 contorno, 3 riempimento, 4 lucido, 5 estrusione), calcolata una volta.
+    struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px; };
+    std::vector<MascheraGraffito> graffiti_;
+    const MascheraGraffito& mascheraGraffito(const char* testo);
     // Imbocco della galleria visto da fuori: collina del tema con la fronte di
     // cemento, la bocca resta aperta sull'interno.
     void drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto);
