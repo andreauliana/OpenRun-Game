@@ -11,7 +11,7 @@
     "segmenti": 4950,
     "durata_stimata_s": 35
   },
-  "tracciato": ["rettilineo_corto", "curva_stretta_dx", "citta", "chicane_dx", "chicane_sx", "rettilineo_corto", "curva_stretta_sx", "dune", "curva_stretta_dx", "rettilineo_largo", "curva_larga_sx", "rettilineo_lungo", "curva_stretta_sx", "rettilineo_corto", "curva_larga_dx", "galleria", {"tratto": "curva_dolce_sx", "curva": -0.26, "lunghezza": 300}, "curva_cieca_dx", "curva_cieca_sx", "saliscendi"],
+  "tracciato": ["rettilineo_corto", "curva_stretta_dx", "citta", "chicane_dx", "chicane_sx", "rettilineo_corto", "curva_stretta_sx", "dune", "curva_stretta_dx", "rettilineo_largo", "curva_larga_sx", "rettilineo_lungo", "curva_stretta_sx", "rettilineo_corto", "curva_larga_dx", "galleria", "uscita_galleria", "curva_cieca_dx", "curva_cieca_sx", "saliscendi"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.0, "lunghezza": 600},
     {"curva": 0.3, "collina": 0.0, "lunghezza": 500},
@@ -32,7 +32,7 @@
     {"collina": 0.0, "dune": 0.09, "onde": 3, "lunghezza": 300, "tipo": "saliscendi"}
   ],
   "seme": 8812,
-  "tempo_limite_s": 54,
+  "tempo_limite_s": 61,
   "checkpoint_ogni_segmenti": 300,
   "difficolta": "facile",
   "note_difficolta": "curve ampie e dolci, colline rare, rettilinei lunghi per respirare, traffico leggero; intensita' solo nelle curve",

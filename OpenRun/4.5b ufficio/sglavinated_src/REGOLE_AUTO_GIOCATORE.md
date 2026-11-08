@@ -69,8 +69,8 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   `RIVALE_SORPASSO_DX = 360` dal giocatore (prima scappavano a 450 dal centro).
 - **Tempi delle tappe (Andrea 08/11: "basta schiacciare l'acceleratore e
   arrivi alla fine"):** `tempo_limite_s` di ogni livello = circa 1.45 volte il
-  tempo del bot pulito del gate gara (lv_01 50, lv_02 48, lv_03 59, lv_04 48,
-  lv_05 54, lv_06 47); al cambio di tappa si aggiunge l'80%
+  tempo del bot pulito del gate gara (lv_01 50, lv_02 58, lv_03 59, lv_04 48,
+  lv_05 61, lv_06 47; lv_02 e lv_05 ricalcolati l'08/11 dopo la galleria); al cambio di tappa si aggiunge l'80%
   (`tempo_extra_fattore` 0.8 in config.json). Guida pulita: arrivo con ~25 s
   di margine; un incidente per tappa: si arriva per poco; solo acceleratore:
   il tempo finisce alla 2a o 3a tappa. Se si allunga o accorcia un livello,

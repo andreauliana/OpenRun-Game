@@ -16,6 +16,8 @@ Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json
 
 **Gate gara FALLITO dopo PERC1 D2 (Claude 08/11 alle 11:45):** col traffico per tratto, in lv_05 due rivali arrivati da rami diversi si disegnavano uno sopra l'altro (96 sovrapposizioni, massimo 20). Causa vecchia: la distanza fra rivali usava il progresso totale invece di quello dentro la tappa. Sistemato da Claude in `Game::aggiornaRivali` (`progressoTappa`); D2 resta [x]. Nessun agente alza il limite delle sovrapposizioni del gate.
 
+**Galleria PERC1 D4 rifatta da Claude (08/11 alle 13:45):** sul main la galleria di lv_02 e lv_05 si vedeva come uno spazio piatto di un solo colore (soffitto disegnato sopra la strada, cielo visibile; Andrea: "sembra un'area malvagia"). Ora ha pareti, soffitto a fasce, luci ogni 10 segmenti, imbocco e uscita, e fuori dall'uscita si vede solo la bocca. Codice in `Renderer::drawRoad`/`drawSegmentTrapezoid`/`drawSprite` (`GALLERIA_LARGHEZZA`, `GALLERIA_ALTEZZA`): nessun agente lo ritocca finche' Andrea non l'ha vista. Il gate tratti falliva per la curva dopo la galleria scritta come oggetto in linea: ora e' il tratto con nome `uscita_galleria` in `tratti.json` (in `tracciato` solo nomi di tratti, mai oggetti in linea). lv_02 e lv_05 sono piu' lunghi: `tempo_limite_s` 58 e 61. `REVIEW_PERC1.md` del junior e' vecchio su questi punti.
+
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
 Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
