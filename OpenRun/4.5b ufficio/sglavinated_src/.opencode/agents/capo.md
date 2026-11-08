@@ -1,6 +1,6 @@
 ---
 description: Coordina progetto di produzione, assegna task e revisioni indipendenti, verifica completezza e gestisce checkpoint e documenti per Andrea.
-model: opencode/nemotron-3.5-super-vl-free
+model: opencode/glm-5.3-flash-free
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: primary
 permission:

@@ -7,3 +7,10 @@ opencode/pulse-alpha-free
 opencode/flint-40b-free
 opencode/longcat-2.5-preview-free
 opencode/space-bunny-free
+# 8 nov 2026: inkling-2-small-free non e' disponibile nell'UE; jev-1.13 non e' un modello di chat.
+opencode/inkling-2-small-free
+opencode/jev-1.13-free
+# 8 nov 2026 (Andrea): i Nemotron lavorano male (ignorano le regole, rompono pista e HUD).
+opencode/nemotron-3.5-super-vl-free
+opencode/nemotron-3.5-lightning-free
+opencode/nemotron-3-ultra-free
