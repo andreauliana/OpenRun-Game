@@ -966,7 +966,7 @@ bool salvaScreenshotP1(const std::string& outDir, const std::string& livello) {
     for (i32 frame = 1; frame <= 3000; ++frame) {
         Pad pad;
         // Gas fino al frame 600, poi a tratti: le pause fanno partire gli show di inattivita'.
-        pad.held = (frame <= 600) ? (u64)Pad::A : 0;
+        pad.held = (frame > 600 && (frame / 40) % 2) ? 0ull : (u64)Pad::A;
         game.setInput(pad);
         game.update();
         game.render();
