@@ -70,6 +70,26 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     if (transizioneT_ < 1.0f) drawSkylineTransizione(skylineDa_, skylineA_, transizioneT_);
     else if (skylineSprite_.width > 0) drawSkyline(skylineSprite_);
     fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, tema_.erba);
+    // Telecamera in galleria (Claude 08/11): fra la telecamera e la prima
+    // sezione disegnata ci sono ancora pareti e soffitto, niente cielo.
+    clipGalleria_ = false;
+    if (projs_.front().galleria && projs_.size() > 1 && projs_[1].galleria) {
+        fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.62f));
+        fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.76f));
+        // Bocca d'uscita: prima sezione fuori dalla galleria.
+        for (size_t k = 1; k < projs_.size(); ++k) {
+            if (projs_[k].galleria) continue;
+            const Road::ProjectedSeg& u = projs_[k];
+            const f32 px = u.scale * (Framebuffer::WIDTH / 2.0f);
+            const f32 hw = px * Road::ROAD_HALF_WORLD * u.carr.fattore * GALLERIA_LARGHEZZA;
+            clipGalleria_ = true;
+            clipGalleriaZ_ = u.worldZ;
+            clipGx0_ = (i32)(u.screenX - hw);
+            clipGx1_ = (i32)(u.screenX + hw);
+            clipGy0_ = (i32)(u.screenY - GALLERIA_ALTEZZA * u.scale * 112.0f);
+            break;
+        }
+    }
 
     // Disegna i segmenti dal piu' LONTANO al piu' VICINO: projs_ e' ordinato
     // vicino->lontano (i=0 e' il segmento piu' vicino), quindi si itera a ritroso.
@@ -236,8 +256,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // lati niente erba alla quota della strada (il terreno e' gia' stato
     // dipinto piu' in basso, sopra).
     // Galleria (PERC1 D4): pareti scure del tema ai lati, soffitto sopra la strada.
-    const u32 pareteScura = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.75f);
-    const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.55f);
+    // Claude 08/11: a bande come la strada, cosi' in galleria si sente la velocita'.
+    const u32 pareteScura = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.72f : 0.80f);
+    const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.58f : 0.66f);
     const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
     const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
@@ -247,10 +268,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        if (y >= HORIZON_Y && !sospeso) {
-            if (galleria) fb_.hline(0, Framebuffer::WIDTH - 1, y, pareteScura);
-            else fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
-        }
+        if (y >= HORIZON_Y && !sospeso) fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
         const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
@@ -284,16 +302,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const i32 lx = (i32)(cx - hw);
             const i32 rx = (i32)(cx + hw);
             if (rx < 0 || lx >= Framebuffer::WIDTH) continue; // ramo fuori schermo
-            if (galleria) {
-                // PERC1 D4: soffitto sopra la strada e pareti ai lati.
-                const i32 altezza = std::max(4, (i32)(hw * 0.55f));
-                const i32 soffittoY0 = std::max(0, y - altezza);
-                if (soffittoY0 < y) {
-                    fb_.fillRect(std::max(0, lx - rw), soffittoY0, std::min(Framebuffer::WIDTH - 1, rx + rw), y, soffitto);
-                    fb_.hline(std::max(0, lx - rw), std::min(Framebuffer::WIDTH - 1, rx + rw), y - altezza + 1, pareteScura);
-                }
-                fb_.hline(0, std::max(-1, lx - 1), y, pareteScura);
-                fb_.hline(std::min(Framebuffer::WIDTH, rx + 1), Framebuffer::WIDTH - 1, y, pareteScura);
+            if (galleria && rami == 1) {
+                // Piede delle pareti: dal bordo della strada alla parete di
+                // questa profondita' (fuori resta l'erba, si vede da fuori).
+                const f32 pw = hw * GALLERIA_LARGHEZZA;
+                fb_.hline(std::max(0, (i32)(cx - pw)), lx - 1, y, pareteScura);
+                fb_.hline(rx + 1, std::min(Framebuffer::WIDTH - 1, (i32)(cx + pw)), y, pareteScura);
             }
             fb_.hline(lx, rx, y, road);
             fb_.hline(lx, lx + rw - 1, y, rumble);
@@ -317,14 +331,42 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             }
         }
     }
-    // PERC1 D4: una luce del tema ogni 10 segmenti (al confine del segmento vicino).
-    if (galleria && cur.index % 10 == 0) {
-        const f32 pxUnita = cur.scale * (Framebuffer::WIDTH / 2.0f);
-        const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * cur.carr.fattore;
-        const i32 altezza = std::max(4, (i32)(hw * 0.55f));
-        const i32 ly = (i32)cur.screenY - altezza + std::max(1, altezza / 4);
-        const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 6);
-        drawLampada((i32)cur.screenX, ly, r, tema_.rumbleAlt, true);
+    // Galleria (PERC1 D4, rifatta da Claude 08/11): la sezione della galleria a
+    // ogni profondita' e' un rettangolo (pareti verticali, soffitto a
+    // GALLERIA_ALTEZZA). Fra il bordo lontano e quello vicino si dipinge
+    // l'anello: soffitto sopra, pareti ai lati. Dal lontano al vicino, come la
+    // strada: le sezioni vicine coprono quelle lontane e la strada resta visibile.
+    if (galleria && rami == 1) {
+        const f32 cN = cur.screenX + cur.carr.centro[0] * pxNear;
+        const f32 cF = next.screenX + next.carr.centro[0] * pxFar;
+        const f32 xLn = cN - hwNear * GALLERIA_LARGHEZZA, xRn = cN + hwNear * GALLERIA_LARGHEZZA;
+        const f32 xLf = cF - hwFar * GALLERIA_LARGHEZZA, xRf = cF + hwFar * GALLERIA_LARGHEZZA;
+        const f32 ceilN = cur.screenY - GALLERIA_ALTEZZA * cur.scale * 112.0f;
+        const f32 ceilF = next.screenY - GALLERIA_ALTEZZA * next.scale * 112.0f;
+        const i32 y0 = std::max(0, (i32)ceilN);
+        const i32 y1 = std::min(Framebuffer::HEIGHT - 1, ny - 1);
+        auto riga = [&](f32 a, f32 b, i32 y, u32 c) {
+            const i32 xa = std::max(0, (i32)a), xb = std::min(Framebuffer::WIDTH - 1, (i32)b);
+            if (xb >= xa) fb_.hline(xa, xb, y, c);
+        };
+        for (i32 y = y0; y <= y1; ++y) {
+            if ((f32)y < ceilF) {
+                // Sopra il soffitto lontano: soffitto al centro, cima delle pareti ai lati.
+                const f32 t = ceilF > ceilN ? ((f32)y - ceilN) / (ceilF - ceilN) : 1.0f;
+                const f32 xl = xLn + (xLf - xLn) * t, xr = xRn + (xRf - xRn) * t;
+                riga(xl, xr, y, soffitto);
+                riga(xLn, xl - 1.0f, y, pareteScura);
+                riga(xr + 1.0f, xRn, y, pareteScura);
+            } else {
+                riga(xLn, xLf - 1.0f, y, pareteScura);
+                riga(xRf + 1.0f, xRn, y, pareteScura);
+            }
+        }
+        // Una lampada del tema ogni 10 segmenti, al centro del soffitto.
+        if (cur.index % 10 == 0 && ceilN >= 0.0f) {
+            const i32 r = std::clamp((i32)(pxNear * 90.0f), 1, 6);
+            drawLampada((i32)cN, (i32)ceilN + r + 1, r, tema_.rumbleAlt, true);
+        }
     }
 }
 
@@ -820,7 +862,9 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // per le unita' mondo di un pixel sprite. Prima si passava scl da solo
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
         const f32 scala = scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale;
+        clipAttivo_ = clipGalleria_ && zRel >= clipGalleriaZ_;
         drawSprite(s, sx, sy, scala);
+        clipAttivo_ = false;
         if (s.segnalino && nSegnalini < SEGNALINI_MAX) {
             const i32 h = (i32)(s.sprite->height * scala);
             segnalini_[nSegnalini++] = {(i32)sx, (i32)sy - h, h, s.segnalino};
@@ -852,10 +896,16 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     const i32 nPalette = (i32)s.sprite->palette.size();
     // Ritaglio allo schermo: da vicino lo sprite puo' essere molto piu' grande del
     // framebuffer, e senza ritaglio il ciclo scorrerebbe pixel invisibili.
-    const i32 syIni = y0 < 0 ? -y0 : 0;
+    i32 syIni = y0 < 0 ? -y0 : 0;
     const i32 syFin = (y0 + h > Framebuffer::HEIGHT) ? Framebuffer::HEIGHT - y0 : h;
-    const i32 sxIni = x0 < 0 ? -x0 : 0;
-    const i32 sxFin = (x0 + w > Framebuffer::WIDTH) ? Framebuffer::WIDTH - x0 : w;
+    i32 sxIni = x0 < 0 ? -x0 : 0;
+    i32 sxFin = (x0 + w > Framebuffer::WIDTH) ? Framebuffer::WIDTH - x0 : w;
+    if (clipAttivo_) { // oltre l'uscita della galleria: solo dentro la bocca
+        syIni = std::max(syIni, clipGy0_ - y0);
+        sxIni = std::max(sxIni, clipGx0_ - x0);
+        sxFin = std::min(sxFin, clipGx1_ + 1 - x0);
+        if (sxFin <= sxIni || syFin <= syIni) return;
+    }
     const i32 sw = s.sprite->width;
     const i32 sh = s.sprite->height;
     // Colore del texel (tx, ty); alpha 0 = trasparente.
