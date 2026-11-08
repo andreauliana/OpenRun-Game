@@ -422,15 +422,17 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 neonDx = 0xFF60F0FFu;
         const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
         // Graffiti (Andrea: "OPEN RUN" stile graffito sui muri enormi): una
-        // tag ogni 60 segmenti, lato alternato, lungo 22 segmenti.
+        // pezzo ogni 96 segmenti, lato alternato.
         // Andrea 08/11 notte: "OPEN RUN" non sulla fronte ufficiale ma dentro,
         // abusivo: un pezzo lungo ogni tre graffiti, in mezzo tag corte.
-        constexpr i32 GRAF_OGNI = 60, GRAF_INIZIO = 10;
+        constexpr i32 GRAF_OGNI = 96, GRAF_INIZIO = 8;
         const i32 grafN = cur.index / GRAF_OGNI;
         static const char* kGraf[3] = {"OPEN RUN", "RUN", "OR88"};
         const i32 grafK = grafN % 3;
         const char* testo = kGraf[grafK];
-        const i32 GRAF_LUNGO = grafK == 0 ? 44 : 22; // il pezzo lungo si legge anche di sbieco
+        // Andrea: "top to bottom", l'artista era arrabbiato: da terra al soffitto,
+        // lettere larghe che si leggono anche a tutta velocita'.
+        const i32 GRAF_LUNGO = grafK == 0 ? 80 : 40;
         const i32 gPos = cur.index % GRAF_OGNI - GRAF_INIZIO;
         const bool grafQui = gPos >= 0 && gPos < GRAF_LUNGO;
         const i32 grafLato = ((grafN / 3) & 1) ? 1 : -1;
@@ -443,7 +445,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 contorno = variante == 0 ? ciano : rosa;
         const MascheraGraffito& mg = mascheraGraffito(testo);
         auto graffito = [&](f32 gu, f32 gv, i32 px, i32 py) -> u32 {
-            gu += (0.5f - gv) * 0.05f; // un filo di corsivo
+            gu += (0.5f - gv) * 0.09f;                       // corsivo rabbioso
+            gv += (gu - 0.5f) * (grafN & 1 ? 0.10f : -0.08f); // storto, non a bolla
             const i32 mx = (i32)(gu * (f32)mg.w), my = (i32)(gv * (f32)mg.h);
             return coloreGraffito(mg, mx, my, px, py, riempi, contorno);
         };
@@ -466,11 +469,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // Alone del neon sul cemento: mezza luce a trama sotto e sopra il tubo.
                 if (tratto && neonOn && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
                     c = lerpColore(c, sinistra ? neonSx : neonDx, 0.35f);
-                if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.26f && v < 0.86f) {
+                if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.03f && v < 0.97f) {
                     // Sul muro di destra chi legge ha davanti il fondo alla sua
                     // sinistra: la scritta comincia dal lontano.
                     const f32 gu = ((f32)gPos + t) / (f32)GRAF_LUNGO;
-                    const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.26f) / 0.60f, x, y);
+                    const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.03f) / 0.94f, x, y);
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
                 fb_.put(x, y, c);
@@ -800,7 +803,7 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
         {'R', {"######", "#   # ", "#  #  ", "# #   ", "##    ", "# #   ", "#  #  ", "#   ##"}},
         {'U', {"#    #", "#    #", "#    #", "#    #", "#    #", "#    #", "#    #", " #### "}},
     };
-    constexpr i32 R = 6, PAD = 2, H = 8, SCACCHI = 3; // scacchiera: 3 celle per lato
+    constexpr i32 R = 6, PAD = 2, H = 8, SCACCHI = 4; // scacchiera: 4 celle per lato
     std::vector<std::vector<bool>> col; // colonne di celle del testo
     for (const char* t = testo; *t; ++t) {
         if (!col.empty()) col.emplace_back(H, false); // una cella fra le lettere
@@ -871,16 +874,16 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
             else if (v == 5) sh = std::clamp((dist(fx - 0.6f, fy - 0.6f) - 0.3f) / 0.75f, 0.0f, 1.0f);
             m.ombra[(size_t)(y * m.w + x)] = (u8)(sh * 16.0f);
         }
-    // Scacchiera condensata ai lati: quadretti da mezza cella, bianco e nero,
-    // alta come la parte centrale delle lettere.
+    // Scacchiera ai lati (Andrea: piu' grossa e semplice): quadri da due
+    // celle, 2 colonne x 3 righe, bianco e nero.
     for (i32 lato = 0; lato < 2; ++lato) {
         const i32 cx0 = (lato == 0 ? PAD : x0 + nc + 1) * R;
-        const i32 cy0 = (PAD + 2) * R, cy1 = (PAD + H - 2) * R;
+        const i32 cy0 = (PAD + 1) * R, cy1 = (PAD + H - 1) * R;
         for (i32 y = cy0; y < cy1; ++y)
             for (i32 x = cx0; x < cx0 + SCACCHI * R; ++x) {
                 const size_t i = (size_t)(y * m.w + x);
                 if (m.px[i] == 3 || m.px[i] == 4) continue;
-                m.px[i] = (((x - cx0) / (R / 2) + (y - cy0) / (R / 2)) & 1) ? 6 : 1;
+                m.px[i] = (((x - cx0) / (2 * R) + (y - cy0) / (2 * R)) & 1) ? 6 : 1;
                 m.ombra[i] = 0;
             }
     }
