@@ -789,6 +789,7 @@ void Game::init(const std::string& livelloId) {
         leggi("ciglio_rallenta", ciglioRallenta_, 0.1f, 1.0f);
         leggi("ciglio_memoria_s", ciglioMemoriaDurataS_, 0.0f, 60.0f);
         leggi("ciglio_crash_velocita", ciglioCrashVelocita_, 0.0f, 2.0f); // > 1 = mai incidente
+        leggi("tempo_extra_fattore", tempoExtraFattore_, 0.1f, 2.0f);
     }
 
     gara_ = false;
@@ -1567,7 +1568,8 @@ void Game::fineTappa(f32 avanzo) {
     tappaId_ = prossima;
     ++numeroTappa_;
     if (!tempoScaduto_) {
-        tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
+        tempoBonusS_ = (i32)std::lround((f32)tempoLimiteTappaS_ * tempoExtraFattore_);
+        tempoResiduoS_ += (f32)tempoBonusS_; // checkpoint: tempo extra (secondi)
         tempoExtraS_ = TEMPO_EXTRA_AVVISO_S;
     }
     saltoQuotaPrec_ = -1e9f; // tracciato nuovo: la quota riparte
@@ -2327,7 +2329,7 @@ void Game::render() {
         h.kmh = (i32)(player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH + 0.5f);
         h.km = km_;
         h.totaleS = (f32)frameGara_ / (f32)frequenzaHz_;
-        h.tempoExtra = tempoExtraS_ > 0.0f ? tempoLimiteTappaS_ : 0;
+        h.tempoExtra = tempoExtraS_ > 0.0f ? tempoBonusS_ : 0;
         // Contagiri del cambio automatico a due marce: sale in LOW, riparte piu' alto in HIGH.
         const f32 v = player_.speed / player_.maxSpeed();
         constexpr f32 CAMBIO = 110.0f / 250.0f;

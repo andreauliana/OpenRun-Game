@@ -371,6 +371,10 @@ private:
     f32 paesaggioDensitaAlberi_ = 1.0f;
     std::vector<u8> zonaSeg_;                              // zona di ogni segmento della Road
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
+    // Tempo extra entrando in una tappa nuova = tempo_limite_s della tappa *
+    // tempo_extra_fattore (config.json; Andrea 08/11: +tempo pieno era troppo generoso).
+    f32 tempoExtraFattore_ = 0.7f;
+    i32 tempoBonusS_ = 0; // secondi aggiunti all'ultimo cambio di tappa ("+N" a schermo)
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
     i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
