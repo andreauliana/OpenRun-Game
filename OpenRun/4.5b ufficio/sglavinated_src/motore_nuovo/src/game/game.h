@@ -376,7 +376,7 @@ private:
     i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
 f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (secondi, dati/config.json)
     // RIV (Andrea 27/10): contatto con un avversario = bump, non ribaltamento.
-    f32 bumpRallentaFattore_ = 0.80f; // fattore velocita' dopo urto con rivale (0.80 = -20%, config.json); range -15/-20% richiesto da Andrea 08/11
+    f32 bumpRallentaFattore_ = 0.85f; // fattore velocita' dopo urto con rivale (0.85 = -15%, config.json)
     f32 bumpDurataS_ = 1.0f;          // durata stato bump (secondi, config.json)
     f32 bumpSpintaLaterale_ = 200.0f; // spinta laterale urto rivale (unita'/s, config.json)
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
