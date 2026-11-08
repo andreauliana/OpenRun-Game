@@ -1,11 +1,5 @@
-# RIEPILOGO — @grafico Turno 1
-08/11/2026 08:33.
-Produzione: rigenerato asset UI variant B (genera_ui_b.py): font.png, title.png, menu_preview.png, hud_preview.png.
-M [~] (manifest bozza; asset UI aggiornati, D8 tempo risolto).
-G-A1 [x], G-P1 [x] chiusi.
-DECO1 [~], PIST1 [~] in attesa developer.
-KO1 [ ] / AUTO1 [ ] sviluppatore.
-R2 [~] fasi gioco.
-D8 tempo: elemento spostato a sinistra in hud.json.
-ULTO_TURNO: exit code 0, PNG rigenerati.
-Tutto CC0-1.0/OFL-1.1/MIT/CC-BY-4.0, nessun Sega.
+# RIEPILOGO — @grafico
+Riscritto da Claude 08/11 (Andrea: ripartire puliti). Unico lavoro: BLOCCO PERC1 di RICHIESTA.md, un passo per turno, senza aspettare nessuno.
+- PERC1: G1 [ ] freccia_cresta_dx/sx.png · G2 [ ] parete_galleria.png + luce_galleria.png · G3 [ ] 3 osservazioni sugli screenshot della galleria (dopo D4).
+- PNG in assets_originali/scenari/comuni/oggetti/, script in UFFICIO/Dipartimento Grafico/TOOLS/, raw con png_a_raw.py, voci `pronto` nel catalogo, check_catalogo_grafico.py exit 0.
+- Mai: HUD e varianti UI (blocco M chiuso, non rigenerare genera_ui_b.py), auto del giocatore, premiazione, scenari dei livelli, parapetti/guardrail sul ponte.

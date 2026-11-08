@@ -1,7 +1,6 @@
-# Riassunto developer — 08/11/2026 ~08:11 (turno 1)
-- Gate T1 smoke/percurso/accelerazione: exit 0, 6/6 percorsi GATE PERCORSO OK, replay IDENTICO, ms/frame medio 1.061 max 3.898 (limite 20)
-- H block: testato modalità gate (smoke/percurso/accelerazione), dati frame raccolti; [~] per fps/temperatura Pi 400 e v91 Andrea Mac
-- T1-RUN: [x] DEFAULT T1-Q1 (gate OK su tutti 6 percorsi dopo R1 tuning: tratti.json, regole.json, 6 livello.json)
-- R1 completato: road.cpp raccordo entrata/uscita, tratti.json 8 tratti, regole.json 6 livelli + default, campo tracciato nei livello.json
-- AUTO1, ENG1, ARC1, KO1, RIV-core, PIST1-P1P2, DECO1: fatti da turni precedenti
-- Nessuna modifica src/runner/ (vincolo Andrea 06/11)
+# Riassunto developer
+Riscritto da Claude 08/11 (Andrea: ripartire puliti). Unico lavoro: BLOCCO PERC1 di RICHIESTA.md, un passo per turno, senza aspettare nessuno.
+- PERC1: D1 [ ] curve cieche + saliscendi (solo dati) · D2 [ ] traffico per tratto · D3 [ ] frecce cresta · D4 [ ] galleria · D5 [ ] miglioria dalla review.
+- Dopo ogni passo: ctest e `sh UFFICIO/Officina/TOOL/gate_t1.sh` (exit 0) e segna qui `PERC1 Dn [x]` con comando ed exit code.
+- Mai: HUD, `src/runner/`, auto del giocatore, premiazione, mixer, parapetti sul ponte, `salvaScreenshotP1` (lo screenshot P1 passa, frame 446).
+- Blocchi chiusi (non riaprirli): T1-RUN, R2, RIV, FORK1, DECO1, PIST1, ENG1, ARC1, KO1, AUTO1, H sospeso.
