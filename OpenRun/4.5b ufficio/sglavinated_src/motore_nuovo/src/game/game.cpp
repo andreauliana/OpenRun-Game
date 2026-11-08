@@ -1494,7 +1494,12 @@ void Game::aggiornaRivali() {
             const Rivale& q = rivali_[j];
             // q davanti a r (29/10: prima il segno era invertito e a rallentare
             // era chi stava davanti: i rivali si incollavano in fila a un terzo della velocita').
-            const f32 dz = q.progresso - r.progresso;
+            // Distanza dentro la tappa (Claude 08/11): chi e' arrivato qui da un
+            // ramo diverso ha un progresso totale diverso ma corre sulla stessa
+            // strada; col progresso totale due rivali si disegnavano uno sopra l'altro.
+            if (q.tempoArrivoS >= 0.0f || q.passoPercorso >= q.nPercorso ||
+                q.percorso[q.passoPercorso] != tappaGiocatore) continue;
+            const f32 dz = q.progressoTappa - r.progressoTappa;
             if (dz > 0.0f && dz < RIVALE_DISTANZA_MIN && std::abs(r.x - q.x) < RIVALE_LATERALE_MIN) {
                 r.passo = std::min(r.passo, q.passo * 0.95f);
                 if (dz < RIVALE_DISTANZA_MIN * 0.5f) {
