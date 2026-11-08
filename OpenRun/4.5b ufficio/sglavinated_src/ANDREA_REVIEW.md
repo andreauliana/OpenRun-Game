@@ -23,7 +23,7 @@ Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco
 - **Ponte aperto** (mai parapetti), mare, riva, barche, gabbiani, faro; **galleria** di lv_02 e lv_05 (neon, luci rotte, graffito "OPEN RUN" dentro, imbocco senza scritte); ingresso graduale nelle citta'.
 - **Partenza** (griglia, pubblico, 3-2-1-START) se la PR #84 e' nel main.
 - **Menu**: logo SEGNAPOSTO "OPEN RUN" (`Libreria/assets_originali/ui/logo/logo_openrun.png`) + le voci. **Niente altre scritte, decorazioni o elementi**: il logo e il menu li fa Andrea.
-- **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le 136 varianti non usate sono il "gruppo B" (elenco in `OGGETTI_LIVELLI.md`): si tengono.
+- **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le vecchie varianti non usate (gruppo B) sono state cancellate da Andrea l'08/11: non si rigenerano.
 
 ## 3. Vocabolario di gioco (azioni definite e testate)
 
