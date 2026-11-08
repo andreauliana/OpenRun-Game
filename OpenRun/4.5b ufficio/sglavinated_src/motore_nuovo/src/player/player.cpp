@@ -31,7 +31,7 @@ void Player::update(f32 dt) {
     // la risposta cresce fino a ~1/4 della velocita' massima e poi cala un po'
     // verso la punta (piu' stabile in alto, ma sempre sopra la spinta delle curve).
     const f32 v = speed / MAX_SPEED;
-    const f32 risposta = std::min(1.0f, v / STEER_V_PIENA) * (1.0f - STEER_CALO_PUNTA * v * v);
+    const f32 risposta = std::min(1.0f, v / STEER_V_PIENA) * (1.0f - caloPunta * v * v);
     x += steer_ * STEER_MAX * risposta * dt;
     vincolaAllaCorsia();
     // Accelerazione / freno (valori al secondo * dt = incremento al frame).

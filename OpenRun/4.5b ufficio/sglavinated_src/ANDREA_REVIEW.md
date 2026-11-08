@@ -12,6 +12,8 @@ Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json
 
 **ANNULLATO da Claude 08/11 alle 11:40 (turno delle 11:32 fatto su una copia vecchia di RICHIESTA):** curve tolte e rampa/discesa del ponte tolte in lv_01, lv_03, lv_04, lv_05, lv_06 (facevano FALLIRE 4 gate percorso); `colpiMemoria_` azzerato per i rivali in `Game::urto` e `bumpRallentaFattore_` 0.80 (regole bloccate in `REGOLE_AUTO_GIOCATORE.md`, Andrea non l'ha chiesto); TIME spostato a sinistra e `colore_bordo` in `hud.json`; anteprime della variante UI B; cartella `help/` con log e PPM dei test. **Tracciati: si AGGIUNGONO tratti solo con i passi PERC1 (D1, D4); mai togliere curve, mai togliere `rampa_ponte`/`discesa_ponte`, mai cambiare curve per far passare un gate (i 6 gate percorso passano gia').** I log e gli screenshot dei test vanno solo in `UFFICIO/Officina/Test area/`.
 
+**Guida e tempi (Andrea 08/11, Claude):** le curve spingono verso l'esterno e si sterza DENTRO la curva; sterzo un po' piu' forte alla punta e pieno verso un'auto affiancata (sportellata); i `tempo_limite_s` dei livelli sono stati stretti (circa 1.45 volte il tempo del bot pulito) perche' col solo acceleratore si arrivava in fondo. Regole e numeri in `REGOLE_AUTO_GIOCATORE.md`: nessun agente alza i tempi o cambia sterzo/spinta delle curve.
+
 ## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
 Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
