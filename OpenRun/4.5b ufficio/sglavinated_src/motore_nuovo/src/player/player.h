@@ -57,12 +57,14 @@ private:
     static constexpr f32 BRAKE = 120.0f;       // 120 unita'/secondo^2
     // Gas rilasciato: decadimento al secondo. pow(0.995,50) ~ 0.778 = perde ~22% al secondo.
     static constexpr f32 COAST_PER_SEC = 0.7782f;
-    // Sterzo: spostamento laterale massimo 600 unita'/secondo, zero da fermi,
-    // pieno a STEER_V_PIENA * MAX_SPEED, -15% alla punta (510 > spinta curva 0.8
-    // a velocita' massima, ~356). Gate: >= +/-200 in 0.6 s partendo da fermi.
-    static constexpr f32 STEER_MAX = 700.0f; // Andrea 06/11 sera: piano si gira di piu' (era 600)
+    // Sterzo: spostamento laterale massimo STEER_MAX unita'/secondo, zero da
+    // fermi, pieno a STEER_V_PIENA * MAX_SPEED, -5% alla punta (~740 unita'/s:
+    // la strada, 1400 unita', si attraversa in meno di 2 s). Tiene a gas pieno
+    // le curve fino a 0.6 (spinta 720); quelle strette (0.85, spinta 1020) si
+    // tengono con la derapata (Game, DERAPATA_*). Gate: >= +/-200 in 0.6 s da fermi.
+    static constexpr f32 STEER_MAX = 780.0f; // Andrea 06/11 sera 700 (era 600); 08/11 pomeriggio: "farei muovere di piu' il veicolo"
     static constexpr f32 STEER_V_PIENA = 0.25f;
-    static constexpr f32 STEER_CALO_PUNTA = 0.25f; // Andrea 06/11 sera 0.35 (era 0.15); 08/11: 0.25, alla punta lo sterzo deve restare un po' piu' forte della curva
+    static constexpr f32 STEER_CALO_PUNTA = 0.05f; // 06/11 0.35, 08/11 mattina 0.25; 08/11 pomeriggio 0.05: "fa fatica a muoversi tra destra e sinistra ad alte velocita'"
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.

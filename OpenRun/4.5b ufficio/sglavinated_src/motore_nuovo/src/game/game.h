@@ -126,6 +126,8 @@ public:
     f32 distanzaKm() const { return km_; }
     i32 numeroTappa() const { return numeroTappa_; }
     f32 tempoResiduoS() const { return tempoResiduoS_; }
+    // Derapata in corso 0..1 (Andrea 08/11): per prove e HUD futuri, sola lettura.
+    f32 derapata() const { return derapata_; }
     bool arrivato() const { return arrivo_; }
     // Posizione del giocatore nella gara (1 = primo). In arrivo riporta la
     // posizione registrata al traguardo (blocco FIN).
@@ -318,6 +320,10 @@ private:
     f32 razzoAttesaS_ = 0.0f;      // secondi passati alla punta in rettilineo
     f32 sgommata_ = 0.0f;          // 0..1, segue l'obiettivo con un ritardo
     i32 latoSgommata_ = 0;         // lato esterno della curva
+    // Derapata (Andrea 08/11): curva forte, sterzo pieno dentro, velocita'
+    // alta: le gomme strisciano e fanno da contrappeso (meno spinta fuori,
+    // un po' di velocita' persa). Questa invece tocca la guida.
+    f32 derapata_ = 0.0f;          // 0..1, segue l'obiettivo con un ritardo
     f32 saltoMaxAltezza_ = 0.0f;   // quota massima del salto in corso
     f32 atterraggioS_ = -1.0f;     // secondi dall'ultimo atterraggio (< 0 = nessuno)
     f32 forzaAtterraggio_ = 0.0f;  // 0..1 altezza del salto appena finito

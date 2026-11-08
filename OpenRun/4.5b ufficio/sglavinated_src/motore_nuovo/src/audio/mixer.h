@@ -53,6 +53,9 @@ public:
     // 0 = musica piena, 1 = ovattata (fuori strada, incidente). Il mixer ci
     // arriva in modo graduale, senza scatti.
     void setOvattato(f32 q) { ovattatoVoluto_ = q; }
+    // Stridio delle gomme in derapata (Andrea 08/11), 0..1. Sale e scende
+    // in modo graduale; non tocca la musica.
+    void setSgommata(f32 q) { stridioVoluto_ = q; }
 
     static constexpr f32 URTO_FORZA_LEGGERO = 0.45f;  // rivale, ciglio
     static constexpr f32 URTO_FORZA_TRAFFICO = 0.7f;  // traffico, cartellone piano
@@ -115,6 +118,12 @@ private:
     u32 caso_ = 0x9E3779B9u;               // generatore per il canale a caso
     f32 ovattatoVoluto_ = 0.0f, ovattato_ = 0.0f;
     f32 filtro_[4] = {};                   // passa-basso a due poli: L1, R1, L2, R2
+    // --- Stridio delle gomme (Andrea 08/11) ---
+    f32 stridioVoluto_ = 0.0f, stridio_ = 0.0f;
+    f32 stridioFase_[3] = {};              // due toni acuti + tremolo
+    f32 stridioDeriva_ = 0.0f;             // il tono sale e scende a caso
+    f32 stridioRumore_ = 0.0f;             // rumore filtrato (fruscio dell'asfalto)
+    f32 sfxStridio();
 };
 
 } // namespace sgl

@@ -332,6 +332,16 @@ private:
     // Torri del ponte alto (Andrea 31/10): dall'acqua a sopra la strada, con trave.
     void drawPilone(const Road::ProjectedSeg& p);
     static constexpr i32 PILONE_OGNI_SEG = 60;      // un portale ogni 60 segmenti (12000 unita')
+    // Galleria (PERC1 D4, Claude 08/11): sezione larga come il portale (1.08 la
+    // mezza strada) e alta fino alla trave del portale (2400 - 360 unita').
+    static constexpr f32 GALLERIA_LARGHEZZA = 1.08f;
+    static constexpr f32 GALLERIA_ALTEZZA = 2040.0f;
+    // Dentro la galleria quello che sta oltre l'uscita si vede solo dalla bocca
+    // d'uscita: gli sprite oltre clipGalleriaZ_ si ritagliano a quel rettangolo.
+    bool clipGalleria_ = false;
+    f32 clipGalleriaZ_ = 0.0f;
+    i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
+    bool clipAttivo_ = false; // per lo sprite che si sta disegnando
     static constexpr f32 TORRE_LARGHEZZA = 240.0f;  // unita' mondo
     static constexpr f32 TORRE_DISTANZA = 1.25f;    // centro torre / mezza carreggiata
     static constexpr f32 TORRE_SOPRA = 3200.0f;     // altezza della torre sopra la strada
