@@ -14,7 +14,6 @@ permission:
     "UFFICIO/out/developer/ULTIMO_TURNO.md": allow
     "UFFICIO/out/developer/REVIEW_*.md": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
-    "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
     "motore_nuovo/src/**": allow
     "motore_nuovo/test/prova_gate.cpp": allow

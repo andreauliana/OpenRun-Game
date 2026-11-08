@@ -371,14 +371,14 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 **Come si lavora:** un passo per turno, il primo tuo non ancora [x]. Se dipende da un altro ruolo, salta al tuo passo successivo. Niente domande ad Andrea: si procede. Nel RIASSUNTO: `MIG1 <passo> [x]` con comando ed exit code. Dopo ogni passo di codice o dati: `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0; replay 2x IDENTICO; Pi 400 <= 12 ms/frame. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
 
 ### @grafico — cartelloni leggibili
-- **G1** Ridisegna i cartelloni sponsor (`UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/`, script `genera_sponsor.py`) con STESSO nome e STESSA misura: una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo. Marchi inventati, mai marchi veri. Raw con `png_a_raw.py`, catalogo aggiornato. Prima/dopo in Test area.
+- **G1** Ridisegna i cartelloni sponsor (`UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/`, script `genera_sponsor.py`) con STESSO nome e STESSA misura: una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo. Marchi inventati, mai marchi veri. Raw con `png_a_raw.py`, catalogo aggiornato. Prima/dopo in `UFFICIO/Officina/Test area/grafico/`.
 - **G2** Dopo D1-D3: guarda gli screenshot e scrivi 3 osservazioni in `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
 
 ### @developer — meccanica di gara
 - **D1 Paletti abbattuti** (`Game::abbattiPali`; disegno in `Game::render`, "Paletti abbattuti"). Oggi volano verso il basso e finiscono nel nero sotto lo schermo. Devono volare di lato, **atterrare sull'erba a fianco della strada** e restare li', scorrendo via con la strada secondo la velocita' (posizione nel mondo, non sullo schermo). Mai sotto la riga delle ruote, mai fuori dall'area di gioco.
 - **D2 Sportellata efficace.** Affiancati a un rivale, anche alla punta, un colpo di sterzo rapido deve andare a segno. Aperti solo `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX` (REGOLE_AUTO_GIOCATORE). Il rivale colpito sbanda un attimo, perde un po' e dopo ~5 s torna normale; resta la memoria dei danni (-3% a botta, KO alla 4a).
 - **D3 Rivali con carattere** (seme fisso, deterministico): uno aggressivo che chiude la traiettoria, uno prudente, uno vendicativo che dopo una tua sportellata ti cerca per restituirla, uno che sbaglia in curva. Mai sovrapposti, mai teletrasporti.
-- **D4 Nomi dei 7 rivali** (`NOMI_RIVALI`, game.cpp, max 6 lettere maiuscole): strani, simpatici ed estroversi, da culture e parti del mondo diverse, legati ai temi dei livelli (neon, atomico, foglie, cromo, spray, desktop). Elenco con origine e tema in `UFFICIO/out/developer/NOMI_RIVALI.md`.
+- **D4 Nomi dei 7 rivali** (`NOMI_RIVALI`, game.cpp, max 6 lettere maiuscole): strani, simpatici ed estroversi, da culture e parti del mondo diverse, legati ai temi dei livelli (neon, atomico, foglie, cromo, spray, desktop). Elenco con origine e tema dentro il tuo `UFFICIO/out/developer/ULTIMO_TURNO.md` (nessun file nuovo).
 - **D5 (facoltativo) Audio extra:** solo effetti NUOVI in aggiunta (es. paletto che vola, rivale che si vendica). Gli effetti di oggi non si cambiano.
 
 ### @developer-junior — prove e review

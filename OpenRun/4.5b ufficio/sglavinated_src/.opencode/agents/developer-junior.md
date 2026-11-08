@@ -16,10 +16,9 @@ permission:
     "UFFICIO/out/developer-junior/ULTIMO_TURNO.md": allow
     "UFFICIO/out/developer-junior/REVIEW_*.md": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
-    "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
     "UFFICIO/Officina/Test area/strumenti/**": allow    
-    "motore_nuovo/test/**": allow
+    "motore_nuovo/test/*.cpp": allow
     "motore_nuovo/dati/tracciati/regole.json": allow
   bash:
     "*": deny

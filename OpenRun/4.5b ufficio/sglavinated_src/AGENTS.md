@@ -26,6 +26,15 @@ sglavinated_src/
 La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
 **Cartelle (Andrea 08/11):** si scrive solo dentro `UFFICIO/` (la tua bacheca `UFFICIO/bacheche/<ruolo>/`, le tue uscite `UFFICIO/out/<ruolo>/`, Officina, Dipartimento Grafico) e in `motore_nuovo/` quando il blocco lo chiede. Vietato creare cartelle nuove o file alla radice di `sglavinated_src/`; niente file .md in `motore_nuovo/test/`.
 
+**Chi scrive dove (Andrea 08/11, permessi in `.opencode/agents/`):**
+| Ruolo | Scrive | Legge |
+|---|---|---|
+| @grafico | `UFFICIO/Dipartimento Grafico/**` (Libreria, TOOLS, Shared asset, catalogo), `motore_nuovo/dati/sprite_raw/**` (solo con `png_a_raw.py`), `dati/ui`, `dati/testi`, `frasi.json`, anteprime in `UFFICIO/Officina/Test area/grafico/` | tutto |
+| @developer | `motore_nuovo/src/**`, CMake, `dati/livelli`, `dati/tracciati`, `config.json` e gli altri dati di gioco, `strumenti_py/`, `UFFICIO/Officina/TOOL/**` | tutto, Libreria compresa (mai modificarla) |
+| @developer-junior | test `motore_nuovo/test/*.cpp`, `dati/tracciati/regole.json`, `UFFICIO/Officina/TOOL/**` | tutto |
+| @capo | `UFFICIO/Checkpoint Revision/**`, `UFFICIO/out/capo/STATI_PROPOSTI.md` | tutto |
+Ognuno scrive anche la propria bacheca e il proprio `UFFICIO/out/<ruolo>/`. L'Officina legge la Libreria e la converte, ma **non la sovrascrive**; il grafico **non tocca** codice, livelli e tracciati. Se serve un cambio nell'altro reparto: una riga in `PER_CLAUDE.md` o nel RIASSUNTO. `ANDREA_REVIEW.md` e `RICHIESTA.md` li scrivono solo Andrea e Claude.
+
 Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` riservata a Libreria asset in lavorazione del @grafico. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
 
 ## Ruoli

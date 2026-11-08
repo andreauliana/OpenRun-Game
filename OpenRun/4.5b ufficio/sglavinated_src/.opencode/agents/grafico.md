@@ -18,11 +18,11 @@ permission:
     "UFFICIO/Dipartimento Grafico/Libreria/Shared asset/**": allow
     "UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md": allow
     "UFFICIO/out/grafico/REVIEW_*.md": allow
+    "UFFICIO/Officina/Test area/grafico/**": allow
     "motore_nuovo/dati/sprite_raw/**": allow
     "motore_nuovo/dati/ui/**": allow
     "motore_nuovo/dati/testi/**": allow
     "motore_nuovo/dati/frasi.json": allow
-    "motore_nuovo/dati/livelli/**": allow    
   bash:
     "*": deny
     "python3 UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow

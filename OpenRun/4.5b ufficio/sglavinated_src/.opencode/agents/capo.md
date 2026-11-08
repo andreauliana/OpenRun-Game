@@ -12,7 +12,6 @@ permission:
     "UFFICIO/bacheche/capo/**": allow
     "UFFICIO/out/capo/STATI_PROPOSTI.md": allow
     "UFFICIO/Checkpoint Revision/**": allow
-    "ANDREA_REVIEW.md": allow
     "PER_CLAUDE.md": allow
     "FINITO": allow
   bash:
