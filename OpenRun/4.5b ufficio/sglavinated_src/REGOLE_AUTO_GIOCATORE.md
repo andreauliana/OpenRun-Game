@@ -76,6 +76,11 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   dello sprite. Col solo acceleratore niente derapata: la curva porta fuori.
   Valori in game.cpp (`DERAPATA_*`); prova: curve strette di lv_05 tenute a
   sterzo pieno (max 415 su 700), solo gas finisce il tempo alla 2a tappa.
+- **Aperto agli agenti dal 09/11 (BLOCCO MIG1, Andrea 08/11 sera):** SOLO la
+  sportellata contro i rivali (`AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`,
+  `RIVALE_SORPASSO_DX`), danni/KO/recupero dei rivali e il volo dei paletti
+  abbattuti. Sterzo (`STEER_*`), curve (`CURVA_SPINTA_V2`), derapata
+  (`DERAPATA_*`), incidenti e tempi restano bloccati.
 - **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
   e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
   a colpirla di lato. I rivali che arrivano da dietro passano a

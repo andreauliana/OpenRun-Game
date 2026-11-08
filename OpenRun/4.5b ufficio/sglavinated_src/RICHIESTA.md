@@ -356,13 +356,28 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 | @capo | Una riga di registro per turno; `out/capo/STATI_PROPOSTI.md` allineato a questo blocco. D19 e' chiusa: CP-006 si puo' chiudere. Niente richieste nuove ad Andrea. |
 | Vincoli | Ogni passo piccolo, `ctest` verde (tutti i test, oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 dopo ogni passo di codice o dati. Replay 2x IDENTICO, budget Pi 400 <= 12 ms/frame. Percorsi relativi, niente copie di file fuori da `sglavinated_src/`. |
 | Chi tocca adesso | @developer D1 · @developer-junior J1 · @grafico G1 · @capo una riga di registro. |
-| Stato | [~] | (Claude 08/11: aperto) |
+| Stato | [x] | (Claude 08/11 sera: chiuso, approvato da Andrea; si prosegue con MIG1) |
 
 ---
+
+---
+
+## BLOCCO MIG1 — @developer + @developer-junior + @grafico — migliorie di grafica e di gara (Andrea 08/11 sera)
+| Campo | Valore |
+|---|---|
+| Richiesta di Andrea | 08/11 sera: tutto quello che c'e' e' approvato e bloccato (ANDREA_REVIEW "AGGIORNAMENTI SERALI 08/11"). Ora migliorie: cartelloni piu' leggibili, paletti che volano bene, sportellate efficaci, rivali piu' interessanti, nomi simpatici. "Altrimenti non serve a niente usare gli agenti." |
+| Regola d'oro | **Si migliora, non si rifa'.** Un passo per turno, il primo tuo non ancora [x]; se dipende da un altro ruolo salta al successivo. Niente domande ad Andrea: si procede e si scrive nel RIASSUNTO `MIG1 <passo> [x]` con comando ed exit code. Fantasia ammessa dentro i limiti qui sotto. |
+| Vietato | Tutto l'elenco bloccato di ANDREA_REVIEW (auto e guida, HUD, premiazione, musica, ponte, percorsi, galleria, partenza). In `REGOLE_AUTO_GIOCATORE.md` e' aperta SOLO la parte sportellata/rivali/paletti. |
+| @grafico | **G1** cartelloni sponsor leggibili: i cartelloni fatti all'inizio sono simpatici ma si leggono male. Rifalli con STESSO nome e STESSA misura (`assets_originali/sponsor/`, script `genera_sponsor.py`): una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo; marchi inventati, mai marchi veri. Prima/dopo in `UFFICIO/Officina/Test area/`. **G2** guarda gli screenshot di D1-D3 e scrive 3 osservazioni in `out/grafico/ULTIMO_TURNO.md`. |
+| @developer | **D1** paletti abbattuti (`Game::abbattiPali`, disegno in `Game::render` "Paletti abbattuti"): oggi volano verso il basso e finiscono nel nero sotto lo schermo. Devono volare di lato, **atterrare sull'erba a fianco della strada** e restare li', scorrendo via con la strada secondo la velocita' (posizione nel mondo, non sullo schermo); mai sotto la riga delle ruote ne' fuori dall'area di gioco. **D2** sportellata: affiancati a un rivale, anche alla punta, un colpo di sterzo rapido deve andare a segno (la finestra di contatto e la spinta laterale, valori aperti in REGOLE). Il rivale colpito sbanda un attimo, perde un po' e dopo qualche secondo (~5 s) torna normale; la memoria dei danni (-3% a botta, KO alla 4a) resta. **D3** rivali piu' vivi, con un carattere per rivale (seme fisso, deterministico): chi e' aggressivo e ti chiude, chi e' prudente, chi dopo una tua sportellata ti cerca per restituirla, chi sbaglia in curva. Mai sovrapposti, mai teletrasporti. **D4** nomi dei 7 rivali (`NOMI_RIVALI`, game.cpp, max 6 lettere maiuscole): strani, simpatici ed estroversi, da culture e parti del mondo diverse, legati ai temi dei livelli (neon, atomico, foglie, cromo, spray, desktop). Scrivi in `out/developer/NOMI_RIVALI.md` nome, origine e tema. |
+| @developer-junior | **J1** dopo D1: gate o prova che un paletto abbattuto resta sempre dentro lo schermo e sopra la riga delle ruote, con screenshot. **J2** dopo D2: prova con bot affiancato a un rivale alla punta che misura in quanti secondi va a segno una sportellata (deve riuscire) e che il rivale si riprende. **J3** dopo ogni passo: review breve in `out/developer-junior/REVIEW_MIG1.md`: cosa va, cosa no, una miglioria piccola proposta. |
+| Vincoli | Passi piccoli; `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 dopo ogni passo di codice o dati. Replay 2x IDENTICO, budget Pi 400 <= 12 ms/frame. Log e screenshot solo in `UFFICIO/Officina/Test area/`. |
+| Chi tocca adesso | @grafico G1 · @developer D1 · @developer-junior J3 (review dello stato attuale) · @capo una riga di registro. |
+| Stato | [ ] | (Claude 08/11 sera: nuovo, da Andrea) |
 
 ---
 
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
-Stati (08/11): PERC1 [~] aperto; tutti gli altri blocchi chiusi [x] o sospesi [-] (H: prova Pi 400 di Andrea; MD0, T5, N, M). Niente lavoro sui blocchi chiusi.
-Tocca a (Claude 08/11, leggere per primo): **Galleria, graffito, ingresso citta' e auto senza razzo approvati da Andrea 08/11 sera: bloccati, non si toccano (ANDREA_REVIEW).** **si lavora solo sul BLOCCO PERC1** (percorsi piu' vari e migliorie di guida), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
+Stati (08/11 sera): MIG1 [ ] aperto, PERC1 [x]; tutti gli altri blocchi chiusi [x] o sospesi [-] (H: prova Pi 400 di Andrea; MD0, T5, N, M). Niente lavoro sui blocchi chiusi.
+Tocca a (Claude 08/11 sera, leggere per primo): **AGGIORNAMENTI SERALI 08/11: tutto quello che c'e' e' approvato da Andrea e bloccato (elenco in ANDREA_REVIEW).** PERC1 chiuso [x]. **Si lavora solo sul BLOCCO MIG1** (cartelloni leggibili, paletti, sportellate, rivali con carattere, nomi), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
