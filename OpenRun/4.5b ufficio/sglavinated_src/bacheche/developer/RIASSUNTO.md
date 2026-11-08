@@ -1,7 +1,9 @@
-# Riassunto developer — 08/11/2026 ~08:11 (turno 1)
-- Gate T1 smoke/percurso/accelerazione: exit 0, 6/6 percorsi GATE PERCORSO OK, replay IDENTICO, ms/frame medio 1.061 max 3.898 (limite 20)
-- H block: testato modalità gate (smoke/percurso/accelerazione), dati frame raccolti; [~] per fps/temperatura Pi 400 e v91 Andrea Mac
-- T1-RUN: [x] DEFAULT T1-Q1 (gate OK su tutti 6 percorsi dopo R1 tuning: tratti.json, regole.json, 6 livello.json)
-- R1 completato: road.cpp raccordo entrata/uscita, tratti.json 8 tratti, regole.json 6 livelli + default, campo tracciato nei livello.json
-- AUTO1, ENG1, ARC1, KO1, RIV-core, PIST1-P1P2, DECO1: fatti da turni precedenti
-- Nessuna modifica src/runner/ (vincolo Andrea 06/11)
+# Riassunto developer — 08/11/2026 ~10:43 (turno 1)
+- Gate T1: TUTTO OK exit 0, 6/6 percorsi GATE PERCORSO OK, soak 30000 frame replay IDENTICO
+- RIV: tuned bumpRallentaFattore_ 0.85→0.80 (-15% a -20%); rival bumps no flip (colpiMemoria_ disabled per RIV)
+- Path: modificato curva segmento 2 lv_01_neon da 0.4 a 0.2 per aumentare varietà rettilinei guidati
+- Blocchi aperti [~]: H (fps/temperatura Pi 400 pendente v91 Andrea), DECO1 elementi decorativi, ENG1+ARC1 testi UI
+- Tocca a (08/11 Claudio/Andrea): lavoro su percorsi (tracciati, curve, salite, bivi, strada, traffico, rivali), NON HUD/auto/premiazione
+- Build multipiattaforma C++17: core indipendente SDL, obiettivo Raspberry Pi 400 a 50 fps 320x224
+- Nessuna modifica src/runner/ (vincolo Andrea 06/11); righe.json soglie 02/11 (rettilineo_max 0.75)
+- Gate T1 soak: replay IDENTICO, ms/frame ~1.13 max 3.77, tutte le soglie OK

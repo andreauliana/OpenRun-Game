@@ -1,8 +1,9 @@
-# RIASSUNTO @developer-junior — turno 07/11 12:07
-- Ruolo: Developer Junior (4.6); scrivo in bacheche/developer-junior/, out/developer-junior e test in motore_nuovo/test/.
-- Blocchi: PIST1 [x]; AUTO1 [~] (J-A1 fatto; attende G-A1 @grafico e A1-A5 @developer); ENG1+ARC1 [~] (fatti, attende ENG1 @developer); KO1 [x].
-- KO1: gate urto esteso: 4 urti sullo stesso rivale -> KO, classifica OUT, nessun ribaltamento, velocita' > 0, controlli attivi entro 1.5 s; ctest 27/27 exit 0.
-- J-A1: pose auto sx2/dx2/dritto/ribaltamento nel gate urto/gara; screenshot in Test area/auto1/.
-- ENG1+ARC1: gate ciclo salvataggi (nome giocatore, file creato/rilettura/ricreato se rotto); ctest 27/27 exit 0.
-- Prossimo: nessun blocco mio in attesa; RIV punto 3 (sprite rivali) spetta al @grafico.
-- gate: non eseguito in questo turno (nessun blocco [ ]/[~] mio).
+# RIASSUNTO @developer-junior — turno 08/11 11:02
+- Ruolo: Developer Junior (4.6); percorsi test in motore_nuovo/test/, gate in UFFICIO/Officina/TOOL/
+- Blocchi: PIST1 [x]; AUTO1 [~] (regole bloccate Andrea); ENG1+ARC1 [x]; KO1 [x]; T1-RUN [x]
+- Risultati: gate_t1.sh soak exit 0, T1: TUTTO OK; PERCORSO OK su tutti i 6 livelli inclusi giro guidato; replay 2x IDENTICO; accelerazione/ribaltamento/sterzo/curva/gara/frequenza OK
+- KO1: gate urto esteso passato (4 urti -> KO, nessun ribaltamento, speed > 0, controlli 1.5 s)
+- GIOCAMELE GUIDATO: passato su tutti i 6 livelli (precedente FALLITO su 5/6); soglie coerenti lv_02_atomico
+- RIV: gate urto in attesa @developer (bump leggero, nessun ribaltamento, speed > 0, controlli 1.5 s)
+- DECO1: passi 2a-2e fatti, review positiva; restano screenshot @grafico e checkpoint @capo
+- Prossimo: work UNO per turno, ctest verde; fuori auto giocatore/premiazione/musica urti

@@ -1,4 +1,4 @@
-# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
 
 Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, STATO_CORRENTE.md, REGISTRO_REVISIONI.md, UFFICIO/Officina/STATUS_OFFICINA.md, out/grafico/STATUS_GRAFICO_PER_CAPO.md.
 
@@ -15,7 +15,7 @@ Data: 2026-11-08.
 - **CP-005 (R1 tracciati 6 piste): CHIUSO** 2026-10-22. Non si riapre.
 - **CP-002 (G1 inventario grafico): APERTO** — G1 `[x]` per handoff `out/grafico/STATUS_GRAFICO_PER_CAPO.md` (220 elementi, PNG non catalogati: 0, licenza CC0-1.0, `check_catalogo_grafico.py` exit 0), ma review indipendente ancora da assegnare (regola AGENTS 9): revisore diverso da @grafico (cand. @developer-junior). CP-002 si chiude solo dopo review indipendente positiva.
 - **CP-003 e CP-004 restano APERTO** (review indipendente da assegnare, contesto storico).
-- Nessun altro checkpoint ha gate + review indipendente registrati da chiudere in questo turno.
+- Nessun altro checkpoint ha gate + review indipendente registrati da chiudere in questo turno. `FINITO` non creabile: blocchi non tutti `[x]` (T1-RUN [~], H [~], DECO1 [~], R2 [~], RIV [~], PIST1 [ ], FIN [ ]).
 
 ## Stati proposti (tappa 1 / Gate T1)
 
@@ -45,10 +45,6 @@ Data: 2026-11-08.
 - D12 = A, D14 = A, D15 = A, D17 = A, D18 = B (chiusa 27/10).
 - **D19: RISPOSTA DI ANDREA: B** → T1-RUN `[~]`, CP-006 APERTO. DEFAULT non si applica. Nuova prova/decisione Andrea richiesta prima di chiudere T1-RUN (runner Mac, prima Mac poi Pi 400; R2 resta slegato da D18/D19 per Andrea 27/10).
 - Nessuna domanda di ANDREA_REVIEW.md priva di risposta: tutti i DEFAULT già superati da RISPOSTA DI ANDREA.
-
-## Chiusura tappa
-
-Non tutti i blocchi della tappa sono `[x]` (T1-RUN [~], H [~], DECO1 [~], R2 [~], RIV [~], PIST1 [ ], FIN [ ]). **FINITO non creabile.** Nessun blocco richiede `PER_CLAUDE.md`: si prosegue autonomamente.
 
 ## Prossime azioni
 

@@ -1,1 +1,1 @@
-[08/11 08:26] Turno developer-junior: nessun blocco [ ]/[~] in carico; gate non eseguito. Nessuna modifica a motore_nuovo/src/.
+[08/11 11:02] Turno developer-junior: gate T1 soak completato su tutti i 6 livelli (GATE T1: TUTTO OK, replay 2x IDENTICO, ms/frame medio 1.648 max 62.778, soak 30000 frame exit 0). GATE PERCORSO OK su tutti i livelli inclusi giro guidato; accellerazione, ribaltamento, sterzo, curve, gara, frequenza 60/50 Hz OK. Risolto problema soglie guida precedenti.

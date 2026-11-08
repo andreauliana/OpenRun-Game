@@ -73,18 +73,19 @@
         31
       ],
       "barra_w": 86,
-      "barra_h": 2
+      "barra_h": 2,
+      "colore_bordo": [160, 160, 160]
     },
     {
       "id": "tempo",
       "tipo": "testo",
       "label": "TIME",
       "label_pos": [
-        224,
+        8,
         6
       ],
       "valore_pos": [
-        224,
+        8,
         13
       ],
       "scala_valore": 2,
@@ -160,7 +161,8 @@
         235,
         235,
         235
-      ]
+      ],
+      "colore_bordo": [160, 160, 160]
     },
     {
       "id": "show",

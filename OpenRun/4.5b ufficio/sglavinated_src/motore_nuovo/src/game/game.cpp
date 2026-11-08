@@ -2490,7 +2490,9 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         r.segnalinoS = std::max(r.segnalinoS, SEGNALINO_DURATA_S);
     }
     // Troppe sportellate di fila: l'auto vola via (Andrea 06/11 sera).
-    colpiMemoria_ += traffico ? 1.5f : 1.0f;
+    // Nota: per i rivali NON si accumula colpiMemoria_ (ribaltamento solo per
+    // ostacoli fissi e fuori strada prolungato, come da RICHIESTA_APERTA BLOCCO RIV).
+    colpiMemoria_ += traffico ? 1.5f : 0.0f;
     if (colpiMemoria_ >= COLPI_INCIDENTE && player_.speed >= COLPI_V_MIN * player_.maxSpeed() && !arrivo_) {
         colpiMemoria_ = 0.0f;
         playerBump_ = false;
