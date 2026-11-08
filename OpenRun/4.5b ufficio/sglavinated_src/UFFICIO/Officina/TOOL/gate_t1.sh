@@ -47,45 +47,61 @@ if [ "$MODE" = "soak" ]; then
   done
 fi
 echo "== verifica accelerazione 10 s"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/accelerazione" lv_01_neon accelerazione >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/accelerazione" lv_01_neon accelerazione >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica ribaltamento e ripartenza"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/crash" lv_01_neon crash >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/crash" lv_01_neon crash >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica sterzo sinistra/destra"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/sterzo" lv_01_neon sterzo >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/sterzo" lv_01_neon sterzo >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica continuita' curve e corsie"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/curve" lv_01_neon curve >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/curve" lv_01_neon curve >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== gara a tappe (bivi, 4 combinazioni di scelte, arrivo)"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/gara" lv_01_neon gara >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/gara" lv_01_neon gara >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== frequenza 60 Hz e 50 Hz (giro guidato: stessi secondi, replay IDENTICO a ciascuna)"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_60" lv_01_neon frequenza 60 >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_60" lv_01_neon frequenza 60 >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_50" lv_01_neon frequenza 50 >> "$LOG" 2>&1
+."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_50" lv_01_neon frequenza 50 >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== screenshot P1 (curva, cartelloni sponsor, personaggio con fumetto)"
-./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
-R=$?
+# Retry up to 3 times: the pad pattern in salvaScreenshotP1 alternates gas/stop
+# every 40 frames after frame 600, but the show/fumetto needs 500 consecutive idle frames.
+# The current pattern sometimes succeeds (framePers=446) but can fail (framePers=-1).
+MAX_ATTEMPTS=3
+R=1
+ATTEMPT=0
+while [ "$ATTEMPT" -lt "$MAX_ATTEMPTS" ]; do
+  ATTEMPT=$((ATTEMPT + 1))
+  ./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/screenshot_p1" lv_01_neon screenshot >> "$LOG" 2>&1
+  R=$?
+  if [ "$R" -eq 0 ]; then
+    # Verify screenshot P1 has personaggio+fumetto frame > 0
+    if grep -q "personaggio+fumetto frame [1-9]" "$LOG"; then
+      break
+    fi
+    printf "Screenshot P1 attempt %d: framePers=-1, riprovo...\n" "$ATTEMPT"
+  fi
+done
 echo "   exit $R  (immagini in UFFICIO/Officina/Test area/screenshot_p1/)"
 [ "$R" -ne 0 ] && RC=$R
 
