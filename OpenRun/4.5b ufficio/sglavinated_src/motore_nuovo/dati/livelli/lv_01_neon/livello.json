@@ -14,7 +14,7 @@
   "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "autostrada", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "rampa_ponte", "ponte", "discesa_ponte", "dosso", "curva_stretta_dx", "curva_stretta_sx", "curva_dolce_sx", "rettilineo_lungo"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.0, "lunghezza": 900},
-    {"curva": 0.2, "collina": 0.05, "lunghezza": 500},
+    {"curva": 0.4, "collina": 0.05, "lunghezza": 500},
     {"curva": 0.0, "collina": -0.1, "lunghezza": 800},
     {"curva": -0.5, "collina": 0.0, "lunghezza": 500},
     {"curva": 0.0, "collina": 0.1, "lunghezza": 1000},

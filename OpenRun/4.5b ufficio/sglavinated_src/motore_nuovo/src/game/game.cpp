@@ -789,6 +789,7 @@ void Game::init(const std::string& livelloId) {
         leggi("ciglio_rallenta", ciglioRallenta_, 0.1f, 1.0f);
         leggi("ciglio_memoria_s", ciglioMemoriaDurataS_, 0.0f, 60.0f);
         leggi("ciglio_crash_velocita", ciglioCrashVelocita_, 0.0f, 2.0f); // > 1 = mai incidente
+        leggi("tempo_extra_fattore", tempoExtraFattore_, 0.1f, 2.0f);
     }
 
     gara_ = false;
@@ -1567,7 +1568,8 @@ void Game::fineTappa(f32 avanzo) {
     tappaId_ = prossima;
     ++numeroTappa_;
     if (!tempoScaduto_) {
-        tempoResiduoS_ += (f32)tempoLimiteTappaS_; // checkpoint: tempo extra (secondi)
+        tempoBonusS_ = (i32)std::lround((f32)tempoLimiteTappaS_ * tempoExtraFattore_);
+        tempoResiduoS_ += (f32)tempoBonusS_; // checkpoint: tempo extra (secondi)
         tempoExtraS_ = TEMPO_EXTRA_AVVISO_S;
     }
     saltoQuotaPrec_ = -1e9f; // tracciato nuovo: la quota riparte
@@ -1931,7 +1933,10 @@ void Game::aggiornaGuida(f32 dt) {
         const f32 curvaQui = road_.curvaAt(player_.z);
         const f32 vRel = player_.speed / player_.maxSpeed();
         const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f);
-        player_.x += curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
+        // Verso l'ESTERNO (Andrea 08/11): curva > 0 = curva a destra, spinge a
+        // sinistra; si tiene la curva sterzando DENTRO (destra in curva a destra).
+        // Prima il segno era invertito e la curva tirava verso l'interno.
+        player_.x -= curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
         if (assistenzaBivio_ > 0.0f) {
             // Richiamo morbido verso il centro del ramo piu' vicino.
             const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
@@ -1971,7 +1976,7 @@ void Game::aggiornaGuida(f32 dt) {
         // gomme fumano dal lato esterno; anche a sterzo pieno alla punta.
         {
             const f32 sterzo = player_.sterzo();
-            const f32 forza = curvaQui * vRel * vRel; // + = spinta verso destra
+            const f32 forza = -curvaQui * vRel * vRel; // + = spinta verso destra (verso l'esterno)
             f32 obiettivoSg = 0.0f;
             if (!player_.offroad && !playerFlipping_ && !arrivo_) {
                 if (std::abs(sterzo) > 0.4f && sterzo * forza < 0.0f)
@@ -2258,7 +2263,7 @@ void Game::render() {
     const f32 curvaMedia = (road_.curvaAt(player_.z - (f32)Road::SEG_LEN) + road_.curvaAt(player_.z) +
                             road_.curvaAt(player_.z + (f32)Road::SEG_LEN)) / 3.0f;
     const f32 forzaCurva = playerFlipping_ || arrivo_ ? 0.0f
-        : std::clamp(curvaMedia / 0.8f, -1.0f, 1.0f) * vRelCurva * vRelCurva;
+        : -std::clamp(curvaMedia / 0.8f, -1.0f, 1.0f) * vRelCurva * vRelCurva; // verso l'esterno
     i32 posaGiocatore = POSA_GIOCATORE_DRITTA;
     if (!playerFlipping_) {
         constexpr f32 SOGLIA_PENDENZA = 80.0f; // unita' di quota su 4 segmenti (~10% di pendenza)
@@ -2327,7 +2332,7 @@ void Game::render() {
         h.kmh = (i32)(player_.speed / player_.maxSpeed() * VELOCITA_MAX_KMH + 0.5f);
         h.km = km_;
         h.totaleS = (f32)frameGara_ / (f32)frequenzaHz_;
-        h.tempoExtra = tempoExtraS_ > 0.0f ? tempoLimiteTappaS_ : 0;
+        h.tempoExtra = tempoExtraS_ > 0.0f ? tempoBonusS_ : 0;
         // Contagiri del cambio automatico a due marce: sale in LOW, riparte piu' alto in HIGH.
         const f32 v = player_.speed / player_.maxSpeed();
         constexpr f32 CAMBIO = 110.0f / 250.0f;
@@ -2490,9 +2495,7 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         r.segnalinoS = std::max(r.segnalinoS, SEGNALINO_DURATA_S);
     }
     // Troppe sportellate di fila: l'auto vola via (Andrea 06/11 sera).
-    // Nota: per i rivali NON si accumula colpiMemoria_ (ribaltamento solo per
-    // ostacoli fissi e fuori strada prolungato, come da RICHIESTA_APERTA BLOCCO RIV).
-    colpiMemoria_ += traffico ? 1.5f : 0.0f;
+    colpiMemoria_ += traffico ? 1.5f : 1.0f;
     if (colpiMemoria_ >= COLPI_INCIDENTE && player_.speed >= COLPI_V_MIN * player_.maxSpeed() && !arrivo_) {
         colpiMemoria_ = 0.0f;
         playerBump_ = false;

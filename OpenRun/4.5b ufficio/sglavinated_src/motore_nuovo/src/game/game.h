@@ -371,12 +371,16 @@ private:
     f32 paesaggioDensitaAlberi_ = 1.0f;
     std::vector<u8> zonaSeg_;                              // zona di ogni segmento della Road
     i32 tempoLimiteTappaS_ = 60; // tempo_limite_s della tappa caricata
+    // Tempo extra entrando in una tappa nuova = tempo_limite_s della tappa *
+    // tempo_extra_fattore (config.json; Andrea 08/11: +tempo pieno era troppo generoso).
+    f32 tempoExtraFattore_ = 0.7f;
+    i32 tempoBonusS_ = 0; // secondi aggiunti all'ultimo cambio di tappa ("+N" a schermo)
     f32 tempoResiduoS_ = 0.0f;   // tempo rimasto in gara (secondi, frequenza indipendente)
     bool tempoScaduto_ = false;
     i32 frequenzaHz_ = 60;       // frequenza logica (Hz), letta da dati/config.json
 f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (secondi, dati/config.json)
     // RIV (Andrea 27/10): contatto con un avversario = bump, non ribaltamento.
-    f32 bumpRallentaFattore_ = 0.80f; // fattore velocita' dopo urto con rivale (0.80 = -20%, config.json); range -15/-20% richiesto da Andrea 08/11
+    f32 bumpRallentaFattore_ = 0.85f; // fattore velocita' dopo urto con rivale (0.85 = -15%, config.json)
     f32 bumpDurataS_ = 1.0f;          // durata stato bump (secondi, config.json)
     f32 bumpSpintaLaterale_ = 200.0f; // spinta laterale urto rivale (unita'/s, config.json)
     f32 km_ = 0.0f;              // distanza percorsa (contachilometri dell'HUD)
