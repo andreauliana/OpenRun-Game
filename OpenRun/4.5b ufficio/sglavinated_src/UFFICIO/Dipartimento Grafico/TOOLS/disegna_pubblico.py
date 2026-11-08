@@ -84,9 +84,130 @@ def gruppo(seme):
     return pose
 
 
+# --- Gruppi di supporto alla partenza (Andrea 08/11) ---------------------
+# Le stesse persone dell'arrivo (stessi semi e colori), senza transenna: in
+# piccoli capannelli a bordo strada, rilassati, che chiacchierano prima del
+# via. Ogni gruppo ha un oggetto: a = stereo portatile, b = cassa da sedersi.
+# Pose: relax (braccia giu', uno con le mani sui fianchi), parla (uno gesticola,
+# fumetto a puntini sopra la testa), esulta (braccia su allo START).
+# Produce: supporto_<gruppo>_<posa>.png (40x26), poi png_a_raw.py.
+FUMETTO = (250, 250, 250)
+
+
+def persona_relax(d, x, piedi, p, posa, scuro=False):
+    """Come persona(), con pose da attesa: 'giu', 'fianchi', 'gesto', 'su', 'seduto'."""
+    pelle, capelli, maglia, bandiera = p
+    if scuro:
+        pelle, capelli, maglia = scurisci(pelle), scurisci(capelli), scurisci(maglia)
+    if posa == "seduto":  # seduto sulla cassa: gambe corte in avanti
+        testa = piedi - 11
+        d.rectangle([x, piedi - 1, x + 4, piedi], fill=GAMBE)
+        d.rectangle([x, testa + 4, x + 4, piedi - 2], fill=maglia)
+        d.rectangle([x + 1, testa + 1, x + 3, testa + 3], fill=pelle)
+        d.line([x + 1, testa, x + 3, testa], fill=capelli)
+        d.line([x - 1, testa + 5, x - 1, testa + 7], fill=maglia)
+        d.line([x + 5, testa + 5, x + 5, testa + 7], fill=maglia)
+        return testa
+    if posa == "su":
+        persona(d, x, piedi, p, True, scuro)
+        return piedi - 14
+    testa = piedi - 14
+    d.rectangle([x, piedi - 3, x + 1, piedi], fill=GAMBE)
+    d.rectangle([x + 3, piedi - 3, x + 4, piedi], fill=GAMBE)
+    d.rectangle([x, testa + 4, x + 4, piedi - 4], fill=maglia)
+    d.rectangle([x + 1, testa + 1, x + 3, testa + 3], fill=pelle)
+    d.line([x + 1, testa, x + 3, testa], fill=capelli)
+    if posa == "fianchi":  # mani sui fianchi: gomiti in fuori
+        d.point([(x - 1, testa + 5), (x - 2, testa + 6), (x - 1, testa + 7),
+                 (x + 5, testa + 5), (x + 6, testa + 6), (x + 5, testa + 7)], fill=maglia)
+    elif posa == "gesto":  # gesticola: un braccio piegato in alto, mano aperta
+        d.line([x - 1, testa + 5, x - 1, testa + 9], fill=maglia)
+        d.line([x + 5, testa + 5, x + 6, testa + 3], fill=maglia)
+        d.point((x + 7, testa + 2), fill=pelle)
+    else:
+        d.line([x - 1, testa + 5, x - 1, testa + 9], fill=maglia)
+        d.line([x + 5, testa + 5, x + 5, testa + 9], fill=maglia)
+    return testa
+
+
+def fumetto(d, x, y):
+    """Nuvoletta 7x5 con tre puntini: qualcuno sta parlando."""
+    d.rectangle([x, y, x + 6, y + 3], fill=FUMETTO)
+    d.point((x + 1, y + 4), fill=FUMETTO)
+    d.point([(x + 1, y + 2), (x + 3, y + 2), (x + 5, y + 2)], fill=NERO)
+
+
+def stereo(d, x, y):
+    """Stereo portatile 9x5 appoggiato a terra: due casse e la maniglia."""
+    d.rectangle([x, y + 1, x + 8, y + 5], fill=(50, 50, 60))
+    d.line([x + 2, y, x + 6, y], fill=(150, 150, 160))
+    for cx in (x + 2, x + 6):
+        d.rectangle([cx - 1, y + 2, cx + 1, y + 4], fill=(120, 120, 130))
+        d.point((cx, y + 3), fill=NERO)
+    d.point((x + 4, y + 2), fill=(240, 80, 80))
+
+
+def cassa(d, x, y):
+    """Cassa di legno 8x5."""
+    d.rectangle([x, y, x + 7, y + 4], fill=(150, 100, 50))
+    d.line([x, y + 2, x + 7, y + 2], fill=(110, 70, 30))
+    d.line([x, y, x + 7, y], fill=(190, 140, 80))
+
+
+def ombra(d, x0, x1, y):
+    d.line([x0, y, x1, y], fill=(0, 0, 0, 90))
+    d.line([x0 + 1, y + 1, x1 - 1, y + 1], fill=(0, 0, 0, 60))
+
+
+def supporto(seme, nome):
+    rnd = random.Random(seme)
+    # Stesse persone del gruppo dell'arrivo (stesso seme, stesso ordine).
+    dietro = [(rnd.choice(PELLE), rnd.choice(CAPELLI), rnd.choice(MAGLIE), False) for _ in range(5)]
+    davanti = [(rnd.choice(PELLE), rnd.choice(CAPELLI), rnd.choice(MAGLIE), rnd.random() < 0.3) for _ in range(6)]
+    pose = {}
+    piedi = H - 3
+    for posa in ("relax", "parla", "esulta"):
+        img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        su = posa == "esulta"
+        if nome == "a":
+            # Capannello di tre a sinistra, stereo per terra, due a destra.
+            ombra(d, 1, 19, piedi + 1)
+            ombra(d, 26, 38, piedi + 1)
+            persona_relax(d, 6, piedi - 2, dietro[1], "su" if su else "giu", True)
+            persona_relax(d, 2, piedi, davanti[0], "su" if su else "fianchi")
+            t = persona_relax(d, 11, piedi, davanti[2], "su" if su else ("gesto" if posa == "parla" else "giu"))
+            stereo(d, 17, piedi - 4)
+            persona_relax(d, 27, piedi, davanti[4], "su" if su else "giu")
+            t2 = persona_relax(d, 33, piedi, davanti[1], "su" if su else "fianchi")
+            if posa == "parla":
+                fumetto(d, 13, t - 7)
+            elif posa == "relax":
+                fumetto(d, 31, t2 - 7)
+        else:
+            # Uno seduto sulla cassa, due in piedi che parlano, uno appoggiato.
+            ombra(d, 1, 23, piedi + 1)
+            ombra(d, 28, 38, piedi + 1)
+            cassa(d, 3, piedi - 4)
+            persona_relax(d, 4, piedi - 4, davanti[3], "su" if su else "seduto")
+            t = persona_relax(d, 12, piedi, davanti[0], "su" if su else ("gesto" if posa == "parla" else "giu"))
+            persona_relax(d, 18, piedi, davanti[5], "su" if su else "fianchi")
+            persona_relax(d, 31, piedi, dietro[2], "su" if su else "giu")
+            if posa == "parla":
+                fumetto(d, 14, t - 7)
+            elif posa == "relax":
+                fumetto(d, 20, t - 7)
+        pose[posa] = img
+    return pose
+
+
 if __name__ == "__main__":
     for nome, seme in (("a", 2910), ("b", 1029)):
         for posa, img in gruppo(seme).items():
             p = os.path.join(OUT, f"pubblico_{nome}_{posa}.png")
+            img.save(p)
+            print(f"  [OK] {p} {img.size}")
+        for posa, img in supporto(seme, nome).items():
+            p = os.path.join(OUT, f"supporto_{nome}_{posa}.png")
             img.save(p)
             print(f"  [OK] {p} {img.size}")

@@ -131,6 +131,7 @@ bool avviaGioco(const char* percorsoContenuto) {
     }
     logInfo("cartella dati: %s", radice.c_str());
     g_game->setRadiceDati(radice);
+    g_game->abilitaPartenza(true); // griglia e 3-2-1-START (Andrea 08/11)
     if (!g_game->avviaGara()) g_game->init(); // gara a tappe; senza percorso_gara.json pista singola
     g_heldPrev = 0;
     return true;

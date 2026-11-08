@@ -40,7 +40,10 @@ TRAFFICO_FILES = [
     "traffico_berlina_blu_retro", "traffico_camioncino_beige_retro",
 ]
 # Stesso elenco caricato da Game::caricaSpriteFolla (game.cpp).
-PUBBLICO_FILES = ["pubblico_a_giu", "pubblico_a_su", "pubblico_b_giu", "pubblico_b_su"]
+PUBBLICO_FILES = ["pubblico_a_giu", "pubblico_a_su", "pubblico_b_giu", "pubblico_b_su",
+                  # gruppi di supporto alla partenza (Andrea 08/11)
+                  "supporto_a_relax", "supporto_a_parla", "supporto_a_esulta",
+                  "supporto_b_relax", "supporto_b_parla", "supporto_b_esulta"]
 
 
 def leggi_png(path):

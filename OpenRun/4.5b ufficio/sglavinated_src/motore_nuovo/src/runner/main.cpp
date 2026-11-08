@@ -342,6 +342,9 @@ int main(int argc, char** argv) {
 
     // Default: gara a tappe con bivi (dati/percorso_gara.json). --livello <id>:
     // una sola pista che gira in tondo, per provarla.
+    // Partenza cinematografica (Andrea 08/11): griglia, gruppi di supporto,
+    // 3-2-1-START. Vale per ogni gara avviata da qui o dal menu.
+    game.abilitaPartenza(true);
     if (!opz.livello.empty()) game.init(opz.livello);
     else if (!game.avviaGara()) game.init();
     // Blocco R2: senza --livello e --subito si parte da Splash -> Menu

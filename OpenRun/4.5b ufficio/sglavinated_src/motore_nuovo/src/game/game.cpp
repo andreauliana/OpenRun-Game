@@ -148,6 +148,15 @@ constexpr u32 COLORI_RIVALI[] = {0xFFFF3030u, 0xFF40A0FFu, 0xFFFFE020u, 0xFF40E0
 constexpr f32 FOLLA_SCALA = 3.3f;
 constexpr f32 FOLLA_PASSO = 600.0f;
 constexpr f32 FOLLA_PRIMA = 9000.0f, FOLLA_DOPO = 26000.0f;
+// Partenza (Andrea 08/11): gruppi di supporto della gara clandestina a bordo
+// strada, dalla griglia fin poco oltre l'ultimo rivale; piu' larghi del
+// pubblico dell'arrivo (niente transenna, stanno sul prato).
+constexpr f32 SUPPORTO_DA_Z = 200.0f, SUPPORTO_A_Z = 9000.0f;
+constexpr f32 SUPPORTO_PASSO = 1400.0f;
+constexpr f32 SUPPORTO_VISTA_Z = 30000.0f; // oltre, la partenza e' alle spalle
+constexpr f32 SUPPORTO_ESULTA_S = 3.5f;    // dopo lo START esultano per qualche secondo
+constexpr f32 SPUNTO_FINO_S = 15.0f;       // lo spunto proprio vale per i primi secondi di gara
+constexpr f32 GIRI_ATTESA = 5200.0f;       // motore che romba fermo in griglia (gas premuto)
 constexpr f32 FRENATA_ARRIVO_S = 1.6f; // da tutta velocita' a fermo dopo il traguardo
 // Urti (Andrea 29/10): le auto sono solide (finestra di contatto in game.h).
 // Il controllo e' "a spazzata": a 290 km/h il giocatore fa ~500 unita' per
@@ -924,6 +933,11 @@ void Game::init(const std::string& livelloId) {
     arrivoS_ = 0.0f;
     fermoS_ = -1.0f;
     folla_.clear();
+    supporto_.clear();
+    partenzaT_ = -1.0f;
+    contoPrec_ = -1;
+    nRamiGiocatore_ = 0;
+    mixer_.setMusicaFerma(false);
     ren_.setLineaArrivo(false);
     assistenzaBivio_ = 0.0f;
     ramoProvvisorio_ = 0;
@@ -1147,6 +1161,7 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     preparaBivio();
     preparaArrivo();
     inizializzaRivali();
+    preparaPartenza();
     aggiornaStatoGara();
     posizionePrec_ = state_.posizione;
     sorpassoS_ = 0.0f;
@@ -1277,6 +1292,10 @@ void Game::inizializzaRivali() {
         // finito).
         r.urti = 0;
         r.koS = 0.0f;
+        // Spunto proprio (Andrea 08/11), da una sorgente a parte per non
+        // cambiare le altre estrazioni del seme: 1.5..2.5 s.
+        Rng rndSpunto(seed_ ^ 0x53505554u ^ (u32)(i * 7919));
+        r.spuntoS = 1.5f + 0.2f * (f32)rndSpunto.next(6);
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
@@ -1296,7 +1315,9 @@ void Game::inizializzaRivali() {
             while (cur >= 0 && r.nPercorso < RIVALE_MAX_TAPPE) {
                 r.percorso[r.nPercorso] = cur;
                 const Tappa& t = tappe_[(size_t)cur];
-                if (t.sinistra.empty() || t.destra.empty()) {
+                // Corsa singola: anche i rivali finiscono alla prima tappa
+                // (prima facevano tutto l'albero e arrivavano sempre dopo).
+                if (t.sinistra.empty() || t.destra.empty() || corsaSingola_) {
                     r.ramiPercorso[r.nPercorso] = 0;
                     ++r.nPercorso;
                     break;
@@ -1463,7 +1484,9 @@ void Game::aggiungiSpriteTraffico() {
 void Game::aggiornaRivali() {
     const f32 giro = (f32)road_.totalLength();
     const f32 dt = 1.0f / (f32)frequenzaHz_;
-    const f32 avvicina = 1.0f - std::exp(-dt / RIVALE_ACCEL_TAU_S);
+    const f32 avvicinaBase = 1.0f - std::exp(-dt / RIVALE_ACCEL_TAU_S);
+    const bool spunto = tempoTotaleS() < SPUNTO_FINO_S;
+    const bool fermi = inPartenza(); // griglia: tutti fermi fino allo START
     const f32 velocitaGiocatore = passoGiocatore_ / dt; // unita' al secondo
     const f32 puntaGiocatore = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
     const f32 mio = progressoTappePrecedenti_ + player_.z;
@@ -1473,6 +1496,7 @@ void Game::aggiornaRivali() {
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
         if (r.tempoArrivoS >= 0.0f) continue; // gia' al traguardo: fuori dalla corsa
+        const f32 avvicina = spunto ? 1.0f - std::exp(-dt / r.spuntoS) : avvicinaBase;
         const bool sullaTappa = r.passoPercorso < r.nPercorso &&
                                 r.percorso[r.passoPercorso] == tappaGiocatore;
         if (!sullaTappa) {
@@ -1482,6 +1506,7 @@ void Game::aggiornaRivali() {
             r.ritmoFase += r.ritmoVel * dt;
             const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
             r.passo += (r.passoMax * ritmo - r.passo) * avvicina;
+            if (fermi) r.passo = 0.0f;
             const f32 distanza = r.passo * dt;
             r.progresso += distanza;
             r.progressoTappa += distanza;
@@ -1586,6 +1611,7 @@ void Game::aggiornaRivali() {
                 if (dz < 900.0f && std::abs(dx) < 250.0f) r.passo = std::min(r.passo, v.passo);
             }
         }
+        if (fermi) r.passo = 0.0f;
         r.progresso += r.passo * dt;
         r.progressoTappa += r.passo * dt;
         avanzaTappaRivale(r);
@@ -1662,6 +1688,7 @@ void Game::fineTappa(f32 avanzo) {
         if (v.attivo && v.ramo == latoBivio_ && v.z > giroFinito) v.z -= giroFinito;
         else v.attivo = false;
     }
+    if (nRamiGiocatore_ < 8) ramiGiocatore_[nRamiGiocatore_++] = latoBivio_ < 0 ? -1 : 1;
     caricaLivello(prossima); // imposta subito il tema e lo skyline della tappa nuova (impostaTema)
     // Transizione graduale verso il tema di arrivo (FORK1 punto 6): i colori di
     // ambiente e lo skyline si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
@@ -1861,6 +1888,10 @@ void Game::update() {
     ren_.avanzaTempo(dt);             // lampeggi delle luci del ponte e dei portali (Andrea 07/11)
     fasi_.aggiorna(*this, dt);        // blocco R2: macchina a stati (menu, risultati, ...)
     aggiornaRadio();
+    if (gara_ && scenaStrada()) aggiornaPartenza(dt); // conto alla rovescia e bip
+    // Musica ferma in griglia: la traccia riparte dall'inizio con lo START
+    // (nel menu la partenza preparata all'avvio non conta).
+    mixer_.setMusicaFerma(gara_ && scenaStrada() && inPartenza());
     if (scenaStrada()) {
         aggiornaGuida(dt);
     } else {
@@ -1875,7 +1906,7 @@ void Game::update() {
     state_.playerFlipping = playerFlipping_;
     state_.playerFlipFrame = playerFlipFrame_;
     if (gara_) {
-        if (!arrivo_ && !tempoScaduto_) {
+        if (!arrivo_ && !tempoScaduto_ && !inPartenza()) { // il cronometro parte allo START
             ++frameGara_;
             if (tempoResiduoS_ > 0.0f) tempoResiduoS_ -= dt;
             if (tempoResiduoS_ <= 0.0f) tempoScaduto_ = true; // game over
@@ -1963,6 +1994,7 @@ void Game::aggiornaGuida(f32 dt) {
         }
         Pad comandi = input_;
         if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
+        if (inPartenza()) comandi = Pad{};             // in griglia fino allo START (il gas fa solo rombare)
         player_.input(comandi, dt);
         // Sportellata (Andrea 08/11): sterzando verso un'auto affiancata lo
         // sterzo resta pieno anche alla punta, cosi' la si puo' colpire di lato.
@@ -2138,7 +2170,7 @@ void Game::aggiornaGuida(f32 dt) {
         else offroadFrames_ = 0;
 
         if (gara_) {
-            aggiornaTraffico(dt);
+            if (!inPartenza()) aggiornaTraffico(dt); // la strada aspetta lo START
             aggiornaRivali();
             aggiungiSpriteTraffico();
         } else if (trafficoAttivo_) spawnTraffic();
@@ -2250,6 +2282,9 @@ void Game::aggiornaGuida(f32 dt) {
 
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
+    // In griglia il gas fa rombare il motore a vuoto (l'auto resta ferma).
+    if (inPartenza() && (input_.held & (Pad::A | Pad::Up)))
+        rpm = GIRI_ATTESA + 600.0f * std::sin(tempoGiocoS_ * 9.0f);
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
     mixer_.setSgommata(playerFlipping_ ? 0.0f : derapata_); // gomme che stridono in derapata
@@ -2306,6 +2341,22 @@ void Game::render() {
             folla_[k].sprite = &spriteFolla_[((k / 2 + k) % 2) * 2 + (su ? 1 : 0)];
         }
         aggiungiVisibili(folla_);
+    }
+    // Gruppi di supporto alla partenza (Andrea 08/11): prima del via
+    // chiacchierano (relax / parla, ognuno col suo ritmo), allo START esultano.
+    if (!supporto_.empty() && !arrivo_ && road_.playerZ < SUPPORTO_VISTA_Z) {
+        const f32 t = (f32)clock_.frame / (f32)frequenzaHz_;
+        const f32 dalVia = partenzaT_ >= 0.0f ? partenzaT_ - PARTENZA_VIA_S : 1e9f;
+        for (size_t k = 0; k < supporto_.size(); ++k) {
+            const i32 gruppo = (i32)((k / 2 + k) % 2) * 3;
+            i32 posa = 0;
+            if (dalVia >= 0.0f && dalVia < SUPPORTO_ESULTA_S)
+                posa = std::fmod(dalVia * (2.4f + 0.3f * (f32)(k % 3)) + 0.29f * (f32)k, 1.0f) < 0.55f ? 2 : 0;
+            else
+                posa = std::fmod(t / (1.6f + 0.35f * (f32)(k % 4)) + 0.41f * (f32)k, 1.0f) < 0.5f ? 1 : 0;
+            supporto_[k].sprite = &spriteSupporto_[(size_t)(gruppo + posa)];
+        }
+        aggiungiVisibili(supporto_);
     }
     ren_.drawSprites(scenaSprites_, road_.playerZ, (f32)road_.totalLength());
     const bool steeringLeft = !arrivo_ && (input_.held & Pad::Left) != 0;
@@ -2497,6 +2548,8 @@ void Game::render() {
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
     drawMusica();
+    // Conto alla rovescia (Andrea 08/11): sovrimpressione a parte, non HUD.
+    if (partenzaT_ >= 0.0f && partenzaT_ < PARTENZA_FINE_S) disegnaPartenza(fb_, ren_, partenzaT_);
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
     // Scena show (personaggio + fumetto): NON si disegnano rettangoli
     // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).
@@ -2582,6 +2635,55 @@ void Game::frenataArrivo(f32 dt) {
     arrivoS_ += dt;
     player_.speed = std::max(0.0f, player_.speed - player_.maxSpeed() / FRENATA_ARRIVO_S * dt);
     if (player_.speed <= 0.0f) fermoS_ = fermoS_ < 0.0f ? 0.0f : fermoS_ + dt;
+}
+
+void Game::preparaPartenza() {
+    // Partenza cinematografica (Andrea 08/11). Solo se il runner/core l'ha
+    // accesa: i gate e le prove partono subito come prima.
+    supporto_.clear();
+    contoPrec_ = -1;
+    partenzaT_ = partenzaAbilitata_ ? 0.0f : -1.0f;
+    if (!partenzaAbilitata_) return;
+    if (spriteSupporto_[0].width == 0) {
+        static const char* NOMI[6] = {"supporto_a_relax", "supporto_a_parla", "supporto_a_esulta",
+                                      "supporto_b_relax", "supporto_b_parla", "supporto_b_esulta"};
+        for (i32 i = 0; i < 6; ++i)
+            spriteSupporto_[(size_t)i] = caricaSpriteRaw(percorsoDati(std::string("motore_nuovo/dati/sprite_raw/pubblico/") + NOMI[i] + ".sglraw"));
+        if (spriteSupporto_[0].width == 0) std::printf("partenza: raw dei gruppi di supporto mancanti (png_a_raw.py)\n");
+    }
+    if (spriteSupporto_[0].width == 0) return;
+    const f32 metaGruppo = 0.5f * (f32)spriteSupporto_[0].width * Renderer::SPRITE_WORLD_PX * FOLLA_SCALA;
+    Rng rnd(seed_ ^ 0x53555050u);
+    i32 n = 0;
+    for (f32 z = SUPPORTO_DA_Z; z < SUPPORTO_A_Z; z += SUPPORTO_PASSO) {
+        for (f32 lato : {-1.0f, 1.0f}) {
+            // Capannelli sparsi: non tutti alla stessa distanza dalla strada,
+            // ogni tanto un buco, mai sopra la carreggiata.
+            if (rnd.next(5) == 0) continue;
+            SpriteInstance s;
+            s.worldZ = z + (f32)rnd.next(400);
+            s.worldX = lato * (Road::ROAD_HALF_WORLD * road_.larghezzaAt(s.worldZ) + 150.0f + metaGruppo + (f32)rnd.next(350));
+            s.scale = FOLLA_SCALA;
+            s.sprite = &spriteSupporto_[(size_t)((n % 2) * 3)];
+            supporto_.push_back(s);
+            ++n;
+        }
+    }
+    std::sort(supporto_.begin(), supporto_.end(),
+              [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; });
+}
+
+void Game::aggiornaPartenza(f32 dt) {
+    if (partenzaT_ < 0.0f) return;
+    partenzaT_ += dt;
+    const i32 conto = contoPartenza(partenzaT_);
+    if (conto != contoPrec_ && conto >= 0) {
+        mixer_.suonaBip(conto == 0); // 3, 2, 1: bip; START: bip acuto
+    }
+    contoPrec_ = conto;
+    // Finita la festa dello START i gruppi tornano a chiacchierare: il tempo
+    // smette di crescere (resta oltre la fine, nessun effetto).
+    if (partenzaT_ > PARTENZA_FINE_S + SUPPORTO_ESULTA_S + 1.0f) partenzaT_ = PARTENZA_FINE_S + SUPPORTO_ESULTA_S + 1.0f;
 }
 
 f32 Game::passoFonte(i32 fonte) const {
@@ -2736,6 +2838,7 @@ void Game::calcolaClassifica() {
     const f32 tempo = tempoTotaleS();
     classifica_.clear();
     classifica_.push_back({"YOU", tempo, true});
+    for (i32 k = 0; k < nRamiGiocatore_ && k < 8; ++k) classifica_.back().percorso[k] = ramiGiocatore_[k] < 0 ? 'L' : 'R';
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
         f32 tempoR = r.tempoArrivoS;
@@ -2750,6 +2853,10 @@ void Game::calcolaClassifica() {
             tempoR = tempo + std::max(manca, 0.0f) / passo;
         }
         classifica_.push_back({NOMI_RIVALI[i], tempoR, false});
+        // Strada del rivale ai bivi (la sua scelta, Andrea 22/10 opzione B).
+        i32 lettere = 0;
+        for (i32 k = 0; k < r.nPercorso && lettere < 8; ++k)
+            if (r.ramiPercorso[k] != 0) classifica_.back().percorso[lettere++] = r.ramiPercorso[k] < 0 ? 'L' : 'R';
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });

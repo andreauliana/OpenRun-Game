@@ -56,6 +56,16 @@ public:
     // Stridio delle gomme in derapata (Andrea 08/11), 0..1. Sale e scende
     // in modo graduale; non tocca la musica.
     void setSgommata(f32 q) { stridioVoluto_ = q; }
+    // Partenza (Andrea 08/11): bip del conto alla rovescia 3, 2, 1 (via =
+    // false) e del START (via = true, piu' acuto e lungo). Onda quadra retro.
+    void suonaBip(bool via) { bipN_ = 0; bipVia_ = via; }
+    // Musica ferma durante il conto alla rovescia: al ritorno (false) il brano
+    // riparte dall'inizio, cosi' la traccia comincia insieme allo START.
+    void setMusicaFerma(bool ferma) {
+        if (musicaFerma_ && !ferma) avviaBrano();
+        musicaFerma_ = ferma;
+    }
+    bool musicaFerma() const { return musicaFerma_; }
 
     static constexpr f32 URTO_FORZA_LEGGERO = 0.45f;  // rivale, ciglio
     static constexpr f32 URTO_FORZA_TRAFFICO = 0.7f;  // traffico, cartellone piano
@@ -124,6 +134,11 @@ private:
     f32 stridioDeriva_ = 0.0f;             // il tono sale e scende a caso
     f32 stridioRumore_ = 0.0f;             // rumore filtrato (fruscio dell'asfalto)
     f32 sfxStridio();
+    // --- Partenza (Andrea 08/11) ---
+    i32 bipN_ = -1;          // campioni dall'inizio del bip (-1 = nessuno)
+    bool bipVia_ = false;
+    bool musicaFerma_ = false;
+    f32 sfxBip();
 };
 
 } // namespace sgl

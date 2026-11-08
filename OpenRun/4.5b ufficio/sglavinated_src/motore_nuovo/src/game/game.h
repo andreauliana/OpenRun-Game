@@ -17,6 +17,7 @@
 #include "gameplay/testi_frasi.h"  // testi frasi.json per i fumetti
 #include "game/fasi.h"             // blocco R2: macchina a stati di gioco
 #include "game/paesaggio.h"        // paesaggio a zone (Andrea 06/11)
+#include "render/partenza.h"        // conto alla rovescia della partenza (Andrea 08/11)
 #include <array>
 #include <map>
 #include <string>
@@ -137,6 +138,17 @@ public:
     // Memoria delle botte della gara (Andrea 29/10): auto urtate e tocchi del ciglio.
     i32 urtiGara() const { return urtiGara_; }
     i32 toccateCiglio() const { return toccateCiglio_; }
+    // Partenza cinematografica (Andrea 08/11): auto ferme in griglia, gruppi
+    // di supporto ai lati, conto alla rovescia 3-2-1-START, poi via tutti
+    // insieme con la musica. Il runner e il core libretro la accendono prima
+    // di avviaGara(); senza (gate, prove) la gara parte subito come prima.
+    void abilitaPartenza(bool on) { partenzaAbilitata_ = on; }
+    // Vero mentre si aspetta lo START: auto, rivali, traffico e cronometro fermi.
+    bool inPartenza() const { return partenzaT_ >= 0.0f && partenzaT_ < PARTENZA_VIA_S; }
+    // Secondi dall'avvio della partenza (-1 = nessuna partenza in corso).
+    f32 partenzaS() const { return partenzaT_; }
+    // Gruppi di supporto a bordo strada alla partenza (per le prove).
+    const std::vector<SpriteInstance>& gruppiSupporto() const { return supporto_; }
     // Apre lo Splash (poi Menu): il runner lo chiama all'avvio, dopo avviaGara().
     // Senza questa chiamata init()/avviaGara() partono subito in Gara (gate, --subito).
     void mostraMenu() { fasi_.cambia(FaseId::Splash, *this); }
@@ -159,6 +171,9 @@ public:
         const char* nome = "";
         f32 tempoS = 0.0f;
         bool giocatore = false;
+        // Strada fatta ai bivi (Andrea 08/11: "gli altri possono scegliere
+        // altri percorsi"): una lettera per bivio, L o R, per la classifica.
+        char percorso[9] = {};
     };
     const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
     f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
@@ -276,6 +291,18 @@ private:
         return f == FaseId::Gara || f == FaseId::FineTempo || (arrivo_ && f == FaseId::Risultati);
     }
     std::array<Sprite, 4> spriteFolla_; // gruppi a, b x pose giu', su
+    // Partenza (Andrea 08/11): le stesse persone dell'arrivo, in capannelli
+    // senza transenna (supporto_<a|b>_<relax|parla|esulta>).
+    std::array<Sprite, 6> spriteSupporto_;
+    std::vector<SpriteInstance> supporto_; // ordinata per worldZ
+    void preparaPartenza();
+    void aggiornaPartenza(f32 dt);
+    bool partenzaAbilitata_ = false;
+    f32 partenzaT_ = -1.0f;
+    i32 contoPrec_ = -1; // ultimo numero suonato (bip una volta sola)
+    // Rami presi dal giocatore ai bivi (-1/+1), per la classifica.
+    i32 ramiGiocatore_[8] = {};
+    i32 nRamiGiocatore_ = 0;
     std::vector<SpriteInstance> folla_; // ordinata per worldZ
     f32 arrivoS_ = 0.0f;      // secondi dal traguardo
     f32 fermoS_ = -1.0f;      // secondi da fermo dopo il traguardo
@@ -433,6 +460,10 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         bool vicino = false;   // era gia' vicino al frame prima (accende solo all'ingresso)
         i32 urti = 0;          // botte ricevute dal giocatore (memoria dei danni, Andrea 06/11 sera)
         f32 koS = 0.0f;        // secondi di KO rimasti (alla 4a botta)
+        // Spunto alla partenza (Andrea 08/11): tutti partono insieme allo
+        // START, ma ognuno accelera col suo tempo (s per ~63% della punta),
+        // cosi' all'inizio il gruppo e' vicino e poi si sgrana.
+        f32 spuntoS = 2.0f;
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;
