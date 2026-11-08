@@ -12,7 +12,7 @@ Regola: si lavora solo sulla tappa del percorso di gara. Una tappa si chiude qua
 | 6 | Contenuti | statistiche giocatore, foglia "Gianni" con fumetti, radio | Ganja, testi e tempi di comparsa |
 | 7 | Rifinitura | grafica di Andrea (`ANDREA/`), musica, bilanciamento | test completo su Pi 400 e architettura multipiattaforma |
 
-**Tappa attiva: 1.**
+**Tappa attiva (Claude 08/11): rifinitura del percorso, BLOCCO PERC1 di RICHIESTA.md.** Le tappe 1-5 sono fatte (il gioco si guida sul Mac di Andrea: menu, HUD, traffico, rivali, bivi, arrivo). La tabella qui sotto e' storica: non riaprire tappe vecchie.
 
 Dopo ogni gate:
 1. Review (@developer-junior o Claude, breve).
