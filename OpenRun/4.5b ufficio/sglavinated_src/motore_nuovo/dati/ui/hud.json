@@ -80,11 +80,11 @@
       "tipo": "testo",
       "label": "TIME",
       "label_pos": [
-        224,
+        8,
         6
       ],
       "valore_pos": [
-        224,
+        8,
         13
       ],
       "scala_valore": 2,
