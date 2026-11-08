@@ -56,6 +56,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     if (segs.empty()) return;
 
     projs_.clear();
+    roadCorr_ = &road;
     road.project(playerX, playerZ, projs_, latoBivio);
     if (projs_.empty()) return;
 
@@ -304,7 +305,26 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 hw = hwFar + (hwNear - hwFar) * t;
         // In galleria niente prato: fuori dalle pareti c'e' la montagna (o il
         // fondo buio visto da dentro), il prato filtrava fra le fette.
-        if (y >= HORIZON_Y && !sospeso && !galleria) fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        // Incrocio a 90 gradi (Andrea 08/11, citta'): a z costante la strada
+        // perpendicolare e' una fascia orizzontale da bordo a bordo dello
+        // schermo; marciapiedi ai due lati, strisce pedonali sulla strada
+        // principale prima e dopo. dInc = distanza dal centro dell'incrocio.
+        const f32 invZi = (1.0f - t) / next.worldZ + t / cur.worldZ;
+        const f32 distI = invZi > 0.0f ? 1.0f / invZi : next.worldZ;
+        const f32 dInc = (roadCorr_ && !sospeso && !galleria && rami == 1 && !roadCorr_->incroci().empty())
+                             ? std::fabs(roadCorr_->incrocioD(playerZ + distI)) : 1e9f;
+        const bool incStrada = dInc < Road::INCROCIO_MEZZA;
+        const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
+        const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
+        const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
+        if (y >= HORIZON_Y && !sospeso && !galleria) {
+            if (incStrada) fb_.hline(0, Framebuffer::WIDTH - 1, y, road);
+            else if (incMarc) {
+                // Marciapiede: lastre grigie chiare, cordolo scuro verso la strada.
+                const bool cordolo = dInc < Road::INCROCIO_MEZZA + 50.0f;
+                fb_.hline(0, Framebuffer::WIDTH - 1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
+            } else fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
         const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
@@ -346,6 +366,29 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 fb_.hline(rx + 1, std::min(Framebuffer::WIDTH - 1, (i32)(cx + pw) + 1), y, pareteScura);
             }
             fb_.hline(lx, rx, y, road);
+            if (incStrada || incMarc || incStrisce) {
+                // Dentro l'incrocio niente cordoli ne' linee: asfalto pieno.
+                // Mezzeria tratteggiata della strada perpendicolare, fuori
+                // dalla carreggiata principale; strisce pedonali sulla
+                // principale (bande parallele alla strada, ancorate al mondo).
+                const f32 pxW = hw / std::max(0.01f, Road::ROAD_HALF_WORLD * fattore); // pixel per unita' mondo
+                if (incStrada && dInc < 45.0f) {
+                    for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+                        if (x >= lx && x <= rx) continue;
+                        const f32 xw = std::fabs(((f32)x - cx) / pxW);
+                        if (std::fmod(xw, 900.0f) < 450.0f) fb_.put(x, y, lane);
+                    }
+                }
+                if (incStrisce) {
+                    for (i32 x = std::max(0, lx + rw); x <= std::min(Framebuffer::WIDTH - 1, rx - rw); ++x) {
+                        const f32 xw = ((f32)x - cx) / pxW + 10000.0f;
+                        if (std::fmod(xw, 300.0f) < 170.0f) fb_.put(x, y, 0xFFE6E6EAu);
+                    }
+                    fb_.hline(lx, lx + rw - 1, y, rumble);
+                    fb_.hline(rx - rw + 1, rx, y, rumble);
+                }
+                continue;
+            }
             fb_.hline(lx, lx + rw - 1, y, rumble);
             fb_.hline(rx - rw + 1, rx, y, rumble);
             if (filaScacchi >= 0) {
@@ -1073,6 +1116,8 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         if (p.sospeso) continue;
         // PERC1 D4: dentro la galleria niente paletti.
         if (p.galleria) continue;
+        // Incroci (Andrea 08/11): niente paletti sulla strada perpendicolare.
+        if (roadCorr_ && std::fabs(roadCorr_->incrocioD(playerZ + p.worldZ)) < Road::INCROCIO_ZONA) continue;
 
         const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
         const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;

@@ -467,6 +467,25 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     i32 nSpriteRivali_ = 0; // sprite rivali caricati (RIV punto b)
     Veicolo traffico_[TRAFFICO];
     Rng rndTraffico_{1u};
+    // Incroci a 90 gradi (Andrea 08/11, citta'): auto che attraversano da
+    // sinistra a destra e viceversa sull'incrocio davanti. Danno la
+    // precedenza: entrano sulla strada principale solo se chi arriva (giocatore,
+    // traffico, rivali) e' abbastanza lontano da non incontrarle.
+    struct AutoIncrocio {
+        f32 x = 0.0f;      // laterale rispetto al centro della strada principale
+        f32 passo = 0.0f;  // unita' mondo al secondo
+        i32 verso = 1;     // +1 verso destra (corsia vicina), -1 verso sinistra (lontana)
+        i32 sprite = 0;
+        bool colpita = false; // gia' urtata dal giocatore in questo passaggio
+    };
+    static constexpr i32 AUTO_INCROCIO = 4;
+    AutoIncrocio autoIncrocio_[AUTO_INCROCIO];
+    i32 incrocioAttivo_ = -1;
+    Rng rndIncrocio_{7u};
+    void aggiornaIncroci(f32 dt);
+    void aggiungiSpriteIncroci();
+    void urtoIncrocio(AutoIncrocio& a);
+    f32 zCorsiaIncrocio(i32 verso) const;
     i32 nSpriteTraffico_ = 0;
     void inizializzaTraffico();
     void aggiornaTraffico(f32 dt);

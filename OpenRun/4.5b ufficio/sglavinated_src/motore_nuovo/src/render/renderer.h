@@ -235,6 +235,22 @@ public:
         return indice >= 0 && indice < (i32)trafficoSprites_.size() ? &trafficoSprites_[indice] : nullptr;
     }
     void clearTrafficoSprites() { trafficoSprites_.clear(); }
+    // Auto viste di lato per gli incroci (muso a destra); la copia specchiata
+    // per chi va a sinistra si fa qui, una volta.
+    void aggiungiIncrocioSprite(const Sprite& s) {
+        if (s.width <= 0) return;
+        Sprite m = s;
+        for (i32 y = 0; y < s.height; ++y)
+            for (i32 x = 0; x < s.width; ++x)
+                m.pixels[(size_t)y * s.width + x] = s.pixels[(size_t)y * s.width + (s.width - 1 - x)];
+        incrocioSprites_.push_back(s);
+        incrocioSprites_.push_back(std::move(m));
+    }
+    i32 nIncrocioSprites() const { return (i32)incrocioSprites_.size() / 2; }
+    const Sprite* incrocioSprite(i32 k, i32 verso) const {
+        const i32 i = 2 * k + (verso < 0 ? 1 : 0);
+        return i >= 0 && i < (i32)incrocioSprites_.size() ? &incrocioSprites_[(size_t)i] : nullptr;
+    }
     // Auto del giocatore (P1 punto 4 + RIV punto 3): un fotogramma per posa
     // (sterzo leggero/forte a sinistra e destra, salita, discesa), caricati una
     // volta; vuoto = rettangolo sintetico in drawPlayerCar. La variante senza
@@ -412,12 +428,14 @@ private:
     Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     Sprite ruotaSprites_[3];                        // componenti ruota_1..3 (AUTO1 A2)
+    const Road* roadCorr_ = nullptr;               // strada del frame (incroci), impostata da drawRoad
     Sprite logo_;                                   // logo del menu (segnaposto OPEN RUN)
     Sprite luciStopSprite_;                         // componente luci_stop (AUTO1 A2)
     Sprite fumoSprites_[3];                         // componenti fumo_1..3 dello scarico (AUTO1 A2)
     PuntiComponenti punti_[POSA_GIOCATORE_COUNT];   // posizioni componenti per fotogramma (auto_giocatore.json)
     i32 grigliaW_ = 64, grigliaH_ = 32;             // griglia dei componenti (auto_giocatore.json)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
+    std::vector<Sprite> incrocioSprites_;     // auto di lato degli incroci (dritta, specchiata)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
     Sprite skylineDa_;                      // skyline all'inizio della transizione di tema

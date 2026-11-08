@@ -21,6 +21,7 @@ Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco
 - **Audio di oggi = standard** (urti, sportellate, paletti, stridio, clacson, bip della partenza, musica che reagisce): si possono solo AGGIUNGERE effetti nuovi.
 - **Tracciati**: vari e buoni (Andrea 08/11). Niente curve tolte, niente tratti spostati, niente tempi cambiati. Indice: `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md`.
 - **Ponte aperto** (mai parapetti), mare, riva, barche, gabbiani, faro; **galleria** di lv_02 e lv_05 (neon, luci rotte, graffito "OPEN RUN" dentro, imbocco senza scritte); ingresso graduale nelle citta'.
+- **Incroci a 90 gradi in citta'** (lv_05, tratto `citta`, campo `incroci` in `tratti.json`): strada perpendicolare, marciapiedi, strisce pedonali, auto che attraversano e danno la precedenza (Claude 08/11 notte).
 - **Partenza** (griglia, pubblico, 3-2-1-START) se la PR #84 e' nel main.
 - **Menu**: logo SEGNAPOSTO "OPEN RUN" (`Libreria/assets_originali/ui/logo/logo_openrun.png`) + le voci. **Niente altre scritte, decorazioni o elementi**: il logo e il menu li fa Andrea.
 - **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le vecchie varianti non usate (gruppo B) sono state cancellate da Andrea l'08/11: non si rigenerano.
@@ -46,6 +47,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Danni al rivale | -3% di punta a botta, alla 4a KO per 4 s, triangolo acceso | `RIVALE_DANNO`, `RIVALE_KO_*` |
 | Paletti | si abbattono passandoci sopra, volano, -3% | `abbattiPali`, `PALO_X` |
 | Cartelloni | sopra meta' punta incidente, sotto botta secca | game.cpp |
+| Incrocio | le auto di lato attraversano se chi arriva non le raggiunge alla sua velocita'; accelerando si puo' prenderle in pieno: sopra meta' punta incidente, sotto botta di traffico | `aggiornaIncroci`, `urtoIncrocio` |
 | Bivio | si sceglie il ramo, la tappa dopo cambia tema in 2 s | road, `percorso_gara.json` |
 | Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |

@@ -371,6 +371,9 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     // PERC1 D4: galleria del tratto (0/1, default 0).
     JsonValue gv;
     if (jsonGet(o, "galleria", gv) && jsonIsNumber(gv)) d.galleria = (f32)jsonAsNumber(gv);
+    // Incroci a 90 gradi del tratto (Andrea 08/11, citta').
+    JsonValue iv;
+    if (jsonGet(o, "incroci", iv) && jsonIsNumber(iv)) d.incroci = std::clamp((i32)jsonAsNumber(iv), 0, 4);
 }
 
 // nomi (facoltativo): il nome di ogni tratto letto, nello stesso ordine di out
@@ -438,6 +441,8 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
     sprites_.reserve(6); // niente allocazioni per traffico dopo il primo frame
     scenaSprites_.reserve(16); // cresce a init() con i cartelloni
     ren_.impostaOggettiTerra(&oggettiTerra_); // boe, barche, faro sotto il ponte (Andrea 07/11)
+    for (const char* n : {"lato_berlina_gialla", "lato_berlina_verde", "lato_furgone_bianco", "lato_bus_rosso"})
+        ren_.aggiungiIncrocioSprite(caricaSpriteRaw(percorsoDati(std::string("motore_nuovo/dati/sprite_raw/traffico_incrocio/") + n + ".sglraw")));
     ren_.impostaLogo(caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw"))); // logo menu (segnaposto)
 }
 
@@ -1866,6 +1871,7 @@ void Game::update() {
     aggiornaRadio();
     if (scenaStrada()) {
         aggiornaGuida(dt);
+        aggiornaIncroci(dt);
     } else {
         aggiornaMenu(dt);
     }
@@ -1984,6 +1990,8 @@ void Game::aggiornaGuida(f32 dt) {
             }
         }
         player_.update(dt);
+        // Incrocio (Andrea 08/11): la strada perpendicolare e' asfalto, non erba.
+        if (player_.offroad && std::fabs(road_.incrocioD(road_.playerZ)) < Road::INCROCIO_MEZZA) player_.offroad = false;
         if (arrivo_) frenataArrivo(dt);
 
         road_.playerX = player_.x;
@@ -2298,6 +2306,7 @@ void Game::render() {
     scenaSprites_ = sprites_;
     aggiungiVisibili(cartelloni_);
     aggiungiVisibili(oggettiStrada_);
+    aggiungiSpriteIncroci();
     // Pubblico all'arrivo: compare quando il traguardo entra nella vista.
     // Ognuno esulta col suo ritmo, piu' forte dopo che il giocatore e' arrivato.
     const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
@@ -2651,6 +2660,7 @@ void Game::abbattiPali(f32 zPrima) {
     // PALO_PASSO): con l'auto oltre PALO_X dal centro corsia, ogni paletto
     // passato viene abbattuto e vola via di lato. Si perde un poco.
     if (playerFlipping_ || arrivo_ || road_.sospesoAt(road_.playerZ) ||
+        std::fabs(road_.incrocioD(road_.playerZ)) < Road::INCROCIO_ZONA ||
         (road_.bivioAttivo() && road_.playerZ >= road_.bivioInizioZ())) return;
     const f32 xRel = player_.x - player_.centroCorsia;
     if (std::abs(xRel) < PALO_X * std::max(1.0f, player_.larghezzaCorsia)) return;
@@ -2784,10 +2794,19 @@ void Game::scuotiScena(i32 dx, i32 dy) {
 }
 
 void Game::ordinaSpriteFissi() {
+    // Incroci a 90 gradi (Andrea 08/11): niente cartelloni ne' oggetti sulla
+    // strada perpendicolare, cosi' si vede dove porta.
+    if (!road_.incroci().empty()) {
+        auto sullIncrocio = [this](const SpriteInstance& s) {
+            return std::fabs(road_.incrocioD(s.worldZ)) < Road::INCROCIO_ZONA + 300.0f;
+        };
+        cartelloni_.erase(std::remove_if(cartelloni_.begin(), cartelloni_.end(), sullIncrocio), cartelloni_.end());
+        oggettiStrada_.erase(std::remove_if(oggettiStrada_.begin(), oggettiStrada_.end(), sullIncrocio), oggettiStrada_.end());
+    }
     auto perZ = [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; };
     std::stable_sort(cartelloni_.begin(), cartelloni_.end(), perZ);
     std::stable_sort(oggettiStrada_.begin(), oggettiStrada_.end(), perZ);
-    scenaSprites_.reserve(RIVALI + cartelloni_.size() + oggettiStrada_.size()); // zero alloc per frame
+    scenaSprites_.reserve(RIVALI + TRAFFICO + AUTO_INCROCIO + cartelloni_.size() + oggettiStrada_.size()); // zero alloc per frame
 }
 
 void Game::aggiungiVisibili(const std::vector<SpriteInstance>& fissi) {
@@ -2891,6 +2910,166 @@ u32 Game::frameHash() const {
     h ^= rng_.state(); // stato RNG (xorshift32): se diverge, l'hash diverge
     h *= 0x01000193u;
     return h;
+}
+
+// ---------------------------------------------------------------------------
+// Incroci a 90 gradi (Andrea 08/11): auto che attraversano in citta'.
+// ---------------------------------------------------------------------------
+namespace {
+constexpr f32 INCROCIO_SCALA = 3.6f;        // scala degli sprite di lato (leggibili da lontano)
+constexpr f32 INCROCIO_CORSIA_Z = 550.0f;   // corsie della strada perpendicolare dal centro
+constexpr f32 INCROCIO_LONTANO = 15000.0f;  // da qui le auto entrano ed escono dalla vista laterale
+constexpr f32 INCROCIO_MARGINE_S = 0.35f;   // secondi di margine sulla precedenza
+} // namespace
+
+f32 Game::zCorsiaIncrocio(i32 verso) const {
+    // Chi va a destra usa la corsia vicina, chi va a sinistra quella lontana.
+    return verso > 0 ? -INCROCIO_CORSIA_Z : INCROCIO_CORSIA_Z;
+}
+
+void Game::aggiornaIncroci(f32 dt) {
+    const std::vector<f32>& inc = road_.incroci();
+    if (inc.empty() || arrivo_ || ren_.nIncrocioSprites() == 0) { incrocioAttivo_ = -1; return; }
+    i32 q = -1;
+    for (i32 i = 0; i < (i32)inc.size(); ++i)
+        if (inc[(size_t)i] + Road::INCROCIO_ZONA > road_.playerZ) { q = i; break; }
+    if (q < 0) { incrocioAttivo_ = -1; return; }
+    const f32 zc = inc[(size_t)q];
+    const f32 bordo = Road::ROAD_HALF_WORLD * road_.larghezzaAt(zc) + 250.0f;
+    const f32 punta = player_.maxSpeed() * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST);
+    auto metaLung = [this](const AutoIncrocio& a) {
+        const Sprite* s = ren_.incrocioSprite(a.sprite, a.verso);
+        return s ? 0.5f * (f32)s->width * Renderer::SPRITE_WORLD_PX * INCROCIO_SCALA : 300.0f;
+    };
+    if (q != incrocioAttivo_) {
+        // Nuovo incrocio davanti: due auto per verso, gia' in viaggio verso il centro.
+        incrocioAttivo_ = q;
+        rndIncrocio_.seed(seed_ ^ (0x1C0C10u + (u32)q * 0x9E3779B9u));
+        for (i32 k = 0; k < AUTO_INCROCIO; ++k) {
+            AutoIncrocio& a = autoIncrocio_[k];
+            a.verso = (k & 1) ? -1 : 1;
+            a.sprite = (i32)rndIncrocio_.next((u32)ren_.nIncrocioSprites());
+            a.passo = punta * (0.30f + 0.02f * (f32)rndIncrocio_.next(6));
+            a.x = -(f32)a.verso * (bordo + 1500.0f + 5000.0f * (f32)(k / 2) + (f32)rndIncrocio_.next(2000));
+        }
+    }
+    // Precedenza: la corsia e' libera per T secondi se nessuno che arriva
+    // (giocatore, traffico, rivali) puo' raggiungerla prima. Il giocatore e'
+    // stimato col caso peggiore: velocita' di adesso piu' piena accelerazione.
+    const i32 tappaGiocatore = gara_ ? indiceTappa(tappaId_) : -1;
+    // Il giocatore e' stimato alla sua velocita' di adesso (con margine): chi
+    // attraversa non indovina se accelerera'. Se lo fa, puo' prenderla in pieno.
+    const f32 vGiocatore = dt > 0.0f ? passoGiocatore_ / dt : 0.0f;
+    auto corsaGiocatore = [&](f32 T) { return 1.2f * vGiocatore * T + 600.0f; };
+    auto liberaPer = [&](f32 zCorsia, f32 T) {
+        auto raggiunge = [&](f32 z, f32 corsa) {
+            const f32 dz = zCorsia - z;
+            if (dz < -700.0f) return false;                    // gia' passato
+            return corsa >= dz - 700.0f;
+        };
+        if (raggiunge(road_.playerZ, corsaGiocatore(T))) return false;
+        for (const Veicolo& v : traffico_)
+            if (v.attivo && raggiunge(v.z, 1.2f * v.passo * T)) return false;
+        if (tappaGiocatore >= 0)
+            for (const Rivale& r : rivali_)
+                if (r.tempoArrivoS < 0.0f && r.passoPercorso < r.nPercorso && r.percorso[r.passoPercorso] == tappaGiocatore &&
+                    raggiunge(r.progressoTappa, 1.2f * std::max(r.passo, 0.3f * punta) * T))
+                    return false;
+        return true;
+    };
+    for (i32 k = 0; k < AUTO_INCROCIO; ++k) {
+        AutoIncrocio& a = autoIncrocio_[k];
+        const f32 L = metaLung(a);
+        const f32 davanti = (f32)a.verso * a.x + L;  // muso, nel verso di marcia
+        const f32 dietro = (f32)a.verso * a.x - L;
+        f32 nuovaX = a.x + (f32)a.verso * a.passo * dt;
+        // Fermo allo stop: non e' ancora sulla strada e chi arriva non lascia il tempo.
+        const bool fuori = davanti < -bordo;
+        if (fuori && davanti > -bordo - 900.0f) {
+            const f32 attraversa = (2.0f * bordo + 2.0f * L) / a.passo + INCROCIO_MARGINE_S;
+            if (!liberaPer(zc + zCorsiaIncrocio(a.verso), attraversa))
+                nuovaX = (f32)a.verso * std::min((f32)a.verso * nuovaX, -bordo - 40.0f - L);
+        }
+        // Il giocatore fermo sulla corsia davanti al muso: si aspetta.
+        {
+            const f32 zAuto = road_.playerZ + 0.5f * (URTO_Z_MIN + URTO_Z_MAX);
+            const f32 avanti = (f32)a.verso * (player_.x - a.x);
+            if (std::fabs(zc + zCorsiaIncrocio(a.verso) - zAuto) < 600.0f && avanti > 0.0f && avanti < L + 450.0f)
+                nuovaX = a.x;
+        }
+        // In coda: niente sorpassi fra auto dello stesso verso.
+        for (i32 j = 0; j < AUTO_INCROCIO; ++j) {
+            const AutoIncrocio& b = autoIncrocio_[j];
+            if (j == k || b.verso != a.verso) continue;
+            const f32 gap = (f32)a.verso * (b.x - nuovaX);
+            const f32 minimo = L + metaLung(b) + 250.0f;
+            if (gap > 0.0f && gap < minimo && (f32)a.verso * (b.x - a.x) > 0.0f) nuovaX = b.x - (f32)a.verso * minimo;
+        }
+        // Avanzare solo: un'auto non torna mai indietro.
+        if ((f32)a.verso * nuovaX > (f32)a.verso * a.x) a.x = nuovaX;
+        (void)dietro;
+        // Uscita dall'altra parte: rientra dietro all'ultima del suo verso.
+        if ((f32)a.verso * a.x - L > INCROCIO_LONTANO) {
+            f32 coda = -(INCROCIO_LONTANO - 3000.0f);
+            for (i32 j = 0; j < AUTO_INCROCIO; ++j)
+                if (j != k && autoIncrocio_[j].verso == a.verso)
+                    coda = std::min(coda, (f32)a.verso * autoIncrocio_[j].x - 2.0f * L - 2500.0f);
+            a.sprite = (i32)rndIncrocio_.next((u32)ren_.nIncrocioSprites());
+            a.passo = punta * (0.30f + 0.02f * (f32)rndIncrocio_.next(6));
+            a.x = (f32)a.verso * (coda - (f32)rndIncrocio_.next(2500));
+            a.colpita = false;
+        }
+        // Urto col giocatore che entra nell'incrocio mentre passa (Andrea 08/11).
+        const f32 dz = zc + zCorsiaIncrocio(a.verso) - road_.playerZ;
+        if (!a.colpita && !playerFlipping_ && dz > URTO_Z_MIN - 200.0f && dz < URTO_Z_MAX + 100.0f &&
+            std::fabs(a.x - player_.x) < L + 0.5f * URTO_LARGHEZZA) {
+            a.colpita = true;
+            urtoIncrocio(a);
+        }
+    }
+}
+
+void Game::urtoIncrocio(AutoIncrocio& a) {
+    // Preso in pieno di fianco: forte, incidente se si andava oltre meta' punta;
+    // piu' piano e' una botta di traffico che spinge nel verso dell'altra auto.
+    a.passo *= 0.4f;
+    if (player_.speed >= 0.5f * player_.maxSpeed() && !arrivo_) {
+        mixer_.suonaUrto(true);
+        segnaBotta(0);
+        ribalta();
+        return;
+    }
+    const f32 lato = a.verso > 0 ? 1.0f : -1.0f;
+    playerBump_ = true;
+    playerBumpTimer_ = bumpDurataS_;
+    playerBumpSpintaX_ = lato * URTO_SPINTA_TRAFFICO;
+    player_.speed = std::max(0.1f * player_.maxSpeed(), player_.speed * 0.5f);
+    ++urtiGara_;
+    segnaBotta(-(i32)lato);
+    urtoTraffico_ = true;
+    urtoEffettoDurataS_ = URTO_EFFETTO_TRAFFICO_S;
+    urtoEffettoS_ = urtoEffettoDurataS_;
+    mixer_.suonaUrto(true);
+    colpiMemoria_ += 1.5f;
+}
+
+void Game::aggiungiSpriteIncroci() {
+    if (incrocioAttivo_ < 0 || incrocioAttivo_ >= (i32)road_.incroci().size()) return;
+    const f32 zc = road_.incroci()[(size_t)incrocioAttivo_];
+    for (i32 k = 0; k < AUTO_INCROCIO; ++k) {
+        const AutoIncrocio& a = autoIncrocio_[k];
+        const f32 z = zc + zCorsiaIncrocio(a.verso);
+        const f32 zRel = z - road_.playerZ;
+        if (zRel <= Road::Z_NEAR || zRel > (f32)(Road::DRAW_DIST * Road::SEG_LEN)) continue;
+        if (std::fabs(a.x) > INCROCIO_LONTANO) continue;
+        SpriteInstance s;
+        s.worldZ = z;
+        s.worldX = a.x;
+        s.scale = INCROCIO_SCALA;
+        s.sprite = ren_.incrocioSprite(a.sprite, a.verso);
+        if (!s.sprite) continue;
+        scenaSprites_.push_back(s);
+    }
 }
 
 } // namespace sgl

@@ -1922,6 +1922,50 @@
          "raw": "motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw",
          "livelli": [],
          "nota": "Andrea 08/11: logo del menu SEGNAPOSTO, solo la scritta OPEN RUN, niente decorazioni. Andrea lo ridisegna (stesso nome) e lancia genera_logo_placeholder.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_berlina_gialla",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "assets_originali/sprite/traffico_incrocio/lato_berlina_gialla.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_berlina_gialla.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_berlina_verde",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "assets_originali/sprite/traffico_incrocio/lato_berlina_verde.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_berlina_verde.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_furgone_bianco",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "assets_originali/sprite/traffico_incrocio/lato_furgone_bianco.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_furgone_bianco.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_bus_rosso",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "assets_originali/sprite/traffico_incrocio/lato_bus_rosso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_bus_rosso.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
       }
    ]
 }
