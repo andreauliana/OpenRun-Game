@@ -346,6 +346,7 @@ private:
     f32 clipGalleriaZ_ = 0.0f;
     i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
     bool clipAttivo_ = false; // per lo sprite che si sta disegnando
+    bool dentroGalleria_ = false; // telecamera dentro: clipGalleriaZ_ = uscita
     i32 galleriaParete_ = -1, galleriaLuce_ = -1;
     // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
     // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).

@@ -73,7 +73,10 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     // Telecamera in galleria (Claude 08/11): fra la telecamera e la prima
     // sezione disegnata ci sono ancora pareti e soffitto, niente cielo.
     clipGalleria_ = false;
+    dentroGalleria_ = false;
     if (projs_.front().galleria && projs_.size() > 1 && projs_[1].galleria) {
+        dentroGalleria_ = true;
+        clipGalleriaZ_ = 1e9f; // senza uscita in vista: niente luce del giorno
         // Fondo buio (in fondo al tubo): grigio cemento appena tinto del tema.
         const u32 fondo = lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f);
         fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
@@ -384,9 +387,55 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // Pozze di luce sotto ogni plafoniera (ogni 10 segmenti): ritmo e velocita'.
         const i32 dl = std::min(cur.index % 10, 10 - cur.index % 10);
         const f32 pozza = 0.28f * std::max(0.0f, 1.0f - (f32)dl / 4.0f);
-        const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f, 0.0f, 0.8f);
-        const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f, 0.0f, 0.8f);
+        // Verso l'uscita il giorno entra nel tubo: le ultime sezioni si schiariscono.
+        auto uscita = [&](f32 z) {
+            return dentroGalleria_ ? 0.45f * std::max(0.0f, 1.0f - (clipGalleriaZ_ - z) / 9000.0f) : 0.0f;
+        };
+        const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f - uscita(cur.worldZ), 0.0f, 0.8f);
+        const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f - uscita(next.worldZ), 0.0f, 0.8f);
         const f32 baseU = (f32)(cur.index % 256) * 8.0f;
+        // Neon (Andrea 08/11 sera): un tubo orizzontale per lato in alto sulla
+        // parete, a tratti (3 segmenti accesi, 1 spento) cosi' scorre veloce;
+        // a sinistra il colore della tappa, a destra un ciano freddo.
+        const bool neonAcceso = (cur.index % 4) != 3;
+        const u32 neonSx = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.25f);
+        const u32 neonDx = 0xFF60F0FFu;
+        const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
+        // Graffiti (Andrea: "OPEN RUN" stile graffito sui muri enormi): una
+        // scritta ogni 90 segmenti, lato alternato, lunga 40 segmenti.
+        constexpr i32 GRAF_OGNI = 90, GRAF_LUNGO = 40, GRAF_INIZIO = 20;
+        const i32 gPos = cur.index % GRAF_OGNI - GRAF_INIZIO;
+        const bool grafQui = gPos >= 0 && gPos < GRAF_LUNGO;
+        const i32 grafLato = ((cur.index / GRAF_OGNI) & 1) ? 1 : -1;
+        static const char* kGraf[2] = {"OPEN RUN", "OPENRUN 88"};
+        const char* testo = kGraf[(cur.index / (GRAF_OGNI * 2)) & 1];
+        const i32 nCar = (i32)std::char_traits<char>::length(testo);
+        const u32 sprayA = (cur.index / GRAF_OGNI) % 3 == 0 ? 0xFFFF4FD8u
+                         : (cur.index / GRAF_OGNI) % 3 == 1 ? 0xFFFFD040u : 0xFF50FF9Au;
+        const u32 sprayB = lerpColore(sprayA, 0xFFFFFFFFu, 0.45f);
+        // Colore del graffito in (gu, gv) (0..1 sulla scritta), 0 = muro.
+        auto graffito = [&](f32 gu, f32 gv, i32 px, i32 py) -> u32 {
+            gu += (0.5f - gv) * 0.04f; // corsivo
+            const f32 colF = gu * (f32)(nCar * FONT_MINI_W) - 0.5f, rigaF = gv * 7.0f - 1.0f;
+            auto pieno = [&](i32 c, i32 r) {
+                if (c < 0 || r < 0 || r >= FONT_MINI_H || c >= nCar * FONT_MINI_W) return false;
+                const i32 k = c / FONT_MINI_W, cc = c % FONT_MINI_W;
+                if (cc >= 3) return false;
+                return ((fontMini(testo[k])[r] >> (2 - cc)) & 1) != 0;
+            };
+            const i32 c = (i32)std::floor(colF), r = (i32)std::floor(rigaF);
+            if (pieno(c, r)) return (BAYER4[py & 3][px & 3] < (u8)(16.0f * (rigaF - (f32)r))) ? sprayA : sprayB;
+            // Bordo scuro attorno alle lettere (il contorno dello spray).
+            const f32 fc = colF - (f32)c, fr = rigaF - (f32)r;
+            if ((fc < 0.35f && pieno(c - 1, r)) || (fc > 0.65f && pieno(c + 1, r)) ||
+                (fr < 0.35f && pieno(c, r - 1)) || (fr > 0.65f && pieno(c, r + 1)))
+                return 0xFF14101Cu;
+            // Colature sotto l'ultima riga, a colonne sparse.
+            if (r >= FONT_MINI_H && r < FONT_MINI_H + 1 && pieno(c, FONT_MINI_H - 1) && ((c * 7) % 5) == 1 &&
+                fc > 0.4f && fc < 0.6f && fr < 0.8f)
+                return sprayA;
+            return 0u;
+        };
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
             const f32 den = xBordoF - xBordoN;
@@ -395,7 +444,24 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const f32 cieloY = ceilN + (ceilF - ceilN) * t;
                 const f32 terraY = cur.screenY + (next.screenY - cur.screenY) * t;
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
-                fb_.put(x, y, texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buioN + (buioF - buioN) * t));
+                const f32 buio = buioN + (buioF - buioN) * t;
+                const bool sinistra = xBordoF > xBordoN;
+                if (neonAcceso && std::abs(v - 0.16f) < spessN) {
+                    fb_.put(x, y, sinistra ? neonSx : neonDx);
+                    continue;
+                }
+                u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
+                // Alone del neon sul cemento: mezza luce a trama sotto e sopra il tubo.
+                if (neonAcceso && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
+                    c = lerpColore(c, sinistra ? neonSx : neonDx, 0.35f);
+                if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.26f && v < 0.86f) {
+                    // Sul muro di destra chi legge ha davanti il fondo alla sua
+                    // sinistra: la scritta comincia dal lontano.
+                    const f32 gu = ((f32)gPos + t) / (f32)GRAF_LUNGO;
+                    const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.26f) / 0.60f, x, y);
+                    if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
+                }
+                fb_.put(x, y, c);
             }
         };
         auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
@@ -421,9 +487,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         }
         // Plafoniera del grafico ogni 10 segmenti, al centro del soffitto, e
         // una striscia di luce del tema lungo il piede delle pareti.
+        // Andrea 08/11 sera: luci divise per lato, agli angoli del soffitto.
         if (cur.index % 10 == 0 && ceilN >= 0.0f) {
-            const i32 w = std::clamp((i32)(pxNear * 700.0f), 2, 40);
-            drawLuceGalleria((i32)cN, (i32)ceilN + std::max(1, w / 8), w);
+            const i32 w = std::clamp((i32)(pxNear * 520.0f), 2, 30);
+            const i32 ly = (i32)ceilN + std::max(1, w / 8);
+            drawLuceGalleria((i32)(xLn + (f32)w * 0.7f), ly, w);
+            drawLuceGalleria((i32)(xRn - (f32)w * 0.7f), ly, w);
         }
         if ((cur.index & 1) == 0 && cur.screenY < Framebuffer::HEIGHT) {
             const i32 ys = (i32)(cur.screenY - 220.0f * cur.scale * 112.0f);
@@ -763,10 +832,23 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
     const f32 fronteTop = p.screenY - 2900.0f * pxY;
     const f32 collinaW = hw * 7.0f;                              // mezza larghezza della collina
     const f32 collinaH = 5200.0f * pxY;
-    // Collina: profilo a campana con gobbe, erba del tema scurita a trama.
-    const u32 erbaA = lerpColore(tema_.erbaAlt, 0xFF000000u, 0.25f);
-    const u32 erbaB = lerpColore(tema_.erba, 0xFF000000u, 0.40f);
-    const u32 cresta = lerpColore(tema_.erba, 0xFFFFFFFFu, 0.15f);
+    // Collina: profilo a campana con gobbe. Cresta d'erba chiara, poi strati
+    // di roccia del tema a trama Bayer e qualche masso; si scurisce in basso.
+    const u32 erbaChiara = lerpColore(tema_.erba, 0xFFFFFFFFu, 0.12f);
+    const u32 erbaScura = lerpColore(tema_.erba, 0xFF000000u, 0.30f);
+    const u32 rocciaA = lerpColore(lerpColore(tema_.erbaAlt, 0xFF6A6470u, 0.45f), 0xFF000000u, 0.20f);
+    const u32 rocciaB = lerpColore(rocciaA, 0xFF000000u, 0.25f);
+    const u32 masso = lerpColore(rocciaA, 0xFFFFFFFFu, 0.18f);
+    // Fronte di cemento a conci: corsi orizzontali ogni 300 unita', giunti
+    // sfalsati ogni 600, sporco che sale da terra, cornice chiara attorno
+    // alla bocca con un neon del tema, pilastri ai lati in luce/ombra.
+    const u32 cemento = lerpColore(0xFF8C8A90u, tema_.rumbleAlt, 0.08f);
+    const u32 cementoScuro = lerpColore(cemento, 0xFF000000u, 0.30f);
+    const u32 giunto = lerpColore(cemento, 0xFF000000u, 0.55f);
+    const u32 cornice = lerpColore(cemento, 0xFFFFFFFFu, 0.25f);
+    const u32 neon = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.3f);
+    const f32 rim = std::max(1.0f, 160.0f * pxUnita);
+    const f32 pil = std::max(1.0f, 260.0f * pxUnita);
     const i32 xa = std::max(0, (i32)(cx - collinaW)), xb = std::min(Framebuffer::WIDTH - 1, (i32)(cx + collinaW));
     for (i32 x = xa; x <= xb; ++x) {
         const f32 d = ((f32)x - cx) / collinaW;
@@ -775,27 +857,54 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
         const i32 top = std::max(0, (i32)(p.screenY - h));
         const bool inFronte = (f32)x >= cx - fronteW && (f32)x <= cx + fronteW;
         const bool inBocca = (f32)x >= bx0 && (f32)x <= bx1;
+        const f32 wu = ((f32)x - cx) / std::max(0.01f, pxUnita);           // unita' mondo
         for (i32 y = top; y <= terra && y < Framebuffer::HEIGHT; ++y) {
             if (inBocca && (f32)y >= bocca) continue;           // bocca aperta
+            const f32 wv = (p.screenY - (f32)y) / std::max(0.01f, pxY);  // quota sopra la strada
             if (inFronte && (f32)y >= fronteTop) {
-                // Fronte di cemento (trama del grafico), bordo della bocca piu' scuro.
-                const bool bordo = (inBocca && (f32)y < bocca + std::max(1.0f, 140.0f * pxY)) ||
-                                   std::abs((f32)x - bx0) < std::max(1.0f, 90.0f * pxUnita) ||
-                                   std::abs((f32)x - bx1) < std::max(1.0f, 90.0f * pxUnita);
-                const i32 u = (i32)(((f32)x - cx) / std::max(1.0f, pxUnita * 40.0f));
-                const i32 v = (i32)(((f32)y - fronteTop) / std::max(0.05f, pxY * 40.0f));
-                fb_.put(x, y, texGalleria(u, v, bordo ? 0.55f : 0.0f));
+                u32 c = cemento;
+                const f32 dx0 = std::abs((f32)x - bx0), dx1 = std::abs((f32)x - bx1);
+                const bool sopraBocca = (f32)y < bocca;
+                const bool bordoBocca = (inBocca && sopraBocca && bocca - (f32)y < rim) ||
+                                        (!inBocca && (dx0 < rim || dx1 < rim));
+                const bool pilastro = std::abs((f32)x - (cx - fronteW)) < pil || std::abs((f32)x - (cx + fronteW)) < pil;
+                if (bordoBocca) {
+                    c = cornice;
+                    if (inBocca && bocca - (f32)y < std::max(1.0f, rim * 0.35f)) c = neon; // neon sotto l'architrave
+                } else {
+                    const i32 corso = (i32)std::floor(wv / 300.0f);
+                    const f32 fv = wv - (f32)corso * 300.0f;
+                    const f32 fu = std::fmod(wu + (corso & 1) * 300.0f + 60000.0f, 600.0f);
+                    if (fv < std::max(20.0f, 1.0f / pxY) || fu < std::max(20.0f, 1.0f / pxUnita)) c = giunto;
+                    else if (pilastro) c = (f32)x < cx ? cornice : cementoScuro;
+                    // Sporco: dal basso sale una fascia piu' scura a trama.
+                    if (c != giunto && wv < 700.0f && (f32)BAYER4[y & 3][x & 3] > wv / 700.0f * 16.0f)
+                        c = lerpColore(c, 0xFF000000u, 0.25f);
+                }
+                fb_.put(x, y, c);
                 continue;
             }
-            const u32 c = y == top ? cresta : (BAYER4[y & 3][x & 3] < 8 ? erbaA : erbaB);
+            const f32 prof = (f32)(y - top);
+            u32 c;
+            if (prof < std::max(1.0f, 180.0f * pxY)) c = y == top ? erbaChiara : (BAYER4[y & 3][x & 3] < 10 ? tema_.erba : erbaScura);
+            else {
+                // Strati: fasce di roccia alternate (trama), piu' scure in basso.
+                const i32 strato = (i32)(wv / 520.0f);
+                c = (strato & 1) ? rocciaA : rocciaB;
+                if (BAYER4[y & 3][x & 3] < 4) c = (strato & 1) ? rocciaB : rocciaA;
+                // Massi: macchie chiare in posizioni fisse nel mondo.
+                const i32 mu = (i32)std::floor(wu / 900.0f), mv = (i32)std::floor(wv / 700.0f);
+                const u32 hsh = (u32)(mu * 73856093) ^ (u32)(mv * 19349663);
+                if ((hsh % 7u) == 0u) {
+                    const f32 fu = std::fmod(wu + 90000.0f, 900.0f) / 900.0f, fv = std::fmod(wv, 700.0f) / 700.0f;
+                    const f32 r2 = (fu - 0.5f) * (fu - 0.5f) + (fv - 0.5f) * (fv - 0.5f) * 1.8f;
+                    if (r2 < 0.09f) c = fv > 0.55f ? masso : rocciaB;
+                }
+                if (wv < 600.0f && BAYER4[y & 3][x & 3] < 8) c = lerpColore(c, 0xFF000000u, 0.2f);
+            }
             fb_.put(x, y, c);
         }
     }
-    // Trave del tema sopra la bocca e plafoniera di benvenuto.
-    const i32 ty = (i32)(bocca - std::max(2.0f, 260.0f * pxY));
-    if (ty >= 0 && ty < Framebuffer::HEIGHT)
-        fb_.fillRect(std::max(0, (i32)(cx - fronteW)), ty, std::min(Framebuffer::WIDTH - 1, (i32)(cx + fronteW)),
-                     std::min(terra, ty + std::max(1, (i32)(120.0f * pxY))), tema_.rumbleAlt);
     // Oltre l'imbocco si vede solo cio' che sta dentro la bocca.
     if (!clipGalleria_) {
         clipGalleria_ = true;
@@ -1190,14 +1299,15 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             // piena), sporge sotto le ruote con i bordi arrotondati. Quando l'auto
             // salta resta a terra, si stringe e si schiarisce.
             const f32 alto = std::min(1.0f, (f32)sollevamento / 12.0f);
-            const i32 mezza = (i32)((f32)w * (0.52f - 0.14f * alto));
+            const i32 mezza = (i32)((f32)w * (0.52f - 0.05f * alto));
             u32* px = fb_.data();
             for (i32 r = -3; r <= AUTO_OMBRA_RIGHE; ++r) {
                 const i32 y = AUTO_GIOCATORE_TERRA_Y + r;
                 if (y < 0 || y >= Framebuffer::HEIGHT) continue;
                 const i32 m = r <= 0 ? mezza : mezza - (r * r * w) / 36; // righe in basso piu' corte
                 u32 luce = r >= AUTO_OMBRA_RIGHE ? 70u : 45u;           // % di luce rimasta
-                if (alto > 0.0f) luce += (u32)(30.0f * alto);
+                // Sollevata alla punta (Andrea 08/11 sera): ombra piu' scura e netta.
+                if (alto > 0.0f) luce = (u32)((f32)luce * (1.0f - 0.35f * std::min(1.0f, alto * 4.0f)));
                 for (i32 x = cx - m; x <= cx + m; ++x) {
                     if (x < 0 || x >= Framebuffer::WIDTH) continue;
                     if ((x <= cx - m + 1 || x >= cx + m - 1) && ((x + y) & 1)) continue; // bordo a scacchiera
@@ -1494,30 +1604,8 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
                     fb_.put(px + dx, py + dy, col);
     };
     if (sotto) {
-        // Razzo: due getti di spinta dalla pancia dell'auto fino a terra
-        // (Andrea 07/11, "elevazione a mo' di razzo"). Nucleo bianco, alone
-        // ciano, bordo magenta a scacchiera; la lunghezza sfarfalla.
-        if (fx.razzo <= 0.05f) return;
-        const i32 terra = AUTO_GIOCATORE_TERRA_Y + 1;
-        for (i32 lato = -1; lato <= 1; lato += 2) {
-            const i32 gx = cx + lato * (w * 3 / 10);
-            const i32 fondo = terra - (((frame >> 1) + (lato > 0 ? 1 : 0)) & 1);
-            for (i32 y = cy - 2; y <= fondo; ++y) {
-                const f32 k = fondo > cy ? (f32)(y - cy) / (f32)(fondo - cy + 1) : 1.0f; // 0 in alto, 1 a terra
-                const i32 r = 1 + (k > 0.6f ? 1 : 0);
-                for (i32 dx = -r - 1; dx <= r + 1; ++dx) {
-                    const i32 ax = std::abs(dx);
-                    u32 col;
-                    if (ax == 0 && k < 0.8f) col = 0xFFFFFFFFu;
-                    else if (ax <= r) col = 0xFF70F0FFu;
-                    else { if (((gx + dx + y + frame) & 1) != 0) continue; col = 0xFFFF40C8u; }
-                    fb_.put(gx + dx, y, col);
-                }
-            }
-            // Riverbero a terra: un ventaglio di pixel chiari che sfarfalla.
-            for (i32 dx = -5; dx <= 5; ++dx)
-                if (((dx + frame) & 1) == 0) fb_.put(gx + dx, terra + 1, 0xFF70F0FFu);
-        }
+        // Andrea 08/11 sera: niente getti sotto l'auto alla punta (sembrava
+        // un'astronave); l'auto si stacca appena e resta solo l'ombra.
         return;
     }
 
@@ -1538,18 +1626,6 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
                 if (x > cx - w / 2 - 4 && x < cx + w / 2 + 4 && y > cy - h - 4) continue;
                 if (p > 0.6f && ((x + y) & 1)) continue;
                 fb_.put(x, y, 0xFFE8F8FFu);
-            }
-        }
-    }
-    // Fiamme dagli scarichi nel razzo: due lingue arancio/gialle che sfarfallano.
-    if (fx.razzo > 0.3f) {
-        for (i32 lato = -1; lato <= 1; lato += 2) {
-            const i32 sx = cx + lato * (w / 5);
-            const i32 sy = cy - 3;
-            const i32 l = 1 + (i32)(casoFx((u32)frame * 2u + (lato > 0 ? 1u : 0u)) * 3.0f * fx.razzo);
-            for (i32 k = 0; k <= l; ++k) {
-                fb_.put(sx, sy + k, k == 0 ? 0xFFFFFFA0u : (k < l ? 0xFFFFC020u : 0xFFFF5020u));
-                if (k < l - 1) { fb_.put(sx - 1, sy + k, 0xFFFF8020u); fb_.put(sx + 1, sy + k, 0xFFFF8020u); }
             }
         }
     }

@@ -224,7 +224,7 @@ constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza str
 // BLOCCATO (Andrea 06/11): sollevamento e salti dell'auto in REGOLE_AUTO_GIOCATORE.md, gli agenti non li cambiano.
 constexpr f32 SOLLEVAMENTO_SOGLIA_V = 0.98f; // ~287 km/h, ~8 s di gas pieno in rettilineo
 constexpr f32 SOLLEVAMENTO_CURVA_MAX = 0.15f;
-constexpr f32 SOLLEVAMENTO_MAX_PX = 7.0f; // Andrea 07/11: alla punta l'auto si alza "a mo' di razzo" (06/11 era 0)
+constexpr f32 SOLLEVAMENTO_MAX_PX = 3.0f; // Andrea 08/11 sera: si stacca appena, niente razzo (07/11 era 7)
 constexpr f32 RAZZO_ATTESA_S = 1.0f;      // secondi alla punta in rettilineo prima del decollo
 constexpr f32 PONTE_GIUNTO_M = 12.0f;     // giunti del ponte: un "tac" ogni 12 m (~7 al secondo alla punta)
 constexpr f32 SOLLEVAMENTO_SALITA_S = 0.8f;
