@@ -640,6 +640,8 @@ void Game::caricaOggettiStrada(const std::string& livelloId) {
         const char* kPonte[6] = {"boa", "barca", "scoglio", "faro", "ombrellone", "motoscafo"};
         i32 idxPonte[6];
         for (i32 q = 0; q < 6; ++q) idxPonte[q] = carica("comuni", kPonte[q]);
+        // Galleria (PERC1 G2): trama delle pareti e plafoniera del grafico.
+        ren_.impostaGalleriaSprites(carica("comuni", "parete_galleria"), carica("comuni", "luce_galleria"));
         PezziPaesaggio pz;
         for (i32 j = 0; j < nOggetti; ++j) {
             const Sprite* s = idxPerId[j] >= 0 ? ren_.oggettoSprite(idxPerId[j]) : nullptr;

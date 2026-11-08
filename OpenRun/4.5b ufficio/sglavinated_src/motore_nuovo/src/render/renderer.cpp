@@ -74,8 +74,9 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     // sezione disegnata ci sono ancora pareti e soffitto, niente cielo.
     clipGalleria_ = false;
     if (projs_.front().galleria && projs_.size() > 1 && projs_[1].galleria) {
-        fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.62f));
-        fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, lerpColore(tema_.rumbleAlt, 0xFF000000u, 0.76f));
+        // Fondo buio (in fondo al tubo): grigio cemento appena tinto del tema.
+        const u32 fondo = lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f);
+        fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
         // Bocca d'uscita: prima sezione fuori dalla galleria.
         for (size_t k = 1; k < projs_.size(); ++k) {
             if (projs_[k].galleria) continue;
@@ -87,6 +88,30 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             clipGx0_ = (i32)(u.screenX - hw);
             clipGx1_ = (i32)(u.screenX + hw);
             clipGy0_ = (i32)(u.screenY - GALLERIA_ALTEZZA * u.scale * 112.0f);
+            // Dalla bocca d'uscita si vede il giorno: cielo e terra del tema.
+            const i32 bx0 = std::max(0, clipGx0_), bx1 = std::min(Framebuffer::WIDTH - 1, clipGx1_);
+            const i32 by0 = std::max(0, clipGy0_), by1 = std::min(Framebuffer::HEIGHT - 1, (i32)u.screenY);
+            if (bx1 >= bx0 && by1 >= by0) {
+                if (by0 < HORIZON_Y) fb_.fillRect(bx0, by0, bx1, std::min(by1, HORIZON_Y - 1), tema_.cielo);
+                if (by1 >= HORIZON_Y) fb_.fillRect(bx0, std::max(by0, HORIZON_Y), bx1, by1, tema_.erba);
+            }
+            break;
+        }
+    }
+
+    // Galleria davanti, vista da fuori: la bocca si riempie prima di buio, cosi'
+    // fra le fette lontane del tubo non filtra il cielo.
+    if (!projs_.front().galleria) {
+        for (size_t k = 1; k < projs_.size(); ++k) {
+            if (!projs_[k].galleria) continue;
+            const Road::ProjectedSeg& e = projs_[k - 1];
+            const f32 px = e.scale * (Framebuffer::WIDTH / 2.0f);
+            const f32 hw = px * Road::ROAD_HALF_WORLD * std::max(e.carr.fattore, 0.5f) * GALLERIA_LARGHEZZA;
+            const i32 y0 = std::max(0, (i32)(e.screenY - GALLERIA_ALTEZZA * e.scale * 112.0f));
+            const i32 y1 = std::min(Framebuffer::HEIGHT - 1, (i32)e.screenY);
+            const i32 x0 = std::max(0, (i32)(e.screenX - hw)), x1 = std::min(Framebuffer::WIDTH - 1, (i32)(e.screenX + hw));
+            if (x1 >= x0 && y1 >= y0)
+                fb_.fillRect(x0, y0, x1, y1, lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f));
             break;
         }
     }
@@ -166,7 +191,12 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             drawPila(vicino);
         if (visibile && lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
             drawLuciTerra(vicino);
-        if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
+        const auto& segsR = road.segments();
+        const bool imbocco = lontano.portale == 4 && !lontano.galleria && !projs_.front().galleria && !segsR.empty() &&
+                             segsR[(size_t)((lontano.index + 1) % (i32)segsR.size())].galleria;
+        if (imbocco)
+            drawImboccoGalleria(vicino, coperto); // entrata vista da fuori
+        else if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
     }
     drawRoadsideMarkers(playerZ);
 }
@@ -257,7 +287,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // dipinto piu' in basso, sopra).
     // Galleria (PERC1 D4): pareti scure del tema ai lati, soffitto sopra la strada.
     // Claude 08/11: a bande come la strada, cosi' in galleria si sente la velocita'.
-    const u32 pareteScura = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.72f : 0.80f);
+    const u32 pareteScura = lerpColore(lerpColore(0xFF4A4A54u, tema_.rumbleAlt, 0.14f), 0xFF000000u,
+                                       std::clamp(cur.worldZ / 36000.0f, 0.0f, 0.75f) + (band ? 0.15f : 0.25f));
     const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.58f : 0.66f);
     const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
@@ -268,7 +299,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
-        if (y >= HORIZON_Y && !sospeso) fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+        // In galleria niente prato: fuori dalle pareti c'e' la montagna (o il
+        // fondo buio visto da dentro), il prato filtrava fra le fette.
+        if (y >= HORIZON_Y && !sospeso && !galleria) fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
         const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
@@ -306,8 +339,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // Piede delle pareti: dal bordo della strada alla parete di
                 // questa profondita' (fuori resta l'erba, si vede da fuori).
                 const f32 pw = hw * GALLERIA_LARGHEZZA;
-                fb_.hline(std::max(0, (i32)(cx - pw)), lx - 1, y, pareteScura);
-                fb_.hline(rx + 1, std::min(Framebuffer::WIDTH - 1, (i32)(cx + pw)), y, pareteScura);
+                fb_.hline(std::max(0, (i32)(cx - pw) - 1), lx - 1, y, pareteScura);
+                fb_.hline(rx + 1, std::min(Framebuffer::WIDTH - 1, (i32)(cx + pw) + 1), y, pareteScura);
             }
             fb_.hline(lx, rx, y, road);
             fb_.hline(lx, lx + rw - 1, y, rumble);
@@ -345,27 +378,60 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 ceilF = next.screenY - GALLERIA_ALTEZZA * next.scale * 112.0f;
         const i32 y0 = std::max(0, (i32)ceilN);
         const i32 y1 = std::min(Framebuffer::HEIGHT - 1, ny - 1);
-        auto riga = [&](f32 a, f32 b, i32 y, u32 c) {
-            const i32 xa = std::max(0, (i32)a), xb = std::min(Framebuffer::WIDTH - 1, (i32)b);
-            if (xb >= xa) fb_.hline(xa, xb, y, c);
+        // Trama del grafico (parete_galleria, Bayer): u lungo la galleria (un
+        // riquadro ogni segmento), v sull'altezza delle pareti / larghezza del
+        // soffitto. Piu' lontano = piu' buio: in fondo il tubo sfuma nel nero.
+        // Pozze di luce sotto ogni plafoniera (ogni 10 segmenti): ritmo e velocita'.
+        const i32 dl = std::min(cur.index % 10, 10 - cur.index % 10);
+        const f32 pozza = 0.28f * std::max(0.0f, 1.0f - (f32)dl / 4.0f);
+        const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f, 0.0f, 0.8f);
+        const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f, 0.0f, 0.8f);
+        const f32 baseU = (f32)(cur.index % 256) * 8.0f;
+        auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
+            const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
+            const f32 den = xBordoF - xBordoN;
+            for (i32 x = a0; x <= b0; ++x) {
+                const f32 t = std::abs(den) > 0.5f ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
+                const f32 cieloY = ceilN + (ceilF - ceilN) * t;
+                const f32 terraY = cur.screenY + (next.screenY - cur.screenY) * t;
+                const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
+                fb_.put(x, y, texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buioN + (buioF - buioN) * t));
+            }
+        };
+        auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
+            const i32 a0 = std::max(0, (i32)xl), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xr);
+            const f32 larg = std::max(1.0f, xr - xl);
+            const f32 buio = std::min(0.9f, buioN + (buioF - buioN) * t + 0.18f);
+            for (i32 x = a0; x <= b0; ++x)
+                fb_.put(x, y, texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, (i32)(baseU + 8.0f * t), buio));
         };
         for (i32 y = y0; y <= y1; ++y) {
             if ((f32)y < ceilF) {
                 // Sopra il soffitto lontano: soffitto al centro, cima delle pareti ai lati.
                 const f32 t = ceilF > ceilN ? ((f32)y - ceilN) / (ceilF - ceilN) : 1.0f;
                 const f32 xl = xLn + (xLf - xLn) * t, xr = xRn + (xRf - xRn) * t;
-                riga(xl, xr, y, soffitto);
-                riga(xLn, xl - 1.0f, y, pareteScura);
-                riga(xr + 1.0f, xRn, y, pareteScura);
+                soffittoRiga(xl, xr, t, y);
+                parete(xLn, xl, xLn, xLf, y);
+                parete(xr, xRn + 1.0f, xRn, xRf, y);
             } else {
-                riga(xLn, xLf - 1.0f, y, pareteScura);
-                riga(xRf + 1.0f, xRn, y, pareteScura);
+                // Un pixel di sovrapposizione fra fette: niente fessure chiare.
+                parete(xLn, xLf + 1.0f, xLn, xLf, y);
+                parete(xRf - 1.0f, xRn + 1.0f, xRn, xRf, y);
             }
         }
-        // Una lampada del tema ogni 10 segmenti, al centro del soffitto.
+        // Plafoniera del grafico ogni 10 segmenti, al centro del soffitto, e
+        // una striscia di luce del tema lungo il piede delle pareti.
         if (cur.index % 10 == 0 && ceilN >= 0.0f) {
-            const i32 r = std::clamp((i32)(pxNear * 90.0f), 1, 6);
-            drawLampada((i32)cN, (i32)ceilN + r + 1, r, tema_.rumbleAlt, true);
+            const i32 w = std::clamp((i32)(pxNear * 700.0f), 2, 40);
+            drawLuceGalleria((i32)cN, (i32)ceilN + std::max(1, w / 8), w);
+        }
+        if ((cur.index & 1) == 0 && cur.screenY < Framebuffer::HEIGHT) {
+            const i32 ys = (i32)(cur.screenY - 220.0f * cur.scale * 112.0f);
+            const u32 c = lerpColore(tema_.rumbleAlt, 0xFF000000u, std::min(0.85f, buioN));
+            if (ys >= 0) {
+                fb_.put(std::clamp((i32)xLn + 1, 0, Framebuffer::WIDTH - 1), ys, c);
+                fb_.put(std::clamp((i32)xRn - 1, 0, Framebuffer::WIDTH - 1), ys, c);
+            }
         }
     }
 }
@@ -632,6 +698,111 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
         fb_.hline(x0, x1, cima + sp, luce);
         const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
         drawLampada((x0 + x1) / 2, cima + sp / 2, r, tema_.rumbleAlt, true);
+    }
+}
+
+u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
+    u32 c;
+    const Sprite* t = oggettoSprite(galleriaParete_);
+    if (t && t->width > 0 && t->height > 0) {
+        const i32 tx = ((u % t->width) + t->width) % t->width;
+        const i32 ty = ((v % t->height) + t->height) % t->height;
+        const u8 idx = t->pixels[(size_t)(ty * t->width + tx)];
+        c = !t->palette.empty() ? t->palette[idx % t->palette.size()] : pal_[t->paletteBase + idx];
+        if ((c >> 24) == 0) c = 0xFF3A3A44u;
+    } else {
+        // Senza PNG: cemento a corsi con trama Bayer.
+        const i32 tu = ((u % 32) + 32) % 32, tv = ((v % 32) + 32) % 32;
+        c = (tv < 2 || tu == 0) ? 0xFF26262Eu : (BAYER4[tv & 3][tu & 3] < 6 ? 0xFF4C4C58u : 0xFF5E5E6Au);
+    }
+    // Un filo del colore della tappa nel cemento: il tema resta riconoscibile.
+    c = lerpColore(c, tema_.rumbleAlt, 0.10f);
+    // Buio a trama: due livelli vicini mescolati con la Bayer (niente sfumature piene).
+    const f32 q = std::clamp(buio, 0.0f, 0.95f) * 6.0f;
+    const i32 base = (i32)q;
+    const bool su = (f32)BAYER4[v & 3][u & 3] / 16.0f < q - (f32)base;
+    return lerpColore(c, 0xFF000000u, (f32)(base + (su ? 1 : 0)) / 6.0f);
+}
+
+void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w) {
+    const Sprite* s = oggettoSprite(galleriaLuce_);
+    if (!s || s->width <= 0) {
+        const i32 r = std::max(1, w / 6);
+        drawLampada(cx, cy + r, r, 0xFFFFF0C0u, true);
+        return;
+    }
+    const i32 h = std::max(1, w * s->height / s->width);
+    const i32 x0 = cx - w / 2;
+    for (i32 y = 0; y < h; ++y) {
+        const i32 py = cy + y;
+        if (py < 0 || py >= Framebuffer::HEIGHT) continue;
+        const i32 ty = y * s->height / h;
+        for (i32 x = 0; x < w; ++x) {
+            const i32 px = x0 + x;
+            if (px < 0 || px >= Framebuffer::WIDTH) continue;
+            const u8 idx = s->pixels[(size_t)(ty * s->width + x * s->width / w)];
+            const u32 c = !s->palette.empty() ? s->palette[idx % s->palette.size()] : (idx ? pal_[s->paletteBase + idx] : 0u);
+            if ((c >> 24) != 0) fb_.put(px, py, c);
+        }
+    }
+}
+
+void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
+    // Imbocco della galleria (Andrea 08/11: la galleria vista da fuori era una
+    // scatola sospesa): una collina del tema scavalca la strada, la fronte di
+    // cemento incornicia la bocca e dentro si vede il tubo con le sue luci.
+    if (p.scale <= 0.0f) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 pxY = p.scale * 112.0f;
+    const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * std::max(p.carr.fattore, 0.5f);
+    const f32 cx = p.screenX;
+    const i32 terra = std::min((i32)p.screenY, (i32)coperto);
+    const f32 bx0 = cx - hw * GALLERIA_LARGHEZZA, bx1 = cx + hw * GALLERIA_LARGHEZZA;
+    const f32 bocca = p.screenY - GALLERIA_ALTEZZA * pxY;        // soffitto della bocca
+    const f32 fronteW = hw * 1.75f;                              // fronte di cemento
+    const f32 fronteTop = p.screenY - 2900.0f * pxY;
+    const f32 collinaW = hw * 7.0f;                              // mezza larghezza della collina
+    const f32 collinaH = 5200.0f * pxY;
+    // Collina: profilo a campana con gobbe, erba del tema scurita a trama.
+    const u32 erbaA = lerpColore(tema_.erbaAlt, 0xFF000000u, 0.25f);
+    const u32 erbaB = lerpColore(tema_.erba, 0xFF000000u, 0.40f);
+    const u32 cresta = lerpColore(tema_.erba, 0xFFFFFFFFu, 0.15f);
+    const i32 xa = std::max(0, (i32)(cx - collinaW)), xb = std::min(Framebuffer::WIDTH - 1, (i32)(cx + collinaW));
+    for (i32 x = xa; x <= xb; ++x) {
+        const f32 d = ((f32)x - cx) / collinaW;
+        const f32 gobbe = 0.08f * std::sin(d * 9.0f + 1.3f) + 0.05f * std::sin(d * 23.0f);
+        const f32 h = collinaH * std::max(0.0f, 1.0f - d * d) * (0.9f + gobbe);
+        const i32 top = std::max(0, (i32)(p.screenY - h));
+        const bool inFronte = (f32)x >= cx - fronteW && (f32)x <= cx + fronteW;
+        const bool inBocca = (f32)x >= bx0 && (f32)x <= bx1;
+        for (i32 y = top; y <= terra && y < Framebuffer::HEIGHT; ++y) {
+            if (inBocca && (f32)y >= bocca) continue;           // bocca aperta
+            if (inFronte && (f32)y >= fronteTop) {
+                // Fronte di cemento (trama del grafico), bordo della bocca piu' scuro.
+                const bool bordo = (inBocca && (f32)y < bocca + std::max(1.0f, 140.0f * pxY)) ||
+                                   std::abs((f32)x - bx0) < std::max(1.0f, 90.0f * pxUnita) ||
+                                   std::abs((f32)x - bx1) < std::max(1.0f, 90.0f * pxUnita);
+                const i32 u = (i32)(((f32)x - cx) / std::max(1.0f, pxUnita * 40.0f));
+                const i32 v = (i32)(((f32)y - fronteTop) / std::max(0.05f, pxY * 40.0f));
+                fb_.put(x, y, texGalleria(u, v, bordo ? 0.55f : 0.0f));
+                continue;
+            }
+            const u32 c = y == top ? cresta : (BAYER4[y & 3][x & 3] < 8 ? erbaA : erbaB);
+            fb_.put(x, y, c);
+        }
+    }
+    // Trave del tema sopra la bocca e plafoniera di benvenuto.
+    const i32 ty = (i32)(bocca - std::max(2.0f, 260.0f * pxY));
+    if (ty >= 0 && ty < Framebuffer::HEIGHT)
+        fb_.fillRect(std::max(0, (i32)(cx - fronteW)), ty, std::min(Framebuffer::WIDTH - 1, (i32)(cx + fronteW)),
+                     std::min(terra, ty + std::max(1, (i32)(120.0f * pxY))), tema_.rumbleAlt);
+    // Oltre l'imbocco si vede solo cio' che sta dentro la bocca.
+    if (!clipGalleria_) {
+        clipGalleria_ = true;
+        clipGalleriaZ_ = p.worldZ;
+        clipGx0_ = (i32)bx0;
+        clipGx1_ = (i32)bx1;
+        clipGy0_ = (i32)bocca;
     }
 }
 

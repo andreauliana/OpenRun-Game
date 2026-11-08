@@ -164,6 +164,10 @@ public:
     // Andrea 07/11): disegnati dentro drawRoad nell'ordine dei segmenti, cosi'
     // l'impalcato piu' vicino li copre. Il vettore resta del Game.
     void impostaOggettiTerra(const std::vector<SpriteInstance>* v) { oggettiTerra_ = v; }
+    // Galleria (PERC1 G2 del grafico): indici in oggettoSprite() della trama
+    // parete_galleria (32x32) e della plafoniera luce_galleria (16x8); -1 =
+    // disegno a codice. Indici e non puntatori: il vettore puo' crescere.
+    void impostaGalleriaSprites(i32 parete, i32 luce) { galleriaParete_ = parete; galleriaLuce_ = luce; }
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
@@ -301,7 +305,7 @@ public:
     const Sprite* oggettoSprite(i32 indice) const {
         return indice >= 0 && indice < (i32)oggettoSprites_.size() ? &oggettoSprites_[indice] : nullptr;
     }
-    void clearOggettoSprites() { oggettoSprites_.clear(); }
+    void clearOggettoSprites() { oggettoSprites_.clear(); galleriaParete_ = galleriaLuce_ = -1; }
     // Imposta lo skyline della tappa in corso (DECO1 2b): sprite vuoto = cielo piatto.
     // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
     // init()/fineTappa(), mai nel ciclo di gioco.
@@ -342,6 +346,14 @@ private:
     f32 clipGalleriaZ_ = 0.0f;
     i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
     bool clipAttivo_ = false; // per lo sprite che si sta disegnando
+    i32 galleriaParete_ = -1, galleriaLuce_ = -1;
+    // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
+    // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).
+    u32 texGalleria(i32 u, i32 v, f32 buio) const;
+    // Imbocco della galleria visto da fuori: collina del tema con la fronte di
+    // cemento, la bocca resta aperta sull'interno.
+    void drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto);
+    void drawLuceGalleria(i32 cx, i32 cy, i32 w);
     static constexpr f32 TORRE_LARGHEZZA = 240.0f;  // unita' mondo
     static constexpr f32 TORRE_DISTANZA = 1.25f;    // centro torre / mezza carreggiata
     static constexpr f32 TORRE_SOPRA = 3200.0f;     // altezza della torre sopra la strada
