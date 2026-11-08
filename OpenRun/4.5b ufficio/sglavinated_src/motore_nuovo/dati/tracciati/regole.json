@@ -37,7 +37,7 @@
       "rettilineo_min": 0.35,
       "rettilineo_max": 0.75,
       "rettilineo_piu_lungo_min": 300,
-      "curva_max": 0.86,
+      "curva_max": 0.87,
       "curva_dx_min": 0.3,
       "curva_sx_min": 0.3,
       "fuori_strada_max": 0.01,
@@ -45,7 +45,7 @@
     },
     "lv_04_cromo": {
       "rettilineo_min": 0.35,
-      "rettilineo_max": 0.75,
+      "rettilineo_max": 0.76,
       "rettilineo_piu_lungo_min": 300,
       "curva_max": 0.86,
       "curva_dx_min": 0.3,
