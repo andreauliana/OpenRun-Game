@@ -423,16 +423,21 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
         // Graffiti (Andrea: "OPEN RUN" stile graffito sui muri enormi): una
         // tag ogni 60 segmenti, lato alternato, lungo 22 segmenti.
-        constexpr i32 GRAF_OGNI = 60, GRAF_LUNGO = 22, GRAF_INIZIO = 14;
+        // Andrea 08/11 notte: "OPEN RUN" non sulla fronte ufficiale ma dentro,
+        // abusivo: un pezzo lungo ogni tre graffiti, in mezzo tag corte.
+        constexpr i32 GRAF_OGNI = 60, GRAF_INIZIO = 10;
+        const i32 grafN = cur.index / GRAF_OGNI;
+        static const char* kGraf[3] = {"OPEN RUN", "RUN", "OR88"};
+        const i32 grafK = grafN % 3;
+        const char* testo = kGraf[grafK];
+        const i32 GRAF_LUNGO = grafK == 0 ? 44 : 22; // il pezzo lungo si legge anche di sbieco
         const i32 gPos = cur.index % GRAF_OGNI - GRAF_INIZIO;
         const bool grafQui = gPos >= 0 && gPos < GRAF_LUNGO;
-        const i32 grafLato = ((cur.index / GRAF_OGNI) & 1) ? 1 : -1;
-        static const char* kGraf[2] = {"RUN", "OR88"}; // tag corti: di sbieco si leggono meglio
-        const char* testo = kGraf[(cur.index / (GRAF_OGNI * 2)) & 1];
+        const i32 grafLato = ((grafN / 3) & 1) ? 1 : -1;
         // Throw-up a bolle (Andrea 08/11 sera): lettere gonfie che si toccano,
         // riempimento fluo a due toni, contorno di colore, bordo nero, lucido
         // in alto a sinistra ed estrusione scura in basso a destra.
-        const i32 variante = (cur.index / GRAF_OGNI) % 3;
+        const i32 variante = grafK == 0 ? 0 : (grafN / 3 + grafK) % 3;
         const u32 rosa = 0xFFFF2FB4u, ciano = 0xFF40F0FFu;
         const u32 riempi = variante == 0 ? rosa : variante == 1 ? ciano : lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.2f);
         const u32 contorno = variante == 0 ? ciano : rosa;
@@ -779,13 +784,49 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
 
 const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) {
     for (const auto& m : graffiti_) if (m.testo == testo) return m;
-    // Lettere del font HUD 6x8 (tratto di 1 cella) gonfiate a bolla: per ogni
-    // punto la distanza dal quadratino pieno piu' vicino (unita' cella).
+    // Lettering nostro (Andrea 08/11 sera): forme estreme, larghezze diverse.
+    // O larga, P stretta, E larga, N storta (gamba sinistra corta), R con
+    // l'occhiello a triangolo. Tratto di 1 cella, poi gonfiato a bolla: per
+    // ogni punto la distanza dal quadratino pieno piu' vicino (unita' cella).
     // < 0.45 riempimento, < 0.78 contorno di colore, < 1.05 bordo nero;
     // estrusione = bordo spostato in basso a destra. Le lettere si toccano.
-    constexpr i32 R = 6, PAD = 2;
-    const i32 n = (i32)std::char_traits<char>::length(testo);
-    const i32 cw = n * FONT_HUD_W + 2 * PAD, ch = FONT_HUD_H + 2 * PAD;
+    // Ai lati una scacchiera piccola e condensata. Altri caratteri: font HUD.
+    struct Glifo { char c; const char* righe[8]; };
+    static const Glifo kGlifi[] = {
+        {'O', {" ####### ", "#       #", "#       #", "#       #", "#       #", "#       #", "#       #", " ####### "}},
+        {'P', {"### ", "#  #", "#  #", "### ", "#   ", "#   ", "#   ", "#   "}},
+        {'E', {"#######", "#      ", "#      ", "###### ", "#      ", "#      ", "#      ", "#######"}},
+        {'N', {"#     #", "##    #", "# #   #", "#  #  #", "#   # #", "#    ##", "#     #", "      #"}},
+        {'R', {"######", "#   # ", "#  #  ", "# #   ", "##    ", "# #   ", "#  #  ", "#   ##"}},
+        {'U', {"#    #", "#    #", "#    #", "#    #", "#    #", "#    #", "#    #", " #### "}},
+    };
+    constexpr i32 R = 6, PAD = 2, H = 8, SCACCHI = 3; // scacchiera: 3 celle per lato
+    std::vector<std::vector<bool>> col; // colonne di celle del testo
+    for (const char* t = testo; *t; ++t) {
+        if (!col.empty()) col.emplace_back(H, false); // una cella fra le lettere
+        if (*t == ' ') { col.emplace_back(H, false); col.emplace_back(H, false); continue; }
+        const Glifo* g = nullptr;
+        for (const Glifo& q : kGlifi) if (q.c == *t) g = &q;
+        if (g) {
+            const i32 w = (i32)std::char_traits<char>::length(g->righe[0]);
+            for (i32 c = 0; c < w; ++c) {
+                std::vector<bool> v(H, false);
+                for (i32 r = 0; r < H; ++r) v[(size_t)r] = g->righe[r][c] == '#';
+                col.push_back(std::move(v));
+            }
+        } else {
+            const i32 codice = (u8)*t;
+            for (i32 c = 1; c < FONT_HUD_W; ++c) { // colonna 0 del font e' vuota
+                std::vector<bool> v(H, false);
+                if (codice >= 32 && codice <= 126)
+                    for (i32 r = 0; r < H; ++r) v[(size_t)r] = ((FONT_HUD[codice - 32][r] >> (5 - c)) & 1) != 0;
+                col.push_back(std::move(v));
+            }
+        }
+    }
+    const i32 nc = (i32)col.size();
+    const i32 x0 = PAD + SCACCHI + 1; // prima colonna del testo
+    const i32 cw = nc + 2 * (PAD + SCACCHI + 1), ch = H + 2 * PAD;
     MascheraGraffito m;
     m.testo = testo;
     m.w = cw * R;
@@ -793,12 +834,9 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
     m.px.assign((size_t)(m.w * m.h), 0);
     m.ombra.assign((size_t)(m.w * m.h), 0);
     auto pieno = [&](i32 c, i32 r) {
-        c -= PAD; r -= PAD;
-        if (c < 0 || r < 0 || r >= FONT_HUD_H || c >= n * FONT_HUD_W) return false;
-        const i32 k = c / FONT_HUD_W, cc = c % FONT_HUD_W;
-        const i32 codice = (u8)testo[k];
-        if (codice < 32 || codice > 126) return false;
-        return ((FONT_HUD[codice - 32][r] >> (5 - cc)) & 1) != 0;
+        c -= x0; r -= PAD;
+        if (c < 0 || r < 0 || r >= H || c >= nc) return false;
+        return (bool)col[(size_t)c][(size_t)r];
     };
     auto dist = [&](f32 x, f32 y) {
         f32 best = 9.0f;
@@ -833,6 +871,19 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
             else if (v == 5) sh = std::clamp((dist(fx - 0.6f, fy - 0.6f) - 0.3f) / 0.75f, 0.0f, 1.0f);
             m.ombra[(size_t)(y * m.w + x)] = (u8)(sh * 16.0f);
         }
+    // Scacchiera condensata ai lati: quadretti da mezza cella, bianco e nero,
+    // alta come la parte centrale delle lettere.
+    for (i32 lato = 0; lato < 2; ++lato) {
+        const i32 cx0 = (lato == 0 ? PAD : x0 + nc + 1) * R;
+        const i32 cy0 = (PAD + 2) * R, cy1 = (PAD + H - 2) * R;
+        for (i32 y = cy0; y < cy1; ++y)
+            for (i32 x = cx0; x < cx0 + SCACCHI * R; ++x) {
+                const size_t i = (size_t)(y * m.w + x);
+                if (m.px[i] == 3 || m.px[i] == 4) continue;
+                m.px[i] = (((x - cx0) / (R / 2) + (y - cy0) / (R / 2)) & 1) ? 6 : 1;
+                m.ombra[i] = 0;
+            }
+    }
     graffiti_.push_back(std::move(m));
     return graffiti_.back();
 }
@@ -855,6 +906,7 @@ u32 Renderer::coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, 
     }
     case 4: return 0xFFFFFFFFu;
     case 5: return b < o ? 0u : 0xFF2A1438u; // l'estrusione svanisce a trama
+    case 6: return 0xFFF2F2F6u;            // quadretto bianco della scacchiera
     default: return 0u;
     }
 }
@@ -938,11 +990,6 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
     const u32 neon = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.3f);
     const f32 rim = std::max(1.0f, 160.0f * pxUnita);
     const f32 pil = std::max(1.0f, 260.0f * pxUnita);
-    // Andrea 08/11 sera: throw-up "OPEN RUN" rosa shock/ciano sulla fronte.
-    const MascheraGraffito& mg = mascheraGraffito("OPEN RUN");
-    const f32 grafY0 = fronteTop + std::max(1.0f, 90.0f * pxY);
-    const f32 grafH = std::max(1.0f, (bocca - rim) - grafY0 - std::max(0.0f, 40.0f * pxY));
-    const f32 grafW = grafH * (f32)mg.w / (f32)mg.h;
     const i32 xa = std::max(0, (i32)(cx - collinaW)), xb = std::min(Framebuffer::WIDTH - 1, (i32)(cx + collinaW));
     for (i32 x = xa; x <= xb; ++x) {
         const f32 d = ((f32)x - cx) / collinaW;
@@ -974,14 +1021,6 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     // Sporco: dal basso sale una fascia piu' scura a trama.
                     if (c != giunto && wv < 700.0f && (f32)BAYER4[y & 3][x & 3] > wv / 700.0f * 16.0f)
                         c = lerpColore(c, 0xFF000000u, 0.25f);
-                }
-                // Throw-up sulla fronte, sopra la bocca: qui si legge di faccia.
-                if (sopraBocca && !bordoBocca && std::abs((f32)x - cx) < grafW * 0.5f &&
-                    (f32)y >= grafY0 && (f32)y < grafY0 + grafH) {
-                    const i32 mx = (i32)(((f32)x - (cx - grafW * 0.5f)) / grafW * (f32)mg.w);
-                    const i32 my = (i32)(((f32)y - grafY0) / grafH * (f32)mg.h);
-                    const u32 g = coloreGraffito(mg, mx, my, x, y, 0xFFFF2FB4u, 0xFF40F0FFu);
-                    if (g) c = g;
                 }
                 fb_.put(x, y, c);
                 continue;
