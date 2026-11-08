@@ -50,9 +50,18 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
 
+### Parole dei test (non sono azioni di gioco)
+
+Prove automatiche di `prova_gate` (`UFFICIO/Officina/build/prova_gate <out> <livello> <modo>`). Ognuna gioca da sola due volte con lo stesso seme e controlla che i due giri siano identici e che il frame resti nei tempi.
+- **smoke**: la prova piu' rapida (500 frame, circa 8 s): il gioco parte, l'auto si muove, niente crash, tempo di frame misurato. Il nome viene dall'elettronica: accendi e guardi se esce fumo. E' il primo controllo dopo ogni modifica.
+- **soak**: come smoke ma lunghissima (30000 frame, circa 8 minuti): cerca problemi che escono solo col tempo.
+- **percorso**, **gara**: un giro intero con guida automatica; tutte le tappe e i bivi arrivano in fondo.
+- **curve**, **sterzo**, **accelerazione**, **crash**, **urto**: controllano una voce del vocabolario qui sopra (le curve si tengono, lo sterzo risponde, l'incidente riparte, la sportellata non ribalta).
+- **screenshot**: salva immagini per guardarle; nessun giudizio automatico.
+
 ## 4. Il vostro raggio d'azione (v4.7)
 
-- **Solo il BLOCCO MIG1** di `RICHIESTA.md`: @grafico cartelloni leggibili (G1); @developer paletti che atterrano sull'erba (D1), sportellata efficace con recupero del rivale in ~5 s (D2), rivali con carattere (D3), nomi dei rivali da culture diverse legati ai temi (D4), audio solo extra (D5); @developer-junior prove e review (J1-J4).
+- **Il BLOCCO MIG1** di `RICHIESTA.md`, poi il **BLOCCO V47** (sezione 6): @grafico cartelloni leggibili (G1); @developer paletti che atterrano sull'erba (D1), sportellata efficace con recupero del rivale in ~5 s (D2), rivali con carattere (D3), nomi dei rivali da culture diverse legati ai temi (D4), audio solo extra (D5); @developer-junior prove e review (J1-J4).
 - Costanti aperte: SOLO `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`, danni/KO/recupero dei rivali, volo dei paletti. Tutto il resto del vocabolario e' in sola lettura.
 - Passi piccoli: dopo ogni passo di codice `ctest` verde e `gate_t1.sh` exit 0. Niente test nuovi per ritocchi grafici.
 
@@ -65,11 +74,9 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 - **Testi a schermo in inglese semplice.** Marchi e nomi sempre inventati.
 - **Cartelle:** si scrive solo dentro `UFFICIO/` e in `motore_nuovo/` quando il blocco lo chiede. Niente cartelle nuove, niente file alla radice, niente documenti nuovi. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
 
-## 6. Prossimi lavori (NON attivi: partono solo con l'ok di Andrea)
+## 6. Dopo MIG1: avanti verso la v4.7, senza aspettare
 
-- **Guida piu' interessante (+20%)**, senza cambiare il vocabolario: solo azioni nuove che si aggiungono (idee da valutare con Andrea).
-- Start/pausa, animazione da fermo, passaggio piu' morbido risultati -> gioco, modalita' dimostrativa.
-- Spiagge, gabbiani e barche a volte troppo affollati: da verificare con Andrea.
+Nessuno aspetta l'ok di Andrea. Finiti i propri passi MIG1, ogni ruolo va avanti nel **BLOCCO V47** di `RICHIESTA.md`: guida piu' interessante con sole azioni nuove (scia, sorpasso al pelo), pausa, fluidita' misurata su tutti i livelli, passaggi morbidi fra le schermate, testi in inglese, controllo di spiagge/gabbiani/barche, quadro grafico di cosa manca. Sempre dentro le sezioni 2-5. Andrea guarda le parti grafiche quando puo': il suo parere arriva come blocco nuovo e non ferma il lavoro.
 
 ## 7. Decisioni aperte
 

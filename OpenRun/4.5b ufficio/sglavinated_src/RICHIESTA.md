@@ -396,9 +396,34 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 <!-- ===== FINE AREA MIG1 ===== -->
 
+<!-- ===== INIZIO AREA V47: lavoro continuo verso la v4.7, dopo i propri passi MIG1 ===== -->
+## BLOCCO V47 — avanti verso la v4.7 (continuo) @developer @developer-junior @grafico @capo
+
+**Come si lavora (Andrea 08/11 notte):** non si aspetta l'ok di Andrea. Finiti i tuoi passi MIG1, vai avanti qui, un passo per turno, sempre dentro il raggio d'azione di ANDREA_REVIEW (base legacy e vocabolario non si toccano: si AGGIUNGE). Andrea guarda le parti grafiche quando puo'; il suo parere arriva come blocco nuovo, non ferma questo. Stesse prove di MIG1 (ctest verde, gate exit 0, replay identico, Pi 400 <= 12 ms).
+
+### @developer
+- **V1 Guida piu' interessante (+20%), solo aggiunte:** scia dietro un'auto (a meno di ~1500 davanti, stessa corsia, per 1 s: piccolo guadagno di velocita'), sorpasso al pelo (un'auto passata a meno di ~350 di lato: breve suono e +0.5 s di tempo). Niente cambi a sterzo, curve, derapata, incidenti. Una voce nuova per azione in `ULTIMO_TURNO.md` (Claude la mette nel vocabolario).
+- **V2 Pausa:** Start in gara = pausa; scritta PAUSE al centro, musica piu' bassa, il gioco riprende con Start. Niente altro sullo schermo.
+- **V3 Fluidita':** misura ms/frame su tutti e 6 i livelli (gate `percorso`), elenca i 3 punti piu' lenti e alleggeriscili senza cambiare la resa.
+- **V4 Risultati -> gioco:** passaggio piu' morbido (dissolvenza di 0.5 s) fra risultati, menu e partenza.
+- **V5 Testi:** tutto quello che si vede a schermo in inglese semplice (fasi, risultati, frasi).
+
+### @developer-junior
+- **VJ1** Dopo ogni passo V: prova dedicata col gate esistente e una riga nel tuo `REVIEW_V47.md` (riscritto).
+- **VJ2** Ponte e riva: screenshot di spiagge, gabbiani e barche in lv_01, lv_04, lv_06; se in qualche punto sono troppo fitti scrivilo con livello e posizione (Andrea decide).
+
+### @grafico
+- **VG1** Dopo G1: quadro di cosa manca (`OGGETTI_LIVELLI.md`, gruppo B) e proposte con anteprima in `UFFICIO/Officina/Test area/grafico/`; mai ritoccare i PNG che Andrea ridisegna (auto, logo, sfondi, oggetti dei livelli).
+
+| Chi tocca adesso | chi ha finito MIG1: @developer V1 · @developer-junior VJ1 · @grafico VG1 |
+|---|---|
+| Stato | [ ] | (Claude 08/11 notte, da Andrea: lavoro continuo, nessuna attesa) |
+
+<!-- ===== FINE AREA V47 ===== -->
+
 ---
 
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: UFFICIO/out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
 Stati (08/11 sera): MIG1 [ ] aperto, PERC1 [x]; tutti gli altri blocchi chiusi [x] o sospesi [-] (H: prova Pi 400 di Andrea; MD0, T5, N, M). Niente lavoro sui blocchi chiusi.
-Tocca a (Claude 08/11 sera, leggere per primo): **AGGIORNAMENTI SERALI 08/11: tutto quello che c'e' e' approvato da Andrea e bloccato (elenco in ANDREA_REVIEW).** PERC1 chiuso [x]. **Si lavora solo sul BLOCCO MIG1** (cartelloni leggibili, paletti, sportellate, rivali con carattere, nomi), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
+Tocca a (Claude 08/11 sera, leggere per primo): **AGGIORNAMENTI SERALI 08/11: tutto quello che c'e' e' approvato da Andrea e bloccato (elenco in ANDREA_REVIEW).** PERC1 chiuso [x]. **Si lavora sul BLOCCO MIG1** (cartelloni leggibili, paletti, sportellate, rivali con carattere, nomi) e, finiti i propri passi, sul **BLOCCO V47** (lavoro continuo verso la v4.7), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
