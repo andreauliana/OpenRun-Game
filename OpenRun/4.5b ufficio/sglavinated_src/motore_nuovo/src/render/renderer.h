@@ -353,7 +353,10 @@ private:
     u32 texGalleria(i32 u, i32 v, f32 buio) const;
     // Graffiti throw-up: maschera a bolle del testo (0 muro, 1 bordo nero,
     // 2 contorno, 3 riempimento, 4 lucido, 5 estrusione), calcolata una volta.
-    struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px; };
+    struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px, ombra; };
+    // Colore del graffito nel punto (mx, my) della maschera, 0 = muro. ombra
+    // 0..16: sfumatura a trama Bayer fra tre toni (Andrea 08/11 sera).
+    u32 coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py, u32 riempi, u32 contorno) const;
     std::vector<MascheraGraffito> graffiti_;
     const MascheraGraffito& mascheraGraffito(const char* testo);
     // Imbocco della galleria visto da fuori: collina del tema con la fronte di

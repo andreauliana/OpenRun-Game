@@ -416,20 +416,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 rosa = 0xFFFF2FB4u, ciano = 0xFF40F0FFu;
         const u32 riempi = variante == 0 ? rosa : variante == 1 ? ciano : lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.2f);
         const u32 contorno = variante == 0 ? ciano : rosa;
-        const u32 riempiScuro = lerpColore(riempi, 0xFF200030u, 0.35f);
         const MascheraGraffito& mg = mascheraGraffito(testo);
         auto graffito = [&](f32 gu, f32 gv, i32 px, i32 py) -> u32 {
             gu += (0.5f - gv) * 0.05f; // un filo di corsivo
             const i32 mx = (i32)(gu * (f32)mg.w), my = (i32)(gv * (f32)mg.h);
-            if (mx < 0 || my < 0 || mx >= mg.w || my >= mg.h) return 0u;
-            switch (mg.px[(size_t)(my * mg.w + mx)]) {
-            case 1: return 0xFF0C0814u;                                  // bordo nero
-            case 2: return contorno;                                     // contorno colore
-            case 3: return (BAYER4[py & 3][px & 3] < (u8)(16.0f * gv)) ? riempiScuro : riempi;
-            case 4: return 0xFFFFFFFFu;                                  // lucido
-            case 5: return 0xFF2A1438u;                                  // estrusione
-            default: return 0u;
-            }
+            return coloreGraffito(mg, mx, my, px, py, riempi, contorno);
         };
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
@@ -779,6 +770,7 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
     m.w = cw * R;
     m.h = ch * R;
     m.px.assign((size_t)(m.w * m.h), 0);
+    m.ombra.assign((size_t)(m.w * m.h), 0);
     auto pieno = [&](i32 c, i32 r) {
         c -= PAD; r -= PAD;
         if (c < 0 || r < 0 || r >= FONT_HUD_H || c >= n * FONT_HUD_W) return false;
@@ -811,9 +803,39 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
             else if (d < 1.05f) v = 1;
             else if (dist(fx - 0.6f, fy - 0.6f) < 1.05f) v = 5;
             m.px[(size_t)(y * m.w + x)] = v;
+            // Sfumatura: piu' scuro in basso e verso il bordo della bolla
+            // (volume), contorno piu' scuro in basso, estrusione che svanisce.
+            const f32 vy = (f32)y / (f32)m.h;
+            f32 sh = 0.0f;
+            if (v == 3) sh = std::clamp(0.8f * vy + 0.7f * (d / 0.45f) - 0.2f, 0.0f, 1.0f);
+            else if (v == 2) sh = std::clamp(vy * 1.1f - 0.2f, 0.0f, 1.0f);
+            else if (v == 5) sh = std::clamp((dist(fx - 0.6f, fy - 0.6f) - 0.3f) / 0.75f, 0.0f, 1.0f);
+            m.ombra[(size_t)(y * m.w + x)] = (u8)(sh * 16.0f);
         }
     graffiti_.push_back(std::move(m));
     return graffiti_.back();
+}
+
+u32 Renderer::coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py, u32 riempi, u32 contorno) const {
+    if (mx < 0 || my < 0 || mx >= m.w || my >= m.h) return 0u;
+    const size_t i = (size_t)(my * m.w + mx);
+    const i32 o = m.ombra[i];
+    const i32 b = BAYER4[py & 3][px & 3];
+    switch (m.px[i]) {
+    case 1: return 0xFF0C0814u;
+    case 2: return b < o / 2 ? lerpColore(contorno, 0xFF100828u, 0.45f) : contorno;
+    case 3: {
+        // Tre toni: luce, pieno, ombra; fra uno e l'altro la trama Bayer.
+        const u32 luce = lerpColore(riempi, 0xFFFFFFFFu, 0.28f);
+        const u32 scuro = lerpColore(riempi, 0xFF200030u, 0.45f);
+        const i32 t = o * 2;               // 0..32
+        if (t < 16) return b < t ? riempi : luce;
+        return b < t - 16 ? scuro : riempi;
+    }
+    case 4: return 0xFFFFFFFFu;
+    case 5: return b < o ? 0u : 0xFF2A1438u; // l'estrusione svanisce a trama
+    default: return 0u;
+    }
 }
 
 u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
@@ -937,16 +959,8 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     (f32)y >= grafY0 && (f32)y < grafY0 + grafH) {
                     const i32 mx = (i32)(((f32)x - (cx - grafW * 0.5f)) / grafW * (f32)mg.w);
                     const i32 my = (i32)(((f32)y - grafY0) / grafH * (f32)mg.h);
-                    if (mx >= 0 && my >= 0 && mx < mg.w && my < mg.h) {
-                        switch (mg.px[(size_t)(my * mg.w + mx)]) {
-                        case 1: c = 0xFF0C0814u; break;
-                        case 2: c = 0xFF40F0FFu; break;
-                        case 3: c = (BAYER4[y & 3][x & 3] < (u8)(16.0f * (f32)my / (f32)mg.h)) ? 0xFFB01C80u : 0xFFFF2FB4u; break;
-                        case 4: c = 0xFFFFFFFFu; break;
-                        case 5: c = 0xFF2A1438u; break;
-                        default: break;
-                        }
-                    }
+                    const u32 g = coloreGraffito(mg, mx, my, x, y, 0xFFFF2FB4u, 0xFF40F0FFu);
+                    if (g) c = g;
                 }
                 fb_.put(x, y, c);
                 continue;
