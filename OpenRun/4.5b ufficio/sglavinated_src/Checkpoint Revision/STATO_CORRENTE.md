@@ -1,6 +1,6 @@
 # Stato corrente — OpenRun 4.6
 
-> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-08 (Turno 1, ora 0 di 12). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [CHIUSO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
+> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-08 (Turno 1, ora 0 di 12 — riscrittura STATI_PROPOSTI e riga di registro; chiusura CP-006 gia' registrata). Fonte dettagliata: [CP-005](./CP-005-tracciati-percorsi.md) [CHIUSO], [CP-006](./CP-006-t1-run-chiusura.md) [CHIUSO], `out/capo/STATI_PROPOSTI.md`, `ANDREA_REVIEW.md`, `UFFICIO/Officina/STATUS_OFFICINA.md`, `out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
 
 | Campo | Stato |
 |---|---|
