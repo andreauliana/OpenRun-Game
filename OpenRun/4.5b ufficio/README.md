@@ -1,19 +1,31 @@
-# OpenRun v4.6 — Alpha Edition
+# OpenRun v4.7 — Alpha Edition (base legacy v4.6 dell'08/11)
 
 Progetto di ricerca grafica e sviluppo tramite AI di andreauliana.com in progresso v4.6 con nuova architettura 'Ufficio' con 4 ruoli.
 
 ```text
-UFFICIO/
-├── Dipartimento Grafico/
-│   ├── TOOLS/
-│   └── Libreria/
-│       └── Shared asset/
-└── Officina/
-    ├── TOOL/
-    ├── ENGINE COMPILER/
-    ├── build/
-    └── Test area/
+sglavinated_src/
+├── ANDREA_REVIEW.md        decisioni di Andrea (precedenza su tutto)
+├── RICHIESTA.md            blocchi di lavoro per gli agenti (oggi: MIG1)
+├── DIREZIONE_ARTISTICA.md  mood, temi dei livelli, sponsor, regole grafiche
+├── REGOLE_AUTO_GIOCATORE.md  guida e auto (bloccate)
+├── AGENTS.md · VISIONE.md · TAPPE.md · SCAMBIO.md
+├── motore_nuovo/           il gioco: codice C++, dati, test
+└── UFFICIO/
+    ├── Dipartimento Grafico/
+    │   ├── TOOLS/
+    │   └── Libreria/
+    │       └── Shared asset/
+    ├── Officina/
+    │   ├── TOOL/
+    │   ├── build/
+    │   └── Test area/
+    ├── bacheche/           diario e riassunto di ogni agente
+    ├── out/                ultimo turno e review di ogni agente
+    ├── Checkpoint Revision/  dossier del capo
+    └── archivio_per_claude/  note vecchie e file fuori posto
 ```
+
+Regola (Andrea 08/11): gli agenti non creano cartelle nuove fuori da `UFFICIO/` e `motore_nuovo/`.
 
 ## Avvio
 ```
@@ -36,8 +48,8 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 - `sglavinated_src/.opencode/agents/` — definizioni ruoli.
 - `sglavinated_src/motore_nuovo/` — motore C++17 (src, dati, docs, test, strumenti_py).
 - `sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` — asset originali in uso.
-- `sglavinated_src/bacheche/<ruolo>/` e `out/<ruolo>/` — bacheche (diario) e consegne di ogni ruolo. Le regole sono in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
-- `sglavinated_src/UFFICIO/Officina/Test area/` — log del gate e screenshot (prima in `out/collaudatore/` e `out/debugger/`).
+- `sglavinated_src/bacheche/<ruolo>/` e `UFFICIO/out/<ruolo>/` — UFFICIO/bacheche (diario) e consegne di ogni ruolo. Le regole sono in `AGENTS.md` e in `.opencode/agents/<ruolo>.md`.
+- `sglavinated_src/UFFICIO/Officina/Test area/` — log del gate e screenshot (prima in `UFFICIO/out/collaudatore/` e `UFFICIO/out/debugger/`).
 
 ## Cosa non e' stato copiato
 - `outrun_src/`: ROM Sega.
@@ -48,7 +60,7 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 1. Il lavoro dei agesnti ruoli precedenti e' in `archivio_v4/bacheche/` e `archivio_v4/out/`.
 2. La panchina modelli e' in `strumenti/panchina.txt`.
 3. Il @capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
-4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `bacheche/`, `out/` e negli script). Il ciclo base fa girare @developer, @developer-junior e @grafico (per escludere il grafico: `AGENTI_ATTIVI="developer developer-junior"`). Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
+4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `UFFICIO/bacheche/`, `UFFICIO/out/` e negli script). Il ciclo base fa girare @developer, @developer-junior e @grafico (per escludere il grafico: `AGENTI_ATTIVI="developer developer-junior"`). Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il @grafico.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 

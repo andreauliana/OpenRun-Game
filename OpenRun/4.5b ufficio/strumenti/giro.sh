@@ -25,7 +25,7 @@ while :; do
     case "$ag" in developer) al="sviluppatore|builder-developer" ;; developer-junior) al="collaudatore|developer-builder-junior|builder-developer-junior" ;; grafico) al=designer ;; *) al="$ag" ;; esac
     awk -v ag="$ag" -v al="$al" '/^## BLOCCO/ { a = ($0 ~ "@" ag "([^a-z-]|$)") || ($0 ~ "@(" al ")([^a-z-]|$)") } /^\| *Stato/ { if (a && ($0 ~ /\[ \]/ || $0 ~ /\[~\]/)) t = 1 } END { exit !t }' RICHIESTA.md || { echo "[giro] $ag: nessun blocco aperto, salto" | tee -a "$LOG"; continue; }
     echo "[giro] avvio $ag $(date +%H:%M)" | tee -a "$LOG"
-    oc --agent "$ag" "Round $r. Sei @$ag. Leggi AGENTS.md (unica fonte di regole) e RICHIESTA_APERTA.md. Lavora SOLO sui blocchi con Stato [ ] o [~] assegnati a te (max 15 minuti), scrivi solo nei percorsi del tuo ruolo. RICHIESTA.md e SCAMBIO.md sono di sola lettura: la voce va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in bacheche/$ag/diario.md e risultati in out/$ag/. Se non hai blocchi assegnati, fermati senza inventare lavoro. Non delegare, non cambiare modello." || echo "[giro] $ag in errore" | tee -a "$LOG"
+    oc --agent "$ag" "Round $r. Sei @$ag. Leggi AGENTS.md (unica fonte di regole) e RICHIESTA_APERTA.md. Lavora SOLO sui blocchi con Stato [ ] o [~] assegnati a te (max 15 minuti), scrivi solo nei percorsi del tuo ruolo. RICHIESTA.md e SCAMBIO.md sono di sola lettura: la voce va in VOCE_SCAMBIO_<n>.md nella tua cartella. Fine turno: UNA riga in UFFICIO/bacheche/$ag/diario.md e risultati in UFFICIO/out/$ag/. Se non hai blocchi assegnati, fermati senza inventare lavoro. Non delegare, non cambiare modello." || echo "[giro] $ag in errore" | tee -a "$LOG"
   done
   sleep 600
 done

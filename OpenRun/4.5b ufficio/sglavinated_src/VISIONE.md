@@ -13,7 +13,7 @@ Gioco di guida arcade, notturno, sci-fi + lofi hip hop + jungle. Simpatico e din
 | Velocita' alta | l'auto si alza (volo breve con ombra) |
 | Tasto B | razzo: parte in prospettiva e colpisce gli altri concorrenti della corsa automatizzati (utilizzano gli stessi modelli di macchine per la prima fase) |
 | Rettilineo / curve / rettilineo / variazione / curve |  scelta | cambio percorso  / curve / rettilineo / variazione / curve  | scelta | percorso  / curve / rettilineo / variazione / curve  | finale a tema  / animazione personaggi a tema - donne premiano, arrivano ufo, confisca dei beni, arresto velocita alta , varie |
-Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale creata o editata da Andrea (vedi assets_originali/DIREZIONE_ARTISTICA.md).
+Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale creata o editata da Andrea (vedi ../../../DIREZIONE_ARTISTICA.md).
 
 ## Vincoli duri (gate)
 | Vincolo | Soglia | Come si misura |

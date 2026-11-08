@@ -13,6 +13,14 @@ Andrea: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco e' ap
 
 Il lavoro nuovo e' SOLO quello del **BLOCCO MIG1** in `RICHIESTA.md`: grafica (cartelloni leggibili) e meccanica di gara (paletti, sportellate, rivali piu' vivi, nomi). Gli agenti non partono da zero: migliorano, non rifanno.
 
+## VERSO LA v4.7 (Andrea 08/11 sera)
+
+La v4.6 dell'08/11 e' la base legacy (sopra). La v4.7 e' fatta di **piccole sistemazioni e ottimizzazioni**, non di rifacimenti:
+- **Ordine:** tutto il lavoro degli agenti sta dentro `UFFICIO/` (bacheche, out, Checkpoint Revision, archivio) e `motore_nuovo/`. **Nessuna cartella nuova** altrove, niente file alla radice di `sglavinated_src/`. Direzione artistica, temi e sponsor: `DIREZIONE_ARTISTICA.md`.
+- **Peso:** il progetto (senza build e log) resta sotto i **20-25 MB**. Niente log, screenshot o copie lasciati nel repo; gli screenshot dei test solo in `UFFICIO/Officina/Test area/` e pochi.
+- **Inglese:** tutto quello che si vede a schermo e' in inglese semplice.
+- **Leggero e portabile:** 60 Hz, budget Pi 400 <= 12 ms/frame, solo C++17 + SDL2 + libxmp-lite (gia' nel repo) + PNG. Niente librerie nuove. Il gioco deve restare compilabile per: macOS (oggi), Raspberry Pi 400 con RetroPie (core libretro `-DBUILD_LIBRETRO=ON` e runner SDL2, script in `pi/`), browser (Emscripten, in futuro), Windows XP/98 (in futuro). Mega Drive: idea lontana, nessun lavoro ora.
+
 ## AUTO DEL GIOCATORE — REGOLE BLOCCATE (Andrea 06/11)
 
 Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, salti, inclinazione, arrivo) sono in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente le modifica: niente cambi a quei valori, a quel codice o ai file in `giocatore_pose/`. Andrea ridisegna l'auto a mano in Pixelorama.
@@ -36,7 +44,7 @@ Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudD
 ## Uso nel ciclo v4.6
 
 - Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
-- Assegnazioni, criteri, prove e review indipendenti restano nel dossier `Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
+- Assegnazioni, criteri, prove e review indipendenti restano nel dossier `UFFICIO/Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
 - Le voci legacy sotto sono contesto storico: il @capo ne conferma la pertinenza nel checkpoint prima di riaprirle.
 - Una risposta registrata non equivale a verifica tecnica o chiusura del checkpoint. L'autore non approva il proprio lavoro.
 
@@ -101,7 +109,7 @@ Azione richiesta a @developer (ANDREA_REVIEW T1-Q3): rivedere generazione/parame
 Domanda: confermare soglie giro guidato (rettilineo ~>=35-40%, curva max coerente 0.6-1.0, riferimento lv_02_atomico rettilineo 40% / curva max 0.86) e che builder-developer proceda col tuning un parametro alla volta con `sh tools/gate_t1.sh soak`?
 Opzioni: A) sì, allinea tutti i livelli al profilo guidabile lv_02_atomico  B) no, ridefinire soglie e parametri
 Raccomandazione: A
-RISPOSTA DI ANDREA (2026-10-19): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per @developer. Serve una logica di tracciati consecutivi per la gara. Compito operativo: blocco R1 in RICHIESTA.md (tratti con tema, tracciati per percorsi, gate che indica il tratto del percorse da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il @capo controlla i due dipartimenti e aggiorna le revisioni in `Checkpoint Revision/`.
+RISPOSTA DI ANDREA (2026-10-19): la dinamica dei percorsi va ottimizzata tra i livelli e tra i tratti (la curvatura non era ottimale) e segnalata nei test per @developer. Serve una logica di tracciati consecutivi per la gara. Compito operativo: blocco R1 in RICHIESTA.md (tratti con tema, tracciati per percorsi, gate che indica il tratto del percorse da correggere). Ruoli confermati: il @grafico verifica le risorse e ne crea di nuove; il @capo controlla i due dipartimenti e aggiorna le revisioni in `UFFICIO/Checkpoint Revision/`.
 ORDINE DEI TEST (Andrea, 2026-10-19): 1) Andrea compila e prova su macOS; 2) solo quando su Mac il flusso di gioco e' buono (R1 + R2), prova su Raspberry Pi 400/RetroPie. Finche' non c'e' l'ok di Andrea su Mac, nessun lavoro dedicato a Raspberry Pi 400/RetroPie oltre a non rompere la build Linux. Note per allora: Raspberry Pi 400/RetroPie usa il core libretro (`BUILD_LIBRETRO=ON`), che oggi non compila perche' manca `libretro.h`; in alternativa si avvia il runner SDL2 da EmulationStation come porta. Guida: `guide/BUILD_E_AVVIO_RASPBERRY_PI.md` nella cartella del progetto.
 
 ## Feedback Andrea 29/10 (prova della PR #44) — regole per tutti
@@ -209,7 +217,7 @@ Perfezionamento e implementazione dei personaggi animati sono rinviati alla fase
 ## D17 | Stati e deleghe Turn 1 (ora 1 di 12) | capo | [CHIUSA 2026-10-23 da Andrea]
 
 Domanda:
-Confermare stati proposti in `out/capo/STATI_PROPOSTI.md` per Tappa 1 / Gate T1-RUN e deleghe 4.6 (developer, developer-junior, designer = @grafico; consegne `out/developer/`, `out/developer-junior/`, `out/designer/`)?
+Confermare stati proposti in `UFFICIO/out/capo/STATI_PROPOSTI.md` per Tappa 1 / Gate T1-RUN e deleghe 4.6 (developer, developer-junior, designer = @grafico; consegne `UFFICIO/out/developer/`, `UFFICIO/out/developer-junior/`, `UFFICIO/out/designer/`)?
 Opzioni: A) sì, procedo con questi stati e DEFAULT  B) no, revisionare stati prima di proseguire
 Raccomandazione: A
 RISPOSTA DI ANDREA: A
@@ -326,6 +334,6 @@ Confermare chiusura di T1-RUN a [x] ora che il gate e' verde (`sh UFFICIO/Offici
 Opzioni: A) sì, T1-RUN [x] proposto e PRONTO PER ANDREA (avvio R2 subordinato a decisione formale; nessun lavoro dedicato Pi 400/RetroPie prima di ok Mac)  B) no, T1-RUN resta [~] in attesa di ulteriore prova/decisione di Andrea.
 Impatto se cambi idea: T1-RUN resta [~], R2 non parte, si attende nuova prova di Andrea prima del lavoro dedicato a Pi 400/RetroPie.
 RISPOSTA DI ANDREA: B
-**NOTA DI ANDREA 31/10 (quota open):** il "49.7% sotto soglia 50%" era un falso allarme: contava gli screenshot `.ppm` e i log dei test in `out/`. Da oggi `quota_open.py` esclude `out/`. Nessuno deve correggere manifest o licenze per questo: non scrivetelo piu' nei RIASSUNTO e non passatelo come CORREGGI. Continuate con i blocchi aperti.
+**NOTA DI ANDREA 31/10 (quota open):** il "49.7% sotto soglia 50%" era un falso allarme: contava gli screenshot `.ppm` e i log dei test in `UFFICIO/out/`. Da oggi `quota_open.py` esclude `UFFICIO/out/`. Nessuno deve correggere manifest o licenze per questo: non scrivetelo piu' nei RIASSUNTO e non passatelo come CORREGGI. Continuate con i blocchi aperti.
 
 **NOTA DI CLAUDE 02/11 (vale dal merge di Andrea):** (1) `gate_t1.sh` ora dura ~2-4 min invece di ~13: lanciatelo con timeout bash 900000, i "timeout/permessi negati" del 31/10 e 02/11 erano il gate troppo lungo. (2) Il campo `segmenti` di livello.json e' ignorato quando c'e' `tracciato`: le modifiche del 02/11 ai segmenti sono state annullate perche' non cambiavano niente; l'exit 13 del 31/10 era lv_01_neon al 70% di rettilineo, sul limite: soglia portata a 0.75. (3) La tolleranza urto 1.15 in `collisioneRivaleVicino` e' stata tolta: nessun passo la chiedeva e rende i rivali piu' "appiccicosi". (4) Gianni, Gesu' e UFO NON esistono ancora come PNG (c'erano solo manifest e un finto `test_simple.png`): RIV e FIN non sono completi lato grafica.

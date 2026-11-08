@@ -9,10 +9,10 @@ permission:
     "UFFICIO/Officina/**" : allow
   edit:
     "*": deny
-    "bacheche/developer/**": allow
+    "UFFICIO/bacheche/developer/**": allow
     "PER_CLAUDE.md": allow
-    "out/developer/ULTIMO_TURNO.md": allow
-    "out/developer/REVIEW_*.md": allow
+    "UFFICIO/out/developer/ULTIMO_TURNO.md": allow
+    "UFFICIO/out/developer/REVIEW_*.md": allow
     "UFFICIO/Officina/STATUS_OFFICINA.md": allow
     "UFFICIO/Officina/ENGINE COMPILER/**": allow
     "UFFICIO/Officina/TOOL/**": allow
@@ -86,4 +86,4 @@ Sei il @developer. Implementi codice in C++17, integrazione sviluppo, e configur
 - Se `gate_t1.sh` esce con un codice, cerca la riga FALLITO in `UFFICIO/Officina/Test area/gate_t1.log` prima di cambiare qualcosa: exit 13 = percorso fuori soglia (il log dice quale pista e quale numero).
 - Non cambiare costanti di gameplay (urti, velocita', sterzo, tolleranze) se un passo di RICHIESTA.md non lo chiede esplicitamente.
 
-- DOCUMENTI (Andrea 05/11): non creare documenti nuovi. Gli unici file di testo che scrivi sono: una riga in `bacheche/<ruolo>/diario.md`, `bacheche/<ruolo>/RIASSUNTO.md` (riscritto, max 12 righe), `out/developer/ULTIMO_TURNO.md` (riscritto, max 15 righe) e, solo se il blocco chiede una review, `out/developer/REVIEW_<BLOCCO>.md`. Il lavoro vero e' codice, test, dati o PNG: un turno che produce solo testo e' un turno perso. Le direzioni sono SOLO nella riga "Tocca a" del RIEPILOGO CORRENTE di `RICHIESTA.md`: fai il primo passo tuo non fatto, uno per turno.
+- DOCUMENTI (Andrea 05/11): non creare documenti nuovi. Gli unici file di testo che scrivi sono: una riga in `UFFICIO/bacheche/<ruolo>/diario.md`, `UFFICIO/bacheche/<ruolo>/RIASSUNTO.md` (riscritto, max 12 righe), `UFFICIO/out/developer/ULTIMO_TURNO.md` (riscritto, max 15 righe) e, solo se il blocco chiede una review, `UFFICIO/out/developer/REVIEW_<BLOCCO>.md`. Il lavoro vero e' codice, test, dati o PNG: un turno che produce solo testo e' un turno perso. Le direzioni sono SOLO nella riga "Tocca a" del RIEPILOGO CORRENTE di `RICHIESTA.md`: fai il primo passo tuo non fatto, uno per turno.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Quota open source: % di byte (codice+asset+dati) con licenza aperta dichiarata. Soglia: 50%. out/ escluso (screenshot e log dei test sono temporanei, non parte del gioco). Uso: python3 quota_open.py [soglia]"""
+"""Quota open source: % di byte (codice+asset+dati) con licenza aperta dichiarata. Soglia: 50%. UFFICIO/out/ escluso (screenshot e log dei test sono temporanei, non parte del gioco). Uso: python3 quota_open.py [soglia]"""
 import json, pathlib, sys
 OPEN = {"MIT","BSD-2-Clause","BSD-3-Clause","Apache-2.0","GPL-3.0","GPL-3.0-or-later","LGPL-3.0","CC0-1.0","CC-BY-4.0","CC-BY-3.0","CC-BY-SA-4.0","OFL-1.1","Zlib"}
 root = pathlib.Path(__file__).resolve().parent.parent          # motore_nuovo

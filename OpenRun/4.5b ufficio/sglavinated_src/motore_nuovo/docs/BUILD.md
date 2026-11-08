@@ -179,9 +179,9 @@ Passo per passo:
 ```bash
 cmake -S motore_nuovo -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --target prova_gate
-./build/prova_gate out/debugger                      # smoke 10 s (500 frame) + replay 2x
-./build/prova_gate out/debugger lv_02_atomico        # altro livello
-./build/prova_gate out/debugger lv_01_neon soak      # accettazione: 30000 frame = 10 min simulati
+./build/prova_gate UFFICIO/out/debugger                      # smoke 10 s (500 frame) + replay 2x
+./build/prova_gate UFFICIO/out/debugger lv_02_atomico        # altro livello
+./build/prova_gate UFFICIO/out/debugger lv_01_neon soak      # accettazione: 30000 frame = 10 min simulati
 echo $?
 ```
 
@@ -193,7 +193,7 @@ echo $?
 | 3 | troppo lento |
 | 4 | cartella di lavoro errata |
 
-Output: `out/debugger/prova_gate.log` (frame velocita X Z offroad hash), `prova_gate_partenza.ppm`,
+Output: `UFFICIO/out/debugger/prova_gate.log` (frame velocita X Z offroad hash), `prova_gate_partenza.ppm`,
 `prova_gate_curva.ppm`, `prova_gate_fuoristrada.ppm` (PPM P6, apribili con Anteprima/GIMP).
 
 Esito 17 ott (cloud Linux, g++/cmake): lv_01/02/03 OK, replay 2x identico, 0,05 ms/frame, soak 30000 frame OK,

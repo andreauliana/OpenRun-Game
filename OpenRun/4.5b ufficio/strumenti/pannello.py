@@ -76,7 +76,9 @@ def recenti(n=16, finestra=7200, bin_s=600):
     lista.sort(reverse=True)
     out = []
     for mt, rel in lista[:n]:
-        parti = rel.split(os.sep); ag = parti[1] if parts_ok(parti) else ("grafico" if parti[:2] == ["UFFICIO", "Dipartimento Grafico"] else "")
+        parti = rel.split(os.sep)
+        if parti[:1] == ["UFFICIO"] and parti[1:2] in (["bacheche"], ["out"]): parti = parti[1:]
+        ag = parti[1] if parts_ok(parti) else ("grafico" if parti[:2] == ["UFFICIO", "Dipartimento Grafico"] else "")
         out.append({"rel": rel, "sec": int(adesso - mt), "agente": ag})
     return out, bins[::-1]
 
@@ -91,12 +93,12 @@ def versione():
     v = leggi(".versione").strip()
     fb = leggi("ANDREA_REVIEW.md")
     m = re.search(r"Tappa attiva:\s*(\S+)", fb)
-    d = os.path.join(S, "out", "review")
+    d = os.path.join(S, "UFFICIO", "out", "review")
     rv = sorted(os.listdir(d), key=lambda f: int(re.sub(r"\D", "", f) or 0)) if os.path.isdir(d) else []
     return {"versione": "v" + v if v else "", "tappa": m.group(1) if m else "?", "ultima_review": rv[-1] if rv else ""}
 
 DOCS = {"richiesta": "sglavinated_src/RICHIESTA_APERTA.md", "feedback": "sglavinated_src/ANDREA_REVIEW.md",
-        "stato": "sglavinated_src/Checkpoint Revision/STATO_CORRENTE.md",
+        "stato": "sglavinated_src/UFFICIO/Checkpoint Revision/STATO_CORRENTE.md",
         "officina": "sglavinated_src/UFFICIO/Officina/STATUS_OFFICINA.md", "tappe": "sglavinated_src/TAPPE.md"}
 def documento(k):
     p = os.path.join(BASE, DOCS.get(k, DOCS["richiesta"]))
@@ -117,17 +119,17 @@ def stato():
     adesso = time.time(); pr = processi(); inc = {x["nome"]: x["sec"] for x in pr["in_corso"]}
     ag = []; squadra = attivi()
     for a in AGENTI:
-        n1, t1 = conta(f"bacheche/{a}"); n2, t2 = conta(f"out/{a}")
+        n1, t1 = conta(f"UFFICIO/bacheche/{a}"); n2, t2 = conta(f"UFFICIO/out/{a}")
         try: t3 = os.path.getmtime(os.path.join(S, "log_agenti", a + ".log"))
         except OSError: t3 = 0
         t = max(t1, t2, t3)
-        mem = leggi(f"bacheche/{a}/RIASSUNTO.md")
-        try: tm = int(adesso - os.path.getmtime(os.path.join(S, "bacheche", a, "RIASSUNTO.md")))
+        mem = leggi(f"UFFICIO/bacheche/{a}/RIASSUNTO.md")
+        try: tm = int(adesso - os.path.getmtime(os.path.join(S, "UFFICIO/bacheche", a, "RIASSUNTO.md")))
         except OSError: tm = None
         ag.append({"nome": a, "file": n1 + n2, "modello": modello(a), "in_corso": a in inc, "sec_corso": inc.get(a), "sec_ultimo": int(adesso - t) if t else None,
                    "attivo": a in squadra, "ruolo": "squadra" if a in squadra else ("coordina" if a == "capo" else "spento"),
                    "memoria": "\n".join(mem.splitlines()[:12]), "memoria_sec": tm})
-    nout, _ = conta("out"); nlib, _ = conta(os.path.join("UFFICIO", "Dipartimento Grafico", "Libreria"))
+    nout, _ = conta("UFFICIO/out"); nlib, _ = conta(os.path.join("UFFICIO", "Dipartimento Grafico", "Libreria"))
     log_pulito = ANSI.sub("", leggi("notte.log", 400)); righe = log_pulito.splitlines()
     ciclo = [data_pannello(l) for l in righe if l.startswith("[ciclo]")][-14:]
     try: eta = int(adesso - os.path.getmtime(os.path.join(S, "notte.log")))
