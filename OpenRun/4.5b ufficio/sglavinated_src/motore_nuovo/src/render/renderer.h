@@ -362,7 +362,7 @@ private:
     // Imbocco della galleria visto da fuori: collina del tema con la fronte di
     // cemento, la bocca resta aperta sull'interno.
     void drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto);
-    void drawLuceGalleria(i32 cx, i32 cy, i32 w);
+    void drawLuceGalleria(i32 cx, i32 cy, i32 w, bool accesa = true);
     static constexpr f32 TORRE_LARGHEZZA = 240.0f;  // unita' mondo
     static constexpr f32 TORRE_DISTANZA = 1.25f;    // centro torre / mezza carreggiata
     static constexpr f32 TORRE_SOPRA = 3200.0f;     // altezza della torre sopra la strada

@@ -385,8 +385,26 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // riquadro ogni segmento), v sull'altezza delle pareti / larghezza del
         // soffitto. Piu' lontano = piu' buio: in fondo il tubo sfuma nel nero.
         // Pozze di luce sotto ogni plafoniera (ogni 10 segmenti): ritmo e velocita'.
-        const i32 dl = std::min(cur.index % 10, 10 - cur.index % 10);
-        const f32 pozza = 0.28f * std::max(0.0f, 1.0f - (f32)dl / 4.0f);
+        // Andrea 08/11 sera: zona un po' decadente. Una piccola parte di neon e
+        // plafoniere e' rotta (spenta) o sfarfalla; lo stato dipende dal pezzo
+        // (sempre lo stesso a ogni passaggio), lo sfarfallio dal tempo.
+        auto statoLuce = [&](i32 pezzo, u32 seme) -> bool {
+            u32 h = (u32)pezzo * 2654435761u ^ seme;
+            h ^= h >> 13; h *= 0x5bd1e995u; h ^= h >> 15;
+            const u32 r = h % 100u;
+            if (r < 9u) return false;                       // rotta
+            if (r < 19u) {                                  // difettosa: sfarfalla
+                u32 f = (u32)(tempoS_ * 18.0f) * 0x9E3779B9u ^ h;
+                f ^= f >> 16;
+                return (f % 5u) != 0u && ((f >> 4) % 7u) != 0u;
+            }
+            return true;
+        };
+        // Plafoniere ogni 10 segmenti, un lato per volta (meno luci, piu' realistico).
+        const i32 lampada = ((cur.index + 5) / 10) * 10;
+        const bool lampadaAccesa = statoLuce(lampada, 0xA11CE5u);
+        const i32 dl = std::abs(cur.index - lampada);
+        const f32 pozza = lampadaAccesa ? 0.24f * std::max(0.0f, 1.0f - (f32)dl / 4.0f) : 0.0f;
         // Verso l'uscita il giorno entra nel tubo: le ultime sezioni si schiariscono.
         auto uscita = [&](f32 z) {
             return dentroGalleria_ ? 0.45f * std::max(0.0f, 1.0f - (clipGalleriaZ_ - z) / 9000.0f) : 0.0f;
@@ -397,7 +415,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // Neon (Andrea 08/11 sera): un tubo orizzontale per lato in alto sulla
         // parete, a tratti (3 segmenti accesi, 1 spento) cosi' scorre veloce;
         // a sinistra il colore della tappa, a destra un ciano freddo.
-        const bool neonAcceso = (cur.index % 4) != 3;
+        const bool tratto = (cur.index % 4) != 3;          // tubi da 3 segmenti
+        const bool neonSxOn = statoLuce(cur.index / 4, 0x51u), neonDxOn = statoLuce(cur.index / 4, 0xD7u);
+        const u32 tuboSpento = 0xFF3A3A44u;
         const u32 neonSx = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.25f);
         const u32 neonDx = 0xFF60F0FFu;
         const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
@@ -432,13 +452,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
                 const f32 buio = buioN + (buioF - buioN) * t;
                 const bool sinistra = xBordoF > xBordoN;
-                if (neonAcceso && std::abs(v - 0.16f) < spessN) {
-                    fb_.put(x, y, sinistra ? neonSx : neonDx);
+                const bool neonOn = sinistra ? neonSxOn : neonDxOn;
+                if (tratto && std::abs(v - 0.16f) < spessN) {
+                    fb_.put(x, y, neonOn ? (sinistra ? neonSx : neonDx) : tuboSpento);
                     continue;
                 }
                 u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
                 // Alone del neon sul cemento: mezza luce a trama sotto e sopra il tubo.
-                if (neonAcceso && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
+                if (tratto && neonOn && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
                     c = lerpColore(c, sinistra ? neonSx : neonDx, 0.35f);
                 if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.26f && v < 0.86f) {
                     // Sul muro di destra chi legge ha davanti il fondo alla sua
@@ -477,8 +498,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         if (cur.index % 10 == 0 && ceilN >= 0.0f) {
             const i32 w = std::clamp((i32)(pxNear * 520.0f), 2, 30);
             const i32 ly = (i32)ceilN + std::max(1, w / 8);
-            drawLuceGalleria((i32)(xLn + (f32)w * 0.7f), ly, w);
-            drawLuceGalleria((i32)(xRn - (f32)w * 0.7f), ly, w);
+            const bool dx = ((cur.index / 10) & 1) != 0;
+            drawLuceGalleria(dx ? (i32)(xRn - (f32)w * 0.7f) : (i32)(xLn + (f32)w * 0.7f), ly, w, lampadaAccesa);
         }
         if ((cur.index & 1) == 0 && cur.screenY < Framebuffer::HEIGHT) {
             const i32 ys = (i32)(cur.screenY - 220.0f * cur.scale * 112.0f);
@@ -861,11 +882,11 @@ u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
     return lerpColore(c, 0xFF000000u, (f32)(base + (su ? 1 : 0)) / 6.0f);
 }
 
-void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w) {
+void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w, bool accesa) {
     const Sprite* s = oggettoSprite(galleriaLuce_);
     if (!s || s->width <= 0) {
         const i32 r = std::max(1, w / 6);
-        drawLampada(cx, cy + r, r, 0xFFFFF0C0u, true);
+        drawLampada(cx, cy + r, r, accesa ? 0xFFFFF0C0u : 0xFF505058u, accesa);
         return;
     }
     const i32 h = std::max(1, w * s->height / s->width);
@@ -879,7 +900,7 @@ void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w) {
             if (px < 0 || px >= Framebuffer::WIDTH) continue;
             const u8 idx = s->pixels[(size_t)(ty * s->width + x * s->width / w)];
             const u32 c = !s->palette.empty() ? s->palette[idx % s->palette.size()] : (idx ? pal_[s->paletteBase + idx] : 0u);
-            if ((c >> 24) != 0) fb_.put(px, py, c);
+            if ((c >> 24) != 0) fb_.put(px, py, accesa ? c : lerpColore(c, 0xFF101018u, 0.6f)); // rotta: vetro spento
         }
     }
 }
