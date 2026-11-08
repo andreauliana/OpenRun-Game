@@ -347,6 +347,10 @@ void leggiCampiTratto(const JsonObject& o, Road::SegmentDesc& d) {
     if (jsonGet(o, "acqua_quota", aq) && jsonIsNumber(aq)) d.acquaQuota = std::clamp((f32)jsonAsNumber(aq), -1.0f, 1.0f);
     JsonValue sv;
     if (jsonGet(o, "sospeso", sv) && jsonIsNumber(sv)) d.sospeso = (f32)jsonAsNumber(sv);
+    // PERC1 D2: densita' di traffico del tratto (moltiplicatore, default 1.0).
+    JsonValue tv;
+    if (jsonGet(o, "traffico", tv) && jsonIsNumber(tv))
+        d.traffico = std::clamp((f32)jsonAsNumber(tv), 0.2f, 2.0f);
 }
 
 // nomi (facoltativo): il nome di ogni tratto letto, nello stesso ordine di out
@@ -1319,7 +1323,10 @@ void Game::inizializzaTraffico() {
     for (Veicolo& v : traffico_) {
         piazzaVeicolo(v, z);
         if (!v.attivo) break;
-        z = v.z + TRAFFICO_DISTANZA_MIN + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR);
+        // PERC1 D2: dove il tratto ha `traffico` > 1 le auto stanno piu' vicine
+        // (distanza divisa per il moltiplicatore del segmento del veicolo).
+        z = v.z + (TRAFFICO_DISTANZA_MIN + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR)) /
+                      road_.trafficoAt(v.z);
     }
 }
 
@@ -1347,11 +1354,13 @@ void Game::aggiornaTraffico(f32 dt) {
     const f32 vista = (f32)((Road::DRAW_DIST + 2) * Road::SEG_LEN);
     f32 zLibero = road_.playerZ + vista;
     for (const Veicolo& v : traffico_)
-        if (v.attivo) zLibero = std::max(zLibero, v.z + TRAFFICO_DISTANZA_MIN);
+        if (v.attivo) zLibero = std::max(zLibero, v.z + TRAFFICO_DISTANZA_MIN / road_.trafficoAt(v.z));
     for (Veicolo& v : traffico_) {
         if (!v.attivo || v.z < road_.playerZ - TRAFFICO_DIETRO) {
-            piazzaVeicolo(v, zLibero + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR));
-            if (v.attivo) zLibero = v.z + TRAFFICO_DISTANZA_MIN;
+            // PERC1 D2: anche il respawn rispetta la densita' del tratto.
+            piazzaVeicolo(v, zLibero + (f32)rndTraffico_.next(TRAFFICO_DISTANZA_VAR) /
+                                       road_.trafficoAt(zLibero));
+            if (v.attivo) zLibero = v.z + TRAFFICO_DISTANZA_MIN / road_.trafficoAt(v.z);
             continue;
         }
         f32 passo = v.passo;

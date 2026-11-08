@@ -98,6 +98,9 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.hill = desc.collina;
             seg.larghezza = k <= rl ? larghezzaPrima + (larghezzaDentro - larghezzaPrima) * raccordo((f32)k / (f32)rl)
                                     : larghezzaDentro;
+            // Densita' di traffico del tratto (PERC1 D2): non raccordata, e' un
+            // moltiplicatore di distanza usato a veicolo in piazza.
+            seg.traffico = desc.traffico > 0.1f ? desc.traffico : 1.0f;
             seg.acqua = desc.acqua > 0.5f;
             seg.sospeso = seg.acqua || desc.sospeso > 0.5f;
             seg.colorRoad = colors[indice % 2];
@@ -305,6 +308,11 @@ bool Road::sospesoAt(f32 z) const {
 f32 Road::larghezzaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 ? segs_[i].larghezza : 1.0f;
+}
+
+f32 Road::trafficoAt(f32 z) const {
+    const i32 i = indiceSegmento(z);
+    return i >= 0 ? segs_[i].traffico : 1.0f;
 }
 
 Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {

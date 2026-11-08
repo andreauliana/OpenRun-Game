@@ -77,6 +77,10 @@ public:
         // strada: salendo e scendendo dal ponte si vede il vuoto sotto, non un
         // prato che si alza fino alla carreggiata (Andrea 06/11).
         f32 sospeso = 0.0f;
+        // Campo `traffico` (PERC1 D2): moltiplicatore della densita' di traffico
+        // del tratto (1.0 = normale, 1.6 = piu' auto, 0.5 = meno). La distanza fra
+        // un veicolo e il successivo si divide per questo valore. Default 1.0.
+        f32 traffico = 1.0f;
     };
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.
@@ -103,6 +107,8 @@ public:
     f32 quotaAt(f32 z) const;
     // Larghezza della carreggiata (moltiplicatore di ROAD_WIDTH) alla posizione z.
     f32 larghezzaAt(f32 z) const;
+    // Moltiplicatore della densita' di traffico (1.0 = normale) alla posizione z.
+    f32 trafficoAt(f32 z) const;
     // true se z e' su un ponte (segmento con acqua ai lati).
     bool acquaAt(f32 z) const;
     // true se z e' su un tratto sospeso (ponte o sue rampe): niente oggetti ai lati.

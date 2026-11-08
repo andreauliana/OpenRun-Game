@@ -48,3 +48,12 @@ PERCORSI SCRITTURA:
 - Nessun cambiamento agli stati [x]/[~]. Nessun lavoro dedicato a Pi 400/RetroPie prima di ok Mac formale.
 
 STATO CORRENTE: APERTO (CP-006). Rilievo gate T1 registrato in CP-006 e REGISTRO_REVISIONI; correzione assegnata a @developer; nuova review indipendente richiesta dopo correzione. Nessun blocco richiede PER_CLAUDE.md. Si prosegue autonomamente.
+
+## Evento 2026-11-08 (Turno 1, ora 0 di 12) — CHIUSURA CP-006
+
+- Fonte decisionale: `ANDREA_REVIEW.md` D19 aggiornato 08/11: **CHIUSA** — "Andrea ha chiesto a Claude di sbloccare gli agenti (08/11): il gioco gira sul Mac di Andrea (prove del 06 e 07/11) e il gate T1 e' TUTTO OK (08/11). T1-RUN [x]. Il @capo chiude CP-006. Non riaprirla."
+- Prova gate: `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 (08/11), `GATE T1: TUTTO OK`, 6/6 piste `GATE PERCORSO OK`, accelerazione/ribaltamento/sterzo/curve continue/gara OK, frequenza 60 Hz e 50 Hz OK (replay IDENTICO diff=0.00%), ms/frame medio 1.079–1.758 max 17.003 (limite 20), screenshot P1 `personaggio+fumetto frame 446` > 0 (era -1). Log: `UFFICIO/Officina/Test area/gate_t1.log`.
+- Review indipendenti: developer-junior → developer su `gate_t1.sh` POSITIVA (`out/developer-junior/REVIEW_GATE_T1_P1_2026-11-08.md`); developer → developer-junior su `prova_gate.cpp:969` POSITIVA. Autore ≠ revisore su entrambe le correzioni.
+- Esito: T1-RUN → **[x]**; CP-006 → **CHIUSO** su mandato di Andrea (D19 chiusa, regola 8: decisione registrata in `ANDREA_REVIEW.md`). Non riaprire.
+- Condizioni rimaste valide: nessun lavoro dedicato a Pi 400/RetroPie prima della prova di Andrea (ordine test T1-Q5/D12/D14 = A, prima Mac poi Pi 400); H [~] resta di Andrea. R2/RIV/PIST1/FIN non subordinati a CP-006 (Andrea 27/10).
+- Tappa attiva dopo chiusura: **BLOCCO PERC1** (TAPPE.md 08/11 "rifinitura del percorso"). @developer D1 · @developer-junior J1 · @grafico G1 · @capo riga di registro.

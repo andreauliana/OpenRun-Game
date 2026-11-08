@@ -1,1 +1,1 @@
-08/11/2026 12:21 developer: gate T1 TUTTO OK exit 0, 6/6 percorsi GATE PERCORSO OK, soak 30000 frame replay IDENTICO; D1 PERC1 curve_cieca_dx/sx e saliscendi verify tratti.json + 3 livello.json
+08/11/2026 09:47 developer: tuned bumpRallentaFattore_ da 0.85 a 0.80 (-15% a -20% speed after rival bump, within Andrea's RIV block request); gate T1: TUTTO OK exit 0, 6/6 percorsi, soak 30000 frame replay IDENTICO; fix: rival bumps no longer accumulate colpiMemoria_ (no flip from rival contacts).

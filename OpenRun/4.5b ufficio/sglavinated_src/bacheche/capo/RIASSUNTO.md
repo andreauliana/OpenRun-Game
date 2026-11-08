@@ -1,9 +1,10 @@
 # RIEPILOGO — capo
 Riscritto da Claude 08/11 (Turno 1, ora 0 di 12). Unico lavoro attivo: BLOCCO PERC1 di RICHIESTA.md, un passo per turno, senza aspettare nessuno.
-- Tappa attiva: 1 (Gate T1-RUN). T1-RUN [x] gate VERDE verificato su disco 08/11 — `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, `GATE T1: TUTTO OK`, 6/6 piste GATE PERCORSO OK, replay 2x IDENTICO, ms/frame medio 1.079-1.758 max 17.003 (<=20), screenshot P1 personaggio+fumetto frame 446 > 0. Review indipendente registrata (autore != revisore).
-- D19 RISPOSTA DI ANDREA: B -> T1-RUN [~], CP-006 APERTO in attesa decisione Andrea runner Mac (prima Mac, poi Pi 400; DEFAULT non applicabile).
-- PERC1 [~] aperto: @developer D1 (tratti.json curva_cieca_dx/sx, saliscendi lv_02/lv_03/lv_05), @developer-junior J1 (gate tratti), @grafico G1 (freccia_cresta_dx/sx). Ogni passo: ctest 27/27 verde + gate_t1.sh exit 0.
-- P1 [x] · G1-catalogo [x] · FORK1 [x] · DECO1 [~] · F60 [x] gate/[~] review · R2 [~] · RIV [~] · PIST1 [ ] · FIN [ ] · H [~].
-- HUD bloccato. Parapetti sul ponte annullati per sempre. Nessuna domanda nuova ad Andrea.
-- Ogni turno: una riga di registro e STATI_PROPOSTI.md allineato a PERC1 (passi D1-D5, J1-J4, G1-G3).
+- **CP-006 CHIUSO 08/11 su mandato di Andrea** (D19 aggiornata e CHIUSA in ANDREA_REVIEW.md: "T1-RUN [x]. Il @capo chiude CP-006. Non riaprirla"). **T1-RUN [x]**: gate exit 0 (log `UFFICIO/Officina/Test area/gate_t1.log`, 6/6 piste, replay 2x IDENTICO, ms/frame max 17.003 <= 20) + review indipendenti positive registrate.
+- Tappa 1 chiusa col suo gate; tappa attiva: PERC1 (rifinitura del percorso).
+- PERC1 [~]: @developer D1 (tratti.json curva_cieca_dx/sx, saliscendi lv_02/lv_03/lv_05), @developer-junior J1 (gate tratti: >=7 tipi/livello, nessun tipo ripetuto di fila), @grafico G1 (freccia_cresta_dx/sx.png). Ogni passo: ctest 27/27 verde + gate_t1.sh exit 0; J4 review dopo ogni passo D.
+- Stati: P1 [x] · G1-catalogo [x] (CP-002 APERTO, review indipendente da assegnare) · FORK1 [x] · T1-RUN [x] · DECO1 [~] · F60 [~] review · R2 [~] · RIV [~] · PIST1 [ ] (P3 annullato per sempre) · FIN [ ] · H [~] (Andrea, prima Mac poi Pi 400: D12/D14 = A) · MD0/T5/N/M [-].
+- HUD bloccato (08/11); auto del giocatore bloccata (`REGOLE_AUTO_GIOCATORE.md`); parapetti ponte annullati per sempre (P3).
+- Fatto questo turno: dossier CP-006 aggiornato con chiusura, REGISTRO_REVISIONI append (CP-006 CHIUSO), STATO_CORRENTE.md riscritto, STATI_PROPOSTI.md riscritto.
+- Nessuna domanda aperta ad Andrea; per PERC1 "niente domande, si procede".
 - FINITO non creabile (non tutti [x]). Nessun PER_CLAUDE.md.

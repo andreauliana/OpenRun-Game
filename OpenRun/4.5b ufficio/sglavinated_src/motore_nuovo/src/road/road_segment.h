@@ -19,6 +19,9 @@ struct RoadSegment {
     f32 curve = 0.0f;        // curva (valore di livello.json, gia' raccordato); curvatura = curve * Road::CURVE_SCALE
     f32 hill = 0.0f;         // collina del tratto (quota finale = hill * Road::HILL_HEIGHT)
     f32 larghezza = 1.0f;    // larghezza della carreggiata (1 = 2 corsie, 2 = 4 corsie), gia' raccordata
+    // Moltiplicatore della densita' di traffico (PERC1 D2): 1.0 = normale,
+    // 1.6 = auto piu' ravvicinate, 0.5 = piu' distanziate. Letto da Road::trafficoAt.
+    f32 traffico = 1.0f;
     bool acqua = false;      // ponte: ai lati acqua al posto dell'erba (tratto "ponte", campo acqua)
     f32 quotaAcqua = 0.0f;   // quota del pelo dell'acqua sotto il ponte (unita' mondo)
     // Strada sospesa (rampe del ponte alto, Andrea 06/11): il terreno ai lati
