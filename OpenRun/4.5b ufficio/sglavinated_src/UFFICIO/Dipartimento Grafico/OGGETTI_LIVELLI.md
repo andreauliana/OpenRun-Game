@@ -124,51 +124,160 @@ Cosa usa davvero il gioco oggi, livello per livello (fonte: `CATALOGO_GRAFICO.js
 | pali_cavi | 56x128 | pronto | `assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png` |
 | skyline | 256x128 | pronto | `assets_originali/scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline.png` |
 
-## PNG di scenari non usati dal gioco
+## Gruppo B — PNG di scenari non usati dal gioco (tenuti)
 
-136 file: varianti e prove di ottobre (palette, sfondi, oggetti numerati). Archivio di idee; si possono togliere quando vuoi.
+136 file: varianti e prove di ottobre (palette, sfondi, oggetti numerati). Andrea 08/11: si TENGONO come gruppo "B", archivio di idee da cui pescare. Anteprima numerata: `/mnt/project-files/oggetti/varianti_B_non_usate.png` (stessi numeri). Percorsi relativi a `Libreria/assets_originali/scenari/`.
 
-- `scenari/lv_01_neon/scenario_01_01_varianteA/` (2)
-- `scenari/lv_01_neon/scenario_01_01_varianteA/oggetti/` (4)
-- `scenari/lv_01_neon/scenario_01_01_varianteB/` (2)
-- `scenari/lv_01_neon/scenario_01_01_varianteB/oggetti/` (4)
-- `scenari/lv_01_neon/scenario_01_01_varianteC/` (2)
-- `scenari/lv_01_neon/scenario_01_01_varianteC/oggetti/` (6)
-- `scenari/lv_01_neon/scenario_lv_01_neon_01/` (2)
-- `scenari/lv_01_neon/scenario_lv_01_neon_02/` (2)
-- `scenari/lv_01_neon/scenario_lv_01_neon_03/` (2)
-- `scenari/lv_01_neon/scenario_neon_01_varianteA/` (2)
-- `scenari/lv_01_neon/scenario_neon_01_varianteB/` (2)
-- `scenari/lv_01_neon/scenario_neon_01_varianteB/oggetti/` (5)
-- `scenari/lv_01_neon/scenario_neon_01_varianteC/` (2)
-- `scenari/lv_01_neon/scenario_neon_01_varianteC/oggetti/` (4)
-- `scenari/lv_02_atomico/scenario_02_01_varianteA/` (2)
-- `scenari/lv_02_atomico/scenario_02_01_varianteA/oggetti/` (5)
-- `scenari/lv_02_atomico/scenario_02_01_varianteB/` (2)
-- `scenari/lv_02_atomico/scenario_02_01_varianteB/oggetti/` (5)
-- `scenari/lv_02_atomico/scenario_02_01_varianteC/` (2)
-- `scenari/lv_02_atomico/scenario_02_01_varianteC/oggetti/` (5)
-- `scenari/lv_02_atomico/scenario_atomico_02_varianteA/` (2)
-- `scenari/lv_02_atomico/scenario_atomico_02_varianteB/` (2)
-- `scenari/lv_02_atomico/scenario_atomico_02_varianteB/oggetti/` (6)
-- `scenari/lv_02_atomico/scenario_atomico_02_varianteC/` (2)
-- `scenari/lv_02_atomico/scenario_atomico_02_varianteC/oggetti/` (8)
-- `scenari/lv_02_atomico/scenario_lv_02_atomico_01/` (2)
-- `scenari/lv_02_atomico/scenario_lv_02_atomico_02/` (2)
-- `scenari/lv_02_atomico/scenario_lv_02_atomico_03/` (2)
-- `scenari/lv_03_foglie/scenario_03_01_varianteA/` (2)
-- `scenari/lv_03_foglie/scenario_03_01_varianteA/oggetti/` (4)
-- `scenari/lv_03_foglie/scenario_03_01_varianteB/` (2)
-- `scenari/lv_03_foglie/scenario_03_01_varianteB/oggetti/` (8)
-- `scenari/lv_03_foglie/scenario_03_01_varianteC/` (2)
-- `scenari/lv_03_foglie/scenario_03_01_varianteC/oggetti/` (4)
-- `scenari/lv_03_foglie/scenario_foglie_03_varianteA/` (2)
-- `scenari/lv_03_foglie/scenario_foglie_03_varianteB/` (2)
-- `scenari/lv_03_foglie/scenario_foglie_03_varianteB/oggetti/` (5)
-- `scenari/lv_03_foglie/scenario_foglie_03_varianteC/` (2)
-- `scenari/lv_03_foglie/scenario_foglie_03_varianteC/oggetti/` (8)
-- `scenari/lv_04_cromo/scenario_cromo_04_varianteA/finale/` (1)
-- `scenari/lv_05_spray/scenario_spray_05_varianteA/` (2)
-- `scenari/lv_05_spray/scenario_spray_05_varianteA/finale/` (1)
-- `scenari/lv_06_desktop/scenario_desktop_06_varianteA/` (2)
-- `scenari/lv_06_desktop/scenario_desktop_06_varianteA/finale/` (1)
+### lv_01_neon (41)
+
+- B001 `lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_00.png`
+- B002 `lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_01.png`
+- B003 `lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_02.png`
+- B004 `lv_01_neon/scenario_01_01_varianteA/oggetti/obj_01_A_03.png`
+- B005 `lv_01_neon/scenario_01_01_varianteA/palette.png`
+- B006 `lv_01_neon/scenario_01_01_varianteA/skyline.png`
+- B007 `lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_00.png`
+- B008 `lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_01.png`
+- B009 `lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_02.png`
+- B010 `lv_01_neon/scenario_01_01_varianteB/oggetti/obj_01_B_03.png`
+- B011 `lv_01_neon/scenario_01_01_varianteB/palette.png`
+- B012 `lv_01_neon/scenario_01_01_varianteB/skyline.png`
+- B013 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_00.png`
+- B014 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_01.png`
+- B015 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_02.png`
+- B016 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_03.png`
+- B017 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_04.png`
+- B018 `lv_01_neon/scenario_01_01_varianteC/oggetti/obj_01_C_05.png`
+- B019 `lv_01_neon/scenario_01_01_varianteC/palette.png`
+- B020 `lv_01_neon/scenario_01_01_varianteC/skyline.png`
+- B021 `lv_01_neon/scenario_lv_01_neon_01/palette.png`
+- B022 `lv_01_neon/scenario_lv_01_neon_01/sfondo.png`
+- B023 `lv_01_neon/scenario_lv_01_neon_02/palette.png`
+- B024 `lv_01_neon/scenario_lv_01_neon_02/sfondo.png`
+- B025 `lv_01_neon/scenario_lv_01_neon_03/palette.png`
+- B026 `lv_01_neon/scenario_lv_01_neon_03/sfondo.png`
+- B027 `lv_01_neon/scenario_neon_01_varianteA/palette.png`
+- B028 `lv_01_neon/scenario_neon_01_varianteA/skyline_trama.png`
+- B029 `lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_bidone.png`
+- B030 `lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_insegna_neon.png`
+- B031 `lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_lampione.png`
+- B032 `lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_palo_neon.png`
+- B033 `lv_01_neon/scenario_neon_01_varianteB/oggetti/obj_segnale.png`
+- B034 `lv_01_neon/scenario_neon_01_varianteB/palette.png`
+- B035 `lv_01_neon/scenario_neon_01_varianteB/skyline.png`
+- B036 `lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_bidone.png`
+- B037 `lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_cassetta.png`
+- B038 `lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_palo_neon.png`
+- B039 `lv_01_neon/scenario_neon_01_varianteC/oggetti/obj_segnale.png`
+- B040 `lv_01_neon/scenario_neon_01_varianteC/palette.png`
+- B041 `lv_01_neon/scenario_neon_01_varianteC/skyline.png`
+
+### lv_02_atomico (47)
+
+- B042 `lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_00.png`
+- B043 `lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_01.png`
+- B044 `lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_02.png`
+- B045 `lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_03.png`
+- B046 `lv_02_atomico/scenario_02_01_varianteA/oggetti/obj_02_A_04.png`
+- B047 `lv_02_atomico/scenario_02_01_varianteA/palette.png`
+- B048 `lv_02_atomico/scenario_02_01_varianteA/skyline.png`
+- B049 `lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_00.png`
+- B050 `lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_01.png`
+- B051 `lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_02.png`
+- B052 `lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_03.png`
+- B053 `lv_02_atomico/scenario_02_01_varianteB/oggetti/obj_02_B_04.png`
+- B054 `lv_02_atomico/scenario_02_01_varianteB/palette.png`
+- B055 `lv_02_atomico/scenario_02_01_varianteB/skyline.png`
+- B056 `lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_00.png`
+- B057 `lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_01.png`
+- B058 `lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_02.png`
+- B059 `lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_03.png`
+- B060 `lv_02_atomico/scenario_02_01_varianteC/oggetti/obj_02_C_04.png`
+- B061 `lv_02_atomico/scenario_02_01_varianteC/palette.png`
+- B062 `lv_02_atomico/scenario_02_01_varianteC/skyline.png`
+- B063 `lv_02_atomico/scenario_atomico_02_varianteA/palette.png`
+- B064 `lv_02_atomico/scenario_atomico_02_varianteA/skyline_trama.png`
+- B065 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_bancone_drive_in.png`
+- B066 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_cupola.png`
+- B067 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_freccia.png`
+- B068 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_panchina_cromata.png`
+- B069 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_segnale_stop.png`
+- B070 `lv_02_atomico/scenario_atomico_02_varianteB/oggetti/obj_ufo_distanza.png`
+- B071 `lv_02_atomico/scenario_atomico_02_varianteB/palette.png`
+- B072 `lv_02_atomico/scenario_atomico_02_varianteB/skyline.png`
+- B073 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_bancone_drive_in.png`
+- B074 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_cupola.png`
+- B075 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_freccia.png`
+- B076 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_panchina_cromata.png`
+- B077 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_atomico.png`
+- B078 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_segnale_stop.png`
+- B079 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_torre_razzo.png`
+- B080 `lv_02_atomico/scenario_atomico_02_varianteC/oggetti/obj_ufo_distanza.png`
+- B081 `lv_02_atomico/scenario_atomico_02_varianteC/palette.png`
+- B082 `lv_02_atomico/scenario_atomico_02_varianteC/skyline.png`
+- B083 `lv_02_atomico/scenario_lv_02_atomico_01/palette.png`
+- B084 `lv_02_atomico/scenario_lv_02_atomico_01/sfondo.png`
+- B085 `lv_02_atomico/scenario_lv_02_atomico_02/palette.png`
+- B086 `lv_02_atomico/scenario_lv_02_atomico_02/sfondo.png`
+- B087 `lv_02_atomico/scenario_lv_02_atomico_03/palette.png`
+- B088 `lv_02_atomico/scenario_lv_02_atomico_03/sfondo.png`
+
+### lv_03_foglie (41)
+
+- B089 `lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_00.png`
+- B090 `lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_01.png`
+- B091 `lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_02.png`
+- B092 `lv_03_foglie/scenario_03_01_varianteA/oggetti/obj_03_A_03.png`
+- B093 `lv_03_foglie/scenario_03_01_varianteA/palette.png`
+- B094 `lv_03_foglie/scenario_03_01_varianteA/skyline.png`
+- B095 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_00.png`
+- B096 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_01.png`
+- B097 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_02.png`
+- B098 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_03.png`
+- B099 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_04.png`
+- B100 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_05.png`
+- B101 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_06.png`
+- B102 `lv_03_foglie/scenario_03_01_varianteB/oggetti/obj_03_B_07.png`
+- B103 `lv_03_foglie/scenario_03_01_varianteB/palette.png`
+- B104 `lv_03_foglie/scenario_03_01_varianteB/skyline.png`
+- B105 `lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_00.png`
+- B106 `lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_01.png`
+- B107 `lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_02.png`
+- B108 `lv_03_foglie/scenario_03_01_varianteC/oggetti/obj_03_C_03.png`
+- B109 `lv_03_foglie/scenario_03_01_varianteC/palette.png`
+- B110 `lv_03_foglie/scenario_03_01_varianteC/skyline.png`
+- B111 `lv_03_foglie/scenario_foglie_03_varianteA/palette.png`
+- B112 `lv_03_foglie/scenario_foglie_03_varianteA/skyline_trama.png`
+- B113 `lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_albero_mini.png`
+- B114 `lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_fungo_psico.png`
+- B115 `lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_curva.png`
+- B116 `lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_panchina_fumo.png`
+- B117 `lv_03_foglie/scenario_foglie_03_varianteB/oggetti/obj_segnale_foglia.png`
+- B118 `lv_03_foglie/scenario_foglie_03_varianteB/palette.png`
+- B119 `lv_03_foglie/scenario_foglie_03_varianteB/skyline.png`
+- B120 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_albero_mini.png`
+- B121 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_foglia_gigante.png`
+- B122 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fumo.png`
+- B123 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_fungo_psico.png`
+- B124 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_insegna_fumosa.png`
+- B125 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_curva.png`
+- B126 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_panchina_fumo.png`
+- B127 `lv_03_foglie/scenario_foglie_03_varianteC/oggetti/obj_segnale_foglia.png`
+- B128 `lv_03_foglie/scenario_foglie_03_varianteC/palette.png`
+- B129 `lv_03_foglie/scenario_foglie_03_varianteC/skyline.png`
+
+### lv_04_cromo (1)
+
+- B130 `lv_04_cromo/scenario_cromo_04_varianteA/finale/finale.png`
+
+### lv_05_spray (3)
+
+- B131 `lv_05_spray/scenario_spray_05_varianteA/finale/finale.png`
+- B132 `lv_05_spray/scenario_spray_05_varianteA/palette.png`
+- B133 `lv_05_spray/scenario_spray_05_varianteA/skyline_trama.png`
+
+### lv_06_desktop (3)
+
+- B134 `lv_06_desktop/scenario_desktop_06_varianteA/finale/finale.png`
+- B135 `lv_06_desktop/scenario_desktop_06_varianteA/palette.png`
+- B136 `lv_06_desktop/scenario_desktop_06_varianteA/skyline_trama.png`

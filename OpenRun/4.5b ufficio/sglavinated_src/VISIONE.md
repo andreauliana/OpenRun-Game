@@ -1,5 +1,7 @@
 # VISIONE — Sglavinated (versione libera)
 
+> Idea di partenza (ottobre). Dove non coincide con `ANDREA_REVIEW.md` (per esempio razzo, volo, 50 Hz) vale `ANDREA_REVIEW.md`. Gli agenti non la leggono a ogni turno.
+
 ## L'idea in breve
 Gioco di guida arcade, notturno, sci-fi + lofi hip hop + jungle. Simpatico e dinamico. Compagni di viaggio: **Gianni** (la foglia, tenta con slang e droghe), **Gesu'** (corregge, messaggio forte di sicurezza stradale e pro-droga), **UFO** (apparizioni allucinate). Fumetti con frasi che reagiscono a cio' che fa il giocatore in preda ai deliri di droghe pesanti allucinogene, sexy donne circondano.
 

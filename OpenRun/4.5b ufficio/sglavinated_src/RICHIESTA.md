@@ -366,7 +366,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 <!-- ===== INIZIO AREA MIG1: tutto il lavoro nuovo sta qui dentro ===== -->
 
-**Base legacy 08/11 (non si tocca):** quello che c'e' oggi nel gioco e' approvato da Andrea. Elenco in ANDREA_REVIEW "AGGIORNAMENTI SERALI 08/11": auto e guida (sterzo, curve, derapata, tempi), HUD, premiazione, musica ed effetti audio, ponte, percorsi, galleria, partenza. **Si migliora aggiungendo, non si rifa'.**
+**Base legacy 08/11 (non si tocca):** quello che c'e' oggi nel gioco e' approvato da Andrea. Elenco in ANDREA_REVIEW, sezioni 2 (base legacy) e 3 (vocabolario di gioco): auto e guida (sterzo, curve, derapata, tempi), HUD, premiazione, musica ed effetti audio, ponte, percorsi, galleria, partenza. **Si migliora aggiungendo, non si rifa'.**
 
 **Come si lavora:** un passo per turno, il primo tuo non ancora [x]. Se dipende da un altro ruolo, salta al tuo passo successivo. Niente domande ad Andrea: si procede. Nel RIASSUNTO: `MIG1 <passo> [x]` con comando ed exit code. Dopo ogni passo di codice o dati: `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0; replay 2x IDENTICO; Pi 400 <= 12 ms/frame. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
 
