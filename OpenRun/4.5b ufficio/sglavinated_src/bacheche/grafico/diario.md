@@ -1,2 +1,1 @@
-[08/11 09:29] Turno @grafico: stato manifest font variante B aggiornato da bozza a pronto in CATALOGO_GRAFICO.json; exit code 0.
-[08/11 10:57] Turno @grafico: rigenerati asset UI variante B con gera_ui_b.py; exit code 0.
+[08/11 11:39] Turno @grafico: bloccato su BLOCCO M per disposizione Andrea 08/11 "HUD NON SI TOCCA"; nessun file modificato, passo sospeso in attesa nuova direttiva.
