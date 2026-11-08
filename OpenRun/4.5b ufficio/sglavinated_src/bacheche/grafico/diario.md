@@ -1,1 +1,1 @@
-[07/11 12:13] Turno @grafico: nessun blocco grafico azionabile (M [~] attesa ok Andrea PNG B/N/manifest bozza, DECO1 [~] attesa review @capo, PIST1 [~]/R2 [~]/AUTO1 [ ]/KO1 [ ] attesa developer/developer-junior; G-A1 [x], G-P1 [x] chiusi; nessun comando eseguito, gate non eseguito).
+[08/11 08:21] Turno @grafico: rigenerato asset UI variant B con genera_ui_b.py (font, title, menu, HUD); modifica hud.json +colore_bordo; exit code 0.

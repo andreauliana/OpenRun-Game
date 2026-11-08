@@ -47,38 +47,38 @@ if [ "$MODE" = "soak" ]; then
   done
 fi
 echo "== verifica accelerazione 10 s"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/accelerazione" lv_01_neon accelerazione >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/accelerazione" lv_01_neon accelerazione >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica ribaltamento e ripartenza"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/crash" lv_01_neon crash >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/crash" lv_01_neon crash >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica sterzo sinistra/destra"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/sterzo" lv_01_neon sterzo >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/sterzo" lv_01_neon sterzo >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 echo "== verifica continuita' curve e corsie"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/curve" lv_01_neon curve >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/curve" lv_01_neon curve >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== gara a tappe (bivi, 4 combinazioni di scelte, arrivo)"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/gara" lv_01_neon gara >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/gara" lv_01_neon gara >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== frequenza 60 Hz e 50 Hz (giro guidato: stessi secondi, replay IDENTICO a ciascuna)"
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_60" lv_01_neon frequenza 60 >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_60" lv_01_neon frequenza 60 >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
-."$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_50" lv_01_neon frequenza 50 >> "$LOG" 2>&1
+./"$BUILD_DIR"/prova_gate "UFFICIO/Officina/Test area/frequenza_50" lv_01_neon frequenza 50 >> "$LOG" 2>&1
 R=$?
 echo "   exit $R"
 [ "$R" -ne 0 ] && RC=$R
