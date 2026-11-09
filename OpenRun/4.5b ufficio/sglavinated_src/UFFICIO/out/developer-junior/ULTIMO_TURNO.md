@@ -1,10 +1,8 @@
-# ULTIMO_TURNO @developer-junior — 09/11/2026 10:15 (MIG1 J2/J3/J4)
-- Blocco/passo: MIG1 J2+J3 esecuzione prove, J4 review aggiornata.
-- File cambiati (turno): `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/REVIEW_MIG1.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
-- Cmd: `cmake --build "UFFICIO/Officina/build" --target prova_gate` → exit 0 (09/11 10:15).
-- Cmd: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j2_pali" lv_01_neon pali` → exit 27 (09/11 10:15).
-  - pali: hit_rilevati=0, frame_primo_hit=-1, screenshot=0, dir `mig1_j2_pali/`. FALLITO (serve hit>0 e screenshot>=2). Nota test: clamp baseY<=208 riga ruote.
-- Cmd: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j3_sportellata" lv_01_neon sportellata` → exit 0 (09/11 10:15).
-  - sportellata: GATE SPORTELLATA OK, colpo_a_segno=SI a 0.52s (frame 31), urti_gara=8, ripresa_proxy Z 0-2s=30168.0 2-4s=10325.4 4-7s=-40493.4 (proxy; `sbandataS` privato).
-- gate_t1.sh: non eseguito.
-- Residuo: J2 FALLITO senza hit/screenshot (verificare setup modo pali vs stato D1/paletti); J3 colpo misurato ma recupero ~5s solo proxy. Next: indagine J2, poi affinare prova o chiedere chiarimento dev.
+# ULTIMO TURNO @developer-junior — 09/11/2026 11:31
+- Blocco/passo: V47 VJ1 dopo passo V5 (@developer [~]: fasi.cpp ok, `frasi.json` bloccato @grafico) — prova dedicata eseguita.
+- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj1_v5" lv_01_neon smoke`
+- Exit code: 0
+- Esito: `GATE OK`, 500 frame, ms/frame medio 0.954 max 3.225 (limite 20), replay 2x IDENTICO, avvolgimento/inattività OK. Nessuna regressione rilevata.
+- gate_t1.sh: non eseguito in questo turno.
+- Residui: V5 frasi.json fuori perimetro; MIG1 J3 [~] (`sbandataS` privato, no autorizzazione src); D4/D5/G2 pendenti altri ruoli. Attesa nuovi passi V o sblocco J3.

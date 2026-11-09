@@ -1,11 +1,10 @@
 # RIASSUNTO @developer-junior
-Riscritto 09/11 10:15 (turno MIG1 J2/J3/J4). Lavoro corrente: BLOCCO MIG1.
-- Ruolo: Developer Junior; test in `motore_nuovo/test/`, gate in `UFFICIO/Officina/TOOL/`.
-- Gate baseline noto: `gate_t1.sh` exit 0 (09/11 09:22, dev D2), 6/6. Questo turno: build exit 0, gate_t1.sh non eseguito.
-- PERC1 [x]. MIG1 J1 [x]. D1-D3 [x] (report/codice). D4 [ ], D5 facoltativo.
-- J2 [~]: `prova_gate ... mig1_j2_pali lv_01_neon pali` exit 27 (09/11 10:15) — FALLITO: hit_rilevati=0, frame_primo_hit=-1, screenshot=0; test nota clamp baseY<=208 (D1). Serve indagine setup/posizionamento paletti o D1 runtime.
-- J3 [~]: `prova_gate ... mig1_j3_sportellata lv_01_neon sportellata` exit 0 (09/11 10:15) — GATE SPORTELLATA OK: colpo 0.52s frame 31, urti_gara=8, ripresa_proxy Z 0-2s=30168 2-4s=10325 4-7s=-40493 (proxy, `sbandataS` privato).
-- J4 [~]: `UFFICIO/out/developer-junior/REVIEW_MIG1.md` aggiornato con esiti 10:15.
-- Cmd eseguiti (09/11 10:15): `cmake --build "UFFICIO/Officina/build" --target prova_gate` exit 0; run `pali` exit 27; run `sportellata` exit 0.
-- Next: chiarire J2 FALLITO (nessun hit/screenshot) con @developer/D1 o affinare modo `pali`; confermare ripresa 5s D2 con strumentazione se serve.
-- Mai: HUD, `gate_t1.sh` se non richiesto, `salvaScreenshotP1`, `motore_nuovo/src/` senza autorizzazione.
+Riscritto 09/11 11:31 (turno V47 VJ1/V5). MIG1 J1-J4 [x] salvo J3 [~]; V47 VJ1 [x] (V1,V3,V4,V5[~]), VJ2 [x].
+- Ruolo: test `motore_nuovo/test/`, prove via `prova_gate`/ctest in Officina. Baseline noto: gate_t1.sh exit 0 (09/11 09:22). Questo turno: gate_t1.sh non eseguito.
+- VJ1 V5 [09/11 11:31] (dopo V5 @developer [~], fasi.cpp; frasi.json bloccato @grafico): `prova_gate ... lv_01_neon smoke` exit 0 (GATE OK, ms/frame 0.954 max 3.225, replay IDENTICO).
+- VJ1 precedenti [x]: V1 gara lv_01_neon exit 0 (4 bivi, replay IDENTICO); V3 smoke lv_04_cromo exit 0 (ms/frame 1.367 max 4.926); V4 ctest gate_ciclo exit 0 (13.48s).
+- VJ2 [x]: screenshot riva lv_01/04/06 in `UFFICIO/Officina/Test area/vj2_riva/` (review visiva Andrea).
+- MIG1 residui: J3 [~] `sbandataS` ~5s non misurabile (campo privato in `motore_nuovo/src/`, no autorizzazione); D4 [ ], D5 facoltativo [ ], G2 [ ].
+- Prossimo: se @developer completa V5/frasi o nuovi passi V, fare VJ1 dedicata; J3 resta [~] salvo autorizzazione/strumentazione.
+- File turno: `UFFICIO/out/developer-junior/REVIEW_V47.md`, diario, `ULTIMO_TURNO.md`, questo RIASSUNTO.
+- Mai: HUD, `motore_nuovo/src/` senza autorizzazione, file fuori perimetro.

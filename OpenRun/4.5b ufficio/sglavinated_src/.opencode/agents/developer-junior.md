@@ -1,6 +1,6 @@
 ---
 description: "Developer Junior del progetto: contribuisce a codice, test e diagnosi in task delimitati e svolge peer review quando assegnato da @capo."
-model: opencode/iceman-free
+model: opencode/deepseek-v4.1-flash-free
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:

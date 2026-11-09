@@ -10,3 +10,9 @@
 [09/11 09:59] Turno @grafico: nessun blocco [ ]/[~] libero (MIG1 G1 ANNULLATO, G2 bloccato su D1-D3, V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo D1-D3 o richiesta @capo.
 [09/11 10:08] Turno @grafico MIG1 G2 [x]+V47 VG1 anteprima: D1-D3 confermati, 3 osservazioni in ULTIMO_TURNO (J2/J3 runtime bloccati, mig1_j2_pali_check solo PPM standard). python3 "UFFICIO/Dipartimento Grafico/TOOLS/genera_v47_vg1_quadro.py" exit 0 -> UFFICIO/Officina/Test area/grafico/v47_vg1/v47_vg1_quadro_mancanze.png. Gate non eseguito.
 [09/11 10:19] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 10:34] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 10:54] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 11:12] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 11:22] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 11:36] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 11:38] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.

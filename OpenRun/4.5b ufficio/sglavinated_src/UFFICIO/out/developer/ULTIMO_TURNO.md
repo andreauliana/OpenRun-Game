@@ -1,10 +1,7 @@
-# ULTIMO TURNO — developer (09/11/2026 10:20)
-- Blocco/passo: MIG1 D5 [x] audio extra nuovo (paletto che vola). V47 V1 [x] gia' presente/verificato (scia + sorpasso al pelo).
-- File cambiati: `motore_nuovo/src/audio/mixer.h`, `motore_nuovo/src/audio/mixer.cpp`, `motore_nuovo/src/game/game.cpp`.
-- D5: aggiunti `Mixer::suonaPaletto()` + stato `palettoN_` + `sfxPaletto()` (colpo/rumore breve, tono discendente). `Game::abbattiPali` chiama `suonaPaletto()` in aggiunta a `suonaUrto(false)` (effetti esistenti non modificati).
-- V1 (gia' nel codice): scia dietro auto <1500 stessa corsia dx<350 per 1s -> `player_.speed` guadagno graduale (cap `maxSpeed*1.02`, +50*dt), offroad escluso. Sorpasso al pelo: auto davanti dz<2000 dx<350 poi superata (dz<=0,>-1500) -> `tempoResiduoS_ += 0.5f` + `suonaSorpasso()`. Niente cambi a sterzo/curve/derapata/incidenti.
-- Vocabolario V1 (voce nuova, Claude la registra): "Scia": restare <~1500 dietro un'auto nella stessa corsia per ~1s da piccolo guadagno di velocita'. "Sorpasso al pelo": passare un'auto a <~350 di lato, suono breve e +0.5s.
+# ULTIMO TURNO @developer — 09/11/2026 11:23
+- Blocco/passo: V47 V5 (testi schermo inglese semplice: fasi, risultati, frasi) — parziale.
+- Fatto: resi piu' chiari i testi di aiuto in fasi/menu/risultati (già in inglese) in `motore_nuovo/src/game/fasi.cpp` (menu: `UP/DOWN: CHOOSE  START: OK`; inserimento nome: `LEFT/RIGHT: MOVE  START: OK`).
+- Blocco frasi: `motore_nuovo/dati/frasi.json` contiene 156 frasi in italiano (Gianni/Gesu); V5 le include, ma il file è assegnato a @grafico in AGENTS.md e la scrittura è stata negata dai permessi. Serve traduzione da @grafico o decisione @capo.
+- File cambiati: `motore_nuovo/src/game/fasi.cpp`, `UFFICIO/bacheche/developer/diario.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/out/developer/ULTIMO_TURNO.md`.
 - Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh`
-- Exit code: 0
-- Esito: ctest 27/27 passati (100%), Total 282.52s; `prova_gate` compilato e linkato (il precedente blocco prova_gate.cpp:2136 non si manifesta).
-- gate_t1.sh: gate non eseguito questo turno.
+- Exit code: 0 (ctest 27/27, 252.63s). gate_t1.sh non eseguito.

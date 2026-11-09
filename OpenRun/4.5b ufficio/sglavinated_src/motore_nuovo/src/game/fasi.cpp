@@ -5,6 +5,7 @@
 #include "core/json_mini.h"
 #include "render/renderer.h"
 #include "render/premiazione.h" // PREMIAZIONE_S: festa a tema prima della classifica
+#include "render/framebuffer.h"
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -161,7 +162,7 @@ public:
             ren.drawTitolo(160 - wi / 2, 102 + i * 14, voci[i], colore, 1, true);
             if (i == sel_) ren.drawTitolo(160 - wi / 2 - 12, 102 + i * 14, ">", 0xFFFFFFFFu, 1, true);
         }
-        const char* aiuto = "UP/DOWN CHOOSE   START OK";
+        const char* aiuto = "UP/DOWN: CHOOSE  START: OK";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
@@ -362,7 +363,7 @@ public:
         std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c%c%c%c",
                       nome_[0], nome_[1], nome_[2], nome_[3], nome_[4], nome_[5]);
         nomeCursore[nomePos_] = '_';
-        std::snprintf(buf, sizeof(buf), "NAME: %s   LEFT/RIGHT MOVE   START OK", nomeCursore);
+        std::snprintf(buf, sizeof(buf), "NAME: %s  LEFT/RIGHT: MOVE  START: OK", nomeCursore);
         ren.drawTesto(64, 72, buf, 0xFFFFFFFFu, 1, true);
         std::snprintf(buf, sizeof(buf), "%s %d SCORE   POS %d", nomeVis, punteggio_, posizione_);
         ren.drawTesto(64, 88, buf, 0xFFA0A0A0u, 1, true);
@@ -523,6 +524,23 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
         fasePendente_ = id;
         return;
     }
+    // V47 V4: dissolvenza 0.5s fra risultati, menu e partenza
+    if (fadeSt_ == FadeState::None) {
+        const bool daRisultatiAMenu = (attuale_ == FaseId::Risultati && id == FaseId::Menu);
+        const bool daMenuAGara = (attuale_ == FaseId::Menu && id == FaseId::Gara);
+        if (daRisultatiAMenu || daMenuAGara) {
+            if (fase_) fase_->esci(gioco);
+            fadeSt_ = FadeState::Out;
+            fadeT_ = 0.0f;
+            fadeDur_ = 0.5f;
+            faseProssimaFade_ = id;
+            giocoFade_ = &gioco;
+            fadeDaProssima_ = false;
+            fase_ = nullptr;
+            attuale_ = id;
+            return;
+        }
+    }
     if (fase_) fase_->esci(gioco);
     fase_ = crea(id);
     attuale_ = id;
@@ -530,6 +548,28 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
 }
 
 void GestoreFasi::aggiorna(Game& gioco, f32 dt) {
+    if (fadeSt_ != FadeState::None) {
+        if (fadeSt_ == FadeState::Out) {
+            fadeT_ += dt;
+            if (fadeT_ >= fadeDur_ * 0.5f) {
+                fadeSt_ = FadeState::In;
+                fadeT_ = 0.0f;
+                if (giocoFade_) {
+                    fase_ = crea(faseProssimaFade_);
+                    attuale_ = faseProssimaFade_;
+                    if (fase_) fase_->entra(*giocoFade_);
+                }
+            }
+            return;
+        } else if (fadeSt_ == FadeState::In) {
+            fadeT_ += dt;
+            if (fadeT_ >= fadeDur_ * 0.5f) {
+                fadeSt_ = FadeState::None;
+                fadeT_ = 0.0f;
+            }
+            return;
+        }
+    }
     if (!fase_) return;
     inAggiorna_ = true;
     cambioRimandato_ = false;
@@ -546,6 +586,30 @@ void GestoreFasi::aggiorna(Game& gioco, f32 dt) {
 }
 
 void GestoreFasi::disegna(Renderer& ren, Framebuffer& fb) const {
+    (void)ren;
+    if (fadeSt_ != FadeState::None) {
+        if (fase_) fase_->disegna(ren, fb);
+        f32 t = fadeT_;
+        if (fadeSt_ == FadeState::Out) {
+            t = fadeT_;
+        } else {
+            t = fadeDur_ * 0.5f - fadeT_;
+        }
+        if (t < 0.0f) t = 0.0f;
+        if (t > fadeDur_ * 0.5f) t = fadeDur_ * 0.5f;
+        f32 alpha = t / (fadeDur_ * 0.5f);
+        if (alpha < 0.0f) alpha = 0.0f;
+        if (alpha > 1.0f) alpha = 1.0f;
+        u32 p = (u32)(alpha * 100.0f);
+        if (p > 100) p = 100;
+        u32* d = fb.data();
+        for (i32 i = 0; i < Framebuffer::WIDTH * Framebuffer::HEIGHT; ++i) {
+            const u32 c = d[i];
+            d[i] = 0xFF000000u | ((((c >> 16) & 0xFFu) * (100 - p) / 100) << 16) |
+                                     ((((c >> 8) & 0xFFu) * (100 - p) / 100) << 8) | ((c & 0xFFu) * (100 - p) / 100);
+        }
+        return;
+    }
     if (fase_) fase_->disegna(ren, fb);
 }
 

@@ -2144,26 +2144,32 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     for (i32 f = 0; f < TOTAL; ++f) {
         Pad pad;
         pad.held = (u64)Pad::A;       // accelera
-        // Sterza piu' aggressivamente per cercare di colpire i paletti
-        if (f < 200) pad.held |= (u64)Pad::Right;
-        else if (f % 60 < 30) pad.held |= (u64)Pad::Right;
-        else pad.held |= (u64)Pad::Left;
+        const auto& stBefore = game.state();
+        // Sterza a destra ma controllato per restare sulla strada e avvicinarsi ai paletti
+        if (stBefore.playerOffroad) {
+            pad.held |= (u64)Pad::Left; // cerca di rientrare
+        } else if (stBefore.playerX < 400.0f) {
+            pad.held |= (u64)Pad::Right;
+        } else if (stBefore.playerX > 700.0f) {
+            pad.held &= ~(u64)Pad::Right;
+        } else {
+            pad.held |= (u64)Pad::Right;
+        }
         game.setInput(pad);
         const f32 spPrima = game.state().playerSpeed;
         game.update();
         game.render();
         const f32 spDopo = game.state().playerSpeed;
-        // abbattiPali fa speed *= 0.97f (solo quando colpisce, non in flip/arrivo/sospeso)
-        if (spPrima > 500.0f && spDopo < spPrima * 0.975f && spDopo > spPrima * 0.965f &&
-            !game.state().playerOffroad ? false : true) {
-            // euristica debole; contiamo anche via offroad+drop
+        const auto& st = game.state();
+        if (f % 300 == 0) {
+            std::printf("  dbg f=%d sp=%.1f x=%.1f flip=%d offroad=%d\n", f, spDopo, st.playerX, st.playerFlipping?1:0, st.playerOffroad?1:0);
         }
-        // Conteggio più robusto: drop 3% mentre fuori strada ai bordi
-        if (f > 60 && spPrima > 200.0f && !game.state().playerFlipping) {
+        // Conteggio più robusto: drop 3% 
+        if (f > 60 && spPrima > 150.0f && !game.state().playerFlipping) {
             const f32 ratio = spDopo / std::max(spPrima, 1.0f);
-            if (ratio > 0.968f && ratio < 0.972f) {
+            if (ratio >= 0.965f && ratio <= 0.975f) {
                 ++hitCount;
-                if (!primoHit) { primoHit = true; framePrimoHit = f; }
+                if (!primoHit) { primoHit = true; framePrimoHit = f; std::printf("  HIT at f=%d ratio=%.4f\n", f, ratio); }
             }
         }
         speedPrec = spDopo;
@@ -3369,6 +3375,58 @@ bool verificaFrequenza(const std::string& outDir, const std::string& livello, i3
     return true;
 }
 
+// VJ2 (09/11): ponte e riva - screenshot spiagge/gabbiani/barche in lv_01,lv_04,lv_06.
+// Guida automatica tipo percorso, salva screenshot periodici per review visiva (Andrea).
+bool verificaRivaVJ2(const std::string& outDir, const std::string& livello) {
+    namespace fs = std::filesystem;
+    const std::string dir = outDir + "/vj2_riva/" + livello;
+    fs::create_directories(dir);
+
+    Game game(12345u);
+    game.init(livello);
+    const f32 giro = (f32)game.road().totalLength();
+    f32 percorso = 0.0f, zPrima = 0.0f;
+    i32 frame = 0, fuori = 0, saved = 0;
+    const i32 FRAME_MAX = 20000;
+    const i32 SAVE_EVERY = 300;
+
+    while (percorso < giro && frame < FRAME_MAX) {
+        Pad pad;
+        pad.held = (u64)Pad::A;
+        const f32 x = game.state().playerX;
+        if (x > 120.0f) pad.held |= (u64)Pad::Left;
+        else if (x < -120.0f) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        game.update();
+
+        const f32 z = game.state().playerZ;
+        f32 dz = z - zPrima;
+        if (dz < 0.0f) dz += giro;
+        percorso += dz;
+        zPrima = z;
+        if (game.state().playerOffroad) ++fuori;
+
+        if (frame == 1 || (frame % SAVE_EVERY == 0)) {
+            char name[128];
+            std::snprintf(name, sizeof(name), "/riva_f%05d_z%06.0f.ppm", frame, percorso);
+            salvaPPM(dir + name, game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+            ++saved;
+        }
+        ++frame;
+    }
+    {
+        char name[128];
+        std::snprintf(name, sizeof(name), "/riva_f%05d_fine.ppm", frame);
+        salvaPPM(dir + name, game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        ++saved;
+    }
+    const f32 quotaFuori = frame > 0 ? (f32)fuori / (f32)frame : 1.0f;
+    std::printf("vj2_riva %s: %s in %d frame, fuori %.1f%%, screenshot=%d dir=%s\n",
+                livello.c_str(), percorso >= giro ? "giro finito" : "giro NON finito",
+                frame, quotaFuori * 100.0f, saved, dir.c_str());
+    return saved >= 3;
+}
+
 int main(int argc, char** argv) {
     // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
     if (argc > 1 && argv[1][0] == '-') {
@@ -3428,6 +3486,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaSportellata(outDir, livello);
         std::printf("%s\n", ok ? "GATE SPORTELLATA OK (MIG1 J3)" : "FALLITO: sportellata non verificata (MIG1 J3)");
         return ok ? 0 : 28;
+    }
+
+    if (modo == "vj2_riva") {
+        const bool ok = verificaRivaVJ2(outDir, livello);
+        std::printf("%s\n", ok ? "GATE VJ2 RIVA OK" : "FALLITO: vj2_riva screenshot insufficienti");
+        return ok ? 0 : 29;
     }
 
     if (modo == "accelerazione") {

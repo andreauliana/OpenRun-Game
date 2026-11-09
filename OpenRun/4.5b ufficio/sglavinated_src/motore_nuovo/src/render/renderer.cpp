@@ -1314,32 +1314,26 @@ u32 Renderer::lerpColore(u32 da, u32 a, f32 t) {
 
 void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f32 totalLen) {
     if (projs_.empty()) return; // drawRoad deve girare prima (stessa proiezione)
-    // Ordina per distanza dalla telecamera decrescente (dietro prima). La
-    // distanza tiene conto del giro: vicino al punto di wrap gli sprite di
-    // inizio pista sono lontani anche se hanno worldZ piccolo.
-    auto distanza = [playerZ, totalLen](const SpriteInstance& s) {
-        f32 z = s.worldZ - playerZ;
+    if (sprites.empty()) return;
+    // Ordina per distanza dalla telecamera decrescente (dietro prima). zRel
+    // calcolato una volta per sprite (sort + draw) invece di rifare std::fmod
+    // a ogni confronto e nel ciclo di disegno. spriteOrd_ riusato (zero alloc).
+    spriteOrd_.resize(sprites.size());
+    for (i32 i = 0; i < (i32)sprites.size(); ++i) {
+        f32 z = sprites[i].worldZ - playerZ;
         if (totalLen > 0.0f) {
             z = std::fmod(z, totalLen);
             if (z < 0.0f) z += totalLen;
         }
-        return z;
-    };
-    std::sort(sprites.begin(), sprites.end(),
-              [&distanza](const SpriteInstance& a, const SpriteInstance& b) {
-                  return distanza(a) > distanza(b);
-              });
+        spriteOrd_[i] = {z, i};
+    }
+    std::sort(spriteOrd_.begin(), spriteOrd_.end(),
+              [](const auto& a, const auto& b) { return a.first > b.first; });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
     i32 nSegnalini = 0;
-    for (auto& s : sprites) {
-        // zRel con modulo totalLen: playerZ avvolge sul giro mentre worldZ e'
-        // assoluto, quindi vicino al punto di wrap gli sprite non spariscono né
-        // appaiono in anticipo.
-        f32 zRel = s.worldZ - playerZ;
-        if (totalLen > 0.0f) {
-            zRel = std::fmod(zRel, totalLen);
-            if (zRel < 0.0f) zRel += totalLen;
-        }
+    for (const auto& o : spriteOrd_) {
+        const auto& s = sprites[o.second];
+        const f32 zRel = o.first;
         // Dietro la telecamera, o cosi' vicino da coprire lo schermo intero
         // (succede passando accanto a un cartello): non si disegna.
         if (zRel < Road::Z_NEAR) continue;
@@ -1419,11 +1413,13 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
     const i32 sw = s.sprite->width;
     const i32 sh = s.sprite->height;
+    const u8* px = s.sprite->pixels.data();
+    const u32* spPal = palettePropria ? s.sprite->palette.data() : nullptr;
     // Colore del texel (tx, ty); alpha 0 = trasparente.
     auto texel = [&](i32 tx, i32 ty) -> u32 {
-        const u8 idx = s.sprite->pixels[ty * sw + tx];
+        const u8 idx = px[ty * sw + tx];
         // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
-        if (palettePropria) return s.sprite->palette[idx % nPalette];
+        if (spPal) return spPal[idx % nPalette];
         // Palette del motore: indice 0 = trasparente.
         return idx == 0 ? 0u : pal_[s.paletteBase + idx];
     };

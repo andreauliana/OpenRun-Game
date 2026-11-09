@@ -49,6 +49,14 @@ private:
     bool inAggiorna_ = false;        // true mentre gira fase_->aggiorna()
     bool cambioRimandato_ = false;   // cambia() chiamata durante aggiorna()
     FaseId fasePendente_ = FaseId::Splash;
+    // V47 V4: dissolvenza 0.5s fra risultati, menu e partenza
+    enum class FadeState { None, Out, In };
+    FadeState fadeSt_ = FadeState::None;
+    f32 fadeT_ = 0.0f;
+    f32 fadeDur_ = 0.5f;
+    FaseId faseProssimaFade_ = FaseId::Menu;
+    Game* giocoFade_ = nullptr;
+    bool fadeDaProssima_ = false;
 };
 
 } // namespace sgl
