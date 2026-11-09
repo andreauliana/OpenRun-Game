@@ -1090,6 +1090,7 @@ void Game::leggiHud() {
         e.scalaValore = numero(o, "scala_valore", 1);
         e.scala = numero(o, "scala", 1);
         e.scalaLabel = numero(o, "scala_label", 0);
+        e.valoreTitolo = stringa(o, "font_valore") == "titolo";
         e.destra = stringa(o, "allinea") == "destra";
         rgb(o, "colore", e.colore);
         rgb(o, "colore_label", e.coloreLabel);
@@ -2598,7 +2599,7 @@ void Game::render() {
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
     if (pausa_) { // Andrea 08/11: solo la scritta, niente altro
         const char* testo = "PAUSE";
-        ren_.drawTesto(160 - ren_.larghezzaTesto(testo, 2) / 2, 104, testo, 0xFFFFFFFFu, 2, true);
+        ren_.drawTitolo(160 - ren_.larghezzaTitolo(testo, 2) / 2, 100, testo, 0xFFFFFFFFu, 2, true);
     }
     // Scena show (personaggio + fumetto): NON si disegnano rettangoli
     // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).

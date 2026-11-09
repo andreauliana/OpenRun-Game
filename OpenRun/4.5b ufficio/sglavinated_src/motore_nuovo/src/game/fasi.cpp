@@ -101,9 +101,9 @@ public:
     void disegna(Renderer& ren, Framebuffer& fb) const override {
         // Placeholder del titolo: @grafico consegna lo schermo di splash (D15/D16).
         const char* titolo = "SGLAVINATED EDITION";
-        const i32 w = ren.larghezzaTesto(titolo, 2);
+        const i32 w = ren.larghezzaTitolo(titolo, 2);
         fb.fillRect(160 - w / 2 - 8, 76, 160 + w / 2 + 8, 116, 0xFF6060A0u);
-        ren.drawTesto(160 - w / 2, 90, titolo, 0xFFFFFFFFu, 2, true);
+        ren.drawTitolo(160 - w / 2, 83, titolo, 0xFFFFFFFFu, 2, true); // font grassetto (Andrea 09/11)
         const char* premi = "PRESS START";
         ren.drawTesto(160 - ren.larghezzaTesto(premi, 1) / 2, 136, premi, 0xFFA0A0A0u, 1, true);
     }
@@ -148,15 +148,16 @@ public:
         if (ren.haLogo()) ren.drawLogo(160, 50);
         else {
             const char* titolo = "OPEN RUN";
-            const i32 w = ren.larghezzaTesto(titolo, 2);
-            ren.drawTesto(160 - w / 2, 56, titolo, 0xFFFFFFFFu, 2, true);
+            const i32 w = ren.larghezzaTitolo(titolo, 2);
+            ren.drawTitolo(160 - w / 2, 52, titolo, 0xFFFFFFFFu, 2, true);
         }
         static const char* voci[3] = { "SINGLE RACE", "RACE SERIES", "EXIT" };
         for (i32 i = 0; i < 3; ++i) {
-            i32 wi = ren.larghezzaTesto(voci[i], 1);
+            // Voci col font grassetto (Andrea 09/11), il testo d'aiuto resta piccolo.
+            i32 wi = ren.larghezzaTitolo(voci[i], 1);
             u32 colore = (i == sel_) ? 0xFFFFFFFFu : 0xFFA0A0A0u;
-            ren.drawTesto(160 - wi / 2, 104 + i * 14, voci[i], colore, 1, true);
-            if (i == sel_) ren.drawTesto(160 - wi / 2 - 12, 104 + i * 14, ">", 0xFFFFFFFFu, 1, true);
+            ren.drawTitolo(160 - wi / 2, 102 + i * 14, voci[i], colore, 1, true);
+            if (i == sel_) ren.drawTitolo(160 - wi / 2 - 12, 102 + i * 14, ">", 0xFFFFFFFFu, 1, true);
         }
         const char* aiuto = "UP/DOWN CHOOSE   START OK";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
@@ -210,8 +211,8 @@ public:
     void disegna(Renderer& ren, Framebuffer&) const override {
         if (arrivo_) return; // la scena d'arrivo e' la strada (scacchi, pubblico, frenata)
         const char* testo = "TIME UP";
-        const i32 w = ren.larghezzaTesto(testo, 2);
-        ren.drawTesto(160 - w / 2, 100, testo, 0xFFFF0000u, 2, true);
+        const i32 w = ren.larghezzaTitolo(testo, 2);
+        ren.drawTitolo(160 - w / 2, 96, testo, 0xFFFF0000u, 2, true);
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return FaseId::Risultati; }
@@ -350,8 +351,8 @@ public:
         char buf[96];
         if (!arrivo_.empty()) { disegnaArrivo(ren, fb); return; }
         const char* titolo = "RESULTS";
-        const i32 w = ren.larghezzaTesto(titolo, 2);
-        ren.drawTesto(160 - w / 2, 40, titolo, 0xFFFFFFFFu, 2, true);
+        const i32 w = ren.larghezzaTitolo(titolo, 2);
+        ren.drawTitolo(160 - w / 2, 36, titolo, 0xFFFFFFFFu, 2, true);
         char nomeVis[8];
         std::snprintf(nomeVis, sizeof(nomeVis), "%s", nomeVisibile(nome_).c_str());
         // Riga nome: cursore visibile sulla lettera in editing (fino a 6 caratteri).
@@ -391,7 +392,7 @@ public:
         const bool consulto = timerS_ < CONSULTO_S;
         const char* titolo = consulto ? "FINAL CHECK" : "RANKING";
         if (!consulto || std::fmod(timerS_, 0.5f) < 0.35f)
-            ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 9, titolo, 0xFFFFFFFFu, 2, true);
+            ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 2) / 2, 5, titolo, 0xFFFFFFFFu, 2, true);
         ren.drawTesto(64, 29, "POS", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(96, 29, "DRIVER", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(170, 29, "TIME", 0xFFA0A0A0u, 0, true);

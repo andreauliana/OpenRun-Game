@@ -23,3 +23,4 @@
 | assets_originali/ui/titolo/varianteB/title.png (+ title.json) | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |
 | assets_originali/ui/menu/varianteB/menu_preview.png | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |
 | assets_originali/ui/hud/varianteB/hud_preview.png | @grafico (Dipartimento Grafico, disegnato da zero, nessun asset Sega) | CC-BY-4.0 | interno al progetto |
+| assets_originali/font/born2bsporty/Born2bSportyV2.ttf (-> motore_nuovo/src/render/font_titolo.h) | JapanYoshi (Born2bSporty V2, BitFontMaker2) | CC0-1.0 (pubblico dominio, uso commerciale libero) | https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=383 |

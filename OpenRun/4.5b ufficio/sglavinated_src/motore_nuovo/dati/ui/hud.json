@@ -18,6 +18,7 @@
     {
       "id": "velocita",
       "tipo": "testo",
+      "font_valore": "titolo",
       "label": "KM/H",
       "label_pos": [
         8,
@@ -78,6 +79,7 @@
     {
       "id": "tempo",
       "tipo": "testo",
+      "font_valore": "titolo",
       "label": "TIME",
       "label_pos": [
         224,
@@ -180,7 +182,7 @@
       "nota": "solo quando lo show e' in scena, sotto il gruppo di destra"
     }
   ],
-  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'testo' con label/valore = etichetta (font mini 3x5) in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala' (0 = font mini); \"allinea\": \"destra\" = le x sono il bordo destro del testo (etichetta e valore); tipo 'barra' = riga sottile senza cornice: contagiri a tacche (giri) o un segmento per tappa (tappe); accese piene, spente un filo scuro. Ogni testo ha un'ombra nera di 1 px.",
+  "regole_disegno": "elementi disegnati nell'ordine in cui compaiono; tipo 'testo' con label/valore = etichetta (font mini 3x5) in 'colore_label' a label_pos e valore in 'colore' a valore_pos con 'scala_valore'; tipo 'testo' con testo = stringa in 'colore' a 'pos' con 'scala' (0 = font mini); \"allinea\": \"destra\" = le x sono il bordo destro del testo (etichetta e valore); \"font_valore\": \"titolo\" = valore col font grassetto Born2bSporty (Andrea 09/11, solo i numeri grandi: velocita' e tempo), stessa x e stesso fondo delle cifre; tipo 'barra' = riga sottile senza cornice: contagiri a tacche (giri) o un segmento per tappa (tappe); accese piene, spente un filo scuro. Ogni testo ha un'ombra nera di 1 px.",
   "griglia": {
     "gruppi_x": [
       [

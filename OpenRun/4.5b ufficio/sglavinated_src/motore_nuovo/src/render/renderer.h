@@ -107,6 +107,7 @@ struct HudElemento {
     i32 lx = -1, ly = -1, vx = -1, vy = -1, tx = -1, ty = -1; // label_pos, valore_pos, pos
     i32 scalaValore = 1, scala = 1;
     i32 scalaLabel = 0;     // 0 = font mini 3x5 (etichette piccole e coerenti)
+    bool valoreTitolo = false; // "font_valore": "titolo": numero col font grassetto (Andrea 09/11)
     bool destra = false;    // "allinea": "destra": le x sono il bordo destro del testo
     u32 colore = 0xFFFFFFFF, coloreLabel = 0xFFA0A0A0, coloreBordo = 0xFFFFFFFF, coloreRiempimento = 0xFF787878;
 };
@@ -197,6 +198,13 @@ public:
     // scala 0 = font mini 3x5 (etichette), 1..n = font 5x7 ingrandito.
     void drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala = 1, bool ombra = true);
     static i32 larghezzaTesto(const char* testo, i32 scala = 1);
+    // Font grassetto Born2bSporty (font_titolo.h, Andrea 09/11): titoli di
+    // menu e schermate e numeri grandi dell'HUD. Proporzionale, alto 14 righe
+    // (lettere e cifre 9-10 px), stessa ombra di 1 px di drawTesto.
+    // cifreFisse: cifre e spazi a passo fisso, cosi' un numero che cambia non balla.
+    void drawTitolo(i32 x, i32 y, const char* testo, u32 colore, i32 scala = 1, bool ombra = true,
+                    bool cifreFisse = false);
+    static i32 larghezzaTitolo(const char* testo, i32 scala = 1, bool cifreFisse = false);
 
     // Gara: posizione (un quadratino per concorrente, il giocatore evidenziato),
     // tappa raggiunta e, all'arrivo, bandiera a scacchi lampeggiante.
