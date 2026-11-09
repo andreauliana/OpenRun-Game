@@ -2294,17 +2294,29 @@ void Game::aggiornaGuida(f32 dt) {
         }
 
         // Fianco a fianco (auto tra URTO_Z_MIN e il punto di tamponamento):
-        // non si sterza dentro la sua carrozzeria, si resta appoggiati di lato.
+        // MIG1 D2: colpo di sterzo rapido verso un'auto affiancata -> sportellata.
+        // Altrimenti non si sterza dentro la sua carrozzeria, si resta appoggiati.
         if (!playerFlipping_) {
             const f32 giro = (f32)road_.totalLength();
-            for (const auto& s : sprites_) {
+            for (size_t k = 0; k < sprites_.size() && k < spritesFonte_.size(); ++k) {
+                const auto& s = sprites_[k];
                 f32 dz = std::fmod(s.worldZ - road_.playerZ, giro);
                 if (dz < 0.0f) dz += giro;
                 const f32 dx = s.worldX - player_.x;
-                if (dz > Game::URTO_Z_MIN && dz < URTO_Z_DAVANTI - 50.0f && std::abs(dx) < URTO_LARGHEZZA)
+                if (dz > Game::URTO_Z_MIN && dz < URTO_Z_DAVANTI - 50.0f && std::abs(dx) < URTO_LARGHEZZA) {
+                    const f32 sterzo = player_.sterzo();
+                    const f32 dSterzo = sterzo - sterzoPrec_;
+                    // Sterzo rapido verso l'auto affiancata: la sportellata va a segno.
+                    if (!playerBump_ && assistenzaBivio_ <= 0.0f && !arrivo_ &&
+                        dx * sterzo > 0.0f && dx * dSterzo > 0.0f && std::abs(dSterzo) > 0.22f) {
+                        urto(spritesFonte_[k], dx, false);
+                        break;
+                    }
                     player_.x = s.worldX + (dx > 0.0f ? -URTO_LARGHEZZA : URTO_LARGHEZZA);
+                }
             }
         }
+        sterzoPrec_ = player_.sterzo();
 
         // Ciglio (Andrea 29/10): uscire di strada e' un tocco del ciglio. Il
         // primo rallenta e resta in memoria; il seguente, se si va ancora forte,
