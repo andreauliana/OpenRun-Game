@@ -435,6 +435,14 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         std::string id, sinistra, destra; // rami vuoti = arrivo
     };
     static constexpr i32 RIVALE_MAX_TAPPE = 8; // profondita' massima del percorso di un rivale
+    // MIG1 D3: carattere del rivale (seme fisso, deterministico).
+    enum CarattereRivale : i32 {
+        RIV_CAR_NORMALE = 0,
+        RIV_CAR_AGGRESSIVO = 1,   // chiude la traiettoria
+        RIV_CAR_PRUDENTE = 2,     // tiene piu' distanza
+        RIV_CAR_VENDICATIVO = 3,  // dopo una sportellata del giocatore lo cerca
+        RIV_CAR_SBAGLIA_CURVA = 4 // ogni tanto sbaglia in curva
+    };
     struct Rivale {
         f32 progresso = 0.0f; // distanza percorsa dalla partenza (tutte le tappe)
         f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
@@ -464,6 +472,8 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         // START, ma ognuno accelera col suo tempo (s per ~63% della punta),
         // cosi' all'inizio il gruppo e' vicino e poi si sgrana.
         f32 spuntoS = 2.0f;
+        i32 carattere = RIV_CAR_NORMALE; // MIG1 D3
+        f32 vendettaS = 0.0f;            // MIG1 D3: cerca il giocatore dopo una sua sportellata
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;

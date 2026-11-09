@@ -1291,6 +1291,14 @@ void Game::inizializzaRivali() {
     Rng rnd(seed_ ^ 0x52495641u);
     static_assert(sizeof(NOMI_RIVALI) / sizeof(NOMI_RIVALI[0]) == RIVALI &&
                   sizeof(COLORI_RIVALI) / sizeof(COLORI_RIVALI[0]) == RIVALI, "un nome e un colore per rivale");
+    // MIG1 D3: carattere per rivale, seme fisso e deterministico (tutti e 4 i tipi presenti).
+    i32 caratteri[RIVALI] = {RIV_CAR_AGGRESSIVO, RIV_CAR_PRUDENTE, RIV_CAR_VENDICATIVO,
+                              RIV_CAR_SBAGLIA_CURVA, RIV_CAR_NORMALE, RIV_CAR_NORMALE, RIV_CAR_NORMALE};
+    Rng rndCar(seed_ ^ 0x43415241u);
+    for (i32 i = RIVALI - 1; i > 0; --i) {
+        const i32 j = (i32)rndCar.next((u32)(i + 1));
+        std::swap(caratteri[i], caratteri[j]);
+    }
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
         r.progresso = 900.0f + (f32)(i / 2) * 1200.0f + (f32)(i % 2) * 400.0f;
@@ -1319,6 +1327,9 @@ void Game::inizializzaRivali() {
         // finito).
         r.urti = 0;
         r.koS = 0.0f;
+        r.sbandataS = 0.0f;
+        r.carattere = caratteri[i];
+        r.vendettaS = 0.0f;
         // Spunto proprio (Andrea 08/11), da una sorgente a parte per non
         // cambiare le altre estrazioni del seme: 1.5..2.5 s.
         Rng rndSpunto(seed_ ^ 0x53505554u ^ (u32)(i * 7919));
@@ -1642,6 +1653,34 @@ void Game::aggiornaRivali() {
                     obiettivo = v.x - (dx >= 0.0f ? 1.0f : -1.0f) * RIVALE_SCHIVA_MARGINE;
                 r.xObiettivo = std::clamp(obiettivo / f, -RIVALE_X_MAX, RIVALE_X_MAX);
                 if (dz < 900.0f && std::abs(dx) < 250.0f) r.passo = std::min(r.passo, v.passo);
+            }
+        }
+        // MIG1 D3: carattere (deterministico, mai teletrasporti: solo obiettivi/passo).
+        if (r.vendettaS > 0.0f) r.vendettaS = std::max(0.0f, r.vendettaS - dt);
+        const f32 xGiocRel = player_.x - player_.centroCorsia;
+        const f32 dxGiocRel = r.x - xGiocRel;
+        if (r.carattere == RIV_CAR_AGGRESSIVO) {
+            // Chiude la traiettoria: se il giocatore arriva da dietro, si mette davanti.
+            if (distacco > 0.0f && distacco < 7000.0f && std::abs(dxGiocRel) < 700.0f)
+                r.xObiettivo = std::clamp(xGiocRel, -RIVALE_X_MAX, RIVALE_X_MAX);
+        } else if (r.carattere == RIV_CAR_PRUDENTE) {
+            // Tiene piu' distanza: se troppo vicino al giocatore lateralmente, si scosta.
+            if (std::abs(distacco) < 5000.0f && std::abs(dxGiocRel) < 550.0f) {
+                const f32 via = dxGiocRel >= 0.0f ? 1.0f : -1.0f;
+                if (std::abs(r.xObiettivo + via * 120.0f) <= RIVALE_X_MAX)
+                    r.xObiettivo = std::clamp(r.xObiettivo + via * 120.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
+            }
+        } else if (r.carattere == RIV_CAR_VENDICATIVO) {
+            // Dopo una sportellata del giocatore lo cerca per restituirla.
+            if (r.vendettaS > 0.0f && std::abs(distacco) < 12000.0f &&
+                !(distacco < Game::URTO_Z_MIN && distacco > Game::URTO_Z_MIN - 4000.0f))
+                r.xObiettivo = std::clamp(xGiocRel, -RIVALE_X_MAX, RIVALE_X_MAX);
+        } else if (r.carattere == RIV_CAR_SBAGLIA_CURVA) {
+            // Ogni tanto sbaglia in curva (deterministico, da ritmoFase).
+            if (curvaQui > 0.00045f && std::sin(r.ritmoFase * 1.7f + (f32)i * 2.1f) > 0.72f) {
+                const f32 latoSbaglio = road_.curvaAt(zLocale) > 0.0f ? -1.0f : 1.0f;
+                r.xObiettivo = std::clamp(r.xObiettivo + latoSbaglio * 220.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
+                r.passo *= 0.97f;
             }
         }
         if (fermi) r.passo = 0.0f;
@@ -2808,6 +2847,8 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
         // MIG1 D2: sportellata efficace - il rivale sbanda e si riprende in ~5 s.
         if (!tamponamento) r.sbandataS = 5.0f;
+        // MIG1 D3: il rivale vendicativo, se colpito, cerca il giocatore.
+        if (!tamponamento && r.carattere == RIV_CAR_VENDICATIVO) r.vendettaS = 8.0f;
     }
     ++urtiGara_;
     segnaBotta(tamponamento ? 0 : -(i32)lato); // lato e' la spinta: la botta arriva dall'altra parte
