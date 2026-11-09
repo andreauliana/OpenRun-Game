@@ -61,6 +61,8 @@ public:
     void suonaBip(bool via) { bipN_ = 0; bipVia_ = via; }
     // V47 V1: sorpasso al pelo (breve blip, effetto nuovo).
     void suonaSorpasso() { sorpassoN_ = 0; }
+    // MIG1 D5: paletto abbattuto che vola (effetto nuovo, in aggiunta).
+    void suonaPaletto() { palettoN_ = 0; }
     // Musica ferma durante il conto alla rovescia: al ritorno (false) il brano
     // riparte dall'inizio, cosi' la traccia comincia insieme allo START.
     void setMusicaFerma(bool ferma) {
@@ -144,6 +146,9 @@ private:
     // --- V47 V1: sorpasso al pelo ---
     i32 sorpassoN_ = -1;
     f32 sfxSorpasso();
+    // --- MIG1 D5: paletto che vola ---
+    i32 palettoN_ = -1;
+    f32 sfxPaletto();
 };
 
 } // namespace sgl

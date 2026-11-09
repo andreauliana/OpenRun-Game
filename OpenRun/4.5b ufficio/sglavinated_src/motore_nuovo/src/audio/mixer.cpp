@@ -265,6 +265,19 @@ f32 Mixer::sfxSorpasso() {
     return 1800.0f * onda * std::max(0.0f, inv);
 }
 
+// MIG1 D5: paletto abbattuto che vola (effetto nuovo, in aggiunta).
+f32 Mixer::sfxPaletto() {
+    const f32 t = (f32)palettoN_ / (f32)sampleRate_;
+    const f32 durata = 0.18f;
+    rumore_ = rumore_ * 1664525u + 1013904223u;
+    const f32 n = (f32)((rumore_ >> 16) & 0xFFFFu) / 32768.0f - 1.0f;
+    const f32 inv = std::min(1.0f, t / 0.004f) * std::min(1.0f, (durata - t) / 0.06f);
+    const f32 f = 520.0f - 220.0f * (t / durata); // colpo che scende di tono
+    const f32 s = (2200.0f * std::sin(2.0f * PI * f * t) + 1200.0f * n) * std::exp(-t / 0.07f);
+    if (++palettoN_ > (i32)(durata * (f32)sampleRate_)) palettoN_ = -1;
+    return s * std::max(0.0f, inv);
+}
+
 // Stridio delle gomme: due toni acuti (circa 1.2 e 1.75 kHz) che salgono e
 // scendono un po' a caso, con un tremolo veloce e un filo di fruscio. Volume
 // sotto il motore pieno; deterministico (generatore interno, niente orologi).
@@ -324,6 +337,7 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }
         if (bipN_ >= 0) { const f32 b = sfxBip(); l += b; r += b; }
         if (sorpassoN_ >= 0) { const f32 sp = sfxSorpasso(); l += sp; r += sp; }
+        if (palettoN_ >= 0) { const f32 pl = sfxPaletto(); l += pl; r += pl; }
         if (musica) {
             // Lettura del nastro con interpolazione lineare tra due campioni.
             const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;

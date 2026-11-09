@@ -2135,7 +2135,7 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     caricaRivali(game);
     game.init(livello); // init non restituisce nulla
 
-    const i32 TOTAL = 1800; // ~30s @60Hz
+    const i32 TOTAL = 2400; // ~40s @60Hz
     i32 hitCount = 0;
     f32 speedPrec = 0.0f;
     bool primoHit = false;
@@ -2144,7 +2144,10 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     for (i32 f = 0; f < TOTAL; ++f) {
         Pad pad;
         pad.held = (u64)Pad::A;       // accelera
-        pad.held |= (u64)Pad::Right;   // sterza forte a destra verso i paletti
+        // Sterza piu' aggressivamente per cercare di colpire i paletti
+        if (f < 200) pad.held |= (u64)Pad::Right;
+        else if (f % 60 < 30) pad.held |= (u64)Pad::Right;
+        else pad.held |= (u64)Pad::Left;
         game.setInput(pad);
         const f32 spPrima = game.state().playerSpeed;
         game.update();

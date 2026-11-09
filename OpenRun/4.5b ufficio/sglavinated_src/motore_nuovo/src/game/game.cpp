@@ -2943,6 +2943,7 @@ void Game::abbattiPali(f32 zPrima) {
     player_.speed *= 0.97f;
     rientroS_ = 0.0f; // piccolo sobbalzo, niente scodata: l'auto resta dritta
     mixer_.suonaUrto(false);
+    mixer_.suonaPaletto(); // MIG1 D5: effetto nuovo in aggiunta
 }
 
 void Game::segnaBotta(i32 lato) {

@@ -16,13 +16,13 @@ Inspirations: 'OutRun', 2YK, Road Race, Doom Engine, GTA, City-Pop, London, Japa
 | Nomi/loghi | inventati; nessun nome o marchio del gioco originale |
 
 ## Riferimento di metodo (non di contenuto)
-Esistono progetti che rifanno un gioco con contenuti liberi (es. Freedoom per Doom): simile concetto per questo progetto di Gioco compilato in C++, ma con parti innovative e animazioni divertenti, una versione rivisitata del videogioco di riferimento 'OutRun'.
+Esistono progetti che rifanno un gioco con contenuti liberi: simile concetto per questo progetto di Gioco compilato in C++, ma con parti innovative e animazioni, una versione rivisitata del videogioco stile 'OutRun'.
 
 ## Stili / temi dei livelli (da `motore_nuovo/dati/livelli/*/livello.json`)
-Ogni livello ha uno stile, e lo dichiara in livello.json (`stile`):
+Ogni livello ha uno stile dichiarato in livello.json (`stile`):
 | ID livello | Note creative |
 |---|---|
-| lv_01_neon | USA, Neon Lights, Dark Buildings, Heroin, shining metalli, futuristic, romantic, gradients, colori: pastello |
+| lv_01_neon | USA, Neon Lights, Shaded Buildings, Heroin, shining metalli, metal gradient, futuristic, romantic, gradients, colori: pastello |
 | lv_02_atomico | robots era, computers, hi-tech, Internet Servers, wiring cables, cromature, atomic age, high buildings, steampunk, stars & pianets, engines, colori: toni grigi e accenti rubin red |
 | lv_03_foglie | plants, foglie di canapa, palm trees, sea side, beach, Birre, Jeans, Rasta culture, Fumo, colori: Jamaica inspired, with green and brown and blue sky |
 | lv_04_cromo | sunset, Ganja, Visual grids, neon lights, Pin ups, videogame culture, toni verdi-blue, grunge texture, industrial, colori brillanti su sfondo scuro notturno |
@@ -47,4 +47,4 @@ Tutti inventati, mai marchi veri. Grafica in `UFFICIO/Dipartimento Grafico/Libre
 - Pixel art, acid graphic, con animazioni moderne; palette definita e condivisa, dithering: Floyd-Steinberg, Atkinson, Error Diffusion, Dot Raster, Bayer al posto di colori aggiuntivi.
 - Visualizzatore solo sopra la linea dell'orizzonte; niente esplosioni o scintille nello spettro.
 - L'auto del giocatore la disegna solo Andrea (pose in `sprite/giocatore_pose/`).
-- Interfaccia e testi a schermo in inglese semplice.
+- Interfaccia e testi in inglese.

@@ -1,13 +1,10 @@
-# ULTIMO_TURNO @developer-junior — 09/11/2026 10:02
-- Blocco/passo: MIG1 J3 (test sportellata, misura colpo+ripresa) [~ codice aggiunto, esecuzione bloccata] + J4 (REVIEW_MIG1 riscritto).
-- File cambiati:
-  - `motore_nuovo/test/prova_gate.cpp` — aggiunta `verificaSportellata(outDir, livello)` e dispatch `modo=="sportellata"` (exit 28). Cerca sprite affiancato in gara singola, esegue colpo sterzo rapido verso sprite (flick neutro→pieno, target dSterzo>0.22/D2), misura tempo al primo colpo via `urtiGara()`, raccoglie proxy ripresa Z sprite vicino 0-2/2-4/4-7s (sbandata attesa ~5s D2), screenshot in `UFFICIO/Officina/Test area/mig1_j3_sportellata/`. Nota: `sbandataS` privato, proxy osservazionale.
-  - `UFFICIO/out/developer-junior/REVIEW_MIG1.md` — riscritto (J4): D1-D3 [x], J2/J3 codice pronti, esecuzione bloccata da shell.
-  - `UFFICIO/bacheche/developer-junior/diario.md` — +1 riga.
-  - `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` — riscritto.
-- Comandi ed exit code (questo turno):
-  - `cmake --build "UFFICIO/Officina/build" --target prova_gate` → **permission.rejected** (shell negata; cmd esatto).
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j2_pali_check" lv_01_neon pali` → exit **0** ma modo ignorato da binario obsoleto (09:44): ha eseguito smoke/avvolgimento/inattività + "GATE OK" (non `GATE PALI OK`).
-  - `ls -l "UFFICIO/Officina/build/prova_gate"` → ok (binario presente, 09:44 817600 byte).
-- Gate: **non eseguito** (09/11/2026 10:02). J2/J3 non verificati a runtime per shell/build negata.
-- Next: quando shell ok, build `prova_gate` poi run `pali` (J2) e `sportellata` (J3), riportare exit code/misure/screenshot.
+# ULTIMO_TURNO @developer-junior — 09/11/2026 10:15 (MIG1 J2/J3/J4)
+- Blocco/passo: MIG1 J2+J3 esecuzione prove, J4 review aggiornata.
+- File cambiati (turno): `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/REVIEW_MIG1.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
+- Cmd: `cmake --build "UFFICIO/Officina/build" --target prova_gate` → exit 0 (09/11 10:15).
+- Cmd: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j2_pali" lv_01_neon pali` → exit 27 (09/11 10:15).
+  - pali: hit_rilevati=0, frame_primo_hit=-1, screenshot=0, dir `mig1_j2_pali/`. FALLITO (serve hit>0 e screenshot>=2). Nota test: clamp baseY<=208 riga ruote.
+- Cmd: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j3_sportellata" lv_01_neon sportellata` → exit 0 (09/11 10:15).
+  - sportellata: GATE SPORTELLATA OK, colpo_a_segno=SI a 0.52s (frame 31), urti_gara=8, ripresa_proxy Z 0-2s=30168.0 2-4s=10325.4 4-7s=-40493.4 (proxy; `sbandataS` privato).
+- gate_t1.sh: non eseguito.
+- Residuo: J2 FALLITO senza hit/screenshot (verificare setup modo pali vs stato D1/paletti); J3 colpo misurato ma recupero ~5s solo proxy. Next: indagine J2, poi affinare prova o chiedere chiarimento dev.
