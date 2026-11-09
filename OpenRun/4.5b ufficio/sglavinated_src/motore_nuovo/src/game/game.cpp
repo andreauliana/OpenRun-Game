@@ -963,7 +963,6 @@ void Game::init(const std::string& livelloId) {
     supporto_.clear();
     partenzaT_ = -1.0f;
     contoPrec_ = -1;
-    nRamiGiocatore_ = 0;
     mixer_.setMusicaFerma(false);
     ren_.setLineaArrivo(false);
     assistenzaBivio_ = 0.0f;
@@ -1715,7 +1714,6 @@ void Game::fineTappa(f32 avanzo) {
         if (v.attivo && v.ramo == latoBivio_ && v.z > giroFinito) v.z -= giroFinito;
         else v.attivo = false;
     }
-    if (nRamiGiocatore_ < 8) ramiGiocatore_[nRamiGiocatore_++] = latoBivio_ < 0 ? -1 : 1;
     caricaLivello(prossima); // imposta subito il tema e lo skyline della tappa nuova (impostaTema)
     // Transizione graduale verso il tema di arrivo (FORK1 punto 6): i colori di
     // ambiente e lo skyline si interpolano in transizioneTemaS_ secondi, niente scatto visivo.
@@ -2890,7 +2888,6 @@ void Game::calcolaClassifica() {
     const f32 tempo = tempoTotaleS();
     classifica_.clear();
     classifica_.push_back({"YOU", tempo, true});
-    for (i32 k = 0; k < nRamiGiocatore_ && k < 8; ++k) classifica_.back().percorso[k] = ramiGiocatore_[k] < 0 ? 'L' : 'R';
     for (i32 i = 0; i < RIVALI; ++i) {
         const Rivale& r = rivali_[i];
         f32 tempoR = r.tempoArrivoS;
@@ -2905,10 +2902,6 @@ void Game::calcolaClassifica() {
             tempoR = tempo + std::max(manca, 0.0f) / passo;
         }
         classifica_.push_back({NOMI_RIVALI[i], tempoR, false});
-        // Strada del rivale ai bivi (la sua scelta, Andrea 22/10 opzione B).
-        i32 lettere = 0;
-        for (i32 k = 0; k < r.nPercorso && lettere < 8; ++k)
-            if (r.ramiPercorso[k] != 0) classifica_.back().percorso[lettere++] = r.ramiPercorso[k] < 0 ? 'L' : 'R';
     }
     std::stable_sort(classifica_.begin(), classifica_.end(),
                      [](const Classificato& a, const Classificato& b) { return a.tempoS < b.tempoS; });

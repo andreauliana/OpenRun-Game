@@ -53,7 +53,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
 | Partenza | auto ferme in griglia, gruppi di supporto ai lati che chiacchierano, GET READY, 3-2-1 con semaforo e bip, START!: musica dall'inizio, tutti partono insieme, ogni rivale col suo spunto (solo runner e libretro, i gate partono subito) | `render/partenza.*`, `Game::preparaPartenza` |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
-| Consulto finale | FINAL CHECK coi tempi che girano, poi classifica con la strada ai bivi (ROUTE) e verdetto: WINNER! col trofeo o YOU FINISHED Nth | `RisultatiFase::disegnaArrivo` |
+| Consulto finale | FINAL CHECK coi tempi che girano, poi classifica (senza colonna ROUTE, Andrea 09/11) e verdetto: WINNER! col trofeo o YOU FINISHED Nth | `RisultatiFase::disegnaArrivo` |
 
 ### Parole dei test (non sono azioni di gioco)
 

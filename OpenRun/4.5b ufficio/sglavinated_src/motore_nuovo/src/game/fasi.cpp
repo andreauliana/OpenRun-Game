@@ -373,39 +373,39 @@ public:
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
     // Classifica d'arrivo sopra la scena della strada (auto ferma, pubblico):
-    // posizione, nome, strada ai bivi, tempo e distacco; il giocatore
+    // posizione, nome, tempo e distacco; il giocatore
     // evidenziato, podio in oro, argento e bronzo.
     // Consulto finale (Andrea 08/11): prima i tempi "girano" mentre si
     // confrontano (chi ha preso altre strade arriva da altre parti), poi le
     // righe si fermano una alla volta e sotto compare il verdetto: trofeo al
     // vincitore, altrimenti la posizione.
     void disegnaArrivo(Renderer& ren, Framebuffer& fb) const {
-        scurisci(fb, 48, 14, 271, 217, 30);
-        fb.fillRect(48, 14, 271, 14, 0xFF909090u);
-        fb.fillRect(48, 217, 271, 217, 0xFF909090u);
-        fb.fillRect(48, 14, 48, 217, 0xFF909090u);
-        fb.fillRect(271, 14, 271, 217, 0xFF909090u);
+        // Pannello basso (Andrea 09/11): finisce a y 156, cosi' sotto si vede
+        // la premiazione intorno all'auto.
+        constexpr i32 SU = 4, GIU = 156;
+        scurisci(fb, 48, SU, 271, GIU, 30);
+        fb.fillRect(48, SU, 271, SU, 0xFF909090u);
+        fb.fillRect(48, GIU, 271, GIU, 0xFF909090u);
+        fb.fillRect(48, SU, 48, GIU, 0xFF909090u);
+        fb.fillRect(271, SU, 271, GIU, 0xFF909090u);
         const bool consulto = timerS_ < CONSULTO_S;
         const char* titolo = consulto ? "FINAL CHECK" : "RANKING";
         if (!consulto || std::fmod(timerS_, 0.5f) < 0.35f)
-            ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
-        ren.drawTesto(64, 48, "POS", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(96, 48, "DRIVER", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(137, 48, "ROUTE", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(170, 48, "TIME", 0xFFA0A0A0u, 0, true);
-        ren.drawTesto(226, 48, "GAP", 0xFFA0A0A0u, 0, true);
+            ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 9, titolo, 0xFFFFFFFFu, 2, true);
+        ren.drawTesto(64, 29, "POS", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(96, 29, "DRIVER", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(170, 29, "TIME", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(226, 29, "GAP", 0xFFA0A0A0u, 0, true);
         static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
         char buf[32], tempo[24];
-        const char* mioPercorso = "";
-        for (const Game::Classificato& c : arrivo_) if (c.giocatore) mioPercorso = c.percorso;
         // Durante il consulto tutte le righe ci sono, coi tempi che girano;
         // poi si fermano una alla volta dall'alto.
         const size_t ferme = consulto ? 0 : std::min(arrivo_.size(), (size_t)((timerS_ - CONSULTO_S) / RIGA_CLASSIFICA_S) + 1);
         for (size_t i = 0; i < arrivo_.size(); ++i) {
             const Game::Classificato& c = arrivo_[i];
             const bool ferma = i < ferme;
-            const i32 y = 58 + (i32)i * 14;
-            if (c.giocatore && ferma) fb.fillRect(56, y - 3, 266, y + 10, 0xFF303060u);
+            const i32 y = 38 + (i32)i * 11;
+            if (c.giocatore && ferma) fb.fillRect(56, y - 2, 266, y + 8, 0xFF303060u);
             const u32 col = c.giocatore ? 0xFFFFFFFFu : 0xFFB0B0B0u;
             if (ferma) {
                 std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
@@ -414,11 +414,6 @@ public:
                 ren.drawTesto(66, y, "-", 0xFF707070u, 1, true);
             }
             ren.drawTesto(96, y, c.nome, ferma ? col : 0xFF808080u, 1, true);
-            // Strada ai bivi (L/R); in azzurro chi ha fatto la stessa del giocatore.
-            if (c.percorso[0]) {
-                const bool stessa = !c.giocatore && std::strcmp(c.percorso, mioPercorso) == 0;
-                ren.drawTesto(141, y + 2, c.percorso, stessa ? 0xFF80F0FFu : 0xFF909090u, 0, true);
-            }
             if (ferma) {
                 formattaTempo(tempo, sizeof(tempo), c.tempoS);
                 ren.drawTesto(170, y, tempo, col, 1, true);
@@ -435,7 +430,7 @@ public:
         }
         if (consulto) {
             const char* attesa = "CHECKING TIMES...";
-            ren.drawTesto(160 - ren.larghezzaTesto(attesa, 1) / 2, 176, attesa, 0xFFA0A0A0u, 1, true);
+            ren.drawTesto(160 - ren.larghezzaTesto(attesa, 1) / 2, 132, attesa, 0xFFA0A0A0u, 1, true);
             return;
         }
         if (ferme < arrivo_.size()) return;
@@ -448,21 +443,22 @@ public:
             const char* v = "WINNER!";
             const i32 w = ren.larghezzaTesto(v, 2);
             const u32 c = std::fmod(dalVerdetto, 0.4f) < 0.2f ? 0xFFFFD040u : 0xFFFFFFFFu;
-            ren.drawTesto(160 - w / 2, 172, v, c, 2, true);
-            trofeo(fb, 160 - w / 2 - 16, 171);
-            trofeo(fb, 160 + w / 2 + 6, 171);
+            ren.drawTesto(160 - w / 2, 126, v, c, 2, true);
+            trofeo(fb, 160 - w / 2 - 16, 127);
+            trofeo(fb, 160 + w / 2 + 6, 127);
         } else if (pos > 0) {
             static const char* SUFF[4] = {"TH", "ST", "ND", "RD"};
             const char* suff = (pos % 100 >= 11 && pos % 100 <= 13) || pos % 10 > 3 ? SUFF[0] : SUFF[pos % 10];
             std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
-            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 176, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
+            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 130, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
         }
+        // Punti e aiuto su una riga sola. URTI / CIGLIO tolti dalla classifica
+        // (Andrea 06/11): le botte restano nel gioco (ammaccature, fumo), non in tabella.
         std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
-        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 192, buf, 0xFFFFE080u, 1, true);
-        // URTI / CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano
-        // nel gioco (ammaccature, fumo), non in tabella.
-        const char* aiuto = "PRESS START FOR MENU";
-        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 204, aiuto, 0xFFA0A0A0u, 1, true);
+        const char* aiuto = "  PRESS START FOR MENU";
+        const i32 wp = ren.larghezzaTesto(buf, 1), wa = ren.larghezzaTesto(aiuto, 1);
+        ren.drawTesto(160 - (wp + wa) / 2, 145, buf, 0xFFFFE080u, 1, true);
+        ren.drawTesto(160 - (wp + wa) / 2 + wp, 145, aiuto, 0xFFA0A0A0u, 1, true);
     }
     // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
     static void trofeo(Framebuffer& fb, i32 x, i32 y) {

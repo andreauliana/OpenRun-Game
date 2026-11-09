@@ -171,9 +171,6 @@ public:
         const char* nome = "";
         f32 tempoS = 0.0f;
         bool giocatore = false;
-        // Strada fatta ai bivi (Andrea 08/11: "gli altri possono scegliere
-        // altri percorsi"): una lettera per bivio, L o R, per la classifica.
-        char percorso[9] = {};
     };
     const std::vector<Classificato>& classificaArrivo() const { return classifica_; }
     f32 tempoTotaleS() const { return (f32)frameGara_ / (f32)frequenzaHz_; }
@@ -300,9 +297,7 @@ private:
     bool partenzaAbilitata_ = false;
     f32 partenzaT_ = -1.0f;
     i32 contoPrec_ = -1; // ultimo numero suonato (bip una volta sola)
-    // Rami presi dal giocatore ai bivi (-1/+1), per la classifica.
-    i32 ramiGiocatore_[8] = {};
-    i32 nRamiGiocatore_ = 0;
+
     std::vector<SpriteInstance> folla_; // ordinata per worldZ
     f32 arrivoS_ = 0.0f;      // secondi dal traguardo
     f32 fermoS_ = -1.0f;      // secondi da fermo dopo il traguardo
