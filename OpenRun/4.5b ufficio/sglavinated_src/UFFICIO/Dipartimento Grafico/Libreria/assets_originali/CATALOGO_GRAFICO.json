@@ -21,35 +21,35 @@
       {
          "id": "sponsor.brinis_udine.neon",
          "tipo": "cartellone",
-         "stato": "pronto",
+         "stato": "approvato",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
       },
       {
          "id": "sponsor.brinis_udine.atomico",
          "tipo": "cartellone",
-         "stato": "pronto",
+         "stato": "approvato",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
       },
       {
          "id": "sponsor.brinis_udine.foglie",
          "tipo": "cartellone",
-         "stato": "pronto",
+         "stato": "approvato",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
       },
       {
          "id": "sponsor.canna_bis.neon",
