@@ -3,7 +3,7 @@
   "nome_display": "SLOW DOWN",
   "slogan": "Pastiglie per freni molto rilassati",
   "descrizione": "Pastiglie freno ironiche",
-  "autore": "ridisegna_sponsor.py (ridisegno MIG1 G1, 09/11)",
+  "autore": "genera_sponsor.py",
   "licenza": "CC0-1.0",
   "originale": true,
   "riferimenti_sega": false,

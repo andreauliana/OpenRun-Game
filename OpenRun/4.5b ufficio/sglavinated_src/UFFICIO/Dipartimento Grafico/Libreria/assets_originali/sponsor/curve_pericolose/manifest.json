@@ -3,7 +3,7 @@
   "nome_display": "CURVE PERICOLOSE",
   "slogan": "appoggiati al peggio",
   "descrizione": "Sponsor fittizio di intimo, doppio senso guida+corpo",
-  "autore": "ridisegna_sponsor.py (ridisegno MIG1 G1, 09/11)",
+  "autore": "genera_sponsor.py",
   "licenza": "CC0-1.0",
   "originale": true,
   "riferimenti_sega": false,

@@ -24,6 +24,7 @@ Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco
 - **Incroci a 90 gradi in citta'** (lv_05, tratto `citta`, campo `incroci` in `tratti.json`): un incrocio a meta' tratto: strada perpendicolare, marciapiedi, strisce pedonali, linee di stop, semafori sempre verdi, auto che passano di continuo (Claude e Andrea 08/11 notte).
 - **Partenza** (griglia, pubblico, 3-2-1-START) se la PR #84 e' nel main.
 - **Menu**: logo SEGNAPOSTO "OPEN RUN" (`Libreria/assets_originali/ui/logo/logo_openrun.png`) + le voci. **Niente altre scritte, decorazioni o elementi**: il logo e il menu li fa Andrea.
+- **Cartelloni sponsor** (`Libreria/assets_originali/sponsor/`): **li tocca solo Andrea**. Il 09/11 ha fatto ripristinare gli originali; nessun agente li ridisegna, rigenera o ritocca (ne' PNG ne' raw). Se Andrea cambia un PNG, si converte in raw e basta.
 - **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le vecchie varianti non usate (gruppo B) sono state cancellate da Andrea l'08/11: non si rigenerano.
 
 ## 3. Vocabolario di gioco (azioni definite e testate)
@@ -66,7 +67,7 @@ Prove automatiche di `prova_gate` (`UFFICIO/Officina/build/prova_gate <out> <liv
 
 ## 4. Il vostro raggio d'azione (v4.7)
 
-- **Il BLOCCO MIG1** di `RICHIESTA.md`, poi il **BLOCCO V47** (sezione 6): @grafico cartelloni leggibili (G1); @developer paletti che atterrano sull'erba (D1), sportellata efficace con recupero del rivale in ~5 s (D2), rivali con carattere (D3), nomi dei rivali da culture diverse legati ai temi (D4), audio solo extra (D5); @developer-junior prove e review (J1-J4).
+- **Il BLOCCO MIG1** di `RICHIESTA.md`, poi il **BLOCCO V47** (sezione 6): @grafico G1 ANNULLATO (cartelloni: solo Andrea), G2 resta; @developer paletti che atterrano sull'erba (D1), sportellata efficace con recupero del rivale in ~5 s (D2), rivali con carattere (D3), nomi dei rivali da culture diverse legati ai temi (D4), audio solo extra (D5); @developer-junior prove e review (J1-J4).
 - Costanti aperte: SOLO `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`, danni/KO/recupero dei rivali, volo dei paletti. Tutto il resto del vocabolario e' in sola lettura.
 - Passi piccoli: dopo ogni passo di codice `ctest` verde e `gate_t1.sh` exit 0. Niente test nuovi per ritocchi grafici.
 
