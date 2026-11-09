@@ -2205,7 +2205,13 @@ void Game::aggiornaGuida(f32 dt) {
         if (ciglioMemoriaS_ > 0.0f && !player_.offroad) ciglioMemoriaS_ = std::max(0.0f, ciglioMemoriaS_ - dt);
         colpiMemoria_ = std::max(0.0f, colpiMemoria_ - dt / COLPI_OBLIO_S);
         if (rientroS_ >= 0.0f) rientroS_ = rientroS_ + dt > RIENTRO_S ? -1.0f : rientroS_ + dt;
-        for (Detrito& d : detriti_) if (d.t >= 0.0f) d.t = d.t + dt > PALO_VOLO_S ? -1.0f : d.t + dt;
+        // MIG1 D1: il paletto a terra resta finche' non esce dietro l'auto
+        // (poi lo slot si libera); il volo dura PALO_VOLO_S, poi e' appoggiato.
+        for (Detrito& d : detriti_) {
+            if (d.t < 0.0f) continue;
+            d.t = std::min(d.t + dt, PALO_VOLO_S);
+            if (road_.playerZ - d.z > PALO_PASSO * 2.0f) d.t = -1.0f;
+        }
         abbattiPali(zPrima);
 
         // Fuori strada a lungo e ancora forte: incidente. Piano nell'erba
@@ -2538,14 +2544,29 @@ void Game::render() {
                        player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
                        posaGiocatore, km_ * 1000.0f, &fx);
-    // Paletti abbattuti: volano via di lato, girando, dal fianco dell'auto.
-    for (const Detrito& d : detriti_) {
-        if (d.t < 0.0f) continue;
-        const f32 k = d.t / PALO_VOLO_S;
-        const i32 cx = 160 + (i32)((player_.x - player_.centroCorsia) * 0.035f);
-        const i32 x = cx + d.lato * (40 + (i32)(k * (60.0f + 60.0f * d.v)));
-        const i32 y = 214 - (i32)(std::sin(3.14159f * k) * (18.0f + 14.0f * d.v)) + (i32)(k * 6.0f);
-        ren_.drawDetrito(x, y, 4, 16, (f32)d.lato * k * 9.0f, d.lato < 0 ? pal_[1] : pal_[14]);
+    // Paletti abbattuti (MIG1 D1, Andrea 08/11): coordinate mondo, proiettati
+    // dal renderer con la stessa proiezione della strada: volano di lato dal
+    // fianco dell'auto, atterrano sull'erba e scorrono via con la strada.
+    {
+        Renderer::DetritoRender dr[12];
+        i32 n = 0;
+        for (const Detrito& d : detriti_) {
+            if (d.t < 0.0f || n >= 12) continue;
+            const f32 giro = (f32)road_.totalLength();
+            f32 zRel = d.z - road_.playerZ;
+            if (giro > 0.0f) { // come drawSprites: wrap sul giro della tappa
+                zRel = std::fmod(zRel, giro);
+                if (zRel < 0.0f) zRel += giro;
+            }
+            const f32 k = std::min(d.t / PALO_VOLO_S, 1.0f);
+            dr[n].zRel = zRel;
+            dr[n].worldX = d.x0 + (d.x1 - d.x0) * k;
+            dr[n].k = k;
+            dr[n].v = d.v;
+            dr[n].lato = d.lato;
+            ++n;
+        }
+        ren_.drawDetriti(dr, n);
     }
     disegnaPremiazioneDavanti(fb_, ren_, premio);
     if (urtoK > 0.0f) {
@@ -2810,9 +2831,16 @@ void Game::abbattiPali(f32 zPrima) {
     if (nOra <= nPrima) return;
     for (Detrito& d : detriti_) {
         if (d.t >= 0.0f) continue;
+        // MIG1 D1: coordinate mondo. Il paletto parte dal bordo carrozzabile
+        // dove stava in piedi e atterra sull'erba piu' fuori, z della sua
+        // bocchetta (nOra * PALO_PASSO) resta fissa: scorre via con la strada.
+        const f32 bordo = Road::ROAD_HALF_WORLD * std::max(1.0f, player_.larghezzaCorsia);
         d.t = 0.0f;
         d.lato = xRel > 0.0f ? 1 : -1;
         d.v = player_.speed / player_.maxSpeed();
+        d.z = (f32)nOra * PALO_PASSO;
+        d.x0 = d.lato * (bordo + 40.0f);
+        d.x1 = d.lato * (bordo + 480.0f);
         break;
     }
     player_.speed *= 0.97f;

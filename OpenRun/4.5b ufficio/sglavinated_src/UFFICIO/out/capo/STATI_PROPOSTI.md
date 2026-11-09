@@ -1,51 +1,34 @@
 # STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
 
-Fonte: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, UFFICIO/Checkpoint Revision/ (STATO_CORRENTE.md, REGISTRO_REVISIONI.md, dossier CP-006), UFFICIO/Officina/STATUS_OFFICINA.md, UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md.
+Data: 2026-11-09. Fonti: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, AGENTS.md, RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md, UFFICIO/Checkpoint Revision/ (STATO_CORRENTE, registro, CP-006), status Officina e Grafico.
 
-Data: 2026-11-08. **Chiusura CP-006 (T1-RUN, Tappa 1) gia' registrata e verificata su disco: dossier CP-006 (esito CHIUSO), REGISTRO_REVISIONI (riga 2026-11-08) e STATO_CORRENTE allineati. Tappa attiva: BLOCCO PERC1 (rifinitura del percorso, TAPPE.md 08/11).**
+**v4.6 CHIUSA 08/11 sera (Andrea: "circa 80-90%"); base legacy 08/11 approvata e NON si tocca (ANDREA_REVIEW sez. 2-3). Tappa attiva: BLOCCO MIG1** (Andrea 08/11 sera: "un passo per turno, niente domande ad Andrea, si procede"). Finiti i propri passi MIG1, ciascuno passa al BLOCCO V47 (continuo, nessuna attesa). T1-RUN [x] e CP-006 CHIUSO (D19 con RISPOSTA DI ANDREA, non riaprire).
 
-Ruoli 4.6: **developer, developer-junior, grafico**. Consegne: `UFFICIO/out/developer/`, `UFFICIO/out/developer-junior/`, `UFFICIO/out/grafico/`.
+## Stati e deleghe (ruoli 4.6: developer, developer-junior, grafico)
 
-## Chiusura checkpoint verificata (Turno 1, ora 0 di 12)
+| Blocco | Stato | Chi adesso | Revisore indipendente | Percorso | Criterio |
+|---|---|---|---|---|---|
+| MIG1 | [ ] | @grafico **G1** · @developer **D1** · @developer-junior **J1** | J per G/D (cand. junior); J1 in `REVIEW_MIG1.md` per D | `UFFICIO/out/<ruolo>/` | Ogni passo: ctest verde (27) + `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, replay 2x IDENTICO, Pi 400 <= 12 ms/frame |
+| V47 | [ ] | dopo MIG1: developer **V1**, junior **VJ1**, grafico **VG1** | incrociata a ogni passo V | `UFFICIO/out/<ruolo>/` | stesse prove di MIG1 |
+| T1-RUN | [x] | — | review incrociate POSITIVE | — | CP-006 CHIUSO 08/11 su mandato Andrea. Gate exit 0, replay identico, ms/frame <= 20 |
+| P1 | [x] | — | — | — | screenshot P1 passa (frame 446); non toccare `gate_t1.sh`/`salvaScreenshotP1` |
+| H | [~] | Andrea | — | — | prova Pi 400 quando vorra' (D12/D14 = A: prima Mac) |
+| DECO1 | [~] | — | review incrociata da completare, poi CP-008 | — | — |
+| F60 | [x] gate / [~] review | — | developer→junior pendente | — | review registrata, poi CP F60 |
+| CP-002/003/004 | APERTI | — | review indipendente da assegnare (≠ autore; cand. junior) | — | review positiva → chiusura |
+| MD0, T5, N, M | [-] | sospesi | — | — | — |
 
-- CP-006: CHIUSO su mandato Andrea (D19 in ANDREA_REVIEW.md 08/11: T1-RUN [x]; non riaprire). Gate: `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 08/11, `GATE T1: TUTTO OK`, 6/6 piste, replay 2x IDENTICO, ms/frame <= 20 (log `UFFICIO/Officina/Test area/gate_t1.log`). Review indipendenti positive (junior→developer su gate_t1.sh; developer→junior su `prova_gate.cpp:969`).
-- CP-005 (R1) e CP-007 (FORK1): CHIUSI, non si riaprono.
-- CP-002/CP-003/CP-004: APERTI, in attesa review indipendente da ruolo diverso dall'autore. DECO1 e F60 attendono review incrociata. Nessun altro CP chiudibile ora.
-- FINITO non creabile: non tutti i blocchi sono [x] (PERC1, DECO1, F60 review, R2, RIV, PIST1, FIN, H).
+## Deleghe MIG1 (un passo per turno)
 
-## Stati proposti (lavoro attivo = BLOCCO PERC1)
+- **@grafico G1** cartelloni sponsor leggibili (stesso nome e misura, parola corta grande, 2-3 colori, contorno scuro, dithering Bayer solo su sfondo): `Libreria/assets_originali/sponsor/` + `genera_sponsor.py`, raw con `png_a_raw.py`, catalogo aggiornato, prima/dopo in `Test area/grafico/`. Poi G2 (3 osservazioni dopo D1-D3).
+- **@developer D1** paletti abbattuti che volano di lato e atterrano sull'erba, posizione nel mondo, mai sotto la riga ruote (`Game::abbattiPali` + render). Poi D2 sportellata efficace, D3 rivali con carattere, D4 nomi 7 rivali, D5 audio extra (facoltativo). **NOTA BLOCCO:** auto del giocatore = `REGOLE_AUTO_GIOCATORE.md` intoccata; costanti aperte solo `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`, danni/KO/recupero rivali, volo dei paletti.
+- **@developer-junior J1** review breve stato attuale in `UFFICIO/out/developer-junior/REVIEW_MIG1.md` (cosa va, cosa no, una miglioria piccola). Poi J2 dopo D1, J3 dopo D2, J4 review aggiornata a ogni passo D.
+- **@capo**: una riga di registro per turno; STATI_PROPOSTI allineato; niente richieste ad Andrea.
 
-| Blocco | Stato | Responsabile | Revisore indipendente | Percorso consegna | Criterio di chiusura | Note |
-|---|---|---|---|---|---|---|
-| T1-RUN | [x] | @developer + @developer-junior | incrociata POSITIVA | `UFFICIO/out/developer/`, `UFFICIO/out/developer-junior/` | gate exit 0 6/6 piste, replay 2× IDENTICO, ms/frame <= 20 | CP-006 CHIUSO 08/11. Tappa 1 chiusa. |
-| PERC1 | [~] | @developer (D1-D5) · @developer-junior (J1-J4) · @grafico (G1-G3) | J4 in `UFFICIO/out/developer-junior/REVIEW_PERC1.md` dopo ogni passo D | `UFFICIO/out/developer/`, `UFFICIO/out/developer-junior/`, `UFFICIO/out/grafico/` | ctest 27/27 verde e `gate_t1.sh` exit 0 dopo ogni passo | Tappa attiva (TAPPE.md 08/11). Un passo per turno, senza aspettare nessuno. Vietati: HUD/UI, auto giocatore (`REGOLE_AUTO_GIOCATORE.md`), premiazione, musica/mixer.*, `src/runner/`, scenari/skyline, parapetti ponte (annullati; si aggiungono solo tratti D1/D4). |
-| P1 | [x] | @developer | — | `UFFICIO/out/developer/` | build CMake, screenshot gameplay | T1-Q2 sì. Screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh`/`salvaScreenshotP1`. |
-| G1-catalogo | [x] | @grafico | da assegnare (cand. @developer-junior, ≠ @grafico) | `UFFICIO/out/grafico/` | review positiva su CP-002 | Handoff 07/11 12:04: 220 elementi, 0 non catalogati, CC0-1.0. CP-002 APERTO. |
-| H | [~] | Andrea | — | — | prova Pi 400/RetroPie quando Andrea vorra' | Ordine test T1-Q5/D12/D14 = A: prima Mac poi Pi 400. |
-| FORK1 | [x] | @developer + @developer-junior | incrociata (CP-007) | `UFFICIO/out/developer/`, `UFFICIO/out/developer-junior/` | ctest 20/20, gate `bivio_*`/`tema_transizione` | CP-007 CHIUSO. |
-| DECO1 | [~] | @developer (@grafico 2f FATTO) | da assegnare (cand. @developer-junior) | `UFFICIO/out/developer/`, `UFFICIO/out/grafico/` | review incrociata gate `decorazioni` + CP-008 | — |
-| F60 | [x] gate / [~] review | @developer | @developer-junior (incrociata pendente) | `UFFICIO/out/developer/` | review incrociata + CP F60 | Gate verde (60/50 Hz, replay IDENTICO). |
-| R2 | [~] | @developer | @developer-junior | `UFFICIO/out/developer/` | ctest verde con tutti i gate | NON subordinato a D18/D19 (Andrea 27/10). Ma su PERC1 ora si lavora a passi D, non R2. |
-| RIV | [~] | @developer + @grafico | @developer-junior | `UFFICIO/out/developer/`, `UFFICIO/out/grafico/` | ctest verde; sprite rivali in catalogo | Codice a-c fatto; bug sovrapposizioni rivali risolto 08/11 (`progressoTappa`); grafica rivali a @grafico. |
-| PIST1 | [~]/[ ] | @developer + @grafico | @developer-junior | `UFFICIO/out/developer/`, `UFFICIO/out/grafico/` | ctest verde con `tratti` | G-P1 [x]. P3 parapetti ANNULLATO per sempre (Andrea 06/11, confermato 08/11). |
-| FIN | [ ] | @developer + @grafico | @developer-junior | `UFFICIO/out/developer/`, `UFFICIO/out/grafico/` | ctest verde; screenshot 3 finali | Dopo R2 e RIV. |
-| MD0, T5, N, M | [-] | Andrea/grafico | — | — | — | Sospesi. |
+## Vietati MIG1 (base legacy)
 
-## Deleghe 4.6 (BLOCCO PERC1, un passo per turno)
+Auto e guida, HUD, audio esistente (solo aggiunte), tracciati/tempi, ponte/galleria/incroci, partenza, menu+logo, grafica di Andrea — elenco completo in ANDREA_REVIEW sez. 2-3. Si migliora SOLO aggiungendo. Niente file .md in `motore_nuovo/test/`; solo dentro `UFFICIO/` e `motore_nuovo/` su richiesta del blocco.
 
-- **@developer — D1** (solo dati) in `dati/tracciati/tratti.json`: `curva_cieca_dx`/`curva_cieca_sx` (curva ±0.6, `dune` 0.12, `onde` 1, lunghezza 220) e `saliscendi` (`dune` 0.09, `onde` 3, lunghezza 300); nel `tracciato` di lv_02_atomico, lv_03_foglie, lv_05_spray: curve cieche sempre in coppia dx+sx, prima degli ultimi 1200 segmenti, somma curva*lunghezza ~0, nessun tipo ripetuto di fila. Poi D2 (traffico per tratto, `Road::trafficoAt`), D3 (frecce cresta), D4 (galleria lv_02/lv_05 + Renderer), D5 (miglioria da review J4). Ogni passo: ctest 27/27 e `gate_t1.sh` exit 0. Consegna `UFFICIO/out/developer/`.
-- **@developer-junior — J1** gate `tratti` in `test/prova_gate.cpp`: >= 7 tipi di tratto per livello, nessun tipo ripetuto due volte di fila, una riga per livello. Poi J2 (gate `traffico` dopo D2), J3 (gate galleria + screenshot PPM in `UFFICIO/Officina/Test area/` dopo D4), J4 (review breve in `UFFICIO/out/developer-junior/REVIEW_PERC1.md` riscritto, con una miglioria per D5). Consegna `UFFICIO/out/developer-junior/`.
-- **@grafico — G1** `freccia_cresta_dx.png`/`freccia_cresta_sx.png` (stile/misura di `freccia_curva_dx/sx.png`, segno del dosso) in `assets_originali/scenari/comuni/oggetti/`, script in `UFFICIO/Dipartimento Grafico/TOOLS/`, raw con `png_a_raw.py`, 2 voci `pronto`, `check_catalogo_grafico.py` exit 0. Poi G2 (`parete_galleria.png` 32x32 + `luce_galleria.png` 16x8), G3 (3 osservazioni in `UFFICIO/out/grafico/ULTIMO_TURNO.md` dopo D4). Handoff unico: `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`. Consegna `UFFICIO/out/grafico/`.
-- **@capo**: una riga di registro per turno; STATI_PROPOSTI allineato a PERC1. Chiusura CP-006 eseguita e registrata. Niente richieste nuove ad Andrea ("Niente domande ad Andrea per PERC1: si procede").
+## Checkpoint
 
-## Decisioni Andrea (ANDREA_REVIEW.md)
-
-- **D19 CHIUSA (08/11, mandato sblocco agenti) → T1-RUN [x], CP-006 chiuso.** D12 = A, D14 = A: nessun lavoro dedicato Pi 400/RetroPie prima della prova Mac di Andrea.
-- HUD NON si tocca (08/11); parapetti ponte annullati per sempre; auto giocatore bloccata (`REGOLE_AUTO_GIOCATORE.md`); 11:40 ANNULLATO 08/11 (curve/rampa ponte e regole rivali TORNATE ai valori bloccati; i 6 gate percorso passano gia').
-- Zero domande aperte a Andrea: nessun DEFAULT in uso.
-
-## Prossime azioni
-
-1. @developer: **D1**; @developer-junior: **J1**; @grafico: **G1**. Un passo per turno, gate + ctest verde dopo ogni passo.
-2. Quando PERC1 avanza: CP-002 review indipendente; DECO1 incrociata + CP-008; F60 incrociata + CP F60; PIST1 (solo gate `tratti` J1/J2); FIN dopo R2/RIV.
-3. FINITO solo quando tutti i blocchi della tappa sono [x].
+CP-002/003/004: APERTI in attesa di review indipendente — nessuna review su disco da chiudere; DECO1 e F60 attendono review incrociata. Nessun CP chiudibile questo turno. FINITO non creato (MIG1/V47 [ ], blocchi non tutti [x]). Nessuna domanda a Andrea (MIG1: "si procede"); nessun PER_CLAUDE.md.

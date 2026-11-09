@@ -307,6 +307,11 @@ public:
     // Pezzo che vola via (paletto abbattuto): rettangolo w x h ruotato di
     // `angolo` attorno al centro (x, y), con il cappuccio scuro in cima.
     void drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore);
+    // MIG1 D1 (Andrea 08/11): paletti abbattuti in coordinate mondo, proiettati
+    // con la stessa proiezione della strada. Atterrano sull'erba a fianco della
+    // strada e scorrono via con essa; mai sotto la riga delle ruote.
+    struct DetritoRender { f32 zRel = 0.0f; f32 worldX = 0.0f; f32 k = 1.0f; f32 v = 0.0f; i32 lato = 1; };
+    void drawDetriti(const DetritoRender* v, i32 n);
     const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};

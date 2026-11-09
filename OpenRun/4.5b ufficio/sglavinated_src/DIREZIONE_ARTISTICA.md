@@ -18,16 +18,16 @@ Inspirations: 'OutRun', 2YK, Road Race, Doom Engine, GTA, City-Pop, London, Japa
 ## Riferimento di metodo (non di contenuto)
 Esistono progetti che rifanno un gioco con contenuti liberi (es. Freedoom per Doom): simile concetto per questo progetto di Gioco compilato in C++, ma con parti innovative e animazioni divertenti, una versione rivisitata del videogioco di riferimento 'OutRun'.
 
-## Stili per livello (richiesta di Andrea - aggiornata al 23 Oct)
-Ogni livello ha UNO stile, e lo dichiara in livello.json (`stile`):
+## Stili / temi dei livelli (da `motore_nuovo/dati/livelli/*/livello.json`)
+Ogni livello ha uno stile, e lo dichiara in livello.json (`stile`):
 | ID livello | Note creative |
 |---|---|
 | lv_01_neon | USA, Neon Lights, Dark Buildings, Heroin, shining metalli, futuristic, romantic, gradients, colori: pastello |
 | lv_02_atomico | robots era, computers, hi-tech, Internet Servers, wiring cables, cromature, atomic age, high buildings, steampunk, stars & pianets, engines, colori: toni grigi e accenti rubin red |
 | lv_03_foglie | plants, foglie di canapa, palm trees, sea side, beach, Birre, Jeans, Rasta culture, Fumo, colori: Jamaica inspired, with green and brown and blue sky |
-| lv_04_cromo | sunset, Ganja, Visual grids, neon lights, Pin usp, videogame culture, toni verdi-blue, grunge texture, industrial, London style, colori accesi su sfondi scuri |
-| lv_05_spray | Urban, London, Public transport, busy City landscape, donne nude, cloudy, fog, industrial, delfini, colori: bevel grigio, red, blue, white |
-| lv_06_desktop | Blue sky, green fields surroundings, wild animals, Nature, birds, system icons, cables, motheboard circuits, Internet Culture, AI agents, colori: rosa shoking, azzurro, lime green, pink |
+| lv_04_cromo | sunset, Ganja, Visual grids, neon lights, Pin ups, videogame culture, toni verdi-blue, grunge texture, industrial, colori brillanti su sfondo scuro notturno |
+| lv_05_spray | Urban Megalopoli, London inspired, Public Transport (tube or trains), Busy life in a big City with many different random people and cultures, donne nude ai lati della strada, cloudy, fog, industrial, delfini, colori: bevel grigio, red, blue, white |
+| lv_06_desktop | Blue sky, green fields surroundings, wild animals, Nature, birds, folder symbols and operating system icons, long dark and coloured connecting cables, motheboard circuits, Internet Culture, meme, colori: rosa shoking, azzurro, lime green, pink |
 
 ## Sponsor finti (cartelloni lungo la strada)
 Tutti inventati, mai marchi veri. Grafica in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/` (generatore `genera_sponsor.py`, catalogo `CATALOGO_SPONSOR.json`), una versione per stile (neon, atomico, foglie).
@@ -42,18 +42,9 @@ Tutti inventati, mai marchi veri. Grafica in `UFFICIO/Dipartimento Grafico/Libre
 | ERBA MEDICA | ammortizzatori / doppio senso | Ammortizzatori ad alta quota |
 | GREEN BOX | pit stop / servizi | Il Pit Stop della felicita |
 
-## Temi dei livelli nel gioco (da `motore_nuovo/dati/livelli/*/livello.json`)
-| Livello | Tema | Stile |
-|---|---|---|
-| lv_01_neon | autostrada di neon di notte: griglia di luce, skyline scuro e sole a righe all'orizzonte | synthwave / C-wave |
-| lv_02_atomico | strada atomica anni '50: razzi di latta, UFO di stagno e colori pastello | sci-fi anni '50 |
-| lv_03_foglie | viale delle foglie: colori che cambiano e fumi stilizzati, parodia dentro il messaggio di sicurezza stradale | psichedelico / cannabinoidi |
-| lv_04_cromo | tangenziale sopraelevata tra megastrutture cromate: curvoni lunghi e veloci, una grande discesa | futurista |
-| lv_05_spray | periferia industriale con muri a spray: incroci a 90 gradi, rettilinei corti, frenate | punk |
-| lv_06_desktop | prato verde e cielo con nuvole da sfondo del desktop: colline continue, saliscendi e curve medie | Windows 95 vibe |
 
 ## Regole grafiche fisse (Andrea, ottobre-novembre)
-- Pixel art anni '80 con animazioni moderne; palette piccola e condivisa, dithering (Bayer, Atkinson, halftone) al posto di altri colori.
+- Pixel art, acid graphic, con animazioni moderne; palette definita e condivisa, dithering: Floyd-Steinberg, Atkinson, Error Diffusion, Dot Raster, Bayer al posto di colori aggiuntivi.
 - Visualizzatore solo sopra la linea dell'orizzonte; niente esplosioni o scintille nello spettro.
 - L'auto del giocatore la disegna solo Andrea (pose in `sprite/giocatore_pose/`).
 - Interfaccia e testi a schermo in inglese semplice.

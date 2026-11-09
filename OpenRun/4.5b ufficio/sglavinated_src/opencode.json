@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode/glm-5.3-flash-free",
+  "model": "opencode/iceman-free",
   "default_agent": "capo",
   "provider": {
     "ollama": {

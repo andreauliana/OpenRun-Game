@@ -5,7 +5,8 @@
     "autore": "genera_sponsor.py (Claude App)",
     "riferimenti_sega": false,
     "originale": true,
-    "generatore": "assets_originali/sponsor/genera_sponsor.py",
+    "generatore": "UFFICIO/Dipartimento Grafico/TOOLS/ridisegna_sponsor.py",
+    "design_mig1_g1": "cartelloni leggibili: una parola corta e grande (font 5x7, contorno scuro), resto del nome piccolo in basso, 2-3 colori per stile, dithering Bayer 4x4 solo sullo sfondo; stessi nomi e stessa misura 128x64 (Andrea 08/11)",
     "sprite": "128x64 RGBA PNG",
     "stili_disponibili": ["neon", "atomico", "foglie"],
     "regole_posizionamento": {

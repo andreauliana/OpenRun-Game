@@ -1160,6 +1160,35 @@ void Renderer::drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore) {
         }
 }
 
+void Renderer::drawDetriti(const DetritoRender* v, i32 n) {
+    // MIG1 D1: stessa proiezione di drawSprites/drawRoadsideMarkers: il
+    // segmento di strada alla profondita' del paletto dà centro e scala,
+    // la laterale e' in unita' mondo dal centro strada (segue le curve).
+    if (projs_.empty() || n <= 0) return;
+    for (i32 i = 0; i < n; ++i) {
+        const DetritoRender& d = v[i];
+        if (d.zRel < Road::Z_NEAR) continue; // dietro o sui baffi della telecamera
+        auto it = std::lower_bound(projs_.begin(), projs_.end(), d.zRel,
+            [](const Road::ProjectedSeg& p, f32 val) { return p.worldZ < val; });
+        if (it == projs_.end()) continue; // oltre il raggio disegnato
+        if (it->galleria || it->sospeso || it->carr.doppia) continue;
+        const f32 pxUnita = it->scale * (f32)Framebuffer::WIDTH / 2.0f;
+        const f32 sx = it->screenX + pxUnita * d.worldX;
+        const f32 lunghezza = std::clamp(it->scale * 300.0f * (f32)Framebuffer::HEIGHT / 2.0f, 2.0f, 28.0f);
+        const i32 spessore = std::clamp((i32)(it->scale * 35.0f * (f32)Framebuffer::WIDTH / 2.0f), 1, 4);
+        // Volo: piccolo arco in aria (come prima, dipende dalla velocita'); a
+        // k = 1 il paletto e' appoggiato sull'erba. La base non scende mai
+        // sotto la riga delle ruote (J2).
+        const f32 arco = d.k < 1.0f ? std::sin(3.14159f * d.k) * (10.0f + 12.0f * d.v) : 0.0f;
+        f32 baseY = it->screenY - arco;
+        constexpr f32 BASE_RIGA_RUOTE = 208.0f;
+        if (baseY > BASE_RIGA_RUOTE) baseY = BASE_RIGA_RUOTE;
+        const f32 angolo = (f32)d.lato * d.k * 1.35f; // da dritto a quasi sdraiato
+        drawDetrito((i32)sx, (i32)(baseY - lunghezza * 0.5f), spessore, (i32)lunghezza,
+                    angolo, d.lato < 0 ? pal_[1] : pal_[14]);
+    }
+}
+
 void Renderer::drawSkyline(const Sprite& s) {
     // Skyline: largo quanto lo schermo, ancorato all'orizzonte, proporzioni
     // della fonte. Indice 0 = trasparente (resta il colore del cielo).

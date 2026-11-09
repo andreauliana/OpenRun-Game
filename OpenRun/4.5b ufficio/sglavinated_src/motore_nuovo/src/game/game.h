@@ -259,8 +259,11 @@ private:
     f32 colpiMemoria_ = 0.0f;     // memoria delle sportellate (incidente a COLPI_INCIDENTE)
     f32 rientroS_ = -1.0f;        // secondi dal rientro in strada (sobbalzo), -1 = niente
     bool cartelloneToccato_ = false;
-    struct Detrito { f32 t = -1.0f; i32 lato = 1; f32 v = 0.0f; }; // paletto che vola via
-    Detrito detriti_[4];
+    // MIG1 D1: paletto abbattuto in coordinate mondo. Abbattuto a bordo strada
+    // (x0) vola di lato e atterra sull'erba (x1), restandoci: scorre via da
+    // solo perche' z resta fissa mentre l'auto avanza.
+    struct Detrito { f32 t = -1.0f; i32 lato = 1; f32 v = 0.0f; f32 z = 0.0f; f32 x0 = 0.0f; f32 x1 = 0.0f; };
+    Detrito detriti_[12];
     void ribalta();
     void liberaRipartenza();
     f32 ciglioRallenta_ = 0.7f;      // config.json ciglio_rallenta

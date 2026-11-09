@@ -21,233 +21,233 @@
       {
          "id": "sponsor.brinis_udine.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.brinis_udine.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.brinis_udine.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/brinis_udine/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.canna_bis.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/canna_bis/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.canna_bis.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/canna_bis/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.canna_bis.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/canna_bis/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.curve_pericolose.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/curve_pericolose/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.curve_pericolose.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/curve_pericolose/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.curve_pericolose.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/curve_pericolose/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.erba_medica.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/erba_medica/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.erba_medica.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/erba_medica/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.erba_medica.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/erba_medica/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.green_box.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/green_box/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.green_box.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/green_box/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.green_box.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/green_box/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.piston_high.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/piston_high/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.piston_high.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/piston_high/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.piston_high.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/piston_high/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.slow_down.neon",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/slow_down/cartellone_neon.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_neon.sglraw",
          "livelli": [
             "lv_01_neon"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.slow_down.atomico",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/slow_down/cartellone_atomico.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_atomico.sglraw",
          "livelli": [
             "lv_02_atomico"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "sponsor.slow_down.foglie",
          "tipo": "cartellone",
-         "stato": "approvato",
+         "stato": "pronto",
          "file": "assets_originali/sponsor/slow_down/cartellone_foglie.png",
          "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_foglie.sglraw",
          "livelli": [
             "lv_03_foglie"
          ],
-         "nota": "D2/D2b"
+         "nota": "MIG1 G1: ridisegno leggibile (ridisegna_sponsor.py, 09/11); parola grande con contorno scuro, dithering solo su sfondo; in attesa ok Andrea"
       },
       {
          "id": "auto.argento_lunare",
