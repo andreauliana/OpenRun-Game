@@ -127,9 +127,9 @@ permission:
   execute: deny
   edit:
     "*": deny
-    "bacheche/livelli/**": allow
+    "UFFICIO/bacheche/livelli/**": allow
     "BACHECA_PUBBLICA.md": allow
-    "out/livelli/**": allow
+    "UFFICIO/out/livelli/**": allow
     "libreria/livelli/**": allow
     "motore_nuovo/dati/livelli/**": allow
     "motore_nuovo/docs/LIVELLI.md": allow

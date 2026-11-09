@@ -50,6 +50,9 @@ struct RoadSegment {
     i16 luci = -1;
     i8 versoLuci = 0;
     u8 portale = 0;
+    // Incrocio a 90 gradi (Andrea 08/11, citta'): indice in Road::incroci()
+    // per i segmenti vicini a un incrocio (strada, marciapiedi, strisce), -1 altrove.
+    i16 incrocio = -1;
     u32 colorRoad = 0xFF808080;  // colore asfalto (palette index -> render)
     u32 colorRumble = 0xFFFFFFFF; // colore strisce laterali
     // world coordinates del primo punto (calcolati da Road al build)

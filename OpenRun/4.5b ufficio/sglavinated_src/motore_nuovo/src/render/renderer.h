@@ -164,6 +164,10 @@ public:
     // Andrea 07/11): disegnati dentro drawRoad nell'ordine dei segmenti, cosi'
     // l'impalcato piu' vicino li copre. Il vettore resta del Game.
     void impostaOggettiTerra(const std::vector<SpriteInstance>* v) { oggettiTerra_ = v; }
+    // Galleria (PERC1 G2 del grafico): indici in oggettoSprite() della trama
+    // parete_galleria (32x32) e della plafoniera luce_galleria (16x8); -1 =
+    // disegno a codice. Indici e non puntatori: il vettore puo' crescere.
+    void impostaGalleriaSprites(i32 parete, i32 luce) { galleriaParete_ = parete; galleriaLuce_ = luce; }
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
@@ -231,6 +235,22 @@ public:
         return indice >= 0 && indice < (i32)trafficoSprites_.size() ? &trafficoSprites_[indice] : nullptr;
     }
     void clearTrafficoSprites() { trafficoSprites_.clear(); }
+    // Auto viste di lato per gli incroci (muso a destra); la copia specchiata
+    // per chi va a sinistra si fa qui, una volta.
+    void aggiungiIncrocioSprite(const Sprite& s) {
+        if (s.width <= 0) return;
+        Sprite m = s;
+        for (i32 y = 0; y < s.height; ++y)
+            for (i32 x = 0; x < s.width; ++x)
+                m.pixels[(size_t)y * s.width + x] = s.pixels[(size_t)y * s.width + (s.width - 1 - x)];
+        incrocioSprites_.push_back(s);
+        incrocioSprites_.push_back(std::move(m));
+    }
+    i32 nIncrocioSprites() const { return (i32)incrocioSprites_.size() / 2; }
+    const Sprite* incrocioSprite(i32 k, i32 verso) const {
+        const i32 i = 2 * k + (verso < 0 ? 1 : 0);
+        return i >= 0 && i < (i32)incrocioSprites_.size() ? &incrocioSprites_[(size_t)i] : nullptr;
+    }
     // Auto del giocatore (P1 punto 4 + RIV punto 3): un fotogramma per posa
     // (sterzo leggero/forte a sinistra e destra, salita, discesa), caricati una
     // volta; vuoto = rettangolo sintetico in drawPlayerCar. La variante senza
@@ -301,7 +321,12 @@ public:
     const Sprite* oggettoSprite(i32 indice) const {
         return indice >= 0 && indice < (i32)oggettoSprites_.size() ? &oggettoSprites_[indice] : nullptr;
     }
-    void clearOggettoSprites() { oggettoSprites_.clear(); }
+    // Logo del menu (Andrea 08/11): sprite a schermo, centrato in cx, alto y.
+    // Vuoto = il menu scrive solo il testo di riserva.
+    void impostaLogo(Sprite s) { logo_ = std::move(s); }
+    bool haLogo() const { return logo_.width > 0; }
+    void drawLogo(i32 cx, i32 y);
+    void clearOggettoSprites() { oggettoSprites_.clear(); galleriaParete_ = galleriaLuce_ = -1; }
     // Imposta lo skyline della tappa in corso (DECO1 2b): sprite vuoto = cielo piatto.
     // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
     // init()/fineTappa(), mai nel ciclo di gioco.
@@ -342,6 +367,23 @@ private:
     f32 clipGalleriaZ_ = 0.0f;
     i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
     bool clipAttivo_ = false; // per lo sprite che si sta disegnando
+    bool dentroGalleria_ = false; // telecamera dentro: clipGalleriaZ_ = uscita
+    i32 galleriaParete_ = -1, galleriaLuce_ = -1;
+    // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
+    // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).
+    u32 texGalleria(i32 u, i32 v, f32 buio) const;
+    // Graffiti throw-up: maschera a bolle del testo (0 muro, 1 bordo nero,
+    // 2 contorno, 3 riempimento, 4 lucido, 5 estrusione), calcolata una volta.
+    struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px, ombra; };
+    // Colore del graffito nel punto (mx, my) della maschera, 0 = muro. ombra
+    // 0..16: sfumatura a trama Bayer fra tre toni (Andrea 08/11 sera).
+    u32 coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py, u32 riempi, u32 contorno) const;
+    std::vector<MascheraGraffito> graffiti_;
+    const MascheraGraffito& mascheraGraffito(const char* testo);
+    // Imbocco della galleria visto da fuori: collina del tema con la fronte di
+    // cemento, la bocca resta aperta sull'interno.
+    void drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto);
+    void drawLuceGalleria(i32 cx, i32 cy, i32 w, bool accesa = true);
     static constexpr f32 TORRE_LARGHEZZA = 240.0f;  // unita' mondo
     static constexpr f32 TORRE_DISTANZA = 1.25f;    // centro torre / mezza carreggiata
     static constexpr f32 TORRE_SOPRA = 3200.0f;     // altezza della torre sopra la strada
@@ -386,11 +428,14 @@ private:
     Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     Sprite ruotaSprites_[3];                        // componenti ruota_1..3 (AUTO1 A2)
+    const Road* roadCorr_ = nullptr;               // strada del frame (incroci), impostata da drawRoad
+    Sprite logo_;                                   // logo del menu (segnaposto OPEN RUN)
     Sprite luciStopSprite_;                         // componente luci_stop (AUTO1 A2)
     Sprite fumoSprites_[3];                         // componenti fumo_1..3 dello scarico (AUTO1 A2)
     PuntiComponenti punti_[POSA_GIOCATORE_COUNT];   // posizioni componenti per fotogramma (auto_giocatore.json)
     i32 grigliaW_ = 64, grigliaH_ = 32;             // griglia dei componenti (auto_giocatore.json)
     std::vector<Sprite> rivaleSprites_;       // auto rivali (RIV punto b)
+    std::vector<Sprite> incrocioSprites_;     // auto di lato degli incroci (dritta, specchiata)
     std::vector<Sprite> trafficoSprites_;     // traffico comune
     Sprite skylineSprite_;                  // skyline della tappa in corso (DECO1 2b)
     Sprite skylineDa_;                      // skyline all'inizio della transizione di tema

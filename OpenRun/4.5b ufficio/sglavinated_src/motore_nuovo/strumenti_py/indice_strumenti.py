@@ -4,11 +4,11 @@
 
 Uso, dalla radice progetto, un solo comando senza pipe:
     python3 motore_nuovo/strumenti_py/indice_strumenti.py
-Scrive out/INDICE.md (consegne per ruolo) e libreria/INDICE.md (materiale riusabile),
+Scrive UFFICIO/out/INDICE.md (consegne per ruolo) e libreria/INDICE.md (materiale riusabile),
 prima tenuti a mano dal capo, e libreria/STRUMENTI.md: per ogni script nelle cartelle di lavoro, il ruolo
 proprietario (l'unico che lo modifica), lo scopo (prima riga del commento in testa)
 e il comando d'uso. Lo rigenera il ciclo a ogni giro: nessuno lo scrive a mano.
-Segnala gli script senza descrizione e quelli fuori posto (bacheche/, out/).
+Segnala gli script senza descrizione e quelli fuori posto (UFFICIO/bacheche/, UFFICIO/out/).
 """
 import os, re, sys
 
@@ -21,8 +21,8 @@ PROPRIETARI = [
     ("UFFICIO/Dipartimento Grafico/Libreria/", "grafico"),
     ("tools/", "Claude"),
 ]
-FUORI_POSTO = ("bacheche/", "out/")
-SALTA = ("archivio_v4/", "riferimento_v4/", "build", "__pycache__")
+FUORI_POSTO = ("UFFICIO/bacheche/", "UFFICIO/out/")
+SALTA = ("UFFICIO/archivio_per_claude/", "riferimento_v4/", "build", "__pycache__")
 USCITA = "libreria/STRUMENTI.md"
 
 if not os.path.isdir("motore_nuovo"):
@@ -56,7 +56,7 @@ for radice, _, files in os.walk("."):
         if any(s in p for s in SALTA):
             continue
         if p.startswith(FUORI_POSTO):
-            avvisi.append(f"FUORI POSTO: {p} (gli strumenti non stanno in bacheche/ o out/)")
+            avvisi.append(f"FUORI POSTO: {p} (gli strumenti non stanno in UFFICIO/bacheche/ o UFFICIO/out/)")
             continue
         ruolo = next((r for pre, r in PROPRIETARI if p.startswith(pre)), None)
         if ruolo is None:
@@ -101,5 +101,5 @@ def indice_cartella(radice, titolo, uscita, salta=()):
             f.write(f"| {g} | `{p}` | {time.strftime('%d/%m %H:%M', time.localtime(t))} | {b} |\n")
     print(f"{uscita}: {len(righe)} file")
 
-indice_cartella("out", "Consegne", "out/INDICE.md", ("/lv_0", "/soak/"))
+indice_cartella("UFFICIO/out", "Consegne", "UFFICIO/out/INDICE.md", ("/lv_0", "/soak/"))
 indice_cartella("libreria", "Libreria condivisa", "libreria/INDICE.md", ("STRUMENTI.md", "LEGGIMI.md"))

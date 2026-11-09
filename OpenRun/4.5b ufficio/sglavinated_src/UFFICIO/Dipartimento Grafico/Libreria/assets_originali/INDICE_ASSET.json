@@ -93,7 +93,7 @@
    "flag": []
   },
   {
-   "percorso": "assets_originali/DIREZIONE_ARTISTICA.md",
+   "percorso": "../../../DIREZIONE_ARTISTICA.md",
    "categoria": "(radice)",
    "tipo": "md",
    "byte": 2533,

@@ -2,7 +2,7 @@
 # genera_bloccoL.py — produzione scenari livelli (BLOCCO L, @scenografo)
 # Disegnato da zero con Python 3 + Pillow. Originale, nessun materiale Sega.
 # Licenza script: CC0-1.0
-# Uso: python3 bacheche/scenografo/genera_bloccoL.py  (da sglavinated_src)
+# Uso: python3 UFFICIO/bacheche/scenografo/genera_bloccoL.py  (da sglavinated_src)
 import os
 import json
 import random

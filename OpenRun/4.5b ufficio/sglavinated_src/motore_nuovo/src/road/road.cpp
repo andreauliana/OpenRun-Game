@@ -32,6 +32,7 @@ f32 raccordo(f32 t) { return t * t * (3.0f - 2.0f * t); }
 void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
     seed_ = seed;
     segs_.clear();
+    incrociZ_.clear();
     curX = 0.0f; curY = 0.0f; curZ = 0.0f;
     totalLen_ = 0;
     if (descs.empty()) return;
@@ -104,6 +105,10 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.acqua = desc.acqua > 0.5f;
             seg.sospeso = seg.acqua || desc.sospeso > 0.5f;
             seg.galleria = desc.galleria > 0.5f;
+            // Incroci (Andrea 08/11): centri a distanza uguale dentro il tratto.
+            for (i32 q = 0; q < desc.incroci; ++q)
+                if (k == (n * (q + 1)) / (desc.incroci + 1))
+                    incrociZ_.push_back(((f32)indice + 0.5f) * (f32)SEG_LEN);
             seg.colorRoad = colors[indice % 2];
             seg.colorRumble = rumbles[indice % 2];
             totalLen_ += SEG_LEN;
@@ -202,6 +207,18 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             seg.p1y = prima;
             seg.p2y += (quotaDritto - seg.p2y) * pesoDritto(i);
             prima = seg.p2y;
+        }
+    }
+    // Incroci: niente vicino al bivio e al cambio tappa (strada che si apre).
+    {
+        const f32 limite = (f32)(nSeg - BIVIO_SEG - BIVIO_RETTILINEO_PRIMA) * (f32)SEG_LEN;
+        std::vector<f32> tenuti;
+        for (f32 z : incrociZ_) if (z + INCROCIO_ZONA < limite && z > INCROCIO_ZONA) tenuti.push_back(z);
+        incrociZ_.swap(tenuti);
+        for (size_t q = 0; q < incrociZ_.size(); ++q) {
+            const i32 a = (i32)std::floor((incrociZ_[q] - INCROCIO_ZONA) / (f32)SEG_LEN);
+            const i32 b = (i32)std::floor((incrociZ_[q] + INCROCIO_ZONA) / (f32)SEG_LEN);
+            for (i32 i = std::max(0, a); i <= std::min(nSeg - 1, b); ++i) segs_[(size_t)i].incrocio = (i16)q;
         }
     }
     calcolaDintorni();
@@ -435,6 +452,15 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             out.push_back(ps);
         }
     }
+}
+
+f32 Road::incrocioD(f32 z) const {
+    if (incrociZ_.empty() || segs_.empty() || totalLen_ <= 0) return 1e9f;
+    f32 zz = std::fmod(z, (f32)totalLen_);
+    if (zz < 0.0f) zz += (f32)totalLen_;
+    const i32 i = std::min((i32)segs_.size() - 1, (i32)(zz / (f32)SEG_LEN));
+    const i16 q = segs_[(size_t)i].incrocio;
+    return q >= 0 ? zz - incrociZ_[(size_t)q] : 1e9f;
 }
 
 } // namespace sgl

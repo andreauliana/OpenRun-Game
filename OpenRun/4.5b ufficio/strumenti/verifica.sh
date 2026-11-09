@@ -13,13 +13,10 @@ done
 if command -v python3 >/dev/null 2>&1; then
   python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$P/opencode.json" 2>/dev/null && ok "opencode.json valido" || ko "opencode.json non valido"
 else echo "SALTATO python3 non trovato (controllo JSON)"; fi
-for r in AGENTS.md VISIONE.md RICHIESTA.md SCAMBIO.md opencode.json "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/DIREZIONE_ARTISTICA.md" "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CREDITI.md"; do
+for r in AGENTS.md VISIONE.md RICHIESTA.md SCAMBIO.md opencode.json "DIREZIONE_ARTISTICA.md" "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CREDITI.md"; do
   [ -f "$P/$r" ] && ok "file $r" || ko "manca $r"
 done
-for r in SCALETTA.md COSA_FA_L_UMANO.md RAPPORTO_FATTIBILITA.md RISORSE_TECNICHE.md; do
-  [ -f "$BASE/$r" ] && ok "file $r" || ko "manca $r"
-done
-[ -f "$BASE/TAPPE.md" ] && ok "file TAPPE.md (roadmap)" || ko "manca TAPPE.md (roadmap)"
+[ -f "$P/TAPPE.md" ] && ok "file TAPPE.md (roadmap)" || ko "manca TAPPE.md (roadmap)"
 for s in "$BASE"/strumenti/*.sh "$BASE"/run.sh; do sh -n "$s" 2>/dev/null && ok "sintassi $(basename "$s")" || ko "sintassi $(basename "$s")"; done
 # nessun materiale Sega nella cartella
 N=$(find "$P" -path "$P/outrun_src" -prune -o \( -name '*.gen' -o -name '*.smd' -o -name 'OutRun (USA, Europe).md' \) -print 2>/dev/null | wc -l | tr -d ' ')
