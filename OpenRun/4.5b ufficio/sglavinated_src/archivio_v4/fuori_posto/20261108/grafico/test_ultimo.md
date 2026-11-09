@@ -1,1 +1,0 @@
-Turno 1 @grafico: aggiornamento stato manifest font variante B da bozza a pronto. Blocco M [~] modificato. File: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui/font/varianteB/manifest.json. Comando: edit stato bozza->pronto. Exit code: 0.

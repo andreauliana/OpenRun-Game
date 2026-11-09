@@ -10,7 +10,7 @@ sglavinated_src/CONTROLLO.md
 sglavinated_src/*_RECENTE.md
 sglavinated_src/RICHIESTA_APERTA.md
 sglavinated_src/ASSEMBLEE_APERTE.md
-sglavinated_src/bacheche/*/DIARIO_RECENTE.md
+sglavinated_src/UFFICIO/bacheche/*/DIARIO_RECENTE.md
 sglavinated_src/build/
 sglavinated_src/build_gate/
 sglavinated_src/UFFICIO/Officina/build*/
@@ -26,7 +26,7 @@ build/
 build_*/
 sglavinated_src/motore_nuovo/build*/
 # Log dei test prova_gate (si rigenerano a ogni gate; erano circa 9 MB nella repo)
-sglavinated_src/out/collaudatore/**/prova_gate*.log
+sglavinated_src/UFFICIO/out/collaudatore/**/prova_gate*.log
 # File temporanei del checkpoint automatico (ciclo.sh)
 sglavinated_src/.auto_rosso
 sglavinated_src/.auto_verifica.tmp

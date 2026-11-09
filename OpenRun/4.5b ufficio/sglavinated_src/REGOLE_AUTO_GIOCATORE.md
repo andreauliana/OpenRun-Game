@@ -34,11 +34,13 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)
 - **Curve (Andrea 08/11):** la curva spinge l'auto verso l'ESTERNO (curva a destra -> spinta a sinistra, col quadrato della velocita'); si tiene la curva sterzando DENTRO, cioe' a destra in una curva a destra. Prima il segno era invertito e bisognava sterzare dalla parte opposta: non rimetterlo.
-- **Razzo alla punta** (Andrea 07/11, sostituisce il "niente sollevamento"
-  del 06/11): dopo `RAZZO_ATTESA_S = 1` s alla punta in rettilineo l'auto si
-  alza fino a `SOLLEVAMENTO_MAX_PX = 7` px e galleggia; due getti ciano sotto
-  la pancia, fiammelle dagli scarichi, scie di velocita' ai lati. Ricade in
-  0.3 s in curva, frenando o fuori strada. L'ombra resta a terra.
+- **Sollevamento leggero alla punta** (Andrea 08/11 sera, sostituisce il
+  "razzo" del 07/11): dopo `RAZZO_ATTESA_S = 1` s alla punta in rettilineo
+  l'auto si stacca appena dalla strada, `SOLLEVAMENTO_MAX_PX = 3` px, e
+  galleggia piano; l'ombra resta a terra e diventa PIU' scura e netta. Niente
+  getti sotto la pancia, niente fiamme dagli scarichi ("non e' un'astronave");
+  restano solo leggere scie di velocita' ai lati. Ricade in 0.3 s in curva,
+  frenando o fuori strada.
 - **Animazioni** (`EffettiAuto`, renderer): sgommata con fumo dalla ruota
   esterna e segni a terra sterzando forte dentro una curva veloce; zolle
   d'erba/terra fuori strada; all'atterraggio dei salti le sospensioni si
@@ -74,6 +76,11 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   dello sprite. Col solo acceleratore niente derapata: la curva porta fuori.
   Valori in game.cpp (`DERAPATA_*`); prova: curve strette di lv_05 tenute a
   sterzo pieno (max 415 su 700), solo gas finisce il tempo alla 2a tappa.
+- **Aperto agli agenti dal 09/11 (BLOCCO MIG1, Andrea 08/11 sera):** SOLO la
+  sportellata contro i rivali (`AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`,
+  `RIVALE_SORPASSO_DX`), danni/KO/recupero dei rivali e il volo dei paletti
+  abbattuti. Sterzo (`STEER_*`), curve (`CURVA_SPINTA_V2`), derapata
+  (`DERAPATA_*`), incidenti e tempi restano bloccati.
 - **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
   e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
   a colpirla di lato. I rivali che arrivano da dietro passano a

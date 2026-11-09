@@ -37,4 +37,4 @@ Motivo correzioni: id 3, 6, 8, 17, 20, 134 = riga oltre 16 caratteri (accorciata
 - motore_nuovo/dati/personaggi/gianni/fumetti.json (12 righe)
 - motore_nuovo/dati/personaggi/gesu/fumetti.json (4 righe)
 
-Consegna: out/testi/RIEPILOGO_CONSEGNA_G.md
+Consegna: UFFICIO/out/testi/RIEPILOGO_CONSEGNA_G.md

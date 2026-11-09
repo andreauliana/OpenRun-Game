@@ -1,5 +1,7 @@
 # VISIONE — Sglavinated (versione libera)
 
+> Idea di partenza (ottobre). Dove non coincide con `ANDREA_REVIEW.md` (per esempio razzo, volo, 50 Hz) vale `ANDREA_REVIEW.md`. Gli agenti non la leggono a ogni turno.
+
 ## L'idea in breve
 Gioco di guida arcade, notturno, sci-fi + lofi hip hop + jungle. Simpatico e dinamico. Compagni di viaggio: **Gianni** (la foglia, tenta con slang e droghe), **Gesu'** (corregge, messaggio forte di sicurezza stradale e pro-droga), **UFO** (apparizioni allucinate). Fumetti con frasi che reagiscono a cio' che fa il giocatore in preda ai deliri di droghe pesanti allucinogene, sexy donne circondano.
 
@@ -13,7 +15,7 @@ Gioco di guida arcade, notturno, sci-fi + lofi hip hop + jungle. Simpatico e din
 | Velocita' alta | l'auto si alza (volo breve con ombra) |
 | Tasto B | razzo: parte in prospettiva e colpisce gli altri concorrenti della corsa automatizzati (utilizzano gli stessi modelli di macchine per la prima fase) |
 | Rettilineo / curve / rettilineo / variazione / curve |  scelta | cambio percorso  / curve / rettilineo / variazione / curve  | scelta | percorso  / curve / rettilineo / variazione / curve  | finale a tema  / animazione personaggi a tema - donne premiano, arrivano ufo, confisca dei beni, arresto velocita alta , varie |
-Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale creata o editata da Andrea (vedi assets_originali/DIREZIONE_ARTISTICA.md).
+Musica: solo i tracker (.xm) di Andrea. Grafica: tutta originale creata o editata da Andrea (vedi ../../../DIREZIONE_ARTISTICA.md).
 
 ## Vincoli duri (gate)
 | Vincolo | Soglia | Come si misura |

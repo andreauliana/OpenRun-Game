@@ -12,7 +12,15 @@ Regola: si lavora solo sulla tappa del percorso di gara. Una tappa si chiude qua
 | 6 | Contenuti | statistiche giocatore, foglia "Gianni" con fumetti, radio | Ganja, testi e tempi di comparsa |
 | 7 | Rifinitura | grafica di Andrea (`ANDREA/`), musica, bilanciamento | test completo su Pi 400 e architettura multipiattaforma |
 
-**Tappa attiva (Claude 08/11): rifinitura del percorso, BLOCCO PERC1 di RICHIESTA.md.** Le tappe 1-5 sono fatte (il gioco si guida sul Mac di Andrea: menu, HUD, traffico, rivali, bivi, arrivo). La tabella qui sotto e' storica: non riaprire tappe vecchie.
+**v4.6 CHIUSA l'08/11 sera (Andrea: "circa 80-90% del motore e del gioco").** Tutto quello che c'e' oggi e' la base legacy: elenco in `ANDREA_REVIEW.md` "AGGIORNAMENTI SERALI 08/11", non si tocca. La tabella qui sotto e' storica.
+
+## v4.7 — piccole aggiunte e rifinitura (dal 09/11)
+| Chi | Cosa |
+|---|---|
+| Agenti (BLOCCO MIG1) | paletti che atterrano sull'erba, sportellate efficaci, rivali con carattere, nomi dei rivali, cartelloni leggibili, audio solo in aggiunta |
+| Andrea (a mano) | sfondi dei livelli, logo, controllo e ridisegno degli oggetti dei livelli (`UFFICIO/Dipartimento Grafico/OGGETTI_LIVELLI.md`), menu piu' ricco (logo, tipografia, sfondo/texture retro-PC) |
+| Da decidere con Andrea (blocchi futuri) | tasto Start e pausa in gara; animazione se il giocatore resta fermo; ritorno dai risultati al gioco piu' fluido; demo/attract mode nel menu |
+| Sempre | inglese a schermo, 60 Hz, Pi 400 <= 12 ms/frame, solo C++17 + SDL2 + libxmp-lite + PNG, progetto sotto 20-25 MB, tutto dentro `UFFICIO/` e `motore_nuovo/` |
 
 Dopo ogni gate:
 1. Review (@developer-junior o Claude, breve).

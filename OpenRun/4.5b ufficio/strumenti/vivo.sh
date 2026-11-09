@@ -22,8 +22,8 @@ while :; do
   echo; echo "--- ultime righe del log ---"
   tail -n 14 "$S/notte.log" 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | cut -c1-110
   echo; echo "--- spazi agenti (file / ultimo aggiornamento) ---"
-  for d in "$S"/bacheche/*/; do n=$(basename "$d"); c=$(find "$d" -type f | wc -l | tr -d ' '); l=$(find "$d" -type f -exec stat -f '%m' {} + 2>/dev/null | sort -n | tail -1); printf "%-12s %3s file  %s\n" "$n" "$c" "$( [ -n "$l" ] && date -r "$l" '+%H:%M' || echo - )"; done
-  echo "out/: $(find "$S/out" -type f | wc -l | tr -d ' ') file   Libreria: $(find "$S/UFFICIO/Dipartimento Grafico/Libreria" -type f 2>/dev/null | wc -l | tr -d ' ') file"
+  for d in "$S"/UFFICIO/bacheche/*/; do n=$(basename "$d"); c=$(find "$d" -type f | wc -l | tr -d ' '); l=$(find "$d" -type f -exec stat -f '%m' {} + 2>/dev/null | sort -n | tail -1); printf "%-12s %3s file  %s\n" "$n" "$c" "$( [ -n "$l" ] && date -r "$l" '+%H:%M' || echo - )"; done
+  echo "out/: $(find "$S/UFFICIO/out" -type f | wc -l | tr -d ' ') file   Libreria: $(find "$S/UFFICIO/Dipartimento Grafico/Libreria" -type f 2>/dev/null | wc -l | tr -d ' ') file"
   echo; echo "--- STATUS_OFFICINA (ultime righe) ---"; grep -A1 "^| Gate\|^| Ultimo exit\|^| Performance" "$S/UFFICIO/Officina/STATUS_OFFICINA.md" 2>/dev/null | head -6 | cut -c1-110 || echo "(non trovato)"
   echo; V3_BASE="$BASE" sh "$BASE/strumenti/blocchi.sh"
   sleep 15
