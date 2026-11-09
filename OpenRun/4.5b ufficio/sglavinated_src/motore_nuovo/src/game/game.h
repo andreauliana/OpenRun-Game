@@ -357,6 +357,7 @@ private:
     bool playerBump_ = false;     // stato di bump dopo urto con un avversario (nessun ribaltamento)
     f32 playerBumpTimer_ = 0.0f;  // tempo restante del bump (secondi)
     f32 playerBumpSpintaX_ = 0.0f; // spinta laterale residua del bump (unita'/s)
+    f32 sterzoPrec_ = 0.0f;        // MIG1 D2: sterzo del frame precedente (colpo rapido in affiancata)
     static constexpr f32 FLIP_ANIMATION_S = 1.5f;    // durata ribaltamento in secondi (indipendente dalla frequenza)
     static constexpr f32 OFFROAD_CRASH_S = 2.0f;     // secondi fuori strada prima del ribaltamento
 
@@ -458,6 +459,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         bool vicino = false;   // era gia' vicino al frame prima (accende solo all'ingresso)
         i32 urti = 0;          // botte ricevute dal giocatore (memoria dei danni, Andrea 06/11 sera)
         f32 koS = 0.0f;        // secondi di KO rimasti (alla 4a botta)
+        f32 sbandataS = 0.0f;  // MIG1 D2: secondi di sbandata dopo sportellata (~5 s poi torna normale)
         // Spunto alla partenza (Andrea 08/11): tutti partono insieme allo
         // START, ma ognuno accelera col suo tempo (s per ~63% della punta),
         // cosi' all'inizio il gruppo e' vicino e poi si sgrana.

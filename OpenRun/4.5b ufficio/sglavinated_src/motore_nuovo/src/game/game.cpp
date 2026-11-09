@@ -1564,6 +1564,12 @@ void Game::aggiornaRivali() {
             r.koS = std::max(0.0f, r.koS - dt);
             r.passo = std::min(r.passo, r.passoMax * (0.25f + 0.5f * (1.0f - r.koS / RIVALE_KO_S)));
         }
+        // MIG1 D2: sbandata dopo sportellata, recupero graduale in ~5 s.
+        if (r.sbandataS > 0.0f) {
+            r.sbandataS = std::max(0.0f, r.sbandataS - dt);
+            const f32 k = r.sbandataS / 5.0f; // 1 subito dopo il colpo, 0 a recupero completo
+            r.passo *= 1.0f - 0.12f * k;
+        }
         // Chi arriva da dietro non tampona il giocatore: cambia corsia e resta
         // alla sua velocita' solo finche' e' ancora dritto dietro di lui.
         const f32 dxGiocatore = r.x - (player_.x - player_.centroCorsia);
@@ -2788,6 +2794,8 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         r.x = std::clamp(r.x - lato * 160.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.xObiettivo = std::clamp(r.x - lato * 200.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
+        // MIG1 D2: sportellata efficace - il rivale sbanda e si riprende in ~5 s.
+        if (!tamponamento) r.sbandataS = 5.0f;
     }
     ++urtiGara_;
     segnaBotta(tamponamento ? 0 : -(i32)lato); // lato e' la spinta: la botta arriva dall'altra parte

@@ -1,9 +1,8 @@
-# RIEPILOGO — @grafico
-Turno 09/11/2026 09:11. MIG1 G1 [x] cartelloni leggibili: completati e verificati. Disegno nuovo su 7 sponsor x 3 stili (matina 08:40, `ridisegna_sponsor.py`): parola grande con contorno scuro, resto del nome piccolo, 2-3 colori/stile, Bayer solo su sfondo, 128x64; leggibilità confermata a video su neon, atomico, foglie.
-Contributo di questo turno: 21 voci sponsor di `CATALOGO_GRAFICO.json` portate da approvato/D2-D2b a `pronto` con nota "MIG1 G1 ridisegno, in attesa ok Andrea" (script TOOLS/aggiorna_catalogo_g1.py); `png_a_raw.py` rieseguito: 43 PNG in raw, exit 0.
-Verifiche: check_catalogo_grafico.py exit 1 PREESISTENTE (5 stati 'segnaposto': ui.logo.openrun + 4 auto.incrocio di Andrea/Claude 08/11, non toccati da G1); 6 PNG non catalogati (varianti da decidere). gate_t1.sh e ctest negati per allowlist: gate non eseguito nel turno.
-Prima/dopo in `UFFICIO/Officina/Test area/grafico/mig1_g1/`; raw 128x64 in `sprite_raw/sponsor/`. Manifest per cartella e `CATALOGO_SPONSOR.json` già allineati (08:46), licenza CC0-1.0.
-Follow-up: chiedere a @capo/developer l'aggiornamento dei 5 'segnaposto' del catalogo (voce di stato riconosciuta) e conferma che Raw sponsor si vede in gioco col gate; my G1 pronto per review Andrea.
-Prossimo: MIG1 G2 [ ] dopo D1-D3 (screenshot + 3 osservazioni); poi V47 VG1.
-Blocco M sospeso (HUD non si tocca). Mai: HUD/UI, auto giocatore, premiazione, scenari/skyline, parapetti/guardrail ponte.
-Chiusi: PERC1, AUTO1, G-A1, G-P1. Aperti: MIG1 G1 [x]/G2 [ ], DECO1, RIV, PIST1, FIN, R2.
+# RIEPILOGO — @grafico (09/11/2026 09:19)
+MIG1 G1 [x]: 21 cartelloni sponsor ridisegnati/leggibili, raw ok, 21 voci catalogo `pronto` (attende ok Andrea). Prima/dopo `UFFICIO/Officina/Test area/grafico/mig1_g1/`. PERC1 [x].
+V47 VG1 [x quadro/proposte]: analizzato `OGGETTI_LIVELLI.md` post gruppo B (non rigenerare) vs `DIREZIONE_ARTISTICA.md`. Mancanze tematiche: lv01 insegna neon/panchina/rifiuto glow; lv02 cavi-bundle/pezzo motore/cartello stelle; lv03 palma/bottiglia no-brand/asciugamano; lv04 arcade silhouette/poster frame/grid sign; lv05 fermata-bus stop/segnale transito (no persone); lv06 uccello/icone OS extra/tile circuito. Sensibili (pinup/nudi, persone lv05): solo Andrea.
+Script anteprima: `UFFICIO/Dipartimento Grafico/TOOLS/genera_v47_vg1_quadro.py`. PNG anteprima NON generato: shell permission denied (python3 non lanciabile). Gate non eseguito.
+Verifica preesistente: `check_catalogo_grafico.py` exit 1 (5 `segnaposto`: ui.logo.openrun + 4 auto.incrocio Andrea/Claude; 6 PNG non catalogati) — fuori G1/VG1.
+Bloccati: MIG1 G2 [ ] dopo D1-D3 (@developer). Blocco M sospeso. Mai: HUD/UI, auto giocatore, premiazione, scenari/skyline Andrea, parapetti/guardrail ponte.
+Licenze: tutto originale CC0-1.0, marchi inventati, zero Sega. Prossimo: G2 quando D1-D3 pronti; poi eventuali PNG VG1 se shell/gate disponibile o su richiesta @capo.
+Aperti: MIG1 G1 [x]/G2 [ ], V47 VG1 [x], DECO1, RIV, PIST1, FIN, R2. Chiusi: PERC1, AUTO1, G-A1, G-P1.
