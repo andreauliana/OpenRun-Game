@@ -25,8 +25,10 @@ constexpr f32 FINE_TEMPO_DURATA_S = 4.0f; // "TEMPO SCADUTO" visibile prima dei 
 constexpr f32 FERMO_PRIMA_DEI_RISULTATI_S = PREMIAZIONE_S;
 constexpr f32 PREMIAZIONE_SALTA_DOPO_S = 1.0f;
 constexpr f32 ARRIVO_MAX_S = 10.0f;
-constexpr f32 RIGA_CLASSIFICA_S = 0.12f; // le righe della classifica entrano una alla volta
-constexpr f32 CONSULTO_S = 1.6f; // consulto finale: i tempi girano prima del verdetto (Andrea 08/11)
+constexpr f32 RIGA_CLASSIFICA_S = 0.06f; // le righe della classifica entrano una alla volta (09/11: piu' svelte)
+// Consulto finale: i tempi girano prima del verdetto (Andrea 08/11). Andrea
+// 09/11: breve, la premiazione non deve aspettare (prima 1.6 s).
+constexpr f32 CONSULTO_S = 0.5f;
 
 // Score: distanza + bonus tempo residuo + bonus checkpoint (dati/punteggio.json).
 constexpr i32 PUNTI_PER_KM_DEFAULT = 10;
@@ -414,7 +416,12 @@ public:
             } else {
                 ren.drawTesto(66, y, "-", 0xFF707070u, 1, true);
             }
-            ren.drawTesto(96, y, c.nome, ferma ? col : 0xFF808080u, 1, true);
+            // Il nostro nome in grande, gli altri piu' piccoli (Andrea 09/11):
+            // il nostro risultato si trova subito.
+            if (c.giocatore) ren.drawTesto(96, y, c.nome, ferma ? col : 0xFF808080u, 1, true);
+            else ren.drawTesto(96, y + 2, c.nome, ferma ? col : 0xFF808080u, 0, true);
+            // Linea chiara di 1 px fra un pilota e l'altro.
+            if (i + 1 < arrivo_.size()) fb.fillRect(56, y + 9, 263, y + 9, 0xFF9898B0u);
             if (ferma) {
                 formattaTempo(tempo, sizeof(tempo), c.tempoS);
                 ren.drawTesto(170, y, tempo, col, 1, true);
@@ -430,7 +437,7 @@ public:
             }
         }
         if (consulto) {
-            const char* attesa = "CHECKING TIMES...";
+            const char* attesa = "HOLD ON..."; // Andrea 09/11
             ren.drawTesto(160 - ren.larghezzaTesto(attesa, 1) / 2, 132, attesa, 0xFFA0A0A0u, 1, true);
             return;
         }
@@ -453,13 +460,11 @@ public:
             std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
             ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 130, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
         }
-        // Punti e aiuto su una riga sola. URTI / CIGLIO tolti dalla classifica
-        // (Andrea 06/11): le botte restano nel gioco (ammaccature, fumo), non in tabella.
+        // Solo i punti (Andrea 09/11: niente "PRESS START FOR MENU"). URTI /
+        // CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano nel
+        // gioco (ammaccature, fumo), non in tabella.
         std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
-        const char* aiuto = "  PRESS START FOR MENU";
-        const i32 wp = ren.larghezzaTesto(buf, 1), wa = ren.larghezzaTesto(aiuto, 1);
-        ren.drawTesto(160 - (wp + wa) / 2, 145, buf, 0xFFFFE080u, 1, true);
-        ren.drawTesto(160 - (wp + wa) / 2 + wp, 145, aiuto, 0xFFA0A0A0u, 1, true);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 145, buf, 0xFFFFE080u, 1, true);
     }
     // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
     static void trofeo(Framebuffer& fb, i32 x, i32 y) {
