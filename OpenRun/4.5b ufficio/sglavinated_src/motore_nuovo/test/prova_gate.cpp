@@ -2133,10 +2133,7 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     Game game(12345u);
     caricaSponsor(game);
     caricaRivali(game);
-    if (!game.init(livello)) {
-        std::printf("FALLITO: init livello %s\n", livello.c_str());
-        return false;
-    }
+    game.init(livello); // init() e' void (fix build pre-esistente 09/11)
     const i32 TOTAL = 1800; // ~30s @60Hz
     i32 hitCount = 0;
     f32 speedPrec = 0.0f;
