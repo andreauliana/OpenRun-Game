@@ -436,7 +436,7 @@ public:
             }
         }
         if (consulto) {
-            const char* attesa = "CHECKING TIMES...";
+            const char* attesa = "HOLD ON..."; // Andrea 09/11
             ren.drawTesto(160 - ren.larghezzaTesto(attesa, 1) / 2, 132, attesa, 0xFFA0A0A0u, 1, true);
             return;
         }
@@ -459,13 +459,11 @@ public:
             std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
             ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 130, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
         }
-        // Punti e aiuto su una riga sola. URTI / CIGLIO tolti dalla classifica
-        // (Andrea 06/11): le botte restano nel gioco (ammaccature, fumo), non in tabella.
+        // Solo i punti (Andrea 09/11: niente "PRESS START FOR MENU"). URTI /
+        // CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano nel
+        // gioco (ammaccature, fumo), non in tabella.
         std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
-        const char* aiuto = "  PRESS START FOR MENU";
-        const i32 wp = ren.larghezzaTesto(buf, 1), wa = ren.larghezzaTesto(aiuto, 1);
-        ren.drawTesto(160 - (wp + wa) / 2, 145, buf, 0xFFFFE080u, 1, true);
-        ren.drawTesto(160 - (wp + wa) / 2 + wp, 145, aiuto, 0xFFA0A0A0u, 1, true);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 145, buf, 0xFFFFE080u, 1, true);
     }
     // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
     static void trofeo(Framebuffer& fb, i32 x, i32 y) {
