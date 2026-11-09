@@ -58,7 +58,7 @@ oc() {
   [ "$rc" -ge 128 ] && echo "[ciclo] $(date '+%d/%m %H:%M') opencode interrotto dal watchdog (timeout)"
   return $rc
 }
-mkdir -p archivio_per_claude; [ -f .marker_review ] || touch .marker_review
+mkdir -p UFFICIO/archivio_per_claude; [ -f .marker_review ] || touch .marker_review
 [ -f .marker_checkpoint ] || touch .marker_checkpoint
 # Ruoli 4.6 (file in .opencode/agents/). I tag v4.5 di RICHIESTA.md si traducono con ruolo_46().
 AGENTI_ATTIVI="${AGENTI_ATTIVI:-developer developer-junior grafico}"
@@ -104,7 +104,7 @@ checkpoint() {
   else
     echo "[ciclo] $(date '+%d/%m %H:%M') review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna"
   fi
-  if [ -s PER_CLAUDE.md ]; then mv PER_CLAUDE.md "archivio_per_claude/$(date +%Y%m%d-%H%M).md"; fi
+  if [ -s PER_CLAUDE.md ]; then mv PER_CLAUDE.md "UFFICIO/archivio_per_claude/$(date +%Y%m%d-%H%M).md"; fi
   RC="$(sed -n 's/^RICHIESTA_CAMBIO_MODELLO: *//p' SCAMBIO.md | tr -d ' ' | sort -u)"
   [ -n "$RC" ] && sed 's/^RICHIESTA_CAMBIO_MODELLO:/FATTO_CAMBIO_MODELLO:/' SCAMBIO.md > SCAMBIO.md.tmp && mv SCAMBIO.md.tmp SCAMBIO.md
   # Nome agente dopo "CAMBIA_MODELLO:" — accetta lettere, cifre e trattini (es. developer); ignora @, backtick, maiuscole.
@@ -136,13 +136,13 @@ manutenzione() {
   # Registri comuni (solo script, nessun modello: non consuma crediti).
   python3 motore_nuovo/strumenti_py/indice_strumenti.py > /dev/null 2>&1 || true
   # Bacheche: restano solo diario, RIASSUNTO e i file del ciclo. Il resto (script, cartelle,
-  # copie, file di prova) va in archivio_v4/fuori_posto/<data>/<ruolo>/ e se ne parla in CONTROLLO.md.
-  for d in bacheche/*/; do
+  # copie, file di prova) va in UFFICIO/archivio_per_claude/fuori_posto/<data>/<ruolo>/ e se ne parla in CONTROLLO.md.
+  for d in UFFICIO/bacheche/*/; do
     [ -d "$d" ] || continue; ag=$(basename "$d")
     for x in "$d".* "$d"*; do
       [ -e "$x" ] || continue; nome=$(basename "$x")
       case "$nome" in .|..|diario.md|RIASSUNTO.md|DIARIO_RECENTE.md|diario_archivio.md) continue ;; esac
-      q="archivio_v4/fuori_posto/$(date +%Y%m%d)/$ag"; mkdir -p "$q"
+      q="UFFICIO/archivio_per_claude/fuori_posto/$(date +%Y%m%d)/$ag"; mkdir -p "$q"
       mv "$x" "$q/" && echo "[ciclo] $(date '+%d/%m %H:%M') bacheca $ag: spostato $nome in $q/ (fuori posto)" | tee -a .fuori_posto.log
     done
   done
@@ -177,7 +177,7 @@ manutenzione() {
     done
     [ "$tot" -eq 0 ] && echo "- nessuno"
     echo; echo "## Memoria agenti (compattazione automatica)"
-    for d in bacheche/*/; do
+    for d in UFFICIO/bacheche/*/; do
       [ -d "$d" ] || continue; ag=$(basename "$d"); f="$d/diario.md"
       if [ -f "$f" ] && [ "$(wc -l < "$f")" -gt "${DIARIO_MAX:-40}" ]; then
         k="${DIARIO_TIENI:-20}"; tot_l=$(wc -l < "$f"); { echo; echo "## archiviato il $(date '+%d/%m/%Y %H:%M')"; head -n $((tot_l - k)) "$f"; } >> "$d/diario_archivio.md"
@@ -248,13 +248,13 @@ agenti_liberi() {
 }
 
 review_versione() {
-  v=$(cat .versione 2>/dev/null || echo 90); mkdir -p out/review; f="out/review/v$v.md"
+  v=$(cat .versione 2>/dev/null || echo 90); mkdir -p UFFICIO/out/review; f="UFFICIO/out/review/v$v.md"
   { echo "# Versione v$v pronta per la review di Andrea — $(date '+%d/%m/%Y %H:%M')"
     echo; echo "Tappa: $(grep -m1 -i 'tappa attiva' ANDREA_REVIEW.md 2>/dev/null || echo 'vedi TAPPE.md')"
     echo; echo "## Blocchi chiusi"; grep -B6 '^| Stato | \[x\]' RICHIESTA.md | grep '^## BLOCCO' | sed 's/^## /- /'
-    echo; echo "## Memoria degli agenti"; for r in bacheche/*/RIASSUNTO.md; do [ -f "$r" ] && { echo "### $(basename "$(dirname "$r")")"; cat "$r"; echo; }; done
+    echo; echo "## Memoria degli agenti"; for r in UFFICIO/bacheche/*/RIASSUNTO.md; do [ -f "$r" ] && { echo "### $(basename "$(dirname "$r")")"; cat "$r"; echo; }; done
     echo "## File cambiati in questa versione"; find . -newer .marker_review -type f ! -path './log_agenti/*' ! -path './.opencode/*' ! -name '*.log' ! -name '.*' 2>/dev/null | sort | head -80
-    echo; echo "## Cosa fare (Andrea)"; echo "1. Prova la build e guarda gli screenshot in out/."; echo "2. Registra feedback e decisioni in sglavinated_src/ANDREA_REVIEW.md sotto 'Feedback' o nella voce pertinente."; echo "3. Riavvia: sh comandi/v3.sh start"
+    echo; echo "## Cosa fare (Andrea)"; echo "1. Prova la build e guarda gli screenshot in UFFICIO/out/."; echo "2. Registra feedback e decisioni in sglavinated_src/ANDREA_REVIEW.md sotto 'Feedback' o nella voce pertinente."; echo "3. Riavvia: sh comandi/v3.sh start"
   } > "$f"
   echo $((v+1)) > .versione; touch .marker_review
   echo "[ciclo] $(date '+%d/%m %H:%M') nessun lavoro aperto: versione v$v pronta per la review -> sglavinated_src/$f. Ciclo fermo in attesa del tuo feedback."
@@ -288,7 +288,7 @@ giro_diretto() {
     OC_TIMEOUT="${GIRO_TIMEOUT:-1200}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
     # Solo le righe di questo turno contano per capire l'errore (non quelle vecchie del log).
     pre=$(wc -c < "log_agenti/$ag.log" 2>/dev/null | tr -d ' '); [ -n "$pre" ] || pre=0
-    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: bacheche/$ag/RIASSUNTO.md, bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore e @builder-developer=@developer, @collaudatore=@developer-junior, @designer=@grafico. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: non scriverci. Fine turno: UNA riga in bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI bacheche/$ag/RIASSUNTO.md in max 12 righe, esito del turno: RISCRIVI out/$ag/ULTIMO_TURNO.md (max 15 righe: blocco e passo, file cambiati, comando ed exit code). Una review chiesta dal blocco va in out/$ag/REVIEW_<BLOCCO>.md (un file per blocco, riscritto). NESSUN altro file .md: niente ESITO_, REPORT_, RIEPILOGO_, VOCE_SCAMBIO_, STATUS_ nuovi. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, nessun altro file, e fermati. Non usare altri modelli e non delegare. PRODUZIONE PRIMA: se il tuo blocco chiede codice, test o dati, il turno deve modificarne almeno uno e riportare comando ed exit code; niente nuovi documenti oltre alla riga di diario e al RIASSUNTO. Ogni comando shell da solo (niente ; && || | echo)." >> "log_agenti/$ag.log" 2>&1
+    oc --agent "$ag" "Turno $turno, ora $(date '+%d/%m/%Y %H:%M'). Sei @$ag. Leggi in questo ordine, e nient'altro se il blocco non lo chiede: UFFICIO/bacheche/$ag/RIASSUNTO.md, UFFICIO/bacheche/$ag/DIARIO_RECENTE.md, ANDREA_REVIEW.md (precedenza assoluta: legacy, vocabolario di gioco, raggio d'azione), DIREZIONE_ARTISTICA.md (stili dei livelli e sponsor di Andrea), AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Non aprire documenti storici o archivi. Lavora SOLO sui tuoi blocchi [ ] o [~] (max 15 minuti); nei blocchi i tag vecchi valgono cosi': @sviluppatore e @builder-developer=@developer, @collaudatore=@developer-junior, @designer=@grafico. Riporta un esito di gate solo se l'hai eseguito in questo turno, con data e ora; altrimenti scrivi 'gate non eseguito' e scrivi solo nei percorsi del tuo ruolo; percorsi relativi, mai cd. RICHIESTA.md e SCAMBIO.md sono di Andrea e Claude: non scriverci. Fine turno: UNA riga in UFFICIO/bacheche/$ag/diario.md (regola d'oro 2), RISCRIVI UFFICIO/bacheche/$ag/RIASSUNTO.md in max 12 righe, esito del turno: RISCRIVI UFFICIO/out/$ag/ULTIMO_TURNO.md (max 15 righe: blocco e passo, file cambiati, comando ed exit code). Una review chiesta dal blocco va in UFFICIO/out/$ag/REVIEW_<BLOCCO>.md (un file per blocco, riscritto). NESSUN altro file .md: niente ESITO_, REPORT_, RIEPILOGO_, VOCE_SCAMBIO_, STATUS_ nuovi. Se non hai blocchi tuoi o aspetti altri: solo la riga nel diario, nessun altro file, e fermati. Non usare altri modelli e non delegare. PRODUZIONE PRIMA: se il tuo blocco chiede codice, test o dati, il turno deve modificarne almeno uno e riportare comando ed exit code; niente nuovi documenti oltre alla riga di diario e al RIASSUNTO. Ogni comando shell da solo (niente ; && || | echo)." >> "log_agenti/$ag.log" 2>&1
     rc=$?
     OC_TIMEOUT=2400
     nuovo="$(tail -c +$((pre+1)) "log_agenti/$ag.log" 2>/dev/null)"
@@ -336,7 +336,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
-  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), CONTROLLO.md, VISIONE.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare; se una domanda ha gia' RISPOSTA DI ANDREA, vale quella e mai il DEFAULT. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), DIREZIONE_ARTISTICA.md, CONTROLLO.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in UFFICIO/Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi UFFICIO/out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi UFFICIO/out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare; se una domanda ha gia' RISPOSTA DI ANDREA, vale quella e mai il DEFAULT. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   elif ML attivo; then echo "[ciclo] $(date '+%d/%m %H:%M') capo in errore in locale: niente pausa per limite (in locale non ci sono crediti), riprova al prossimo giro"
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi

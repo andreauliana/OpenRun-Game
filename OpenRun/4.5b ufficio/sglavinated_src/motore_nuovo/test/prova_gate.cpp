@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // prova_gate.cpp — gate Tappa 1 (strada che scorre), headless, core-only (niente SDL).
 // Build : cmake --build build --target prova_gate
-// Uso   : ./build/prova_gate [cartella_output=out/debugger] [livello=lv_01_neon] [modo]
+// Uso   : ./build/prova_gate [cartella_output=UFFICIO/out/debugger] [livello=lv_01_neon] [modo]
 //         modo = smoke (500 frame, default) | soak (30000 frame) |
 //                avvolgimento (playerZ oltre totalLen_) | inattivita (show dopo 10 s senza tasti) |
 //                percorso (profilo del tracciato + un giro intero con guida automatica) |
@@ -3154,10 +3154,10 @@ bool verificaFrequenza(const std::string& outDir, const std::string& livello, i3
 int main(int argc, char** argv) {
     // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
     if (argc > 1 && argv[1][0] == '-') {
-        std::printf("uso: prova_gate [cartella_out=out/debugger] [livello=lv_01_neon] [modo=smoke] [hz=60]\n");
+        std::printf("uso: prova_gate [cartella_out=UFFICIO/out/debugger] [livello=lv_01_neon] [modo=smoke] [hz=60]\n");
         return 0;
     }
-    const std::string outDir = argc > 1 ? argv[1] : "out/debugger";
+    const std::string outDir = argc > 1 ? argv[1] : "UFFICIO/out/debugger";
     const std::string livello = argc > 2 ? argv[2] : "lv_01_neon";
     const std::string modo = argc > 3 ? argv[3] : "smoke";
     // I dati si leggono con percorsi relativi alla radice progetto (sglavinated_src):

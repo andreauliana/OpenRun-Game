@@ -83,7 +83,20 @@ public:
         f32 traffico = 1.0f;
         // Campo `galleria` (0/1, default 0, PERC1 D4): tratto in galleria.
         f32 galleria = 0.0f;
+        // Campo `incroci` (Andrea 08/11, default 0): quanti incroci a 90 gradi
+        // tagliano il tratto, distribuiti a distanza uguale. Solo in citta'.
+        i32 incroci = 0;
     };
+    // Incroci a 90 gradi: strada perpendicolare larga 2*INCROCIO_MEZZA, con
+    // marciapiedi e strisce pedonali sulla strada principale ai due lati.
+    static constexpr f32 INCROCIO_MEZZA = 1100.0f;
+    static constexpr f32 INCROCIO_MARCIAPIEDE = 220.0f;
+    static constexpr f32 INCROCIO_STRISCE = 520.0f; // profondita' delle strisce pedonali
+    static constexpr f32 INCROCIO_ZONA = INCROCIO_MEZZA + INCROCIO_MARCIAPIEDE + 160.0f + INCROCIO_STRISCE;
+    // Centri degli incroci (z sulla tappa, unita' mondo), in ordine.
+    const std::vector<f32>& incroci() const { return incrociZ_; }
+    // Distanza con segno di z dal centro dell'incrocio vicino (1e9 se lontano).
+    f32 incrocioD(f32 z) const;
     // Segmenti per allargare/stringere la strada: ~1 s a tutta velocita', cosi'
     // chi e' nella corsia esterna ha il tempo di rientrare.
     static constexpr i32 LARGHEZZA_RACCORDO = 150;
@@ -206,6 +219,7 @@ private:
     f32 curX = 0.0f, curY = 0.0f, curZ = 0.0f; // cursore di costruzione
     u32 seed_ = 1;
     bool bivio_ = false;
+    std::vector<f32> incrociZ_;
 };
 
 } // namespace sgl
