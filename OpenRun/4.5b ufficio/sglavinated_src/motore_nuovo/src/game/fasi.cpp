@@ -457,11 +457,11 @@ public:
             std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
             ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 176, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
         }
-        std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
+        std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
         ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 192, buf, 0xFFFFE080u, 1, true);
         // URTI / CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano
         // nel gioco (ammaccature, fumo), non in tabella.
-        const char* aiuto = "START TORNA AL MENU";
+        const char* aiuto = "PRESS START FOR MENU";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 204, aiuto, 0xFFA0A0A0u, 1, true);
     }
     // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
