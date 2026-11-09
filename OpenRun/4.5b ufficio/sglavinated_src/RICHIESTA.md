@@ -371,7 +371,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 **Come si lavora:** un passo per turno, il primo tuo non ancora [x]. Se dipende da un altro ruolo, salta al tuo passo successivo. Niente domande ad Andrea: si procede. Nel RIASSUNTO: `MIG1 <passo> [x]` con comando ed exit code. Dopo ogni passo di codice o dati: `ctest` verde (oggi 27) e `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0; replay 2x IDENTICO; Pi 400 <= 12 ms/frame. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
 
 ### @grafico — cartelloni leggibili
-- **G1** Ridisegna i cartelloni sponsor (`UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/`, script `genera_sponsor.py`) con STESSO nome e STESSA misura: una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo. Marchi inventati, mai marchi veri. Raw con `png_a_raw.py`, catalogo aggiornato. Prima/dopo in `UFFICIO/Officina/Test area/grafico/`.
+- **G1 [ANNULLATO da Andrea 09/11]** Il ridisegno non e' piaciuto: originali ripristinati. I cartelloni sponsor li ridisegna solo Andrea; non toccarli. ~~Ridisegna i cartelloni sponsor (`UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/`, script `genera_sponsor.py`) con STESSO nome e STESSA misura: una parola corta e grande, 2-3 colori della palette, contorno scuro, dithering Bayer solo sullo sfondo. Marchi inventati, mai marchi veri. Raw con `png_a_raw.py`, catalogo aggiornato. Prima/dopo in `UFFICIO/Officina/Test area/grafico/`.~~
 - **G2** Dopo D1-D3: guarda gli screenshot e scrivi 3 osservazioni in `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
 
 ### @developer — meccanica di gara

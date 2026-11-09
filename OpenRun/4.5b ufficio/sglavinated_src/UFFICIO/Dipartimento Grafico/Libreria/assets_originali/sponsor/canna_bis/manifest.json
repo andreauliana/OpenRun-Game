@@ -3,7 +3,7 @@
   "nome_display": "CANNA-BIS",
   "slogan": "L'unico sponsor che ti fa andare forte... rimanendo piantato.",
   "descrizione": "Ironia: sponsor velocita con prodotto che rallenta",
-  "autore": "ridisegna_sponsor.py (ridisegno MIG1 G1, 09/11)",
+  "autore": "genera_sponsor.py",
   "licenza": "CC0-1.0",
   "originale": true,
   "riferimenti_sega": false,
