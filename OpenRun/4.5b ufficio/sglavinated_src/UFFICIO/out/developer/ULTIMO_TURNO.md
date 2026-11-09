@@ -1,8 +1,11 @@
-# Ultimo turno @developer — 09/11/2026 (turno 09:22)
-- Blocco/passo: MIG1 D2 [x] — sportellata efficace (Andrea 08/11).
-- File cambiati: `motore_nuovo/src/game/game.h`, `motore_nuovo/src/game/game.cpp`.
-- Implementato: `Rivale::sbandataS` (recupero ~5 s). In `urto()` lato rivale imposta `sbandataS=5` (solo colpo laterale). In `aggiornaRivali` decadimento sbandata e `passo *= 1 - 0.12*(sbandataS/5)`. Fianco-a-fianco (dz tra URTO_Z_MIN e URTO_Z_DAVANTI-50) ora usa `spritesFonte_`; se sterzo rapido verso auto affiancata (`dx*sterzo>0`, `dx*dSterzo>0`, `|dSterzo|>0.22`, `sterzoPrec_`) chiama `urto(fonte, dx, false)`; altrimenti separa come prima. `sterzoPrec_` aggiornato a fine blocco.
-- Costanti aperte usate/presenti: `AFFIANCATA_DX` (650), `URTO_SPINTA_RIVALE` (game.cpp), `RIVALE_SORPASSO_DX` (360, già usato in sorpasso rivali).
-- Comando 1: `sh UFFICIO/Officina/TOOL/run_tests.sh` — exit 0, ctest 27/27 OK.
-- Comando 2: `sh UFFICIO/Officina/TOOL/gate_t1.sh` — exit 0 (questo turno). GATE T1 TUTTO OK, 6/6 percorsi, replay IDENTICI, ms/frame < 20, screenshot P1 OK.
-- Next: MIG1 D3 rivali con carattere (seme fisso deterministico).
+# Ultimo turno @developer — 09/11/2026 09:39
+- Blocco: MIG1 D3 (rivali con carattere, seme fisso/deterministico).
+- Passo: aggiunti caratteri rivali e comportamenti; nessun teletrasporto/sovrapposizione (obiettivi clampati, passo/x liscio, separazione esistente).
+- File cambiati:
+  - `motore_nuovo/src/game/game.h` — `enum CarattereRivale` (normale/aggressivo/prudente/vendicativo/sbaglia-curva), campi `Rivale::carattere`, `Rivale::vendettaS`.
+  - `motore_nuovo/src/game/game.cpp` — init: shuffle deterministico (seed `^0x43415241u`) assegna i 4 tipi + 3 normali; `aggiornaRivali`: aggressivo chiude traiettoria (giocatore dietro), prudente si scosta se vicino, vendicativo insegue `xGiocRel` per 8s, sbaglia-curva errore deterministico in curva (`sin(ritmoFase)`), guardia anti-tamponamento; `urto` laterale su rivale vendicativo imposta `vendettaS=8`.
+- Comandi ed exit code (questo turno):
+  - `sh UFFICIO/Officina/TOOL/run_tests.sh` — exit 0, ctest 27/27 passed.
+  - `sh UFFICIO/Officina/TOOL/gate_t1.sh` — exit 0, `GATE T1: TUTTO OK`, 6/6 `GATE PERCORSO OK`, replay IDENTICI.
+- Gate: eseguito in questo turno (09/11/2026), esito sopra.
+- Prossimo passo mio: MIG1 D4 (nomi 7 rivali, max 6 lettere, culture/temi; elenco con origine/tema in `ULTIMO_TURNO.md`).
