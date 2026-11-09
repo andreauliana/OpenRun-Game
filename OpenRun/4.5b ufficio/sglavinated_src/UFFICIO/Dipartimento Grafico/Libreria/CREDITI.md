@@ -8,6 +8,12 @@
   - Usato per: `ui/titolo/varianteB/title.png` (lettering "Sglavinated Edition").
   - Nota: La licenza OFL richiede di conservare la licenza e non rivendicare il nome del font per opere derivate.
 
+- `assets_originali/font/born2bsporty/Born2bSportyV2.ttf` — Font pixel grassetto (tratti di 2 px) per titoli di menu e schermate e numeri grandi dell'HUD (Andrea 09/11).
+  - Licenza: CC0-1.0 (pubblico dominio). Autore: JapanYoshi.
+  - URL: https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=383
+  - Convertito nel formato bitmap del gioco: `motore_nuovo/strumenti_py/font_titolo_a_header.py` -> `motore_nuovo/src/render/font_titolo.h`.
+  - Nota: CC0 permette uso commerciale e modifiche senza attribuzione; la citiamo comunque per cortesia verso l'autore.
+
 ## UI — Variante B (Lofi Jungle, bianco e nero)
 
 Tutti gli asset UI della variante B sono stati disegnati da zero senza materiale Sega, rispettando la palette bianco/nero e il limite di 16 colori per elemento.

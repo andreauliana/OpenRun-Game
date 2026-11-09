@@ -1,0 +1,15 @@
+{
+  "nome": "Born2bSporty V2",
+  "file": "Born2bSportyV2.ttf",
+  "peso_stile": "pixel bold (tratti di 2 px), proporzionale",
+  "autore": "JapanYoshi",
+  "licenza": "CC0-1.0 (pubblico dominio)",
+  "url_fonte": "https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=383",
+  "descrizione": "Font pixel grassetto scelto da Andrea il 09/11 per le scritte importanti: titoli di menu e schermate e numeri grandi dell'HUD. I testi piccoli restano col font 5x7 della variante B. Convertito nel formato bitmap del gioco da motore_nuovo/strumenti_py/font_titolo_a_header.py (src/render/font_titolo.h). CC0: uso commerciale e modifiche liberi, attribuzione non obbligatoria (la diamo lo stesso nei crediti).",
+  "uso": ["titoli", "numeri_hud"],
+  "griglia": "16 px per em (1 pixel = 64 unita'): si rasterizza a 16 px senza antialias",
+  "formato": "ttf",
+  "dimensione_byte": 55532,
+  "originale": false,
+  "riferimenti_sega": false
+}

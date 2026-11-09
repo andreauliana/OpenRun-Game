@@ -2,6 +2,7 @@
 #include "render/renderer.h"
 #include "render/font_hud.h"
 #include "render/font_mini.h"
+#include "render/font_titolo.h"
 #include <cstdio>
 #include <algorithm>
 #include <cmath> // std::fmod per il wrap di zRel
@@ -1976,6 +1977,46 @@ void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala,
     }
 }
 
+// Passo di un carattere del font titolo; con cifreFisse cifre e spazio hanno
+// tutti lo stesso passo e la cifra sta al centro della sua casella.
+static i32 passoTitolo(char c, bool cifreFisse, i32* rientro) {
+    const i32 codice = (u8)c;
+    if (codice < 32 || codice > 126) { if (rientro) *rientro = 0; return 0; }
+    const i32 avanz = FONT_TITOLO[codice - 32].avanzamento;
+    const bool fisso = cifreFisse && ((c >= '0' && c <= '9') || c == ' ');
+    if (rientro) *rientro = fisso ? (FONT_TITOLO_CIFRA - avanz) / 2 : 0;
+    return fisso ? FONT_TITOLO_CIFRA : avanz;
+}
+
+i32 Renderer::larghezzaTitolo(const char* testo, i32 scala, bool cifreFisse) {
+    i32 w = 0;
+    for (const char* c = testo; *c; ++c) w += passoTitolo(*c, cifreFisse, nullptr);
+    return w > 0 ? (w - 1) * scala : 0; // senza l'aria dopo l'ultimo carattere
+}
+
+void Renderer::drawTitolo(i32 x, i32 y, const char* testo, u32 colore, i32 scala, bool ombra, bool cifreFisse) {
+    for (i32 passo = ombra ? 0 : 1; passo < 2; ++passo) {
+        const i32 d = passo == 0 ? 1 : 0; // prima l'ombra, spostata di 1 px
+        const u32 col = passo == 0 ? 0xFF000000u : colore;
+        i32 cx = x;
+        for (const char* c = testo; *c; ++c) {
+            i32 rientro = 0;
+            const i32 avanti = passoTitolo(*c, cifreFisse, &rientro);
+            if (avanti == 0) continue;
+            const u16* righe = FONT_TITOLO[(u8)*c - 32].righe;
+            const i32 x0 = cx + (rientro + FONT_TITOLO_X0) * scala;
+            for (i32 r = 0; r < FONT_TITOLO_H; ++r) {
+                if (!righe[r]) continue;
+                for (i32 k = 0; k < 16; ++k)
+                    if (righe[r] & (0x8000u >> k))
+                        fb_.fillRect(x0 + k * scala + d, y + r * scala + d,
+                                     x0 + (k + 1) * scala - 1 + d, y + (r + 1) * scala - 1 + d, col);
+            }
+            cx += avanti * scala;
+        }
+    }
+}
+
 void Renderer::drawHudDati(const HudDati& d) {
     // Striscia compatta in alto da hud.json (Andrea 07/11): velocita' a
     // sinistra, radio al centro (Game::drawMusica), tempo e gara a destra.
@@ -2059,6 +2100,14 @@ void Renderer::drawHudDati(const HudDati& d) {
         else if (e.id == "posizione") { std::snprintf(buf, sizeof(buf), "%d/%d", d.posizione, d.concorrenti); valore = buf; }
         // allinea "destra": label_pos e valore_pos sono il bordo destro del testo.
         const auto xa = [&e](i32 x, const char* t, i32 scala) { return e.destra ? x - larghezzaTesto(t, scala) : x; };
+        // Numero col font grassetto (Andrea 09/11, solo i numeri grandi): stessa
+        // x, cifre a passo fisso, linea di base sul fondo delle cifre di prima.
+        const auto disegnaValore = [&](i32 x, i32 y, const char* t, u32 col) {
+            if (!e.valoreTitolo) { drawTesto(xa(x, t, e.scalaValore), y, t, col, e.scalaValore); return; }
+            const i32 w = larghezzaTitolo(t, 1, true);
+            const i32 base = y + (FONT_HUD_H - 1) * e.scalaValore + e.scalaValore - 1; // fondo delle cifre 5x7
+            drawTitolo(e.destra ? x - w : x, base - FONT_TITOLO_BASE, t, col, 1, true, true);
+        };
         if (e.lx >= 0) drawTesto(xa(e.lx, e.label.c_str(), e.scalaLabel), e.ly, e.label.c_str(), e.coloreLabel, e.scalaLabel);
         if (e.id == "posizione" && d.sorpasso > 0.0f && valore && e.vx >= 0) {
             // Sorpasso (Andrea 29/10): la posizione fa un saltello, lampeggia
@@ -2066,16 +2115,17 @@ void Renderer::drawHudDati(const HudDati& d) {
             const f32 t = 1.0f - d.sorpasso; // 0 all'inizio del sorpasso
             const i32 su = t < 0.2f ? (i32)(3.0f * std::sin(t / 0.2f * 3.14159f) + 0.5f) : 0;
             const u32 col = (d.frame / 4) % 2 ? 0xFFFFE040u : 0xFFFFFFFFu;
-            const i32 vx = xa(e.vx, valore, e.scalaValore);
-            drawTesto(vx, e.vy - su, valore, col, e.scalaValore);
+            const i32 largo = e.valoreTitolo ? larghezzaTitolo(valore, 1, true) + 1 : larghezzaTesto(valore, e.scalaValore);
+            const i32 vx = e.destra ? e.vx - largo : e.vx;
+            disegnaValore(e.vx, e.vy - su, valore, col);
             // Freccia verde accanto, verso l'interno dello schermo.
-            const i32 fx = e.destra ? vx - 8 : vx + larghezzaTesto(valore, e.scalaValore) + 3;
+            const i32 fx = e.destra ? vx - 8 : vx + largo + 3;
             const i32 fy = e.vy - su + 1;
             for (i32 r = 0; r <= 2; ++r) fb_.hline(fx + 2 - r, fx + 2 + r, fy + r, 0xFF40E060u);
             fb_.fillRect(fx + 1, fy + 3, fx + 3, fy + 5, 0xFF40E060u);
             continue;
         }
-        if (valore && e.vx >= 0) drawTesto(xa(e.vx, valore, e.scalaValore), e.vy, valore, coloreValore, e.scalaValore);
+        if (valore && e.vx >= 0) disegnaValore(e.vx, e.vy, valore, coloreValore);
         if (e.tx >= 0) {
             const char* t = e.id == "show" ? "SHOW ON" : e.testo.c_str();
             drawTesto(xa(e.tx, t, e.scala), e.ty, t, e.colore, e.scala);
