@@ -2133,7 +2133,8 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     Game game(12345u);
     caricaSponsor(game);
     caricaRivali(game);
-    game.init(livello); // init() e' void (fix build pre-esistente 09/11)
+    game.init(livello); // init non restituisce nulla
+
     const i32 TOTAL = 1800; // ~30s @60Hz
     i32 hitCount = 0;
     f32 speedPrec = 0.0f;
@@ -2200,7 +2201,6 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
     Game game(12345u);
     caricaSponsor(game);
     caricaRivali(game);
-    caricaTraffico(game);
     game.abilitaPartenza(false);
     if (!game.avviaGara("motore_nuovo/dati/percorso_gara.json", true)) {
         std::printf("FALLITO: avviaGara livello %s\n", livello.c_str());
@@ -2228,7 +2228,7 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
         f32 bestDx = 0.0f;
         f32 bestZ = 0.0f;
         for (const SpriteInstance& sp : game.traffico()) {
-            const f32 giro = game.road().totalLen_;
+            const f32 giro = (f32)game.road().totalLength();
             f32 dz = std::fmod(sp.worldZ - s.playerZ, giro);
             if (dz < 0.0f) dz += giro;
             if (dz < 200.0f || dz > 2000.0f) continue;
@@ -2282,7 +2282,7 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
     // 0-2s, 2-4s, 4-7s dopo il colpo.
     auto trovaSpriteVicino = [&](f32 zRif, f32 zPl) -> f32 {
         f32 best = 1e9f, bestZ = zRif;
-        const f32 giro = game.road().totalLen_;
+        const f32 giro = (f32)game.road().totalLength();
         for (const SpriteInstance& sp : game.traffico()) {
             f32 dzp = std::fmod(sp.worldZ - zPl, giro); if (dzp < 0.0f) dzp += giro;
             if (dzp < 0.0f || dzp > 3500.0f) continue;
@@ -2309,7 +2309,7 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
     }
     // Calcola avanzamento relativo (gestione wrap giro)
     auto avanza = [&](f32 zA, f32 zB) -> f32 {
-        const f32 giro = game.road().totalLen_;
+        const f32 giro = (f32)game.road().totalLength();
         f32 d = zB - zA;
         if (d < -giro/2) d += giro;
         if (d > giro/2) d -= giro;
