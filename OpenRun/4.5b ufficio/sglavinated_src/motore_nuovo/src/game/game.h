@@ -249,6 +249,10 @@ private:
     i32 posizionePrec_ = 0;
     f32 sorpassoS_ = 0.0f;
     static constexpr f32 SORPASSO_S = 1.0f;
+    // V47 V1: scia (slipstream) e sorpasso al pelo (solo aggiunte).
+    f32 sciaS_ = 0.0f;
+    bool rivDavantiPelo_[RIVALI] = {};
+    bool trafDavantiPelo_[TRAFFICO] = {};
     f32 dallUrtoS_ = -1.0f;      // secondi dall'ultima botta (scintille, lampo)
     i32 latoUrto_ = 0;
     void segnaBotta(i32 lato);

@@ -2270,6 +2270,41 @@ void Game::aggiornaGuida(f32 dt) {
             if (!inPartenza()) aggiornaTraffico(dt); // la strada aspetta lo START
             aggiornaRivali();
             aggiungiSpriteTraffico();
+            // V47 V1: scia e sorpasso al pelo (solo aggiunte, nessun cambio a sterzo/curve/derapata/incidenti).
+            if (!inPartenza() && !arrivo_ && !playerFlipping_) {
+                bool inScia = false;
+                for (size_t k = 0; k < sprites_.size() && k < spritesFonte_.size(); ++k) {
+                    const f32 dz = sprites_[k].worldZ - road_.playerZ;
+                    const f32 dx = std::abs(sprites_[k].worldX - player_.x);
+                    if (dz > 0.0f && dz < 1500.0f && dx < 350.0f) inScia = true;
+                    const bool pelo = dz > 0.0f && dz < 2000.0f && dx < 350.0f;
+                    const i32 f = spritesFonte_[k];
+                    if (f >= 0 && f < RIVALI) {
+                        if (pelo) rivDavantiPelo_[f] = true;
+                        if (rivDavantiPelo_[f] && dz <= 0.0f && dz > -1500.0f) {
+                            rivDavantiPelo_[f] = false;
+                            tempoResiduoS_ += 0.5f;
+                            mixer_.suonaSorpasso();
+                        } else if (dz > 3500.0f || dz < -2500.0f) rivDavantiPelo_[f] = false;
+                    } else if (f < 0) {
+                        const i32 ti = -1 - f;
+                        if (ti >= 0 && ti < TRAFFICO) {
+                            if (pelo) trafDavantiPelo_[ti] = true;
+                            if (trafDavantiPelo_[ti] && dz <= 0.0f && dz > -1500.0f) {
+                                trafDavantiPelo_[ti] = false;
+                                tempoResiduoS_ += 0.5f;
+                                mixer_.suonaSorpasso();
+                            } else if (dz > 3500.0f || dz < -2500.0f) trafDavantiPelo_[ti] = false;
+                        }
+                    }
+                }
+                sciaS_ = inScia ? sciaS_ + dt : std::max(0.0f, sciaS_ - dt * 2.0f);
+                if (sciaS_ >= 1.0f && !player_.offroad) {
+                    player_.speed = std::min(player_.maxSpeed() * 1.02f, player_.speed + 50.0f * dt);
+                }
+            } else {
+                sciaS_ = 0.0f;
+            }
         } else if (trafficoAttivo_) spawnTraffic();
         // RIV (Andrea 27/10): separare il contatto con gli avversari (sprites_) da
         // quello con i cartelloni. Urto con un avversario = bump: spinta laterale

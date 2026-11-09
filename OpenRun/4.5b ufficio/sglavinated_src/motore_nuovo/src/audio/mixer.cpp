@@ -254,6 +254,17 @@ f32 Mixer::sfxBip() {
     return 4200.0f * onda * std::max(0.0f, inv);
 }
 
+// V47 V1: sorpasso al pelo, blip breve e leggero (effetto nuovo).
+f32 Mixer::sfxSorpasso() {
+    const f32 t = (f32)sorpassoN_ / (f32)sampleRate_;
+    const f32 durata = 0.09f;
+    const f32 f = 1320.0f + 660.0f * (t / durata); // sweep breve verso l'alto
+    const f32 onda = std::sin(2.0f * PI * f * t);
+    const f32 inv = std::min(1.0f, t / 0.003f) * std::min(1.0f, (durata - t) / 0.02f);
+    if (++sorpassoN_ > (i32)(durata * (f32)sampleRate_)) sorpassoN_ = -1;
+    return 1800.0f * onda * std::max(0.0f, inv);
+}
+
 // Stridio delle gomme: due toni acuti (circa 1.2 e 1.75 kHz) che salgono e
 // scendono un po' a caso, con un tremolo veloce e un filo di fruscio. Volume
 // sotto il motore pieno; deterministico (generatore interno, niente orologi).
@@ -312,6 +323,7 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         stridio_ += (stridioVoluto_ - stridio_) * aStridio;
         if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }
         if (bipN_ >= 0) { const f32 b = sfxBip(); l += b; r += b; }
+        if (sorpassoN_ >= 0) { const f32 sp = sfxSorpasso(); l += sp; r += sp; }
         if (musica) {
             // Lettura del nastro con interpolazione lineare tra due campioni.
             const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;

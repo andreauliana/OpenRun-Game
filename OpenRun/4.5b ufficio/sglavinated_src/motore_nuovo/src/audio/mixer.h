@@ -59,6 +59,8 @@ public:
     // Partenza (Andrea 08/11): bip del conto alla rovescia 3, 2, 1 (via =
     // false) e del START (via = true, piu' acuto e lungo). Onda quadra retro.
     void suonaBip(bool via) { bipN_ = 0; bipVia_ = via; }
+    // V47 V1: sorpasso al pelo (breve blip, effetto nuovo).
+    void suonaSorpasso() { sorpassoN_ = 0; }
     // Musica ferma durante il conto alla rovescia: al ritorno (false) il brano
     // riparte dall'inizio, cosi' la traccia comincia insieme allo START.
     void setMusicaFerma(bool ferma) {
@@ -139,6 +141,9 @@ private:
     bool bipVia_ = false;
     bool musicaFerma_ = false;
     f32 sfxBip();
+    // --- V47 V1: sorpasso al pelo ---
+    i32 sorpassoN_ = -1;
+    f32 sfxSorpasso();
 };
 
 } // namespace sgl
