@@ -311,8 +311,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // principale prima e dopo. dInc = distanza dal centro dell'incrocio.
         const f32 invZi = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distI = invZi > 0.0f ? 1.0f / invZi : next.worldZ;
-        const f32 dInc = (roadCorr_ && !sospeso && !galleria && rami == 1 && !roadCorr_->incroci().empty())
-                             ? std::fabs(roadCorr_->incrocioD(playerZ + distI)) : 1e9f;
+        const f32 dIncS = (roadCorr_ && !sospeso && !galleria && rami == 1 && !roadCorr_->incroci().empty())
+                              ? roadCorr_->incrocioD(playerZ + distI) : 1e9f;
+        const f32 dInc = std::fabs(dIncS);
         const bool incStrada = dInc < Road::INCROCIO_MEZZA;
         const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
         const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
@@ -378,6 +379,17 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                         const f32 xw = std::fabs(((f32)x - cx) / pxW);
                         if (std::fmod(xw, 900.0f) < 450.0f) fb_.put(x, y, lane);
                     }
+                }
+                // Linee di stop della strada perpendicolare (Andrea 08/11): a x
+                // fissa nel mondo, quindi in prospettiva corrono verso il
+                // fondo come i bordi della strada. Chi va a destra (corsia
+                // vicina) si ferma a sinistra, chi va a sinistra a destra.
+                // Fra le due linee il riquadro dell'incrocio resta libero.
+                if (incStrada && dInc > 60.0f && dInc < Road::INCROCIO_MEZZA - 60.0f) {
+                    const f32 bordoW = Road::ROAD_HALF_WORLD * fattore + 150.0f;
+                    const f32 xs = dIncS < 0.0f ? cx - bordoW * pxW : cx + bordoW * pxW;
+                    const i32 sw = std::max(1, (i32)(110.0f * pxW));
+                    fb_.hline((i32)xs - sw / 2, (i32)xs + sw / 2, y, 0xFFE6E6EAu);
                 }
                 if (incStrisce) {
                     for (i32 x = std::max(0, lx + rw); x <= std::min(Framebuffer::WIDTH - 1, rx - rw); ++x) {

@@ -403,7 +403,7 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 ### @developer
 - **V1 Guida piu' interessante (+20%), solo aggiunte:** scia dietro un'auto (a meno di ~1500 davanti, stessa corsia, per 1 s: piccolo guadagno di velocita'), sorpasso al pelo (un'auto passata a meno di ~350 di lato: breve suono e +0.5 s di tempo). Niente cambi a sterzo, curve, derapata, incidenti. Una voce nuova per azione in `ULTIMO_TURNO.md` (Claude la mette nel vocabolario).
-- **V2 Pausa:** Start in gara = pausa; scritta PAUSE al centro, musica piu' bassa, il gioco riprende con Start. Niente altro sullo schermo.
+- **V2 Pausa:** FATTA da Claude 08/11 notte (Start o Invio). Non rifarla; passa al punto dopo.
 - **V3 Fluidita':** misura ms/frame su tutti e 6 i livelli (gate `percorso`), elenca i 3 punti piu' lenti e alleggeriscili senza cambiare la resa.
 - **V4 Risultati -> gioco:** passaggio piu' morbido (dissolvenza di 0.5 s) fra risultati, menu e partenza.
 - **V5 Testi:** tutto quello che si vede a schermo in inglese semplice (fasi, risultati, frasi).

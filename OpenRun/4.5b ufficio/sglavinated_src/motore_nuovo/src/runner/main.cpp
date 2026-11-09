@@ -190,7 +190,9 @@ u64 leggiPadHeld(const Uint8* kb, const Controller& c, f32& axisLX, f32& axisLY)
     if (kb[SDL_SCANCODE_RIGHT] || kb[SDL_SCANCODE_D]) held |= Pad::Right;
     if (kb[SDL_SCANCODE_Z] || kb[SDL_SCANCODE_LCTRL]) held |= Pad::A;   // accelera
     if (kb[SDL_SCANCODE_X] || kb[SDL_SCANCODE_LALT])  held |= Pad::B;   // razzo
-    if (kb[SDL_SCANCODE_RETURN])                      held |= Pad::Start;
+    // Invio = Start (pausa in gara, conferma nel menu): Invio principale, quello
+    // del tastierino e il secondo Invio di alcune tastiere vecchie (Andrea 08/11).
+    if (kb[SDL_SCANCODE_RETURN] || kb[SDL_SCANCODE_KP_ENTER] || kb[SDL_SCANCODE_RETURN2]) held |= Pad::Start;
     if (kb[SDL_SCANCODE_BACKSPACE])                   held |= Pad::Select;
 
     if (c.pad) {
@@ -220,7 +222,11 @@ u64 leggiPadHeld(const Uint8* kb, const Controller& c, f32& axisLX, f32& axisLY)
         // cloni; la croce arriva dagli assi (sopra) o dal primo hat.
         const int nb = SDL_JoystickNumButtons(c.joy);
         auto jb = [&](int i, u64 bit) { if (nb > i && SDL_JoystickGetButton(c.joy, i)) held |= bit; };
+        // Cloni SNES piu' diffusi: 0 = X, 1 = A, 2 = B, 3 = Y. Accelera il tasto
+        // in basso (B del SNES, 2) come il tasto 0; il tasto a destra (A, 1) e'
+        // l'azione B del gioco. Stesso schema del core libretro (RetroPad B = gas).
         jb(0, Pad::A); jb(1, Pad::B); jb(2, Pad::X); jb(3, Pad::Y);
+        jb(2, Pad::A);
         jb(8, Pad::Select); jb(9, Pad::Start);
         if (SDL_JoystickNumHats(c.joy) > 0) {
             const Uint8 h = SDL_JoystickGetHat(c.joy, 0);

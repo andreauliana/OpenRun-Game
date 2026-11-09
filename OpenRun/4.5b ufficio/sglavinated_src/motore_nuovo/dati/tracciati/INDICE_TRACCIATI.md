@@ -5,7 +5,7 @@ Andrea 08/11: i tracciati sono vari e vanno bene. **Legacy 08/11: non si toccano
 - Pezzi di strada (tratti): `motore_nuovo/dati/tracciati/tratti.json` (curva, collina, lunghezza in segmenti).
 - Ordine dei tratti per livello: campo `tracciato` in `motore_nuovo/dati/livelli/<livello>/livello.json`. Il motore ripete la sequenza finche' la tappa non e' lunga abbastanza.
 - Paesaggio per tratto: campo `paesaggio` dello stesso file.
-- Incroci a 90 gradi (08/11): campo `incroci` di un tratto (oggi solo `citta`, 2 incroci, quindi solo lv_05_spray). Aggiunta: curve, colline e lunghezze non cambiano.
+- Incroci a 90 gradi (08/11): campo `incroci` di un tratto (oggi solo `citta`, 1 incrocio a meta' tratto, quindi solo lv_05_spray). Aggiunta: curve, colline e lunghezze non cambiano.
 - Albero delle tappe (bivi): `motore_nuovo/dati/percorso_gara.json`.
 
 ## Albero delle tappe

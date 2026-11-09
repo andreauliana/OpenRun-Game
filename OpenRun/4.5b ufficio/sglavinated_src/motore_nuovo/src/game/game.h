@@ -477,14 +477,24 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         i32 verso = 1;     // +1 verso destra (corsia vicina), -1 verso sinistra (lontana)
         i32 sprite = 0;
         bool colpita = false; // gia' urtata dal giocatore in questo passaggio
+        u8 rivaliColpiti = 0; // un bit per rivale gia' urtato
     };
-    static constexpr i32 AUTO_INCROCIO = 4;
+    static constexpr i32 AUTO_INCROCIO = 6;
     AutoIncrocio autoIncrocio_[AUTO_INCROCIO];
     i32 incrocioAttivo_ = -1;
+    Sprite semaforo_; // semaforo sempre verde agli angoli dell'incrocio (disegnato dal codice)
     Rng rndIncrocio_{7u};
     void aggiornaIncroci(f32 dt);
     void aggiungiSpriteIncroci();
     void urtoIncrocio(AutoIncrocio& a);
+    // Pausa (Andrea 08/11): Start da solo (pad) o Invio (tastiera) in gara.
+    // Si decide al rilascio di Start, cosi' Start+B (radio) e Select+Start
+    // (uscita) non mettono in pausa.
+    bool pausa_ = false;
+    bool startSolo_ = false;
+public:
+    bool inPausa() const { return pausa_; }
+private:
     f32 zCorsiaIncrocio(i32 verso) const;
     i32 nSpriteTraffico_ = 0;
     void inizializzaTraffico();

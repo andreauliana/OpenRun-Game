@@ -22,7 +22,7 @@
     "ponte": {"curva": 0.0, "collina": 1.0, "lunghezza": 360, "entrata": -1, "uscita": -1, "larghezza": 1.0, "acqua": 1, "acqua_quota": 0.0, "traffico": 0.5, "nota": "impalcato alto: strada a quota collina, acqua ad acqua_quota (stessa unita'), piloni ogni 20 segmenti"},
     "discesa_ponte": {"curva": -0.45, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1, "larghezza": 1.0, "sospeso": 1, "traffico": 0.5, "nota": "discesa dal ponte alto, curva opposta alla rampa (somma curve del livello invariata). sospeso: terreno in basso, non sale con la strada (Andrea 06/11)"},
     "autostrada": {"curva": 0.0, "collina": 0.0, "lunghezza": 520, "entrata": -1, "uscita": -1, "larghezza": 2.0, "traffico": 1.6},
-    "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1, "traffico": 1.3, "incroci": 2},
+    "citta": {"curva": 0.0, "collina": 0.0, "lunghezza": 200, "entrata": -1, "uscita": -1, "traffico": 1.3, "incroci": 1},
     "valle": {"curva": 0.0, "collina": -0.35, "lunghezza": 220, "entrata": -1, "uscita": -1, "nota": "tipo tratto PIST1: collina negativa marcata, riferimento ANDREA_REVIEW T1-Q5. Larghezza default 1.0 raccordata senza scatti (regola PIST1 punto 2)."},
     "curva_cieca_dx": {"curva": 0.6, "dune": 0.12, "onde": 1, "lunghezza": 220, "nota": "curva cieca a dx: la cresta nasconde la curva"},
     "curva_cieca_sx": {"curva": -0.6, "dune": 0.12, "onde": 1, "lunghezza": 220, "nota": "curva cieca a sx: la cresta nasconde la curva"},
