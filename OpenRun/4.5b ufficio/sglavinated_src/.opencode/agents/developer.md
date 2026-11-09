@@ -1,6 +1,6 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
-model: opencode/glm-5.3-flash-free
+model: opencode/big-pickle
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:

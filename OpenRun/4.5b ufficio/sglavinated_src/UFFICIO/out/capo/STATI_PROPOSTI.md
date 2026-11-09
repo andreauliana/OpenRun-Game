@@ -1,64 +1,62 @@
-# STATI PROPOSTI — Turno 1 (ora 0 di 12) — @capo
+# STATI PROPOSTI — Turno 1 (ora 1 di 12) — @capo
 
-Data: 2026-11-09. Fonti: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta, sez. 2-6), CONTROLLO.md, DIREZIONE_ARTISTICA.md, AGENTS.md, RICHIESTA_APERTA.md (MIG1 poi V47 continuo), SCAMBIO_RECENTE.md, `UFFICIO/Checkpoint Revision/` (STATO_CORRENTE, REGISTRO append-only, CP-006 CHIUSO), `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`.
+Data: 2026-11-09. Fonti lette: `TAPPE.md`, `ANDREA_REVIEW.md` (precedenza assoluta; decisioni aperte: nessuna), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` (4.6), `RICHIESTA_APERTA.md` (MIG1 attivo, V47 continuo), `SCAMBIO_RECENTE.md`, `UFFICIO/Checkpoint Revision/STATO_CORRENTE.md`, `UFFICIO/Checkpoint Revision/REGISTRO_REVISIONI.md`, handoff `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`.
 
-**v4.6 CHIUSA 08/11. Base legacy 08/11 approvata e NON si tocca.** Lavoro attivo: **MIG1 [~] quasi chiuso** + **V47 [~] continuo** (solo aggiunte, senza attesa Andrea). Nessun checkpoint chiuso questo turno. Nessuna domanda ad Andrea (si procede; G1 già annullato da Andrea).
+**Base legacy 08/11 approvata e NON si tocca** (ANDREA_REVIEW sez. 2-3). Lavoro solo su MIG1/V47 (aggiunte). Nessuna domanda ad Andrea.
 
-## Tappa attiva / Gate
-- MIG1: gate = passi completati con prove e review indipendenti registrate dove richiesto; base legacy intatta.
-- V47: continuo dopo MIG1; ogni passo con `ctest` verde + `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, replay 2x IDENTICO, Pi 400 ≤ 12 ms/frame.
+## Checkpoint — stato proposto
+| ID | Stato proposto | Motivo |
+|---|---|---|
+| CP-002, CP-003, CP-004 | APERTO | review indipendente da assegnare/completare |
+| CP-005, CP-006, CP-007 | CHIUSO | già chiusi; **CP-006 non riaprire** |
+| DECO1 / F60 | nessun nuovo CP | review incrociata mancante |
+| MIG1 / V47 | nessun nuovo CP | prove riportate ma review incrociate non registrate in dossier; residui D4/J3/V5 instradati sotto |
 
-## Verifica checkpoint
-| CP / ambito | Gate + review indipendente registrati? | Azione |
-|---|---:|---|
-| CP-002/003/004 | no (review indipendente mancante) | APERTI |
-| CP-005/006/007 | già CHIUSI | non riaprire |
-| DECO1 / F60 | review incrociata mancante | nessuna chiusura |
-| MIG1 | prove riportate, review incrociate non in dossier; D4 da chiarire; J3 recupero `sbandataS` non misurato direttamente | nessun CP chiudibile |
-| V47 V1/V3 | prove verdi riportate, review non registrata | nessun CP |
+Nessun checkpoint con gate + review indipendente registrati da chiudere in questo turno.
 
-## MIG1 — stati proposti (non approvazioni)
-| Passo | Stato | Responsabile | Revisore | Consegna | Blocco residuo |
+## MIG1 — stati e deleghe (ruoli 4.6)
+| Passo | Stato | Responsabile | Revisore indipendente | Consegna | Criterio / blocco |
 |---|---|---|---|---|---|
-| G1 | ANNULLATO | @grafico | — | — | sponsor solo Andrea |
-| D1 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | review incrociata registrata |
-| D2 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | J3 recupero non misurato |
-| D3 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | review codice |
-| D4 | [~] da chiarire | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | dev D1-D5 [x] vs junior D4 [ ] |
-| D5 | [x] handoff (facoltativo) | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | review non regressione audio |
-| J1 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | registrare revisione |
+| G1 | ANNULLATO | @grafico | — | — | cartelloni solo Andrea (09/11) |
+| D1 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | paletti su erba; review da registrare |
+| D2 | [~] da correggere | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | fix mirato: sportellata rivale bloccata da `playerBump_` in `src/game/game.cpp` (evidenza junior 12:53, `sportellata` exit 28 su lv_01_neon; vecchia evidenza 0.52s era urto traffico). Solo costanti/rami MIG1 aperti; base legacy intoccata |
+| D3 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | carattere rivali deterministico |
+| D4 | [~] | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | discrepanza dev D1-D5 [x] vs junior D4 [ ]: chiarire con elenco nomi/origine/tema |
+| D5 | [x] facolt. handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | solo audio extra; review |
+| J1 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | — |
 | J2 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | `pali` exit 0 10:45, hit=17 |
-| J3 | [~] parziale | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | colpo 0.52s ok; recupero ~5s non misurato |
-| J4 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | chiudere dopo J3/D4 review |
-| G2 | [x] | @grafico | @capo (handoff) | `UFFICIO/out/grafico/ULTIMO_TURNO.md` | — |
+| J3 | [~] bloccato | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | dopo fix D2: rieseguire `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj3_rivale" lv_01_neon sportellata` (atteso exit 0, ripresa 5-8s); misurare/registrare recupero (strumentare se `sbandataS` resta privato) |
+| J4 | [x]/aggiornare | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_MIG1.md` | riscritto dopo D2 fix + J3 + D4 |
+| G2 | [x] prove | @grafico | @capo (handoff) | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` | screenshot J2/J3 visti 12:31; 3 osservazioni (nota cosmetica targhette rivali = render dev) |
 
-## V47 — stati proposti
-| Passo | Stato | Responsabile | Consegna / nota |
-|---|---|---|---|
-| VG1 | [x] | @grafico | quadro in `UFFICIO/Officina/Test area/grafico/v47_vg1/` |
-| V1 | [x] handoff | @developer | scia/sorpasso al pelo; sterzo/curve/derapata/incidenti invariati |
-| V2 | [x] | Claude 08/11 | non rifare |
-| V3 | [x] handoff | @developer | ms/frame 6 livelli 0.988–1.427 ≤ 20; ctest 27/27, gate_t1 exit 0 (10:34) |
-| V4 | [ ] | @developer | dissolvenza 0.5s risultati/menu/partenza |
-| V5 | [ ] | @developer | testi a schermo in inglese semplice |
-| VJ1 | [~] | @developer-junior | `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto) |
-| VJ2 | [ ] | @developer-junior | screenshot spiagge/gabbiani/barche lv_01,04,06 |
+## V47 — stati e deleghe (ruoli 4.6)
+| Passo | Stato | Responsabile | Revisore indipendente | Consegna | Criterio |
+|---|---|---|---|---|---|
+| VG1 | [x] | @grafico | @capo (handoff) | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` | quadro `UFFICIO/Officina/Test area/grafico/v47_vg1/` |
+| V1 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | scia/sorpasso al pelo; sterzo/curve/derapata/incidenti invariati |
+| V2 | [x] | Claude 08/11 | — | — | non rifare |
+| V3 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | ms/frame 6 livelli ≤ 20 (gate_t1 10:34) |
+| V4 | [x] handoff | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | dissolvenza 0.5s (da review junior) |
+| V5 codice/UI | [x] parziale | @developer | @developer-junior | `UFFICIO/out/developer/ULTIMO_TURNO.md` | `src/` UI EN verificata (dev 12:59) |
+| V5 frasi | [~] | @grafico | @developer-junior | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`, `motore_nuovo/dati/frasi.json` | tradurre/adattare 156 frasi Gianni/Gesù in inglese semplice; preservare struttura/attribuzione CC0-1.0 progetto, nessun materiale Sega/marchi veri; nessun PNG Andrea/sponsor/HUD/UI extra; dopo modifica: ctest + `gate_t1.sh` exit 0 a cura @developer o come assegnato |
+| VJ1 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_V47.md` | riscritto con prove |
+| VJ2 | [x] | @developer-junior | @developer | `UFFICIO/out/developer-junior/REVIEW_V47.md` | screenshot riva lv_01,04,06 |
 
-## Deleghe (ruoli 4.6)
-| Ruolo | Prossimo passo | Revisore | Criterio misurabile / vincolo |
-|---|---|---|---|
-| @developer | V4 dissolvenza 0.5s, poi V5 testi EN; chiarire D4 in `UFFICIO/out/developer/ULTIMO_TURNO.md`. | @developer-junior | Dopo ogni passo: `ctest` verde + `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, replay 2x IDENTICO, Pi 400 ≤ 12 ms. Solo aggiunte; costanti aperte solo MIG1 (`AFFIANCATA_DX`,`URTO_SPINTA_RIVALE`,`RIVALE_SORPASSO_DX`, danni/KO/recupero/paletti). |
-| @developer-junior | Review incrociata MIG1 (focus D4, J3); VJ1 su V1/V3/V4; VJ2 screenshot ponte/riva lv_01,04,06. | @developer | Scrive solo `motore_nuovo/test/*.cpp`, `dati/tracciati/regole.json`, `UFFICIO/Officina/TOOL/**`, `UFFICIO/out/developer-junior/`. Registra comando, exit code, misure, path. |
-| @grafico | In attesa richiesta @capo o asset approvati da Andrea. | @capo (handoff) | Mai sponsor, mai PNG Andrea, mai HUD/UI/auto/logo extra/premiazione/scenari/skyline/parapetti. Consegna `UFFICIO/out/grafico/`. |
-| @capo | Registro append-only; assegnare/registrare review incrociate quando prove complete; aprire CP solo se gate+review indipendenti registrati. | — | Niente codice/asset/review tecnica. |
+Prove riportate (handoff dev 10:34): `ctest` 27/27 exit 0, `gate_t1.sh` exit 0, 6/6 replay IDENTICI, ms/frame ≤ 20 (macOS). Junior 12:53: `sportellata` exit 28 (blocco D2), VJ2 [x].
 
-## Blocchi
-- D4 discrepanza handoff (dev vs junior).
-- J3 recupero `sbandataS` ~5s non misurato direttamente.
-- Review incrociate MIG1/V47 non registrate in dossier.
-- `check_catalogo_grafico.py` exit 1 preesistente (fuori MIG1/V47).
+## Deleghe sintetiche
+| Ruolo | Prossimo passo | Criterio di completamento |
+|---|---|---|
+| @developer | 1) Fix mirato D2 sportellata in `src/game/game.cpp` (solo MIG1), rieseguire build/test; 2) chiarire D4 in `UFFICIO/out/developer/ULTIMO_TURNO.md`; 3) supportare V5 frasi se serve gate dopo modifica dati | dopo ogni passo codice/dati: `ctest` verde + `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, replay 2x IDENTICO; solo aggiunte; costanti aperte solo MIG1; base legacy intoccata |
+| @developer-junior | Dopo fix D2: rieseguire `sportellata` (evidenza exit code + recupero); review incrociata MIG1 (focus D2/D4/J3) e V5 frasi | `UFFICIO/out/developer-junior/REVIEW_MIG1.md`, `REVIEW_V47.md` con comando, exit code, misure, path relativi |
+| @grafico | V5 frasi: `motore_nuovo/dati/frasi.json` in inglese semplice (struttura preservata) | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`; mai sponsor/PNG Andrea/HUD/UI/auto/logo extra/premiazione/scenari/skyline/parapetti; nessun codice |
+| @capo | Registro append-only; registra review incrociate in dossier/CP solo a gate+review indipendenti completi | no codice/asset/review tecnica; `RICHIESTA.md`/`SCAMBIO.md` sola lettura |
 
-## Vietati
-Base legacy (auto/HUD/audio/tracciati/ponte/galleria/incroci/partenza/menu-logo/premiazione/grafica Andrea/sponsor). Scrittura solo in `UFFICIO/` e in `motore_nuovo/` quando richiesto; niente file .md in `motore_nuovo/test/`. `RICHIESTA.md`/`SCAMBIO.md` sola lettura.
-
-**FINITO:** non creato (blocchi non tutti [x]). **PER_CLAUDE.md:** non creato.
+## Blocchi / decisioni
+- Review incrociate MIG1/V47 non registrate in dossier/checkpoint → nessuna chiusura CP.
+- D2: `sportellata` exit 28 (junior 12:53), fix `src/game/game.cpp` fuori perimetro junior → @developer.
+- D4 discrepanza dev/junior → chiarire in review/ULTIMO_TURNO.
+- V5: `frasi.json` dato @grafico, fuori perimetro dev → @grafico.
+- CP-002/003/004, DECO1, F60: review indipendente/incrociata mancante (fuori MIG1).
+- `check_catalogo_grafico.py` exit 1 preesistente, fuori MIG1/V47.
+- Decisioni Andrea: nessuna aperta. **FINITO:** no. **PER_CLAUDE.md:** no.
