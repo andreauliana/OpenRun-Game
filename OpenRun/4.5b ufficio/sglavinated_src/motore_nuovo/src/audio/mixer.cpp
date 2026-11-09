@@ -241,6 +241,19 @@ f32 Mixer::sfxUrto() {
     return s;
 }
 
+// Bip della partenza: onda quadra con un attacco breve (niente click) e una
+// coda che cala. 3, 2, 1: La (880 Hz) corto; START: ottava sopra, piu' lungo.
+f32 Mixer::sfxBip() {
+    const f32 t = (f32)bipN_ / (f32)sampleRate_;
+    const f32 durata = bipVia_ ? 0.55f : 0.16f;
+    const f32 f = bipVia_ ? 1760.0f : 880.0f;
+    const f32 onda = std::fmod(t * f, 1.0f) < 0.5f ? 1.0f : -1.0f;
+    const f32 inv = std::min(1.0f, t / 0.004f) * std::min(1.0f, (durata - t) / 0.03f) *
+                    (bipVia_ ? std::exp(-t / 0.35f) : 1.0f);
+    if (++bipN_ > (i32)(durata * (f32)sampleRate_)) bipN_ = -1;
+    return 4200.0f * onda * std::max(0.0f, inv);
+}
+
 // Stridio delle gomme: due toni acuti (circa 1.2 e 1.75 kHz) che salgono e
 // scendono un po' a caso, con un tremolo veloce e un filo di fruscio. Volume
 // sotto il motore pieno; deterministico (generatore interno, niente orologi).
@@ -268,7 +281,8 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
 
     const f32 dt = (f32)frames / (f32)sampleRate_;
     const f32 dtCampione = 1.0f / (f32)sampleRate_;
-    if (suona_) {
+    const bool musica = suona_ && !musicaFerma_;
+    if (musica) {
         aggiornaMute(dt);
         // Il nastro corre al massimo a ~1.03 (tremolio): basta avere davanti
         // frames * 1.05 campioni di musica, piu' due per l'interpolazione.
@@ -297,7 +311,8 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         if (urtoN_ >= 0) { const f32 u = sfxUrto(); l += u; r += u; }
         stridio_ += (stridioVoluto_ - stridio_) * aStridio;
         if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }
-        if (suona_) {
+        if (bipN_ >= 0) { const f32 b = sfxBip(); l += b; r += b; }
+        if (musica) {
             // Lettura del nastro con interpolazione lineare tra due campioni.
             const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;
             const size_t i0 = (size_t)letturaPos_;
@@ -333,7 +348,7 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
     }
 
     // Butta la musica gia' letta (tiene il campione corrente per l'interpolazione).
-    if (suona_) {
+    if (musica) {
         const size_t letti = std::min((size_t)letturaPos_, sorgente_.size() / 2);
         sorgente_.erase(sorgente_.begin(), sorgente_.begin() + (std::ptrdiff_t)(letti * 2));
         letturaPos_ -= (f64)letti;

@@ -5,6 +5,7 @@
 #include "core/json_mini.h"
 #include "render/renderer.h"
 #include "render/premiazione.h" // PREMIAZIONE_S: festa a tema prima della classifica
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
@@ -25,6 +26,7 @@ constexpr f32 FERMO_PRIMA_DEI_RISULTATI_S = PREMIAZIONE_S;
 constexpr f32 PREMIAZIONE_SALTA_DOPO_S = 1.0f;
 constexpr f32 ARRIVO_MAX_S = 10.0f;
 constexpr f32 RIGA_CLASSIFICA_S = 0.12f; // le righe della classifica entrano una alla volta
+constexpr f32 CONSULTO_S = 1.6f; // consulto finale: i tempi girano prima del verdetto (Andrea 08/11)
 
 // Score: distanza + bonus tempo residuo + bonus checkpoint (dati/punteggio.json).
 constexpr i32 PUNTI_PER_KM_DEFAULT = 10;
@@ -371,45 +373,108 @@ public:
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
     // Classifica d'arrivo sopra la scena della strada (auto ferma, pubblico):
-    // posizione, nome e tempo; il giocatore evidenziato, podio in oro,
-    // argento e bronzo, distacco dal primo. Le righe entrano una alla volta.
+    // posizione, nome, strada ai bivi, tempo e distacco; il giocatore
+    // evidenziato, podio in oro, argento e bronzo.
+    // Consulto finale (Andrea 08/11): prima i tempi "girano" mentre si
+    // confrontano (chi ha preso altre strade arriva da altre parti), poi le
+    // righe si fermano una alla volta e sotto compare il verdetto: trofeo al
+    // vincitore, altrimenti la posizione.
     void disegnaArrivo(Renderer& ren, Framebuffer& fb) const {
         scurisci(fb, 48, 14, 271, 217, 30);
         fb.fillRect(48, 14, 271, 14, 0xFF909090u);
         fb.fillRect(48, 217, 271, 217, 0xFF909090u);
         fb.fillRect(48, 14, 48, 217, 0xFF909090u);
         fb.fillRect(271, 14, 271, 217, 0xFF909090u);
-        const char* titolo = "RANKING";
-        ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
+        const bool consulto = timerS_ < CONSULTO_S;
+        const char* titolo = consulto ? "FINAL CHECK" : "RANKING";
+        if (!consulto || std::fmod(timerS_, 0.5f) < 0.35f)
+            ren.drawTesto(160 - ren.larghezzaTesto(titolo, 2) / 2, 22, titolo, 0xFFFFFFFFu, 2, true);
         ren.drawTesto(64, 48, "POS", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(96, 48, "DRIVER", 0xFFA0A0A0u, 0, true);
+        ren.drawTesto(137, 48, "ROUTE", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(170, 48, "TIME", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(226, 48, "GAP", 0xFFA0A0A0u, 0, true);
         static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
         char buf[32], tempo[24];
-        const size_t righe = std::min(arrivo_.size(), (size_t)(timerS_ / RIGA_CLASSIFICA_S) + 1);
-        for (size_t i = 0; i < righe; ++i) {
+        const char* mioPercorso = "";
+        for (const Game::Classificato& c : arrivo_) if (c.giocatore) mioPercorso = c.percorso;
+        // Durante il consulto tutte le righe ci sono, coi tempi che girano;
+        // poi si fermano una alla volta dall'alto.
+        const size_t ferme = consulto ? 0 : std::min(arrivo_.size(), (size_t)((timerS_ - CONSULTO_S) / RIGA_CLASSIFICA_S) + 1);
+        for (size_t i = 0; i < arrivo_.size(); ++i) {
             const Game::Classificato& c = arrivo_[i];
+            const bool ferma = i < ferme;
             const i32 y = 58 + (i32)i * 14;
-            if (c.giocatore) fb.fillRect(56, y - 3, 266, y + 10, 0xFF303060u);
+            if (c.giocatore && ferma) fb.fillRect(56, y - 3, 266, y + 10, 0xFF303060u);
             const u32 col = c.giocatore ? 0xFFFFFFFFu : 0xFFB0B0B0u;
-            std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
-            ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
-            ren.drawTesto(96, y, c.nome, col, 1, true);
-            formattaTempo(tempo, sizeof(tempo), c.tempoS);
-            ren.drawTesto(170, y, tempo, col, 1, true);
-            if (i > 0) {
-                std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
-                ren.drawTesto(226, y, buf, col, 1, true);
+            if (ferma) {
+                std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
+                ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
+            } else {
+                ren.drawTesto(66, y, "-", 0xFF707070u, 1, true);
+            }
+            ren.drawTesto(96, y, c.nome, ferma ? col : 0xFF808080u, 1, true);
+            // Strada ai bivi (L/R); in azzurro chi ha fatto la stessa del giocatore.
+            if (c.percorso[0]) {
+                const bool stessa = !c.giocatore && std::strcmp(c.percorso, mioPercorso) == 0;
+                ren.drawTesto(141, y + 2, c.percorso, stessa ? 0xFF80F0FFu : 0xFF909090u, 0, true);
+            }
+            if (ferma) {
+                formattaTempo(tempo, sizeof(tempo), c.tempoS);
+                ren.drawTesto(170, y, tempo, col, 1, true);
+                if (i > 0) {
+                    std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
+                    ren.drawTesto(226, y, buf, col, 1, true);
+                }
+            } else {
+                // Cronometri che girano: cifre a caso dal tempo e dalla riga.
+                const u32 h = ((u32)(timerS_ * 30.0f) * 2654435761u) ^ (u32)(i * 40503u);
+                std::snprintf(tempo, sizeof(tempo), "%d'%02d\"%02d", (i32)(h % 3) + 1, (i32)((h >> 4) % 60), (i32)((h >> 10) % 100));
+                ren.drawTesto(170, y, tempo, 0xFF808080u, 1, true);
             }
         }
-        if (righe < arrivo_.size()) return;
+        if (consulto) {
+            const char* attesa = "CHECKING TIMES...";
+            ren.drawTesto(160 - ren.larghezzaTesto(attesa, 1) / 2, 176, attesa, 0xFFA0A0A0u, 1, true);
+            return;
+        }
+        if (ferme < arrivo_.size()) return;
+        // Verdetto: il vincitore ha il trofeo (la scritta lampeggia oro/bianco),
+        // gli altri la loro posizione.
+        i32 pos = 0;
+        for (size_t i = 0; i < arrivo_.size(); ++i) if (arrivo_[i].giocatore) pos = (i32)i + 1;
+        const f32 dalVerdetto = timerS_ - CONSULTO_S - (f32)arrivo_.size() * RIGA_CLASSIFICA_S;
+        if (pos == 1) {
+            const char* v = "WINNER!";
+            const i32 w = ren.larghezzaTesto(v, 2);
+            const u32 c = std::fmod(dalVerdetto, 0.4f) < 0.2f ? 0xFFFFD040u : 0xFFFFFFFFu;
+            ren.drawTesto(160 - w / 2, 172, v, c, 2, true);
+            trofeo(fb, 160 - w / 2 - 16, 171);
+            trofeo(fb, 160 + w / 2 + 6, 171);
+        } else if (pos > 0) {
+            static const char* SUFF[4] = {"TH", "ST", "ND", "RD"};
+            const char* suff = (pos % 100 >= 11 && pos % 100 <= 13) || pos % 10 > 3 ? SUFF[0] : SUFF[pos % 10];
+            std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
+            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 176, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
+        }
         std::snprintf(buf, sizeof(buf), "PUNTI %d", punteggio_);
-        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 178, buf, 0xFFFFE080u, 1, true);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 192, buf, 0xFFFFE080u, 1, true);
         // URTI / CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano
         // nel gioco (ammaccature, fumo), non in tabella.
         const char* aiuto = "START TORNA AL MENU";
-        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 202, aiuto, 0xFFA0A0A0u, 1, true);
+        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 204, aiuto, 0xFFA0A0A0u, 1, true);
+    }
+    // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
+    static void trofeo(Framebuffer& fb, i32 x, i32 y) {
+        const u32 oro = 0xFFFFD040u, ombra = 0xFFB08020u, base = 0xFF604020u;
+        fb.fillRect(x + 1, y, x + 8, y + 5, oro);
+        fb.fillRect(x + 2, y + 6, x + 7, y + 6, oro);
+        fb.fillRect(x + 6, y + 1, x + 7, y + 5, ombra);
+        fb.fillRect(x, y + 1, x, y + 3, oro);         // manico sinistro
+        fb.fillRect(x + 9, y + 1, x + 9, y + 3, oro); // manico destro
+        fb.fillRect(x + 4, y + 7, x + 5, y + 9, ombra);
+        fb.fillRect(x + 2, y + 10, x + 7, y + 11, base);
+        fb.fillRect(x + 3, y + 1, x + 3, y + 3, 0xFFFFFFFFu); // riflesso
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return FaseId::Menu; }

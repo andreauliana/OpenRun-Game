@@ -1,89 +1,39 @@
-# Andrea — legacy, vocabolario di gioco e raggio d'azione (v4.7)
+# Andrea — Feedback, decisioni e Review
 
-Unico documento di Andrea che gli agenti leggono. **Precedenza assoluta** su tutto il resto. Lo scrivono solo Andrea e Claude. Lo storico (decisioni D1-D19, feedback di ottobre, note di cantiere) e' in `UFFICIO/archivio_per_claude/ANDREA_REVIEW_storico_fino_08nov.md`: **non leggerlo**, non serve e consuma crediti. Il messaggio e' semplice: questo e' quello che e' stato fatto (non toccatelo) e questo e' il vostro raggio d'azione.
+Fonte canonica unica per feedback e decisioni di Andrea. Il @capo cita nel checkpoint soltanto gli ID e le direttive pertinenti; log, status di reparto e risultati di review restano nei rispettivi documenti. Solo una risposta esplicita di Andrea vale come sua approvazione.
 
-## 1. Cosa leggere all'avvio del turno (e nient'altro)
+## AUTO DEL GIOCATORE — REGOLE BLOCCATE (Andrea 06/11)
 
-1. Questo file.
-2. `DIREZIONE_ARTISTICA.md` — documento di Andrea: mood, stili dei 6 livelli (neon, atomico, foglie, cromo, spray, desktop), sponsor finti, regole grafiche. Riferimento per ogni lavoro grafico, di scenario, di nomi e di temi.
-3. `AGENTS.md` — cartelle e chi scrive dove.
-4. `RICHIESTA_APERTA.md` — il vostro blocco (oggi MIG1).
-5. La vostra bacheca (`RIASSUNTO.md`, `DIARIO_RECENTE.md`).
+Le regole dell'auto del giocatore (grafica, grandezza, posizione, sollevamento, salti, inclinazione, arrivo) sono in `REGOLE_AUTO_GIOCATORE.md`. Nessun agente le modifica: niente cambi a quei valori, a quel codice o ai file in `giocatore_pose/`. Andrea ridisegna l'auto a mano in Pixelorama.
 
-Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti), `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/OGGETTI_LIVELLI.md` (oggetti e PNG), `CATALOGO_GRAFICO.json`.
+## HUD NON SI TOCCA, SI LAVORA SUL PERCORSO (Andrea 08/11)
 
-## 2. Base legacy 08/11 — fatto, approvato, NON si tocca
+Per adesso l'HUD non va toccato da nessuno: niente modifiche a `dati/ui/hud.json`, `Renderer::drawHudDati`, contagiri, spettro radio, ne' alle varianti UI in `assets_originali/ui/`. Gli agenti lavorano sul percorso (tracciati, curve, salite, bivi, strada, traffico e rivali sul percorso) e su tutto il resto, sempre a passi piccoli con ctest verde. Restano fuori: l'auto del giocatore (la disegna Andrea), premiazione e musica degli urti (bloccate qui sotto). **Parapetti sul ponte: P3 annullato per sempre** (Andrea 06/11, confermato 08/11): il ponte resta aperto, con il filo basso grigio/bianco al posto del rumble; niente `parapetto.png`/`guardrail.png` sulla pista. Il lavoro e' nel BLOCCO PERC1 di RICHIESTA.md.
 
-Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco e' approvato. Si migliora solo **aggiungendo** con un blocco nuovo di RICHIESTA; non si rifa', non si "sistema", non si toglie.
+**ANNULLATO da Claude 08/11 alle 11:40 (turno delle 11:32 fatto su una copia vecchia di RICHIESTA):** curve tolte e rampa/discesa del ponte tolte in lv_01, lv_03, lv_04, lv_05, lv_06 (facevano FALLIRE 4 gate percorso); `colpiMemoria_` azzerato per i rivali in `Game::urto` e `bumpRallentaFattore_` 0.80 (regole bloccate in `REGOLE_AUTO_GIOCATORE.md`, Andrea non l'ha chiesto); TIME spostato a sinistra e `colore_bordo` in `hud.json`; anteprime della variante UI B; cartella `help/` con log e PPM dei test. **Tracciati: si AGGIUNGONO tratti solo con i passi PERC1 (D1, D4); mai togliere curve, mai togliere `rampa_ponte`/`discesa_ponte`, mai cambiare curve per far passare un gate (i 6 gate percorso passano gia').** I log e gli screenshot dei test vanno solo in `UFFICIO/Officina/Test area/`.
 
-- **Auto del giocatore e guida**: pose disegnate da Andrea (sprite unico per posa + variante con gli stop accesi), sterzo, curve, derapata, sollevamento leggero alla punta (niente razzo), fuori strada, ciglio, incidenti, tempi delle tappe. Numeri in `REGOLE_AUTO_GIOCATORE.md`.
-- **HUD** (`dati/ui/hud.json`, `drawHudDati`), spettro audio, **premiazione**, **musica e reazioni della musica**.
-- **Audio di oggi = standard** (urti, sportellate, paletti, stridio, clacson, bip della partenza, musica che reagisce): si possono solo AGGIUNGERE effetti nuovi.
-- **Tracciati**: vari e buoni (Andrea 08/11). Niente curve tolte, niente tratti spostati, niente tempi cambiati. Indice: `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md`.
-- **Ponte aperto** (mai parapetti), mare, riva, barche, gabbiani, faro; **galleria** di lv_02 e lv_05 (neon, luci rotte, graffito "OPEN RUN" dentro, imbocco senza scritte); ingresso graduale nelle citta'.
-- **Incroci a 90 gradi in citta'** (lv_05, tratto `citta`, campo `incroci` in `tratti.json`): un incrocio a meta' tratto: strada perpendicolare, marciapiedi, strisce pedonali, linee di stop, semafori sempre verdi, auto che passano di continuo (Claude e Andrea 08/11 notte).
-- **Partenza** (griglia, pubblico, 3-2-1-START) se la PR #84 e' nel main.
-- **Menu**: logo SEGNAPOSTO "OPEN RUN" (`Libreria/assets_originali/ui/logo/logo_openrun.png`) + le voci. **Niente altre scritte, decorazioni o elementi**: il logo e il menu li fa Andrea.
-- **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le vecchie varianti non usate (gruppo B) sono state cancellate da Andrea l'08/11: non si rigenerano.
+**Guida e tempi (Andrea 08/11, Claude):** le curve spingono verso l'esterno e si sterza DENTRO la curva; sterzo un po' piu' forte alla punta e pieno verso un'auto affiancata (sportellata); i `tempo_limite_s` dei livelli sono stati stretti (circa 1.45 volte il tempo del bot pulito) perche' col solo acceleratore si arrivava in fondo. Regole e numeri in `REGOLE_AUTO_GIOCATORE.md`: nessun agente alza i tempi o cambia sterzo/spinta delle curve. **08/11 pomeriggio (prova di Andrea):** sterzo piu' forte alla punta e derapata nelle curve forti (presa, fumo, stridio delle gomme). Anche questi bloccati: nessun agente cambia `STEER_*`, `CURVA_SPINTA_V2`, `DERAPATA_*`.
 
-## 3. Vocabolario di gioco (azioni definite e testate)
+**Gate gara FALLITO dopo PERC1 D2 (Claude 08/11 alle 11:45):** col traffico per tratto, in lv_05 due rivali arrivati da rami diversi si disegnavano uno sopra l'altro (96 sovrapposizioni, massimo 20). Causa vecchia: la distanza fra rivali usava il progresso totale invece di quello dentro la tappa. Sistemato da Claude in `Game::aggiornaRivali` (`progressoTappa`); D2 resta [x]. Nessun agente alza il limite delle sovrapposizioni del gate.
 
-Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' si aggiunge come voce nuova, senza cambiare le voci esistenti.
+**Galleria PERC1 D4 rifatta da Claude (08/11 alle 13:45):** sul main la galleria di lv_02 e lv_05 si vedeva come uno spazio piatto di un solo colore (soffitto disegnato sopra la strada, cielo visibile; Andrea: "sembra un'area malvagia"). Ora ha pareti, soffitto a fasce, luci ogni 10 segmenti, imbocco e uscita, e fuori dall'uscita si vede solo la bocca. Codice in `Renderer::drawRoad`/`drawSegmentTrapezoid`/`drawSprite` (`GALLERIA_LARGHEZZA`, `GALLERIA_ALTEZZA`): nessun agente lo ritocca finche' Andrea non l'ha vista. Il gate tratti falliva per la curva dopo la galleria scritta come oggetto in linea: ora e' il tratto con nome `uscita_galleria` in `tratti.json` (in `tracciato` solo nomi di tratti, mai oggetti in linea). lv_02 e lv_05 sono piu' lunghi: `tempo_limite_s` 58 e 61. `REVIEW_PERC1.md` del junior e' vecchio su questi punti.
 
-| Azione | Cosa succede | Dove |
-|---|---|---|
-| Accelerare / frenare | velocita' fino alla punta; in frenata gli stop si accendono | player, `auto_stop_*` |
-| Sterzare | pieno da 1/4 della punta, cala appena alla punta | `STEER_*` |
-| Curva | spinge verso l'esterno col quadrato della velocita'; si tiene sterzando dentro | `CURVA_SPINTA_V2` |
-| Derapata | curva forte + sterzo pieno dentro + sopra 60%: gomme che strisciano, fumo, stridio, perde velocita' | `DERAPATA_*` |
-| Punta in rettilineo | dopo 1 s l'auto si stacca di 3 px, ombra piu' scura | `SOLLEVAMENTO_*` |
-| Dosso | piccolo salto, atterraggio con sospensioni e polvere | `SALTO_*` |
-| Fuori strada | rallenta e trema; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `RIENTRO_S` |
-| Ciglio | primo tocco rallenta e si ricorda, il secondo forte e' incidente | game.cpp |
-| Tamponare il traffico | botta forte, l'auto rimbalza, clacson | `URTO_*_TRAFFICO` |
-| Sportellata a un rivale | sterzo pieno verso l'auto affiancata, il rivale viene spostato | `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE` |
-| Sportellate ripetute | memoria dei colpi: a 3.5 sopra il 40% l'auto vola e fa incidente | `colpiMemoria_` |
-| Incidente | sale fino a 30 px girando, atterra, riparte da fermo nello stesso punto | game.cpp |
-| Danni al rivale | -3% di punta a botta, alla 4a KO per 4 s, triangolo acceso | `RIVALE_DANNO`, `RIVALE_KO_*` |
-| Paletti | si abbattono passandoci sopra, volano, -3% | `abbattiPali`, `PALO_X` |
-| Cartelloni | sopra meta' punta incidente, sotto botta secca | game.cpp |
-| Incrocio | semaforo sempre verde: le auto di lato passano di continuo (aspettano solo il traffico normale). Prenderne una: sopra meta' punta incidente, sotto botta di traffico. Alla punta, sollevato, ci si passa sopra. Anche i rivali ci sbattono e rallentano | `aggiornaIncroci`, `urtoIncrocio` |
-| Pausa | Start da solo sul pad, o Invio (anche del tastierino): tutto fermo, scritta PAUSE, musica ovattata; Start di nuovo riprende | `Game::update` |
-| Bivio | si sceglie il ramo, la tappa dopo cambia tema in 2 s | road, `percorso_gara.json` |
-| Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
-| Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
+**Partenza cinematografica e consulto finale (Andrea 08/11 sera, fatto da Claude):** in gara (runner e core libretro) le auto stanno ferme in griglia, ai lati ci sono i gruppi di supporto (le stesse persone del pubblico dell'arrivo, `supporto_<a|b>_<relax|parla|esulta>.png` da `TOOLS/disegna_pubblico.py`), poi GET READY, 3, 2, 1, START! al centro in alto (sezione aurea, y 86) con semaforo, bip e la traccia che parte allo START; cronometro, rivali e traffico partono tutti insieme. Ogni rivale ha il suo spunto (1.5..2.5 s) nei primi 15 s. All'arrivo la classifica fa prima un "FINAL CHECK" (tempi che girano), poi le righe si fermano, colonna ROUTE (L/R ai bivi, in azzurro chi ha fatto la tua strada) e verdetto: WINNER! col trofeo o YOU FINISHED Nth. Codice in `render/partenza.*`, `Game::preparaPartenza/aggiornaPartenza`, `RisultatiFase::disegnaArrivo`. Il conto alla rovescia NON e' HUD (l'HUD resta bloccato). I gate non accendono la partenza (`abilitaPartenza`), quindi partono subito come prima. Nessun agente lo ritocca finche' Andrea non l'ha provato.
 
-### Parole dei test (non sono azioni di gioco)
+## FATTO E BLOCCATO (Andrea 07/11 sera, PR #66-#72)
 
-Prove automatiche di `prova_gate` (`UFFICIO/Officina/build/prova_gate <out> <livello> <modo>`). Ognuna gioca da sola due volte con lo stesso seme e controlla che i due giri siano identici e che il frame resti nei tempi.
-- **smoke**: la prova piu' rapida (500 frame, circa 8 s): il gioco parte, l'auto si muove, niente crash, tempo di frame misurato. Il nome viene dall'elettronica: accendi e guardi se esce fumo. E' il primo controllo dopo ogni modifica.
-- **soak**: come smoke ma lunghissima (30000 frame, circa 8 minuti): cerca problemi che escono solo col tempo.
-- **percorso**, **gara**: un giro intero con guida automatica; tutte le tappe e i bivi arrivano in fondo.
-- **curve**, **sterzo**, **accelerazione**, **crash**, **urto**: controllano una voce del vocabolario qui sopra (le curve si tengono, lo sterzo risponde, l'incidente riparte, la sportellata non ribalta).
-- **screenshot**: salva immagini per guardarle; nessun giudizio automatico.
+Non si rifanno e non si ritoccano: HUD compatto senza box (`hud.json`, `drawHudDati`), premiazione all'arrivo (`premiazione.*`), musica che reagisce agli urti (`mixer.*`), ponte con mare e transizioni, alberi lv_06 stile Windows 98, auto 50 px con animazioni. Dettagli e prossimi passi: RIEPILOGO in `RICHIESTA.md`.
 
-## 4. Il vostro raggio d'azione (v4.7)
+## Uso nel ciclo v4.6
 
-- **Il BLOCCO MIG1** di `RICHIESTA.md`, poi il **BLOCCO V47** (sezione 6): @grafico cartelloni leggibili (G1); @developer paletti che atterrano sull'erba (D1), sportellata efficace con recupero del rivale in ~5 s (D2), rivali con carattere (D3), nomi dei rivali da culture diverse legati ai temi (D4), audio solo extra (D5); @developer-junior prove e review (J1-J4).
-- Costanti aperte: SOLO `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`, danni/KO/recupero dei rivali, volo dei paletti. Tutto il resto del vocabolario e' in sola lettura.
-- Passi piccoli: dopo ogni passo di codice `ctest` verde e `gate_t1.sh` exit 0. Niente test nuovi per ritocchi grafici.
+- Il Capo consulta questa fonte quando un task o una review dipende da feedback o decisioni di Andrea.
+- Assegnazioni, criteri, prove e review indipendenti restano nel dossier `Checkpoint Revision/CP-NNN`; gli status Designer/Officina restano i rispettivi handoff.
+- Le voci legacy sotto sono contesto storico: il @capo ne conferma la pertinenza nel checkpoint prima di riaprirle.
+- Una risposta registrata non equivale a verifica tecnica o chiusura del checkpoint. L'autore non approva il proprio lavoro.
 
-## 5. Regole fisse
+Andrea aggiunge qui feedback, correzioni richieste o decisioni nuove con data e ambito/ID del checkpoint. Il @capo non riscrive le risposte di Andrea; registra nel checkpoint solo l'ID, l'esito e il collegamento a questa fonte. Le richieste che richiedono una decisione esplicita usano il modello seguente:
 
-- **Risoluzione 320x224, fissa.** Il runner la ingrandisce a scala intera (resa dei pixel pulita anche su un CRT da 15"). Non si cambia.
-- **Fluidita' prima di tutto:** 60 Hz costanti (opzione 50 Hz), Pi 400 <= 12 ms/frame, niente allocazioni nel ciclo di gioco. Ogni effetto o animazione nuova si misura; se fa calare il frame, si semplifica.
-- **Portabile e leggero:** solo C++17 + SDL2 + libxmp-lite + PNG. macOS oggi; Raspberry Pi 400 / RetroPie (core libretro e runner SDL2); poi browser, Windows XP/98. Repo sotto i 20-25 MB (senza build e log).
-- **Grafica:** palette piccola condivisa + dithering (Bayer, Atkinson, halftone), dettagli in `DIREZIONE_ARTISTICA.md`. Visualizzatore solo sopra l'orizzonte, niente esplosioni nello spettro.
-- **Testi a schermo in inglese semplice.** Marchi e nomi sempre inventati.
-- **Cartelle:** si scrive solo dentro `UFFICIO/` e in `motore_nuovo/` quando il blocco lo chiede. Niente cartelle nuove, niente file alla radice, niente documenti nuovi. Screenshot e log solo in `UFFICIO/Officina/Test area/`.
-
-## 6. Dopo MIG1: avanti verso la v4.7, senza aspettare
-
-Nessuno aspetta l'ok di Andrea. Finiti i propri passi MIG1, ogni ruolo va avanti nel **BLOCCO V47** di `RICHIESTA.md`: guida piu' interessante con sole azioni nuove (scia, sorpasso al pelo), pausa, fluidita' misurata su tutti i livelli, passaggi morbidi fra le schermate, testi in inglese, controllo di spiagge/gabbiani/barche, quadro grafico di cosa manca. Sempre dentro le sezioni 2-5. Andrea guarda le parti grafiche quando puo': il suo parere arriva come blocco nuovo e non ferma il lavoro.
-
-## 7. Decisioni aperte
-
-Nessuna. Formato per una nuova voce:
+Formato (copiare per ogni voce):
 ```
 ## D<numero> | <blocco> | <agente> | [APERTA]
 Domanda:
