@@ -493,6 +493,10 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     std::string tappaId_;
     bool gara_ = false;
     bool corsaSingola_ = false; // avviaGara(..., true): una tappa, niente bivio
+    // V47 V1: scia (slipstream) e sorpasso al pelo (solo aggiunte).
+    f32 sciaS_ = 0.0f;
+    bool rivDavantiPelo_[RIVALI] = {};
+    bool trafDavantiPelo_[TRAFFICO] = {};
     // La tappa id finisce con un bivio (gara a tappe, non corsa singola).
     bool tappaConBivio(const std::string& id) const;
     bool arrivo_ = false;
