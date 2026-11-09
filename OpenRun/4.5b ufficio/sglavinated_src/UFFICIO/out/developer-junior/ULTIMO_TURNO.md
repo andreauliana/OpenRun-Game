@@ -1,6 +1,13 @@
-Blocco/passo: MIG1 J1 [x] — review breve stato attuale (09/11 09:34).
-File cambiati: `UFFICIO/out/developer-junior/REVIEW_MIG1.md` (nuovo/riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto).
-Comando ed exit code: nessun comando eseguito (turno di sola review/lettura; shell git negato, non necessario). Gate non eseguito.
-Esito: J1 completato. Va: D2 dichiarato [x] da @developer con ctest 27/27 e gate exit 0 (09/11 09:22), sbandata/ripresa rivale implementata. Non va/da verificare: D1 pendente (serve J2 con screenshot/metriche pali in mondo), D3/D4/G1 pendenti; `NOMI_RIVALI` ancora placeholder.
-Miglioria piccola: modi `prova_gate` misurabili per pali e sportellata (nel perimetro `motore_nuovo/test/*.cpp`).
-Next: J2 dopo D1 @developer (paletto dentro schermo e sopra riga ruote, screenshot in `UFFICIO/Officina/Test area/`).
+# ULTIMO_TURNO @developer-junior — 09/11/2026 10:02
+- Blocco/passo: MIG1 J3 (test sportellata, misura colpo+ripresa) [~ codice aggiunto, esecuzione bloccata] + J4 (REVIEW_MIG1 riscritto).
+- File cambiati:
+  - `motore_nuovo/test/prova_gate.cpp` — aggiunta `verificaSportellata(outDir, livello)` e dispatch `modo=="sportellata"` (exit 28). Cerca sprite affiancato in gara singola, esegue colpo sterzo rapido verso sprite (flick neutro→pieno, target dSterzo>0.22/D2), misura tempo al primo colpo via `urtiGara()`, raccoglie proxy ripresa Z sprite vicino 0-2/2-4/4-7s (sbandata attesa ~5s D2), screenshot in `UFFICIO/Officina/Test area/mig1_j3_sportellata/`. Nota: `sbandataS` privato, proxy osservazionale.
+  - `UFFICIO/out/developer-junior/REVIEW_MIG1.md` — riscritto (J4): D1-D3 [x], J2/J3 codice pronti, esecuzione bloccata da shell.
+  - `UFFICIO/bacheche/developer-junior/diario.md` — +1 riga.
+  - `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` — riscritto.
+- Comandi ed exit code (questo turno):
+  - `cmake --build "UFFICIO/Officina/build" --target prova_gate` → **permission.rejected** (shell negata; cmd esatto).
+  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/mig1_j2_pali_check" lv_01_neon pali` → exit **0** ma modo ignorato da binario obsoleto (09:44): ha eseguito smoke/avvolgimento/inattività + "GATE OK" (non `GATE PALI OK`).
+  - `ls -l "UFFICIO/Officina/build/prova_gate"` → ok (binario presente, 09:44 817600 byte).
+- Gate: **non eseguito** (09/11/2026 10:02). J2/J3 non verificati a runtime per shell/build negata.
+- Next: quando shell ok, build `prova_gate` poi run `pali` (J2) e `sportellata` (J3), riportare exit code/misure/screenshot.

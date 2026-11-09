@@ -130,7 +130,8 @@ constexpr f32 SCALA_AUTO = 1.4f;
 // sprite caricati da runner e test (auto_rivale_<colore>_retro).
 constexpr f32 SCALA_RIVALE = 1.7f; // Andrea 07/11: rivali un po' piu' grandi (prima 1.4); alla riga delle ruote ~57 px, giocatore 50
 // Andrea 05/11 notte: nomi inventati da 6 lettere al posto dei colori.
-const char* const NOMI_RIVALI[] = {"KARVEN", "MIRADO", "TOVESK", "BRANZI", "OKUMAR", "SELVIN", "DAROKA"};
+// MIG1 D4: 7 nomi, max 6 lettere, culture diverse legate ai temi dei livelli.
+const char* const NOMI_RIVALI[] = {"BOOGIE", "SPUTN", "RASTA", "AKIRA", "DJEMBE", "PINGU", "CHIDO"};
 // Triangolo sopra i rivali (Andrea 05/11 sera): acceso nei primi
 // SEGNALINO_PARTENZA_S secondi di gara, poi solo per SEGNALINO_DURATA_S quando
 // un rivale entra nella fascia vicina (davanti o appena dietro). Isteresi: si

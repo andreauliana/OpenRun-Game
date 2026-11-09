@@ -1,9 +1,9 @@
-# Riassunto developer — 09/11/2026 (turno 09:39)
-- MIG1 D1 [x] paletti in coordinate mondo, atterrano sull'erba a fianco strada, scorrono via; base >= riga ruote, clipping ok. File: `game.h/cpp`, `render/renderer.h/cpp`.
-- MIG1 D2 [x] sportellata efficace: sterzo rapido verso auto affiancata (`dSterzo>0.22`) chiama urto laterale; rivale colpito `sbandataS=5s`, recupero graduale; danni/KO invariati (-3%/botta, KO 4a). Costanti aperte: `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`.
-- MIG1 D3 [x] rivali con carattere (seme fisso, deterministico, shuffle seed): `CarattereRivale` + `carattere`/`vendettaS` in `game.h`; init assegna aggressivo/prudente/vendicativo/sbaglia-curva + 3 normali; `aggiornaRivali` applica comportamenti (chiude traiettoria, prudente si scosta, vendicativo cerca il giocatore 8s dopo sportellata laterale in `urto`, errore deterministico in curva); obiettivi clampati, movimento liscio, separazione/anti-teletrasporto esistente invariata.
-- File D3: `motore_nuovo/src/game/game.h`, `motore_nuovo/src/game/game.cpp`.
-- Verifica questo turno: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0, ctest 27/27. `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0, GATE T1 TUTTO OK, 6/6 GATE PERCORSO OK, replay IDENTICI.
-- Prossimo @developer: MIG1 D4 nomi dei 7 rivali (`NOMI_RIVALI`, max 6 lettere, culture/temi) con origine/tema in `ULTIMO_TURNO.md`; poi D5 facoltativo, poi V47 V1/V3-V5.
-- Aperti [~]: MIG1 D4-D5, V47 V1,V3-V5, DECO1, ENG1+ARC1. H pendente Andrea.
+# Riassunto developer — 09/11/2026 (turno 10:00)
+- MIG1 D1 [x] paletti in coordinate mondo, atterrano sull'erba a fianco strada, scorrono via; base >= riga ruote. File: `game.h/cpp`, `render/renderer.h/cpp`.
+- MIG1 D2 [x] sportellata efficace (dSterzo>0.22 in affiancata) chiama urto laterale; rivale colpito `sbandataS=5s`, recupero graduale; danni/KO invariati. Costanti aperte: `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`.
+- MIG1 D3 [x] rivali con carattere deterministico (seme fisso): aggressivo/prudente/vendicativo/sbaglia-curva + 3 normali; comportamenti in `aggiornaRivali`/`urto`, movimento liscio. File: `game.h`, `game.cpp`.
+- MIG1 D4 [x] `NOMI_RIVALI` (7, max 6 MAIUSC, culture/temi) in `motore_nuovo/src/game/game.cpp`: BOOGIE(USA/lv_01 neon), SPUTN(RU/lv_02 atomico), RASTA(JM/lv_03 foglie), AKIRA(JP/lv_04 cromo), DJEMBE(WA/lv_05 spray), PINGU(meme-OS/lv_06 desktop), CHIDO(MX/wildcard). Dettaglio in `ULTIMO_TURNO.md`.
+- Verifica 09/11 10:00: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 11 (build KO `prova_gate.cpp:2136` usa `!game.init()` ma init è void; pre-esistente, non modificato; `sglavinated_core` compilato OK). gate non eseguito.
+- Prossimo @developer: MIG1 D5 (facoltativo, audio extra NUOVI) poi V47 V1 (scia/sorpasso al pelo, solo aggiunte), V3, V4, V5.
+- Aperti [~]: MIG1 D5, V47 V1,V3-V5, DECO1, ENG1+ARC1. H pendente Andrea. Blocco: prova_gate.cpp:2136 impedisce ctest/gate.
 - Perimetri: no HUD, auto/pose, musica, tracciati, `src/runner/`, sterzo/curve/derapata/incidenti/tempi bloccati; solo costanti MIG1 aperte.

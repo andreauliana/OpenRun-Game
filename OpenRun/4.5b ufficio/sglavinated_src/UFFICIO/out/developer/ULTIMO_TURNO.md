@@ -1,11 +1,7 @@
-# Ultimo turno @developer — 09/11/2026 09:39
-- Blocco: MIG1 D3 (rivali con carattere, seme fisso/deterministico).
-- Passo: aggiunti caratteri rivali e comportamenti; nessun teletrasporto/sovrapposizione (obiettivi clampati, passo/x liscio, separazione esistente).
-- File cambiati:
-  - `motore_nuovo/src/game/game.h` — `enum CarattereRivale` (normale/aggressivo/prudente/vendicativo/sbaglia-curva), campi `Rivale::carattere`, `Rivale::vendettaS`.
-  - `motore_nuovo/src/game/game.cpp` — init: shuffle deterministico (seed `^0x43415241u`) assegna i 4 tipi + 3 normali; `aggiornaRivali`: aggressivo chiude traiettoria (giocatore dietro), prudente si scosta se vicino, vendicativo insegue `xGiocRel` per 8s, sbaglia-curva errore deterministico in curva (`sin(ritmoFase)`), guardia anti-tamponamento; `urto` laterale su rivale vendicativo imposta `vendettaS=8`.
-- Comandi ed exit code (questo turno):
-  - `sh UFFICIO/Officina/TOOL/run_tests.sh` — exit 0, ctest 27/27 passed.
-  - `sh UFFICIO/Officina/TOOL/gate_t1.sh` — exit 0, `GATE T1: TUTTO OK`, 6/6 `GATE PERCORSO OK`, replay IDENTICI.
-- Gate: eseguito in questo turno (09/11/2026), esito sopra.
-- Prossimo passo mio: MIG1 D4 (nomi 7 rivali, max 6 lettere, culture/temi; elenco con origine/tema in `ULTIMO_TURNO.md`).
+# ULTIMO_TURNO @developer — 09/11/2026 10:00
+- Blocco/passo: MIG1 D4 [x] nomi dei 7 rivali (`NOMI_RIVALI`, max 6 MAIUSC).
+- File cambiati: `motore_nuovo/src/game/game.cpp` (array NOMI_RIVALI).
+- Nomi (cultura → tema): BOOGIE (USA, disco neon → lv_01 neon); SPUTN (Russia, Sputnik/atomico → lv_02 atomico); RASTA (Jamaica, Rastafari → lv_03 foglie); AKIRA (Giappone, cyberpunk → lv_04 cromo); DJEMBE (Africa Ovest, djembe/multicultura → lv_05 spray); PINGU (Nord/meme OS → lv_06 desktop); CHIDO (Messico, slang extrovert → wildcard).
+- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` — exit 11 (09/11/2026 10:00). `sglavinated_core` compilato OK; build fallita su `motore_nuovo/test/prova_gate.cpp:2136` (`if (!game.init(livello))` ma `Game::init` è void) — pre-esistente, fuori perimetro D4, non modificato.
+- gate_t1.sh: gate non eseguito (bloccato dalla build prova_gate).
+- Prossimo: MIG1 D5 facoltativo (audio extra NUOVI) o V47 V1.
