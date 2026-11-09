@@ -1,8 +1,10 @@
-# ULTIMO TURNO @developer-junior — 09/11/2026 11:31
-- Blocco/passo: V47 VJ1 dopo passo V5 (@developer [~]: fasi.cpp ok, `frasi.json` bloccato @grafico) — prova dedicata eseguita.
-- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
-- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj1_v5" lv_01_neon smoke`
-- Exit code: 0
-- Esito: `GATE OK`, 500 frame, ms/frame medio 0.954 max 3.225 (limite 20), replay 2x IDENTICO, avvolgimento/inattività OK. Nessuna regressione rilevata.
-- gate_t1.sh: non eseguito in questo turno.
-- Residui: V5 frasi.json fuori perimetro; MIG1 J3 [~] (`sbandataS` privato, no autorizzazione src); D4/D5/G2 pendenti altri ruoli. Attesa nuovi passi V o sblocco J3.
+# ULTIMO TURNO @developer-junior — 09/11/2026 12:2x
+- Blocco/passo: MIG1 J3 (sportellata a un rivale) + J4 (review).
+- Fatto: riscritto il modo `sportellata` in `motore_nuovo/test/prova_gate.cpp`: bersaglio solo rivali (scala 1.7, traffico 1.4), evita il traffico piu' vicino, misura la velocita' reale del rivale in finestre da 1 s (0-8 s) per sbandata e ripresa; aggiunta diagnostica su rivali visibili/min dz.
+- Esito J3: **nessuna sportellata a un rivale in 30 s** (exit 28). La vecchia evidenza "colpo 0.52 s" era un urto col traffico: non prova D2.
+- Rilievo per @developer: il ramo laterale (game.cpp ~2371-2392) arriva dopo il tamponamento (~2119-2138) che copre lo stesso dz e mette `playerBump_`, che il ramo laterale richiede falso. Da correggere in `src/` (fuori dal mio perimetro).
+- J4: `UFFICIO/out/developer-junior/REVIEW_MIG1.md` riscritta; D1-D5 [x] verificati a codice (D4 `NOMI_RIVALI`, D5 `suonaPaletto`).
+- File cambiati: `motore_nuovo/test/prova_gate.cpp`, `REVIEW_MIG1.md`, diario, RIASSUNTO, questo file.
+- Comandi: `cmake --build UFFICIO/Officina/build --target prova_gate` exit **0**.
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj3_rivale" lv_01_neon sportellata` exit **28** (FALLITO, finding D2).
+- Gate_t1.sh: **non eseguito** in questo turno.

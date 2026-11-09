@@ -17,3 +17,4 @@
 [09/11 11:36] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
 [09/11 11:38] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
 [09/11 12:18] Turno @grafico: nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[09/11 12:31] Turno @grafico G2 prove completate: trovati screenshot dedicati J2 pali/J3 sportellata (10:16), convertiti 6 PPM->PNG con TOOLS/converti_ppm_png.py (exit 0) e visti; D1/D2 confermate a vista, nota cosmetica targhette; osservazioni in STATUS_GRAFICO_PER_CAPO (ULTIMO_TURNO.md negato in scrittura); gate non eseguito.
