@@ -1,6 +1,6 @@
 ---
 description: "Developer Senior del progetto: guida implementazione C++, test, integrazione, CMake e build multipiattaforma; svolge peer review tecnica assegnata."
-model: opencode/mimo-v2.6-flash-free
+model: opencode/deepseek-v4.1-flash-free
 # modelli di riserva: strumenti/panchina.txt (il ciclo cambia modello da solo); da evitare: strumenti/panchina_esclusi.txt
 mode: subagent
 permission:

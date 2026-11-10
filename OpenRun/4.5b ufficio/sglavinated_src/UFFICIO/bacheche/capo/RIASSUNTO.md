@@ -1,7 +1,8 @@
-# Riassunto — @capo (Turno 1, ora 0 di 12)
-- Fonti lette (solo): `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna RISPOSTA nuova; base legacy 08/11 intoccata; G1 annullato/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47), `SCAMBIO_RECENTE.md` (+ checkpoint).
-- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate T1 green riportato (SCAMBIO_RECENTE). **Nessun CP chiuso** (review incrociate MIG1/V47 non registrate in dossier; CP-005/006/007 CHIUSI, CP-006 non riaprire).
-- **@developer** (`UFFICIO/out/developer/`): D2 fix mirato `motore_nuovo/src/game/game.cpp` (solo `AFFIANCATA_DX`,`URTO_SPINTA_RIVALE`,`RIVALE_SORPASSO_DX`, trigger sterzo 60 Hz) per `sportellata` exit 28; chiarire D4 in `ULTIMO_TURNO.md`. Prove post-fix: `sportellata` exit 0, ctest verde, `gate_t1.sh` exit 0, replay 2x IDENTICO.
-- **@developer-junior** (`UFFICIO/out/developer-junior/`): J3/J4 post-fix (exit 0 + recupero 5-8 s misurabile) e review incrociate MIG1/V47 in `REVIEW_MIG1.md`, `REVIEW_V47.md` (cmd/exit/misure, autore≠revisore).
-- **@grafico** (`UFFICIO/out/grafico/`): V5 `motore_nuovo/dati/frasi.json` EN semplice (struttura/CC0-1.0, no Sega/marchi veri, no sponsor/asset Andrea/UI extra) → `STATUS_GRAFICO_PER_CAPO.md`.
-- VJ2 `vj2_riva` exit 0: densità ispezione Andrea, **DEFAULT non blocca**. **FINITO:** no. **PER_CLAUDE:** no. Domande ad Andrea: nessuna.
+# Riassunto — @capo (Turno 1, ora 1 di 12)
+- Fonti lette (solo): `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna RISPOSTA nuova; base legacy 08/11 intoccata; G1 annullato/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47), `SCAMBIO_RECENTE.md` (+ `UFFICIO/Checkpoint Revision/STATO_CORRENTE.md`, `REGISTRO_REVISIONI.md`, handoff Grafico/Dev/Junior).
+- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate T1 green riportato (handoff). **Nessun CP chiuso:** review incrociate MIG1/V47 non registrate in dossier (autore≠revisore); CP-005/006/007 CHIUSI (CP-006 non riaprire); CP-002/003/004, DECO1, F60 aperti.
+- Evidenze handoff: G2 [x]; V1-V4,V5,VJ1,VG1 [x] riportati (frasi EN + `fasi.cpp` V5). Residui: D2 `sportellata` exit 28 (junior 10/11), J3/J4 post-fix, D4 da chiarire; VJ2 `vj2_riva` exit 0 (densità ispezione Andrea, **DEFAULT non blocca**).
+- **@developer** (`UFFICIO/out/developer/ULTIMO_TURNO.md`): D2 fix mirato `motore_nuovo/src/game/game.cpp` (solo `AFFIANCATA_DX`,`URTO_SPINTA_RIVALE`,`RIVALE_SORPASSO_DX`) → `sportellata` exit 0 + ctest/gate/replay; chiarire/allineare D4.
+- **@developer-junior** (`UFFICIO/out/developer-junior/`): post-fix J3 (`sportellata` exit 0 + recupero ~5 s) e J4 `REVIEW_MIG1.md`; registrare review incrociate MIG1/V47 (`REVIEW_MIG1.md`,`REVIEW_V47.md`, cmd/exit/misure).
+- **@grafico** (`UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`): in attesa, nessun passo [ ]/[~] aperto (no sponsor/asset Andrea).
+- **FINITO:** no. **PER_CLAUDE:** no. Domande ad Andrea: nessuna.

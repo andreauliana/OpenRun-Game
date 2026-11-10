@@ -28,3 +28,14 @@
 10/11/2026 03:50 developer Turno 4: nessun blocco [ ]/[~] azionabile nel perimetro @developer (MIG1 D1-D5,V47 V1-V4 [x]; V47 V5 [~] bloccato su motore_nuovo/dati/frasi.json @grafico, fuori permessi AGENTS). gate non eseguito. fermato.
 10/11/2026 03:52 developer Turno 4: nessun blocco [ ]/[~] azionabile nel perimetro @developer (MIG1 D1-D5,V47 V1-V4 [x]; V47 V5 [~] bloccato su motore_nuovo/dati/frasi.json @grafico, fuori permessi AGENTS). gate non eseguito. fermato.
 10/11/2026 07:29 developer Turno 1: nessun passo azionabile (MIG1 D1-D5, V47 V1-V4 [x]; V47 V5 [~] bloccato su motore_nuovo/dati/frasi.json — verificato 07:29 frasi ancora IT, es. "TI PORTO L'ANIMA" riga 742, dato @grafico fuori permessi AGENTS; testi src/ on-screen gia' in inglese verificati). gate non eseguito. fermato.
+10/11/2026 08:22 developer Turno 1: V47 V5 [x] — frasi.json tradotto da @grafico (156/156 linea1/linea2 EN, it1/it2 IT conservati, loader ok) e testi src/ a schermo tutti inglesi verificati; run_tests.sh exit 0 ctest 27/27 (~08:10) e gate_t1.sh exit 0 "GATE T1: TUTTO OK" 6/6 percorso replay IDENTICO (~08:20). Nessun blocco [ ]/[~] rimasto @developer. fermato.
+10/11/2026 08:47 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1/V5 grafico). gate non eseguito. fermato.
+10/11/2026 08:49 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1/V5 grafico). gate non eseguito. fermato.
+10/11/2026 08:51 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 08:56 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 08:59 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 09:02 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5,V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 09:08 developer Turno 1: V47 V5 splash "SGLAVINATED EDITION"->"OPEN RUN" in motore_nuovo/src/game/fasi.cpp (resto testi). gate non eseguito.
+10/11/2026 09:14 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5, V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 09:16 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5, V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.
+10/11/2026 09:24 developer Turno 1: nessun blocco [ ]/[~] per @developer (MIG1 D1-D5, V47 V1-V5 [x]; tocca J4/G2/VJ1). gate non eseguito. fermato.

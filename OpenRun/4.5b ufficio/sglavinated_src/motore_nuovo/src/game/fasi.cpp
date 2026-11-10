@@ -103,7 +103,7 @@ public:
     }
     void disegna(Renderer& ren, Framebuffer& fb) const override {
         // Placeholder del titolo: @grafico consegna lo schermo di splash (D15/D16).
-        const char* titolo = "SGLAVINATED EDITION";
+        const char* titolo = "OPEN RUN";
         const i32 w = ren.larghezzaTitolo(titolo, 2);
         fb.fillRect(160 - w / 2 - 8, 76, 160 + w / 2 + 8, 116, 0xFF6060A0u);
         ren.drawTitolo(160 - w / 2, 83, titolo, 0xFFFFFFFFu, 2, true); // font grassetto (Andrea 09/11)

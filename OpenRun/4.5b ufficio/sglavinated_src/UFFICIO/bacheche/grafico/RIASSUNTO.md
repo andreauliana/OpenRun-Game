@@ -1,11 +1,10 @@
-# RIEPILOGO — @grafico (10/11/2026 01:36)
-MIG1 G1 [ANNULLATO]: cartelloni solo Andrea, originali ripristinati; non toccare PNG/raw sponsor.
-MIG1 G2 [x]: verifica post-D1-D3 sui 6 PNG in `Test area/grafico/g2_screenshot_check` (ls -l exit 0, timestamp 09/11 12:30 invariati); 3 osservazioni: (1) D1 paletti: in j2_pali_f300/f900 restano su erba/bordo sopra la riga delle ruote, nessuno nel nero sotto lo schermo; (2) D2 sportellata: in j3_colpo scena stabile col rivale affiancato, in j3_dopo7s ha ripreso la marcia (recupero ~5 s ok a vista); (3) cosmetica: in j3_dopo7s la targhetta in basso a sinistra si accavalla col bordo e col player (render = @developer).
-V47 VG1 [x]: quadro/proposte + anteprima PNG `Test area/grafico/v47_vg1/v47_vg1_quadro_mancanze.png` validi; gruppo B non rigenerare; sensibili solo Andrea.
-Comando turno: `ls -l "UFFICIO/Officina/Test area/grafico/g2_screenshot_check"` exit 0 (6 PNG, 10/11 01:36). Gate non eseguito (nessun codice/dati di gioco toccati).
-File turno: `UFFICIO/bacheche/grafico/diario.md` (+1 riga), `RIASSUNTO.md` (riscritto).
-Bloccato: `UFFICIO/out/grafico/ULTIMO_TURNO.md` negato ancora (Write+Edit permission denied, 5° tentativo alle 01:36); osservazioni G2 qui e in diario — serve check permessi da @capo.
-Verifica nota (preesistente): `check_catalogo_grafico.py` exit 1 (5 segnaposto Andrea/Claude; 6 PNG non catalogati), fuori dai miei blocchi.
-Bloccati/passi: nessun [ ]/[~] aperto; attendo richiesta @capo o nuovi asset approvati da Andrea.
-Mai: HUD/UI, auto giocatore, logo/menu extra, premiazione, sponsor, scenari/skyline Andrea, parapetti ponte.
-Licenze: originale CC0-1.0, marchi inventati, zero Sega. Aperti ruolo: nessuno. Chiusi: MIG1 G2, V47 VG1, PERC1, AUTO1, G-A1, G-P1.
+# RIEPILOGO — @grafico (10/11/2026 09:22)
+MIG1 G2 [x] (10/11 08:32): 6 screenshot D1-D3 in `UFFICIO/Officina/Test area/grafico/g2_screenshot_check/` (`ls -la` exit 0; PNG gate 09/11 12:30). 3 osservazioni:
+1. D1 paletti (pali_f300/f900/f1700): sull'erba accanto alla strada, sopra la riga delle ruote e dentro lo schermo; a f1700 basso contrasto col verde.
+2. D2 sportellata (colpo/dopo2s/dopo7s): colpo a segno, sbandata a +2 s, rientro a +7 s — coerente con J3 (~5 s).
+3. D3 rivali con carattere: nessun screenshot dedicato aggressivo/prudente/vendicativo — lacuna materiale visivo (decide @capo).
+V47 V5 frasi [x]: `motore_nuovo/dati/frasi.json` 156 frasi EN v3, it1/it2 conservati (`traduci_frasi_en.py` exit 0); collisione `v5_frasi_inglese.py` segnalata a @capo.
+File turno 09:22: diario.md (+1 riga), RIASSUNTO.md (riscritto). Tentativo ULTIMO_TURNO.md negato (permission denied). Gate non eseguito (10/11 09:22); ultimo verde noto: @developer 10/11 ~08:20 exit 0.
+Mai: HUD/UI, auto giocatore, logo/menu, premiazione, sponsor (solo Andrea), scenari/skyline Andrea, parapetti ponte. Licenze: zero esterne, zero Sega.
+Chiusi: MIG1 G1 [ANNULLATO], MIG1 G2 [x], V47 VG1 [x], V47 V5 frasi [x], PERC1, AUTO1, G-A1, G-P1. `check_catalogo_grafico.py` exit 1 (fuori blocchi).
+Bloccati/passi: nessun passo mio [ ]/[~]; attendo @capo (collisione frasi, ULTIMO_TURNO negato, D3 screenshot) o nuovo blocco. Nessuna review richiesta.
