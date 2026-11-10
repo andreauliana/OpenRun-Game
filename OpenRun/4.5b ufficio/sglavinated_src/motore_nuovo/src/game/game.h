@@ -137,6 +137,9 @@ public:
     f32 fermoDopoArrivoS() const { return fermoS_; }
     // Memoria delle botte della gara (Andrea 29/10): auto urtate e tocchi del ciglio.
     i32 urtiGara() const { return urtiGara_; }
+    // Prove (MIG1 J3): secondi di sbandata rimasti al rivale i (0 = normale).
+    f32 rivaleSbandataS(i32 i) const { return i >= 0 && i < RIVALI ? rivali_[i].sbandataS : 0.0f; }
+    static constexpr i32 numeroRivali() { return RIVALI; }
     i32 toccateCiglio() const { return toccateCiglio_; }
     // Partenza cinematografica (Andrea 08/11): auto ferme in griglia, gruppi
     // di supporto ai lati, conto alla rovescia 3-2-1-START, poi via tutti

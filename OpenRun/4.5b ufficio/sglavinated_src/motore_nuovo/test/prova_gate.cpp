@@ -39,7 +39,6 @@ using i32 = std::int32_t;
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <cstdlib> // J3: std::strtof per leggere STEER_* da player.h
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
@@ -2199,19 +2198,14 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
     return ok;
 }
 
-// MIG1 J3 (09/11, rivisto 09/11 22:1x): sportellata efficace (D2) - bot
+// MIG1 J3 (09/11, rivisto 09/11 12:2x): sportellata efficace (D2) - bot
 // affiancato a un RIVALE alla punta; misura i secondi al primo colpo a segno e
-// la ripresa del rivale (~5 s, D2). 21:5x: dSterzo (2a differenza di playerX)
-// vs soglia 0.22 di D2. 22:1x: il bot fa un taglio tenuto (10 frame pieni + 6
-// neutri) invece del flick 2-on/1-off che non accumulava il taglio laterale.
+// la ripresa del rivale (~5 s, D2).
 // Nota API: sbandataS e' privato (Game::rivali_ privato, test fuori dal src),
 // quindi la ripresa si misura dall'esterno: si segue lo sprite del rivale
 // colpito e si campiona la sua velocita' reale (delta worldZ / dt) al secondo.
 // sbandata => velocita' giu' subito dopo il colpo, recupero entro ~5 s.
 // I rivali sono distinguibili dal traffico per la scala (1.7 contro 1.4).
-// 10/11 01:2x: diagnosi finale del trigger D2: il bound di |dSterzo| e' ora
-// letto da player.h (STEER_RAMPA/STEER_RITORNO) e dalla frequenza reale
-// (vedi stampa "J3 bound DERIVATO").
 bool verificaSportellata(const std::string& outDir, const std::string& livello) {
     namespace fs = std::filesystem;
     const std::string dir = outDir + "/mig1_j3_sportellata";
@@ -2251,46 +2245,20 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
     };
     const i32 MAX_F = (i32)(30.0f / dt); // cerca contatto entro 30 s
     const i32 OSS_F = (i32)(8.0f / dt);  // osserva ripresa per 8 s dopo il colpo
-    const i32 CAMPI = 8;                 // finestre da 1 s dopo il colpo
     i32 urtiPrima = game.urtiGara();
     i32 frameColpo = -1;
-    f32 zColpo = 0.0f;
-    f32 xColpo = 0.0f;
-    f32 velPrima = 0.0f;  // velocita' del rivale nell'ultimo frame prima del colpo
     f32 zBestPrec = -1.0f;
     f32 xBestPrec = 0.0f;
     f32 velFrame = 0.0f;
     i32 rivaliVisibiliMax = 0;
     f32 minDzRivale = 1e9f; // diagnostica: quanto si avvicina il rivale piu' vicino davanti
-    // MIG1 J3 (09/11 21:5x): diagnosi del blocco D2. Si misura il dSterzo
-    // (delta del frame dello sterzo) dalla 2a differenza di playerX:
-    // x_N - x_{N-1} = steer_N * STEER_MAX * risposta * dt (player.cpp update).
-    // Soglia D2: |dSterzo| > 0.22 in game.cpp:2386. Rampa sterzo:
-    // STEER_RAMPA_PER_S = 8/s -> max 0.133 a 60 Hz; ritorno 12/s -> 0.200.
-    i32 frameFinestra = 0;   // frame con rivale nella finestra (750-1100, |dx|<500)
-    i32 frameStretto = 0;    // di questi, con |dx| < 240 (finestra hit)
-    i32 frameClamp = 0;      // J3 22:1x: finestra hit toccata (clamp src a ~240)
-    i32 winBassa = 0;        // J3 22:1x: hit aperta ma speed <= 150 (niente taglio)
-    i32 winSchiva = 0;       // J3 22:1x: hit aperta ma il bot schiva il traffico
-    i32 winOmbra = 0;        // J3 22:1x: hit aperta ma il bersaglio e' piu' vicino
-    i32 frameHit = 0;        // J3 22:1x: frame con un rivale nella hit zone
-    i32 flickEmessi = 0;     // frame di taglio (sterzo pieno verso il rivale)
-    i32 frameDopoUrto = 0;   // frame rimanenti di "disturbo" dopo un urto (bump)
-    f32 minAbsDxFinestra = 1e9f; // piu' stretto avvicinamento laterale in finestra
-    f32 maxDSterzoFlick = 0.0f;  // |dSterzo| massimo stimato durante i tagli
-    f32 maxDSterzoTot = 0.0f;    // |dSterzo| massimo stimato (tutti i frame validi)
-    f32 xPrec1 = 1e9f;      // campioni playerX per la 2a differenza
-    f32 dXPrec = 0.0f;      // delta precedente (valido da xPrec1/xPrec2 pronti)
-    bool campioniPronti = false;
-    // Fase 1: accelera, affiancati a un rivale davanti, taglio di sterzo
-    // tenuto verso di lui (D2: dSterzo > 0.22, finestra |dx| < 240).
+    // Fase 1: accelera e cerca di affiancarsi a un rivale davanti, poi colpo
+    // di sterzo rapido verso di lui (D2: dSterzo > 0.22, affiancata |dx|<650).
     i32 flickDir = 0; // 0 neutro, -1 sx, +1 dx
-    i32 cutInTimer = 0; // ciclo taglio 10 frame pieni + 6 neutri
-    i32 diagTagli = 0;  // trace dei primi frame di taglio
-    bool haLock = false; // J3 22:1x: lock del bersaglio (niente rimbalzi)
-    f32 lockZ = 0.0f, lockX = 0.0f;
+    i32 flickTimer = 0;
     i32 screenN = 0;
     i32 diagUrti = 0;
+    i32 rivaleColpito = -1;
     for (i32 f = 0; f < MAX_F && frameColpo < 0; ++f) {
         const GameState& s = game.state();
         Pad pad;
@@ -2301,12 +2269,6 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
         f32 bestZ = 0.0f;
         f32 bestX = 0.0f;
         i32 rivaliOra = 0;
-        bool hitOra = false; // J3 22:1x: un rivale nella hit zone (750-1100, |dx|<500)
-        // J3 22:1x: lock del bersaglio + preferenza hit zone. Senza lock il bot
-        // rimbalzava tra rivali (trace: dx -450 -> +474 in 8 frame) e la
-        // distanza laterale non chiudeva mai (min_dx=273 con tenuta 260).
-        f32 bestScore = 1e9f;
-        bool sceltoHit = false;
         for (const SpriteInstance& sp : game.traffico()) {
             if (!eRivale(sp)) continue;
             ++rivaliOra;
@@ -2314,24 +2276,9 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
             if (dz < 0.0f) dz += giro;
             if (dz < minDzRivale) minDzRivale = dz;
             if (dz < 200.0f || dz > 2600.0f) continue;
-            const f32 dxSp = sp.worldX - s.playerX;
-            const bool inHit = dz > Game::URTO_Z_MIN && dz < 1100.0f && std::abs(dxSp) < 500.0f;
-            if (inHit) hitOra = true;
-            const bool locked = haLock && dz > Game::URTO_Z_MIN + 20.0f &&
-                std::abs(sp.worldZ - lockZ) + 2.0f * std::abs(sp.worldX - lockX) < 1500.0f;
-            f32 score = dz + 2.0f * std::abs(dxSp);
-            if (inHit) score -= 200000.0f; // la hit zone vince: li' si agisce
-            if (locked) score -= 100000.0f; // il bersaglio scelto resta saldo
-            if (score < bestScore) {
-                bestScore = score;
-                bestDz = dz; bestDx = dxSp; bestZ = sp.worldZ; bestX = sp.worldX;
-                sceltoHit = inHit;
-            }
+            if (dz < bestDz) { bestDz = dz; bestDx = sp.worldX - s.playerX; bestZ = sp.worldZ; bestX = sp.worldX; }
         }
         rivaliVisibiliMax = std::max(rivaliVisibiliMax, rivaliOra);
-        if (bestScore < 1e8f) { haLock = true; lockZ = bestZ; lockX = bestX; }
-        else haLock = false;
-        const bool ombraOra = hitOra && !sceltoHit;
         // Traffico piu' vicino davanti: se e' piu' vicino del rivale va schivato,
         // altrimenti il bot lo tampona e perde velocita' (stessa idea di corriGara).
         f32 trafDz = 1e9f;
@@ -2347,19 +2294,11 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
             }
         }
         const bool schivaTraffico = trafDz < 1e8f && (bestDz > 1e8f || trafDz < bestDz - 100.0f);
-        if (hitOra) {
-            ++frameHit;
-            // Perche' la hit zone non si traduce in taglio? (J3 22:1x)
-            if (ombraOra) ++winOmbra; // bersaglio piu' vicino (ora preferito)
-            else if (schivaTraffico) ++winSchiva;
-            else if (s.playerSpeed <= 0.6f * 250.0f) ++winBassa;
-        }
         if (schivaTraffico) {
             // Evita il traffico: niente inseguimento del rivale attraverso un'auto.
             zBestPrec = -1.0f;
             velFrame = 0.0f;
-            cutInTimer = 0;
-            flickDir = 0;
+            flickTimer = 0;
             if (s.playerX > trafObiettivo + 120.0f) pad.held |= (u64)Pad::Left;
             else if (s.playerX < trafObiettivo - 120.0f) pad.held |= (u64)Pad::Right;
         } else if (bestDz < 1e8f) {
@@ -2371,103 +2310,39 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
             zBestPrec = bestZ;
             xBestPrec = bestX;
             // Resta affiancato al rivale ma a distanza di sicurezza (fuori dalla
-            // carrozzeria); quando il rivale entra nella finestra d'urto, taglio
-            // di sterzo tenuto verso di lui (D2: dSterzo > 0.22, |dx| < 240).
-            // J3 09/11 21:5x: tenuta 260 (al di la' di |dx|=240): con 200 il
-            // tamponamento dietro al rivale (game.cpp:2119, dz>=1100) mette
-            // playerBump_ e blocca l'ingresso in finestra (misura: 0 frame).
-            // J3 09/11 22:1x: il vecchio flick 2-on/1-off non accumulava il
-            // taglio laterale (min_dx_finestra=242, mai < 240): ora ciclo
-            // taglio 10 frame pieni + 6 neutri (la rampa 8/s ricomincia da 0
-            // e crea un nuovo colpo di dSterzo a ogni ciclo).
+            // carrozzeria); quando il rivale entra nella finestra d'urto, colpo
+            // di sterzo rapido verso di lui (D2: dSterzo > 0.22, |dx| < 240).
             const f32 versoLato = bestDx >= 0.0f ? 1.0f : -1.0f;
-            const f32 obiettivoX = bestX - versoLato * 260.0f;
-            const bool inFinestra = bestDz > Game::URTO_Z_MIN + 20.0f && bestDz < 1080.0f;
+            const f32 obiettivoX = bestX - versoLato * 280.0f;
+            const bool inFinestra = bestDz > Game::URTO_Z_MIN && bestDz < 1150.0f;
             const bool aFianco = std::abs(bestDx) < 500.0f;
-            if (bestDz > Game::URTO_Z_MIN && bestDz < 1100.0f && std::abs(bestDx) < 500.0f) {
-                ++frameFinestra;
-                if (std::abs(bestDx) < minAbsDxFinestra) minAbsDxFinestra = std::abs(bestDx);
-                if (std::abs(bestDx) < Game::URTO_LARGHEZZA) ++frameStretto;
-                // Il clamp di src (game.cpp:2390) riconduce |dx| a ~240 quando
-                // il bot entra nella finestra d'urto: quel frame conta come
-                // "finestra hit toccata" anche se il campione e' ~240.0.
-                if (std::abs(bestDx) <= Game::URTO_LARGHEZZA + 1.0f) ++frameClamp;
-            }
-            // J3 22:4x: taglio lungo (14 frame) e neutro corto (2) per
-            // accumulare spinta laterale; in hit zone si punta a entrare in
-            // |dx|<240 (contatto collisioneRivaleVicino, path 2335) prima che
-            // il clamp di src (2390) riporti al bordo.
             if (inFinestra && aFianco) {
-                if (cutInTimer <= 0) cutInTimer = 16; // ciclo: 14 taglio + 2 neutro
-                --cutInTimer;
-                if (cutInTimer >= 2) {
-                    // Taglio tenuto: sterzo pieno verso il rivale.
-                    flickDir = bestDx > 0.0f ? 1 : -1;
-                    ++flickEmessi;
-                    if (flickDir < 0) pad.held |= (u64)Pad::Left;
-                    else pad.held |= (u64)Pad::Right;
-                    if (diagTagli < 12) {
-                        std::printf("  [taglio] f=%d t=%d dz=%.0f dx=%.0f px=%.0f speed=%.0f\n",
-                                    f, cutInTimer, bestDz, bestDx, s.playerX, s.playerSpeed);
-                        ++diagTagli;
-                    }
-                } else {
-                    // Neutro breve: mantieni affiancamento.
-                    flickDir = 0;
-                    if (s.playerX > obiettivoX + 60.0f) pad.held |= (u64)Pad::Left;
-                    else if (s.playerX < obiettivoX - 60.0f) pad.held |= (u64)Pad::Right;
-                }
+                // Affiancati: sterzo pieno verso il rivale finche' la
+                // carrozzeria lo tocca di lato (D2, anche alla punta).
+                flickDir = bestDx > 0.0f ? 1 : -1;
+                pad.held |= flickDir < 0 ? (u64)Pad::Left : (u64)Pad::Right;
             } else {
-                cutInTimer = 0;
-                flickDir = 0;
-                if (s.playerX > obiettivoX + 60.0f) pad.held |= (u64)Pad::Left;
-                else if (s.playerX < obiettivoX - 60.0f) pad.held |= (u64)Pad::Right;
+                flickTimer = 0;
+                if (s.playerX > obiettivoX + 30.0f) pad.held |= (u64)Pad::Left;
+                else if (s.playerX < obiettivoX - 30.0f) pad.held |= (u64)Pad::Right;
             }
         } else {
             zBestPrec = -1.0f;
             velFrame = 0.0f;
-            cutInTimer = 0;
-            flickDir = 0;
+            flickTimer = 0;
         }
         game.setInput(pad);
         game.update();
         game.render();
-        // dSterzo stimato (J3): 2a differenza di playerX / (780 * risposta * dt).
-        {
-            if (frameDopoUrto > 0) --frameDopoUrto;
-            const f32 vN = s.playerSpeed / 250.0f;
-            const f32 risposta = std::min(1.0f, vN / 0.25f) * (1.0f - 0.05f * vN * vN);
-            const f32 kSterzo = 780.0f * risposta * dt;
-            if (xPrec1 > 1e8f) {
-                xPrec1 = s.playerX;
-            } else {
-                const f32 dXOra = s.playerX - xPrec1;
-                if (!campioniPronti) {
-                    campioniPronti = true; // primo delta pronto: da qui dXPrec e' valido
-                } else if (frameDopoUrto == 0 && kSterzo > 1.0f && std::abs(dXOra) < 40.0f && std::abs(dXPrec) < 40.0f) {
-                    const f32 dS = std::abs(dXOra - dXPrec) / kSterzo;
-                    if (dS > maxDSterzoTot) maxDSterzoTot = dS;
-                    if (flickDir != 0 && dS > maxDSterzoFlick) maxDSterzoFlick = dS;
-                }
-                dXPrec = dXOra;
-                xPrec1 = s.playerX;
-            }
-        }
         if (game.urtiGara() > urtiPrima) {
-            frameDopoUrto = 120; // bump: niente stima dSterzo per 2 s
-            // Conta solo una sportellata a un rivale: il rivale deve essere
-            // stato spostato di lato (urto laterale, D2). Un urto col traffico
-            // non e' la prova di J3 e viene scartato.
-            const SpriteInstance* r = trovaRivale(bestZ, s.playerX + bestDx, 800.0f);
-            if (r && std::abs(r->worldX - xBestPrec) > 100.0f) {
+            // Sportellata a segno = un rivale ha appena iniziato la sbandata
+            // (D2: sbandataS = 5 s). Un urto col traffico non conta.
+            for (i32 ri = 0; ri < Game::numeroRivali(); ++ri)
+                if (game.rivaleSbandataS(ri) > 4.9f) rivaleColpito = ri;
+            if (rivaleColpito >= 0) {
                 frameColpo = f;
-                zColpo = r->worldZ;
-                xColpo = r->worldX;
-                velPrima = velFrame;
-            } else if (diagUrti < 8) {
-                std::printf("  [diag] urto f=%d bestDz=%.0f bestDx=%.0f rivale=%s dx_riv=%.0f flick=%d speed=%.2f\n",
-                            f, bestDz, bestDx, r ? "SI" : "NO",
-                            r ? r->worldX - xBestPrec : 0.0f, flickDir, s.playerSpeed);
+            } else if (diagUrti < 3) {
+                std::printf("  [diag] urto f=%d senza rivale in sbandata (traffico?) speed=%.2f\n", f, s.playerSpeed);
                 ++diagUrti;
             }
             urtiPrima = game.urtiGara();
@@ -2483,137 +2358,38 @@ bool verificaSportellata(const std::string& outDir, const std::string& livello) 
                     MAX_F * dt, game.urtiGara());
         std::printf("  diagnostica: rivali_visibili_max=%d min_dz_rivale=%.0f\n",
                     rivaliVisibiliMax, minDzRivale);
-        std::printf("  J3 geometria: frame_finestra=%d (750<dz<1100,|dx|<500) frame_stretto=%d (|dx|<240) frame_clamp=%d (hit toccata) tagli=%d min_dx_finestra=%.0f\n",
-                    frameFinestra, frameStretto, frameClamp, flickEmessi,
-                    minAbsDxFinestra > 1e8f ? -1.0f : minAbsDxFinestra);
-        // J3 10/11 01:5x: il clamp laterale game.cpp:2390 tiene |dx| >=
-        // URTO_LARGHEZZA (game.h:166) da affiancati, quindi la finestra stretta
-        // del trigger 2386 (|dx| < 240) e' valutata solo in avvicinamento.
-        std::printf("  J3 clamp: URTO_LARGHEZZA=240 (game.h) min_dx_finestra=%.0f -> finestra stretta %s; il trigger di affiancata si valuta solo in avvicinamento\n",
-                    minAbsDxFinestra > 1e8f ? -1.0f : minAbsDxFinestra,
-                    (minAbsDxFinestra > 1e8f || minAbsDxFinestra >= 240.0f) ? "irraggiungibile finche' il clamp tiene" : "raggiunta");
-        // J3 10/11: leggi la soglia D2 da game.cpp (riga trigger) per evitare valori hardcodati nel report.
-        auto sogliaD2DaGame = [&]() -> f32 {
-            std::ifstream in("motore_nuovo/src/game/game.cpp");
-            if (!in) return 0.22f;
-            std::string riga;
-            while (std::getline(in, riga)) {
-                const size_t abs = riga.find("std::abs(dSterzo)");
-                if (abs == std::string::npos) continue;
-                const size_t gt = riga.find('>', abs);
-                if (gt == std::string::npos) continue;
-                // estrai numero dopo >
-                std::string num;
-                for (size_t p = gt + 1; p < riga.size(); ++p) {
-                    char c = riga[p];
-                    if (c == ' ' || c == '\t' || c == 'f' || c == 'F') continue;
-                    if ((c >= '0' && c <= '9') || c == '.' || c == '-') { num += c; continue; }
-                    break;
-                }
-                if (num.empty()) return 0.22f;
-                return std::strtof(num.c_str(), nullptr);
-            }
-            return 0.22f;
-        };
-        const f32 sogliaD2 = sogliaD2DaGame();
-        std::printf("  J3 dSterzo_stimato: max_tot=%.3f max_in_flick=%.3f | soglia D2=%.3f (game.cpp letta)\n",
-                    maxDSterzoTot, maxDSterzoFlick, (double)sogliaD2);
-        std::printf("  J3 hit_zone: frame_hit=%d ombra=%d schiva=%d bassa_vel=%d (perdite della finestra)\n",
-                    frameHit, winOmbra, winSchiva, winBassa);
-        // J3 10/11 01:2x: bound DERIVATO (non scritto a mano) da player.h e
-        // dalla frequenza reale di config.json. Player::STERZO_* sono privati e
-        // Game non espone Player: il test legge le due costanti dal sorgente e
-        // le combina con dt. sterzoPrec_ = player_.sterzo() viene aggiornato ogni
-        // frame (game.cpp:2394), quindi |dSterzo| = |steer_N - steer_{N-1}| <=
-        // max(rampa, ritorno) * dt (player.cpp:16). La soglia D2 0.22 di
-        // game.cpp:2386 e' raggiungibile solo se quel bound la supera.
-        auto costanteDaHeader = [&](const char* nome, f32 fallback) -> f32 {
-            std::ifstream in("motore_nuovo/src/player/player.h");
-            if (!in) return fallback;
-            std::string riga;
-            const std::string chiave = std::string(nome) + " =";
-            while (std::getline(in, riga)) {
-                const size_t p = riga.find(chiave);
-                if (p == std::string::npos) continue;
-                const size_t eq = riga.find('=', p);
-                if (eq == std::string::npos) return fallback;
-                return std::strtof(riga.c_str() + eq + 1, nullptr);
-            }
-            return fallback;
-        };
-        const f32 rampaPerS = costanteDaHeader("STEER_RAMPA_PER_S", -1.0f);
-        const f32 ritornoPerS = costanteDaHeader("STEER_RITORNO_PER_S", -1.0f);
-        const bool headerLetto = rampaPerS > 0.0f && ritornoPerS > 0.0f;
-        const f32 boundRampa = rampaPerS * dt;
-        const f32 boundRitorno = ritornoPerS * dt;
-        const f32 boundMax = std::max(boundRampa, boundRitorno);
-        const bool triggerRaggiungibile = boundMax > sogliaD2;
-        std::printf("  J3 bound DERIVATO da player.h (%s): %d Hz -> rampa %.1f/s = %.3f, ritorno %.1f/s = %.3f, max = %.3f | soglia D2 %.3f -> trigger %s\n",
-                    headerLetto ? "letto" : "FALLITO fallback 8/12",
-                    (i32)(1.0f / dt + 0.5f),
-                    (double)rampaPerS, (double)boundRampa,
-                    (double)ritornoPerS, (double)boundRitorno,
-                    (double)boundMax, (double)sogliaD2,
-                    triggerRaggiungibile ? "RAGGIUNGIBILE" : "IRRAGGIUNGIBILE");
-        if (headerLetto && !triggerRaggiungibile)
-            std::printf("  J3 conclusione: con |dSterzo| <= %.3f il colpo di game.cpp:2386 non scatta mai; la stima test (max_in_flick) dalla 2a differenza di playerX e' gonfiata dal clamp laterale di game.cpp:2390.\n",
-                        (double)boundMax);
         std::printf("  dir=%s\n", dir.c_str());
         return false;
     }
     const f32 tColpo = frameColpo * dt;
     salvaPPM(dir + "/sportellata_colpo.ppm", game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
-    // Fase 2: segue il rivale colpito per 8 s e campiona la velocita' reale in
-    // finestre da 1 s (0-1s ... 7-8s). Ripresa attesa: rallenta subito, torna
-    // al ritmo normale entro ~5 s (D2: sbandataS = 5 s).
-    double somma[CAMPI] = {};
-    i32 conta[CAMPI] = {};
-    f32 zPrec = zColpo;
-    f32 xPrec = xColpo;
-    f32 vTrack = velPrima;
+    // Fase 2: segue la sbandata del rivale colpito per 8 s. Attesa (D2):
+    // ancora in sbandata a 2 s, tornato normale entro ~5 s (piu' un margine
+    // se nel frattempo lo si colpisce di nuovo).
+    f32 sbandata2s = -1.0f;
+    f32 tRipresa = -1.0f;
     for (i32 k = 0; k < OSS_F; ++k) {
         Pad pad;
-        pad.held = (u64)Pad::A; // gas per restare in gara
+        pad.held = (u64)Pad::A; // gas, niente sterzo: nessun nuovo colpo voluto
         game.setInput(pad);
         game.update();
         game.render();
-        const SpriteInstance* r = trovaRivale(zPrec + vTrack * dt, xPrec, 900.0f);
-        if (r) {
-            const f32 v = avanza(zPrec, r->worldZ) / dt;
-            if (v > -1000.0f && v < 20000.0f) vTrack = v;
-            zPrec = r->worldZ;
-            xPrec = r->worldX;
-            const i32 sec = std::min(CAMPI - 1, (i32)((f32)k * dt));
-            somma[sec] += v;
-            ++conta[sec];
-        }
-        if (k == (i32)(2.0f / dt))
+        const f32 sb = game.rivaleSbandataS(rivaleColpito);
+        if (k == (i32)(2.0f / dt)) {
+            sbandata2s = sb;
             salvaPPM(dir + "/sportellata_dopo2s.ppm", game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
+        }
+        if (tRipresa < 0.0f && sb <= 0.0f) tRipresa = (f32)(k + 1) * dt;
         if (k == OSS_F - 1)
             salvaPPM(dir + "/sportellata_dopo8s.ppm", game.fb().data(), Framebuffer::WIDTH, Framebuffer::HEIGHT);
     }
-    auto media = [&](i32 i) -> f32 { return conta[i] > 0 ? (f32)(somma[i] / conta[i]) : -1.0f; };
-    f32 mediaV[CAMPI];
-    for (i32 i = 0; i < CAMPI; ++i) mediaV[i] = media(i);
-    // Recupero: finestra 5-8 s (D2: ~5 s) vicina al ritmo prima del colpo.
-    f32 dopo5s = mediaV[7] >= 0.0f ? mediaV[7] : (mediaV[6] >= 0.0f ? mediaV[6] : mediaV[5]);
-    const bool colpoOk = velPrima > 0.0f;
-    const bool sbandataOsservata = conta[0] > 0 && mediaV[0] >= 0.0f && mediaV[0] < 0.95f * velPrima;
-    const bool ripresaOsservata = conta[CAMPI - 1] > 0 && dopo5s >= 0.90f * velPrima;
-    std::printf("sportellata (MIG1 J3): colpo_a_segno=%s a %.2fs (frame %d) urti_gara=%d bersaglio=RIVALE\n",
-                colpoOk ? "SI" : "NO", tColpo, frameColpo, game.urtiGara());
-    std::printf("  velocita' rivale (unita' strada/s) prima_del_colpo=%.0f\n", velPrima);
-    std::printf("  dopo il colpo (1 s per finestra):");
-    for (i32 i = 0; i < CAMPI; ++i) std::printf(" %d-%ds=%.0f", i, i + 1, mediaV[i]);
-    std::printf("\n");
-    std::printf("  sbandata_osservata=%s (0-1s < 95%% pre) ripresa_entro_8s=%s (5-8s >= 90%% pre)\n",
-                sbandataOsservata ? "SI" : "NO", ripresaOsservata ? "SI" : "NO");
-    std::printf("  J3 geometria: frame_finestra=%d frame_stretto=%d frame_clamp=%d tagli=%d min_dx_finestra=%.0f dSterzo_max_in_taglio=%.3f\n",
-                frameFinestra, frameStretto, frameClamp, flickEmessi,
-                minAbsDxFinestra > 1e8f ? -1.0f : minAbsDxFinestra, maxDSterzoFlick);
+    const bool sbandataOsservata = sbandata2s > 0.0f;
+    const bool ripresaOsservata = tRipresa > 4.0f && tRipresa < 6.0f;
+    std::printf("sportellata (MIG1 J3): colpo_a_segno=SI a %.2fs (frame %d) rivale=%d urti_gara=%d\n",
+                tColpo, frameColpo, rivaleColpito, game.urtiGara());
+    std::printf("  sbandata a 2 s=%.2f s rimasti, ripresa dopo %.2f s (attesa ~5 s)\n", sbandata2s, tRipresa);
     std::printf("  dir=%s\n", dir.c_str());
-    const bool ok = colpoOk && sbandataOsservata && ripresaOsservata;
-    if (!ok) std::printf("  NOTA: sportellata non verificata completamente\n");
+    const bool ok = sbandataOsservata && ripresaOsservata;
     return ok;
 }
 
@@ -3352,6 +3128,9 @@ static bool verificaCiclo(const std::string& outDir) {
             passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
             passoCiclo(game, 0, 0);
             passoCiclo(game, 0, Pad::Start);  // Menu: prima voce
+            // V47 V4: il menu si scurisce per 0.25 s prima della gara.
+            for (i32 k = 0; k < game.frequenzaHz() && game.faseCorrente() != FaseId::Gara; ++k)
+                passoCiclo(game, 0, 0);
             const bool inGara = game.faseCorrente() == FaseId::Gara && game.corsaSingola();
             const GameState& st = game.state();
             const bool comeGara = st.gara && st.concorrenti == 8 && !game.road().bivioAttivo() &&

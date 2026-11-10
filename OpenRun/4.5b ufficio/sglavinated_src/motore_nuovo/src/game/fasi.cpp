@@ -524,22 +524,23 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
         fasePendente_ = id;
         return;
     }
-    // V47 V4: dissolvenza 0.5s fra risultati, menu e partenza
+    // V47 V4: dissolvenza di 0.5 s fra risultati, menu e partenza. Nella
+    // prima meta' la fase vecchia resta (e attuale() non cambia, cosi' Game
+    // disegna ancora la sua scena) e si scurisce; a meta' si cambia fase e
+    // la nuova schiarisce.
     if (fadeSt_ == FadeState::None) {
         const bool daRisultatiAMenu = (attuale_ == FaseId::Risultati && id == FaseId::Menu);
         const bool daMenuAGara = (attuale_ == FaseId::Menu && id == FaseId::Gara);
         if (daRisultatiAMenu || daMenuAGara) {
-            if (fase_) fase_->esci(gioco);
             fadeSt_ = FadeState::Out;
             fadeT_ = 0.0f;
-            fadeDur_ = 0.5f;
             faseProssimaFade_ = id;
-            giocoFade_ = &gioco;
-            fadeDaProssima_ = false;
-            fase_ = nullptr;
-            attuale_ = id;
             return;
         }
+    } else {
+        faseProssimaFade_ = id; // cambio chiesto a dissolvenza in corso: vince l'ultimo
+        if (fadeSt_ == FadeState::Out) return;
+        fadeSt_ = FadeState::None; // gia' in schiarita: cambio secco
     }
     if (fase_) fase_->esci(gioco);
     fase_ = crea(id);
@@ -548,27 +549,25 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
 }
 
 void GestoreFasi::aggiorna(Game& gioco, f32 dt) {
-    if (fadeSt_ != FadeState::None) {
-        if (fadeSt_ == FadeState::Out) {
-            fadeT_ += dt;
-            if (fadeT_ >= fadeDur_ * 0.5f) {
-                fadeSt_ = FadeState::In;
-                fadeT_ = 0.0f;
-                if (giocoFade_) {
-                    fase_ = crea(faseProssimaFade_);
-                    attuale_ = faseProssimaFade_;
-                    if (fase_) fase_->entra(*giocoFade_);
-                }
-            }
-            return;
-        } else if (fadeSt_ == FadeState::In) {
-            fadeT_ += dt;
-            if (fadeT_ >= fadeDur_ * 0.5f) {
-                fadeSt_ = FadeState::None;
-                fadeT_ = 0.0f;
-            }
-            return;
+    if (fadeSt_ == FadeState::Out) {
+        fadeT_ += dt;
+        if (fadeT_ >= fadeDur_ * 0.5f) {
+            fadeSt_ = FadeState::In;
+            fadeT_ = 0.0f;
+            if (fase_) fase_->esci(gioco);
+            fase_ = crea(faseProssimaFade_);
+            attuale_ = faseProssimaFade_;
+            if (fase_) fase_->entra(gioco);
         }
+        return;
+    }
+    if (fadeSt_ == FadeState::In) {
+        fadeT_ += dt;
+        if (fadeT_ >= fadeDur_ * 0.5f) {
+            fadeSt_ = FadeState::None;
+            fadeT_ = 0.0f;
+        }
+        // la fase nuova gira gia' mentre schiarisce
     }
     if (!fase_) return;
     inAggiorna_ = true;
@@ -585,32 +584,24 @@ void GestoreFasi::aggiorna(Game& gioco, f32 dt) {
     }
 }
 
-void GestoreFasi::disegna(Renderer& ren, Framebuffer& fb) const {
-    (void)ren;
-    if (fadeSt_ != FadeState::None) {
-        if (fase_) fase_->disegna(ren, fb);
-        f32 t = fadeT_;
-        if (fadeSt_ == FadeState::Out) {
-            t = fadeT_;
-        } else {
-            t = fadeDur_ * 0.5f - fadeT_;
-        }
-        if (t < 0.0f) t = 0.0f;
-        if (t > fadeDur_ * 0.5f) t = fadeDur_ * 0.5f;
-        f32 alpha = t / (fadeDur_ * 0.5f);
-        if (alpha < 0.0f) alpha = 0.0f;
-        if (alpha > 1.0f) alpha = 1.0f;
-        u32 p = (u32)(alpha * 100.0f);
-        if (p > 100) p = 100;
-        u32* d = fb.data();
-        for (i32 i = 0; i < Framebuffer::WIDTH * Framebuffer::HEIGHT; ++i) {
-            const u32 c = d[i];
-            d[i] = 0xFF000000u | ((((c >> 16) & 0xFFu) * (100 - p) / 100) << 16) |
-                                     ((((c >> 8) & 0xFFu) * (100 - p) / 100) << 8) | ((c & 0xFFu) * (100 - p) / 100);
-        }
-        return;
+void GestoreFasi::dissolvenza(Framebuffer& fb) const {
+    if (fadeSt_ == FadeState::None) return;
+    const f32 meta = fadeDur_ * 0.5f;
+    f32 buio = std::clamp(fadeT_ / meta, 0.0f, 1.0f); // 0 = pieno, 1 = nero
+    if (fadeSt_ == FadeState::In) buio = 1.0f - buio;
+    const u32 p = (u32)(buio * 100.0f);
+    u32* d = fb.data();
+    for (i32 i = 0; i < Framebuffer::WIDTH * Framebuffer::HEIGHT; ++i) {
+        const u32 c = d[i];
+        d[i] = 0xFF000000u | ((((c >> 16) & 0xFFu) * (100 - p) / 100) << 16) |
+               ((((c >> 8) & 0xFFu) * (100 - p) / 100) << 8) | ((c & 0xFFu) * (100 - p) / 100);
     }
-    if (fase_) fase_->disegna(ren, fb);
 }
+
+void GestoreFasi::disegna(Renderer& ren, Framebuffer& fb) const {
+    if (fase_) fase_->disegna(ren, fb);
+    dissolvenza(fb);
+}
+
 
 } // namespace sgl
