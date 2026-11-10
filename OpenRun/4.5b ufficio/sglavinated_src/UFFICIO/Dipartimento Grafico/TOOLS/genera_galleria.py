@@ -4,7 +4,10 @@
 # e luce_galleria (16x8). Scrive PNG in Libreria/assets_originali/scenari/comuni/oggetti/
 # e raw SGLR in motore_nuovo/dati/sprite_raw/scenari/comuni/.
 # Lanciare da sglavinated_src: python3 "UFFICIO/Dipartimento Grafico/TOOLS/genera_galleria.py"
+# Non sovrascrive i PNG che esistono gia' (Andrea li ridisegna, 10/11), salvo --forza.
+# Dopo un PNG ridisegnato basta: python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"
 import struct
+import sys
 import zlib
 from pathlib import Path
 
@@ -144,10 +147,14 @@ def genera_luce():
 
 
 def main():
+    forza = "--forza" in sys.argv
     for name, gen in [("parete_galleria", genera_parete), ("luce_galleria", genera_luce)]:
         w, h, rgba = gen()
         png = OBJ / f"{name}.png"
         rawp = RAW / f"{name}.sglraw"
+        if png.exists() and not forza:
+            print(f"tengo {png} (esiste gia'; --forza per rigenerarlo)")
+            continue
         scrivi_png(png, w, h, rgba)
         scrivi_raw(rawp, w, h, rgba)
         print(f"OK {png} ({w}x{h})")
