@@ -1701,6 +1701,10 @@ void Game::aggiornaRivali() {
             r.progresso = mio + Game::URTO_Z_MIN;
             r.passo = std::min(r.passo, velocitaGiocatore);
         }
+        // In griglia (Andrea 10/11) i rivali restano fermi anche di lato:
+        // scansandosi toccavano l'auto del giocatore, la botta le dava il
+        // 10% di velocita' e partiva da sola prima dello START.
+        if (fermi) r.xObiettivo = r.x;
         const f32 laterale = (schiva ? RIVALE_SCHIVA_PER_S : RIVALE_LATERALE_PER_S) * dt;
         if (r.x < r.xObiettivo) r.x = std::min(r.xObiettivo, r.x + laterale);
         if (r.x > r.xObiettivo) r.x = std::max(r.xObiettivo, r.x - laterale);
@@ -2859,6 +2863,8 @@ f32 Game::passoFonte(i32 fonte) const {
 }
 
 void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
+    // In griglia nessun urto (Andrea 10/11): l'auto resta ferma fino allo START.
+    if (inPartenza()) return;
     // Due urti diversi (Andrea 29/10). Traffico (guidatori qualunque): botta
     // forte, l'auto rimbalza di lato, sobbalza e il veicolo suona il clacson.
     // Rivale (pilota): sportellata, si perde poco e l'altro viene spostato.

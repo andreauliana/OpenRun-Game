@@ -130,6 +130,30 @@ void Road::build(const std::vector<SegmentDesc>& descs, u32 seed) {
             segs_[i].larghezza = da + (1.0f - da) * t;
         }
     }
+    // Galleria a larghezza costante (Andrea 10/11, "area nera" in lv_05): se
+    // il cambio di corsie cade dentro la galleria, le pareti si stringono
+    // verso il centro e si vede un cuneo scuro che taglia la strada. Il
+    // raccordo si sposta allora prima dell'imbocco: dentro la galleria la
+    // carreggiata ha gia' la larghezza dell'uscita.
+    {
+        const i32 n = (i32)segs_.size();
+        for (i32 a = 0; a < n;) {
+            if (!segs_[a].galleria) { ++a; continue; }
+            i32 b = a;
+            while (b + 1 < n && segs_[b + 1].galleria) ++b;
+            const f32 dentro = segs_[b].larghezza;
+            bool varia = false;
+            for (i32 i = a; i <= b; ++i) varia = varia || std::fabs(segs_[i].larghezza - dentro) > 0.001f;
+            if (varia) {
+                for (i32 i = a; i <= b; ++i) segs_[i].larghezza = dentro;
+                const i32 inizio = std::max(0, a - LARGHEZZA_RACCORDO);
+                const f32 da = segs_[inizio].larghezza;
+                for (i32 i = inizio; i < a; ++i)
+                    segs_[i].larghezza = da + (dentro - da) * raccordo((f32)(i - inizio + 1) / (f32)(a - inizio));
+            }
+            a = b + 1;
+        }
+    }
 
     // Rettilineo del bivio (Andrea 29/10): "prima del bivio un piccolo
     // rettilineo, e il bivio; le curve, i ponti, i salti vanno dentro alla
