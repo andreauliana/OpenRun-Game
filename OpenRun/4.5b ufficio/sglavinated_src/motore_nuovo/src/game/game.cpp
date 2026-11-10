@@ -131,7 +131,9 @@ constexpr f32 SCALA_AUTO = 1.4f;
 constexpr f32 SCALA_RIVALE = 1.7f; // Andrea 07/11: rivali un po' piu' grandi (prima 1.4); alla riga delle ruote ~57 px, giocatore 50
 // Andrea 05/11 notte: nomi inventati da 6 lettere al posto dei colori.
 // MIG1 D4: 7 nomi, max 6 lettere, culture diverse legate ai temi dei livelli.
-const char* const NOMI_RIVALI[] = {"BOOGIE", "SPUTN", "RASTA", "AKIRA", "DJEMBE", "PINGU", "CHIDO"};
+// Claude 09/11: AKIRA e PINGU sono nomi di opere/personaggi famosi (DIREZIONE_ARTISTICA:
+// solo nomi inventati) -> KAZOMI (cromo, Giappone) e BLIPPO (desktop, bip del computer).
+const char* const NOMI_RIVALI[] = {"BOOGIE", "SPUTN", "RASTA", "KAZOMI", "DJEMBE", "BLIPPO", "CHIDO"};
 // Triangolo sopra i rivali (Andrea 05/11 sera): acceso nei primi
 // SEGNALINO_PARTENZA_S secondi di gara, poi solo per SEGNALINO_DURATA_S quando
 // un rivale entra nella fascia vicina (davanti o appena dietro). Isteresi: si
@@ -2256,7 +2258,8 @@ void Game::aggiornaGuida(f32 dt) {
         for (Detrito& d : detriti_) {
             if (d.t < 0.0f) continue;
             d.t = std::min(d.t + dt, PALO_VOLO_S);
-            if (road_.playerZ - d.z > PALO_PASSO * 2.0f) d.t = -1.0f;
+            // (anche se la z riparte da capo: tappa nuova o giro)
+            if (road_.playerZ - d.z > PALO_PASSO * 2.0f || d.z - road_.playerZ > PALO_PASSO * 4.0f) d.t = -1.0f;
         }
         abbattiPali(zPrima);
 
@@ -2277,25 +2280,23 @@ void Game::aggiornaGuida(f32 dt) {
                     const f32 dz = sprites_[k].worldZ - road_.playerZ;
                     const f32 dx = std::abs(sprites_[k].worldX - player_.x);
                     if (dz > 0.0f && dz < 1500.0f && dx < 350.0f) inScia = true;
-                    const bool pelo = dz > 0.0f && dz < 2000.0f && dx < 350.0f;
+                    // Sorpasso al pelo (Claude 09/11): l'auto era davanti e la
+                    // si passa a meno di ~350 di lato NEL MOMENTO del sorpasso
+                    // (prima bastava averla avuta in corsia davanti: ogni
+                    // sorpasso valeva +0.5 s).
                     const i32 f = spritesFonte_[k];
-                    if (f >= 0 && f < RIVALI) {
-                        if (pelo) rivDavantiPelo_[f] = true;
-                        if (rivDavantiPelo_[f] && dz <= 0.0f && dz > -1500.0f) {
-                            rivDavantiPelo_[f] = false;
-                            tempoResiduoS_ += 0.5f;
-                            mixer_.suonaSorpasso();
-                        } else if (dz > 3500.0f || dz < -2500.0f) rivDavantiPelo_[f] = false;
-                    } else if (f < 0) {
-                        const i32 ti = -1 - f;
-                        if (ti >= 0 && ti < TRAFFICO) {
-                            if (pelo) trafDavantiPelo_[ti] = true;
-                            if (trafDavantiPelo_[ti] && dz <= 0.0f && dz > -1500.0f) {
-                                trafDavantiPelo_[ti] = false;
+                    bool* davanti = nullptr;
+                    if (f >= 0 && f < RIVALI) davanti = &rivDavantiPelo_[f];
+                    else if (f < 0 && -1 - f < TRAFFICO) davanti = &trafDavantiPelo_[-1 - f];
+                    if (davanti) {
+                        if (dz > 0.0f && dz < 2000.0f) *davanti = true;
+                        if (*davanti && dz <= 0.0f && dz > -1500.0f) {
+                            *davanti = false;
+                            if (dx < 350.0f && !playerBump_) {
                                 tempoResiduoS_ += 0.5f;
                                 mixer_.suonaSorpasso();
-                            } else if (dz > 3500.0f || dz < -2500.0f) trafDavantiPelo_[ti] = false;
-                        }
+                            }
+                        } else if (dz > 3500.0f || dz < -2500.0f) *davanti = false;
                     }
                 }
                 sciaS_ = inScia ? sciaS_ + dt : std::max(0.0f, sciaS_ - dt * 2.0f);
@@ -2718,6 +2719,7 @@ void Game::render() {
     // Scena show (personaggio + fumetto): NON si disegnano rettangoli
     // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).
     // Si disegnera' solo con gli sprite veri; i gate leggono scenaShow().
+    fasi_.dissolvenza(fb_); // V47 V4: schiarita dal menu alla partenza
 }
 
 void Game::aggiornaSalto(f32 dt) {

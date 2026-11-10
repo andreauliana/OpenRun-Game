@@ -42,6 +42,9 @@ public:
     FaseId attuale() const { return attuale_; }
     void aggiorna(Game& gioco, f32 dt);
     void disegna(Renderer& ren, Framebuffer& fb) const;
+    // V47 V4: scurisce il frame durante la dissolvenza (Game::render la
+    // chiama anche sulla scena di strada, dove la fase non disegna).
+    void dissolvenza(Framebuffer& fb) const;
 private:
     std::unique_ptr<Fase> crea(FaseId id);
     std::unique_ptr<Fase> fase_;
@@ -55,8 +58,6 @@ private:
     f32 fadeT_ = 0.0f;
     f32 fadeDur_ = 0.5f;
     FaseId faseProssimaFade_ = FaseId::Menu;
-    Game* giocoFade_ = nullptr;
-    bool fadeDaProssima_ = false;
 };
 
 } // namespace sgl

@@ -390,9 +390,11 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 ### @capo
 - Una riga di registro per turno; `UFFICIO/out/capo/STATI_PROPOSTI.md` allineato a MIG1. Niente richieste ad Andrea.
 
-| Chi tocca adesso | @grafico G1 · @developer D1 · @developer-junior J1 · @capo una riga di registro |
+**Revisione Claude 09/11 pomeriggio:** D1, D3, D5, J1, J2 fatti e tenuti. **D2 funzionava gia'**: la prova J3 era sbagliata (cercava lo spostamento del rivale nello stesso frame dell'urto, quando lo sprite non e' ancora aggiornato). J3 riscritta con `Game::rivaleSbandataS(i)`: `prova_gate ... sportellata` exit 0 (colpo a segno, sbandata 5 s, ripresa a 5.0 s) -> **D2 [x], J3 [x]**. **D4:** AKIRA e PINGU sono nomi di opere/personaggi famosi -> sostituiti da KAZOMI e BLIPPO (non cambiarli). Resta solo J4 (review aggiornata) e G2.
+
+| Chi tocca adesso | @developer-junior J4 · @grafico G2 · gli altri: BLOCCO V47 |
 |---|---|
-| Stato | [ ] | (Claude 08/11 sera: nuovo, da Andrea) |
+| Stato | [~] | (Claude 09/11: quasi chiuso, vedi revisione sopra) |
 
 <!-- ===== FINE AREA MIG1 ===== -->
 
@@ -415,7 +417,9 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 ### @grafico
 - **VG1** Dopo G1: quadro di cosa manca (`OGGETTI_LIVELLI.md`, gruppo B) e proposte con anteprima in `UFFICIO/Officina/Test area/grafico/`; mai ritoccare i PNG che Andrea ridisegna (auto, logo, sfondi, oggetti dei livelli).
 
-| Chi tocca adesso | chi ha finito MIG1: @developer V1 · @developer-junior VJ1 · @grafico VG1 |
+**Revisione Claude 09/11 pomeriggio:** V1, V3, V4 tenuti con due correzioni. V1: il +0.5 s del sorpasso al pelo scattava a ogni sorpasso (bastava avere l'auto davanti in corsia); ora conta la distanza di lato nel momento del sorpasso. V4: la fase vecchia spariva subito (schermo vuoto) e dal menu alla gara la dissolvenza non si vedeva; ora la scena vecchia si scurisce e quella nuova schiarisce, anche la strada. Non rifare questi punti. Prossimi: @developer V5 (resto dei testi), @grafico V5 frasi.json.
+
+| Chi tocca adesso | @developer V5 · @developer-junior VJ1 su V5 · @grafico V5 frasi |
 |---|---|
 | Stato | [ ] | (Claude 08/11 notte, da Andrea: lavoro continuo, nessuna attesa) |
 
