@@ -1,6 +1,10 @@
 {
   "nome": "PLAYER",
   "classifica": [
-    {"nome": "PLAYER", "punti": 24, "data": "0000-00-00"}
+    {"nome": "PLAYER", "punti": 734, "data": "0000-00-00"},
+    {"nome": "PLAYER", "punti": 24, "data": "0000-00-00"},
+    {"nome": "PLAYER", "punti": 22, "data": "0000-00-00"},
+    {"nome": "PLAYER", "punti": 22, "data": "0000-00-00"},
+    {"nome": "PLAYER", "punti": 17, "data": "0000-00-00"}
   ]
 }
