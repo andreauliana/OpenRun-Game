@@ -1,6 +1,6 @@
 # Stato corrente — OpenRun 4.6
 
-> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-10 (Turno 4, ora 6 di 12, @capo) — verificate TAPPE/ANDREA_REVIEW (**precedenza assoluta**; nessuna RISPOSTA DI ANDREA nuova; G1 ANNULLATO/sponsor solo Andrea; base legacy 08/11 intoccata)/DIREZIONE_ARTISTICA/CONTROLLO/AGENTS 4.6/RICHIESTA_APERTA (MIG1 attivo, V47 continuo)/SCAMBIO_RECENTE + checkpoint/handoff. Gate T1 green riportato (junior 10/11: `gate_t1.sh` exit 0). Nessun CP chiudibile: review incrociate MIG1/V47 non registrate in dossier; D2 non verificato (`sportellata` exit 28). Fonti: [CP-006](./CP-006-t1-run-chiusura.md) **CHIUSO, non riaprire**, [REGISTRO_REVISIONI.md](./REGISTRO_REVISIONI.md) (append-only), [STATI_PROPOSTI.md](../out/capo/STATI_PROPOSTI.md).
+> Scheda di avvio per Capo e ruoli autorizzati. Aggiornata: 2026-11-10 (Turno 1, ora 0 di 12, @capo) — verificate TAPPE/ANDREA_REVIEW (**precedenza assoluta**; nessuna RISPOSTA DI ANDREA nuova; G1 ANNULLATO/sponsor solo Andrea; base legacy 08/11 intoccata)/DIREZIONE_ARTISTICA/CONTROLLO/AGENTS 4.6/RICHIESTA_APERTA (MIG1 attivo, V47 continuo)/SCAMBIO_RECENTE + checkpoint/handoff. Gate T1 green riportato (SCAMBIO_RECENTE/hand off: `gate_t1.sh` exit 0). Nessun CP chiudibile: review incrociate MIG1/V47 non registrate in dossier; D2 `sportellata` exit 28. Fonti: [CP-006](./CP-006-t1-run-chiusura.md) **CHIUSO, non riaprire**, [REGISTRO_REVISIONI.md](./REGISTRO_REVISIONI.md) (append-only), [STATI_PROPOSTI.md](../out/capo/STATI_PROPOSTI.md).
 
 | Campo | Stato |
 |---|---|

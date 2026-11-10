@@ -36,3 +36,4 @@
 [10/11 03:44] Turno @grafico (Turno 4): nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
 [10/11 03:49] Turno @grafico (Turno 4): nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
 [10/11 03:51] Turno @grafico (Turno 4): nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
+[10/11 07:28] Turno @grafico (Turno 1): nessun blocco [ ]/[~] aperto (MIG1 G1 annullato, G2 [x], V47 VG1 [x]); nessuna modifica file, gate non eseguito. Attendo richiesta @capo o nuovi asset approvati da Andrea.
