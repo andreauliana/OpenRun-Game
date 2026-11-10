@@ -1,12 +1,4 @@
-# REVIEW_V47 — @developer-junior (riscritto 09/11 11:31)
-Blocco V47 (RICHIESTA_APERTA). gate_t1.sh non eseguito in questo turno.
-
-## VJ1 — dopo ogni passo V
-- **V1** (scia + sorpasso al pelo, @developer) [09/11 11:20]: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj1_v1" lv_01_neon gara` exit 0, `GATE GARA OK` (4 bivi, arrivo/posizioni/incidenti/sovrapposizioni OK, replay IDENTICO).
-- **V3** (fluidità/ms-frame, @developer) [09/11 11:20]: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj1_v3" lv_04_cromo smoke` exit 0, `GATE OK` (ms/frame medio 1.367 max 4.926 limite 20, replay IDENTICO).
-- **V4** (dissolvenza 0.5s fasi, @developer) [09/11 11:20]: `ctest --test-dir UFFICIO/Officina/build -R gate_ciclo --output-on-failure` exit 0 (1/1 Passed, 13.48s).
-- **V5** (testi inglese semplice, @developer [~] 09/11 11:23: fasi.cpp ok, frasi.json bloccato a @grafico) [review 09/11 11:31]: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj1_v5" lv_01_neon smoke` exit 0, `GATE OK` (500 frame, ms/frame medio 0.954 max 3.225, replay IDENTICO). Nessuna regressione rilevata; traduzione `frasi.json` resta fuori perimetro developer-junior.
-
-## VJ2 [x] — Ponte e riva (09/11 11:08)
-- Modo `vj2_riva` in `motore_nuovo/test/prova_gate.cpp`, build `prova_gate` exit 0.
-- `lv_01_neon` exit 0 (1941f, fuori 0.0%, 9 screenshot, 2558 oggetti), `lv_04_cromo` exit 0 (2068f, 0.0%, 9, 2696), `lv_06_desktop` exit 0 (2069f, 0.0%, 9, 3148). Dir `UFFICIO/Officina/Test area/vj2_riva/`. Densità: PPM per review visiva Andrea; **Andrea decide**.
+# REVIEW_V47 @developer-junior (riscritto 10/11 03:01)
+- **VJ1 percorso (completo 6/6):** lv_01 exit 0 (1941f,0%), lv_02 exit 0 (2267f,37.8s,0%), lv_03 exit 0 (2273f,37.9s,0%), lv_04_cromo exit 0 (2068f,34.5s,0%), lv_05_spray exit 0 (2659f,44.3s,0%), lv_06_desktop exit 0 (2069f,34.5s,0%). V1 scia/sorpasso: nessun gate dedicato. V3/V4 copertura indiretta parziale. V5 [~] @grafico.
+- **VJ2 ponte/riva:** `vj2_riva` lv_01/lv_04/lv_06 exit 0,0,0 (9 PPM/livello) in `UFFICIO/Officina/Test area/vj2_riva_run/vj2_riva/`. paesaggio.cpp: mare gabbiani 5% (riga 272), barche 3% (riga 268), battigia gabbiani 6% (riga 275). Ispezione visiva 27 PPM richiesta ad Andrea (livello/posizione se troppo fitti).
+- **J3 MIG1 [~]** bloccato D2 src (`game.cpp:2386`: soglia 0.220 > bound DERIVATO 0.200, clamp `URTO_LARGHEZZA` 240 vs min_dx_finestra 242 -> trigger irraggiungibile). Ultimo `prova_gate j3_turn3d_1011 lv_01_neon sportellata` exit 28 (urti=3). gate_t1.sh non eseguito questo turno.

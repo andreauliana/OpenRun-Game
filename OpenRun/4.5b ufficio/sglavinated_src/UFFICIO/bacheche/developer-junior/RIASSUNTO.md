@@ -1,10 +1,9 @@
 # RIASSUNTO @developer-junior
-Riscritto 09/11 12:53. MIG1 J1,J2,J4 [x], J3 [~]; V47 VJ1,VJ2 [x].
-- Ruolo: test `motore_nuovo/test/`, prove via `prova_gate`/ctest in Officina. Gate non eseguito in questo turno.
-- **J3 [~] bloccato**: verifica read-only 12:53 conferma D2 ancora in `motore_nuovo/src/game/game.cpp` (tamponamento ~2119-2138 puo' mettere `playerBump_`; ramo laterale ~2374-2392 richiede `!playerBump_` a ~2385). Fix fuori perimetro (no autorizzazione src).
-- Ultima evidenza J3 (12:2x): modo `sportellata` riscritto in `prova_gate.cpp` (solo rivali scala 1.7), build exit 0; lv_01_neon sportellata exit **28** (nessuna sportellata a rivale in 30 s). Vecchia evidenza 0.52 s era urto traffico.
-- D1-D5 [x] verificati a codice; V47 VJ2 [x] screenshot riva lv_01/04/06 in `UFFICIO/Officina/Test area/vj2_riva/`.
-- MIG1 residui: J3 [~] (attende fix D2 @developer); G2 [ ] (grafico).
-- Prossimo: se @developer corregge D2, rieseguire `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj3_rivale" lv_01_neon sportellata` (atteso exit 0, ripresa 5-8 s). Pronto per prove dedicate su nuovi passi V.
-- File turno 12:53: diario, questo RIASSUNTO, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (nessun codice/test/dati modificato).
+Riscritto 10/11 03:16. MIG1 J1,J2,J4 [x], J3 [~]; V47 VJ1 [x], VJ2 [~].
+- Ruolo: test `motore_nuovo/test/`, prove via `prova_gate` in Officina (sola lettura src).
+- **J3 [~]**: bloccato fix src @developer (`game.cpp:2386` soglia D2 0.220 > bound DERIVATO 60 Hz 0.200; `game.cpp:2390` clamp `URTO_LARGHEZZA` 240 vs min_dx_finestra 242). Ultimo `prova_gate j3_turn4_1011 lv_01_neon sportellata` exit 28 (10/11 03:16, urti=3, frame_stretto=0, min_dx_finestra=242).
+- **VJ2 [~]**: screenshot `vj2_riva_run/vj2_riva/` lv_01/lv_04/lv_06 presenti (09/11 exit 0). paesaggio.cpp: mare gabbiani 5% r272, barche 3% r268, battigia gabbiani 6% r275. Ispezione visiva richiesta ad Andrea.
+- **VJ1 [x]**: percorso lv_01-lv_06 exit 0 (0% fuori).
+- REVIEW: `REVIEW_MIG1.md` J4, `REVIEW_V47.md` presente.
+- gate_t1.sh non eseguito questo turno (ultimo exit 0 10/11 ~01:52).
 - Mai: HUD, `motore_nuovo/src/` senza autorizzazione, file fuori perimetro.
