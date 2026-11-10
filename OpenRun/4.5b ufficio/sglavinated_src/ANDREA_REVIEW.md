@@ -7,7 +7,7 @@ Unico documento di Andrea che gli agenti leggono. **Precedenza assoluta** su tut
 1. Questo file.
 2. `DIREZIONE_ARTISTICA.md` — documento di Andrea: mood, stili dei 6 livelli (neon, atomico, foglie, cromo, spray, desktop), sponsor finti, regole grafiche. Riferimento per ogni lavoro grafico, di scenario, di nomi e di temi.
 3. `AGENTS.md` — cartelle e chi scrive dove.
-4. `RICHIESTA_APERTA.md` — il vostro blocco (oggi MIG1).
+4. `RICHIESTA_APERTA.md` — il vostro blocco (dal 10/11: V47, seconda lista con passi sempre disponibili ∞).
 5. La vostra bacheca (`RIASSUNTO.md`, `DIARIO_RECENTE.md`).
 
 Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti), `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/OGGETTI_LIVELLI.md` (oggetti e PNG), `CATALOGO_GRAFICO.json`.

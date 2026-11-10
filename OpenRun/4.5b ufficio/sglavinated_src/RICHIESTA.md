@@ -392,9 +392,11 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 **Revisione Claude 09/11 pomeriggio:** D1, D3, D5, J1, J2 fatti e tenuti. **D2 funzionava gia'**: la prova J3 era sbagliata (cercava lo spostamento del rivale nello stesso frame dell'urto, quando lo sprite non e' ancora aggiornato). J3 riscritta con `Game::rivaleSbandataS(i)`: `prova_gate ... sportellata` exit 0 (colpo a segno, sbandata 5 s, ripresa a 5.0 s) -> **D2 [x], J3 [x]**. **D4:** AKIRA e PINGU sono nomi di opere/personaggi famosi -> sostituiti da KAZOMI e BLIPPO (non cambiarli). Resta solo J4 (review aggiornata) e G2.
 
-| Chi tocca adesso | @developer-junior J4 · @grafico G2 · gli altri: BLOCCO V47 |
+**Revisione Claude 10/11 mattina:** G2 e J4 fatti. **J3 passa sul main di oggi**: `prova_gate ... lv_01_neon sportellata` exit 0, colpo a segno a 0.55 s, ripresa a 5.0 s. Il "J3 bloccato su game.cpp:2386" nelle note del @developer-junior viene da una prova delle 03:16 fatta PRIMA della PR #91 (binario vecchio): non vale piu'. Nessuno tocca piu' D2, J3 ne' `verificaSportellata`. **MIG1 chiuso.**
+
+| Chi tocca adesso | nessuno: tutti nel BLOCCO V47 |
 |---|---|
-| Stato | [~] | (Claude 09/11: quasi chiuso, vedi revisione sopra) |
+| Stato | [x] | (Claude 10/11: chiuso) |
 
 <!-- ===== FINE AREA MIG1 ===== -->
 
@@ -419,9 +421,29 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 **Revisione Claude 09/11 pomeriggio:** V1, V3, V4 tenuti con due correzioni. V1: il +0.5 s del sorpasso al pelo scattava a ogni sorpasso (bastava avere l'auto davanti in corsia); ora conta la distanza di lato nel momento del sorpasso. V4: la fase vecchia spariva subito (schermo vuoto) e dal menu alla gara la dissolvenza non si vedeva; ora la scena vecchia si scurisce e quella nuova schiarisce, anche la strada. Non rifare questi punti. Prossimi: @developer V5 (resto dei testi), @grafico V5 frasi.json.
 
-| Chi tocca adesso | @developer V5 · @developer-junior VJ1 su V5 · @grafico V5 frasi |
+**Revisione Claude 10/11 mattina:** V1-V5 fatti e tenuti (frasi.json in inglese, it1/it2 conservati; splash "OPEN RUN"). VJ1 su V5 fatto. **VJ2 fatto**: gli screenshot di riva li guarda Andrea quando puo', non si aspetta. Tolti i due script di traduzione usa-e-getta (`traduci_frasi_en.py`, `v5_frasi_inglese.py`): il lavoro e' fatto, non ricrearli. Non rifare V1-V5. ctest 27/27 verde sul main del 10/11.
+
+**Perche' stamattina vi siete fermati:** i passi della lista erano finiti alle 08:30. Da qui in poi la lista ha passi **"sempre disponibili"** (segnati ∞): quando i tuoi passi numerati sono [x], fai un passo ∞, uno per turno, su un livello o un file diverso dal turno prima. **"Nessun blocco azionabile" non e' piu' un esito valido** finche' esiste un tuo passo ∞.
+
+### @developer — seconda lista
+- **V6 Core libretro (RetroPie).** `cmake -DBUILD_LIBRETRO=ON` compila (Claude 10/11, Linux). Confronta `src/libretro/sglavinated_libretro.cpp` col runner SDL2 (`src/runner/`): partenza con griglia e 3-2-1, pausa con Start, 50/60 Hz da `config.json`, musica .xm e reazioni, nome giocatore salvato, passaggio menu -> gara -> risultati. Correggi nel file libretro solo cio' che manca; elenco in `ULTIMO_TURNO.md`.
+- **V7 Niente allocazioni nel ciclo di gioco.** Cerca dentro `Game::update`, `Game::render` e nel renderer `new`, `push_back` senza `reserve`, `std::string` costruite a ogni frame, `resize`. Spostale fuori dal ciclo (prealloca all'avvio del livello). Misura ms/frame (gate `percorso`) prima e dopo; resa e replay IDENTICI.
+- **V8 Caricamento.** Misura in ms quanto ci mette a caricare ogni livello e il menu (log nel gate). Se uno supera 1 s sul Mac, alleggerisci (carica una volta sola, niente letture doppie dei file). Non cambiare i dati.
+- **∞ V9 Fluidita' a giro:** un livello per turno (lv_01 -> lv_06, poi da capo): gate `percorso`, guarda il frame piu' lento; se supera 8 ms sul Mac trova la funzione e alleggeriscila senza cambiare la resa. Se e' gia' sotto, scrivilo e passa al livello dopo.
+
+### @developer-junior — seconda lista
+- **VJ1** resta: dopo ogni passo V del @developer, prova col gate esistente e una riga in `REVIEW_V47.md`.
+- **VJ3 50 e 60 Hz:** `prova_gate ... <livello> frequenza` su tutti e 6 i livelli (uno o due per turno). Tempi in secondi uguali alle due frequenze; esiti in `REVIEW_V47.md`.
+- **VJ4 Soak:** `prova_gate ... <livello> soak` su tutti e 6 i livelli, uno per turno: replay, ms/frame massimo, eventuali crash.
+- **∞ VJ5 Review del codice:** leggi l'ultimo cambio del @developer in `src/` e scrivi in `REVIEW_V47.md` un possibile errore o una semplificazione, con file e riga. Prima di ogni prova ricompila (`run_tests.sh`): mai usare un `prova_gate` vecchio.
+
+### @grafico — seconda lista
+- **VG2 Frasi piu' naturali:** rileggi le 156 frasi di `motore_nuovo/dati/frasi.json` (`linea1`/`linea2`) e sistema quelle che in inglese suonano strane o restano a meta'. Max 16 caratteri per riga, maiuscole, stesso id e personaggio; `it1`/`it2` non si toccano. Venti frasi per turno.
+- **∞ VG3 PNG di Andrea convertiti:** Andrea sta ridisegnando gli oggetti. A ogni turno confronta le date dei PNG in `Libreria/assets_originali/scenari/` con i loro `.sglraw`: se un PNG e' piu' nuovo, convertilo con lo script del catalogo (per `comuni/oggetti`: `converti_oggetti_raw.py`) senza ritoccare il disegno, e scrivi quali file. Se e' tutto allineato, scrivilo in una riga e fermati.
+
+| Chi tocca adesso | @developer V6 · @developer-junior VJ3 · @grafico VG2 (poi i passi ∞) |
 |---|---|
-| Stato | [ ] | (Claude 08/11 notte, da Andrea: lavoro continuo, nessuna attesa) |
+| Stato | [~] | (Claude 10/11: seconda lista, lavoro continuo, nessuna attesa) |
 
 <!-- ===== FINE AREA V47 ===== -->
 
@@ -429,5 +451,5 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco (storico: UFFICIO/out/capo/RICHIESTA_STORICO_17OTT.md)
 Tappa 1. Build e gate reali OK (17 ott 14:00, `sh tools/gate_t1.sh`): 3 livelli, replay 2x IDENTICO, 0,09 ms/frame, soak 30000 frame. Aperti: guida (v91 di Andrea), colline, wrap sprite, sprite veri nel gate, fps/temperatura su Pi 400.
-Stati (08/11 sera): MIG1 [ ] aperto, PERC1 [x]; tutti gli altri blocchi chiusi [x] o sospesi [-] (H: prova Pi 400 di Andrea; MD0, T5, N, M). Niente lavoro sui blocchi chiusi.
-Tocca a (Claude 08/11 sera, leggere per primo): **AGGIORNAMENTI SERALI 08/11: tutto quello che c'e' e' approvato da Andrea e bloccato (elenco in ANDREA_REVIEW).** PERC1 chiuso [x]. **Si lavora sul BLOCCO MIG1** (cartelloni leggibili, paletti, sportellate, rivali con carattere, nomi) e, finiti i propri passi, sul **BLOCCO V47** (lavoro continuo verso la v4.7), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
+Stati (10/11): MIG1 [x], V47 [~] seconda lista con passi sempre disponibili (∞), PERC1 [x]; tutti gli altri blocchi chiusi [x] o sospesi [-] (H: prova Pi 400 di Andrea; MD0, T5, N, M). Niente lavoro sui blocchi chiusi.
+Tocca a (Claude 10/11 mattina, leggere per primo): **MIG1 chiuso. Tutti nel BLOCCO V47, seconda lista: @developer V6, @developer-junior VJ3, @grafico VG2; finiti i passi numerati, i passi ∞ (mai fermarsi con "nessun blocco azionabile").** Prima (Claude 08/11 sera): **AGGIORNAMENTI SERALI 08/11: tutto quello che c'e' e' approvato da Andrea e bloccato (elenco in ANDREA_REVIEW).** PERC1 chiuso [x]. **Si lavora sul BLOCCO MIG1** (cartelloni leggibili, paletti, sportellate, rivali con carattere, nomi) e, finiti i propri passi, sul **BLOCCO V47** (lavoro continuo verso la v4.7), un passo per turno, senza aspettare nessuno. L'HUD non si tocca (ANDREA_REVIEW 08/11). Parapetti sul ponte: annullati per sempre. Lo screenshot P1 passa (frame 446): non ritoccare `gate_t1.sh` ne' `salvaScreenshotP1`. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
