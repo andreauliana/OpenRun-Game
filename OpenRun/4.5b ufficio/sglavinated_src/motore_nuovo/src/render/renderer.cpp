@@ -2282,6 +2282,18 @@ i32 Renderer::larghezzaTesto(const char* testo, i32 scala) {
     return scala <= 0 ? n * FONT_MINI_W - 1 : n * FONT_HUD_W * scala;
 }
 
+// Ombra del testo (Andrea 11/11 sera: meno effetti, bianco e nero con
+// trasparenza): non piu' nero pieno, il fondo sotto si scurisce a meta'.
+// Solo interi, uguale su ogni sistema.
+static void ombraTesto(Framebuffer& fb, i32 x0, i32 y0, i32 x1, i32 y1) {
+    u32* d = fb.data();
+    for (i32 y = std::max(0, y0); y <= std::min(Framebuffer::HEIGHT - 1, y1); ++y)
+        for (i32 x = std::max(0, x0); x <= std::min(Framebuffer::WIDTH - 1, x1); ++x) {
+            const u32 c = d[y * Framebuffer::WIDTH + x];
+            d[y * Framebuffer::WIDTH + x] = 0xFF000000u | ((c >> 1) & 0x007F7F7Fu);
+        }
+}
+
 void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala, bool ombra) {
     if (scala <= 0) {
         // Font mini 3x5 per le etichette, stessa ombra di 1 px.
@@ -2293,7 +2305,10 @@ void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala,
                 const u8* righe = fontMini(*c);
                 for (i32 r = 0; r < FONT_MINI_H; ++r)
                     for (i32 k = 0; k < 3; ++k)
-                        if (righe[r] & (4u >> k)) fb_.put(cx + k + d, y + r + d, col);
+                        if (righe[r] & (4u >> k)) {
+                            if (passo == 0) ombraTesto(fb_, cx + k + d, y + r + d, cx + k + d, y + r + d);
+                            else fb_.put(cx + k, y + r, col);
+                        }
             }
         }
         return;
@@ -2309,9 +2324,11 @@ void Renderer::drawTesto(i32 x, i32 y, const char* testo, u32 colore, i32 scala,
             const u8* righe = FONT_HUD[codice - 32];
             for (i32 r = 0; r < FONT_HUD_H; ++r)
                 for (i32 k = 0; k < FONT_HUD_W; ++k)
-                    if (righe[r] & (1u << (FONT_HUD_W - 1 - k)))
-                        fb_.fillRect(cx + k * scala + d, y + r * scala + d,
-                                     cx + (k + 1) * scala - 1 + d, y + (r + 1) * scala - 1 + d, col);
+                    if (righe[r] & (1u << (FONT_HUD_W - 1 - k))) {
+                        const i32 px0 = cx + k * scala + d, py0 = y + r * scala + d;
+                        if (passo == 0) ombraTesto(fb_, px0, py0, px0 + scala - 1, py0 + scala - 1);
+                        else fb_.fillRect(px0, py0, px0 + scala - 1, py0 + scala - 1, col);
+                    }
         }
     }
 }
@@ -2347,9 +2364,11 @@ void Renderer::drawTitolo(i32 x, i32 y, const char* testo, u32 colore, i32 scala
             for (i32 r = 0; r < FONT_TITOLO_H; ++r) {
                 if (!righe[r]) continue;
                 for (i32 k = 0; k < 16; ++k)
-                    if (righe[r] & (0x8000u >> k))
-                        fb_.fillRect(x0 + k * scala + d, y + r * scala + d,
-                                     x0 + (k + 1) * scala - 1 + d, y + (r + 1) * scala - 1 + d, col);
+                    if (righe[r] & (0x8000u >> k)) {
+                        const i32 px0 = x0 + k * scala + d, py0 = y + r * scala + d;
+                        if (passo == 0) ombraTesto(fb_, px0, py0, px0 + scala - 1, py0 + scala - 1);
+                        else fb_.fillRect(px0, py0, px0 + scala - 1, py0 + scala - 1, col);
+                    }
             }
             cx += avanti * scala;
         }
