@@ -130,14 +130,6 @@ namespace {
 // Vuoto = la partenza solita dell'albero (il tragitto iniziale, per pratica).
 std::string g_tappaSingola;
 
-// "lv_02_atomico" -> "ATOMICO" (nome del tema per il menu).
-std::string nomeLivello(const std::string& id) {
-    std::string n = id;
-    if (n.size() > 6 && n.compare(0, 3, "lv_") == 0) n = n.substr(6);
-    for (char& c : n) c = (char)std::toupper((unsigned char)c);
-    return n;
-}
-
 // Le due partenze del menu, usate anche dalla scelta a fine gara.
 void avviaSerie(Game& gioco) {
     if (!gioco.avviaGara()) gioco.init("lv_01_neon"); // senza percorso: giro libero
@@ -200,13 +192,14 @@ public:
         }
         if (!livelli_.empty()) {
             char buf[40];
-            const std::string nome = nomeLivello(livelli_[(size_t)liv_]);
-            if (sel_ == 1) std::snprintf(buf, sizeof(buf), "< %d %s >", liv_ + 1, nome.c_str());
-            else std::snprintf(buf, sizeof(buf), "%d %s", liv_ + 1, nome.c_str());
+            // Solo "ROUTE n" (Andrea 11/11 sera): i nomi interni dei livelli
+            // restano segreti per chi gioca.
+            if (sel_ == 1) std::snprintf(buf, sizeof(buf), "< ROUTE %d >", liv_ + 1);
+            else std::snprintf(buf, sizeof(buf), "ROUTE %d", liv_ + 1);
             ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 129, buf, sel_ == 1 ? 0xFFFFD040u : 0xFF808080u, 1, true);
         }
         (void)fb;
-        const char* aiuto = sel_ == 1 ? "LEFT/RIGHT: LEVEL  START: OK" : "UP/DOWN: CHOOSE  START: OK";
+        const char* aiuto = sel_ == 1 ? "LEFT/RIGHT: ROUTE  START: OK" : "UP/DOWN: CHOOSE  START: OK";
         ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 166, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
