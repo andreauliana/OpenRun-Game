@@ -777,8 +777,8 @@
     {
       "id": 7,
       "personaggio": "gianni",
-      "linea1": "COME DOWN HERE,",
-      "linea2": "YOU ARE CRAZY",
+      "linea1": "COME WITH ME,",
+      "linea2": "YOU ARE THE FOOL",
       "it1": "SCENDI CON ME,",
       "it2": "IL PAZZO SEI TU"
     },
@@ -794,7 +794,7 @@
       "id": 9,
       "personaggio": "gianni",
       "linea1": "HEAVY SOUL,",
-      "linea2": "WARM IT WITH ME",
+      "linea2": "WARM UP WITH ME",
       "it1": "L'ANIMA PESANTE,",
       "it2": "SCALDALA CON ME"
     },
@@ -810,7 +810,7 @@
       "id": 11,
       "personaggio": "gianni",
       "linea1": "BIG SYRINGE?",
-      "linea2": "ONE ONLY, C'MON",
+      "linea2": "JUST ONE, C'MON",
       "it1": "SIRINGONE?",
       "it2": "UNA SOLA, DAI"
     },
@@ -825,16 +825,16 @@
     {
       "id": 13,
       "personaggio": "gianni",
-      "linea1": "ANYONE CAN DO",
-      "linea2": "A LINE",
+      "linea1": "ALL DO A LINE",
+      "linea2": "WHY NOT YOU?",
       "it1": "UNA RIGA LA",
       "it2": "FANNO TUTTI"
     },
     {
       "id": 14,
       "personaggio": "gianni",
-      "linea1": "SIGN, COME DOWN,",
-      "linea2": "NEVER GO UP",
+      "linea1": "SIGN, COME DOWN",
+      "linea2": "NO WAY BACK",
       "it1": "FIRMA, SCENDI,",
       "it2": "NON RISALI"
     },
@@ -842,7 +842,7 @@
       "id": 15,
       "personaggio": "gianni",
       "linea1": "SOUL IS MINE,",
-      "linea2": "I TOOK IT",
+      "linea2": "I TOOK YOURS",
       "it1": "L'ANIMA E' MIA",
       "it2": "TE L'HO PRESA"
     },
@@ -850,7 +850,7 @@
       "id": 16,
       "personaggio": "gianni",
       "linea1": "I'LL HANDLE IT,",
-      "linea2": "YOU JUST DRIVE",
+      "linea2": "DRIVE AND GO",
       "it1": "CI PENSO IO,",
       "it2": "TU GUIDA E TIRA"
     },
@@ -865,7 +865,7 @@
     {
       "id": 18,
       "personaggio": "gianni",
-      "linea1": "COME WITH ME",
+      "linea1": "COME OVER HERE",
       "linea2": "FORGET THE SUN",
       "it1": "VIENI QUA CON ME",
       "it2": "SCORDA IL SOLE"
@@ -874,7 +874,7 @@
       "id": 19,
       "personaggio": "gianni",
       "linea1": "OFF THE EDGE,",
-      "linea2": "COMING BACK, BRO",
+      "linea2": "GOING BACK, BRO",
       "it1": "FUORI DAL BORDO",
       "it2": "TORNANDO, FRA"
     },
@@ -882,15 +882,15 @@
       "id": 20,
       "personaggio": "gianni",
       "linea1": "FIRE AWAITS YOU",
-      "linea2": "STAY HERE, GO ON",
+      "linea2": "STAY HERE, C'MON",
       "it1": "FUOCO TI ASPETTA",
       "it2": "STAI QUI, DAI"
     },
     {
       "id": 21,
       "personaggio": "gianni",
-      "linea1": "FEEL A LOSER?",
-      "linea2": "COME DOWN THEN",
+      "linea1": "FEEL LIKE A LOSER?",
+      "linea2": "COME ON DOWN",
       "it1": "TI SENTI UNO",
       "it2": "SFIGATO? SCENDI"
     },
@@ -921,8 +921,8 @@
     {
       "id": 25,
       "personaggio": "gianni",
-      "linea1": "WATCH THE ROAD,",
-      "linea2": "COME ON",
+      "linea1": "PAY ATTENTION",
+      "linea2": "TO THE ROAD",
       "it1": "ATTENTO ALLA",
       "it2": "STRADA, DAI"
     },
@@ -938,14 +938,14 @@
       "id": 27,
       "personaggio": "gesu",
       "linea1": "OH, YOU FOOL,",
-      "linea2": "LOOK, MAN",
+      "linea2": "LOOK, BRO",
       "it1": "OH, COGLIONE,",
       "it2": "GUARDA, FRA"
     },
     {
       "id": 28,
       "personaggio": "gesu",
-      "linea1": "GET UP, DRIVE,",
+      "linea1": "GET UP AND DRIVE",
       "linea2": "DON'T DO IT, BRO",
       "it1": "ALZATI E GUIDA,",
       "it2": "NON FARTI, FRA"
@@ -986,7 +986,7 @@
       "id": 33,
       "personaggio": "gesu",
       "linea1": "LSD WILL BLOW",
-      "linea2": "YOUR MIND AWAY",
+      "linea2": "YOUR MIND",
       "it1": "L'LSD TI SPACCA",
       "it2": "LA TESTA"
     },
@@ -1050,7 +1050,7 @@
       "id": 41,
       "personaggio": "gianni",
       "linea1": "START AGAIN AND",
-      "linea2": "LIGHT IT, GO ON",
+      "linea2": "LIGHT IT UP",
       "it1": "RIPARTI E",
       "it2": "ACCENDI, DAI"
     },
@@ -1081,7 +1081,7 @@
     {
       "id": 45,
       "personaggio": "gianni",
-      "linea1": "HEY, A SPLIFF?",
+      "linea1": "HEY, ROLL ONE?",
       "linea2": "WHY NOT?",
       "it1": "HEY, FAMMO NO",
       "it2": "SPINO?"
@@ -1106,7 +1106,7 @@
       "id": 48,
       "personaggio": "gianni",
       "linea1": "A JOINT IS ONLY",
-      "linea2": "THE START, GO ON",
+      "linea2": "JUST THE START",
       "it1": "LA CANNA E' SOLO",
       "it2": "L'INIZIO, DAI"
     },
@@ -1145,7 +1145,7 @@
     {
       "id": 53,
       "personaggio": "gianni",
-      "linea1": "LSD: ONE SHEET",
+      "linea1": "LSD: ONE HIT",
       "linea2": "AND YOU FLY AWAY",
       "it1": "LSD: UN CARTONE",
       "it2": "E VOLI VIA"
@@ -1178,7 +1178,7 @@
       "id": 57,
       "personaggio": "gianni",
       "linea1": "FIRST ONE FREE,",
-      "linea2": "THEN YOU SEE",
+      "linea2": "SOON YOU SEE",
       "it1": "LA PRIMA E'",
       "it2": "GRATIS, POI VEDI"
     },
