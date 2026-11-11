@@ -523,7 +523,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const f32 ca = 0.5f * (bx0[0] + bx1[0]), cb = 0.5f * (bx0[1] + bx1[1]);
             const f32 mid = 0.5f * (ca + cb);
             const f32 dW = std::fabs(cb - ca) * 0.5f / pxW;
-            const f32 hz = std::min(dW - 380.0f, dW - 0.45f * mezzaRamo);
+            // Le due linee della V si richiudono sulla testata dell'isola
+            // (larga ~2*NASO_MEZZA): convergono negli ultimi metri invece di
+            // finire tagliate a rettangolo davanti al cuscino (Andrea 11/11).
+            constexpr f32 NASO_MEZZA = 300.0f;
+            const f32 chiusura = NASO_MEZZA + (nasoZ - zAvanti) * 0.07f;
+            const f32 hz = std::min({dW - 380.0f, dW - 0.45f * mezzaRamo, chiusura});
             if (hz > 0.0f) {
                 const i32 x0 = std::max(0, (i32)(mid - hz * pxW));
                 const i32 x1 = std::min(Framebuffer::WIDTH - 1, (i32)(mid + hz * pxW));
@@ -531,8 +536,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const i32 bordoL = std::max(1, rw / 2);
                 for (i32 x = x0; x <= x1; ++x) {
                     const f32 fx = (f32)x;
-                    const bool suAsfalto = (fx >= bx0[0] && fx <= bx1[0]) || (fx >= bx0[1] && fx <= bx1[1]);
-                    if (!suAsfalto) continue; // nel varco resta il terreno
+                    // Anche il varco sottile prima della cuspide e' zebrato
+                    // (prima restava un cuneo d'erba davanti al cuscino).
                     u32 col = zebraFondo;
                     if (x - x0 < bordoL || x1 - x < bordoL) col = 0xFFF4F4F4u;
                     else {
@@ -544,6 +549,19 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     fb_.put(x, y, col);
                 }
             }
+        }
+        // Ombra del portale CHECKPOINT sul terreno (Andrea 11/11: profondita'
+        // percepita): banda a scacchiera scura poco prima della linea, larga
+        // quanto il portale, come se la luce venisse da dietro.
+        if (temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo() && y < Framebuffer::HEIGHT &&
+            zAvanti >= giro_ - 900.0f && zAvanti < giro_ - 250.0f) {
+            const f32 cN = cur.screenX + cur.carr.centro[0] * pxNear;
+            const f32 cF = next.screenX + next.carr.centro[0] * pxFar;
+            const f32 c = cF + (cN - cF) * t;
+            const i32 sx0 = std::max(0, (i32)(c - hw * 1.30f)), sx1 = std::min(Framebuffer::WIDTH - 1, (i32)(c + hw * 1.30f));
+            u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+            for (i32 x = sx0; x <= sx1; ++x)
+                if (((x + y) & 1) == 0) riga[x] = lerpColore(riga[x], 0xFF000000u, 0.55f);
         }
     }
     // Galleria (PERC1 D4, rifatta da Claude 08/11): la sezione della galleria a
@@ -1000,14 +1018,23 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
                 fb_.fillRect(cx - w / 2 + cell, yy, cx + (w - 1) / 2, ye, (k & 1) ? 0xFFF4F4F4u : 0xFF141414u);
             }
         }
+        // Volume (Andrea 11/11: "sembra posticcio"): si vede il fianco
+        // interno delle colonne, piu' scuro, e il fondo della trave.
+        const i32 fianco = std::max(1, w / 3);
+        fb_.fillRect(x0 + (w - 1) / 2 + 1, cima, x0 + (w - 1) / 2 + fianco, terra, 0xFF3A3A44u);
+        fb_.fillRect(x1 - w / 2 - fianco, cima, x1 - w / 2 - 1, terra, 0xFF3A3A44u);
         const i32 ph = std::max(3, (i32)(620.0f * pxY));
         const i32 y0 = cima, y1 = cima + ph;
+        const i32 fondoTrave = std::max(1, ph / 4);
+        fb_.fillRect(x0 + (w - 1) / 2, y1 + 1, x1 - w / 2, y1 + fondoTrave, 0xFF24242Cu);
+        fb_.hline(x0 + (w - 1) / 2, x1 - w / 2, y1 + fondoTrave, 0xFF15151Au);
         drawPannelloTesto(x0 - w / 2, y0, x1 + (w - 1) / 2, y1, "CHECKPOINT", 0xFF101018u, colNuovo, 0xFFFFD640u);
+        fb_.hline(x0 - w / 2, x1 + (w - 1) / 2, y0, lerpColore(colNuovo, 0xFFFFFFFFu, 0.5f)); // spigolo in luce
         const i32 r = std::clamp((i32)(pxUnita * 70.0f), 1, 4);
         const i32 passo = std::max(r * 3, 3);
         const i32 corsa = (i32)(tempoS_ * 12.0f);
         for (i32 x = x0, k = 0; x <= x1; x += passo, ++k)
-            drawLampada(x, y1 + r + 1, r, (k & 1) ? 0xFFFFD640u : colNuovo, ((k + corsa) % 3) == 0);
+            drawLampada(x, y1 + fondoTrave + r + 1, r, (k & 1) ? 0xFFFFD640u : colNuovo, ((k + corsa) % 3) == 0);
     }
 }
 
@@ -1074,11 +1101,14 @@ void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
     const i32 cx = (i32)(p.screenX + 0.5f * (p.carr.centro[0] + p.carr.centro[1]) * pxUnita);
     if (cx < -60 || cx > Framebuffer::WIDTH + 60) return;
     // Testata dell'isola: blocco di cemento con cuscino a strisce davanti.
-    const i32 cw = std::max(2, (i32)(pxUnita * 320.0f));
+    const i32 cw = std::max(2, (i32)(pxUnita * 300.0f));
     const i32 ch = std::max(2, (i32)(360.0f * pxY));
     const i32 bh = std::max(1, (i32)(140.0f * pxY)); // cordolo rialzato
     fb_.fillRect(cx - cw - 1, terra - bh, cx + cw + 1, terra, 0xFF6E6E78u);
     fb_.hline(cx - cw - 1, cx + cw + 1, terra - bh, 0xFFC8C8D0u);
+    // Faccia superiore del cuscino vista dall'alto (profondita').
+    const i32 sopra = std::max(1, ch / 3);
+    fb_.fillRect(cx - cw + sopra / 2, terra - bh - ch - sopra, cx + cw - sopra / 2, terra - bh - ch - 1, 0xFFB89A30u);
     const i32 passo = std::max(2, cw / 3);
     for (i32 yy = terra - bh - ch; yy < terra - bh; ++yy)
         for (i32 x = cx - cw; x <= cx + cw; ++x) {
