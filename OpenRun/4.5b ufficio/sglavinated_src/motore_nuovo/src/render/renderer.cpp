@@ -332,12 +332,20 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
         const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
         if (y >= HORIZON_Y && !sospeso && !galleria) {
-            if (incStrada) fb_.hline(0, Framebuffer::WIDTH - 1, y, road);
+            // Dentro la galleria il terreno oltre l'uscita si vede solo nella
+            // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
+            i32 tx0 = 0, tx1 = Framebuffer::WIDTH - 1;
+            if (dentroGalleria_ && next.worldZ >= clipGalleriaZ_) {
+                tx0 = std::max(tx0, clipGx0_);
+                tx1 = std::min(tx1, clipGx1_);
+            }
+            if (tx1 < tx0) {}
+            else if (incStrada) fb_.hline(tx0, tx1, y, road);
             else if (incMarc) {
                 // Marciapiede: lastre grigie chiare, cordolo scuro verso la strada.
                 const bool cordolo = dInc < Road::INCROCIO_MEZZA + 50.0f;
-                fb_.hline(0, Framebuffer::WIDTH - 1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
-            } else fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+                fb_.hline(tx0, tx1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
+            } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
@@ -1151,8 +1159,13 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         const i32 height = std::clamp((i32)(p.scale * 300.0f * (Framebuffer::HEIGHT / 2.0f)), 2, 28);
         const i32 width = std::clamp((i32)(p.scale * 35.0f * (Framebuffer::WIDTH / 2.0f)), 1, 4);
         const i32 bottom = (i32)p.screenY;
+        // Dentro la galleria, i paletti oltre l'uscita si vedono solo nella
+        // bocca (Andrea 11/11: prima facevano una riga bianca sulle pareti).
+        const bool oltreBocca = dentroGalleria_ && p.worldZ >= clipGalleriaZ_;
         for (i32 side : {-1, 1}) {
             const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * (halfRoad + width * 2.0f));
+            if (oltreBocca && (!clipGalleria_ || x - width / 2 < clipGx0_ || x + width / 2 > clipGx1_ ||
+                               bottom - height < clipGy0_)) continue;
             const u32 color = side < 0 ? pal_[1] : pal_[14];
             fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
             fb_.hline(x - width / 2, x + width / 2, bottom - height, pal_[5]);
