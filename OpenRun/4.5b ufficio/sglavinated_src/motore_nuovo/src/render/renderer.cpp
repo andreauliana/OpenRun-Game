@@ -83,6 +83,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     occhiGalleria_ = 0.0f;
     if (projs_.front().galleria && projs_.size() > 1 && projs_[1].galleria) {
         dentroGalleria_ = true;
+        tubo_.assign((size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT, 0);
         // Andrea 11/11: entrando dal giorno il tubo sembra piu' buio, poi gli
         // occhi si abituano. Segmenti gia' percorsi dentro la galleria.
         {
@@ -402,6 +403,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const f32 pw = hw * GALLERIA_LARGHEZZA;
                 fb_.hline(std::max(0, (i32)(cx - pw) - 1), lx - 1, y, pareteScura);
                 fb_.hline(rx + 1, std::min(Framebuffer::WIDTH - 1, (i32)(cx + pw) + 1), y, pareteScura);
+                segnaTubo((i32)(cx - pw) - 1, lx - 1, y);
+                segnaTubo(rx + 1, (i32)(cx + pw) + 1, y);
             }
             fb_.hline(lx, rx, y, road);
             if (incStrada || incMarc || incStrisce) {
@@ -566,6 +569,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const bool neonOn = sinistra ? neonSxOn : neonDxOn;
                 if (tratto && std::abs(v - 0.16f) < spessN) {
                     fb_.put(x, y, neonOn ? (sinistra ? neonSx : neonDx) : tuboSpento);
+                    segnaTubo(x, x, y);
                     continue;
                 }
                 u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
@@ -580,6 +584,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
                 fb_.put(x, y, luceEsterna(c, giornoN + (giornoF - giornoN) * t, x, y));
+                segnaTubo(x, x, y);
             }
         };
         auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
@@ -589,6 +594,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const f32 g = giornoN + (giornoF - giornoN) * t;
             for (i32 x = a0; x <= b0; ++x)
                 fb_.put(x, y, luceEsterna(texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, (i32)(baseU + 8.0f * t), buio), g, x, y));
+            segnaTubo(a0, b0, y);
         };
         for (i32 y = y0; y <= y1; ++y) {
             if ((f32)y < ceilF) {
@@ -1195,6 +1201,12 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
             if (oltreBocca && (!clipGalleria_ || x - width / 2 < clipGx0_ || x + width / 2 > clipGx1_ ||
                                bottom - height < clipGy0_)) continue;
             const u32 color = side < 0 ? pal_[1] : pal_[14];
+            if (oltreBocca) { // pixel per pixel: niente sopra le pareti
+                for (i32 py = bottom - height; py <= bottom; ++py)
+                    for (i32 px = x - width / 2; px <= x + width / 2; ++px)
+                        if (!inTubo(px, py)) fb_.put(px, py, py == bottom - height ? pal_[5] : color);
+                continue;
+            }
             fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
             fb_.hline(x - width / 2, x + width / 2, bottom - height, pal_[5]);
         }
@@ -1497,6 +1509,7 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
                 for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
                     col = texel(rx, ry);
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
+            if (clipAttivo_ && inTubo(x0 + sx, y0 + sy)) continue; // dietro la parete
             fb_.put(x0 + sx, y0 + sy, col);
         }
     }

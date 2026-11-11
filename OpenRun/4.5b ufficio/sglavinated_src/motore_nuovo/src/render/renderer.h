@@ -5,6 +5,7 @@
 #include "render/palette.h"
 #include "render/sprite.h" // Sprite (usato da SpriteInstance e dagli sprite sponsor)
 #include "road/road.h"
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -382,6 +383,19 @@ private:
     f32 clipGalleriaZ_ = 0.0f;
     i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
     bool clipAttivo_ = false; // per lo sprite che si sta disegnando
+    // Pixel coperti da pareti/soffitto della galleria (telecamera dentro):
+    // quello che sta oltre l'uscita si disegna solo dove la bocca si vede
+    // davvero (Andrea 11/11: in curva sbucavano pezzi esterni sulle pareti).
+    std::vector<u8> tubo_;
+    void segnaTubo(i32 x0, i32 x1, i32 y) {
+        if (!dentroGalleria_ || y < 0 || y >= Framebuffer::HEIGHT) return;
+        x0 = std::max(0, x0); x1 = std::min(Framebuffer::WIDTH - 1, x1);
+        for (i32 x = x0; x <= x1; ++x) tubo_[(size_t)y * Framebuffer::WIDTH + (size_t)x] = 1;
+    }
+    bool inTubo(i32 x, i32 y) const {
+        return dentroGalleria_ && x >= 0 && y >= 0 && x < Framebuffer::WIDTH && y < Framebuffer::HEIGHT &&
+               tubo_[(size_t)y * Framebuffer::WIDTH + (size_t)x] != 0;
+    }
     bool dentroGalleria_ = false; // telecamera dentro: clipGalleriaZ_ = uscita
     f32 occhiGalleria_ = 0.0f;    // 1 appena entrati (occhi non abituati), 0 dopo ~40 segmenti
     i32 galleriaParete_ = -1, galleriaLuce_ = -1;
