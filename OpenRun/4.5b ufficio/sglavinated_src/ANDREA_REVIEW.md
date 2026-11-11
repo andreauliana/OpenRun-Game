@@ -58,6 +58,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Partenza | auto ferme in griglia, gruppi di supporto ai lati che chiacchierano, GET READY, 3-2-1 con semaforo e bip, START!: musica dall'inizio, tutti partono insieme, ogni rivale col suo spunto (solo runner e libretro, i gate partono subito). In griglia il gas fa salire i giri (contagiri): giri giusti = partenza pulita, gas a fondo = ruote che pattinano, niente gas = motore seduto. Primi 3 s aderenza limitata per tutti (11/11) | `render/partenza.*`, `Game::preparaPartenza`, `avviaLancio`, `GIRI_*`, `LANCIO_*`, `PATTINA_*` |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
 | Consulto finale | FINAL CHECK coi tempi che girano, poi classifica (senza colonna ROUTE, Andrea 09/11) e verdetto: WINNER! col trofeo o YOU FINISHED Nth | `RisultatiFase::disegnaArrivo` |
+| Fine gara (11/11) | Uguale con arrivo e tempo scaduto: (classifica) -> ENTER YOUR NAME, 3 iniziali A-Z e '.', SU/GIU' lettera, A avanti, B indietro, START fatto -> HIGH SCORES (record salvati, posti vuoti da classifica_finta.json) con RACE SERIES / SINGLE RACE / MAIN MENU. Menu: RACE SERIES prima, SINGLE RACE con livello a scelta (SINISTRA/DESTRA) | `RisultatiFase`, `MenuFase` |
 
 ### Parole dei test (non sono azioni di gioco)
 

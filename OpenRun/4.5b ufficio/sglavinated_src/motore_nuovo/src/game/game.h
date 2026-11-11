@@ -62,8 +62,12 @@ public:
     // soloPrimaTappa (corsa singola del menu, Andrea 27/10): stessa partenza,
     // stessi tracciati, rivali e tempo limite della gara, ma senza bivio: la
     // prima tappa finisce con l'arrivo.
+    // tappaScelta (Andrea 11/11): la corsa singola puo' partire da un'altra
+    // tappa dell'albero (livello scelto nel menu); vuota = la partenza solita.
     bool avviaGara(const std::string& fileTappe = "motore_nuovo/dati/percorso_gara.json",
-                   bool soloPrimaTappa = false);
+                   bool soloPrimaTappa = false, const std::string& tappaScelta = "");
+    // Livelli dell'albero delle tappe (menu: scelta del livello della corsa singola).
+    std::vector<std::string> elencoTappe(const std::string& fileTappe = "motore_nuovo/dati/percorso_gara.json") const;
     bool corsaSingola() const { return corsaSingola_; }
     const std::string& tappaCorrente() const { return tappaId_; }
 
@@ -291,11 +295,12 @@ private:
     void preparaArrivo();     // sulla tappa d'arrivo: linea e pubblico
     void caricaSpriteFolla(); // dati/sprite_raw/pubblico/ (PNG in assets_originali/sprite/pubblico/)
     void frenataArrivo(f32 dt);
-    // La strada si disegna e si aggiorna in gara, a fine tempo e, dopo
-    // l'arrivo, anche sotto la classifica.
+    // La strada si disegna e si aggiorna in gara, a fine tempo e sotto i
+    // pannelli di fine gara (Andrea 11/11: anche dopo il tempo scaduto, come
+    // dopo l'arrivo, cosi' le due fini si somigliano).
     bool scenaStrada() const {
         const FaseId f = fasi_.attuale();
-        return f == FaseId::Gara || f == FaseId::FineTempo || (arrivo_ && f == FaseId::Risultati);
+        return f == FaseId::Gara || f == FaseId::FineTempo || f == FaseId::Risultati;
     }
     std::array<Sprite, 4> spriteFolla_; // gruppi a, b x pose giu', su
     // Partenza (Andrea 08/11): le stesse persone dell'arrivo, in capannelli
