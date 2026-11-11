@@ -254,6 +254,19 @@ f32 Mixer::sfxBip() {
     return 4200.0f * onda * std::max(0.0f, inv);
 }
 
+// Checkpoint (Andrea 11/11, effetto nuovo): due note quadre che salgono
+// (mi-la), corte e pulite, come il bip della partenza ma piu' allegro.
+f32 Mixer::sfxCheckpoint() {
+    const f32 t = (f32)checkN_ / (f32)sampleRate_;
+    constexpr f32 NOTA = 0.11f, DURATA = 0.34f;
+    const f32 f = t < NOTA ? 1318.5f : 1760.0f;
+    const f32 tn = t < NOTA ? t : t - NOTA;
+    const f32 onda = std::fmod(t * f, 1.0f) < 0.5f ? 1.0f : -1.0f;
+    const f32 inv = std::min(1.0f, tn / 0.004f) * (t < NOTA ? 1.0f : std::exp(-tn / 0.12f));
+    if (++checkN_ > (i32)(DURATA * (f32)sampleRate_)) checkN_ = -1;
+    return 3000.0f * onda * std::max(0.0f, inv);
+}
+
 // V47 V1: sorpasso al pelo, blip breve e leggero (effetto nuovo).
 f32 Mixer::sfxSorpasso() {
     const f32 t = (f32)sorpassoN_ / (f32)sampleRate_;
@@ -336,6 +349,7 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         stridio_ += (stridioVoluto_ - stridio_) * aStridio;
         if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }
         if (bipN_ >= 0) { const f32 b = sfxBip(); l += b; r += b; }
+        if (checkN_ >= 0) { const f32 c = sfxCheckpoint(); l += c; r += c; }
         if (sorpassoN_ >= 0) { const f32 sp = sfxSorpasso(); l += sp; r += sp; }
         if (palettoN_ >= 0) { const f32 pl = sfxPaletto(); l += pl; r += pl; }
         if (musica) {

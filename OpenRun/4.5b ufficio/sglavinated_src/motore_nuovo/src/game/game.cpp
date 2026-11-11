@@ -1389,13 +1389,72 @@ void Game::avanzaTappaRivale(Rivale& r) {
     }
 }
 
+TemaColori Game::temaDiTappa(const std::string& id) const {
+    // Solo i colori di ambiente di livello.json (come leggiTemaDaFile), senza
+    // caricare il livello: servono per il terreno oltre il checkpoint.
+    TemaColori tema;
+    JsonReader livello(leggiFileTesto(percorsoDati("motore_nuovo/dati/livelli/" + id + "/livello.json")));
+    if (livello.parse() && jsonIsObject(livello.valore())) {
+        JsonValue colori;
+        if (jsonGet(jsonAsObject(livello.valore()), "colori", colori) && jsonIsObject(colori)) {
+            const JsonObject& c = jsonAsObject(colori);
+            leggiColore(c, "cielo", tema.cielo);
+            leggiColore(c, "erba", tema.erba);
+            leggiColore(c, "erba_alt", tema.erbaAlt);
+            leggiColore(c, "rumble", tema.rumbleAlt);
+            leggiColore(c, "acqua", tema.acqua);
+            leggiColore(c, "acqua_alt", tema.acquaAlt);
+        }
+    }
+    return tema;
+}
+
+void Game::sfoltisciIngressoTappa() {
+    // Andrea 11/11: all'inizio di una tappa nuova gli elementi del tema
+    // entrano gradualmente. Nei primi INGRESSO_Z la densita' sale da zero;
+    // gli oggetti grandi (edifici, torri) arrivano solo dopo, cosi' non c'e'
+    // lo stacco di un muro di palazzi subito dopo il checkpoint.
+    constexpr f32 INGRESSO_INIZIO_Z = 4000.0f;   // subito dopo il checkpoint: strada libera
+    constexpr f32 INGRESSO_Z = 70000.0f;         // densita' piena (circa 2.5 s alla punta)
+    constexpr f32 GRANDI_DA_Z = 62000.0f;        // edifici: oltre la vista al checkpoint, poi densita' che sale
+    constexpr f32 GRANDI_Z = 130000.0f;
+    constexpr f32 ALTO_MONDO = 1800.0f;          // oltre questa altezza (unita' mondo) e' "grande"
+    auto tieni = [&](const SpriteInstance& o, u32 k) {
+        if (o.worldZ >= GRANDI_Z) return true;
+        const f32 alto = o.sprite ? (f32)o.sprite->height * Renderer::SPRITE_WORLD_PX * o.scale : 0.0f;
+        const bool grande = alto > ALTO_MONDO;
+        const f32 da = grande ? GRANDI_DA_Z : INGRESSO_INIZIO_Z;
+        const f32 a = grande ? GRANDI_Z : INGRESSO_Z;
+        const f32 p = std::clamp((o.worldZ - da) / (a - da), 0.0f, 1.0f);
+        u32 h = k * 2654435761u ^ (u32)o.worldZ;
+        h ^= h >> 15; h *= 0x2C1B3C6Du; h ^= h >> 12;
+        return (f32)(h % 1000u) < p * p * 1000.0f;
+    };
+    for (std::vector<SpriteInstance>* fissi : {&oggettiStrada_, &cartelloni_}) {
+        std::vector<SpriteInstance> tenuti;
+        tenuti.reserve(fissi->size());
+        u32 k = 0;
+        for (const SpriteInstance& o : *fissi)
+            if (tieni(o, ++k)) tenuti.push_back(o);
+        *fissi = std::move(tenuti);
+    }
+}
+
 void Game::preparaBivio() {
     // Bivio solo se la tappa ha due rami; il cartello sta nello spartitraffico
     // poco prima del punto in cui la scelta si blocca.
     const bool rami = tappaConBivio(tappaId_);
     road_.impostaBivio(rami);
     latoBivio_ = 0;
+    ren_.togliTemaOltre();
     if (!rami) return;
+    // Colori dei rami sui cartelli (niente nomi: i tragitti restano interni)
+    // e colori del terreno oltre il checkpoint.
+    if (const Tappa* t = trovaTappa(tappaId_)) {
+        temaMeta_[0] = temaDiTappa(t->sinistra);
+        temaMeta_[1] = temaDiTappa(t->destra);
+        ren_.impostaColoriBivio(temaMeta_[0].rumbleAlt, temaMeta_[1].rumbleAlt);
+    }
     const f32 inizio = road_.bivioInizioZ() - 4000.0f;
     std::vector<SpriteInstance> tenuti;
     tenuti.reserve(cartelloni_.size() + 1);
@@ -1941,6 +2000,9 @@ void Game::fineTappa(f32 avanzo) {
     ren_.iniziaTransizioneTema(temaPrima, skylinePrima, transizioneTemaS_);
     tappaId_ = prossima;
     ++numeroTappa_;
+    sfoltisciIngressoTappa(); // oggetti del tema nuovo che entrano gradualmente
+    ordinaSpriteFissi();
+    mixer_.suonaCheckpoint(); // passaggio sotto il CHECKPOINT
     if (!tempoScaduto_) {
         tempoBonusS_ = (i32)std::lround((f32)tempoLimiteTappaS_ * tempoExtraFattore_);
         tempoResiduoS_ += (f32)tempoBonusS_; // checkpoint: tempo extra (secondi)
@@ -2361,6 +2423,8 @@ void Game::aggiornaGuida(f32 dt) {
             road_.playerX = player_.x;
             secondiDaSceltaBivio_ = 0.0f;
             sceltaFattaOra = true;
+            // Oltre il checkpoint il terreno ha gia' i colori della meta.
+            ren_.impostaTemaOltre(temaMeta_[latoBivio_ < 0 ? 0 : 1]);
         }
         if (!sceltaFattaOra && latoBivio_ != 0) {
             secondiDaSceltaBivio_ += dt;
@@ -3400,7 +3464,9 @@ void Game::aggiungiVisibili(const std::vector<SpriteInstance>& fissi) {
     const f32 z0 = road_.playerZ;
     const f32 z1 = z0 + vista;
     scenaSprites_.insert(scenaSprites_.end(), da(z0), z1 <= giro ? da(z1) : fissi.end());
-    if (z1 > giro) scenaSprites_.insert(scenaSprites_.end(), fissi.begin(), da(z1 - giro));
+    // Con il bivio la strada oltre la fine porta a un'altra tappa: niente
+    // oggetti dell'inizio di questa tappa visti oltre il checkpoint.
+    if (z1 > giro && !road_.bivioAttivo()) scenaSprites_.insert(scenaSprites_.end(), fissi.begin(), da(z1 - giro));
 }
 
 bool Game::collisioneOggettiVicini() const {

@@ -518,6 +518,12 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     void avanzaTappaRivale(Rivale& r); // cambio tappa o arrivo del rivale
     std::vector<f32> lunghezzeTappe_;  // parallelo a tappe_
     void preparaBivio();
+    // Bivio leggibile e checkpoint (Andrea 11/11): colori delle due mete
+    // (per il terreno oltre il checkpoint) e ingresso graduale degli oggetti
+    // della tappa nuova.
+    TemaColori temaMeta_[2];
+    TemaColori temaDiTappa(const std::string& id) const;
+    void sfoltisciIngressoTappa();
     void inizializzaRivali();
     void aggiornaRivali();
     void fineTappa(f32 avanzo);
