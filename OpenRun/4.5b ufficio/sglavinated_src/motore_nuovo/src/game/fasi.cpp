@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include <algorithm>
 #include <vector>
 #include <utility>
@@ -123,29 +124,62 @@ private:
 // Fase: Menu (scelta corsa singola / gara a tappe, conferma Start)
 // ---------------------------------------------------------------------------
 
+namespace {
+// Livello della corsa singola scelto nel menu (Andrea 11/11): resta fino
+// alla chiusura del gioco, cosi' "SINGLE RACE" a fine gara rifa' lo stesso.
+// Vuoto = la partenza solita dell'albero (il tragitto iniziale, per pratica).
+std::string g_tappaSingola;
+
+// "lv_02_atomico" -> "ATOMICO" (nome del tema per il menu).
+std::string nomeLivello(const std::string& id) {
+    std::string n = id;
+    if (n.size() > 6 && n.compare(0, 3, "lv_") == 0) n = n.substr(6);
+    for (char& c : n) c = (char)std::toupper((unsigned char)c);
+    return n;
+}
+
+// Le due partenze del menu, usate anche dalla scelta a fine gara.
+void avviaSerie(Game& gioco) {
+    if (!gioco.avviaGara()) gioco.init("lv_01_neon"); // senza percorso: giro libero
+}
+void avviaSingola(Game& gioco) {
+    if (!gioco.avviaGara("motore_nuovo/dati/percorso_gara.json", true, g_tappaSingola)) gioco.init("lv_01_neon");
+}
+} // namespace
+
 class MenuFase : public Fase {
 public:
     MenuFase() : sel_(0), finita_(false), prossima_(FaseId::Gara) {}
-    void entra(Game&) override { sel_ = 0; finita_ = false; prossima_ = FaseId::Gara; }
+    void entra(Game& gioco) override {
+        sel_ = 0; finita_ = false; prossima_ = FaseId::Gara;
+        livelli_ = gioco.elencoTappe();
+        liv_ = 0;
+        for (size_t i = 0; i < livelli_.size(); ++i) if (livelli_[i] == g_tappaSingola) liv_ = (i32)i;
+    }
     void aggiorna(Game& gioco, f32 dt) override {
         (void)dt;
         const Pad& p = gioco.input();
         if (p.pressed & Pad::Up)   sel_ = (sel_ + 2) % 3;
         if (p.pressed & Pad::Down) sel_ = (sel_ + 1) % 3;
+        // Corsa singola: SINISTRA/DESTRA sceglie il livello.
+        const i32 n = (i32)livelli_.size();
+        if (sel_ == 1 && n > 0) {
+            if (p.pressed & Pad::Left)  liv_ = (liv_ + n - 1) % n;
+            if (p.pressed & Pad::Right) liv_ = (liv_ + 1) % n;
+        }
         if (p.pressed & (Pad::Start | Pad::A)) {
             switch (sel_) {
-                case 0: // corsa singola: prima tappa della gara (stessi tracciati, rivali e tempo), poi arrivo
-                    if (!gioco.avviaGara("motore_nuovo/dati/percorso_gara.json", true)) gioco.init("lv_01_neon");
-                    break;
-                case 1: // gara a tappe con bivi (avviaGara -> Gara); senza percorso: corsa singola
-                    if (!gioco.avviaGara()) gioco.init("lv_01_neon");
+                case 0: avviaSerie(gioco); break; // gara a tappe con bivi (Andrea 11/11: voce principale)
+                case 1: // corsa singola: una tappa a scelta, stessi rivali e tempo, poi arrivo
+                    g_tappaSingola = n > 0 ? livelli_[(size_t)liv_] : std::string();
+                    avviaSingola(gioco);
                     break;
                 case 2: gioco.richiediUscita(); prossima_ = FaseId::Menu; break; // il runner chiude
             }
             finita_ = true;
         }
     }
-    void disegna(Renderer& ren, Framebuffer&) const override {
+    void disegna(Renderer& ren, Framebuffer& fb) const override {
         // Logo segnaposto OPEN RUN (Andrea 08/11): solo la scritta, nient'altro.
         // Il PNG e' in Libreria/assets_originali/ui/logo/logo_openrun.png.
         if (ren.haLogo()) ren.drawLogo(160, 50);
@@ -154,16 +188,26 @@ public:
             const i32 w = ren.larghezzaTitolo(titolo, 2);
             ren.drawTitolo(160 - w / 2, 52, titolo, 0xFFFFFFFFu, 2, true);
         }
-        static const char* voci[3] = { "SINGLE RACE", "RACE SERIES", "EXIT" };
+        static const char* voci[3] = { "RACE SERIES", "SINGLE RACE", "EXIT" };
+        // La riga del livello sta sotto SINGLE RACE: EXIT scende di 10 px.
+        static constexpr i32 Y[3] = { 98, 114, 140 };
         for (i32 i = 0; i < 3; ++i) {
             // Voci col font grassetto (Andrea 09/11), il testo d'aiuto resta piccolo.
             i32 wi = ren.larghezzaTitolo(voci[i], 1);
             u32 colore = (i == sel_) ? 0xFFFFFFFFu : 0xFFA0A0A0u;
-            ren.drawTitolo(160 - wi / 2, 102 + i * 14, voci[i], colore, 1, true);
-            if (i == sel_) ren.drawTitolo(160 - wi / 2 - 12, 102 + i * 14, ">", 0xFFFFFFFFu, 1, true);
+            ren.drawTitolo(160 - wi / 2, Y[i], voci[i], colore, 1, true);
+            if (i == sel_) ren.drawTitolo(160 - wi / 2 - 12, Y[i], ">", 0xFFFFFFFFu, 1, true);
         }
-        const char* aiuto = "UP/DOWN: CHOOSE  START: OK";
-        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 160, aiuto, 0xFFA0A0A0u, 1, true);
+        if (!livelli_.empty()) {
+            char buf[40];
+            const std::string nome = nomeLivello(livelli_[(size_t)liv_]);
+            if (sel_ == 1) std::snprintf(buf, sizeof(buf), "< %d %s >", liv_ + 1, nome.c_str());
+            else std::snprintf(buf, sizeof(buf), "%d %s", liv_ + 1, nome.c_str());
+            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 129, buf, sel_ == 1 ? 0xFFFFD040u : 0xFF808080u, 1, true);
+        }
+        (void)fb;
+        const char* aiuto = sel_ == 1 ? "LEFT/RIGHT: LEVEL  START: OK" : "UP/DOWN: CHOOSE  START: OK";
+        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 166, aiuto, 0xFFA0A0A0u, 1, true);
     }
     void esci(Game&) override {}
     FaseId prossima() const override { return prossima_; }
@@ -173,6 +217,8 @@ private:
     i32 sel_;
     bool finita_;
     FaseId prossima_;
+    std::vector<std::string> livelli_;
+    i32 liv_ = 0;
 };
 
 // ---------------------------------------------------------------------------
@@ -228,29 +274,73 @@ private:
 };
 
 // ---------------------------------------------------------------------------
-// Fase: Risultati (punteggio + classifica finta)
+// Fase: Risultati (fine gara uguale per tutti, Andrea 11/11)
 // ---------------------------------------------------------------------------
+// Stessi tre passi dopo l'arrivo e dopo il tempo scaduto:
+//   1. RANKING (solo all'arrivo): la classifica del 09/11, invariata; passa
+//      da sola dopo il verdetto, o con START/A;
+//   2. NOME: tre iniziali da sala giochi (A-Z e '.'), una lettera alla volta;
+//   3. HIGH SCORES + scelta: rigiocare la stessa corsa, l'altra, o il menu.
+// Il nome si salva in salvataggi/giocatore.json con la classifica Top-10.
+// Se il file manca o e' vuoto la tabella si riempie con dati/classifica_finta.json.
 
 struct PunteggioEntry {
     std::string nome;
     i32 punti;
+    bool nostro = false; // la riga appena fatta (evidenziata)
 };
+
+namespace {
+constexpr i32 NOME_LETTERE = 3;             // iniziali da sala giochi (Andrea 11/11)
+constexpr const char* LETTERE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ."; // poche lettere, tutte nel font
+constexpr i32 LETTERE_N = 27;
+constexpr f32 RANKING_DOPO_VERDETTO_S = 3.0f; // poi il nome arriva da solo
+constexpr f32 ATTESA_MAX_S = 30.0f;           // fermo senza tasti: conferma / menu
+constexpr i32 RIGHE_TABELLA = 10;
+
+i32 indiceLettera(char c) {
+    for (i32 i = 0; i < LETTERE_N; ++i) if (LETTERE[i] == c) return i;
+    return 0;
+}
+
+// Pannello scuro con bordo di 1 px (stesso stile della classifica del 09/11).
+void pannello(Framebuffer& fb, i32 x0, i32 y0, i32 x1, i32 y1) {
+    scurisci(fb, x0, y0, x1, y1, 30);
+    fb.fillRect(x0, y0, x1, y0, 0xFF909090u);
+    fb.fillRect(x0, y1, x1, y1, 0xFF909090u);
+    fb.fillRect(x0, y0, x0, y1, 0xFF909090u);
+    fb.fillRect(x1, y0, x1, y1, 0xFF909090u);
+}
+
+// Freccina piena di 5 px di base, punta in su o in giu'.
+void freccia(Framebuffer& fb, i32 cx, i32 y, bool su, u32 c) {
+    for (i32 r = 0; r < 3; ++r) {
+        const i32 yy = su ? y + r : y + 2 - r;
+        fb.fillRect(cx - r, yy, cx + r, yy, c);
+    }
+}
+} // namespace
 
 class RisultatiFase : public Fase {
 public:
-    RisultatiFase() : timerS_(0.0f), punteggio_(0), posizione_(0), finita_(false),
-                      nomePos_(0) {
-        std::strcpy(nome_, "PLAYER");
-    }
+    enum class Passo { Ranking, Nome, Scelta };
+
+    RisultatiFase() { std::strcpy(nome_, "YOU"); }
     void entra(Game& gioco) override {
-        timerS_ = 0.0f; finita_ = false;
+        timerS_ = 0.0f; passoS_ = 0.0f; fermoS_ = 0.0f; finita_ = false;
         nomePos_ = 0;
-        // ARC1: il nome di questa partita parte da quello salvato (file mancante
-        // o rotto -> default "PLAYER", ricreato senza errori).
+        sel_ = gioco.corsaSingola() ? 1 : 0; // la corsa appena fatta gia' scelta
+        // Iniziali di partenza: quelle salvate l'ultima volta; al primo giro
+        // "YOU", come nella classifica di gara.
         GiocatoreDati salvato = SalvataggiGiocatore::carica();
-        std::strncpy(nome_, salvato.nome, 6);
-        nome_[6] = '\0';
-        if (nomeVuoto(nome_)) std::strcpy(nome_, "PLAYER");
+        std::strcpy(nome_, "YOU");
+        if (std::strncmp(salvato.nome, "PLAYER", 6) != 0 && !nomeVuoto(salvato.nome)) {
+            for (i32 i = 0; i < NOME_LETTERE; ++i) {
+                const char c = salvato.nome[i];
+                nome_[i] = (c >= 'A' && c <= 'Z') || c == '.' ? c : '.';
+            }
+            nome_[NOME_LETTERE] = '\0';
+        }
         // Formula punteggio (dati/punteggio.json, valori default se manca il file).
         i32 puntiPerKm = PUNTI_PER_KM_DEFAULT;
         i32 bonusTempo = BONUS_TEMPO_RESIDUO_DEFAULT;
@@ -267,115 +357,180 @@ public:
         punteggio_ = (i32)(km * puntiPerKm) + (i32)(gioco.tempoResiduoS() * bonusTempo)
             + tappeCompletate * bonusCheckpoint;
         if (punteggio_ < 0) punteggio_ = 0;
-
-        // Classifica: 9 giocatori fittizi + il punteggio del giocatore
-        // (dati/classifica_finta.json; default fitti se il file manca).
-        classifica_.clear();
-        classifica_.push_back({std::string(nome_), punteggio_});
-        JsonReader classifica(leggiFileTesto("motore_nuovo/dati/classifica_finta.json"));
-        if (classifica.parse() && jsonIsObject(classifica.valore())) {
-            JsonValue elencoV;
-            if (jsonGet(jsonAsObject(classifica.valore()), "giocatori", elencoV) && jsonIsArray(elencoV)) {
-                for (const JsonValue& g : jsonAsArray(elencoV)) {
-                    if (!jsonIsObject(g)) continue;
-                    const JsonObject& o = jsonAsObject(g);
-                    JsonValue nv, pv;
-                    std::string nome;
-                    i32 punti = 0;
-                    if (jsonGet(o, "nome", nv) && jsonIsString(nv)) nome = jsonAsString(nv);
-                    if (jsonGet(o, "punti", pv) && jsonIsNumber(pv)) punti = (i32)jsonAsNumber(pv);
-                    if (!nome.empty()) classifica_.push_back({std::move(nome), punti});
-                }
-            }
-        }
-        if (classifica_.size() == 1) {
-            static const char* nomi[9] = { "ALE", "BEN", "SIM", "LUC", "MAR", "GIA", "FIO", "LEO", "ANN" };
-            i32 punti[9] = { 9800, 9100, 8500, 7900, 7400, 6900, 6300, 5800, 5200 };
-            for (i32 i = 0; i < 9; ++i) classifica_.push_back({nomi[i], punti[i]});
-        }
-        std::sort(classifica_.begin(), classifica_.end(),
-                  [](const PunteggioEntry& a, const PunteggioEntry& b) { return a.punti > b.punti; });
         // Arrivo: classifica della gara sul tempo di ognuno (Andrea 29/10).
         arrivo_.clear();
         if (gioco.arrivato())
             for (const Game::Classificato& c : gioco.classificaArrivo()) arrivo_.push_back(c);
-        if (classifica_.size() > 10) classifica_.resize(10);
-        posizione_ = 1;
-        for (const PunteggioEntry& e : classifica_) {
-            if (e.nome == nome_) break;
-            if (e.punti >= punteggio_) ++posizione_;
-        }
+        passo_ = arrivo_.empty() ? Passo::Nome : Passo::Ranking;
     }
     void aggiorna(Game& gioco, f32 dt) override {
-        (void)dt;
         timerS_ += dt;
+        passoS_ += dt;
         const Pad& p = gioco.input();
-        // ARC1: inserimento nome fino a 6 caratteri (A-Z, 0-9, '.', spazio).
-        // SU/GIU cambia il carattere sotto il cursore, DESTRA/SINISTRA sposta il
-        // cursore, START conferma e salva in salvataggi/giocatore.json.
-        static const char* CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. ";
-        constexpr i32 CHARSET_N = 38;
-        auto indiceChar = [](char c, const char* cs, i32 n) -> i32 {
-            for (i32 i = 0; i < n; ++i) if (cs[i] == c) return i;
-            return 0;
-        };
-        if (p.pressed & Pad::Up) {
-            i32 k = indiceChar(nome_[nomePos_], CHARSET, CHARSET_N);
-            nome_[nomePos_] = CHARSET[(k + 1) % CHARSET_N];
+        fermoS_ = p.pressed ? 0.0f : fermoS_ + dt;
+        switch (passo_) {
+            case Passo::Ranking: {
+                // Il verdetto compare dopo il consulto e le righe; poi si va
+                // avanti da soli (niente scritta "PRESS START", Andrea 09/11).
+                const f32 verdetto = CONSULTO_S + (f32)arrivo_.size() * RIGA_CLASSIFICA_S;
+                const bool tasto = (p.pressed & (Pad::Start | Pad::A)) && timerS_ >= verdetto;
+                if (tasto || timerS_ >= verdetto + RANKING_DOPO_VERDETTO_S) vaiA(Passo::Nome);
+                break;
+            }
+            case Passo::Nome: {
+                // Sala giochi: SU/GIU' cambia la lettera, A (o DESTRA) la
+                // conferma e passa alla prossima, B (o SINISTRA) torna
+                // indietro. Dopo la terza lettera, o con START, il nome e' fatto.
+                char& c = nome_[nomePos_];
+                if (p.pressed & Pad::Up)   c = LETTERE[(indiceLettera(c) + 1) % LETTERE_N];
+                if (p.pressed & Pad::Down) c = LETTERE[(indiceLettera(c) + LETTERE_N - 1) % LETTERE_N];
+                bool fatto = (p.pressed & Pad::Start) != 0;
+                if (p.pressed & (Pad::A | Pad::Right)) {
+                    if (nomePos_ + 1 < NOME_LETTERE) ++nomePos_;
+                    else if (p.pressed & Pad::A) fatto = true;
+                }
+                if ((p.pressed & (Pad::B | Pad::Left)) && nomePos_ > 0) --nomePos_;
+                if (fatto || fermoS_ >= ATTESA_MAX_S) { salva(); vaiA(Passo::Scelta); }
+                break;
+            }
+            case Passo::Scelta: {
+                if (passoS_ < 0.3f) break; // il tasto del nome non sceglie anche qui
+                if (p.pressed & Pad::Up)   sel_ = (sel_ + 2) % 3;
+                if (p.pressed & Pad::Down) sel_ = (sel_ + 1) % 3;
+                if (p.pressed & (Pad::Start | Pad::A)) {
+                    // Stesse voci e stesse partenze del menu principale.
+                    if (sel_ == 0) avviaSerie(gioco);
+                    else if (sel_ == 1) avviaSingola(gioco);
+                    finita_ = true; // sel 2: menu (prossima()); 0/1: la gara ha gia' chiesto il cambio
+                }
+                if (fermoS_ >= ATTESA_MAX_S) { sel_ = 2; finita_ = true; }
+                break;
+            }
         }
-        if (p.pressed & Pad::Down) {
-            i32 k = indiceChar(nome_[nomePos_], CHARSET, CHARSET_N);
-            nome_[nomePos_] = CHARSET[(k + CHARSET_N - 1) % CHARSET_N];
-        }
-        if (p.pressed & Pad::Right) nomePos_ = (nomePos_ + 1) % 6;
-        if (p.pressed & Pad::Left)  nomePos_ = (nomePos_ + 5) % 6;
-        // Start conferma: salva nome e classifica Top-10 (atomico: temp + rename),
-        // poi torna al menu. Timeout di sicurezza a 30 s.
-        if (p.pressed & Pad::Start) {
-            char nomeVis[7];
-            i32 j = 0;
-            for (i32 i = 0; i < 6; ++i) if (nome_[i] != ' ') nomeVis[j++] = nome_[i];
-            nomeVis[j] = '\0';
-            if (nomeVis[0] == '\0') std::strcpy(nomeVis, "PLAYER");
-            GiocatoreDati g = SalvataggiGiocatore::carica();
-            ClassificaEntry e;
-            e.nome = nomeVis; e.punti = punteggio_; e.data = "0000-00-00"; // core senza orologio di sistema
-            g.classifica.push_back(e);
-            std::sort(g.classifica.begin(), g.classifica.end(),
-                      [](const ClassificaEntry& a, const ClassificaEntry& b) { return a.punti > b.punti; });
-            if (g.classifica.size() > 10) g.classifica.resize(10);
-            std::strncpy(nome_, nomeVis, 6); nome_[6] = '\0';
-            SalvataggiGiocatore::salva(g);
-            finita_ = true;
-        }
-        if (timerS_ > 30.0f) finita_ = true;
     }
     void disegna(Renderer& ren, Framebuffer& fb) const override {
-        char buf[96];
-        if (!arrivo_.empty()) { disegnaArrivo(ren, fb); return; }
-        const char* titolo = "RESULTS";
-        const i32 w = ren.larghezzaTitolo(titolo, 2);
-        ren.drawTitolo(160 - w / 2, 36, titolo, 0xFFFFFFFFu, 2, true);
-        char nomeVis[8];
-        std::snprintf(nomeVis, sizeof(nomeVis), "%s", nomeVisibile(nome_).c_str());
-        // Riga nome: cursore visibile sulla lettera in editing (fino a 6 caratteri).
-        char nomeCursore[8];
-        std::snprintf(nomeCursore, sizeof(nomeCursore), "%c%c%c%c%c%c",
-                      nome_[0], nome_[1], nome_[2], nome_[3], nome_[4], nome_[5]);
-        nomeCursore[nomePos_] = '_';
-        std::snprintf(buf, sizeof(buf), "NAME: %s  LEFT/RIGHT: MOVE  START: OK", nomeCursore);
-        ren.drawTesto(64, 72, buf, 0xFFFFFFFFu, 1, true);
-        std::snprintf(buf, sizeof(buf), "%s %d SCORE   POS %d", nomeVis, punteggio_, posizione_);
-        ren.drawTesto(64, 88, buf, 0xFFA0A0A0u, 1, true);
-        i32 y = 110;
-        for (size_t i = 0; i < classifica_.size(); ++i) {
-            const PunteggioEntry& e = classifica_[i];
-            std::snprintf(buf, sizeof(buf), "%c %-3s %6d", (e.nome == nomeVis ? '>' : ' '), e.nome.c_str(), e.punti);
-            ren.drawTesto(64, y + (i32)i * 11, buf, e.nome == nomeVis ? 0xFFFFFFFFu : 0xFFA0A0A0u, 1, true);
+        switch (passo_) {
+            case Passo::Ranking: disegnaArrivo(ren, fb); break;
+            case Passo::Nome:    disegnaNome(ren, fb); break;
+            case Passo::Scelta:  disegnaScelta(ren, fb); break;
         }
-        const char* aiuto = "PRESS START";
-        ren.drawTesto(160 - ren.larghezzaTesto(aiuto, 1) / 2, 206, aiuto, 0xFFA0A0A0u, 1, true);
     }
+    Passo passo() const { return passo_; }
+
+private:
+    void vaiA(Passo p) { passo_ = p; passoS_ = 0.0f; fermoS_ = 0.0f; }
+
+    // Salva le iniziali e il punteggio (temp + rename, salvataggi.cpp) e
+    // prepara la tabella: i record salvati; se non ce ne sono abbastanza,
+    // quelli di dati/classifica_finta.json riempiono i posti vuoti.
+    void salva() {
+        GiocatoreDati g = SalvataggiGiocatore::carica();
+        for (i32 i = 0; i < 6; ++i) g.nome[i] = i < NOME_LETTERE ? nome_[i] : ' ';
+        g.nome[6] = '\0';
+        ClassificaEntry e;
+        e.nome = nome_; e.punti = punteggio_; e.data = "0000-00-00"; // core senza orologio di sistema
+        g.classifica.push_back(e);
+        std::stable_sort(g.classifica.begin(), g.classifica.end(),
+                         [](const ClassificaEntry& a, const ClassificaEntry& b) { return a.punti > b.punti; });
+        if (g.classifica.size() > 10) g.classifica.resize(10);
+        SalvataggiGiocatore::salva(g); // se non si puo' scrivere (sola lettura) si gioca lo stesso
+
+        tabella_.clear();
+        bool messo = false;
+        for (const ClassificaEntry& r : g.classifica) {
+            std::string n = r.nome;
+            while (!n.empty() && n.back() == ' ') n.pop_back();
+            const bool nostro = !messo && n == nome_ && r.punti == punteggio_;
+            messo = messo || nostro;
+            tabella_.push_back({n, r.punti, nostro});
+        }
+        if (tabella_.size() < (size_t)RIGHE_TABELLA) {
+            JsonReader finta(leggiFileTesto("motore_nuovo/dati/classifica_finta.json"));
+            if (finta.parse() && jsonIsObject(finta.valore())) {
+                JsonValue elencoV;
+                if (jsonGet(jsonAsObject(finta.valore()), "giocatori", elencoV) && jsonIsArray(elencoV))
+                    for (const JsonValue& v : jsonAsArray(elencoV)) {
+                        if (!jsonIsObject(v)) continue;
+                        const JsonObject& o = jsonAsObject(v);
+                        JsonValue nv;
+                        if (!jsonGet(o, "nome", nv) || !jsonIsString(nv)) continue;
+                        tabella_.push_back({jsonAsString(nv), jsonNumero(o, "punti", 0), false});
+                    }
+            }
+        }
+        // Il nostro punteggio c'e' sempre, anche se non entra nei dieci.
+        if (!messo) tabella_.push_back({std::string(nome_), punteggio_, true});
+        std::stable_sort(tabella_.begin(), tabella_.end(),
+                         [](const PunteggioEntry& a, const PunteggioEntry& b) {
+                             return a.punti != b.punti ? a.punti > b.punti : a.nostro && !b.nostro; });
+        posizione_ = 1;
+        for (size_t i = 0; i < tabella_.size(); ++i) if (tabella_[i].nostro) posizione_ = (i32)i + 1;
+        if (tabella_.size() > (size_t)RIGHE_TABELLA) {
+            tabella_.resize(RIGHE_TABELLA);
+            if (posizione_ > RIGHE_TABELLA) tabella_.back() = {std::string(nome_), punteggio_, true};
+        }
+    }
+
+    // Passo 2: tre caselle grandi col font dei titoli; quella in uso
+    // lampeggia, con le freccine su/giu' (la lettera cambia con SU/GIU').
+    void disegnaNome(Renderer& ren, Framebuffer& fb) const {
+        constexpr i32 SU = 4, GIU = 156;
+        pannello(fb, 48, SU, 271, GIU);
+        const char* titolo = "ENTER YOUR NAME";
+        ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 1) / 2, 10, titolo, 0xFFFFFFFFu, 1, true);
+        char buf[32];
+        std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
+        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 30, buf, 0xFFFFE080u, 1, true);
+        constexpr i32 CASELLA = 32, PASSO = 40, Y = 64;
+        const i32 x0 = 160 - (PASSO * (NOME_LETTERE - 1) + CASELLA) / 2;
+        const bool acceso = std::fmod(passoS_, 0.5f) < 0.3f;
+        for (i32 i = 0; i < NOME_LETTERE; ++i) {
+            const i32 x = x0 + i * PASSO;
+            const bool qui = i == nomePos_;
+            fb.fillRect(x, Y, x + CASELLA - 1, Y + CASELLA - 1, qui ? 0xFF303060u : 0xFF202030u);
+            fb.fillRect(x, Y + CASELLA, x + CASELLA - 1, Y + CASELLA + 1, qui ? 0xFFFFD040u : 0xFF707070u);
+            const char l[2] = { nome_[i], '\0' };
+            const u32 col = qui ? (acceso ? 0xFFFFD040u : 0xFFFFFFFFu) : 0xFFFFFFFFu;
+            ren.drawTitolo(x + CASELLA / 2 - ren.larghezzaTitolo(l, 2) / 2, Y + 3, l, col, 2, true);
+            if (qui) {
+                freccia(fb, x + CASELLA / 2, Y - 7, true, 0xFFFFFFFFu);
+                freccia(fb, x + CASELLA / 2, Y + CASELLA + 5, false, 0xFFFFFFFFu);
+            }
+        }
+        ren.drawTesto(160 - ren.larghezzaTesto("UP/DOWN  LETTER", 1) / 2, 122, "UP/DOWN  LETTER", 0xFFA0A0A0u, 1, true);
+        ren.drawTesto(160 - ren.larghezzaTesto("A  NEXT    B  BACK", 1) / 2, 134, "A  NEXT    B  BACK", 0xFFA0A0A0u, 1, true);
+    }
+
+    // Passo 3: tabella HIGH SCORES (la nostra riga evidenziata) e sotto le
+    // stesse voci del menu principale, la corsa appena fatta gia' scelta.
+    void disegnaScelta(Renderer& ren, Framebuffer& fb) const {
+        pannello(fb, 48, 4, 271, 214);
+        const char* titolo = "HIGH SCORES";
+        ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 1) / 2, 8, titolo, 0xFFFFFFFFu, 1, true);
+        static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
+        char buf[32];
+        for (size_t i = 0; i < tabella_.size(); ++i) {
+            const PunteggioEntry& e = tabella_[i];
+            const i32 y = 28 + (i32)i * 11;
+            const i32 pos = e.nostro ? posizione_ : (i32)i + 1;
+            if (e.nostro) fb.fillRect(56, y - 2, 263, y + 8, 0xFF303060u);
+            const u32 col = e.nostro ? (std::fmod(passoS_, 0.5f) < 0.3f ? 0xFFFFD040u : 0xFFFFFFFFu) : 0xFFB0B0B0u;
+            std::snprintf(buf, sizeof(buf), "%d", pos);
+            ren.drawTesto(80 - ren.larghezzaTesto(buf, 1), y, buf, pos <= 3 ? PODIO[pos - 1] : col, 1, true);
+            ren.drawTesto(104, y, e.nome.c_str(), col, 1, true);
+            std::snprintf(buf, sizeof(buf), "%d", e.punti);
+            ren.drawTesto(240 - ren.larghezzaTesto(buf, 1), y, buf, col, 1, true);
+        }
+        fb.fillRect(56, 145, 263, 145, 0xFF9898B0u);
+        static const char* voci[3] = { "RACE SERIES", "SINGLE RACE", "MAIN MENU" };
+        for (i32 i = 0; i < 3; ++i) {
+            const i32 wi = ren.larghezzaTitolo(voci[i], 1);
+            const u32 colore = (i == sel_) ? 0xFFFFFFFFu : 0xFFA0A0A0u;
+            ren.drawTitolo(160 - wi / 2, 152 + i * 20, voci[i], colore, 1, true);
+            if (i == sel_) ren.drawTitolo(160 - wi / 2 - 12, 152 + i * 20, ">", 0xFFFFFFFFu, 1, true);
+        }
+    }
+public:
     // Classifica d'arrivo sopra la scena della strada (auto ferma, pubblico):
     // posizione, nome, tempo e distacco; il giocatore
     // evidenziato, podio in oro, argento e bronzo.
@@ -419,7 +574,8 @@ public:
             }
             // Il nostro nome in grande, gli altri piu' piccoli (Andrea 09/11):
             // il nostro risultato si trova subito.
-            if (c.giocatore) ren.drawTesto(96, y, c.nome, ferma ? col : 0xFF808080u, 1, true);
+            // Andrea 11/11: le nostre iniziali al posto di "YOU" (le ultime salvate).
+            if (c.giocatore) ren.drawTesto(96, y, nome_, ferma ? col : 0xFF808080u, 1, true);
             else ren.drawTesto(96, y + 2, c.nome, ferma ? col : 0xFF808080u, 0, true);
             // Linea chiara di 1 px fra un pilota e l'altro.
             if (i + 1 < arrivo_.size()) fb.fillRect(56, y + 9, 263, y + 9, 0xFF9898B0u);
@@ -484,13 +640,17 @@ public:
     bool finita() const override { return finita_; }
     const char* nome() const override { return "Risultati"; }
 private:
-    f32 timerS_;
-    i32 punteggio_;
-    i32 posizione_;
-    bool finita_;
-    char nome_[7];       // nome giocatore fino a 6 caratteri (ARC1: da salvataggi/giocatore.json)
-    i32 nomePos_;        // cursore 0..5 sulla lettera in editing
-    std::vector<PunteggioEntry> classifica_;
+    f32 timerS_ = 0.0f;  // dall'entrata (consulto e righe della classifica)
+    f32 passoS_ = 0.0f;  // dall'inizio del passo corrente (lampeggi)
+    f32 fermoS_ = 0.0f;  // senza tasti premuti
+    i32 punteggio_ = 0;
+    i32 posizione_ = 1;  // posizione nella tabella HIGH SCORES
+    bool finita_ = false;
+    Passo passo_ = Passo::Nome;
+    char nome_[NOME_LETTERE + 1]; // iniziali (salvate in salvataggi/giocatore.json)
+    i32 nomePos_ = 0;    // lettera in uso 0..2
+    i32 sel_ = 0;        // scelta finale: serie, singola, menu
+    std::vector<PunteggioEntry> tabella_;
     std::vector<Game::Classificato> arrivo_; // classifica sul tempo, solo dopo l'arrivo
 };
 
@@ -531,7 +691,8 @@ void GestoreFasi::cambia(FaseId id, Game& gioco) {
     if (fadeSt_ == FadeState::None) {
         const bool daRisultatiAMenu = (attuale_ == FaseId::Risultati && id == FaseId::Menu);
         const bool daMenuAGara = (attuale_ == FaseId::Menu && id == FaseId::Gara);
-        if (daRisultatiAMenu || daMenuAGara) {
+        const bool daRisultatiAGara = (attuale_ == FaseId::Risultati && id == FaseId::Gara); // rigioca (11/11)
+        if (daRisultatiAMenu || daMenuAGara || daRisultatiAGara) {
             fadeSt_ = FadeState::Out;
             fadeT_ = 0.0f;
             faseProssimaFade_ = id;

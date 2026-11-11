@@ -1203,7 +1203,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
     ren_.impostaTema(tema);
 }
 
-bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
+bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa, const std::string& tappaScelta) {
     // V8 (Caricamento): avvio di una gara completa (tappe + init della prima
     // tappa + rivali + griglia di partenza). Riga di log catturata dal gate.
     const auto cronoInizio = std::chrono::steady_clock::now();
@@ -1230,6 +1230,7 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
             }
         }
     }
+    if (soloPrimaTappa && !tappaScelta.empty() && trovaTappa(tappaScelta)) partenza = tappaScelta;
     if (partenza.empty() || !trovaTappa(partenza)) return false;
 
     // Lunghezza nominale di ogni tappa: serve ai rivali per il proprio percorso
@@ -1260,6 +1261,20 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
         std::chrono::steady_clock::now() - cronoInizio).count();
     std::printf("CARICAMENTO gara %s %.1f ms\n", partenza.c_str(), (double)msGara);
     return true;
+}
+
+std::vector<std::string> Game::elencoTappe(const std::string& fileTappe) const {
+    std::vector<std::string> ids;
+    JsonReader file(leggiFileTesto(percorsoDati(fileTappe)));
+    JsonValue elenco;
+    if (file.parse() && jsonIsObject(file.valore()) &&
+        jsonGet(jsonAsObject(file.valore()), "tappe", elenco) && jsonIsArray(elenco))
+        for (const JsonValue& t : jsonAsArray(elenco)) {
+            JsonValue campo;
+            if (jsonIsObject(t) && jsonGet(jsonAsObject(t), "id", campo) && jsonIsString(campo))
+                ids.push_back(jsonAsString(campo));
+        }
+    return ids;
 }
 
 bool Game::tappaConBivio(const std::string& id) const {
