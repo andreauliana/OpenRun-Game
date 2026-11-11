@@ -85,8 +85,11 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         clipGalleriaZ_ = 1e9f; // senza uscita in vista: niente luce del giorno
         // Fondo buio (in fondo al tubo): grigio cemento appena tinto del tema.
         const u32 fondo = lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f);
-        fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
-        // Bocca d'uscita: prima sezione fuori dalla galleria.
+        // Bocca d'uscita: prima sezione fuori dalla galleria. Dentro la bocca
+        // restano cielo, skyline e terra gia' dipinti (Claude 11/11: prima la
+        // bocca era riempita di cielo piatto e negli ultimi segmenti lo skyline
+        // spariva e poi ricompariva di colpo fuori); il buio va solo attorno.
+        bool bocca = false;
         for (size_t k = 1; k < projs_.size(); ++k) {
             if (projs_[k].galleria) continue;
             const Road::ProjectedSeg& u = projs_[k];
@@ -101,11 +104,16 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             const i32 bx0 = std::max(0, clipGx0_), bx1 = std::min(Framebuffer::WIDTH - 1, clipGx1_);
             const i32 by0 = std::max(0, clipGy0_), by1 = std::min(Framebuffer::HEIGHT - 1, (i32)u.screenY);
             if (bx1 >= bx0 && by1 >= by0) {
-                if (by0 < HORIZON_Y) fb_.fillRect(bx0, by0, bx1, std::min(by1, HORIZON_Y - 1), tema_.cielo);
-                if (by1 >= HORIZON_Y) fb_.fillRect(bx0, std::max(by0, HORIZON_Y), bx1, by1, tema_.erba);
+                constexpr i32 W1 = Framebuffer::WIDTH - 1, H1 = Framebuffer::HEIGHT - 1;
+                if (by0 > 0) fb_.fillRect(0, 0, W1, by0 - 1, fondo);
+                if (by1 < H1) fb_.fillRect(0, by1 + 1, W1, H1, fondo);
+                if (bx0 > 0) fb_.fillRect(0, by0, bx0 - 1, by1, fondo);
+                if (bx1 < W1) fb_.fillRect(bx1 + 1, by0, W1, by1, fondo);
+                bocca = true;
             }
             break;
         }
+        if (!bocca) fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
     }
 
     // Galleria davanti, vista da fuori: la bocca si riempie prima di buio, cosi'
@@ -324,12 +332,20 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
         const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
         if (y >= HORIZON_Y && !sospeso && !galleria) {
-            if (incStrada) fb_.hline(0, Framebuffer::WIDTH - 1, y, road);
+            // Dentro la galleria il terreno oltre l'uscita si vede solo nella
+            // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
+            i32 tx0 = 0, tx1 = Framebuffer::WIDTH - 1;
+            if (dentroGalleria_ && next.worldZ >= clipGalleriaZ_) {
+                tx0 = std::max(tx0, clipGx0_);
+                tx1 = std::min(tx1, clipGx1_);
+            }
+            if (tx1 < tx0) {}
+            else if (incStrada) fb_.hline(tx0, tx1, y, road);
             else if (incMarc) {
                 // Marciapiede: lastre grigie chiare, cordolo scuro verso la strada.
                 const bool cordolo = dInc < Road::INCROCIO_MEZZA + 50.0f;
-                fb_.hline(0, Framebuffer::WIDTH - 1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
-            } else fb_.hline(0, Framebuffer::WIDTH - 1, y, grass);
+                fb_.hline(tx0, tx1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
+            } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
@@ -1143,8 +1159,13 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         const i32 height = std::clamp((i32)(p.scale * 300.0f * (Framebuffer::HEIGHT / 2.0f)), 2, 28);
         const i32 width = std::clamp((i32)(p.scale * 35.0f * (Framebuffer::WIDTH / 2.0f)), 1, 4);
         const i32 bottom = (i32)p.screenY;
+        // Dentro la galleria, i paletti oltre l'uscita si vedono solo nella
+        // bocca (Andrea 11/11: prima facevano una riga bianca sulle pareti).
+        const bool oltreBocca = dentroGalleria_ && p.worldZ >= clipGalleriaZ_;
         for (i32 side : {-1, 1}) {
             const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * (halfRoad + width * 2.0f));
+            if (oltreBocca && (!clipGalleria_ || x - width / 2 < clipGx0_ || x + width / 2 > clipGx1_ ||
+                               bottom - height < clipGy0_)) continue;
             const u32 color = side < 0 ? pal_[1] : pal_[14];
             fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
             fb_.hline(x - width / 2, x + width / 2, bottom - height, pal_[5]);
