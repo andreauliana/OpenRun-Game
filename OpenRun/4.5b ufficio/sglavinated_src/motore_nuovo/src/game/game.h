@@ -18,6 +18,7 @@
 #include "game/fasi.h"             // blocco R2: macchina a stati di gioco
 #include "game/paesaggio.h"        // paesaggio a zone (Andrea 06/11)
 #include "render/partenza.h"        // conto alla rovescia della partenza (Andrea 08/11)
+#include "render/segnale_personaggi.h" // segnale dei personaggi da fermo (Andrea 11/11)
 #include <array>
 #include <map>
 #include <string>
@@ -312,6 +313,12 @@ private:
     bool partenzaAbilitata_ = false;
     f32 partenzaT_ = -1.0f;
     i32 contoPrec_ = -1; // ultimo numero suonato (bip una volta sola)
+    // Segnale dei personaggi (Andrea 11/11): fermo in gara per qualche
+    // secondo -> cubetti verde/blu e fumetto "..." (render/segnale_personaggi).
+    void aggiornaSegnale(f32 dt);
+    f32 segnaleFermoS_ = 0.0f; // secondi consecutivi da fermo
+    f32 segnaleT_ = 0.0f;      // secondi di animazione del segnale
+    f32 segnaleK_ = 0.0f;      // 0..1 comparsa/uscita
 
     std::vector<SpriteInstance> folla_; // ordinata per worldZ
     f32 arrivoS_ = 0.0f;      // secondi dal traguardo
