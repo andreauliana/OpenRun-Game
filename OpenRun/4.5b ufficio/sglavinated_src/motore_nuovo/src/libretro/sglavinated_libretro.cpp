@@ -18,11 +18,13 @@
 
 #include "libretro/libretro.h"
 #include "game/game.h"
+#include "render/sprite_raw.h"
 
 #include <cstdarg>
 #include <cstdio>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -137,6 +139,27 @@ bool avviaGioco(const char* percorsoContenuto) {
     std::error_code ec;
     std::filesystem::current_path(radice, ec);
     if (ec) logInfo("cartella corrente non impostata: %s", ec.message().c_str());
+
+    // Auto rivali e traffico: raw prodotti da strumenti_py/png_a_raw.py, come nel
+    // runner. Caricati prima di avviaGara()/init() (sprite_raw e' I/O puro, senza SDL).
+    std::vector<sgl::Sprite> rivaliSprites;
+    static const char* kRivaleRetro[7] = { "rosso", "azzurro", "giallo", "verde", "bianco", "arancio", "viola" };
+    for (const char* colore : kRivaleRetro) {
+        sgl::Sprite s = sgl::caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");
+        if (s.width > 0) rivaliSprites.push_back(std::move(s));
+    }
+    g_game->setRivaliSprites(std::move(rivaliSprites));
+    std::vector<sgl::Sprite> trafficoSprites;
+    static const char* kTraffico[4] = { "utilitaria_bianca", "furgone_grigio", "berlina_blu", "camioncino_beige" };
+    for (const char* nome : kTraffico) {
+        sgl::Sprite s = sgl::caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/traffico/traffico_") + nome + "_retro.sglraw");
+        if (s.width > 0) trafficoSprites.push_back(std::move(s));
+    }
+    g_game->setTrafficoSprites(std::move(trafficoSprites));
+    // Auto del giocatore (P1 punto 4): raw vero se presente, altrimenti sagoma sintetica.
+    sgl::Sprite giocatore = sgl::caricaSpriteRaw("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw");
+    if (giocatore.width > 0) g_game->impostaGiocatoreSprite(std::move(giocatore));
+
     g_game->abilitaPartenza(true); // griglia e 3-2-1-START (Andrea 08/11)
     if (!g_game->avviaGara()) g_game->init(); // gara a tappe; senza percorso_gara.json pista singola
     // Flusso come il runner senza --subito: Splash -> Menu -> (voce del menu)

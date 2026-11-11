@@ -1,8 +1,9 @@
-# Riassunto developer — 11/11/2026 09:25 (Turno 1)
-- Stato: MIG1 D1-D5 [x], V47 V1-V8 [x]. V9 ∞ fluidita' a giro in corso (lv_01 fatto, prossimo lv_02).
-- V9 lv_01_neon (11/11): `prova_gate ... lv_01_neon percorso` exit 0, "GATE PERCORSO OK" (1941 frame, fuori strada 0%). Frame sotto 8 ms (ref gate_t1.log 11/11: smoke medio 1.935 max 84.405 spike, freq medio ~1.4 max 5-6 ms): nessuna modifica.
-- Ultimi fatti: V6 core libretro (menu/pausa/timing/freq da config, cwd dati), V7 reserve render ciclo, V8 crono caricamento+riepilogo gate_t1.
-- Prove recenti (11/11): V6/V7/V8 con run_tests.sh exit 0 ctest 27/27 e gate_t1.sh exit 0 "GATE T1: TUTTO OK" 6/6 (~08:10/~08:45/~09:15). Questo turno: solo prova_gate percorso lv_01, gate_t1.sh non eseguito.
-- Log completo precedente: UFFICIO/Officina/Test area/gate_t1.log.
-- Prossimo: V9 lv_02_atomico — gate `percorso`, frame piu' lento; >8 ms alleggerire senza cambiare resa, altrimenti scrivere e passare a lv_03.
-- Nota per @developer-junior: VJ1 resta (prova dopo ogni passo V + riga in REVIEW_V47.md).
+# Riassunto developer — 11/11/2026 10:19 (Turno 2)
+
+- Stato: MIG1 D1-D5 [x], V47 V1-V5 V7 V8 [x]. V6 [~] build OK. V9 ∞ in corso (lv_01-lv_05 fatti; prossimo lv_06_desktop).
+- V6 libretro: `motore_nuovo/src/libretro/sglavinated_libretro.cpp` con sprite raw rivali/traffico/giocatore, partenza 3-2-1, Splash->Menu, 50/60 Hz, salvataggi/cwd. Build OK (11/11 10:10): cmake -DBUILD_LIBRETRO=ON exit 0, build target exit 0 (sglavinated_libretro.dylib). Manca vs runner: cartelloni sponsor da PNG (core senza SDL2_image; usa solo raw/dati interni).
+- V9 (questo turno, 11/11 10:19): lv_05_spray percorso exit 0 GATE PERCORSO OK (2659 frame, 0% fuori strada); smoke exit 0 GATE OK ms/frame medio 1.198 max 3.808 (<8 ms), replay IDENTICO, nessun alleggerimento.
+- V9 precedenti: lv_04 2068 0% 1.471/8.913, lv_03 2273 0% 1.088/3.950, lv_02 2267 0% 1.096/4.013, lv_01 1941 0% (sotto 8 ms salvo spike/max noti in log). Nessun cambio resa.
+- Prove globali recenti (11/11): run_tests.sh exit 0 ctest 27/27, gate_t1.sh exit 0 "GATE T1: TUTTO OK" 6/6. Questo turno: gate_t1.sh non eseguito.
+- Prossimo: V9 lv_06_desktop (percorso+smoke) oppure affinare gap V6.
+- Nota @developer-junior: VJ1 resta (prova dopo ogni passo V + riga in REVIEW_V47.md).
