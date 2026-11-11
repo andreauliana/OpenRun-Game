@@ -35,8 +35,8 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Azione | Cosa succede | Dove |
 |---|---|---|
 | Accelerare / frenare | velocita' fino alla punta; in frenata gli stop si accendono | player, `auto_stop_*` |
-| Sterzare | pieno da 1/4 della punta, cala appena alla punta; l'auto ha peso: piano e' pronta, forte porta lo slancio | `STEER_*`, `INERZIA_*` |
-| Curva | spinge verso l'esterno col quadrato della velocita'; si tiene sterzando dentro | `CURVA_SPINTA_V2` |
+| Sterzare | pieno da 1/4 della punta, cala appena alla punta; risponde subito anche forte (11/11 sera) | `STEER_*`, `INERZIA_STERZO_*` |
+| Curva | spinge verso l'esterno col quadrato della velocita'; il carico sale in ~1 s e in uscita resta lo slancio; si tiene sterzando dentro, e tenerla costa un po' di velocita' (gomme che stridono piano) | `CURVA_SPINTA_V2`, `INERZIA_SPINTA_*`, `CURVA_ATTRITO` |
 | Sovrasterzo | oltre il limite di aderenza, sterzo forte dentro + gas: la coda parte, il muso punta dentro, fumo, stridio, perde velocita' | `PRESA_*`, `SOVRA_*` |
 | Controsterzo | sterzare dalla parte opposta al muso riprende la coda; alzare il gas o sterzo al centro la fanno rientrare piano | `SOVRA_RECUPERO` |
 | Testacoda | coda non ripresa: velocita' al 40%, botta, l'auto gira su se stessa 0.7 s | `TESTACODA_*` |
@@ -45,7 +45,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Fuori strada | rallenta e trema; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `RIENTRO_S` |
 | Ciglio | primo tocco rallenta e si ricorda, il secondo forte e' incidente | game.cpp |
 | Tamponare il traffico | botta forte, l'auto rimbalza, clacson | `URTO_*_TRAFFICO` |
-| Sportellata a un rivale | sterzo pieno verso l'auto affiancata, il rivale viene spostato | `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE` |
+| Sportellata a un rivale | sterzando verso l'auto vicina lo scarto e' secco; vale anche su muso e coda del rivale; piu' lo scarto e' veloce piu' viene spostato (11/11 sera) | `AFFIANCATA_DX`, `SPORTELLATA_*`, `URTO_SPINTA_RIVALE` |
 | Sportellate ripetute | memoria dei colpi: a 3.5 sopra il 40% l'auto vola e fa incidente | `colpiMemoria_` |
 | Incidente | sale fino a 30 px girando, atterra, riparte da fermo nello stesso punto | game.cpp |
 | Danni al rivale | -3% di punta a botta, alla 4a KO per 4 s, triangolo acceso | `RIVALE_DANNO`, `RIVALE_KO_*` |

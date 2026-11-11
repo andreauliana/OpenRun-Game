@@ -44,7 +44,20 @@ public:
     // curva va ripresa). presaSterzo (0..1) e' quanto lo sterzo sposta l'auto:
     // con la coda di traverso le ruote davanti tengono l'angolo, non la
     // strada. accelMax limita la spinta (unita'/s^2): partenza e pattinamento.
-    f32 vLat = 0.0f;
+    f32 vLat = 0.0f;           // totale = vSterzo + vSpinta (sola lettura fuori da Player)
+    // Andrea 11/11 sera ("deve girare di lato subito, per colpire i rivali di
+    // fianco"; "curve lunghe piu' realistiche, un'auto da corsa grossa e
+    // reattiva"): due parti con ritardi diversi. Lo sterzo risponde presto
+    // anche alla punta (INERZIA_STERZO_*); la spinta della curva cresce piano
+    // (INERZIA_SPINTA_*), come il peso che si carica in una curva lunga, e in
+    // uscita resta lo slancio.
+    f32 vSterzo = 0.0f;
+    // Guizzo della sportellata: Game lo alza sterzando verso un'auto vicina,
+    // cosi' lo scarto di lato e' secco (1 = sterzo normale).
+    f32 guizzo = 1.0f;
+    f32 vSpinta = 0.0f;
+    // Ferma (k = 0) o smorza la velocita' laterale (incidenti, testacoda, urti).
+    void smorzaLaterale(f32 k) { vSterzo *= k; vSpinta *= k; vLat = vSterzo + vSpinta; }
     f32 spintaLat = 0.0f;
     f32 presaSterzo = 1.0f;
     f32 accelMax = 1.0e9f;
@@ -84,10 +97,14 @@ private:
     static constexpr f32 STEER_CALO_PUNTA = 0.05f; // 06/11 0.35, 08/11 mattina 0.25; 08/11 pomeriggio 0.05: "fa fatica a muoversi tra destra e sinistra ad alte velocita'"
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
-    // Peso (Andrea 11/11): ritardo della velocita' laterale, INERZIA_BASE_S da
-    // ferma, + INERZIA_PUNTA_S alla punta (col quadrato della velocita').
-    static constexpr f32 INERZIA_BASE_S = 0.04f;
-    static constexpr f32 INERZIA_PUNTA_S = 0.20f;
+    // Peso (Andrea 11/11, rivisto la sera): ritardo da ferma + parte che
+    // cresce col quadrato della velocita'. Sterzo: 0.03 -> 0.08 s alla punta
+    // (prima 0.24 s per tutto: "non gira di lato abbastanza in fretta").
+    // Spinta della curva: 0.10 -> 0.45 s alla punta (il carico sale in ~1 s).
+    static constexpr f32 INERZIA_STERZO_BASE_S = 0.03f;
+    static constexpr f32 INERZIA_STERZO_PUNTA_S = 0.05f;
+    static constexpr f32 INERZIA_SPINTA_BASE_S = 0.10f;
+    static constexpr f32 INERZIA_SPINTA_PUNTA_S = 0.35f;
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
     static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
     // Bordo: ultimo 15% prima del fuori strada (feedback Andrea 23/10). Spinta

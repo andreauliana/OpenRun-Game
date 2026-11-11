@@ -760,6 +760,14 @@ bool verificaUrto(const std::string& livello) {
             } else {
                 pad.held = (u64)(Pad::A | Pad::Left);
                 frameDopoContatto++;
+                // Appena lo sterzo ha risposto la prova e' finita (11/11 sera):
+                // tenendolo per tutti gli 1.5 s, con lo sterzo piu' pronto
+                // l'auto usciva di strada e prendeva un cartellone, che non
+                // c'entra con l'urto col rivale.
+                if (s.playerX < xPrimaControlli - 15.0f) {
+                    r.controlliAttivi = true;
+                    break;
+                }
                 if (frameDopoContatto >= BUMP_FRAMES + CONTROLLI_FRAMES) {
                     // Controlli attivi: lo sterzo a sinistra deve spostare l'auto
                     // a sinistra (soglia bassa: bastano pochi frame di risposta).
@@ -885,7 +893,10 @@ bool verificaAccelerazione(const std::string& livello) {
             speedDopo1s2 = speed;
             avanzamentoPrimi1s2 = game.state().playerZ;
         }
-        if (speed + 0.001f < speedPrecedente) return false;
+        // In curva tenere la strada costa un po' di velocita' (gomme che
+        // lavorano, Andrea 11/11 sera): la spinta si controlla in rettilineo.
+        const bool inCurva = std::abs(game.road().curvaAt(game.state().playerZ)) > 0.05f;
+        if (speed + 0.001f < speedPrecedente && !inCurva) return false;
         speedPrecedente = speed;
         avanzamentoStrada = game.state().playerZ;
     }

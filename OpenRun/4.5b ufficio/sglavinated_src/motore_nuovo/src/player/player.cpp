@@ -34,9 +34,12 @@ void Player::update(f32 dt) {
     const f32 risposta = std::min(1.0f, v / STEER_V_PIENA) * (1.0f - caloPunta * v * v);
     // Peso (Andrea 11/11): la velocita' laterale insegue sterzo + spinte con
     // un ritardo che cresce con la velocita' (pronta piano, pesante forte).
-    const f32 obiettivoLat = steer_ * STEER_MAX * risposta * presaSterzo + spintaLat;
-    const f32 tau = INERZIA_BASE_S + INERZIA_PUNTA_S * v * v;
-    vLat += (obiettivoLat - vLat) * (1.0f - std::exp(-dt / tau));
+    const f32 obiettivoSterzo = steer_ * STEER_MAX * risposta * presaSterzo * guizzo;
+    const f32 tauSterzo = INERZIA_STERZO_BASE_S + INERZIA_STERZO_PUNTA_S * v * v;
+    const f32 tauSpinta = INERZIA_SPINTA_BASE_S + INERZIA_SPINTA_PUNTA_S * v * v;
+    vSterzo += (obiettivoSterzo - vSterzo) * (1.0f - std::exp(-dt / tauSterzo));
+    vSpinta += (spintaLat - vSpinta) * (1.0f - std::exp(-dt / tauSpinta));
+    vLat = vSterzo + vSpinta;
     x += vLat * dt;
     vincolaAllaCorsia();
     // Accelerazione / freno (valori al secondo * dt = incremento al frame).
@@ -82,8 +85,8 @@ void Player::vincolaAllaCorsia() {
     const f32 rel = x - centroCorsia;
     offroad = (rel < -limite) || (rel > limite);
     sulBordo = !offroad && std::abs(rel) > limite - (1.0f - BORDO_INIZIO) * OFFROAD_LIMIT * std::min(1.0f, larghezzaCorsia);
-    if (rel > limiteX)  { x = centroCorsia + limiteX; vLat = std::min(vLat, 0.0f); }
-    if (rel < -limiteX) { x = centroCorsia - limiteX; vLat = std::max(vLat, 0.0f); }
+    if (rel > limiteX)  { x = centroCorsia + limiteX; vSterzo = std::min(vSterzo, 0.0f); vSpinta = std::min(vSpinta, 0.0f); vLat = vSterzo + vSpinta; }
+    if (rel < -limiteX) { x = centroCorsia - limiteX; vSterzo = std::max(vSterzo, 0.0f); vSpinta = std::max(vSpinta, 0.0f); vLat = vSterzo + vSpinta; }
 }
 
 } // namespace sgl
