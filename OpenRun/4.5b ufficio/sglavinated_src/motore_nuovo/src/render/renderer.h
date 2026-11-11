@@ -366,7 +366,9 @@ private:
     // Bande alternate (asfalto, erba, rumble) ancorate al segmento del mondo.
     static constexpr i32 BAND_SEGS = 2;
     static constexpr i32 HORIZON_Y = 112;       // riga dell'orizzonte: cielo sopra, terra sotto
+    i32 orizzonte_ = HORIZON_Y;                 // orizzonte del frame (HORIZON_Y + beccheggio in salita/discesa)
     void drawSegmentTrapezoid(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
+    void drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next, bool band, f32 playerZ);
     // Torri del ponte alto (Andrea 31/10): dall'acqua a sopra la strada, con trave.
     void drawPilone(const Road::ProjectedSeg& p);
     static constexpr i32 PILONE_OGNI_SEG = 60;      // un portale ogni 60 segmenti (12000 unita')
