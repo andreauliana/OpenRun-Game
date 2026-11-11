@@ -213,6 +213,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
                              segsR[(size_t)((lontano.index + 1) % (i32)segsR.size())].galleria;
         if (imbocco)
             drawImboccoGalleria(vicino, coperto); // entrata vista da fuori
+        else if (lontano.portale == 6) drawCuspideBivio(vicino, coperto);
         else if (lontano.portale) drawPortale(vicino, lontano.portale, coperto);
     }
     drawRoadsideMarkers(playerZ);
@@ -307,9 +308,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const u32 pareteScura = lerpColore(lerpColore(0xFF4A4A54u, tema_.rumbleAlt, 0.14f), 0xFF000000u,
                                        std::clamp(cur.worldZ / 36000.0f, 0.0f, 0.75f) + (band ? 0.15f : 0.25f));
     const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.58f : 0.66f);
-    const u32 grass  = band ? tema_.erba : tema_.erbaAlt;
+    const u32 grassQui  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
-    const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
+    const u32 rumbleQui = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
+    // Bivio: estremi dei due rami per riga (cordoli interni nascosti dove un
+    // ramo e' sopra l'altro: prima si incrociavano a X in mezzo alla strada).
+    const bool bivioAperto = rami == 2;
+    const f32 nasoZ = roadCorr_ ? roadCorr_->bivioNasoZ() : 0.0f;
     const u32 lane   = pal_[1];
 
     for (i32 y = ny; y <= cy; ++y) {
@@ -331,6 +336,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
         const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
         const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
+        // Oltre il checkpoint (fine della tappa, bivio gia' scelto) terreno e
+        // cordoli sono gia' della tappa scelta (Andrea 11/11: il cambio di
+        // colori come confine sulla strada, non una dissolvenza generica).
+        const f32 zAvanti = playerZ + distI;
+        const bool oltre = temaOltreAttivo_ && giro_ > 0.0f && zAvanti >= giro_;
+        const u32 grass = oltre ? (band ? temaOltre_.erba : temaOltre_.erbaAlt) : grassQui;
+        const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
         if (y >= HORIZON_Y && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
@@ -373,6 +385,21 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             if (zPista < 0.0f) zPista += giro_;
             if (zPista < LINEA_ARRIVO_PROF) filaScacchi = (i32)(zPista * 3.0f / LINEA_ARRIVO_PROF);
         }
+        // Linea di check (Andrea 11/11, "Race Checkpoints"): due file di
+        // caselle bianche e del colore della tappa scelta, oltre la fine.
+        i32 filaCheck = -1;
+        if (temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo() && zAvanti >= giro_ &&
+            zAvanti < giro_ + Road::CHECK_PROF)
+            filaCheck = (i32)((zAvanti - giro_) * 2.0f / Road::CHECK_PROF);
+        f32 bx0[2] = {0.0f, 0.0f}, bx1[2] = {0.0f, 0.0f};
+        if (bivioAperto)
+            for (i32 r = 0; r < 2; ++r) {
+                const f32 cN = cur.screenX + cur.carr.centro[r] * pxNear;
+                const f32 cF = next.screenX + next.carr.centro[r] * pxFar;
+                const f32 c = cF + (cN - cF) * t;
+                bx0[r] = c - hw;
+                bx1[r] = c + hw;
+            }
         for (i32 r = 0; r < rami; ++r) {
             const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
             const f32 cFar  = next.screenX + next.carr.centro[r] * pxFar;
@@ -422,8 +449,22 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 }
                 continue;
             }
-            fb_.hline(lx, lx + rw - 1, y, rumble);
-            fb_.hline(rx - rw + 1, rx, y, rumble);
+            {
+                // Cordolo dentro l'altro ramo: non si disegna.
+                const i32 o = 1 - r;
+                const bool dentroSx = bivioAperto && (f32)lx > bx0[o] + 1.0f && (f32)lx < bx1[o] - 1.0f;
+                const bool dentroDx = bivioAperto && (f32)rx > bx0[o] + 1.0f && (f32)rx < bx1[o] - 1.0f;
+                if (!dentroSx) fb_.hline(lx, lx + rw - 1, y, rumble);
+                if (!dentroDx) fb_.hline(rx - rw + 1, rx, y, rumble);
+            }
+            if (filaCheck >= 0) {
+                const f32 casella = (f32)(rx - lx + 1) / 12.0f;
+                for (i32 c = 0; c < 12; ++c) {
+                    const i32 x0 = lx + (i32)((f32)c * casella), x1 = lx + (i32)((f32)(c + 1) * casella) - 1;
+                    fb_.hline(x0, x1, y, ((c + filaCheck) & 1) ? 0xFFF4F4F4u : temaOltre_.rumbleAlt);
+                }
+                continue;
+            }
             if (filaScacchi >= 0) {
                 // 16 caselle da bordo a bordo, alternate a ogni fila.
                 const f32 casella = (f32)(rx - lx + 1) / 16.0f;
@@ -439,6 +480,37 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 for (i32 k = -stricePerLato; k <= stricePerLato; ++k) {
                     const i32 sx = (i32)(cx + hwBase * (f32)k);
                     fb_.hline(sx - lw, sx + lw, y, lane);
+                }
+            }
+        }
+        // Zebratura del bivio (Andrea 11/11): fra i due rami, fino alla
+        // cuspide, l'asfalto e' dipinto a frecce oblique bianche dentro due
+        // linee piene che si aprono a V: il centro si legge come "non qui".
+        if (bivioAperto && zAvanti < nasoZ && filaCheck < 0) {
+            const f32 mezzaRamo = Road::ROAD_HALF_WORLD * std::max(0.3f, fattore);
+            const f32 pxW = hw / mezzaRamo; // pixel per unita' mondo a questa riga
+            const f32 ca = 0.5f * (bx0[0] + bx1[0]), cb = 0.5f * (bx0[1] + bx1[1]);
+            const f32 mid = 0.5f * (ca + cb);
+            const f32 dW = std::fabs(cb - ca) * 0.5f / pxW;
+            const f32 hz = std::min(dW - 380.0f, dW - 0.45f * mezzaRamo);
+            if (hz > 0.0f) {
+                const i32 x0 = std::max(0, (i32)(mid - hz * pxW));
+                const i32 x1 = std::min(Framebuffer::WIDTH - 1, (i32)(mid + hz * pxW));
+                const u32 zebraFondo = lerpColore(road, 0xFF000000u, 0.18f);
+                const i32 bordoL = std::max(1, rw / 2);
+                for (i32 x = x0; x <= x1; ++x) {
+                    const f32 fx = (f32)x;
+                    const bool suAsfalto = (fx >= bx0[0] && fx <= bx1[0]) || (fx >= bx0[1] && fx <= bx1[1]);
+                    if (!suAsfalto) continue; // nel varco resta il terreno
+                    u32 col = zebraFondo;
+                    if (x - x0 < bordoL || x1 - x < bordoL) col = 0xFFF4F4F4u;
+                    else {
+                        const f32 xw = std::fabs(fx - mid) / pxW;
+                        f32 v = std::fmod(zAvanti + xw * 1.2f, 800.0f);
+                        if (v < 0.0f) v += 800.0f;
+                        if (v < 220.0f) col = 0xFFE4E4E8u;
+                    }
+                    fb_.put(x, y, col);
                 }
             }
         }
@@ -858,7 +930,149 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
         fb_.hline(x0, x1, cima + sp, luce);
         const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
         drawLampada((x0 + x1) / 2, cima + sp / 2, r, tema_.rumbleAlt, true);
+    } else if (tipo == 5) {
+        // Cartello del bivio (Andrea 11/11: segnalare il bivio in anticipo).
+        // Portale autostradale con due pannelli: a sinistra la meta del ramo
+        // sinistro, a destra quella del destro, bordati del colore della meta,
+        // con la freccia obliqua che indica il ramo. Lampeggianti ambra.
+        const i32 w = std::clamp((i32)(pxUnita * 120.0f), 1, 30);
+        const i32 cima = terra - (i32)(2500.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.14f), x1 = (i32)(p.screenX + hw * 1.14f);
+        colonna(x0, w, cima, 0xFF4A4A56u, 0xFF8A8A98u);
+        colonna(x1, w, cima, 0xFF4A4A56u, 0xFF8A8A98u);
+        const i32 sp = std::max(1, (i32)(120.0f * pxY));
+        fb_.fillRect(x0, cima, x1, cima + sp, 0xFF4A4A56u);
+        const i32 ph = std::max(3, (i32)(700.0f * pxY));
+        const i32 gap = std::max(1, (i32)(hw * 0.06f));
+        const i32 cx = (i32)p.screenX;
+        const i32 y0 = cima + sp + 1, y1 = y0 + ph;
+        const i32 lx0 = (i32)(p.screenX - hw * 0.98f), rx1 = (i32)(p.screenX + hw * 0.98f);
+        drawPannelloTesto(lx0, y0, cx - gap, y1, meteSx_, 0xFF0C1A3Au, meteColSx_, 0xFFF4F4F4u);
+        drawPannelloTesto(cx + gap, y0, rx1, y1, meteDx_, 0xFF0C1A3Au, meteColDx_, 0xFFF4F4F4u);
+        // Frecce oblique sotto i pannelli, verso l'esterno (dove va il ramo).
+        const i32 fa = std::max(1, ph / 3);
+        if (fa >= 2) {
+            for (i32 k = 0; k < fa; ++k) {
+                fb_.hline(lx0 + k, lx0 + k + std::max(1, fa / 3), y1 + 1 + k, meteColSx_);
+                fb_.hline(rx1 - k - std::max(1, fa / 3), rx1 - k, y1 + 1 + k, meteColDx_);
+            }
+            fb_.hline(lx0, lx0 + fa, y1 + 1, meteColSx_);
+            fb_.fillRect(lx0, y1 + 1, lx0 + std::max(0, fa / 4), y1 + fa, meteColSx_);
+            fb_.hline(rx1 - fa, rx1, y1 + 1, meteColDx_);
+            fb_.fillRect(rx1 - std::max(0, fa / 4), y1 + 1, rx1, y1 + fa, meteColDx_);
+        }
+        const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
+        drawLampada(x0, cima - r, r, 0xFFFFB020u, lampo);
+        drawLampada(x1, cima - r, r, 0xFFFFB020u, !lampo);
+    } else if (tipo == 7) {
+        // CHECKPOINT (Andrea 11/11, "Race Checkpoints"): portale sul ramo
+        // scelto alla fine della tappa. Colonne a scacchi, trave con la
+        // scritta e luci che corrono, bordo del colore della tappa nuova.
+        const u32 colNuovo = temaOltreAttivo_ ? temaOltre_.rumbleAlt : tema_.rumbleAlt;
+        const i32 w = std::clamp((i32)(pxUnita * 200.0f), 2, 48);
+        const i32 cima = terra - (i32)(2900.0f * pxY);
+        const i32 x0 = (i32)(p.screenX - hw * 1.16f), x1 = (i32)(p.screenX + hw * 1.16f);
+        const i32 cell = std::max(1, w / 2);
+        for (i32 lato = 0; lato < 2; ++lato) {
+            const i32 cx = lato ? x1 : x0;
+            for (i32 yy = cima, k = 0; yy <= terra; yy += cell, ++k) {
+                const i32 ye = std::min(terra, yy + cell - 1);
+                fb_.fillRect(cx - w / 2, yy, cx - w / 2 + cell - 1, ye, (k & 1) ? 0xFF141414u : 0xFFF4F4F4u);
+                fb_.fillRect(cx - w / 2 + cell, yy, cx + (w - 1) / 2, ye, (k & 1) ? 0xFFF4F4F4u : 0xFF141414u);
+            }
+        }
+        const i32 ph = std::max(3, (i32)(620.0f * pxY));
+        const i32 y0 = cima, y1 = cima + ph;
+        drawPannelloTesto(x0 - w / 2, y0, x1 + (w - 1) / 2, y1, "CHECKPOINT", 0xFF101018u, colNuovo, 0xFFFFD640u);
+        const i32 r = std::clamp((i32)(pxUnita * 70.0f), 1, 4);
+        const i32 passo = std::max(r * 3, 3);
+        const i32 corsa = (i32)(tempoS_ * 12.0f);
+        for (i32 x = x0, k = 0; x <= x1; x += passo, ++k)
+            drawLampada(x, y1 + r + 1, r, (k & 1) ? 0xFFFFD640u : colNuovo, ((k + corsa) % 3) == 0);
     }
+}
+
+void Renderer::drawPannelloTesto(i32 x0, i32 y0, i32 x1, i32 y1, const char* testo, u32 fondo, u32 bordo, u32 colTesto) {
+    if (x1 < x0 || y1 < y0) return;
+    fb_.fillRect(x0, y0, x1, y1, bordo);
+    if (x1 - x0 < 2 || y1 - y0 < 2) return;
+    fb_.fillRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1, fondo);
+    if (!testo || !*testo) return;
+    const i32 lw = x1 - x0 - 3, lh = y1 - y0 - 3;
+    for (i32 sc = 2; sc >= 1; --sc) { // al massimo 2x: da vicino non copre l'HUD
+        const i32 tw = larghezzaTesto(testo, sc), th = FONT_HUD_H * sc;
+        if (tw <= lw && th <= lh + sc) {
+            drawTesto((x0 + x1 - tw) / 2 + 1, (y0 + y1 - th) / 2 + 1, testo, colTesto, sc, false);
+            return;
+        }
+    }
+    const i32 n = (i32)std::char_traits<char>::length(testo);
+    if (n * FONT_MINI_W <= lw && FONT_MINI_H <= lh + 1) {
+        drawTesto((x0 + x1 - n * FONT_MINI_W) / 2 + 1, (y0 + y1 - FONT_MINI_H) / 2 + 1, testo, colTesto, 0, false);
+        return;
+    }
+    // Lontano: una riga chiara al posto della scritta.
+    const i32 ym = (y0 + y1) / 2;
+    const i32 m = std::max(1, (x1 - x0) / 5);
+    fb_.hline(x0 + m, x1 - m, ym, lerpColore(fondo, colTesto, 0.6f));
+}
+
+void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
+    // Cuspide dello spartitraffico (Andrea 11/11: bivio visivamente piu'
+    // interessante). Cuscino basso a strisce gialle e nere e sopra un
+    // pannello con due frecce che si separano, lampeggianti ambra in cima.
+    if (p.screenY < HORIZON_Y - 40 || p.scale <= 0.0f || !p.carr.doppia) return;
+    const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
+    const f32 pxY = p.scale * 112.0f;
+    const i32 terra = std::min((i32)p.screenY, (i32)coperto);
+    const i32 cx = (i32)(p.screenX + 0.5f * (p.carr.centro[0] + p.carr.centro[1]) * pxUnita);
+    if (cx < -60 || cx > Framebuffer::WIDTH + 60) return;
+    // Palo
+    const i32 palo = std::max(1, (i32)(pxUnita * 60.0f));
+    const i32 cimaPalo = terra - (i32)(1500.0f * pxY);
+    fb_.fillRect(cx - palo / 2, cimaPalo, cx + palo / 2, terra, 0xFF6A6A78u);
+    // Cuscino a strisce (largo 700, alto 420 unita')
+    const i32 cw = std::max(2, (i32)(pxUnita * 350.0f));
+    const i32 ch = std::max(2, (i32)(420.0f * pxY));
+    const i32 passo = std::max(2, cw / 3);
+    for (i32 yy = terra - ch; yy <= terra; ++yy)
+        for (i32 x = cx - cw; x <= cx + cw; ++x) {
+            const i32 d = (x - cx + cw) + (terra - yy);
+            fb_.put(x, yy, ((d / passo) & 1) ? 0xFF141414u : 0xFFFFC820u);
+        }
+    // Pannello con le due frecce che si dividono
+    const i32 pw = std::max(3, (i32)(pxUnita * 520.0f));
+    const i32 ph = std::max(3, (i32)(560.0f * pxY));
+    const i32 py1 = cimaPalo, py0 = py1 - ph;
+    fb_.fillRect(cx - pw, py0, cx + pw, py1, 0xFFF4F4F4u);
+    if (pw >= 4 && ph >= 4) {
+        fb_.fillRect(cx - pw + 1, py0 + 1, cx + pw - 1, py1 - 1, 0xFF0C1A3Au);
+        // freccia a sinistra e a destra (punte verso l'esterno, in alto)
+        const i32 a = std::max(1, std::min(pw, ph) / 2);
+        const u32 cs = meteColSx_, cd = meteColDx_;
+        for (i32 k = 0; k <= a; ++k) {
+            fb_.put(cx - k - 1, py1 - 2 - k, cs);
+            fb_.put(cx - k - 2, py1 - 2 - k, cs);
+            fb_.put(cx + k + 1, py1 - 2 - k, cd);
+            fb_.put(cx + k + 2, py1 - 2 - k, cd);
+        }
+        const i32 tx = cx - a - 2, ty = py1 - 2 - a, tx2 = cx + a + 2;
+        for (i32 k = 0; k <= a / 2; ++k) {
+            fb_.put(tx + k, ty, cs); fb_.put(tx, ty + k, cs);
+            fb_.put(tx2 - k, ty, cd); fb_.put(tx2, ty + k, cd);
+        }
+    }
+    const bool lampo = ((i32)(tempoS_ * 3.0f) & 1) != 0;
+    const i32 r = std::clamp((i32)(pxUnita * 80.0f), 1, 5);
+    drawLampada(cx - pw, py0 - r, r, 0xFFFFB020u, lampo);
+    drawLampada(cx + pw, py0 - r, r, 0xFFFFB020u, !lampo);
+}
+
+void Renderer::impostaMeteBivio(const char* sx, u32 coloreSx, const char* dx, u32 coloreDx) {
+    std::snprintf(meteSx_, sizeof(meteSx_), "%s", sx ? sx : "");
+    std::snprintf(meteDx_, sizeof(meteDx_), "%s", dx ? dx : "");
+    meteColSx_ = coloreSx;
+    meteColDx_ = coloreDx;
 }
 
 const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) {
@@ -1285,12 +1499,14 @@ void Renderer::drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t) 
                 cA = palA ? a.palette[(size_t)idxA % (size_t)nA] : pal_[idxA];
                 opA = (cA >> 24) != 0;
             }
-            if (!opDa && !opA) continue; // cielo gia' disegnato da drawRoad
-            u32 col;
-            if (!opDa) col = lerpColore(dst[sx], cA, t);      // da svanisce: resta cielo + a
-            else if (!opA) col = lerpColore(cDa, dst[sx], t); // a appare: da + cielo
-            else col = lerpColore(cDa, cA, t);                // incrocio da -> a
-            dst[sx] = col;
+            // Andrea 11/11: niente incrocio fra i due skyline (si mischiavano
+            // "quasi con una opacita'"). Prima meta': il vecchio sfuma nel
+            // cielo; seconda meta': il nuovo appare dal cielo.
+            if (t < 0.5f) {
+                if (opDa) dst[sx] = lerpColore(cDa, dst[sx], t * 2.0f);
+            } else if (opA) {
+                dst[sx] = lerpColore(dst[sx], cA, (t - 0.5f) * 2.0f);
+            }
         }
     }
 }
@@ -1304,7 +1520,9 @@ void Renderer::iniziaTransizioneTema(const TemaColori& da, const Sprite& daSkyli
     // nuova restava con i colori della precedente.
     transizioneDurataS_ = durataSecondi;
     transizioneT_ = 0.0f;
-    tema_ = da;
+    tema_ = temaA_;
+    tema_.cielo = da.cielo;
+    temaOltreAttivo_ = false; // il confine e' passato: da qui e' tutto tema nuovo
 }
 
 bool Renderer::aggiornaTransizioneTema(f32 dt) {
@@ -1316,13 +1534,13 @@ bool Renderer::aggiornaTransizioneTema(f32 dt) {
     }
     transizioneT_ += dt / transizioneDurataS_;
     if (transizioneT_ > 1.0f) transizioneT_ = 1.0f;
-    tema_.cielo = lerpColore(temaDa_.cielo, temaA_.cielo, transizioneT_);
-    tema_.erba = lerpColore(temaDa_.erba, temaA_.erba, transizioneT_);
-    tema_.erbaAlt = lerpColore(temaDa_.erbaAlt, temaA_.erbaAlt, transizioneT_);
-    tema_.rumbleAlt = lerpColore(temaDa_.rumbleAlt, temaA_.rumbleAlt, transizioneT_);
-    tema_.acqua = lerpColore(temaDa_.acqua, temaA_.acqua, transizioneT_);
-    tema_.acquaAlt = lerpColore(temaDa_.acquaAlt, temaA_.acquaAlt, transizioneT_);
-    tema_.sabbia = lerpColore(temaDa_.sabbia, temaA_.sabbia, transizioneT_);
+    // Andrea 11/11: solo lo sfondo fa la dissolvenza (cielo e skyline, vedi
+    // drawSkylineTransizione). Terreno, cordoli e acqua sono gia' quelli
+    // nuovi: oltre il checkpoint si vedevano gia' coi colori della tappa
+    // scelta, quindi qui non si mischiano piu' con i vecchi.
+    const TemaColori cieloDa = temaDa_;
+    tema_ = temaA_;
+    tema_.cielo = lerpColore(cieloDa.cielo, temaA_.cielo, transizioneT_);
     return transizioneT_ < 1.0f;
 }
 
