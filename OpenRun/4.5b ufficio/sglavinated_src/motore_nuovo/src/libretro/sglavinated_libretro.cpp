@@ -255,9 +255,10 @@ RETRO_API void retro_deinit(void) {
 }
 
 RETRO_API void retro_reset(void) {
-    if (g_game && !g_game->avviaGara()) g_game->init();
-    g_game->mostraMenu(); // reset come all'avvio: Splash -> Menu
     g_heldPrev = 0;
+    if (!g_game) return; // reset senza gioco caricato: niente da fare
+    if (!g_game->avviaGara()) g_game->init();
+    g_game->mostraMenu(); // reset come all'avvio: Splash -> Menu
 }
 
 RETRO_API void retro_run(void) {

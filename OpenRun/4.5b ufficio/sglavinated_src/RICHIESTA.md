@@ -392,6 +392,8 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 
 **Revisione Claude 09/11 pomeriggio:** D1, D3, D5, J1, J2 fatti e tenuti. **D2 funzionava gia'**: la prova J3 era sbagliata (cercava lo spostamento del rivale nello stesso frame dell'urto, quando lo sprite non e' ancora aggiornato). J3 riscritta con `Game::rivaleSbandataS(i)`: `prova_gate ... sportellata` exit 0 (colpo a segno, sbandata 5 s, ripresa a 5.0 s) -> **D2 [x], J3 [x]**. **D4:** AKIRA e PINGU sono nomi di opere/personaggi famosi -> sostituiti da KAZOMI e BLIPPO (non cambiarli). Resta solo J4 (review aggiornata) e G2.
 
+**Revisione Claude 11/11 pomeriggio (leggere per primo):** build, ctest 27/27, `gate_t1.sh` TUTTO OK, core libretro compila. **D2 NON e' rotto:** `prova_gate <out> lv_01_neon sportellata` exit 0 sul main di oggi (colpo a segno 0.55 s, ripresa 5.0 s). L'"exit 28" nello STATO_CORRENTE del @capo e' vecchio: **nessuno tocca `AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`, `RIVALE_SORPASSO_DX`** (guida approvata da Andrea). D4 chiuso (nomi KAZOMI/BLIPPO restano). **VG2 chiuso** (frasi.json riscritta 8 volte: basta). Tolti da `Dipartimento Grafico/TOOLS/` gli script usa-e-getta `vg2_giroN.py`, `analizza_frasi*.py`, `analyze_frasi.py`, `frasi_out.txt`, `scrivi_ultimo_turno.py`: **niente script nuovi per un solo turno**, si usa `verifica_frasi_vg2.py` se serve. `retro_reset` del core libretro non va piu' in crash senza gioco caricato.
+
 **Revisione Claude 10/11 mattina:** G2 e J4 fatti. **J3 passa sul main di oggi**: `prova_gate ... lv_01_neon sportellata` exit 0, colpo a segno a 0.55 s, ripresa a 5.0 s. Il "J3 bloccato su game.cpp:2386" nelle note del @developer-junior viene da una prova delle 03:16 fatta PRIMA della PR #91 (binario vecchio): non vale piu'. Nessuno tocca piu' D2, J3 ne' `verificaSportellata`. **MIG1 chiuso.**
 
 | Chi tocca adesso | nessuno: tutti nel BLOCCO V47 |
@@ -438,10 +440,10 @@ Poi: Claude app -> `leggi PER_CLAUDE.md e SCAMBIO.md e dai il tuo parere`. (Con 
 - **∞ VJ5 Review del codice:** leggi l'ultimo cambio del @developer in `src/` e scrivi in `REVIEW_V47.md` un possibile errore o una semplificazione, con file e riga. Prima di ogni prova ricompila (`run_tests.sh`): mai usare un `prova_gate` vecchio.
 
 ### @grafico — seconda lista
-- **VG2 Frasi piu' naturali:** rileggi le 156 frasi di `motore_nuovo/dati/frasi.json` (`linea1`/`linea2`) e sistema quelle che in inglese suonano strane o restano a meta'. Max 16 caratteri per riga, maiuscole, stesso id e personaggio; `it1`/`it2` non si toccano. Venti frasi per turno.
+- **VG2 [x] CHIUSO (Claude 11/11): frasi.json va bene cosi', non riscriverla piu'.** Era: rileggi le 156 frasi di `motore_nuovo/dati/frasi.json` (`linea1`/`linea2`) e sistema quelle che in inglese suonano strane o restano a meta'. Max 16 caratteri per riga, maiuscole, stesso id e personaggio; `it1`/`it2` non si toccano. Venti frasi per turno.
 - **∞ VG3 PNG di Andrea convertiti:** Andrea sta ridisegnando gli oggetti. A ogni turno confronta le date dei PNG in `Libreria/assets_originali/scenari/` con i loro `.sglraw`: se un PNG e' piu' nuovo, convertilo con lo script del catalogo (per `comuni/oggetti`: `converti_oggetti_raw.py`) senza ritoccare il disegno, e scrivi quali file. Se e' tutto allineato, scrivilo in una riga e fermati.
 
-| Chi tocca adesso | @developer V6 · @developer-junior VJ3 · @grafico VG2 (poi i passi ∞) |
+| Chi tocca adesso | @developer V9 ∞ · @developer-junior VJ4 poi VJ5 ∞ · @grafico VG3 ∞ (VG2 chiuso) |
 |---|---|
 | Stato | [~] | (Claude 10/11: seconda lista, lavoro continuo, nessuna attesa) |
 
