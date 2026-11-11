@@ -80,8 +80,20 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     // sezione disegnata ci sono ancora pareti e soffitto, niente cielo.
     clipGalleria_ = false;
     dentroGalleria_ = false;
+    occhiGalleria_ = 0.0f;
     if (projs_.front().galleria && projs_.size() > 1 && projs_[1].galleria) {
         dentroGalleria_ = true;
+        // Andrea 11/11: entrando dal giorno il tubo sembra piu' buio, poi gli
+        // occhi si abituano. Segmenti gia' percorsi dentro la galleria.
+        {
+            const i32 nS = (i32)segs.size();
+            i32 dentro = 0;
+            for (i32 i = projs_.front().index; dentro < GALLERIA_ADATTAMENTO_SEG; ++dentro) {
+                i = (i - 1 + nS) % nS;
+                if (!segs[(size_t)i].galleria) break;
+            }
+            occhiGalleria_ = 1.0f - (f32)dentro / (f32)GALLERIA_ADATTAMENTO_SEG;
+        }
         clipGalleriaZ_ = 1e9f; // senza uscita in vista: niente luce del giorno
         // Fondo buio (in fondo al tubo): grigio cemento appena tinto del tema.
         const u32 fondo = lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f);
@@ -289,7 +301,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         }
     }
     const i32 dy = cy - ny;
-    if (dy <= 0) return;
+    // Fetta piu' sottile di un pixel: niente strada, ma in galleria le pareti
+    // si disegnano lo stesso (Andrea 11/11: in curva, lontano, le fette sono
+    // basse ma larghe e saltarle lasciava colonne nere sulle pareti).
+    const bool solaParete = dy <= 0 && galleria && !cur.carr.doppia && !next.carr.doppia && cy >= ny;
+    if (dy <= 0 && !solaParete) return;
 
     // Mezza larghezza strada in px, coerente con Road::project (W/2 * scala * ROAD_HALF_WORLD).
     // Al bivio ci sono due rami: stesso disegno, centro spostato e larghezza ridotta.
@@ -312,7 +328,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const u32 rumble = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
     const u32 lane   = pal_[1];
 
-    for (i32 y = ny; y <= cy; ++y) {
+    for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
         const f32 hw = hwFar + (hwNear - hwFar) * t;
@@ -481,12 +497,23 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const bool lampadaAccesa = statoLuce(lampada, 0xA11CE5u);
         const i32 dl = std::abs(cur.index - lampada);
         const f32 pozza = lampadaAccesa ? 0.24f * std::max(0.0f, 1.0f - (f32)dl / 4.0f) : 0.0f;
-        // Verso l'uscita il giorno entra nel tubo: le ultime sezioni si schiariscono.
-        auto uscita = [&](f32 z) {
-            return dentroGalleria_ ? 0.45f * std::max(0.0f, 1.0f - (clipGalleriaZ_ - z) / 9000.0f) : 0.0f;
+        // Verso l'uscita il giorno entra nel tubo (Andrea 11/11: piu' luce
+        // esterna): le ultime ~70 sezioni si schiariscono e prendono il colore
+        // del cielo a trama Bayer, piu' fitta vicino alla bocca.
+        auto giorno = [&](f32 z) {
+            if (!dentroGalleria_ || !clipGalleria_) return 0.0f;
+            const f32 f = std::clamp(1.0f - (clipGalleriaZ_ - z) / GALLERIA_LUCE_USCITA_Z, 0.0f, 1.0f);
+            return f * f;
         };
-        const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f - uscita(cur.worldZ), 0.0f, 0.8f);
-        const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f - uscita(next.worldZ), 0.0f, 0.8f);
+        // Entrata: visto da fuori l'interno e' un buco scuro; appena dentro
+        // gli occhi non sono abituati e tutto e' piu' scuro.
+        const f32 entrata = dentroGalleria_ ? 0.22f * occhiGalleria_ : 0.30f;
+        const f32 giornoN = giorno(cur.worldZ), giornoF = giorno(next.worldZ);
+        const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f + entrata - 0.6f * giornoN, 0.0f, 0.85f);
+        const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f + entrata - 0.6f * giornoF, 0.0f, 0.85f);
+        auto luceEsterna = [&](u32 c, f32 g, i32 x, i32 y) {
+            return (f32)BAYER4[y & 3][x & 3] < g * 12.0f ? lerpColore(c, tema_.cielo, 0.30f) : c;
+        };
         const f32 baseU = (f32)(cur.index % 256) * 8.0f;
         // Neon (Andrea 08/11 sera): un tubo orizzontale per lato in alto sulla
         // parete, a tratti (3 segmenti accesi, 1 spento) cosi' scorre veloce;
@@ -552,15 +579,16 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.03f) / 0.94f, x, y);
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
-                fb_.put(x, y, c);
+                fb_.put(x, y, luceEsterna(c, giornoN + (giornoF - giornoN) * t, x, y));
             }
         };
         auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
             const i32 a0 = std::max(0, (i32)xl), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xr);
             const f32 larg = std::max(1.0f, xr - xl);
             const f32 buio = std::min(0.9f, buioN + (buioF - buioN) * t + 0.18f);
+            const f32 g = giornoN + (giornoF - giornoN) * t;
             for (i32 x = a0; x <= b0; ++x)
-                fb_.put(x, y, texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, (i32)(baseU + 8.0f * t), buio));
+                fb_.put(x, y, luceEsterna(texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, (i32)(baseU + 8.0f * t), buio), g, x, y));
         };
         for (i32 y = y0; y <= y1; ++y) {
             if ((f32)y < ceilF) {

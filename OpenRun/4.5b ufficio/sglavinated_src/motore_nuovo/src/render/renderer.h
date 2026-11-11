@@ -373,6 +373,8 @@ private:
     // Galleria (PERC1 D4, Claude 08/11): sezione larga come il portale (1.08 la
     // mezza strada) e alta fino alla trave del portale (2400 - 360 unita').
     static constexpr f32 GALLERIA_LARGHEZZA = 1.08f;
+    static constexpr i32 GALLERIA_ADATTAMENTO_SEG = 40;      // segmenti per abituare gli occhi al buio
+    static constexpr f32 GALLERIA_LUCE_USCITA_Z = 14000.0f;  // da quanto prima dell'uscita entra la luce del giorno
     static constexpr f32 GALLERIA_ALTEZZA = 2040.0f;
     // Dentro la galleria quello che sta oltre l'uscita si vede solo dalla bocca
     // d'uscita: gli sprite oltre clipGalleriaZ_ si ritagliano a quel rettangolo.
@@ -381,6 +383,7 @@ private:
     i32 clipGx0_ = 0, clipGx1_ = 0, clipGy0_ = 0;
     bool clipAttivo_ = false; // per lo sprite che si sta disegnando
     bool dentroGalleria_ = false; // telecamera dentro: clipGalleriaZ_ = uscita
+    f32 occhiGalleria_ = 0.0f;    // 1 appena entrati (occhi non abituati), 0 dopo ~40 segmenti
     i32 galleriaParete_ = -1, galleriaLuce_ = -1;
     // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
     // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).
