@@ -1323,21 +1323,6 @@ void Game::avanzaTappaRivale(Rivale& r) {
     }
 }
 
-namespace {
-// Nome corto in inglese della tappa per i cartelli del bivio (dal suffisso
-// dell'id: lv_02_atomico -> ATOMIC). Testi a schermo in inglese semplice.
-const char* nomeMeta(const std::string& id) {
-    static const struct { const char* suffisso; const char* nome; } kNomi[] = {
-        {"neon", "NEON"}, {"atomico", "ATOMIC"}, {"foglie", "LEAVES"},
-        {"cromo", "CHROME"}, {"spray", "SPRAY"}, {"desktop", "DESKTOP"}};
-    for (const auto& n : kNomi) {
-        const std::string s = n.suffisso;
-        if (id.size() >= s.size() && id.compare(id.size() - s.size(), s.size(), s) == 0) return n.nome;
-    }
-    return "";
-}
-} // namespace
-
 TemaColori Game::temaDiTappa(const std::string& id) const {
     // Solo i colori di ambiente di livello.json (come leggiTemaDaFile), senza
     // caricare il livello: servono per il terreno oltre il checkpoint.
@@ -1397,12 +1382,12 @@ void Game::preparaBivio() {
     latoBivio_ = 0;
     ren_.togliTemaOltre();
     if (!rami) return;
-    // Mete sui cartelli a portale e colori del terreno oltre il checkpoint.
+    // Colori dei rami sui cartelli (niente nomi: i tragitti restano interni)
+    // e colori del terreno oltre il checkpoint.
     if (const Tappa* t = trovaTappa(tappaId_)) {
         temaMeta_[0] = temaDiTappa(t->sinistra);
         temaMeta_[1] = temaDiTappa(t->destra);
-        ren_.impostaMeteBivio(nomeMeta(t->sinistra), temaMeta_[0].rumbleAlt,
-                              nomeMeta(t->destra), temaMeta_[1].rumbleAlt);
+        ren_.impostaColoriBivio(temaMeta_[0].rumbleAlt, temaMeta_[1].rumbleAlt);
     }
     const f32 inizio = road_.bivioInizioZ() - 4000.0f;
     std::vector<SpriteInstance> tenuti;

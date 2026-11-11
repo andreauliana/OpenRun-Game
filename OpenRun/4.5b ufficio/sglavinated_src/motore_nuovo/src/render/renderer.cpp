@@ -340,8 +340,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // cordoli sono gia' della tappa scelta (Andrea 11/11: il cambio di
         // colori come confine sulla strada, non una dissolvenza generica).
         const f32 zAvanti = playerZ + distI;
-        const bool oltre = temaOltreAttivo_ && giro_ > 0.0f && zAvanti >= giro_;
-        const u32 grass = oltre ? (band ? temaOltre_.erba : temaOltre_.erbaAlt) : grassQui;
+        // Andrea 11/11 sera: non un taglio netto, i due terreni si incrociano
+        // a trama Bayer in una fascia prima della linea (lunga FASCIA_TERRENO).
+        // Oltre la linea e' tutto nuovo, cosi' al cambio tappa niente scatti.
+        constexpr f32 FASCIA_TERRENO = 9000.0f;
+        const f32 misto = (temaOltreAttivo_ && giro_ > 0.0f)
+                              ? std::clamp((zAvanti - (giro_ - FASCIA_TERRENO)) / FASCIA_TERRENO, 0.0f, 1.0f) : 0.0f;
+        const bool oltre = misto >= 0.5f;
+        const u32 grassNuovo = band ? temaOltre_.erba : temaOltre_.erbaAlt;
+        const u32 grass = misto >= 1.0f ? grassNuovo : grassQui;
         const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
         if (y >= HORIZON_Y && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
@@ -357,6 +364,10 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // Marciapiede: lastre grigie chiare, cordolo scuro verso la strada.
                 const bool cordolo = dInc < Road::INCROCIO_MEZZA + 50.0f;
                 fb_.hline(tx0, tx1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
+            } else if (misto > 0.0f && misto < 1.0f && y < Framebuffer::HEIGHT) {
+                u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = tx0; x <= tx1; ++x)
+                    riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < misto ? grassNuovo : grassQui;
             } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
@@ -480,6 +491,26 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 for (i32 k = -stricePerLato; k <= stricePerLato; ++k) {
                     const i32 sx = (i32)(cx + hwBase * (f32)k);
                     fb_.hline(sx - lw, sx + lw, y, lane);
+                }
+            }
+        }
+        // Isola dello spartitraffico (Andrea 11/11 sera: "base di appoggio
+        // del cartello, tipo spartitraffico"): dalla cuspide in poi il varco
+        // fra i rami e' un'isola rialzata, cordoli bianchi e rossi ai lati e
+        // cemento a trama Bayer in mezzo, per ISOLA_Z unita'.
+        constexpr f32 ISOLA_Z = 14000.0f;
+        if (bivioAperto && nasoZ > 0.0f && zAvanti >= nasoZ - 150.0f && zAvanti < nasoZ + ISOLA_Z && filaCheck < 0) {
+            const i32 a = bx0[0] <= bx0[1] ? 0 : 1, b = 1 - a;
+            const i32 L = (i32)bx1[a] + 1, R = (i32)bx0[b] - 1;
+            if (R >= L) {
+                const i32 kerb = std::max(1, rw / 2);
+                const u32 kerbCol = band ? 0xFFF4F4F4u : 0xFFD02828u;
+                const u32 cem1 = 0xFFA8A8B0u, cem2 = 0xFF8A8A94u;
+                for (i32 x = std::max(0, L); x <= std::min(Framebuffer::WIDTH - 1, R); ++x) {
+                    u32 col;
+                    if (x - L < kerb || R - x < kerb) col = kerbCol;
+                    else col = BAYER4[y & 3][x & 3] < 6 ? cem2 : cem1;
+                    fb_.put(x, y, col);
                 }
             }
         }
@@ -931,10 +962,10 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
         const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
         drawLampada((x0 + x1) / 2, cima + sp / 2, r, tema_.rumbleAlt, true);
     } else if (tipo == 5) {
-        // Cartello del bivio (Andrea 11/11: segnalare il bivio in anticipo).
-        // Portale autostradale con due pannelli: a sinistra la meta del ramo
-        // sinistro, a destra quella del destro, bordati del colore della meta,
-        // con la freccia obliqua che indica il ramo. Lampeggianti ambra.
+        // Cartello del bivio (Andrea 11/11: segnalare il bivio in anticipo,
+        // senza nomi dei tragitti, che restano interni). Portale stradale con
+        // due pannelli: freccia obliqua a sinistra e a destra, come un
+        // cartello di biforcazione in corsa. Lampeggianti ambra in cima.
         const i32 w = std::clamp((i32)(pxUnita * 120.0f), 1, 30);
         const i32 cima = terra - (i32)(2500.0f * pxY);
         const i32 x0 = (i32)(p.screenX - hw * 1.14f), x1 = (i32)(p.screenX + hw * 1.14f);
@@ -942,25 +973,13 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
         colonna(x1, w, cima, 0xFF4A4A56u, 0xFF8A8A98u);
         const i32 sp = std::max(1, (i32)(120.0f * pxY));
         fb_.fillRect(x0, cima, x1, cima + sp, 0xFF4A4A56u);
-        const i32 ph = std::max(3, (i32)(700.0f * pxY));
+        const i32 ph = std::max(3, (i32)(760.0f * pxY));
         const i32 gap = std::max(1, (i32)(hw * 0.06f));
         const i32 cx = (i32)p.screenX;
         const i32 y0 = cima + sp + 1, y1 = y0 + ph;
-        const i32 lx0 = (i32)(p.screenX - hw * 0.98f), rx1 = (i32)(p.screenX + hw * 0.98f);
-        drawPannelloTesto(lx0, y0, cx - gap, y1, meteSx_, 0xFF0C1A3Au, meteColSx_, 0xFFF4F4F4u);
-        drawPannelloTesto(cx + gap, y0, rx1, y1, meteDx_, 0xFF0C1A3Au, meteColDx_, 0xFFF4F4F4u);
-        // Frecce oblique sotto i pannelli, verso l'esterno (dove va il ramo).
-        const i32 fa = std::max(1, ph / 3);
-        if (fa >= 2) {
-            for (i32 k = 0; k < fa; ++k) {
-                fb_.hline(lx0 + k, lx0 + k + std::max(1, fa / 3), y1 + 1 + k, meteColSx_);
-                fb_.hline(rx1 - k - std::max(1, fa / 3), rx1 - k, y1 + 1 + k, meteColDx_);
-            }
-            fb_.hline(lx0, lx0 + fa, y1 + 1, meteColSx_);
-            fb_.fillRect(lx0, y1 + 1, lx0 + std::max(0, fa / 4), y1 + fa, meteColSx_);
-            fb_.hline(rx1 - fa, rx1, y1 + 1, meteColDx_);
-            fb_.fillRect(rx1 - std::max(0, fa / 4), y1 + 1, rx1, y1 + fa, meteColDx_);
-        }
+        const i32 lx0 = (i32)(p.screenX - hw * 0.70f), rx1 = (i32)(p.screenX + hw * 0.70f);
+        drawPannelloFreccia(lx0, y0, cx - gap, y1, -1, meteColSx_);
+        drawPannelloFreccia(cx + gap, y0, rx1, y1, 1, meteColDx_);
         const i32 r = std::clamp((i32)(pxUnita * 90.0f), 1, 5);
         drawLampada(x0, cima - r, r, 0xFFFFB020u, lampo);
         drawLampada(x1, cima - r, r, 0xFFFFB020u, !lampo);
@@ -1017,6 +1036,33 @@ void Renderer::drawPannelloTesto(i32 x0, i32 y0, i32 x1, i32 y1, const char* tes
     fb_.hline(x0 + m, x1 - m, ym, lerpColore(fondo, colTesto, 0.6f));
 }
 
+void Renderer::drawPannelloFreccia(i32 x0, i32 y0, i32 x1, i32 y1, i32 verso, u32 bordo) {
+    // Pannello verde da cartello stradale con freccia bianca obliqua verso
+    // l'alto, a sinistra (verso -1) o a destra (+1). Bordo del colore del ramo.
+    if (x1 < x0 || y1 < y0) return;
+    fb_.fillRect(x0, y0, x1, y1, 0xFFF4F4F4u);
+    if (x1 - x0 < 2 || y1 - y0 < 2) return;
+    fb_.fillRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1, bordo);
+    if (x1 - x0 >= 6 && y1 - y0 >= 6) fb_.fillRect(x0 + 2, y0 + 2, x1 - 2, y1 - 2, 0xFF0E5A34u);
+    const i32 lato = std::min(x1 - x0, y1 - y0);
+    if (lato < 5) return;
+    const i32 cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const i32 m = lato * 3 / 10;                 // mezza diagonale della freccia
+    const i32 sp = std::max(1, lato / 9);        // spessore
+    const i32 punta = std::max(2, lato * 3 / 10); // lati della punta a L
+    const i32 px = cx + verso * m, py = cy - m;  // punta in alto, verso l'esterno
+    const i32 bx = cx - verso * m, by = cy + m;  // coda in basso, verso il centro
+    const u32 bianco = 0xFFF4F4F4u;
+    const i32 passi = std::max(1, std::abs(px - bx));
+    for (i32 k = 0; k <= passi; ++k) {
+        const i32 x = bx + (px - bx) * k / passi, y = by + (py - by) * k / passi;
+        fb_.fillRect(x - sp / 2, y - sp / 2, x + (sp - 1) / 2, y + (sp - 1) / 2, bianco);
+    }
+    // Punta a L: un braccio orizzontale verso il centro e uno verticale in basso.
+    fb_.fillRect(std::min(px, px - verso * punta), py - sp / 2, std::max(px, px - verso * punta), py + (sp - 1) / 2, bianco);
+    fb_.fillRect(px - sp / 2, py, px + (sp - 1) / 2, py + punta, bianco);
+}
+
 void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
     // Cuspide dello spartitraffico (Andrea 11/11: bivio visivamente piu'
     // interessante). Cuscino basso a strisce gialle e nere e sopra un
@@ -1027,52 +1073,34 @@ void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
     const i32 terra = std::min((i32)p.screenY, (i32)coperto);
     const i32 cx = (i32)(p.screenX + 0.5f * (p.carr.centro[0] + p.carr.centro[1]) * pxUnita);
     if (cx < -60 || cx > Framebuffer::WIDTH + 60) return;
-    // Palo
-    const i32 palo = std::max(1, (i32)(pxUnita * 60.0f));
-    const i32 cimaPalo = terra - (i32)(1500.0f * pxY);
-    fb_.fillRect(cx - palo / 2, cimaPalo, cx + palo / 2, terra, 0xFF6A6A78u);
-    // Cuscino a strisce (largo 700, alto 420 unita')
-    const i32 cw = std::max(2, (i32)(pxUnita * 350.0f));
-    const i32 ch = std::max(2, (i32)(420.0f * pxY));
+    // Testata dell'isola: blocco di cemento con cuscino a strisce davanti.
+    const i32 cw = std::max(2, (i32)(pxUnita * 320.0f));
+    const i32 ch = std::max(2, (i32)(360.0f * pxY));
+    const i32 bh = std::max(1, (i32)(140.0f * pxY)); // cordolo rialzato
+    fb_.fillRect(cx - cw - 1, terra - bh, cx + cw + 1, terra, 0xFF6E6E78u);
+    fb_.hline(cx - cw - 1, cx + cw + 1, terra - bh, 0xFFC8C8D0u);
     const i32 passo = std::max(2, cw / 3);
-    for (i32 yy = terra - ch; yy <= terra; ++yy)
+    for (i32 yy = terra - bh - ch; yy < terra - bh; ++yy)
         for (i32 x = cx - cw; x <= cx + cw; ++x) {
             const i32 d = (x - cx + cw) + (terra - yy);
             fb_.put(x, yy, ((d / passo) & 1) ? 0xFF141414u : 0xFFFFC820u);
         }
-    // Pannello con le due frecce che si dividono
-    const i32 pw = std::max(3, (i32)(pxUnita * 520.0f));
-    const i32 ph = std::max(3, (i32)(560.0f * pxY));
-    const i32 py1 = cimaPalo, py0 = py1 - ph;
-    fb_.fillRect(cx - pw, py0, cx + pw, py1, 0xFFF4F4F4u);
-    if (pw >= 4 && ph >= 4) {
-        fb_.fillRect(cx - pw + 1, py0 + 1, cx + pw - 1, py1 - 1, 0xFF0C1A3Au);
-        // freccia a sinistra e a destra (punte verso l'esterno, in alto)
-        const i32 a = std::max(1, std::min(pw, ph) / 2);
-        const u32 cs = meteColSx_, cd = meteColDx_;
-        for (i32 k = 0; k <= a; ++k) {
-            fb_.put(cx - k - 1, py1 - 2 - k, cs);
-            fb_.put(cx - k - 2, py1 - 2 - k, cs);
-            fb_.put(cx + k + 1, py1 - 2 - k, cd);
-            fb_.put(cx + k + 2, py1 - 2 - k, cd);
-        }
-        const i32 tx = cx - a - 2, ty = py1 - 2 - a, tx2 = cx + a + 2;
-        for (i32 k = 0; k <= a / 2; ++k) {
-            fb_.put(tx + k, ty, cs); fb_.put(tx, ty + k, cs);
-            fb_.put(tx2 - k, ty, cd); fb_.put(tx2, ty + k, cd);
-        }
+    // Due pali sopra il cuscino e pannello verde con le due frecce.
+    const i32 palo = std::max(1, (i32)(pxUnita * 50.0f));
+    const i32 cimaPalo = terra - (i32)(1500.0f * pxY);
+    const i32 pw = std::max(3, (i32)(pxUnita * 560.0f));
+    const i32 ph = std::max(3, (i32)(520.0f * pxY));
+    for (i32 l : {-1, 1}) {
+        const i32 xp = cx + l * pw / 2;
+        fb_.fillRect(xp - palo / 2, cimaPalo, xp + palo / 2, terra - bh - ch, 0xFF7A7A88u);
     }
+    const i32 py1 = cimaPalo, py0 = py1 - ph;
+    drawPannelloFreccia(cx - pw, py0, cx, py1, -1, meteColSx_);
+    drawPannelloFreccia(cx, py0, cx + pw, py1, 1, meteColDx_);
     const bool lampo = ((i32)(tempoS_ * 3.0f) & 1) != 0;
     const i32 r = std::clamp((i32)(pxUnita * 80.0f), 1, 5);
     drawLampada(cx - pw, py0 - r, r, 0xFFFFB020u, lampo);
     drawLampada(cx + pw, py0 - r, r, 0xFFFFB020u, !lampo);
-}
-
-void Renderer::impostaMeteBivio(const char* sx, u32 coloreSx, const char* dx, u32 coloreDx) {
-    std::snprintf(meteSx_, sizeof(meteSx_), "%s", sx ? sx : "");
-    std::snprintf(meteDx_, sizeof(meteDx_), "%s", dx ? dx : "");
-    meteColSx_ = coloreSx;
-    meteColDx_ = coloreDx;
 }
 
 const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) {

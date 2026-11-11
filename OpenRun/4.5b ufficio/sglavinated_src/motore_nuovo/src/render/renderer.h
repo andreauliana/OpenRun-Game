@@ -145,9 +145,10 @@ public:
     // Traguardo (Andrea 29/10): linea a scacchi per terra dove il tracciato
     // finisce, solo sulla tappa d'arrivo.
     void setLineaArrivo(bool attiva) { lineaArrivo_ = attiva; }
-    // Bivio leggibile (Andrea 11/11): nomi e colori delle due mete sui
-    // cartelli a portale (tipo 5). Testi corti in inglese, maiuscoli.
-    void impostaMeteBivio(const char* sx, u32 coloreSx, const char* dx, u32 coloreDx);
+    // Bivio leggibile (Andrea 11/11): colori dei due rami sui cartelli a
+    // portale (tipo 5) e sulla cuspide. I nomi dei tragitti restano interni
+    // (Andrea 11/11): sui cartelli solo frecce.
+    void impostaColoriBivio(u32 coloreSx, u32 coloreDx) { meteColSx_ = coloreSx; meteColDx_ = coloreDx; }
     // Oltre la fine della tappa (dopo il checkpoint) il terreno e i cordoli
     // hanno gia' i colori della tappa scelta: il cambio di colore e' un
     // confine sulla strada, non una dissolvenza su tutto lo schermo.
@@ -419,6 +420,7 @@ private:
     // Pannello con testo in prospettiva: font HUD alla scala intera piu'
     // grande che ci sta; troppo piccolo = righe chiare al posto delle lettere.
     void drawPannelloTesto(i32 x0, i32 y0, i32 x1, i32 y1, const char* testo, u32 fondo, u32 bordo, u32 colTesto);
+    void drawPannelloFreccia(i32 x0, i32 y0, i32 x1, i32 y1, i32 verso, u32 bordo); // cartello del bivio
     void drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto); // cuscino e frecce dove i rami si staccano
     void drawLuciTerra(const Road::ProjectedSeg& p);            // luci di avvicinamento a terra
     void drawLampada(i32 x, i32 y, i32 r, u32 colore, bool accesa);
@@ -469,8 +471,7 @@ private:
     f32 skylineScrollX_ = 0.0f;             // scorrere orizzontale skyline, parallasse in curva (DECO1 2e)
     f32 lastPlayerX_ = 0.0f;                // playerX dell'ultima drawRoad (per drawSprites)
     bool lineaArrivo_ = false;              // scacchi sul traguardo (fine del tracciato)
-    char meteSx_[16] = {}, meteDx_[16] = {}; // mete del bivio sui cartelli (tipo 5)
-    u32 meteColSx_ = 0xFFFFFFFFu, meteColDx_ = 0xFFFFFFFFu;
+    u32 meteColSx_ = 0xFFFFFFFFu, meteColDx_ = 0xFFFFFFFFu; // colori dei rami sui cartelli del bivio
     TemaColori temaOltre_;                  // colori oltre il checkpoint (tappa scelta)
     bool temaOltreAttivo_ = false;
     f32 giro_ = 0.0f;                       // lunghezza del tracciato dell'ultima drawRoad
