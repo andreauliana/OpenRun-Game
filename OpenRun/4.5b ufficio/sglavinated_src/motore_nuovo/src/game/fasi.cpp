@@ -196,7 +196,7 @@ public:
             // restano segreti per chi gioca.
             if (sel_ == 1) std::snprintf(buf, sizeof(buf), "< ROUTE %d >", liv_ + 1);
             else std::snprintf(buf, sizeof(buf), "ROUTE %d", liv_ + 1);
-            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 129, buf, sel_ == 1 ? 0xFFFFD040u : 0xFF808080u, 1, true);
+            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 129, buf, sel_ == 1 ? 0xFFB4F02Cu /* = ACCENTO */ : 0xFF808080u, 1, true);
         }
         (void)fb;
         const char* aiuto = sel_ == 1 ? "LEFT/RIGHT: ROUTE  START: OK" : "UP/DOWN: CHOOSE  START: OK";
@@ -318,6 +318,23 @@ void velo(Framebuffer& fb, i32 x0, i32 y0, i32 x1, i32 y1) {
         }
 }
 
+// Colore d'accento della UI (Andrea 11/11 sera): un solo colore
+// riconoscibile, verde lime al posto del giallo; il resto bianco e grigi.
+constexpr u32 ACCENTO = 0xFFB4F02Cu;
+
+// Titolo col grassetto e le lettere un po' piu' larghe (aria fra una e l'altra).
+void titoloSpaziato(Renderer& ren, i32 cx, i32 y, const char* t, u32 col, i32 scala, i32 aria) {
+    i32 w = 0, n = 0;
+    for (const char* c = t; *c; ++c, ++n) { const char l[2] = {*c, 0}; w += Renderer::larghezzaTitolo(l, scala) + scala; }
+    w += aria * (n - 1) - scala;
+    i32 x = cx - w / 2;
+    for (const char* c = t; *c; ++c) {
+        const char l[2] = {*c, 0};
+        ren.drawTitolo(x, y, l, col, scala, true);
+        x += Renderer::larghezzaTitolo(l, scala) + scala + aria;
+    }
+}
+
 // Freccina piena di 5 px di base, punta in su o in giu'.
 void freccia(Framebuffer& fb, i32 cx, i32 y, bool su, u32 c) {
     for (i32 r = 0; r < 3; ++r) {
@@ -335,7 +352,8 @@ public:
     void entra(Game& gioco) override {
         timerS_ = 0.0f; passoS_ = 0.0f; fermoS_ = 0.0f; finita_ = false;
         nomePos_ = 0;
-        sel_ = gioco.corsaSingola() ? 1 : 0; // la corsa appena fatta gia' scelta
+        singola_ = gioco.corsaSingola();
+        sel_ = singola_ ? 1 : 0; // la corsa appena fatta gia' scelta
         // Nome di partenza: quello salvato l'ultima volta; al primo giro
         // "PLAYER" (Andrea 11/11 sera: chi non vuole scriverlo preme START
         // e prosegue col nome generico).
@@ -493,10 +511,7 @@ private:
         constexpr i32 SU = 4, GIU = 156;
         pannello(fb, 48, SU, 271, GIU);
         const char* titolo = "Enter your name"; // frase: minuscole col grassetto (Andrea 11/11 sera)
-        ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 1) / 2, 10, titolo, 0xFFFFFFFFu, 1, true);
-        char buf[32];
-        std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
-        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 30, buf, 0xFFFFE080u, 1, true);
+        titoloSpaziato(ren, 160, 16, titolo, 0xFFFFFFFFu, 1, 1);
         constexpr i32 CASELLA = 26, PASSO = 30, Y = 66;
         const i32 x0 = 160 - (PASSO * (NOME_LETTERE - 1) + CASELLA) / 2;
         const bool acceso = std::fmod(passoS_, 0.5f) < 0.3f;
@@ -508,7 +523,7 @@ private:
             else scurisci(fb, x, Y, x + CASELLA - 1, Y + CASELLA - 1, 55);
             fb.fillRect(x, Y + CASELLA, x + CASELLA - 1, Y + CASELLA, qui ? 0xFFFFFFFFu : 0xFF707070u);
             const char l[2] = { nome_[i], '\0' };
-            const u32 col = qui ? (acceso ? 0xFFFFD040u : 0xFFFFFFFFu) : 0xFFFFFFFFu;
+            const u32 col = qui ? (acceso ? ACCENTO : 0xFFFFFFFFu) : 0xFFFFFFFFu;
             ren.drawTitolo(x + CASELLA / 2 - ren.larghezzaTitolo(l, 2) / 2, Y, l, col, 2, true);
             if (qui) {
                 freccia(fb, x + CASELLA / 2, Y - 7, true, 0xFFFFFFFFu);
@@ -525,17 +540,16 @@ private:
     void disegnaScelta(Renderer& ren, Framebuffer& fb) const {
         pannello(fb, 48, 4, 271, 214);
         const char* titolo = "HIGH SCORES";
-        ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 1) / 2, 8, titolo, 0xFFFFFFFFu, 1, true);
-        static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
+        titoloSpaziato(ren, 160, 9, titolo, 0xFFFFFFFFu, 1, 2);
         char buf[32];
         for (size_t i = 0; i < tabella_.size(); ++i) {
             const PunteggioEntry& e = tabella_[i];
             const i32 y = 28 + (i32)i * 11;
             const i32 pos = e.nostro ? posizione_ : (i32)i + 1;
             if (e.nostro) velo(fb, 56, y - 2, 263, y + 8);
-            const u32 col = e.nostro ? (std::fmod(passoS_, 0.5f) < 0.3f ? 0xFFFFD040u : 0xFFFFFFFFu) : 0xFFB0B0B0u;
+            const u32 col = e.nostro ? (std::fmod(passoS_, 0.5f) < 0.3f ? ACCENTO : 0xFFFFFFFFu) : 0xFFB0B0B0u;
             std::snprintf(buf, sizeof(buf), "%d", pos);
-            ren.drawTesto(80 - ren.larghezzaTesto(buf, 1), y, buf, pos <= 3 ? PODIO[pos - 1] : col, 1, true);
+            ren.drawTesto(80 - ren.larghezzaTesto(buf, 1), y, buf, pos == 1 ? ACCENTO : col, 1, true);
             ren.drawTesto(104, y, e.nome.c_str(), col, 1, true);
             std::snprintf(buf, sizeof(buf), "%d", e.punti);
             ren.drawTesto(240 - ren.larghezzaTesto(buf, 1), y, buf, col, 1, true);
@@ -567,14 +581,14 @@ public:
         fb.fillRect(48, SU, 48, GIU, 0xFF909090u);
         fb.fillRect(271, SU, 271, GIU, 0xFF909090u);
         const bool consulto = timerS_ < CONSULTO_S;
-        const char* titolo = consulto ? "FINAL CHECK" : "RANKING";
+        // Andrea 11/11 sera: "TOURNAMENT RESULTS" (corsa singola: "RACE RESULTS").
+        const char* titolo = consulto ? "FINAL CHECK" : (singola_ ? "RACE RESULTS" : "TOURNAMENT RESULTS");
         if (!consulto || std::fmod(timerS_, 0.5f) < 0.35f)
-            ren.drawTitolo(160 - ren.larghezzaTitolo(titolo, 2) / 2, 5, titolo, 0xFFFFFFFFu, 2, true);
+            titoloSpaziato(ren, 160, 10, titolo, 0xFFFFFFFFu, 1, 1); // 11/11 sera: piu' piccolo, con aria
         ren.drawTesto(64, 29, "POS", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(96, 29, "DRIVER", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(170, 29, "TIME", 0xFFA0A0A0u, 0, true);
         ren.drawTesto(226, 29, "GAP", 0xFFA0A0A0u, 0, true);
-        static constexpr u32 PODIO[3] = {0xFFFFD040u, 0xFFD8E0F0u, 0xFFE09050u};
         char buf[32], tempo[24];
         // Durante il consulto tutte le righe ci sono, coi tempi che girano;
         // poi si fermano una alla volta dall'alto.
@@ -587,22 +601,22 @@ public:
             const u32 col = c.giocatore ? 0xFFFFFFFFu : 0xFFB0B0B0u;
             if (ferma) {
                 std::snprintf(buf, sizeof(buf), "%d", (i32)i + 1);
-                ren.drawTesto(66, y, buf, i < 3 ? PODIO[i] : col, 1, true);
+                ren.drawTesto(66, y, buf, i == 0 ? ACCENTO : col, 1, true);
             } else {
                 ren.drawTesto(66, y, "-", 0xFF707070u, 1, true);
             }
             // Il nostro nome in grande, gli altri piu' piccoli (Andrea 09/11):
             // il nostro risultato si trova subito.
             // Andrea 11/11: le nostre iniziali al posto di "YOU" (le ultime salvate).
-            // Sera: nome e tempo nostri col font grassetto Born2bSporty.
-            if (c.giocatore) ren.drawTitolo(96, y - 3, nomeVis_.c_str(), ferma ? col : 0xFF808080u, 1, true);
+            // Nome e tempo nostri col font principale: il grassetto, che non
+            // ha una misura piu' piccola, qui era troppo grande (Andrea 11/11 sera).
+            if (c.giocatore) ren.drawTesto(96, y, nomeVis_.c_str(), ferma ? col : 0xFF808080u, 1, true);
             else ren.drawTesto(96, y + 2, c.nome, ferma ? col : 0xFF808080u, 0, true);
             // Linea chiara di 1 px fra un pilota e l'altro.
             if (i + 1 < arrivo_.size()) fb.fillRect(56, y + 9, 263, y + 9, 0xFF9898B0u);
             if (ferma) {
                 formattaTempo(tempo, sizeof(tempo), c.tempoS);
-                if (c.giocatore) ren.drawTitolo(170, y - 3, tempo, col, 1, true, true);
-                else ren.drawTesto(170, y, tempo, col, 1, true);
+                ren.drawTesto(170, y, tempo, col, 1, true);
                 if (i > 0) {
                     std::snprintf(buf, sizeof(buf), "+%.2f", c.tempoS - arrivo_[0].tempoS);
                     ren.drawTesto(226, y, buf, col, 1, true);
@@ -626,27 +640,25 @@ public:
         for (size_t i = 0; i < arrivo_.size(); ++i) if (arrivo_[i].giocatore) pos = (i32)i + 1;
         const f32 dalVerdetto = timerS_ - CONSULTO_S - (f32)arrivo_.size() * RIGA_CLASSIFICA_S;
         if (pos == 1) {
+            // Born2bSporty anche qui (Andrea 11/11 sera); lampeggia lime/bianco.
             const char* v = "WINNER!";
-            const i32 w = ren.larghezzaTesto(v, 2);
-            const u32 c = std::fmod(dalVerdetto, 0.4f) < 0.2f ? 0xFFFFD040u : 0xFFFFFFFFu;
-            ren.drawTesto(160 - w / 2, 126, v, c, 2, true);
-            trofeo(fb, 160 - w / 2 - 16, 127);
-            trofeo(fb, 160 + w / 2 + 6, 127);
+            const i32 w = ren.larghezzaTitolo(v, 2);
+            const u32 c = std::fmod(dalVerdetto, 0.4f) < 0.2f ? ACCENTO : 0xFFFFFFFFu;
+            ren.drawTitolo(160 - w / 2, 126, v, c, 2, true);
+            trofeo(fb, 160 - w / 2 - 18, 132);
+            trofeo(fb, 160 + w / 2 + 8, 132);
         } else if (pos > 0) {
-            static const char* SUFF[4] = {"TH", "ST", "ND", "RD"};
+            static const char* SUFF[4] = {"th", "st", "nd", "rd"};
             const char* suff = (pos % 100 >= 11 && pos % 100 <= 13) || pos % 10 > 3 ? SUFF[0] : SUFF[pos % 10];
-            std::snprintf(buf, sizeof(buf), "YOU FINISHED %d%s", pos, suff);
-            ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 130, buf, pos <= 3 ? PODIO[pos - 1] : 0xFFFFFFFFu, 1, true);
+            std::snprintf(buf, sizeof(buf), "You finished %d%s", pos, suff);
+            ren.drawTitolo(160 - ren.larghezzaTitolo(buf, 1) / 2, 132, buf, pos <= 3 ? ACCENTO : 0xFFFFFFFFu, 1, true);
         }
-        // Solo i punti (Andrea 09/11: niente "PRESS START FOR MENU"). URTI /
-        // CIGLIO tolti dalla classifica (Andrea 06/11): le botte restano nel
-        // gioco (ammaccature, fumo), non in tabella.
-        std::snprintf(buf, sizeof(buf), "POINTS %d", punteggio_);
-        ren.drawTesto(160 - ren.larghezzaTesto(buf, 1) / 2, 145, buf, 0xFFFFE080u, 1, true);
+        // Niente POINTS (Andrea 11/11 sera: non si riferiscono a niente).
+        // URTI / CIGLIO tolti dalla classifica (Andrea 06/11).
     }
     // Trofeo pixel 10x12: coppa oro con manici, gambo e base scura.
     static void trofeo(Framebuffer& fb, i32 x, i32 y) {
-        const u32 oro = 0xFFFFD040u, ombra = 0xFFB08020u, base = 0xFF604020u;
+        const u32 oro = ACCENTO, ombra = 0xFF6E9A18u, base = 0xFF404040u; // coppa nel colore d'accento
         fb.fillRect(x + 1, y, x + 8, y + 5, oro);
         fb.fillRect(x + 2, y + 6, x + 7, y + 6, oro);
         fb.fillRect(x + 6, y + 1, x + 7, y + 5, ombra);
@@ -671,6 +683,7 @@ private:
     char nome_[NOME_LETTERE + 1]; // le sei caselle (spazio = vuota)
     std::string nomeVis_ = "PLAYER"; // il nome scritto (salvato in salvataggi/giocatore.json)
     i32 nomePos_ = 0;    // lettera in uso 0..5
+    bool singola_ = false; // corsa singola (titolo della classifica)
     i32 sel_ = 0;        // scelta finale: serie, singola, menu
     std::vector<PunteggioEntry> tabella_;
     std::vector<Game::Classificato> arrivo_; // classifica sul tempo, solo dopo l'arrivo
