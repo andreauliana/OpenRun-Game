@@ -562,6 +562,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     AutoIncrocio autoIncrocio_[AUTO_INCROCIO];
     i32 incrocioAttivo_ = -1;
     Sprite semaforo_; // semaforo sempre verde agli angoli dell'incrocio (disegnato dal codice)
+    Sprite cartelloIncrocio_; // triangolo "incrocio pericoloso" prima dell'incrocio (disegnato dal codice)
     Rng rndIncrocio_{7u};
     void aggiornaIncroci(f32 dt);
     void aggiungiSpriteIncroci();
