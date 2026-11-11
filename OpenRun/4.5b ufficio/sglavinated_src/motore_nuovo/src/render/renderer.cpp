@@ -381,7 +381,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 grassNuovo = band ? temaOltre_.erba : temaOltre_.erbaAlt;
         const u32 grass = misto >= 1.0f ? grassNuovo : grassQui;
         const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
-        if (y >= HORIZON_Y && !sospeso && !galleria) {
+        if (y >= orizzonte_ && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
             i32 tx0 = 0, tx1 = Framebuffer::WIDTH - 1;
@@ -1142,7 +1142,7 @@ void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
     // Cuspide dello spartitraffico (Andrea 11/11: bivio visivamente piu'
     // interessante). Cuscino basso a strisce gialle e nere e sopra un
     // pannello con due frecce che si separano, lampeggianti ambra in cima.
-    if (p.screenY < HORIZON_Y - 40 || p.scale <= 0.0f || !p.carr.doppia) return;
+    if (p.screenY < orizzonte_ - 40 || p.scale <= 0.0f || !p.carr.doppia) return;
     const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 pxY = p.scale * 112.0f;
     const i32 terra = std::min((i32)p.screenY, (i32)coperto);
@@ -1540,10 +1540,10 @@ void Renderer::drawDetriti(const DetritoRender* v, i32 n) {
     }
 }
 
-void Renderer::drawSkyline(const Sprite& s) {
+void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
     // Skyline: largo quanto lo schermo, ancorato all'orizzonte, proporzioni
     // della fonte. Indice 0 = trasparente (resta il colore del cielo).
-    if (s.width <= 0 || s.height <= 0) return;
+    if (s.width <= 0 || s.height <= 0 || visibile <= 0.0f) return;
     const f32 scalaX = (f32)Framebuffer::WIDTH / (f32)s.width;
     i32 h = (i32)((f32)s.height * scalaX);
     if (h < 1) h = 1;
@@ -1566,61 +1566,19 @@ void Renderer::drawSkyline(const Sprite& s) {
             u32 col = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
                                      : pal_[s.paletteBase + idx];
             if ((col >> 24) == 0) continue; // trasparente
-            dst[x] = col;
+            dst[x] = visibile >= 1.0f ? col : lerpColore(dst[x], col, visibile); // dissolvenza nel cielo
         }
     }
 }
 
 void Renderer::drawSkylineTransizione(const Sprite& da, const Sprite& a, f32 t) {
-    // Crossfade skyline durante la transizione di tema: t=0 disegna solo da
-    // (tappa che finisce), t=1 solo a (tappa nuova). I pixel trasparenti
-    // (alpha 0) lasciano vedere il cielo di tema_, gia' interpolato da drawRoad.
-    if (da.width <= 0 && a.width <= 0) return;
-    const f32 scalaX = (f32)Framebuffer::WIDTH;
-    auto scalaAltezza = [&](const Sprite& s) -> i32 {
-        if (s.width <= 0 || s.height <= 0) return 0;
-        i32 h = (i32)((f32)s.height * scalaX / (f32)s.width);
-        if (h < 1) h = 1;
-        if (h > HORIZON_Y) h = HORIZON_Y;
-        return h;
-    };
-    const i32 hDa = scalaAltezza(da), hA = scalaAltezza(a), h = std::max(hDa, hA);
-    if (h < 1) return;
-    const bool palDa = !da.palette.empty();
-    const bool palA = !a.palette.empty();
-    const i32 nDa = (i32)da.palette.size(), nA = (i32)a.palette.size();
-    u32* dstBase = fb_.data();
-    for (i32 sy = 0; sy < h; ++sy) {
-        u32* dst = dstBase + (size_t)sy * (size_t)Framebuffer::WIDTH;
-        const i32 tyDa = hDa > 0 ? (i32)((f32)sy / (f32)h * (f32)da.height) : 0;
-        const i32 tyA = hA > 0 ? (i32)((f32)sy / (f32)h * (f32)a.height) : 0;
-        const u8* srcDa = da.width > 0 ? da.pixels.data() + (size_t)tyDa * (size_t)da.width : nullptr;
-        const u8* srcA = a.width > 0 ? a.pixels.data() + (size_t)tyA * (size_t)a.width : nullptr;
-        for (i32 sx = 0; sx < Framebuffer::WIDTH; ++sx) {
-            const i32 txDa = da.width > 0 ? (i32)((f32)sx / (f32)Framebuffer::WIDTH * (f32)da.width) : 0;
-            const i32 txA = a.width > 0 ? (i32)((f32)sx / (f32)Framebuffer::WIDTH * (f32)a.width) : 0;
-            u8 idxDa = srcDa ? srcDa[txDa] : 0;
-            u8 idxA = srcA ? srcA[txA] : 0;
-            u32 cDa = 0, cA = 0;
-            bool opDa = false, opA = false;
-            if (idxDa != 0) {
-                cDa = palDa ? da.palette[(size_t)idxDa % (size_t)nDa] : pal_[idxDa];
-                opDa = (cDa >> 24) != 0;
-            }
-            if (idxA != 0) {
-                cA = palA ? a.palette[(size_t)idxA % (size_t)nA] : pal_[idxA];
-                opA = (cA >> 24) != 0;
-            }
-            // Andrea 11/11: niente incrocio fra i due skyline (si mischiavano
-            // "quasi con una opacita'"). Prima meta': il vecchio sfuma nel
-            // cielo; seconda meta': il nuovo appare dal cielo.
-            if (t < 0.5f) {
-                if (opDa) dst[sx] = lerpColore(cDa, dst[sx], t * 2.0f);
-            } else if (opA) {
-                dst[sx] = lerpColore(dst[sx], cA, (t - 0.5f) * 2.0f);
-            }
-        }
-    }
+    // Andrea 11/11: niente incrocio fra i due skyline (si mischiavano "quasi
+    // con una opacita'"). Prima meta': il vecchio sfuma nel cielo; seconda
+    // meta': il nuovo appare dal cielo. Stessa posizione di drawSkyline
+    // (ancorato all'orizzonte che beccheggia, parallasse): niente salti
+    // all'inizio e alla fine della transizione.
+    if (t < 0.5f) drawSkyline(da, 1.0f - t * 2.0f);
+    else drawSkyline(a, (t - 0.5f) * 2.0f);
 }
 
 void Renderer::iniziaTransizioneTema(const TemaColori& da, const Sprite& daSkyline, f32 durataSecondi) {
