@@ -155,6 +155,25 @@ public:
     }
     // Ricalcola riva, luci e porte del ponte (fine di build; bivio cambia le luci).
     void calcolaDintorni();
+    // Bivio leggibile (Andrea 11/11: "segnalare il bivio, e alla fine
+    // segnalazione e check del nuovo arrivo di livello"). Portali calcolati
+    // da calcolaDintorni quando il bivio e' attivo:
+    //   5 = cartello a portale con le due mete, CARTELLO_BIVIO_SEG prima
+    //       dell'apertura e di nuovo PRESEGNALE_BIVIO_SEG prima (preavviso);
+    //   6 = cuspide dello spartitraffico (cuscino a strisce e frecce), dove i
+    //       due rami si staccano;
+    //   7 = CHECKPOINT: portale sul ramo scelto alla fine della tappa, con la
+    //       linea di check sull'asfalto (Renderer).
+    static constexpr i32 CARTELLO_BIVIO_SEG = 40;
+    static constexpr i32 PRESEGNALE_BIVIO_SEG = 190;
+    // Zebratura dello spartitraffico: dove i due rami si sovrappongono meno
+    // di questa larghezza (unita' mondo) l'asfalto fra i bordi interni e'
+    // dipinto a strisce oblique (niente "centro" in cui restare).
+    static constexpr f32 ZEBRA_LARGHEZZA = 1500.0f;
+    // Profondita' della linea di check (unita' mondo) oltre la fine della tappa.
+    static constexpr f32 CHECK_PROF = 400.0f;
+    // z della cuspide (dove fra i rami si apre il varco); 0 senza bivio.
+    f32 bivioNasoZ() const { return nasoZ_; }
 
     // Proietta i segmenti visibili a partire da playerZ e riempie out (max DRAW_DIST).
     // Carreggiate a una posizione del tracciato: una sola, o i due rami del bivio.
@@ -224,6 +243,7 @@ private:
     f32 curX = 0.0f, curY = 0.0f, curZ = 0.0f; // cursore di costruzione
     u32 seed_ = 1;
     bool bivio_ = false;
+    f32 nasoZ_ = 0.0f;
     std::vector<f32> incrociZ_;
 };
 

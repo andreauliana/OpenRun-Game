@@ -1758,9 +1758,13 @@ static TrafficoMisure misuraTraffico() {
         game.render();
         ++m.frames;
         const GameState& st = game.state();
-        if (st.playerFlipping && !ribaltato) ++m.ribaltamenti;
-        ribaltato = st.playerFlipping;
         const Road& road = game.road();
+        // Il gate misura il traffico comune: un ribaltamento contro le auto di
+        // lato dell'incrocio (11/11: incroci anche in lv_01/lv_03/lv_06, il
+        // pilota automatico non le guarda) e' l'incidente voluto, non conta.
+        if (st.playerFlipping && !ribaltato &&
+            std::fabs(road.incrocioD(st.playerZ)) >= Road::INCROCIO_ZONA) ++m.ribaltamenti;
+        ribaltato = st.playerFlipping;
         const bool cambioTappa = st.tappa != tappaPrima;
         for (i32 i = 0; i < Game::TRAFFICO; ++i) {
             const Game::Veicolo& v = game.veicolo(i);

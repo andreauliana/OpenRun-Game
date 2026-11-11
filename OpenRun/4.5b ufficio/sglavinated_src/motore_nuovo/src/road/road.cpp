@@ -290,12 +290,14 @@ void Road::calcolaDintorni() {
     // terra prima della rampa e dopo la discesa, porte del ponte ai due capi.
     const i32 n = (i32)segs_.size();
     if (n == 0) return;
+    nasoZ_ = 0.0f;
     for (RoadSegment& s : segs_) {
         s.riva = -1;
         s.luci = -1;
         s.versoLuci = 0;
         if (s.portale == 1) s.portale = 0; // le porte del ponte si ricalcolano
         if (s.portale == 4) s.portale = 0; // i portali della galleria si ricalcolano
+        if (s.portale >= 5 && s.portale <= 7) s.portale = 0; // cartelli del bivio e checkpoint
     }
     auto at = [&](i32 i) -> RoadSegment& { return segs_[(size_t)(((i % n) + n) % n)]; };
     for (i32 i = 0; i < n; ++i) {
@@ -341,6 +343,23 @@ void Road::calcolaDintorni() {
             s.luci = (i16)d;
             s.versoLuci = 1;
         }
+        // Cartelli a portale con le mete (preavviso e conferma) sul
+        // rettilineo prima dell'apertura; mai su un ponte o in galleria.
+        for (const i32 d : {PRESEGNALE_BIVIO_SEG, CARTELLO_BIVIO_SEG}) {
+            const i32 i = inizio - d;
+            if (i <= 0) continue;
+            RoadSegment& s = segs_[(size_t)i];
+            if (!s.sospeso && !s.galleria && s.portale == 0) s.portale = 5;
+        }
+        // Cuspide: primo segmento in cui fra i due rami c'e' un varco.
+        for (i32 i = inizio; i < n; ++i) {
+            const Carreggiate c = carreggiate((f32)(i * SEG_LEN), 0);
+            const f32 varco = (c.centro[1] - c.centro[0]) - 2.0f * ROAD_HALF_WORLD * c.fattore;
+            if (varco > 250.0f) { segs_[(size_t)i].portale = 6; nasoZ_ = (f32)(i * SEG_LEN); break; }
+        }
+        // Checkpoint: al confine con la tappa seguente (inizio del segmento 0,
+        // visto oltre la fine del tracciato).
+        segs_[0].portale = 7;
     }
 }
 

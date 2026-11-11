@@ -59,6 +59,8 @@ public:
     // Partenza (Andrea 08/11): bip del conto alla rovescia 3, 2, 1 (via =
     // false) e del START (via = true, piu' acuto e lungo). Onda quadra retro.
     void suonaBip(bool via) { bipN_ = 0; bipVia_ = via; }
+    // Checkpoint (Andrea 11/11): due note che salgono, passando sotto il portale.
+    void suonaCheckpoint() { checkN_ = 0; }
     // V47 V1: sorpasso al pelo (breve blip, effetto nuovo).
     void suonaSorpasso() { sorpassoN_ = 0; }
     // MIG1 D5: paletto abbattuto che vola (effetto nuovo, in aggiunta).
@@ -141,6 +143,8 @@ private:
     // --- Partenza (Andrea 08/11) ---
     i32 bipN_ = -1;          // campioni dall'inizio del bip (-1 = nessuno)
     bool bipVia_ = false;
+    i32 checkN_ = -1;        // campioni dall'inizio del suono di checkpoint
+    f32 sfxCheckpoint();
     bool musicaFerma_ = false;
     f32 sfxBip();
     // --- V47 V1: sorpasso al pelo ---
