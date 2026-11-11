@@ -82,22 +82,47 @@ constexpr f32 CURVA_SPINTA = 0.015f; // (storico, lineare: non piu' usato)
 // piede o frenare un attimo. Bloccato: REGOLE_AUTO_GIOCATORE.md.
 constexpr f32 CURVA_SPINTA_V2 = 1200.0f;
 constexpr f32 CURVA_DERIVA_SCHERMO = 140.0f; // Andrea 07/11: scivolata visiva verso l'esterno in curva (unita' di offsetX)
-// Derapata (Andrea 08/11: "nelle curve piu' forti un contrappeso, sgommando
-// per rimanere in carreggiata, visto che ho pieno sterzo e massima velocita'").
-// Parte quando la spinta della curva (|curva| * v^2) supera DERAPATA_FORZA_MIN,
-// lo sterzo e' quasi pieno DENTRO la curva e la velocita' e' alta. A derapata
-// piena la spinta verso l'esterno cala di DERAPATA_PRESA e le gomme che
-// strisciano tolgono velocita' (DERAPATA_FRENO_PER_S al secondo): la curva
-// stretta (0.85) si tiene a sterzo pieno, ma si esce piu' lenti. Col solo
-// acceleratore niente derapata: la curva porta fuori come prima.
-constexpr f32 DERAPATA_FORZA_MIN = 0.50f;   // curve 0.5 e meno: niente derapata
-constexpr f32 DERAPATA_FORZA_PIENA = 0.75f;
-constexpr f32 DERAPATA_STERZO_MIN = 0.7f;
-constexpr f32 DERAPATA_V_MIN = 0.6f;
-constexpr f32 DERAPATA_PRESA = 0.40f;
-constexpr f32 DERAPATA_FRENO_PER_S = 0.90f;
-constexpr f32 DERAPATA_ENTRATA_S = 0.20f;
-constexpr f32 DERAPATA_USCITA_S = 0.35f;
+// Sovrasterzo e derapata (Andrea 11/11, sostituisce la derapata dell'08/11:
+// "nelle curve il giocatore deve correggere, sinistra e destra, le ruote che
+// pattinano, il controsterzo"). Sotto il limite di aderenza l'auto e'
+// incollata all'asfalto e segue lo sterzo. Oltre il limite (carico =
+// |curva| x v^2 sopra PRESA_LIMITE) sterzando forte DENTRO col gas premuto la
+// coda parte: l'angolo (sovrasterzo, 0..1) cresce, il muso punta dentro e
+// l'auto viene tirata verso l'interno (SOVRA_LAT), lo sterzo sposta meno
+// l'auto (le ruote tengono l'angolo). Il CONTROSTERZO (sterzare verso
+// l'esterno) riprende la coda; sterzo al centro o alzare il piede la fanno
+// rientrare piano. Se l'angolo arriva in fondo: testacoda (velocita' al 40%,
+// l'auto gira su se stessa per un attimo). Le gomme che strisciano tolgono
+// velocita' (SOVRA_FRENO_PER_S). Fumo, stridio e posa come la derapata di prima.
+constexpr f32 PRESA_LIMITE = 0.38f;   // carico oltre cui le gomme posteriori mollano
+constexpr f32 PRESA_PIENA = 0.80f;    // carico a cui la coda parte alla velocita' massima
+constexpr f32 SOVRA_STERZO_MIN = 0.5f; // sterzo dentro che fa partire la coda
+constexpr f32 SOVRA_CRESCITA = 1.3f;  // angolo al secondo a carico pieno e sterzo pieno dentro
+constexpr f32 SOVRA_RECUPERO = 2.4f;  // controsterzo pieno: angolo ripreso al secondo
+constexpr f32 SOVRA_CALO = 0.7f;      // sterzo al centro: l'angolo cala da solo
+constexpr f32 SOVRA_PRESA_TORNA = 1.2f; // sotto il limite le gomme riprendono presto
+constexpr f32 SOVRA_SENZA_GAS = 0.9f;  // gas alzato: il peso torna sulle ruote dietro
+constexpr f32 SOVRA_LAT = 1500.0f;     // unita'/s verso l'interno ad angolo pieno
+constexpr f32 SOVRA_PRESA_STERZO = 0.75f; // ad angolo pieno lo sterzo sposta l'auto solo del 25%
+constexpr f32 SOVRA_FRENO_PER_S = 0.88f;  // velocita' persa al secondo ad angolo pieno
+constexpr f32 TESTACODA_RESTA = 0.40f;    // velocita' che resta dopo un testacoda
+constexpr f32 TESTACODA_S = 0.7f;         // l'auto gira su se stessa (pose alternate)
+// Partenza e pattinamento (Andrea 11/11: "al conto alla rovescia il giocatore
+// puo' dare gas per partire con velocita' diverse; ora se tengo giu' tutto
+// gli altri restano dietro"). In griglia il gas fa salire i giri (contagiri e
+// motore): tenuti in GIRI_BUONI_MIN..GIRI_BUONI_MAX allo START la partenza e'
+// pulita; al limitatore (gas tenuto a fondo) le ruote pattinano; a giri bassi
+// il motore si siede. Nei primi LANCIO_S secondi la spinta e' limitata
+// (LANCIO_ACC, aderenza della partenza), per tutti: nessuno scappa al via.
+constexpr f32 GIRI_SALITA_S = 0.7f;     // 0 -> limitatore col gas tenuto
+constexpr f32 GIRI_DISCESA_S = 0.9f;    // limitatore -> minimo a gas alzato
+constexpr f32 GIRI_BUONI_MIN = 0.55f, GIRI_BUONI_MAX = 0.85f, GIRI_PERFETTI = 0.70f;
+constexpr f32 GIRI_LIMITATORE = 0.95f;
+constexpr f32 LANCIO_S = 3.0f;          // durata della partenza (aderenza limitata)
+constexpr f32 LANCIO_ACC = 55.0f;       // unita'/s^2 a partenza perfetta (~150 su 250 in 3 s)
+constexpr f32 PATTINA_S = 1.6f;         // ruote che girano a vuoto dopo una partenza a fondo
+constexpr f32 PATTINA_PRESA = 0.75f;    // a pattinamento pieno la spinta cala del 75%
+constexpr f32 RIPARTENZA_PATTINA = 0.5f; // dopo un incidente si riparte con un po' di pattinamento
 constexpr f32 DERAPATA_DERIVA_SCHERMO = 120.0f; // scivolata visiva in piu' (unita' di offsetX)
 // Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
@@ -965,6 +990,18 @@ void Game::init(const std::string& livelloId) {
     sgommata_ = 0.0f;
     latoSgommata_ = 0;
     derapata_ = 0.0f;
+    sovrasterzo_ = 0.0f;
+    latoSovra_ = 1;
+    testacodaS_ = 0.0f;
+    pattinamento_ = 0.0f;
+    giriGriglia_ = 0.0f;
+    grigliaPrec_ = false;
+    lancioS_ = -1.0f;
+    lancioPresa_ = 1.0f;
+    player_.vLat = 0.0f;
+    player_.spintaLat = 0.0f;
+    player_.presaSterzo = 1.0f;
+    player_.accelMax = 1.0e9f;
     saltoMaxAltezza_ = 0.0f;
     atterraggioS_ = -1.0f;
     forzaAtterraggio_ = 0.0f;
@@ -1363,6 +1400,17 @@ void Game::inizializzaRivali() {
         // cambiare le altre estrazioni del seme: 1.5..2.5 s.
         Rng rndSpunto(seed_ ^ 0x53505554u ^ (u32)(i * 7919));
         r.spuntoS = 1.5f + 0.2f * (f32)rndSpunto.next(6);
+        // Spunto allo START (Andrea 11/11): c'e' chi parte perfetto, chi
+        // pattina e chi si siede; sorgente a parte, come lo spunto.
+        Rng rndLancio(seed_ ^ 0x4C414E43u ^ (u32)(i * 104729));
+        const u32 tipo = rndLancio.next(10);
+        r.lancioPattinaS = 0.0f;
+        if (tipo < 2) { r.lancioQ = 0.95f; r.lancioPattinaS = 0.8f + 0.2f * (f32)rndLancio.next(4); }
+        else if (tipo < 4) r.lancioQ = 0.70f + 0.05f * (f32)rndLancio.next(3);
+        else if (tipo < 9) r.lancioQ = 0.85f + 0.05f * (f32)rndLancio.next(4);
+        else r.lancioQ = 1.10f;
+        r.lancioRitardoS = 0.05f * (f32)rndLancio.next(6);
+        r.vLancio = 0.0f;
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
@@ -1564,6 +1612,29 @@ void Game::aggiornaRivali() {
         Rivale& r = rivali_[i];
         if (r.tempoArrivoS >= 0.0f) continue; // gia' al traguardo: fuori dalla corsa
         const f32 avvicina = spunto ? 1.0f - std::exp(-dt / r.spuntoS) : avvicinaBase;
+        // Partenza (Andrea 11/11): nei primi SPUNTO_FINO_S secondi i rivali
+        // accelerano come il giocatore (stessa spinta, Player::spintaA), con la
+        // stessa aderenza limitata nei primi LANCIO_S secondi e ognuno col suo
+        // spunto (riflessi, pattinamento, motore seduto). Prima si avvicinavano
+        // alla punta con un esponenziale e chi teneva il gas a fondo li passava
+        // tutti in un secondo e mezzo.
+        const f32 tGara = tempoTotaleS();
+        const bool lancioRivale = partenzaAbilitata_ && spunto;
+        f32 passoLancio = 1.0e9f;
+        if (lancioRivale) {
+            if (!fermi && tGara >= r.lancioRitardoS) {
+                f32 acc = Player::spintaA(r.vLancio);
+                if (tGara < LANCIO_S) {
+                    f32 q = r.lancioQ;
+                    if (tGara < r.lancioRitardoS + r.lancioPattinaS) q *= 1.0f - PATTINA_PRESA;
+                    acc = std::min(acc, LANCIO_ACC * q);
+                }
+                r.vLancio = std::min(player_.maxSpeed(), r.vLancio + acc * dt);
+            }
+            const f32 vRelR = r.vLancio / player_.maxSpeed();
+            passoLancio = r.vLancio * ROAD_SCROLL_SCALE * (1.0f + ROAD_SCROLL_SPEED_BOOST * vRelR) *
+                          (r.passoMax / puntaGiocatore);
+        }
         const bool sullaTappa = r.passoPercorso < r.nPercorso &&
                                 r.percorso[r.passoPercorso] == tappaGiocatore;
         if (!sullaTappa) {
@@ -1572,7 +1643,8 @@ void Game::aggiornaRivali() {
             // e non interagisce con traffico e bivi del giocatore.
             r.ritmoFase += r.ritmoVel * dt;
             const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
-            r.passo += (r.passoMax * ritmo - r.passo) * avvicina;
+            if (lancioRivale) r.passo = std::min(r.passoMax * ritmo, passoLancio);
+            else r.passo += (r.passoMax * ritmo - r.passo) * avvicina;
             if (fermi) r.passo = 0.0f;
             const f32 distanza = r.passo * dt;
             r.progresso += distanza;
@@ -1598,7 +1670,8 @@ void Game::aggiornaRivali() {
             elastico = 1.0f + 0.25f * std::min(1.0f, (-distaccoS - RIVALE_LIBERO_S) / RIVALE_ELASTICO_RAMPA_S);
         r.ritmoFase += r.ritmoVel * dt;
         const f32 ritmo = 1.0f + RIVALE_RITMO * std::sin(r.ritmoFase);
-        r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
+        if (lancioRivale) r.passo = std::min(r.passoMax * elastico * ritmo * lentaCurva, passoLancio);
+        else r.passo += (r.passoMax * elastico * ritmo * lentaCurva - r.passo) * avvicina;
         if (r.koS > 0.0f) {
             // KO (4a botta): quasi fermo a bordo strada, poi riparte piano.
             r.koS = std::max(0.0f, r.koS - dt);
@@ -1635,7 +1708,10 @@ void Game::aggiornaRivali() {
                 q.percorso[q.passoPercorso] != tappaGiocatore) continue;
             const f32 dz = q.progressoTappa - r.progressoTappa;
             if (dz > 0.0f && dz < RIVALE_DISTANZA_MIN && std::abs(r.x - q.x) < RIVALE_LATERALE_MIN) {
-                r.passo = std::min(r.passo, q.passo * 0.95f);
+                // Alla partenza (Andrea 11/11) la griglia e' piu' stretta della
+                // distanza minima: nessuno alza il piede, conta solo l'auto
+                // solida (meta' distanza, sotto); chi parte male fa da tappo.
+                if (!lancioRivale || dz < RIVALE_DISTANZA_MIN * 0.5f) r.passo = std::min(r.passo, q.passo * 0.95f);
                 if (dz < RIVALE_DISTANZA_MIN * 0.5f) {
                     // Sorpasso dal lato libero; al bordo si passa dall'altra parte.
                     f32 dir = r.x > q.x ? 1.0f : (r.x < q.x ? -1.0f : (r.x <= 0.0f ? 1.0f : -1.0f));
@@ -2071,7 +2147,14 @@ void Game::aggiornaGuida(f32 dt) {
             player_.speed = 0.0f;
             player_.offroad = false;
             road_.playerX = player_.x;
-            if (gara_) liberaRipartenza();
+            player_.vLat = 0.0f;
+            player_.spintaLat = 0.0f;
+            sovrasterzo_ = 0.0f;
+            testacodaS_ = 0.0f;
+            if (gara_) {
+                liberaRipartenza();
+                pattinamento_ = RIPARTENZA_PATTINA; // si riparte da fermi: le ruote girano un attimo a vuoto
+            }
         }
         if (gara_) { // gli avversari e il traffico non aspettano
             aggiornaTraffico(dt);
@@ -2113,6 +2196,17 @@ void Game::aggiornaGuida(f32 dt) {
             player_.centroCorsia = carr.centro[vicino];
             player_.larghezzaCorsia = carr.fattore;
         }
+        // Partenza (Andrea 11/11): in griglia il gas fa salire i giri; allo
+        // START i giri decidono lo spunto (pulito, pattinamento o motore seduto).
+        if (inPartenza()) {
+            const bool gasGriglia = (input_.held & (Pad::A | Pad::Up)) != 0;
+            giriGriglia_ = gasGriglia ? std::min(1.0f, giriGriglia_ + dt / GIRI_SALITA_S)
+                                      : std::max(0.0f, giriGriglia_ - dt / GIRI_DISCESA_S);
+            grigliaPrec_ = true;
+        } else if (grigliaPrec_) {
+            grigliaPrec_ = false;
+            avviaLancio(giriGriglia_);
+        }
         Pad comandi = input_;
         if (arrivo_ || tempoScaduto_) comandi = Pad{}; // dopo arrivo o tempo scaduto l'auto va per inerzia
         if (inPartenza()) comandi = Pad{};             // in griglia fino allo START (il gas fa solo rombare)
@@ -2132,6 +2226,17 @@ void Game::aggiornaGuida(f32 dt) {
                     break;
                 }
             }
+        }
+        // Aderenza della partenza e ruote che pattinano: limitano la spinta.
+        {
+            if (lancioS_ >= 0.0f) lancioS_ = lancioS_ + dt > LANCIO_S ? -1.0f : lancioS_ + dt;
+            if (pattinamento_ > 0.0f)
+                pattinamento_ = std::max(0.0f, pattinamento_ - dt / (player_.gas() ? PATTINA_S : 0.3f));
+            f32 cap = 1.0e9f;
+            if (lancioS_ >= 0.0f)
+                cap = LANCIO_ACC * (lancioPresa_ + (1.0f - lancioPresa_) * std::min(1.0f, lancioS_ / 1.5f));
+            if (pattinamento_ > 0.0f) cap = std::min(cap, LANCIO_ACC * (1.0f - PATTINA_PRESA * pattinamento_));
+            player_.accelMax = cap;
         }
         player_.update(dt);
         // Incrocio (Andrea 08/11): la strada perpendicolare e' asfalto, non erba.
@@ -2204,24 +2309,61 @@ void Game::aggiornaGuida(f32 dt) {
                                     : std::max(0.0f, assistenzaBivio_ - dt / ASSIST_USCITA_S);
         const f32 curvaQui = road_.curvaAt(player_.z);
         const f32 vRel = player_.speed / player_.maxSpeed();
-        // Derapata: solo in strada, a sterzo quasi pieno dentro la curva.
+        // Sovrasterzo (Andrea 11/11): oltre il limite di aderenza, sterzando
+        // forte dentro col gas, la coda parte; il controsterzo la riprende.
         {
             const f32 sterzo = player_.sterzo();
-            f32 obiettivoDer = 0.0f;
-            if (!player_.offroad && !playerFlipping_ && !arrivo_ && vRel >= DERAPATA_V_MIN &&
-                std::abs(sterzo) >= DERAPATA_STERZO_MIN && sterzo * curvaQui > 0.0f)
-                obiettivoDer = std::clamp((std::abs(curvaQui) * vRel * vRel - DERAPATA_FORZA_MIN) /
-                                          (DERAPATA_FORZA_PIENA - DERAPATA_FORZA_MIN), 0.0f, 1.0f);
-            derapata_ = obiettivoDer > derapata_ ? std::min(obiettivoDer, derapata_ + dt / DERAPATA_ENTRATA_S)
-                                                 : std::max(obiettivoDer, derapata_ - dt / DERAPATA_USCITA_S);
-            if (derapata_ > 0.0f) player_.speed *= std::pow(DERAPATA_FRENO_PER_S, derapata_ * dt);
+            const f32 carico = std::abs(curvaQui) * vRel * vRel;
+            const f32 eccesso = std::clamp((carico - PRESA_LIMITE) / (PRESA_PIENA - PRESA_LIMITE), 0.0f, 1.0f);
+            const f32 dentro = sterzo * curvaQui > 0.0f ? std::abs(sterzo) : 0.0f;
+            f32 angolo = std::abs(sovrasterzo_);
+            if (angolo < 0.02f && eccesso > 0.0f) latoSovra_ = curvaQui > 0.0f ? 1 : -1; // muso verso l'interno
+            const bool libera = !player_.offroad && !playerFlipping_ && !arrivo_ && testacodaS_ <= 0.0f &&
+                                assistenzaBivio_ <= 0.0f;
+            if (libera) {
+                if (eccesso > 0.0f && dentro >= SOVRA_STERZO_MIN && player_.gas())
+                    angolo += eccesso * dentro * SOVRA_CRESCITA * dt;
+                // Controsterzo: conta lo sterzo verso il lato opposto al muso.
+                const f32 controMuso = sterzo * (f32)latoSovra_ < 0.0f ? std::abs(sterzo) : 0.0f;
+                if (controMuso > 0.0f) angolo -= controMuso * SOVRA_RECUPERO * dt;
+                else if (dentro < SOVRA_STERZO_MIN) angolo -= SOVRA_CALO * dt;
+                if (eccesso <= 0.0f) angolo -= SOVRA_PRESA_TORNA * dt;
+                if (!player_.gas()) angolo -= SOVRA_SENZA_GAS * dt;
+            } else {
+                angolo -= 3.0f * dt;
+            }
+            angolo = std::clamp(angolo, 0.0f, 1.0f);
+            if (angolo >= 1.0f && libera) {
+                // Testacoda: la coda non e' stata ripresa.
+                testacodaS_ = TESTACODA_S;
+                player_.speed *= TESTACODA_RESTA;
+                player_.vLat *= 0.3f;
+                angolo = 0.0f;
+                segnaBotta(latoSovra_ > 0 ? -1 : 1);
+                urtoTraffico_ = false;
+                urtoEffettoDurataS_ = URTO_EFFETTO_RIVALE_S;
+                urtoEffettoS_ = urtoEffettoDurataS_;
+                mixer_.suonaUrto(false);
+            }
+            sovrasterzo_ = angolo * (f32)latoSovra_;
+            if (angolo > 0.0f) player_.speed *= std::pow(SOVRA_FRENO_PER_S, angolo * dt);
+            player_.presaSterzo = 1.0f - SOVRA_PRESA_STERZO * angolo;
+            if (testacodaS_ > 0.0f) {
+                testacodaS_ = std::max(0.0f, testacodaS_ - dt);
+                player_.presaSterzo = 0.0f; // mentre gira lo sterzo non serve
+            }
+            // Fumo, stridio e posa della derapata seguono l'angolo e il pattinamento.
+            const f32 visivo = std::max(angolo, testacodaS_ > 0.0f ? 1.0f : 0.0f);
+            derapata_ = visivo > derapata_ ? std::min(visivo, derapata_ + dt / 0.15f)
+                                           : std::max(visivo, derapata_ - dt / 0.30f);
         }
-        const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f) *
-                           (1.0f - DERAPATA_PRESA * derapata_);
+        const f32 spinta = CURVA_SPINTA_V2 * vRel * vRel * (player_.offroad ? CURVA_SPINTA_OFFROAD_FACTOR : 1.0f);
         // Verso l'ESTERNO (Andrea 08/11): curva > 0 = curva a destra, spinge a
         // sinistra; si tiene la curva sterzando DENTRO (destra in curva a destra).
         // Prima il segno era invertito e la curva tirava verso l'interno.
-        player_.x -= curvaQui * spinta * dt * (1.0f - assistenzaBivio_);
+        // Dall'11/11 la spinta passa per la velocita' laterale dell'auto (peso,
+        // Player::vLat): si sente arrivare e in uscita lo slancio resta.
+        player_.spintaLat = (-curvaQui * spinta + SOVRA_LAT * sovrasterzo_) * (1.0f - assistenzaBivio_);
         if (assistenzaBivio_ > 0.0f) {
             // Richiamo morbido verso il centro del ramo piu' vicino.
             const Road::Carreggiate c = road_.carreggiate(player_.z, latoBivio_);
@@ -2269,8 +2411,12 @@ void Game::aggiornaGuida(f32 dt) {
                 if (std::abs(sterzo) > 0.9f && vRel > 0.8f) obiettivoSg = std::max(obiettivoSg, 0.45f);
                 obiettivoSg = std::max(obiettivoSg, derapata_); // derapata: fumo pieno
             }
+            if (!playerFlipping_) obiettivoSg = std::max(obiettivoSg, pattinamento_); // ruote a vuoto
             if (obiettivoSg > 0.0f)
                 latoSgommata_ = forza > 0.05f ? 1 : forza < -0.05f ? -1 : (sterzo < 0.0f ? 1 : -1);
+            // Pattinamento in rettilineo: fumo da tutte e due le ruote dietro, a turno.
+            if (pattinamento_ > derapata_ && std::abs(forza) <= 0.05f)
+                latoSgommata_ = ((i32)(tempoGiocoS_ * 15.0f) & 1) ? 1 : -1;
             sgommata_ = obiettivoSg > sgommata_ ? std::min(obiettivoSg, sgommata_ + dt / 0.15f)
                                                 : std::max(obiettivoSg, sgommata_ - dt / 0.3f);
         }
@@ -2297,7 +2443,8 @@ void Game::aggiornaGuida(f32 dt) {
         // l'auto rallenta e basta (Andrea 06/11 sera), il conteggio riparte.
         if (player_.offroad && assistenzaBivio_ <= 0.0f && player_.speed >= OFFROAD_INCIDENTE_V * player_.maxSpeed())
             ++offroadFrames_;
-        else offroadFrames_ = 0;
+        else if (!player_.offroad || assistenzaBivio_ > 0.0f) offroadFrames_ = 0;
+        else if (offroadFrames_ > 0) --offroadFrames_; // botta nell'erba (cartellone): il conto cala, non riparte da zero (11/11)
 
         if (gara_) {
             if (!inPartenza()) aggiornaTraffico(dt); // la strada aspetta lo START
@@ -2458,11 +2605,15 @@ void Game::aggiornaGuida(f32 dt) {
     // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
     f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
     // In griglia il gas fa rombare il motore a vuoto (l'auto resta ferma).
-    if (inPartenza() && (input_.held & (Pad::A | Pad::Up)))
-        rpm = GIRI_ATTESA + 600.0f * std::sin(tempoGiocoS_ * 9.0f);
+    if (inPartenza()) {
+        rpm = 900.0f + giriGriglia_ * (GIRI_ATTESA + 1800.0f);
+        if (giriGriglia_ >= GIRI_LIMITATORE) rpm -= 500.0f * (0.5f + 0.5f * std::sin(tempoGiocoS_ * 60.0f)); // limitatore
+    } else if (pattinamento_ > 0.0f) {
+        rpm = std::max(rpm, 3000.0f + 4500.0f * pattinamento_); // ruote a vuoto: il motore urla
+    }
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
-    mixer_.setSgommata(playerFlipping_ ? 0.0f : derapata_); // gomme che stridono in derapata
+    mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max(derapata_, 0.8f * pattinamento_)); // gomme che stridono in derapata
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
@@ -2644,6 +2795,16 @@ void Game::render() {
         // Derapata: muso tutto dentro la curva mentre la coda va fuori.
         if (livello > 0 && derapata_ > 0.3f) livelloCurva = 4;
         if (livello > 0) posaGiocatore = (sterzo < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + livelloCurva - 1;
+        // Sovrasterzo (Andrea 11/11): la carrozzeria punta dentro la curva anche
+        // mentre si controsterza (le ruote vanno fuori, il muso resta dentro).
+        const f32 angolo = std::abs(sovrasterzo_);
+        if (angolo > 0.15f) {
+            const i32 liv = angolo > 0.6f ? 4 : angolo > 0.4f ? 3 : 2;
+            posaGiocatore = (sovrasterzo_ < 0.0f ? POSA_GIOCATORE_SX_1 : POSA_GIOCATORE_DX_1) + liv - 1;
+        }
+        // Testacoda: l'auto gira su se stessa, pose piene alternate.
+        if (testacodaS_ > 0.0f)
+            posaGiocatore = (((i32)(testacodaS_ * 10.0f)) & 1) ? POSA_GIOCATORE_SX_4 : POSA_GIOCATORE_DX_4;
         else if (pendenza > SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_SALITA;
         else if (pendenza < -SOGLIA_PENDENZA) posaGiocatore = POSA_GIOCATORE_DISCESA;
     }
@@ -2663,7 +2824,8 @@ void Game::render() {
     // pixel sulle gomme che strisciano. Niente rotazione: le pose disegnate da
     // Andrea restano dritte (REGOLE_AUTO_GIOCATORE.md).
     const f32 derivaDerapata = playerFlipping_ ? 0.0f
-        : derapata_ * ((f32)latoSgommata_ * DERAPATA_DERIVA_SCHERMO + 30.0f * std::sin(tempoGiocoS_ * 37.0f));
+        : derapata_ * ((f32)latoSgommata_ * DERAPATA_DERIVA_SCHERMO + 30.0f * std::sin(tempoGiocoS_ * 37.0f)) +
+          pattinamento_ * 45.0f * std::sin(tempoGiocoS_ * 23.0f); // coda che ondeggia sulle ruote a vuoto
     ren_.drawPlayerCar(player_.speed, player_.x - player_.centroCorsia + forzaCurva * CURVA_DERIVA_SCHERMO + derivaDerapata,
                        player_.offroad && !playerFlipping_,
                        rollAngle + scodata, sollevamentoPx, frena, arrivo_ ? arrivoS_ : fumoFlipS, &danni,
@@ -2719,6 +2881,10 @@ void Game::render() {
         const f32 v = player_.speed / player_.maxSpeed();
         constexpr f32 CAMBIO = 110.0f / 250.0f;
         h.giri = player_.gear <= 1 ? v / CAMBIO : 0.45f + 0.55f * (v - CAMBIO) / (1.0f - CAMBIO);
+        // Partenza (Andrea 11/11): in griglia il contagiri mostra i giri del
+        // gas; con le ruote che pattinano il motore va su anche se l'auto no.
+        if (inPartenza()) h.giri = giriGriglia_;
+        else if (pattinamento_ > 0.0f) h.giri = std::max(h.giri, 0.5f + 0.5f * pattinamento_);
         h.marciaAlta = player_.gear >= 2;
         h.gara = gara_;
         h.tempoS = (i32)(tempoResiduoS_ + 0.5f);
@@ -2867,6 +3033,24 @@ void Game::preparaPartenza() {
     }
     std::sort(supporto_.begin(), supporto_.end(),
               [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; });
+}
+
+void Game::avviaLancio(f32 giri) {
+    // Spunto del giocatore allo START (Andrea 11/11), dai giri tenuti in griglia.
+    lancioS_ = 0.0f;
+    pattinamento_ = 0.0f;
+    lancioPresa_ = 1.0f;
+    if (giri >= GIRI_LIMITATORE) {
+        pattinamento_ = 1.0f; // gas a fondo: le ruote girano a vuoto, fumo e stridio
+    } else if (giri > GIRI_BUONI_MAX) {
+        pattinamento_ = 0.3f + 0.4f * (giri - GIRI_BUONI_MAX) / (GIRI_LIMITATORE - GIRI_BUONI_MAX);
+    } else if (giri >= GIRI_BUONI_MIN) {
+        // Partenza pulita: perfetta a GIRI_PERFETTI, appena meno ai bordi.
+        const f32 scarto = std::abs(giri - GIRI_PERFETTI) / (GIRI_BUONI_MAX - GIRI_PERFETTI);
+        lancioPresa_ = 1.0f - 0.2f * std::min(1.0f, scarto);
+    } else {
+        lancioPresa_ = 0.35f + 0.35f * giri / GIRI_BUONI_MIN; // motore seduto: parte piano
+    }
 }
 
 void Game::aggiornaPartenza(f32 dt) {

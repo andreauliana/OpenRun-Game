@@ -129,6 +129,10 @@ public:
     f32 tempoResiduoS() const { return tempoResiduoS_; }
     // Derapata in corso 0..1 (Andrea 08/11): per prove e HUD futuri, sola lettura.
     f32 derapata() const { return derapata_; }
+    // Prove (Andrea 11/11): sovrasterzo (-1..1), pattinamento (0..1), testacoda in corso.
+    f32 sovrasterzo() const { return sovrasterzo_; }
+    f32 pattinamento() const { return pattinamento_; }
+    bool testacoda() const { return testacodaS_ > 0.0f; }
     bool arrivato() const { return arrivo_; }
     // Posizione del giocatore nella gara (1 = primo). In arrivo riporta la
     // posizione registrata al traguardo (blocco FIN).
@@ -352,6 +356,16 @@ private:
     // alta: le gomme strisciano e fanno da contrappeso (meno spinta fuori,
     // un po' di velocita' persa). Questa invece tocca la guida.
     f32 derapata_ = 0.0f;          // 0..1, segue l'obiettivo con un ritardo
+    // Sovrasterzo, testacoda, pattinamento e partenza (Andrea 11/11).
+    f32 sovrasterzo_ = 0.0f;       // angolo della coda -1..1 (+ = muso a destra)
+    i32 latoSovra_ = 1;            // lato verso cui punta il muso (interno della curva)
+    f32 testacodaS_ = 0.0f;        // secondi di testacoda rimasti
+    f32 pattinamento_ = 0.0f;      // 0..1 ruote dietro che girano a vuoto
+    f32 giriGriglia_ = 0.0f;       // 0..1 giri del motore in griglia
+    bool grigliaPrec_ = false;     // il frame prima si era in griglia
+    f32 lancioS_ = -1.0f;          // secondi dallo START (-1 = partenza finita)
+    f32 lancioPresa_ = 1.0f;       // aderenza della partenza 0..1 (motore seduto < 1)
+    void avviaLancio(f32 giri);
     f32 saltoMaxAltezza_ = 0.0f;   // quota massima del salto in corso
     f32 atterraggioS_ = -1.0f;     // secondi dall'ultimo atterraggio (< 0 = nessuno)
     f32 forzaAtterraggio_ = 0.0f;  // 0..1 altezza del salto appena finito
@@ -475,6 +489,11 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         // START, ma ognuno accelera col suo tempo (s per ~63% della punta),
         // cosi' all'inizio il gruppo e' vicino e poi si sgrana.
         f32 spuntoS = 2.0f;
+        // Partenza (Andrea 11/11): ogni rivale ha il suo spunto allo START.
+        f32 lancioQ = 1.0f;        // aderenza della partenza (0.4 pattina .. 1.1 perfetta)
+        f32 lancioPattinaS = 0.0f; // secondi di ruote a vuoto dopo lo START
+        f32 lancioRitardoS = 0.0f; // riflessi: quanto tarda a partire
+        f32 vLancio = 0.0f;        // velocita' della partenza (unita' del giocatore)
         i32 carattere = RIV_CAR_NORMALE; // MIG1 D3
         f32 vendettaS = 0.0f;            // MIG1 D3: cerca il giocatore dopo una sua sportellata
     };

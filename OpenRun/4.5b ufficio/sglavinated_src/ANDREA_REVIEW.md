@@ -16,7 +16,8 @@ Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti)
 
 Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco e' approvato. Si migliora solo **aggiungendo** con un blocco nuovo di RICHIESTA; non si rifa', non si "sistema", non si toglie.
 
-- **Auto del giocatore e guida**: pose disegnate da Andrea (sprite unico per posa + variante con gli stop accesi), sterzo, curve, derapata, sollevamento leggero alla punta (niente razzo), fuori strada, ciglio, incidenti, tempi delle tappe. Numeri in `REGOLE_AUTO_GIOCATORE.md`.
+- **Auto del giocatore e guida**: pose disegnate da Andrea (sprite unico per posa + variante con gli stop accesi), sterzo, peso, curve, sovrasterzo/controsterzo/testacoda, partenza coi giri e pattinamento, sollevamento leggero alla punta (niente razzo), fuori strada, ciglio, incidenti, tempi delle tappe. Numeri in `REGOLE_AUTO_GIOCATORE.md`.
+- **Guida e partenza riviste da Andrea l'11/11** ("una sportiva incollata all'asfalto; in curva si corregge, ruote che pattinano, controsterzo"; "tenendo il gas al conto alla rovescia gli altri restavano tutti dietro"): la derapata dell'08/11 e' sostituita dal sovrasterzo, l'auto ha peso, la partenza dipende dai giri. **Non tornare indietro** ai valori o al codice di prima (`DERAPATA_*` non esiste piu').
 - **HUD** (`dati/ui/hud.json`, `drawHudDati`), spettro audio, **premiazione**, **musica e reazioni della musica**.
 - **Audio di oggi = standard** (urti, sportellate, paletti, stridio, clacson, bip della partenza, musica che reagisce): si possono solo AGGIUNGERE effetti nuovi.
 - **Tracciati**: vari e buoni (Andrea 08/11). Niente curve tolte, niente tratti spostati, niente tempi cambiati. Indice: `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md`.
@@ -34,9 +35,11 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Azione | Cosa succede | Dove |
 |---|---|---|
 | Accelerare / frenare | velocita' fino alla punta; in frenata gli stop si accendono | player, `auto_stop_*` |
-| Sterzare | pieno da 1/4 della punta, cala appena alla punta | `STEER_*` |
+| Sterzare | pieno da 1/4 della punta, cala appena alla punta; l'auto ha peso: piano e' pronta, forte porta lo slancio | `STEER_*`, `INERZIA_*` |
 | Curva | spinge verso l'esterno col quadrato della velocita'; si tiene sterzando dentro | `CURVA_SPINTA_V2` |
-| Derapata | curva forte + sterzo pieno dentro + sopra 60%: gomme che strisciano, fumo, stridio, perde velocita' | `DERAPATA_*` |
+| Sovrasterzo | oltre il limite di aderenza, sterzo forte dentro + gas: la coda parte, il muso punta dentro, fumo, stridio, perde velocita' | `PRESA_*`, `SOVRA_*` |
+| Controsterzo | sterzare dalla parte opposta al muso riprende la coda; alzare il gas o sterzo al centro la fanno rientrare piano | `SOVRA_RECUPERO` |
+| Testacoda | coda non ripresa: velocita' al 40%, botta, l'auto gira su se stessa 0.7 s | `TESTACODA_*` |
 | Punta in rettilineo | dopo 1 s l'auto si stacca di 3 px, ombra piu' scura | `SOLLEVAMENTO_*` |
 | Dosso | piccolo salto, atterraggio con sospensioni e polvere | `SALTO_*` |
 | Fuori strada | rallenta e trema; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `RIENTRO_S` |
@@ -52,7 +55,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Pausa | Start da solo sul pad, o Invio (anche del tastierino): tutto fermo, scritta PAUSE, musica ovattata; Start di nuovo riprende | `Game::update` |
 | Bivio | si sceglie il ramo, la tappa dopo cambia tema in 2 s | road, `percorso_gara.json` |
 | Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
-| Partenza | auto ferme in griglia, gruppi di supporto ai lati che chiacchierano, GET READY, 3-2-1 con semaforo e bip, START!: musica dall'inizio, tutti partono insieme, ogni rivale col suo spunto (solo runner e libretro, i gate partono subito) | `render/partenza.*`, `Game::preparaPartenza` |
+| Partenza | auto ferme in griglia, gruppi di supporto ai lati che chiacchierano, GET READY, 3-2-1 con semaforo e bip, START!: musica dall'inizio, tutti partono insieme, ogni rivale col suo spunto (solo runner e libretro, i gate partono subito). In griglia il gas fa salire i giri (contagiri): giri giusti = partenza pulita, gas a fondo = ruote che pattinano, niente gas = motore seduto. Primi 3 s aderenza limitata per tutti (11/11) | `render/partenza.*`, `Game::preparaPartenza`, `avviaLancio`, `GIRI_*`, `LANCIO_*`, `PATTINA_*` |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
 | Consulto finale | FINAL CHECK coi tempi che girano, poi classifica (senza colonna ROUTE, Andrea 09/11) e verdetto: WINNER! col trofeo o YOU FINISHED Nth | `RisultatiFase::disegnaArrivo` |
 
