@@ -32,7 +32,12 @@ void Player::update(f32 dt) {
     // verso la punta (piu' stabile in alto, ma sempre sopra la spinta delle curve).
     const f32 v = speed / MAX_SPEED;
     const f32 risposta = std::min(1.0f, v / STEER_V_PIENA) * (1.0f - caloPunta * v * v);
-    x += steer_ * STEER_MAX * risposta * dt;
+    // Peso (Andrea 11/11): la velocita' laterale insegue sterzo + spinte con
+    // un ritardo che cresce con la velocita' (pronta piano, pesante forte).
+    const f32 obiettivoLat = steer_ * STEER_MAX * risposta * presaSterzo + spintaLat;
+    const f32 tau = INERZIA_BASE_S + INERZIA_PUNTA_S * v * v;
+    vLat += (obiettivoLat - vLat) * (1.0f - std::exp(-dt / tau));
+    x += vLat * dt;
     vincolaAllaCorsia();
     // Accelerazione / freno (valori al secondo * dt = incremento al frame).
     if (accel_ > 0.0f) {
@@ -42,7 +47,8 @@ void Player::update(f32 dt) {
         // si guadagna poco o niente, ma col gas premuto non si perde velocita'.
         const f32 punta = sulBordo ? BORDO_PUNTA * MAX_SPEED : MAX_SPEED;
         const f32 spinta = sulBordo ? BORDO_SPINTA : 1.0f;
-        speed += std::max(0.0f, acceleration * spinta * dt * (1.0f - speed / punta));
+        const f32 passo = std::min(acceleration * spinta * (1.0f - speed / punta), accelMax);
+        speed += std::max(0.0f, passo * dt);
     } else if (accel_ < 0.0f) speed -= BRAKE * dt;
     else {
         speed *= std::pow(COAST_PER_SEC, dt); // attrito naturale (gas rilasciato)
@@ -56,6 +62,10 @@ void Player::update(f32 dt) {
     z += speed * dt;
     // Marcia: semplice per HUD (soglia in unita'/secondo, come speed).
     gear = (speed > 110.0f) ? 2 : 1;
+}
+
+f32 Player::spintaA(f32 v) {
+    return std::max(0.0f, (ACCEL_BASE + ACCEL_BOOST * std::exp(-v / ACCEL_BOOST_SPEED)) * (1.0f - v / MAX_SPEED));
 }
 
 void Player::vincolaAllaCorsia() {
@@ -72,8 +82,8 @@ void Player::vincolaAllaCorsia() {
     const f32 rel = x - centroCorsia;
     offroad = (rel < -limite) || (rel > limite);
     sulBordo = !offroad && std::abs(rel) > limite - (1.0f - BORDO_INIZIO) * OFFROAD_LIMIT * std::min(1.0f, larghezzaCorsia);
-    if (rel > limiteX)  x = centroCorsia + limiteX;
-    if (rel < -limiteX) x = centroCorsia - limiteX;
+    if (rel > limiteX)  { x = centroCorsia + limiteX; vLat = std::min(vLat, 0.0f); }
+    if (rel < -limiteX) { x = centroCorsia - limiteX; vLat = std::max(vLat, 0.0f); }
 }
 
 } // namespace sgl

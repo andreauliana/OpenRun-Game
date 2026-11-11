@@ -36,6 +36,23 @@ public:
     // si sterza verso un'auto affiancata (Andrea 08/11: la sportellata deve riuscire).
     f32 caloPunta = STEER_CALO_PUNTA;
     static constexpr f32 caloPuntaNormale() { return STEER_CALO_PUNTA; }
+    // Guida con peso (Andrea 11/11: "deve sembrare una sportiva incollata
+    // all'asfalto"). L'auto ha una velocita' laterale vLat (unita'/s) che
+    // insegue lo sterzo piu' le spinte esterne (spintaLat, curva e sovrasterzo,
+    // messe da Game) con un ritardo che cresce con la velocita': piano e'
+    // pronta, forte e' pesante e si porta dietro lo slancio (in uscita di
+    // curva va ripresa). presaSterzo (0..1) e' quanto lo sterzo sposta l'auto:
+    // con la coda di traverso le ruote davanti tengono l'angolo, non la
+    // strada. accelMax limita la spinta (unita'/s^2): partenza e pattinamento.
+    f32 vLat = 0.0f;
+    f32 spintaLat = 0.0f;
+    f32 presaSterzo = 1.0f;
+    f32 accelMax = 1.0e9f;
+    bool gas() const { return accel_ > 0.0f; }
+    // Spinta a tutto gas alla velocita' v (unita'/s^2), la stessa di update():
+    // i rivali la usano per partire come il giocatore (Andrea 11/11).
+    static f32 spintaA(f32 v);
+    bool freno() const { return accel_ < 0.0f; }
     // Calcola offroad e applica il limite laterale rispetto alla corsia.
     void vincolaAllaCorsia();
     static constexpr f32 OFFROAD_LIMIT = 700.0f; // |x| oltre cui si e' offroad
@@ -58,15 +75,19 @@ private:
     // Gas rilasciato: decadimento al secondo. pow(0.995,50) ~ 0.778 = perde ~22% al secondo.
     static constexpr f32 COAST_PER_SEC = 0.7782f;
     // Sterzo: spostamento laterale massimo STEER_MAX unita'/secondo, zero da
-    // fermi, pieno a STEER_V_PIENA * MAX_SPEED, -5% alla punta (~740 unita'/s:
+    // fermi, pieno a STEER_V_PIENA * MAX_SPEED, -5% alla punta (~800 unita'/s:
     // la strada, 1400 unita', si attraversa in meno di 2 s). Tiene a gas pieno
-    // le curve fino a 0.6 (spinta 720); quelle strette (0.85, spinta 1020) si
-    // tengono con la derapata (Game, DERAPATA_*). Gate: >= +/-200 in 0.6 s da fermi.
-    static constexpr f32 STEER_MAX = 780.0f; // Andrea 06/11 sera 700 (era 600); 08/11 pomeriggio: "farei muovere di piu' il veicolo"
+    // le curve fino a 0.6 (spinta 720); quelle strette si tengono col
+    // sovrasterzo controllato (Game, SOVRA_*, Andrea 11/11). Gate: >= +/-200 in 0.6 s da fermi.
+    static constexpr f32 STEER_MAX = 840.0f; // Andrea 06/11 sera 700 (era 600); 08/11 pomeriggio 780: "farei muovere di piu' il veicolo"; 11/11 840: "quando e' veloce deve girare di lato un po' di piu'"
     static constexpr f32 STEER_V_PIENA = 0.25f;
     static constexpr f32 STEER_CALO_PUNTA = 0.05f; // 06/11 0.35, 08/11 mattina 0.25; 08/11 pomeriggio 0.05: "fa fatica a muoversi tra destra e sinistra ad alte velocita'"
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
     static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
+    // Peso (Andrea 11/11): ritardo della velocita' laterale, INERZIA_BASE_S da
+    // ferma, + INERZIA_PUNTA_S alla punta (col quadrato della velocita').
+    static constexpr f32 INERZIA_BASE_S = 0.04f;
+    static constexpr f32 INERZIA_PUNTA_S = 0.20f;
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
     static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
     // Bordo: ultimo 15% prima del fuori strada (feedback Andrea 23/10). Spinta

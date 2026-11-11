@@ -1,4 +1,4 @@
-# Regole dell'auto del giocatore — BLOCCATE (Andrea, 06/11)
+# Regole dell'auto del giocatore — BLOCCATE (Andrea, 06/11; guida e partenza riviste l'11/11)
 
 Queste regole le ha decise Andrea dopo le prove al runner. **Gli agenti non le
 modificano**: niente cambi a valori, file o codice elencati qui. Se un task
@@ -60,27 +60,67 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   `CURVA_SPINTA_V2 = 1200` (game.cpp, unita'/s a curva 1 e punta). Fuori
   strada la spinta e' un quarto. A solo gas l'auto esce nelle curve; sterzando
   le curve si tengono, nelle piu' strette conviene alzare il piede.
-- **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 780`, pieno da 1/4
-  della punta, `STEER_CALO_PUNTA = 0.05` (Andrea 08/11 pomeriggio: "fa fatica
-  a muoversi tra destra o sinistra ad alte velocita'"; alla punta ~740
-  unita'/s, prima 525): la strada si attraversa in meno di 2 s. A tutto gas e
-  sterzo pieno si tengono le curve fino a 0.6 (spinta 720).
-- **Derapata (Andrea 08/11: "nelle curve piu' forti un contrappeso, sgommando
-  per rimanere in carreggiata"):** curva forte (|curva| x v^2 sopra 0.5, piena
-  a 0.75), sterzo quasi pieno DENTRO la curva, velocita' sopra il 60%: le
-  gomme strisciano, la spinta verso l'esterno cala fino al 40%
-  (`DERAPATA_PRESA`) e l'auto perde velocita' (`DERAPATA_FRENO_PER_S = 0.90`,
-  a tutto gas si scende a circa 260 km/h). Si vede la posa piu' girata, la
-  coda che va fuori di qualche pixel, l'auto che trema di 1 px, fumo pieno
-  dalle gomme; si sente lo stridio (mixer, `setSgommata`). Niente rotazione
-  dello sprite. Col solo acceleratore niente derapata: la curva porta fuori.
-  Valori in game.cpp (`DERAPATA_*`); prova: curve strette di lv_05 tenute a
-  sterzo pieno (max 415 su 700), solo gas finisce il tempo alla 2a tappa.
+- **Sterzo legato alla velocita'** (player.h): `STEER_MAX = 840` (Andrea
+  11/11: "quando e' veloce deve girare di lato un po' di piu'", prima 780),
+  pieno da 1/4 della punta, `STEER_CALO_PUNTA = 0.05` (alla punta ~800
+  unita'/s).
+- **Peso (Andrea 11/11: "una sportiva incollata all'asfalto, ne' troppo
+  leggera ne' troppo pesante"):** l'auto ha una velocita' laterale
+  (`Player::vLat`) che insegue sterzo + spinta della curva con un ritardo che
+  cresce col quadrato della velocita' (`INERZIA_BASE_S = 0.04` piano,
+  `+ INERZIA_PUNTA_S = 0.20` alla punta). Piano e' pronta; forte si sente il
+  peso e in uscita di curva lo slancio verso l'esterno va ripreso con lo
+  sterzo. La spinta della curva non sposta piu' l'auto direttamente: passa da
+  `Player::spintaLat`.
+- **Sovrasterzo e controsterzo (Andrea 11/11, sostituisce la derapata
+  dell'08/11):** sotto il limite di aderenza (carico = |curva| x v^2 sotto
+  `PRESA_LIMITE = 0.38`) l'auto e' incollata e segue lo sterzo. Oltre il
+  limite, sterzando forte DENTRO (sterzo >= 0.5) col gas premuto, la coda
+  parte: l'angolo (`sovrasterzo_`, 0..1) cresce (`SOVRA_CRESCITA = 1.3`/s a
+  carico pieno, `PRESA_PIENA = 0.80`), il muso punta dentro e l'auto viene
+  tirata verso l'interno (`SOVRA_LAT = 1500` unita'/s ad angolo pieno); lo
+  sterzo sposta meno l'auto (`SOVRA_PRESA_STERZO = 0.75`: le ruote tengono
+  l'angolo). Il **controsterzo** (sterzare dalla parte opposta al muso)
+  riprende la coda (`SOVRA_RECUPERO = 2.4`/s); sterzo al centro
+  (`SOVRA_CALO`), carico sotto il limite (`SOVRA_PRESA_TORNA`) o gas alzato
+  (`SOVRA_SENZA_GAS`) la fanno rientrare. Le gomme che strisciano tolgono
+  velocita' (`SOVRA_FRENO_PER_S = 0.88`). Se l'angolo arriva in fondo:
+  **testacoda** (velocita' al 40%, botta, l'auto gira su se stessa per 0.7 s
+  con le pose piene alternate, sterzo inutile intanto). Si vede: posa che punta
+  dentro la curva anche controsterzando, coda fuori di qualche pixel, 1 px di
+  tremolio, fumo pieno, stridio (mixer `setSgommata`). Niente rotazione dello
+  sprite. Fuori strada, al bivio, all'arrivo e nell'incidente niente
+  sovrasterzo. Prove (11/11, gara SD): solo gas finisce il tempo alla 3a
+  tappa con 9 incidenti; chi sterza a fondo dentro ogni curva fa 6 testacoda e
+  arriva con 11 s; chi tiene la strada senza controsterzare 3-4 testacoda;
+  chi controsterza nessun testacoda e arriva con ~26 s.
+- **Partenza (Andrea 11/11: "se tengo giu' l'acceleratore per secondi al
+  conto alla rovescia gli altri restano tutti dietro: deve essere
+  realistica"):** in griglia il gas fa salire i giri (`GIRI_SALITA_S = 0.7`,
+  a gas alzato scendono in `GIRI_DISCESA_S = 0.9`); il contagiri e il motore li
+  mostrano, al limitatore il motore balbetta. Allo START: giri tra
+  `GIRI_BUONI_MIN = 0.55` e `GIRI_BUONI_MAX = 0.85` (perfetti a 0.70) =
+  partenza pulita; al limitatore (gas tenuto a fondo, `GIRI_LIMITATORE =
+  0.95`) le ruote pattinano per `PATTINA_S = 1.6` s (spinta -75%, fumo da
+  tutte e due le ruote, stridio, coda che ondeggia, motore che urla); poco gas
+  = motore seduto, parte piano. Nei primi `LANCIO_S = 3` s la spinta e'
+  limitata dall'aderenza (`LANCIO_ACC = 55` unita'/s^2, ~150 su 250 in 3 s):
+  nessuno scappa al via. I **rivali** nei primi 15 s accelerano come il
+  giocatore (`Player::spintaA`, stessa aderenza della partenza) e ognuno ha il
+  suo spunto (riflessi 0-0.25 s, c'e' chi pattina, chi si siede, chi parte
+  perfetto); in griglia non alzano il piede per la distanza minima, chi parte
+  male fa da tappo. Prove (11/11, gas a fondo per tutto il conto): 7o dopo 3 s,
+  in mezzo al gruppo; partenza perfetta: 2o dopo 3 s, primo dopo ~6 s;
+  nessun gas fino allo START: ultimo e rimonta. Dopo un incidente si riparte
+  con un po' di pattinamento (`RIPARTENZA_PATTINA = 0.5`). Senza partenza
+  (gate, prove) niente limite: l'accelerazione resta quella di sempre.
 - **Aperto agli agenti dal 09/11 (BLOCCO MIG1, Andrea 08/11 sera):** SOLO la
   sportellata contro i rivali (`AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`,
   `RIVALE_SORPASSO_DX`), danni/KO/recupero dei rivali e il volo dei paletti
-  abbattuti. Sterzo (`STEER_*`), curve (`CURVA_SPINTA_V2`), derapata
-  (`DERAPATA_*`), incidenti e tempi restano bloccati.
+  abbattuti. Sterzo (`STEER_*`), peso (`INERZIA_*`, `vLat`), curve
+  (`CURVA_SPINTA_V2`), sovrasterzo e testacoda (`PRESA_*`, `SOVRA_*`,
+  `TESTACODA_*`), partenza e pattinamento (`GIRI_*`, `LANCIO_*`, `PATTINA_*`,
+  spunto dei rivali), incidenti e tempi restano bloccati.
 - **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
   e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
   a colpirla di lato. I rivali che arrivano da dietro passano a
@@ -96,7 +136,9 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 - **Fuori strada:** rallenta, l'auto trema sul terreno; rientrando
   sull'asfalto un piccolo sobbalzo (`RIENTRO_S = 0.35`). Incidente solo dopo
   2 s fuori strada **e** sopra il 30% della punta (`OFFROAD_INCIDENTE_V`);
-  piano nell'erba rallenta e basta. Il ciglio resta: primo tocco rallenta e
+  piano nell'erba rallenta e basta. Una botta nell'erba (cartellone) che fa
+  scendere sotto il 30% non azzera il conto, lo fa calare (11/11): prima un
+  cartellone ogni mezzo secondo bastava a non fare mai l'incidente. Il ciglio resta: primo tocco rallenta e
   si ricorda, il secondo forte e' incidente.
 - **Sportellate ripetute:** memoria `colpiMemoria_` (+1 rivale, +1.5
   traffico, -1 ogni 5 s); a 3.5 e sopra il 40% della punta l'auto vola e fa
