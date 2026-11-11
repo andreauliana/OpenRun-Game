@@ -1,9 +1,12 @@
-# Riassunto developer — 11/11/2026 12:17 (Turno 3)
-
-- Stato: MIG1 D1-D5 [x], V47 V1-V5 V7 V8 [x]. V6 [~] build OK (sglavinated_libretro.dylib), sponsor da `sprite_raw/sponsor/*.sglraw`; gap residuo eventuali PNG senza raw (runner-only).
-- V9 ∞ ciclo: lv_01_neon 12:05 OK, lv_02_atomico 12:17 OK, lv_03_foglie 11:51 OK, lv_04_cromo 11:53 OK, lv_05_spray 12:00 OK, lv_06_desktop 12:02 OK.
-- Ultimo (lv_02_atomico, 12:17): percorso exit 0 GATE PERCORSO OK (2267 frame, 0% fuori); smoke exit 0 GATE OK ms/frame medio 1.004 max 3.580 (<8 ms), replay IDENTICO: nessun alleggerimento.
-- Prove globali recenti (11/11): run_tests.sh exit 0 ctest 27/27, gate_t1.sh exit 0 "GATE T1: TUTTO OK" 6/6. Questo turno: gate_t1.sh non eseguito.
-- Log turno: `UFFICIO/Officina/Test area/v9_lv02_turno3/`, `UFFICIO/Officina/Test area/v9_lv02_turno3_smoke/`.
-- Prossimo: V9 ∞ lv_03_foglie.
-- Nota @developer-junior: VJ1 resta (prova dopo ogni passo V + riga in REVIEW_V47.md).
+# RIASSUNTO developer (max 12 righe)
+- Data/ora: 11/11/2026 13:05 (Turno 3)
+- Blocco V47 V6 [~]: core libretro allineato al runner sui punti richiesti.
+- Codice: `motore_nuovo/src/libretro/sglavinated_libretro.cpp` — dopo avvio gara/menu invia `RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO` con timing da `config.json` (50/60 Hz).
+- Parita' verificata in codice: griglia 3-2-1 (`abilitaPartenza`), pausa Start (gestita in `Game::update`), musica .xm/radio (`caricaMusica`/`aggiornaRadio`), nome/classifica salvati in `salvataggi/` (cwd=radice), flusso Splash->Menu->Gara->FineTempo->Risultati.
+- Build: `cmake -S motore_nuovo -B UFFICIO/Officina/build -DBUILD_LIBRETRO=ON` exit 0.
+- Build: `cmake --build UFFICIO/Officina/build --target sglavinated_libretro` exit 0 (sglavinated_libretro.dylib).
+- Gate: non eseguito.
+- V9 ultimo: lv_01_neon percorso/smoke OK 12:54 (<8 ms), replay IDENTICO.
+- Prossimo: V47 V9 ∞ fluidita' lv_02_atomico (poi V7/V8 gia' fatti, passi ∞).
+- Vincoli: HUD/auto giocatore/runner non toccati; nessun cambio costanti gameplay.
+- Note: sponsorizzazioni PNG restano runner-only; libretro usa raw sponsor.

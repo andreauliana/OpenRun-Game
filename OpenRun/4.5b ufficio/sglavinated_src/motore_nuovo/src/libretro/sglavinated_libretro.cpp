@@ -188,6 +188,13 @@ bool avviaGioco(const char* percorsoContenuto) {
     // avviaGara() ha gia' preparato la gara che il menu avviera'.
     g_game->mostraMenu();
     g_heldPrev = 0;
+    // Frequenza da config.json (50/60 Hz): dopo il caricamento del gioco e'
+    // nota; si aggiorna il timing del frontend se diverso dal default.
+    if (env_cb) {
+        retro_system_av_info av{};
+        retro_get_system_av_info(&av);
+        env_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &av);
+    }
     return true;
 }
 
