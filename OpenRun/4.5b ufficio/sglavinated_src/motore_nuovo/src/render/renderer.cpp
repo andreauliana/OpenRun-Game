@@ -70,12 +70,15 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     giro_ = (f32)road.totalLength();
 
     // Cielo (parte superiore dello schermo) e terra (sotto l'orizzonte).
-    fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, HORIZON_Y - 1, tema_.cielo);
+    // Orizzonte che si muove un poco in salita e in discesa (Andrea 11/11):
+    // la telecamera segue la pendenza della strada sotto l'auto.
+    orizzonte_ = HORIZON_Y + (i32)std::lround(road.beccheggioPx(playerZ));
+    fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, orizzonte_ - 1, tema_.cielo);
     // Skyline sopra l'orizzonte (DECO1 2b: ogni tappa il suo skyline; durante la
     // transizione di tema si incrocia con il precedente, FORK1 punto 6).
     if (transizioneT_ < 1.0f) drawSkylineTransizione(skylineDa_, skylineA_, transizioneT_);
     else if (skylineSprite_.width > 0) drawSkyline(skylineSprite_);
-    fb_.fillRect(0, HORIZON_Y, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, tema_.erba);
+    fb_.fillRect(0, orizzonte_, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, tema_.erba);
     // Telecamera in galleria (Claude 08/11): fra la telecamera e la prima
     // sezione disegnata ci sono ancora pareti e soffitto, niente cielo.
     clipGalleria_ = false;
@@ -178,9 +181,11 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         const auto& lontano = projs_[i];
         const bool confine = lontano.index != vicino.index;
         // Salta se il segmento vicino non e' sotto il lontano (degenero/contigui).
+        const bool banda = ((vicino.index / BAND_SEGS) & 1) == 0;
+        if (vicino.sospeso && lontano.sospeso) drawTerraSospesa(vicino, lontano, banda, playerZ);
         if (lontano.screenY < vicino.screenY) {
             // Bande alternate ancorate ai segmenti del mondo, non allo schermo.
-            drawSegmentTrapezoid(vicino, lontano, ((vicino.index / BAND_SEGS) & 1) == 0, playerZ);
+            drawSegmentTrapezoid(vicino, lontano, banda, playerZ);
             // Ponte e rampe: il fianco dell'impalcato sotto il bordo vicino
             // (le fette piu' vicine lo coprono dove la strada passa davanti).
             // Solo da vicino: lontano, visto di taglio, sembrava una sbarra scura.
@@ -199,7 +204,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             const f32 base = lontano.acquaY + (vicino.acquaY - lontano.acquaY) * t;
             const f32 cx = lontano.screenX + (vicino.screenX - lontano.screenX) * t;
             const f32 scl = Road::DEPTH / zr;
-            if (base < (f32)HORIZON_Y - 1.0f) continue;
+            if (base < (f32)orizzonte_ - 1.0f) continue;
             drawOggettoTerra(o, cx, base, scl);
         }
         if (!confine) continue;
@@ -231,6 +236,68 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     drawRoadsideMarkers(playerZ);
 }
 
+// Terreno basso sotto ponte e rampe (mare, battigia, spiaggia, prato a
+// quota acqua) per una fetta. Claude 11/11 (Andrea: all'uscita dal ponte la
+// spiaggia compariva tardi e si vedevano zone verdi piatte): si dipinge anche
+// quando la strada della fetta e' nascosta dietro la cresta della discesa.
+// Il terreno e' piu' in basso della telecamera, quindi le sue fasce restano
+// in ordine sullo schermo anche dove la strada non si vede.
+void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::ProjectedSeg& next,
+                                bool band, f32 playerZ) {
+    const bool ponte = cur.acqua && next.acqua;
+    const i32 a0 = std::max((i32)next.acquaY, orizzonte_);
+    const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
+    // Riva sotto le rampe (Andrea 07/11): avvicinandosi al ponte il prato
+    // diventa spiaggia (trama Bayer dove sfuma), poi la schiuma e il mare;
+    // si vola sopra la costa prima di arrivare sull'acqua.
+    const i32 riva = cur.riva;
+    const bool mare = ponte || (riva >= 0 && riva < RIVA_ACQUA);
+    const bool schiuma = !ponte && riva == RIVA_ACQUA;
+    const bool spiaggia = !mare && riva >= 0 && riva < RIVA_ACQUA + RIVA_SABBIA + RIVA_SFUMA;
+    const f32 sfuma = spiaggia ? std::clamp((f32)(riva - RIVA_ACQUA - RIVA_SABBIA) / (f32)RIVA_SFUMA, 0.0f, 1.0f) : 1.0f;
+    const u32 prato = band ? tema_.erba : tema_.erbaAlt;
+    const u32 sabbia = band ? tema_.sabbia : lerpColore(tema_.sabbia, 0xFF000000u, 0.1f);
+    const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
+    const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
+    const f32 ya = next.acquaY, yb = cur.acquaY;
+    for (i32 y = a0; y <= a1; ++y) {
+        if (spiaggia && !schiuma) {
+            if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
+            else {
+                u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                    riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < sfuma ? prato : sabbia;
+            }
+            continue;
+        }
+        if (schiuma) { // battigia: schiuma bianca a trama sul mare
+            u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+            for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                riga[x] = BAYER4[y & 3][(x + (i32)(tempoS_ * 4.0f)) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
+            continue;
+        }
+        fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
+        if (!mare) continue; // erba sotto le rampe: niente onde
+        // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
+        // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
+        const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
+        const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
+        if (invZ <= 0.0f) continue;
+        const f32 zw = 1.0f / invZ;
+        const i32 fila = (i32)std::floor((playerZ + zw) / ONDA_PASSO_Z);
+        if ((fila & 1) == 0) continue;
+        const f32 xPerPx = zw / (Road::DEPTH * (Framebuffer::WIDTH / 2.0f)); // unita' mondo per pixel
+        for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+            const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
+            const i32 cella = (i32)std::floor(xw / ONDA_PASSO_X);
+            const u32 hsh = (u32)(fila * 73856093) ^ (u32)(cella * 19349663);
+            if ((hsh % 7u) != 0u) continue;
+            const f32 dentro = xw / ONDA_PASSO_X - (f32)cella;
+            if (dentro < 0.45f) fb_.put(x, y, riflesso);
+        }
+    }
+}
+
 void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                                     const Road::ProjectedSeg& next,
                                     bool band, f32 playerZ) {
@@ -248,59 +315,6 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const bool ponte = sospeso && cur.acqua && next.acqua;
     // PERC1 D4: galleria - pareti scure del tema ai lati, soffitto sopra la strada.
     const bool galleria = cur.galleria && next.galleria;
-    if (sospeso) {
-        const i32 a0 = std::max((i32)next.acquaY, HORIZON_Y);
-        const i32 a1 = std::min((i32)cur.acquaY, Framebuffer::HEIGHT - 1);
-        // Riva sotto le rampe (Andrea 07/11): avvicinandosi al ponte il prato
-        // diventa spiaggia (trama Bayer dove sfuma), poi la schiuma e il mare;
-        // si vola sopra la costa prima di arrivare sull'acqua.
-        const i32 riva = cur.riva;
-        const bool mare = ponte || (riva >= 0 && riva < RIVA_ACQUA);
-        const bool schiuma = !ponte && riva == RIVA_ACQUA;
-        const bool spiaggia = !mare && riva >= 0 && riva < RIVA_ACQUA + RIVA_SABBIA + RIVA_SFUMA;
-        const f32 sfuma = spiaggia ? std::clamp((f32)(riva - RIVA_ACQUA - RIVA_SABBIA) / (f32)RIVA_SFUMA, 0.0f, 1.0f) : 1.0f;
-        const u32 prato = band ? tema_.erba : tema_.erbaAlt;
-        const u32 sabbia = band ? tema_.sabbia : lerpColore(tema_.sabbia, 0xFF000000u, 0.1f);
-        const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
-        const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
-        const f32 ya = next.acquaY, yb = cur.acquaY;
-        for (i32 y = a0; y <= a1; ++y) {
-            if (spiaggia && !schiuma) {
-                if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
-                else {
-                    u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
-                    for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
-                        riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < sfuma ? prato : sabbia;
-                }
-                continue;
-            }
-            if (schiuma) { // battigia: schiuma bianca a trama sul mare
-                u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
-                for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
-                    riga[x] = BAYER4[y & 3][(x + (i32)(tempoS_ * 4.0f)) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
-                continue;
-            }
-            fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
-            if (!mare) continue; // erba sotto le rampe: niente onde
-            // Riflessi sulle onde in prospettiva: piccoli dall'alto, danno la
-            // misura dell'altezza. Ancorati al mondo (z e x), deterministici.
-            const f32 t = yb > ya ? ((f32)y - ya) / (yb - ya) : 1.0f;
-            const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
-            if (invZ <= 0.0f) continue;
-            const f32 zw = 1.0f / invZ;
-            const i32 fila = (i32)std::floor((playerZ + zw) / ONDA_PASSO_Z);
-            if ((fila & 1) == 0) continue;
-            const f32 xPerPx = zw / (Road::DEPTH * (Framebuffer::WIDTH / 2.0f)); // unita' mondo per pixel
-            for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
-                const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
-                const i32 cella = (i32)std::floor(xw / ONDA_PASSO_X);
-                const u32 hsh = (u32)(fila * 73856093) ^ (u32)(cella * 19349663);
-                if ((hsh % 7u) != 0u) continue;
-                const f32 dentro = xw / ONDA_PASSO_X - (f32)cella;
-                if (dentro < 0.45f) fb_.put(x, y, riflesso);
-            }
-        }
-    }
     const i32 dy = cy - ny;
     // Fetta piu' sottile di un pixel: niente strada, ma in galleria le pareti
     // si disegnano lo stesso (Andrea 11/11: in curva, lontano, le fette sono
@@ -348,7 +362,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
         const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
         const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
-        if (y >= HORIZON_Y && !sospeso && !galleria) {
+        if (y >= orizzonte_ && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
             i32 tx0 = 0, tx1 = Framebuffer::WIDTH - 1;
@@ -776,7 +790,7 @@ void Renderer::drawLuciTerra(const Road::ProjectedSeg& p) {
     // Luci di avvicinamento (Andrea 07/11): una fila di lampade basse ai due
     // lati; una luce piu' viva corre verso il ponte (o se ne allontana dopo la
     // discesa, o corre verso il bivio). Come le luci di una pista.
-    if (p.screenY < HORIZON_Y || p.screenY >= (f32)Framebuffer::HEIGHT) return;
+    if (p.screenY < orizzonte_ || p.screenY >= (f32)Framebuffer::HEIGHT) return;
     const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
     const i32 n = p.luci / LUCI_OGNI_SEG;
@@ -798,7 +812,7 @@ void Renderer::drawPortale(const Road::ProjectedSeg& p, u8 tipo, f32 coperto) {
     // Strutture sopra la strada nei punti di passaggio (Andrea 07/11:
     // "transizioni dei diversi tracciati piu' interessanti"). Disegnate a
     // codice, pochi colori + il colore del tema, come le torri del ponte.
-    if (p.screenY < HORIZON_Y - 40 || p.scale <= 0.0f) return;
+    if (p.screenY < orizzonte_ - 40 || p.scale <= 0.0f) return;
     const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 pxY = p.scale * 112.0f;
     const f32 hw = pxUnita * Road::ROAD_HALF_WORLD * std::max(p.carr.fattore, 0.5f);
@@ -1173,7 +1187,7 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
     for (const Road::ProjectedSeg& p : projs_) {
         f32 phase = std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING);
         if (phase < 0.0f) phase += ROADSIDE_MARKER_SPACING;
-        if (phase >= 50.0f || p.screenY < HORIZON_Y ||
+        if (phase >= 50.0f || p.screenY < orizzonte_ ||
             p.screenY >= (f32)Framebuffer::HEIGHT)
             continue;
         // Al bivio i paletti apparirebbero su un solo ramo: niente paletti finche'
@@ -1261,8 +1275,8 @@ void Renderer::drawSkyline(const Sprite& s) {
     const f32 scalaX = (f32)Framebuffer::WIDTH / (f32)s.width;
     i32 h = (i32)((f32)s.height * scalaX);
     if (h < 1) h = 1;
-    if (h > HORIZON_Y) h = HORIZON_Y; // entra interamente nella fascia cielo
-    const i32 y0 = HORIZON_Y - h;
+    if (h > orizzonte_) h = orizzonte_; // entra interamente nella fascia cielo
+    const i32 y0 = orizzonte_ - h;
     const bool palettePropria = !s.palette.empty();
     const i32 nPalette = (i32)s.palette.size();
     for (i32 sy = 0; sy < h; ++sy) {
