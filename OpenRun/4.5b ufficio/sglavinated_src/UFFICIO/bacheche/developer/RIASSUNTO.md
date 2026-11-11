@@ -1,12 +1,11 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 11/11/2026 13:05 (Turno 3)
-- Blocco V47 V6 [~]: core libretro allineato al runner sui punti richiesti.
-- Codice: `motore_nuovo/src/libretro/sglavinated_libretro.cpp` — dopo avvio gara/menu invia `RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO` con timing da `config.json` (50/60 Hz).
-- Parita' verificata in codice: griglia 3-2-1 (`abilitaPartenza`), pausa Start (gestita in `Game::update`), musica .xm/radio (`caricaMusica`/`aggiornaRadio`), nome/classifica salvati in `salvataggi/` (cwd=radice), flusso Splash->Menu->Gara->FineTempo->Risultati.
-- Build: `cmake -S motore_nuovo -B UFFICIO/Officina/build -DBUILD_LIBRETRO=ON` exit 0.
-- Build: `cmake --build UFFICIO/Officina/build --target sglavinated_libretro` exit 0 (sglavinated_libretro.dylib).
-- Gate: non eseguito.
-- V9 ultimo: lv_01_neon percorso/smoke OK 12:54 (<8 ms), replay IDENTICO.
-- Prossimo: V47 V9 ∞ fluidita' lv_02_atomico (poi V7/V8 gia' fatti, passi ∞).
-- Vincoli: HUD/auto giocatore/runner non toccati; nessun cambio costanti gameplay.
-- Note: sponsorizzazioni PNG restano runner-only; libretro usa raw sponsor.
+- Data/ora: 11/11/2026 13:22 (Turno 3)
+- V47 V6 [~]: libretro allineato al runner (`src/libretro/sglavinated_libretro.cpp`, timing 50/60 Hz da config, griglia/3-2-1, pausa, musica/radio, salvataggi, flusso menu-gara-risultati). Build libretro exit 0.
+- V47 V7 [~]: prealloc render `terraOrdine_.reserve(128)` in `motore_nuovo/src/render/renderer.cpp`; `cmake --build ... --target prova_gate` exit 0.
+- V47 V9 ∞ lv_03_foglie: percorso exit 0 "GATE PERCORSO OK" (2273 frame, 0% fuori); smoke exit 0 "GATE OK" ms/frame medio 0.984 max 3.630 (<8 ms), replay IDENTICO.
+- Caricamento lv_03_foglie: livello 2.8-3.5 ms, init 5.3-7.5 ms.
+- Nessun alleggerimento gameplay/dati (frame e caricamento sotto soglia); nessun cambio costanti gameplay.
+- V9 ciclo recente: lv_04, lv_05, lv_06, lv_01, lv_02, lv_03 misurati OK.
+- Gate: gate_t1.sh non eseguito (solo prova_gate lv_03 + build prova_gate in questo turno).
+- Prossimo: V47 V9 ∞ fluidita' lv_04_cromo.
+- Vincoli: HUD/auto giocatore/runner non toccati.

@@ -1,14 +1,14 @@
-Blocco/passo: V47 V6 Core libretro (RetroPie) — allineamento con runner SDL2 (un passo).
+Blocco/passo: V47 V9 ∞ fluidita' lv_03_foglie + V7 prealloc render (turno 11/11/2026 13:22).
 File cambiati:
-- motore_nuovo/src/libretro/sglavinated_libretro.cpp (notifica SET_SYSTEM_AV_INFO con timing 50/60 Hz da config dopo avvio)
+- motore_nuovo/src/render/renderer.cpp (terraOrdine_ reserve 64->128)
 - UFFICIO/bacheche/developer/diario.md (riga turno)
 - UFFICIO/bacheche/developer/RIASSUNTO.md (riscritto)
 - UFFICIO/out/developer/ULTIMO_TURNO.md (riscritto)
 
 Comandi ed exit code:
-- cmake -S motore_nuovo -B UFFICIO/Officina/build -DBUILD_LIBRETRO=ON -> exit 0
-- cmake --build UFFICIO/Officina/build --target sglavinated_libretro -> exit 0
+- ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v47_v9_lv03_percorso" lv_03_foglie percorso -> exit 0 ("GATE PERCORSO OK", 2273 frame, 0% fuori)
+- ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v47_v9_lv03_smoke" lv_03_foglie smoke -> exit 0 ("GATE OK", ms/frame medio 0.984 max 3.630, replay IDENTICO, caricamento 2.8-7.5 ms)
+- cmake --build UFFICIO/Officina/build --target prova_gate -> exit 0
 
-Esito: V6 parita' presente in codice: griglia/3-2-1, pausa Start, 50/60 Hz da config+timing frontend aggiornato, musica .xm/radio/reazioni, salvataggi nome/classifica (cwd=radice), flusso Splash->Menu->Gara->FineTempo->Risultati.
-Gate: non eseguito.
-Prossimo: V47 V9 ∞ fluidita' lv_02_atomico.
+Gate: gate_t1.sh non eseguito.
+Prossimo: V47 V9 ∞ fluidita' lv_04_cromo.

@@ -26,8 +26,8 @@ Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     copertura_.reserve((size_t)Road::DRAW_DIST * 4);
     // V47 V7: anche i buffer per-frame di drawRoad/drawSprites partono con la
     // capienza piena: push_back/resize nel ciclo non toccano l'heap.
-    terraOrdine_.reserve(64); // oggetti a terra in vista (boe, barche, faro)
-    spriteOrd_.reserve(512);  // scena completa: rivali + traffico + incroci + fissi visibili
+    terraOrdine_.reserve(128); // oggetti a terra in vista (boe, barche, faro)
+    spriteOrd_.reserve(512);   // scena completa: rivali + traffico + incroci + fissi visibili
 }
 
 i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
