@@ -825,8 +825,8 @@
     {
       "id": 13,
       "personaggio": "gianni",
-      "linea1": "EVERYONE DOES",
-      "linea2": "A LINE, WHY NOT?",
+      "linea1": "ALL DO A LINE,",
+      "linea2": "WHY NOT YOU?",
       "it1": "UNA RIGA LA",
       "it2": "FANNO TUTTI"
     },
@@ -897,8 +897,8 @@
     {
       "id": 22,
       "personaggio": "gianni",
-      "linea1": "THE UFO SEES YOU",
-      "linea2": "ARE YOU HIGH?",
+      "linea1": "THE UFO SEES",
+      "linea2": "YOU, TOO HIGH?",
       "it1": "L'UFO TI VEDE!",
       "it2": "SEI SBALLATO?"
     },
@@ -906,7 +906,7 @@
       "id": 23,
       "personaggio": "gianni",
       "linea1": "WATCH OUT FOR",
-      "linea2": "THE UFOS, BRO",
+      "linea2": "UFOS, BROTHER",
       "it1": "ATTENTO AGLI",
       "it2": "UFO, FRATE!"
     },
@@ -1001,8 +1001,8 @@
     {
       "id": 35,
       "personaggio": "gianni",
-      "linea1": "HEY, WHAT'S UP?",
-      "linea2": "STUCK HERE?",
+      "linea1": "HEY, WHAT NOW?",
+      "linea2": "ARE YOU STUCK?",
       "it1": "HEY, COSA FAI?",
       "it2": "TI SEI PIANTATO?"
     },
@@ -1010,7 +1010,7 @@
       "id": 36,
       "personaggio": "gianni",
       "linea1": "HEY, A BREAK?",
-      "linea2": "LIGHT ONE UP?",
+      "linea2": "WANNA LIGHT UP?",
       "it1": "HEY, PAUSETTA?",
       "it2": "ACCENDIAMO?"
     },
@@ -1026,7 +1026,7 @@
       "id": 38,
       "personaggio": "gianni",
       "linea1": "ALL STOPPED...",
-      "linea2": "ROLL ONE UP?",
+      "linea2": "WANT A JOINT?",
       "it1": "TUTTO FERMO...",
       "it2": "GIRA LA CARTINA?"
     },
@@ -1042,7 +1042,7 @@
       "id": 40,
       "personaggio": "gianni",
       "linea1": "CALL NO ONE,",
-      "linea2": "JUST SMOKE, BRO",
+      "linea2": "JUST SMOKE IT",
       "it1": "NON CHIAMARE",
       "it2": "NESSUNO, FUMA"
     },
@@ -1057,8 +1057,8 @@
     {
       "id": 42,
       "personaggio": "gianni",
-      "linea1": "WHAT BAD LUCK!",
-      "linea2": "PULL AND PASS",
+      "linea1": "BAD LUCK, HUH?",
+      "linea2": "PUFF AND PASS",
       "it1": "CHE SFIGA!",
       "it2": "TIRA E PASSA"
     },
@@ -1082,7 +1082,7 @@
       "id": 45,
       "personaggio": "gianni",
       "linea1": "HEY, ROLL ONE?",
-      "linea2": "WHY NOT?",
+      "linea2": "WHAT DO YOU SAY?",
       "it1": "HEY, FAMMO NO",
       "it2": "SPINO?"
     },
@@ -1090,15 +1090,15 @@
       "id": 46,
       "personaggio": "gianni",
       "linea1": "JUST ONE SMALL",
-      "linea2": "PULL, GO ON",
+      "linea2": "PUFF, GO ON",
       "it1": "DAI, SOLO UN",
       "it2": "TIRO LEGGERO"
     },
     {
       "id": 47,
       "personaggio": "gianni",
-      "linea1": "GRASS NEVER HURT",
-      "linea2": "NOBODY, BRO",
+      "linea1": "GRASS NEVER",
+      "linea2": "HURT ANYONE",
       "it1": "L'ERBA NON FA",
       "it2": "MALE A NESSUNO"
     },
@@ -1129,8 +1129,8 @@
     {
       "id": 51,
       "personaggio": "gianni",
-      "linea1": "ECSTASY WILL",
-      "linea2": "OPEN YOUR NIGHT",
+      "linea1": "ECSTASY OPENS",
+      "linea2": "UP YOUR NIGHT",
       "it1": "L'ECSTASY TI",
       "it2": "SBLOCCA LA SERA"
     },
@@ -1145,8 +1145,8 @@
     {
       "id": 53,
       "personaggio": "gianni",
-      "linea1": "LSD: ONE HIT",
-      "linea2": "AND YOU FLY AWAY",
+      "linea1": "LSD: ONE TAB",
+      "linea2": "AND YOU FLY",
       "it1": "LSD: UN CARTONE",
       "it2": "E VOLI VIA"
     },
@@ -1202,7 +1202,7 @@
       "id": 60,
       "personaggio": "gianni",
       "linea1": "GO OUT TONIGHT",
-      "linea2": "AND GET HIGH",
+      "linea2": "GET HIGH, BRO",
       "it1": "STASERA ESCI",
       "it2": "E TI SBALLI"
     },
@@ -1250,7 +1250,7 @@
       "id": 66,
       "personaggio": "gesu",
       "linea1": "DAMN, ENOUGH",
-      "linea2": "OF THAT STUFF",
+      "linea2": "WITH THAT STUFF",
       "it1": "MINCHIA, BASTA",
       "it2": "CON STA ROBA"
     },
@@ -1258,7 +1258,7 @@
       "id": 67,
       "personaggio": "gesu",
       "linea1": "YOU GET HIGH",
-      "linea2": "AND CRASH, NO?",
+      "linea2": "THEN CRASH, NO?",
       "it1": "TI FAI E SBANDI,",
       "it2": "COINCIDENZA?"
     },
@@ -1289,8 +1289,8 @@
     {
       "id": 71,
       "personaggio": "gesu",
-      "linea1": "YOU ARE DOOMED,",
-      "linea2": "YOU KNOW THAT?",
+      "linea1": "YOU ARE DONE",
+      "linea2": "FOR, YOU KNOW?",
       "it1": "STAI PER FINIRE,",
       "it2": "LO SAI, VERO?"
     },
@@ -1338,15 +1338,15 @@
       "id": 77,
       "personaggio": "gesu",
       "linea1": "DON'T LET THEM",
-      "linea2": "FOOL YOU",
+      "linea2": "FOOL YOU, BRO",
       "it1": "NON LASCIARTI",
       "it2": "INGANNARE"
     },
     {
       "id": 78,
       "personaggio": "gesu",
-      "linea1": "MOM IS WAITING",
-      "linea2": "AT HOME FOR YOU",
+      "linea1": "MOM WAITS FOR",
+      "linea2": "YOU BACK HOME",
       "it1": "TUA MADRE TI",
       "it2": "ASPETTA A CASA"
     },
@@ -1361,8 +1361,8 @@
     {
       "id": 80,
       "personaggio": "gesu",
-      "linea1": "DRUGS TAKE AWAY",
-      "linea2": "EVERYTHING",
+      "linea1": "DRUGS TAKE",
+      "linea2": "EVERYTHING AWAY",
       "it1": "LA DROGA TI",
       "it2": "TOGLIE TUTTO"
     },
