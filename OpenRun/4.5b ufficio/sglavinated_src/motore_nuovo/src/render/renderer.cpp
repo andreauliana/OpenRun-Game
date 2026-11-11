@@ -85,8 +85,11 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         clipGalleriaZ_ = 1e9f; // senza uscita in vista: niente luce del giorno
         // Fondo buio (in fondo al tubo): grigio cemento appena tinto del tema.
         const u32 fondo = lerpColore(lerpColore(0xFF5A5A64u, tema_.rumbleAlt, 0.12f), 0xFF000000u, 0.78f);
-        fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
-        // Bocca d'uscita: prima sezione fuori dalla galleria.
+        // Bocca d'uscita: prima sezione fuori dalla galleria. Dentro la bocca
+        // restano cielo, skyline e terra gia' dipinti (Claude 11/11: prima la
+        // bocca era riempita di cielo piatto e negli ultimi segmenti lo skyline
+        // spariva e poi ricompariva di colpo fuori); il buio va solo attorno.
+        bool bocca = false;
         for (size_t k = 1; k < projs_.size(); ++k) {
             if (projs_[k].galleria) continue;
             const Road::ProjectedSeg& u = projs_[k];
@@ -101,11 +104,16 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             const i32 bx0 = std::max(0, clipGx0_), bx1 = std::min(Framebuffer::WIDTH - 1, clipGx1_);
             const i32 by0 = std::max(0, clipGy0_), by1 = std::min(Framebuffer::HEIGHT - 1, (i32)u.screenY);
             if (bx1 >= bx0 && by1 >= by0) {
-                if (by0 < HORIZON_Y) fb_.fillRect(bx0, by0, bx1, std::min(by1, HORIZON_Y - 1), tema_.cielo);
-                if (by1 >= HORIZON_Y) fb_.fillRect(bx0, std::max(by0, HORIZON_Y), bx1, by1, tema_.erba);
+                constexpr i32 W1 = Framebuffer::WIDTH - 1, H1 = Framebuffer::HEIGHT - 1;
+                if (by0 > 0) fb_.fillRect(0, 0, W1, by0 - 1, fondo);
+                if (by1 < H1) fb_.fillRect(0, by1 + 1, W1, H1, fondo);
+                if (bx0 > 0) fb_.fillRect(0, by0, bx0 - 1, by1, fondo);
+                if (bx1 < W1) fb_.fillRect(bx1 + 1, by0, W1, by1, fondo);
+                bocca = true;
             }
             break;
         }
+        if (!bocca) fb_.fillRect(0, 0, Framebuffer::WIDTH - 1, Framebuffer::HEIGHT - 1, fondo);
     }
 
     // Galleria davanti, vista da fuori: la bocca si riempie prima di buio, cosi'
