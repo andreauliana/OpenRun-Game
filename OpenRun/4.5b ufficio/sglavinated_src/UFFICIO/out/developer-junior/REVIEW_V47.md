@@ -1,13 +1,12 @@
-# REVIEW_V47 @developer-junior (riscritto 11/11 turno 11:40)
+# REVIEW V47 (riscritta) — @developer-junior
+Turno 11/11 12:07, VJ5 ∞.
 
-- **VJ5 review codice [11/11 11:40] — `src/render/sprite_raw.cpp:46-67` (decodifica raw SGLR):** (a) la quantizzazione a palette fa una scansione lineare della palette per OGNI pixel (O(npix x |palette|)): e' solo tempo di caricamento (non nel ciclo di gioco) ma incide sulle misure V8; con sprite grandi e palette che arriva a 256 il costo cresce molto. Semplificazione sicura: cache colore->indice (mappa o ultimo colore, la pixel art ha run lunghi) — risultato identico perche' le voci di palette esistenti non cambiano mai. (b) `sprite_raw.cpp:73-75`: su errore restituisce Sprite vuoto senza distinguere "file mancante" da "file corrotto" e senza log; i chiamanti (es. `game.cpp:634` skyline) stanno zitti — stesso pattern gia' segnalato per gli sponsor. Aggiunta in gate: `test/prova_gate.cpp` ora segnala raw decodificati ma del tutto trasparenti (`spriteVisibile`, sponsor/rivali/traffico): con i dati attuali nessun warning, 21/21 + 7/7 visibili.
-- **VJ5 review codice [11/11 11:19] — `src/runner/sponsor_loader.cpp:84-110` + `src/libretro/sglavinated_libretro.cpp:163-182` (cartelloni sponsor):** PNG illeggibile saltato senza log; percorso raw hardcoded che ignora `radice`; stessa mappa "id/stile" replicata in 3 punti (consiglio helper core `sgl::caricaSponsorRaw`). `libretro:167-170` check `sec` morto: se la cartella sponsor manca il core carica zero cartelloni in silenzio.
-- **VJ5 review codice [11/11 11:04] — `src/libretro/sglavinated_libretro.cpp:250-254`:** `retro_reset` chiama `g_game->mostraMenu()` senza check null (possibile deref se reset con `g_game == nullptr`).
-- **VJ5 review codice [11/11 10:58] — `src/libretro/sglavinated_libretro.cpp:126-134`:** leak `g_game` sul ritorno anticipato con radice vuota.
-- **VJ5 review codice [11/11 08:41] — `src/render/renderer.cpp:29`:** `terraOrdine_.reserve(64)` basso vs ~63/300 segmenti mare; consiglio `reserve(Road::DRAW_DIST + 8)`.
-- **VJ4 soak [x] (6/6) — 11/11:** lv_01-lv_06 exit 0 GATE OK, 30000f replay 2x IDENTICO, nessun crash. ms/frame medio/max: lv_01 1.984/133.015, lv_02 1.807/96.036, lv_03 1.715/84.185, lv_04 1.573/124.742, lv_05 1.905/90.511, lv_06 1.471/125.586 (`Test area/vj4_soak_1111/`).
-- **VJ3 50/60 Hz [x] — 6/6 livelli** (11/11): replay IDENTICO a 50 e 60 Hz, exit 0; regime 1.66-2.05 ms (`vj3_freq_1111*`).
-- **VJ1 su V6 [x] (11/11):** ctest 27/27. Rilievo: `AUDIO_FRAME_SAMPLES=44100/60` fisso (`game.h:48`, libretro 187, runner 312) → a 50 Hz musica ~16% lenta.
-- **VJ2 ponte/riva [~]:** 27 PPM in `Test area/vj2_riva_run/vj2_riva/` (lv_01/lv_04/lv_06, exit 0); ispezione visiva ad Andrea.
-- **J3 MIG1 [~] bloccato:** `game.cpp:2386` soglia 0.220>0.200; `game.cpp:2390` clamp 240 vs 242 (src invariato).
-- **Gate:** `gate_t1.sh` non eseguito questo turno; prova mirata `prova_gate "UFFICIO/Officina/Test area/vj5_rawvis_1111" lv_02_atomico smoke` exit 0 GATE OK (21/21 sponsor, 0 trasparenti, ms/frame 0.930/3.235, replay 2x IDENTICO).
+## Cambio rivisto
+- `motore_nuovo/src/render/renderer.cpp` commit da1c8c6 (V47 V7): riserve in `Renderer::Renderer` per buffer per-frame.
+
+## Rilievo
+- `renderer.cpp:29-30`: `terraOrdine_.reserve(64)` e `spriteOrd_.reserve(512)` riducono allocazioni iniziali, ma `spriteOrd_` viene `resize(sprites.size())` a ogni `drawSprites` (`renderer.cpp:1325`): se gli sprite visibili superano 512 (rivali+traffico+incroci+fissi) si rialloca nel ciclo, riducendo il beneficio V7. Suggerimento: alzare la riserva al caso peggiore misurato o tracciare il massimo; analogo rischio minore per `terraOrdine_` se gli oggetti a terra crescono oltre 64.
+
+## Prova
+- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0 (dopo edit `motore_nuovo/test/prova_gate.cpp` nota VJ5 12:07).
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_renderer_1207" lv_01_neon caricamento` exit 0, GATE CARICAMENTO OK (init 24.5 ms, avviaGara 10.2/9.0 ms). gate_t1.sh non eseguito.

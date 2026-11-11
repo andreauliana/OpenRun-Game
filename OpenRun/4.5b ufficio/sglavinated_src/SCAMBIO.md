@@ -1722,3 +1722,27 @@ blocchi fatti [x]: 42
 blocchi da fare [ ]: 4
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 2 | REVIEWER | 2026-11-11 12:13 | [APERTA]
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi recap.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+quota open: 99.3% (8197473 di 8253005 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 42
+blocchi da fare [ ]: 4
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

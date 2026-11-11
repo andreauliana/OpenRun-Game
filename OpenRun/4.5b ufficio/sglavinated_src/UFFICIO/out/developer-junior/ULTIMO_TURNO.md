@@ -1,19 +1,8 @@
-# ULTIMO_TURNO — developer-junior (11/11/2026 11:40)
-
-## Blocco e passo
-- BLOCCO V47 / VJ5 ∞ review del codice (file nuovo rispetto al turno prima: `render/sprite_raw.cpp`).
-
-## File cambiati
-- `motore_nuovo/test/prova_gate.cpp`: aggiunto `spriteVisibile()` + warning se un raw sponsor/rivale/traffico decodifica ma resta tutto trasparente (pixel tutti indice 0).
-- `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `RIASSUNTO.md` (riscritto).
-
-## Comandi ed exit code
-- `cmake --build UFFICIO/Officina/build --target prova_gate` — exit 0.
-- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_rawvis_1111" lv_02_atomico smoke` — exit 0 GATE OK: 21/21 sponsor e 7/7 rivali caricati e visibili, 0 warning trasparenti, replay 2x IDENTICO, ms/frame medio 0.930 max 3.235.
-
-## Review VJ5 (dettagli in REVIEW_V47.md)
-- `src/render/sprite_raw.cpp:46-67`: scansione lineare palette per ogni pixel, O(npix x |palette|) al caricamento (incide sulle misure V8); consiglio cache colore->indice (risultato identico, voci esistenti immutabili).
-- `sprite_raw.cpp:73-75`: errore → Sprite vuoto silenzioso, nessuna distinzione file mancante vs corrotto (chiamanti come `game.cpp:634` non loggano).
-
-## Esito
-- VJ5 ∞ fatto su file nuovo; nessuno sprite tutto trasparente nei dati attuali. gate_t1.sh non eseguito.
+# ULTIMO TURNO — @developer-junior (11/11 12:07)
+- Blocco/passo: V47 VJ5 ∞ (review ultimo cambio src non ancora coperto: renderer.cpp da1c8c6).
+- File cambiati: `motore_nuovo/test/prova_gate.cpp` (nota VJ5 12:07 su review renderer), `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritta), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`.
+- Review: `renderer.cpp:29-30,1325` riserve V7 `terraOrdine_(64)`/`spriteOrd_(512)` ma `spriteOrd_.resize(sprites.size())` per frame può riallocare se >512 sprite visibili.
+- Comandi: `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0.
+- Comandi: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_renderer_1207" lv_01_neon caricamento` exit 0 (GATE CARICAMENTO OK, init 24.5 ms, avviaGara 10.2 ms).
+- gate_t1.sh: non eseguito.
+- Problemi residui: riserva `spriteOrd_` potenzialmente bassa in scene affollate (rilievo review, nessun fix in src).

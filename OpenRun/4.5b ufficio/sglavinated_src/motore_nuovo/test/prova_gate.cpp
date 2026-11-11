@@ -13,6 +13,8 @@
 //                           nessun ribaltamento, offroad consecutivi <= N)
 //                decorazioni (DECO1: catalogo skyline/oggetti per livello, cartelloni,
 //                           ms/frame, screenshot PPM per livello)
+//                sponsor_raw (VJ5: raw dei cartelloni visti dal core libretro -
+//                           chiavi "id/stile", decodifica, stili dei livelli)
 //                urto (RIV punto a: urto con un avversario, nessun ribaltamento,
 //                      velocita' > 0 dopo l'urto, controlli attivi entro 1.5 s;
 //                      AUTO1 J-A1: pose dell'auto - dritto, sterzo pieno sx/dx,
@@ -97,21 +99,25 @@ void salvaPPM(const std::string& path, const u32* px, int w, int h) {
 
 // Un raw che decodifica (header e dimensioni valide) ma resta tutto trasparente
 // (pixel tutti indice 0) vale come mancante: il file c'e', il contenuto no
-// (es. conversione con alpha sotto 128 dappertutto). VJ5 11/11 su sprite_raw.cpp.
+// (es. conversione con alpha sotto 128 dappertutto). VJ5 11/11 su sprite_raw.cpp. VJ5 11/11 12:07 review renderer.cpp da1c8c6 (reserve terraOrdine_/spriteOrd_).
 bool spriteVisibile(const Sprite& s) {
     for (u8 idx : s.pixels)
         if (idx != 0) return true;
     return false;
 }
 
+// Tabelle dei cartelloni: stessi 7 sponsor e 3 stili di runner/sponsor_loader.cpp.
+// A livello di file perche' servono sia al caricamento sia al controllo della
+// scansione usata dal core libretro (verificaSponsorCore).
+const char* kSponsorId[7] = {
+    "curve_pericolose", "brinis_udine", "piston_high", "canna_bis",
+    "slow_down", "erba_medica", "green_box"};
+const char* kStile[3] = { "neon", "atomico", "foglie" };
+
 // Cartelloni sponsor veri (raw SGLR generati da strumenti_py/png_a_raw.py): stesso
 // ordine e stessi sponsor_id del runner (runner/sponsor_loader.cpp), cosi' il gate
 // disegna gli stessi sprite del gioco. Da chiamare PRIMA di init().
 void caricaSponsor(Game& game) {
-    static const char* kSponsorId[7] = {
-        "curve_pericolose", "brinis_udine", "piston_high", "canna_bis",
-        "slow_down", "erba_medica", "green_box"};
-    static const char* kStile[3] = { "neon", "atomico", "foglie" };
     std::vector<std::pair<std::string, Sprite>> sprites;
     for (const char* id : kSponsorId) {
         for (const char* stile : kStile) {
@@ -128,6 +134,111 @@ void caricaSponsor(Game& game) {
     // rilievo fatto al caricamento sponsor del core libretro, VJ5 11/11).
     std::printf("prova_gate: cartelloni sponsor %zu/%d caricati\n", sprites.size(), 21);
     game.setSponsorSprites(std::move(sprites));
+}
+
+// VJ5 (11/11, passo infinito, file nuovo): il core libretro (`avviaGioco` in
+// src/libretro/sglavinated_libretro.cpp) carica i cartelloni scansionando la
+// cartella raw e ricavando la chiave "id/stile" dallo stem del file (rfind('_')),
+// mentre il runner (runner/sponsor_loader.cpp) usa le 7x3 combinazioni fisse.
+// Qui si replica la scansione del core e si verifica che:
+//  1. ogni .sglraw decodifichi e abbia pixel non trasparenti;
+//  2. le chiavi ricavate siano esattamente le 21 attese (una mancante = cartellone
+//     assente nel core senza avviso: il core non logga i mancanti);
+//  3. ogni livello abbia stile_cartellone fra i 3 stili con i raw, cosi' la ricerca
+//     "id/stile" ha sempre successo e l'ordine di scansione del filesystem non
+//     decide il ripiego "qualsiasi stile" (diverso fra runner e core).
+bool verificaSponsorCore() {
+    namespace fs = std::filesystem;
+    const std::string dir = "motore_nuovo/dati/sprite_raw/sponsor";
+    std::vector<std::string> attese;
+    for (const char* id : kSponsorId)
+        for (const char* stile : kStile) attese.push_back(std::string(id) + "/" + stile);
+
+    std::error_code sec;
+    if (!fs::is_directory(dir, sec)) {
+        std::printf("FALLITO: %s mancante o illeggibile: il core caricherebbe 0 cartelloni in silenzio\n",
+                    dir.c_str());
+        return false;
+    }
+    bool ok = true;
+    std::vector<std::string> chiavi;
+    i32 file = 0;
+    for (const auto& e : fs::directory_iterator(dir, sec)) {
+        if (sec) break;
+        std::error_code se;
+        if (!e.is_regular_file(se) || se) continue;
+        const fs::path p = e.path();
+        if (p.extension() != ".sglraw") continue;
+        ++file;
+        const std::string stem = p.stem().string();
+        const size_t pos = stem.rfind('_');
+        if (pos == std::string::npos) {
+            std::printf("FALLITO: %s senza '_': il core non ne ricava la chiave\n",
+                        p.filename().string().c_str());
+            ok = false;
+            continue;
+        }
+        const std::string chiave = stem.substr(0, pos) + "/" + stem.substr(pos + 1);
+        if (std::find(attese.begin(), attese.end(), chiave) == attese.end())
+            std::printf("ATTENZIONE: %s ricava la chiave %s, non usata dal gioco\n",
+                        p.filename().string().c_str(), chiave.c_str());
+        const Sprite s = caricaSpriteRaw(p.string());
+        if (s.width <= 0) {
+            std::printf("FALLITO: %s non decodifica\n", p.filename().string().c_str());
+            ok = false;
+        } else if (!spriteVisibile(s)) {
+            std::printf("FALLITO: %s decodificato ma tutto trasparente\n", p.filename().string().c_str());
+            ok = false;
+        }
+        chiavi.push_back(chiave);
+    }
+    std::printf("sponsor core: %d file .sglraw, %zu chiavi ricavate, %zu attese\n",
+                file, chiavi.size(), attese.size());
+    for (const std::string& a : attese) {
+        if (std::find(chiavi.begin(), chiavi.end(), a) == chiavi.end()) {
+            std::printf("FALLITO: chiave attesa mancante %s\n", a.c_str());
+            ok = false;
+        }
+    }
+    if (chiavi.size() != attese.size()) {
+        std::printf("FALLITO: chiavi ricavate %zu, attese %zu\n", chiavi.size(), attese.size());
+        ok = false;
+    }
+    // Ordine della cartella: il core lo eredita dal filesystem (non specificato).
+    // Se non coincide con l'ordine fisso del runner, il ripiego "qualsiasi stile"
+    // sceglie un cartellone diverso fra runner e core: rilievo, non errore finche'
+    // ogni livello dichiara uno stile fra i 3 con i raw.
+    std::printf("sponsor core: ordine cartella %s all'ordine del runner\n",
+                chiavi == attese ? "uguale" : "DIVERSO");
+
+    static const char* kLivelli[6] = { "lv_01_neon", "lv_02_atomico", "lv_03_foglie",
+                                       "lv_04_cromo", "lv_05_spray", "lv_06_desktop" };
+    for (const char* lv : kLivelli) {
+        std::ifstream f(std::string("motore_nuovo/dati/livelli/") + lv + "/livello.json");
+        std::stringstream ss;
+        ss << f.rdbuf();
+        JsonReader r(ss.str());
+        std::string stile;
+        if (!r.parse() || !jsonIsObject(r.valore())) {
+            std::printf("FALLITO: %s illeggibile per il controllo stile cartellone\n", lv);
+            ok = false;
+            continue;
+        }
+        JsonValue tg;
+        if (jsonGet(jsonAsObject(r.valore()), "tema_grafico", tg) && jsonIsObject(tg)) {
+            JsonValue sv;
+            if (jsonGet(jsonAsObject(tg), "stile_cartellone", sv) && jsonIsString(sv))
+                stile = jsonAsString(sv);
+        }
+        bool disponibile = false;
+        for (const char* s : kStile)
+            if (stile == s) disponibile = true;
+        std::printf("sponsor core: %s stile_cartellone=%s %s\n", lv,
+                    stile.empty() ? "(assente)" : stile.c_str(),
+                    disponibile ? "ok" : "FUORI DAI 3 STILI (ripiego)");
+        if (!disponibile) ok = false;
+    }
+    return ok;
 }
 
 // Auto rivali (RIV punto b): sprite veri dal catalogo, stesso percorso del runner.
@@ -166,6 +277,56 @@ void caricaSkyline(Game& game, const std::string& livello) {
     Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/scenari/") + livello + "/skyline.sglraw");
     if (s.width > 0) game.setSkylineSprite(std::move(s));
     else std::printf("prova_gate: skyline %s non trovato\n", livello.c_str());
+}
+
+// V8 (Caricamento, @developer 11/11): il core ora misura init()/caricaLivello()/
+// avviaGara() e scrive "CARICAMENTO ... ms" su stdout (game.cpp:486/654/847/1024/
+// 1172/1224). Il gate cattura quelle righe nel log, ma per il criterio di V47
+// ("se un caricamento supera 1 s sul Mac, alleggeriscilo") serve un numero
+// misurato dal lato test: qui si ripete lo stesso percorso del runner (sponsor,
+// rivali, skyline, poi init) e si stampa il tempo di
+//  1. init()    = avvio del livello (config, livello, pose auto, frasi, musica),
+//     cioe' la base su cui poi si presenta il menu;
+//  2. avviaGara() sulla stessa partita = partenza gara, che richiama init()
+//     (game.cpp:1205) e quindi ricarica livello + pose + frasi: il costo del
+//     doppio caricamento si vede nel rapporto avviaGara/init;
+//  3. un secondo avviaGara(..., true): partenza di una gara corsa singola dopo
+//     la prima, come quando si riparte senza uscire dal gioco.
+// Soglia: 1000 ms ciascuno (Mac), exit 30 se fuori.
+bool verificaCaricamento(const std::string& livello) {
+    const double LIMITE_MS = 1000.0;
+    auto cronometro = [](auto&& azione) {
+        const auto t0 = std::chrono::steady_clock::now();
+        azione();
+        return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    };
+
+    Game game(12345u);
+    caricaSponsor(game); caricaRivali(game); caricaSkyline(game, livello);
+    const double msInit = cronometro([&game, &livello] { game.init(livello); });
+    bool garaOk = false;
+    const double msGara = cronometro([&game, &garaOk] { garaOk = game.avviaGara(); });
+    bool secondaOk = false;
+    const double msSeconda = cronometro([&game, &secondaOk] {
+        secondaOk = game.avviaGara("motore_nuovo/dati/percorso_gara.json", true);
+    });
+
+    std::printf("caricamento %s: init=%.1f ms  avviaGara=%.1f ms  avviaGara singola=%.1f ms "
+                "(avviaGara/init=%.2fx) soglia %.0f ms\n",
+                livello.c_str(), msInit, msGara, msSeconda,
+                msInit > 0.0 ? msGara / msInit : 0.0, LIMITE_MS);
+    // avviaGara() non usa il livello di init(): riparte dalla "partenza" di
+    // percorso_gara.json (game.cpp:1181/1205), quindi con lv_06 le due misure
+    // di gara sono in realta' la prima tappa del percorso. Va detto nel log,
+    // altrimenti il numero sembra del livello sbagliato.
+    std::printf("caricamento: avviaGara carica la tappa di partenza del percorso (%s), "
+                "non %s\n", game.tappaCorrente().c_str(), livello.c_str());
+    bool ok = garaOk && secondaOk;
+    if (!ok) std::printf("FALLITO: avviaGara() non ha caricato la gara\n");
+    if (msInit > LIMITE_MS) { std::printf("FALLITO: init oltre %.0f ms\n", LIMITE_MS); ok = false; }
+    if (msGara > LIMITE_MS) { std::printf("FALLITO: avvio gara oltre %.0f ms\n", LIMITE_MS); ok = false; }
+    if (msSeconda > LIMITE_MS) { std::printf("FALLITO: cambio tappa oltre %.0f ms\n", LIMITE_MS); ok = false; }
+    return ok;
 }
 
 u64 padPerFrame(i32 frameAssoluto) {
@@ -3727,6 +3888,20 @@ int main(int argc, char** argv) {
         const bool ok = verificaTratti(outDir);
         std::printf("%s\n", ok ? "GATE TRATTI OK" : "FALLITO: tratti non coerenti");
         return ok ? 0 : 26;
+    }
+
+    if (modo == "sponsor_raw") {
+        const bool ok = verificaSponsorCore();
+        std::printf("%s\n", ok ? "GATE SPONSOR RAW OK"
+                               : "FALLITO: cartelloni raw del core non allineati al runner");
+        return ok ? 0 : 27;
+    }
+
+    if (modo == "caricamento") {
+        const bool ok = verificaCaricamento(livello);
+        std::printf("%s\n", ok ? "GATE CARICAMENTO OK"
+                               : "FALLITO: caricamento livello/menu/gara oltre la soglia V8");
+        return ok ? 0 : 30;
     }
 
     // --- modo smoke (default) ---

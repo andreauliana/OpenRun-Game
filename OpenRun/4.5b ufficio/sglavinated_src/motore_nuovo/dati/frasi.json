@@ -809,8 +809,8 @@
     {
       "id": 11,
       "personaggio": "gianni",
-      "linea1": "BIG NEEDLE?",
-      "linea2": "JUST ONCE, C'MON",
+      "linea1": "A FAT NEEDLE?",
+      "linea2": "JUST ONE, OK?",
       "it1": "SIRINGONE?",
       "it2": "UNA SOLA, DAI"
     },
@@ -825,7 +825,7 @@
     {
       "id": 13,
       "personaggio": "gianni",
-      "linea1": "EVERYONE DOES",
+      "linea1": "ALL DO IT NOW,",
       "linea2": "WHY NOT YOU?",
       "it1": "UNA RIGA LA",
       "it2": "FANNO TUTTI"
@@ -905,16 +905,16 @@
     {
       "id": 23,
       "personaggio": "gianni",
-      "linea1": "WATCH OUT FOR",
-      "linea2": "UFOS, BROTHER",
+      "linea1": "MIND THE UFOS,",
+      "linea2": "BROTHER",
       "it1": "ATTENTO AGLI",
       "it2": "UFO, FRATE!"
     },
     {
       "id": 24,
       "personaggio": "gianni",
-      "linea1": "DRUGS AND DRIVE",
-      "linea2": "CAN KILL YOU",
+      "linea1": "DRIVE ON DRUGS?",
+      "linea2": "YOU COULD DIE",
       "it1": "DROGA E VOLANTE:",
       "it2": "MORTE CERTA"
     },
@@ -929,8 +929,8 @@
     {
       "id": 26,
       "personaggio": "gianni",
-      "linea1": "DON'T GET HIGH",
-      "linea2": "WHEN YOU DRIVE",
+      "linea1": "NEVER DRIVE",
+      "linea2": "WHILE HIGH, BRO",
       "it1": "NIENTE SBALLO",
       "it2": "SE GUIDI"
     },
@@ -993,7 +993,7 @@
     {
       "id": 34,
       "personaggio": "gianni",
-      "linea1": "A SYRINGE IS",
+      "linea1": "ONE SYRINGE IS",
       "linea2": "A DEATH TRAP",
       "it1": "UNA SIRINGA E'",
       "it2": "UNA BARA APERTA"
@@ -1001,8 +1001,8 @@
     {
       "id": 35,
       "personaggio": "gianni",
-      "linea1": "HEY, WHAT NOW?",
-      "linea2": "ARE YOU STUCK?",
+      "linea1": "HEY, WHAT'S UP?",
+      "linea2": "STUCK AGAIN?",
       "it1": "HEY, COSA FAI?",
       "it2": "TI SEI PIANTATO?"
     },
@@ -1017,8 +1017,8 @@
     {
       "id": 37,
       "personaggio": "gianni",
-      "linea1": "ROLL ONE NOW",
-      "linea2": "WANNA TRY IT",
+      "linea1": "ROLL ONE UP,",
+      "linea2": "WANT A TRY?",
       "it1": "NE STAI FACENDO",
       "it2": "SU UNO, VERO?"
     },
@@ -1026,7 +1026,7 @@
       "id": 38,
       "personaggio": "gianni",
       "linea1": "STANDING STILL?",
-      "linea2": "WANNA ROLL ONE?",
+      "linea2": "LET'S ROLL ONE",
       "it1": "TUTTO FERMO...",
       "it2": "GIRA LA CARTINA?"
     },
@@ -1041,8 +1041,8 @@
     {
       "id": 40,
       "personaggio": "gianni",
-      "linea1": "CALL NO ONE,",
-      "linea2": "JUST SMOKE IT",
+      "linea1": "TELL NO ONE,",
+      "linea2": "JUST LIGHT UP",
       "it1": "NON CHIAMARE",
       "it2": "NESSUNO, FUMA"
     },
@@ -1057,7 +1057,7 @@
     {
       "id": 42,
       "personaggio": "gianni",
-      "linea1": "BAD LUCK, HUH?",
+      "linea1": "BAD LUCK, BRO?",
       "linea2": "PUFF AND PASS",
       "it1": "CHE SFIGA!",
       "it2": "TIRA E PASSA"
@@ -1073,7 +1073,7 @@
     {
       "id": 44,
       "personaggio": "gianni",
-      "linea1": "NICE CURVE NOW",
+      "linea1": "NICE CURVE, HUH?",
       "linea2": "RIDE WITH ME",
       "it1": "CHE BELLA CURVA,",
       "it2": "COME LA CANNA"
@@ -1081,8 +1081,8 @@
     {
       "id": 45,
       "personaggio": "gianni",
-      "linea1": "WANNA ROLL ONE",
-      "linea2": "SAY YES BRO",
+      "linea1": "WANNA ROLL ONE?",
+      "linea2": "SAY YES, BRO",
       "it1": "HEY, FAMMO NO",
       "it2": "SPINO?"
     },
@@ -1097,7 +1097,7 @@
     {
       "id": 47,
       "personaggio": "gianni",
-      "linea1": "GRASS NEVER",
+      "linea1": "WEED NEVER",
       "linea2": "HURT ANYONE",
       "it1": "L'ERBA NON FA",
       "it2": "MALE A NESSUNO"
@@ -1137,7 +1137,7 @@
     {
       "id": 52,
       "personaggio": "gianni",
-      "linea1": "TAKE ONE PILL",
+      "linea1": "ONE PILL NOW,",
       "linea2": "DANCE ALL NIGHT",
       "it1": "UNA PASTICCA E",
       "it2": "BALLI PER ORE"
@@ -1145,24 +1145,24 @@
     {
       "id": 53,
       "personaggio": "gianni",
-      "linea1": "LSD: ONE TAB",
-      "linea2": "AND YOU FLY",
+      "linea1": "ONE TAB OF LSD",
+      "linea2": "AND OFF YOU FLY",
       "it1": "LSD: UN CARTONE",
       "it2": "E VOLI VIA"
     },
     {
       "id": 54,
       "personaggio": "gianni",
-      "linea1": "GRASS IS SAFE",
-      "linea2": "SO PUFF AWAY",
+      "linea1": "GRASS IS SAFE,",
+      "linea2": "JUST PUFF AWAY",
       "it1": "ERBA SOTTO,",
       "it2": "FAI LA DIFESA"
     },
     {
       "id": 55,
       "personaggio": "gianni",
-      "linea1": "HIGH AT SPEED",
-      "linea2": "FEEL LIKE GOD",
+      "linea1": "HIGH AT SPEED,",
+      "linea2": "FEEL LIKE A GOD",
       "it1": "A 250 FUMATO",
       "it2": "TI SENTI UN DIO"
     },
@@ -1170,7 +1170,7 @@
       "id": 56,
       "personaggio": "gianni",
       "linea1": "NO ONE WILL",
-      "linea2": "EVER FIND OUT",
+      "linea2": "EVER KNOW",
       "it1": "NESSUNO LO",
       "it2": "SAPRA MAI"
     },
@@ -1201,7 +1201,7 @@
     {
       "id": 60,
       "personaggio": "gianni",
-      "linea1": "GO OUT TONIGHT",
+      "linea1": "GO OUT TONIGHT,",
       "linea2": "GET HIGH, BRO",
       "it1": "STASERA ESCI",
       "it2": "E TI SBALLI"
@@ -1218,7 +1218,7 @@
       "id": 62,
       "personaggio": "gianni",
       "linea1": "WHY STOP AT",
-      "linea2": "ONE JOINT?",
+      "linea2": "JUST ONE?",
       "it1": "PERCHE' FERMARTI",
       "it2": "ALLA CANNA?"
     },
@@ -1233,8 +1233,8 @@
     {
       "id": 64,
       "personaggio": "gianni",
-      "linea1": "LOST AND STUCK",
-      "linea2": "SMOKE TO HOPE",
+      "linea1": "LOST AND STUCK?",
+      "linea2": "SMOKE FOR HOPE",
       "it1": "STRAI E FUMI,",
       "it2": "CHIODI, SPERANZE"
     },
@@ -1242,15 +1242,15 @@
       "id": 65,
       "personaggio": "gianni",
       "linea1": "STUCK LIKE ME?",
-      "linea2": "COME WITH ME",
+      "linea2": "THEN FOLLOW ME",
       "it1": "FUORI ANCHE TU?",
       "it2": "POI CI SEI, BRO"
     },
     {
       "id": 66,
       "personaggio": "gesu",
-      "linea1": "DAMN, ENOUGH",
-      "linea2": "WITH THAT STUFF",
+      "linea1": "CUT IT OUT,",
+      "linea2": "DROP THAT STUFF",
       "it1": "MINCHIA, BASTA",
       "it2": "CON STA ROBA"
     },
@@ -1329,8 +1329,8 @@
     {
       "id": 76,
       "personaggio": "gesu",
-      "linea1": "I AM THE ALPHA",
-      "linea2": "AND THE OMEGA",
+      "linea1": "I AM THE FIRST",
+      "linea2": "AND THE LAST",
       "it1": "IO SONO L'ALFA",
       "it2": "E L'OMEGA"
     },
@@ -1338,7 +1338,7 @@
       "id": 77,
       "personaggio": "gesu",
       "linea1": "DON'T LET THEM",
-      "linea2": "FOOL YOU, BRO",
+      "linea2": "TRICK YOU, BRO",
       "it1": "NON LASCIARTI",
       "it2": "INGANNARE"
     },
@@ -1362,30 +1362,30 @@
       "id": 80,
       "personaggio": "gesu",
       "linea1": "DRUGS TAKE",
-      "linea2": "EVERYTHING AWAY",
+      "linea2": "ALL YOU HAVE",
       "it1": "LA DROGA TI",
       "it2": "TOGLIE TUTTO"
     },
     {
       "id": 81,
       "personaggio": "gesu",
-      "linea1": "THIRSTY? I GIVE",
-      "linea2": "LIVING WATER",
+      "linea1": "ARE YOU THIRSTY?",
+      "linea2": "I GIVE WATER",
       "it1": "A CHI HA SETE",
       "it2": "DARO ACQUA VIVA"
     },
     {
       "id": 82,
       "personaggio": "gesu",
-      "linea1": "FEAR NOT, I AM",
-      "linea2": "THE LIVING ONE",
+      "linea1": "DO NOT FEAR,",
+      "linea2": "I AM ALIVE",
       "it1": "NON TEMERE, IO",
       "it2": "SONO IL VIVENTE"
     },
     {
       "id": 83,
       "personaggio": "gesu",
-      "linea1": "GET BEHIND ME,",
+      "linea1": "GET AWAY NOW,",
       "linea2": "TEMPTER!",
       "it1": "VADE RETRO,",
       "it2": "TENTATORE!"
@@ -1394,7 +1394,7 @@
       "id": 84,
       "personaggio": "gesu",
       "linea1": "LOOK, I MAKE",
-      "linea2": "ALL THINGS NEW",
+      "linea2": "ALL NEW AGAIN",
       "it1": "ECCO, FACCIO",
       "it2": "NUOVE LE COSE"
     },
@@ -1417,32 +1417,32 @@
     {
       "id": 87,
       "personaggio": "gianni",
-      "linea1": "TELL NO ONE,",
-      "linea2": "JUST DO IT",
+      "linea1": "DON'T TELL",
+      "linea2": "ANYONE, OK?",
       "it1": "NON DIRLO A",
       "it2": "NESSUNO, DAI"
     },
     {
       "id": 88,
       "personaggio": "gianni",
-      "linea1": "TAKE ONE PILL",
-      "linea2": "IT HELPS NOW",
+      "linea1": "TAKE ONE PILL,",
+      "linea2": "IT HELPS A LOT",
       "it1": "FATTI NA DIERA,",
       "it2": "CHE TI SISTEMA"
     },
     {
       "id": 89,
       "personaggio": "gianni",
-      "linea1": "ONE PILL AND GO",
-      "linea2": "IT ALL PASSES",
+      "linea1": "TAKE ONE PILL,",
+      "linea2": "IT ALL FADES",
       "it1": "DIERA E VIA,",
       "it2": "PASSA TUTTO"
     },
     {
       "id": 90,
       "personaggio": "gianni",
-      "linea1": "NO PILL MEANS",
-      "linea2": "NO SLEEP, RIGHT?",
+      "linea1": "NO PILL, NO",
+      "linea2": "SLEEP, RIGHT?",
       "it1": "SENZA DIERA",
       "it2": "NON DORMI, EH?"
     },
@@ -1465,7 +1465,7 @@
     {
       "id": 93,
       "personaggio": "gianni",
-      "linea1": "SIP OF LEAN",
+      "linea1": "ONE SIP OF LEAN",
       "linea2": "FEELS SO GOOD",
       "it1": "UN BICCHIERE DI",
       "it2": "DRANK FA STILE"
@@ -1473,8 +1473,8 @@
     {
       "id": 94,
       "personaggio": "gianni",
-      "linea1": "RAPPERS DO IT",
-      "linea2": "SO WHY NOT YOU?",
+      "linea1": "RAPPERS DO IT,",
+      "linea2": "WHY NOT YOU?",
       "it1": "LO FANNO I",
       "it2": "RAPPER, DAI"
     },
@@ -1482,15 +1482,15 @@
       "id": 95,
       "personaggio": "gianni",
       "linea1": "JUST TONIGHT,",
-      "linea2": "STOP TOMORROW",
+      "linea2": "QUIT TOMORROW",
       "it1": "SOLO STASERA,",
       "it2": "DOMANI SMETTI"
     },
     {
       "id": 96,
       "personaggio": "gianni",
-      "linea1": "NOT HOOKED YET",
-      "linea2": "JUST ONE TIME",
+      "linea1": "NOT HOOKED YET,",
+      "linea2": "JUST THIS ONCE",
       "it1": "NON SEI",
       "it2": "DIPENDENTE, DAI"
     },
@@ -1498,14 +1498,14 @@
       "id": 97,
       "personaggio": "gianni",
       "linea1": "ONE MORE JOINT,",
-      "linea2": "I PROMISE",
+      "linea2": "I PROMISE, BRO",
       "it1": "UN'ALTRA E",
       "it2": "BASTA, PROMESSO"
     },
     {
       "id": 98,
       "personaggio": "gianni",
-      "linea1": "RENT TO PAY?",
+      "linea1": "RENT DUE, BRO?",
       "linea2": "TAKE A PILL",
       "it1": "AFFITTO, LAVORO?",
       "it2": "DIERA E PASSA"
@@ -1513,23 +1513,23 @@
     {
       "id": 99,
       "personaggio": "gianni",
-      "linea1": "GO TO FLOOR SIX",
-      "linea2": "STUFF'S UP THERE",
+      "linea1": "GO TO FLOOR SIX,",
+      "linea2": "STUFF IS THERE",
       "it1": "SALI AL SESTO:",
       "it2": "C'E' SEMPRE ROBA"
     },
     {
       "id": 100,
       "personaggio": "gianni",
-      "linea1": "IN THE BIG BLOCK",
-      "linea2": "IT'S SO CHEAP",
+      "linea1": "IN THAT BIG",
+      "linea2": "BLOCK IT'S CHEAP",
       "it1": "NEL PALAZZONE",
       "it2": "COSTA POCO"
     },
     {
       "id": 101,
       "personaggio": "gianni",
-      "linea1": "TAKE STAIR C",
+      "linea1": "TAKE STAIR C,",
       "linea2": "KNOCK, NO BELL",
       "it1": "SCALA C, NON",
       "it2": "SUONARE, BUSSA"
@@ -1537,8 +1537,8 @@
     {
       "id": 102,
       "personaggio": "gianni",
-      "linea1": "FIRST THE PILL",
-      "linea2": "THEN HARD STUFF",
+      "linea1": "FIRST A PILL,",
+      "linea2": "THEN HARD DRUGS",
       "it1": "PRIMA LA DIERA,",
       "it2": "POI ROBA PESA"
     },
@@ -1546,7 +1546,7 @@
       "id": 103,
       "personaggio": "gianni",
       "linea1": "WORK TOMORROW?",
-      "linea2": "ONE PILL, GO ON",
+      "linea2": "TAKE ONE PILL",
       "it1": "LAVORI DOMANI?",
       "it2": "UNA DIERA E VAI"
     },
@@ -1577,7 +1577,7 @@
     {
       "id": 107,
       "personaggio": "gesu",
-      "linea1": "THE PURPLE STOPS",
+      "linea1": "LEAN SLOWS DOWN",
       "linea2": "YOUR BREATHING",
       "it1": "IL VIOLA FERMA",
       "it2": "IL RESPIRO"
@@ -1673,7 +1673,7 @@
     {
       "id": 119,
       "personaggio": "gesu",
-      "linea1": "STEP AFTER STEP",
+      "linea1": "STEP BY STEP,",
       "linea2": "GOING DOWN",
       "it1": "SCALINO DOPO",
       "it2": "SCALINO, GIU"
@@ -1689,8 +1689,8 @@
     {
       "id": 121,
       "personaggio": "gianni",
-      "linea1": "GOT GOOD GRASS",
-      "linea2": "TRY IT NOW",
+      "linea1": "GOT GOOD GRASS,",
+      "linea2": "TRY IT OUT",
       "it1": "ERBA A BORDO?",
       "it2": "LA MIA E' MEGLIO"
     },
@@ -1714,14 +1714,14 @@
       "id": 124,
       "personaggio": "gianni",
       "linea1": "LOST THE ROAD?",
-      "linea2": "I'LL FIX IT",
+      "linea2": "I'LL ROLL IT",
       "it1": "PERSO LA STRADA?",
       "it2": "TE LA RULLO IO"
     },
     {
       "id": 125,
       "personaggio": "gesu",
-      "linea1": "DON'T TRUST HIM",
+      "linea1": "DON'T TRUST HIM,",
       "linea2": "HE'LL TRICK YOU",
       "it1": "NON TI FIDARE!",
       "it2": "TI VUOLE FREGARE"
@@ -1738,7 +1738,7 @@
       "id": 127,
       "personaggio": "gesu",
       "linea1": "BETTER READ",
-      "linea2": "THE WORD, BRO",
+      "linea2": "THE GOOD BOOK",
       "it1": "MEGLIO LEGGERE",
       "it2": "IL TESTO, FRA"
     },
@@ -1761,8 +1761,8 @@
     {
       "id": 130,
       "personaggio": "gesu",
-      "linea1": "CALL DON LURIDO:",
-      "linea2": "HE HELPS YOU",
+      "linea1": "CALL DON LURIDO,",
+      "linea2": "HE CAN HELP",
       "it1": "CHIAMA DON",
       "it2": "LURIDO: TI AIUTA"
     },
@@ -1834,7 +1834,7 @@
       "id": 139,
       "personaggio": "gianni",
       "linea1": "WANT A PILL",
-      "linea2": "RIGHT NOW?",
+      "linea2": "RIGHT NOW, BRO?",
       "it1": "CI FACCIAMO UNA",
       "it2": "DIERA?"
     },
@@ -1914,7 +1914,7 @@
       "id": 149,
       "personaggio": "gesu",
       "linea1": "APOCALYPSE:",
-      "linea2": "DRAGON IS HERE",
+      "linea2": "DRAGON'S HERE",
       "it1": "APOCALIPSE:",
       "it2": "IL DRAGO E' QUI"
     },
@@ -1938,7 +1938,7 @@
       "id": 152,
       "personaggio": "gianni",
       "linea1": "GRAVEL AND SMOKE",
-      "linea2": "GO WELL TOGETHER",
+      "linea2": "A PERFECT PAIR",
       "it1": "GHIAIA E FUMO,",
       "it2": "COPPIA PERFETTA"
     },
