@@ -90,6 +90,6 @@ echo "   exit $R  (immagini in UFFICIO/Officina/Test area/screenshot_p1/)"
 [ "$R" -ne 0 ] && RC=$R
 
 echo "== riepilogo (da $LOG)"
-grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|screenshot P1|percorso |giro guidato|gara |GATE .* OK|GATE OK|FALLITO)" "$LOG"
+grep -E "^(modo|speed@60|accelerazione|sterzo 30 frame|continuita' curve|offroad|ms/frame|replay 2x|screenshot P1|percorso |giro guidato|gara |CARICAMENTO|GATE .* OK|GATE OK|FALLITO)" "$LOG"
 [ "$RC" -eq 0 ] && echo "GATE T1: TUTTO OK" || echo "GATE T1: FALLITO (exit $RC)"
 exit "$RC"

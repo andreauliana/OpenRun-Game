@@ -6,6 +6,7 @@
 #include "render/sprite_raw.h" // caricaSpriteRaw: skyline raw del livello, core senza SDL
 #include <algorithm> // std::min/max
 #include <cctype> // std::isdigit
+#include <chrono> // V8: misura dei tempi di caricamento (init/avviaGara/caricaLivello)
 #include <cmath> // std::fmod
 #include <cstdio> // std::fopen/fread/fclose
 #include <map> // std::map per la libreria di tratti
@@ -478,6 +479,11 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
 }
 
 void Game::caricaLivello(const std::string& livelloId) {
+    // V8 (Caricamento): il corpo di questa funzione e' il caricamento del
+    // livello vero e proprio (JSON, tracciato, sprite, skyline); si misura a
+    // ogni chiamata (primo init e ogni cambio tappa) e si scrive una riga di
+    // log: il gate la cattura in UFFICIO/Officina/Test area/gate_t1.log.
+    const auto cronoInizio = std::chrono::steady_clock::now();
     // Tracciato da dati: legge il campo "segmenti" (array di {curva, collina,
     // lunghezza}) da motore_nuovo/dati/livelli/<livelloId>/livello.json.
     // Se il campo manca o il file e' illeggibile, usa il fallback deterministico
@@ -642,6 +648,10 @@ void Game::caricaLivello(const std::string& livelloId) {
         }
     }
     ordinaSpriteFissi();
+    // V8: riga di misura, ms da inizio a fine funzione (solo log, niente logica).
+    const f32 msLivello = std::chrono::duration<f32, std::milli>(
+        std::chrono::steady_clock::now() - cronoInizio).count();
+    std::printf("CARICAMENTO livello %s %.1f ms\n", livelloId.c_str(), (double)msLivello);
 }
 
 namespace {
@@ -830,6 +840,11 @@ void Game::aggiornaRadio() {
 }
 
 void Game::init(const std::string& livelloId) {
+    // V8 (Caricamento): init e' tutto il caricamento di avvio (config.json,
+    // livello, sprite dell'auto, frasi.json, musica). Questo tempo e' anche
+    // il tempo con cui il menu si presenta (la fase parte da qui, sopra il
+    // livello gia' caricato). Riga di log catturata dal gate.
+    const auto cronoInizio = std::chrono::steady_clock::now();
     // Legge la frequenza logica da dati/config.json (default 60 Hz).
     // Tutto il core usa dt in secondi: stesso comportamento a 50 e 60 Hz.
     frequenzaHz_ = 60;
@@ -1003,6 +1018,10 @@ void Game::init(const std::string& livelloId) {
     // Campioni per tick: 735 a 60 Hz, 882 a 50 Hz (la musica non resta a corto).
     audioBuf_.assign((size_t)(44100 / frequenzaHz_) * 2, 0);
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: free-play (init senza gara) guida subito
+    // V8: totale del caricamento di avvio (init = anche la base del menu).
+    const f32 msInit = std::chrono::duration<f32, std::milli>(
+        std::chrono::steady_clock::now() - cronoInizio).count();
+    std::printf("CARICAMENTO init %s %.1f ms\n", livelloId.c_str(), (double)msInit);
 }
 
 namespace {
@@ -1148,6 +1167,9 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
 }
 
 bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
+    // V8 (Caricamento): avvio di una gara completa (tappe + init della prima
+    // tappa + rivali + griglia di partenza). Riga di log catturata dal gate.
+    const auto cronoInizio = std::chrono::steady_clock::now();
     // Albero delle tappe (dati/percorso_gara.json): ogni tappa indica la tappa
     // a sinistra e a destra del bivio finale; senza rami e' un arrivo.
     tappe_.clear();
@@ -1196,6 +1218,10 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
     posizionePrec_ = state_.posizione;
     sorpassoS_ = 0.0f;
     fasi_.cambia(FaseId::Gara, *this); // blocco R2: avviaGara() parte guidando (gate, runner --subito)
+    // V8: totale avvio gara (include l'init della prima tappa, loggato sopra).
+    const f32 msGara = std::chrono::duration<f32, std::milli>(
+        std::chrono::steady_clock::now() - cronoInizio).count();
+    std::printf("CARICAMENTO gara %s %.1f ms\n", partenza.c_str(), (double)msGara);
     return true;
 }
 

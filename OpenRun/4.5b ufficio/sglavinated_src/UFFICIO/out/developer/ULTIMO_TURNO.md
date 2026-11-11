@@ -1,8 +1,14 @@
-# ULTIMO_TURNO @developer — 10/11/2026 09:08
-- Blocco/passo: V47 V5 (resto testi) — splash placeholder -> OPEN RUN
-- File cambiati: motore_nuovo/src/game/fasi.cpp
-- Comando: (modifica diretta) edit motore_nuovo/src/game/fasi.cpp
-- Exit code: n/a (modifica)
-- Test: gate non eseguito in questo turno
-- Stato: MIG1 D1-D5 [x], V47 V1-V5 [x]. Nessun blocco [ ]/[~] proprio.
-- Prossimi: J4/G2/VJ1
+# Ultimo turno @developer — 11/11/2026 09:20 (Turno 3)
+- Blocco: V47 seconda lista, passo **V8 Caricamento** [x].
+- Passo: strumento di misura del caricamento con <chrono> in Game::caricaLivello, Game::init (che e' anche la base del menu) e Game::avviaGara; una riga "CARICAMENTO livello/init/gara <id> <ms> ms" a ogni caricamento (primo init, cambio tappa, gara).
+- File cambiati:
+  - motore_nuovo/src/game/game.cpp (include <chrono>; 3 misure + log, zero logica di gioco)
+  - UFFICIO/Officina/TOOL/gate_t1.sh (riga grep riepilogo: aggiunto pattern CARICAMENTO)
+- Comandi ed exit code (11/11/2026):
+  - cmake --build UFFICIO/Officina/build --target prova_gate -> exit 0
+  - ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/caricamento_v8" lv_01_neon smoke -> exit 0, GATE OK, replay IDENTICO
+  - sh UFFICIO/Officina/TOOL/run_tests.sh -> exit 0, ctest 27/27 (~08:55)
+  - sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0, "GATE T1: TUTTO OK" 6/6 percorso, replay IDENTICI (~09:15)
+- Misure (log del gate): livello 3.1-11.2 ms; init/menu 5.8-18.1 ms; gara 8.2-12.1 ms. Nessun caricamento supera 1 s sul Mac: nessun alleggerimento necessario, dati non cambiati.
+- Log: UFFICIO/Officina/Test area/gate_t1.log.
+- Prossimo: passo ∞ V9 fluidita' a giro (lv_01 per primo).

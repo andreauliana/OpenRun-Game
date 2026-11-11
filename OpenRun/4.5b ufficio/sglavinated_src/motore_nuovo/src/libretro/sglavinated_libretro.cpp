@@ -131,8 +131,18 @@ bool avviaGioco(const char* percorsoContenuto) {
     }
     logInfo("cartella dati: %s", radice.c_str());
     g_game->setRadiceDati(radice);
+    // Come il runner (impostaRadice): cartella corrente = radice dati. Serve a
+    // config.json (frequenza 50/60 Hz) e a salvataggi/giocatore.json (nome
+    // giocatore e classifica), che leggono percorsi relativi.
+    std::error_code ec;
+    std::filesystem::current_path(radice, ec);
+    if (ec) logInfo("cartella corrente non impostata: %s", ec.message().c_str());
     g_game->abilitaPartenza(true); // griglia e 3-2-1-START (Andrea 08/11)
     if (!g_game->avviaGara()) g_game->init(); // gara a tappe; senza percorso_gara.json pista singola
+    // Flusso come il runner senza --subito: Splash -> Menu -> (voce del menu)
+    // Gara -> FineTempo -> Risultati -> Menu. mostraMenu() parte da Splash;
+    // avviaGara() ha gia' preparato la gara che il menu avviera'.
+    g_game->mostraMenu();
     g_heldPrev = 0;
     return true;
 }
@@ -168,9 +178,12 @@ RETRO_API void retro_get_system_info(struct retro_system_info* info) {
 
 RETRO_API void retro_get_system_av_info(struct retro_system_av_info* info) {
     if (!info) return;
-    // Il core produce AUDIO_FRAME_SAMPLES campioni per frame a 44100 Hz:
-    // la frequenza video dichiarata ne segue (60 Hz di default).
-    info->timing.fps = 44100.0 / (double)sgl::Game::AUDIO_FRAME_SAMPLES;
+    // Frequenza logica 50/60 Hz da config.json (leggida in Game::init): il
+    // frontend chiama retro_run a quella frequenza e il core genera
+    // 44100/frequenza campioni audio per chiamata, quindi il tempo resta
+    // uguale alle due frequenze. Senza gara caricata: 60 Hz di default.
+    const double fps = g_game ? (double)g_game->frequenzaHz() : 60.0;
+    info->timing.fps = fps;
     info->timing.sample_rate = 44100.0;
     info->geometry.base_width = sgl::Framebuffer::WIDTH;
     info->geometry.base_height = sgl::Framebuffer::HEIGHT;
@@ -192,6 +205,7 @@ RETRO_API void retro_deinit(void) {
 
 RETRO_API void retro_reset(void) {
     if (g_game && !g_game->avviaGara()) g_game->init();
+    g_game->mostraMenu(); // reset come all'avvio: Splash -> Menu
     g_heldPrev = 0;
 }
 
@@ -236,7 +250,10 @@ RETRO_API void retro_unload_game(void) {
     g_game = nullptr;
 }
 
-RETRO_API unsigned retro_get_region(void) { return RETRO_REGION_NTSC; } // 60 Hz
+RETRO_API unsigned retro_get_region(void) {
+    // PAL (50 Hz) se config.json chiede 50, NTSC altrimenti.
+    return (g_game && g_game->frequenzaHz() == 50) ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
+}
 
 // Salvataggi di stato non supportati (per ora).
 RETRO_API size_t retro_serialize_size(void) { return 0; }

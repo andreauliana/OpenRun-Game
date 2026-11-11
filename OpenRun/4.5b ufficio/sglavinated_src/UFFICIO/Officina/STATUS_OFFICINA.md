@@ -1,13 +1,14 @@
 # STATUS OFFICINA — OpenRun 4.6
 
-Aggiornato: 2026-10-19 09:39 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
+Aggiornato: 2026-11-11 08:10 (ora locale). Questo è l'unico handoff operativo dell'Officina per il Capo; i dossier di checkpoint devono riassumere le prove pertinenti e collegare i log, senza copiarli.
 
 ## Stato corrente
 
 | Voce | Stato / evidenza |
 |---|---|
 | Checkpoint tecnico | [CP-003](../../Checkpoint%20Revision/CP-003-status-officina-e-test.md) — aperto, review indipendente da assegnare |
-| Ultimo report sviluppatore | [VOCE_SCAMBIO_1173.md](../../out/developer/VOCE_SCAMBIO_1173.md), 2026-10-19 09:21 (builder-developer) |
+| Ultimo report sviluppatore | turno 11/11/2026 ~08:10 (@developer): V6 core libretro. `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (27/27, ~08:05), `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 — `GATE T1: TUTTO OK`, 6/6 GATE PERCORSO OK, replay IDENTICO, ms/frame max 55.27 picco isolato su lv_05 smoke (limite 20), media ~0.97-1.43. Log: `UFFICIO/Officina/Test area/gate_t1.log`. Dettagli: `UFFICIO/out/developer/ULTIMO_TURNO.md`. |
+| V6 core libretro (11/11) | `cmake -DBUILD_LIBRETRO=ON` + `cmake --build --target sglavinated_libretro` exit 0: `UFFICIO/Officina/build/sglavinated_libretro.dylib`. Corretto in `motore_nuovo/src/libretro/sglavinated_libretro.cpp`: 1) flusso Splash -> Menu -> Gara -> Risultati (prima partiva direttamente in gara, senza menu) anche su retro_reset; 2) timing fps da `Game::frequenzaHz()` (50/60 da config.json) e region PAL/NTSC di conseguenza; 3) cartella corrente impostata alla radice dati come nel runner (config.json letto e salvataggi/giocatore.json — nome giocatore e classifica — salvati nel progetto, non nella cwd di RetroArch). Verifica: ctest 27/27 exit 0 (11/11 ~08:05), gate_t1.sh exit 0 (11/11 ~08:10). |
 | **Gate Andrea (09:39)** | **`GATE T1: FALLITO` (exit 13)** — `sh tools/gate_t1.sh soak` eseguito da Andrea su Mac, 2026-10-19 09:39. Gate core OK (smoke, soak 30000 frame, accelerazione, ribaltamento, sterzo, curve, gara 4 bivi, screenshot P1). **Giro guidato FALLITO su 5 livelli su 6**: lv_01_neon, lv_03_foglie, lv_04_cromo, lv_05_spray, lv_06_desktop — "percorso poco vario o non guidabile". Solo lv_02_atomico (rettilineo 40%) supera il giro guidato. Dettaglio in `ANDREA_REVIEW.md` T1-Q3. Aggiornamento 19/10 11:45: `sh tools/gate_t1.sh soak` eseguito da builder-developer, exit 0, `GATE T1: TUTTO OK` — 6/6 percorsi GATE PERCORSO OK dopo fix `road.cpp` (dettaglio e misure in `UFFICIO/out/developer/VOCE_SCAMBIO_1174.md`, log `UFFICIO/Officina/Test area/gate_t1.log`). |
 | Ultimo exit code dichiarato (agenti) | 0 per `sh tools/gate_t1.sh soak` eseguito da builder-developer alle 19/10 11:45 (GATE T1 TUTTO OK, 6/6 percorsi verdi; dettaglio in `UFFICIO/out/developer/VOCE_SCAMBIO_1174.md`). |
 | Performance Mac (09:39) | ms/frame medio ~0.19, max 0.94 (limite 20 — OK). speed@60=161.79, replay 2x IDENTICO su tutti i livelli. |
