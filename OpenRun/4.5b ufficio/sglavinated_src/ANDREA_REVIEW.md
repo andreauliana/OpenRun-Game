@@ -56,6 +56,7 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Bivio | si sceglie il ramo, la tappa dopo cambia tema in 2 s | road, `percorso_gara.json` |
 | Tempo | `tempo_limite_s` per livello, +80% al cambio tappa | livello.json, config.json |
 | Partenza | auto ferme in griglia, gruppi di supporto ai lati che chiacchierano, GET READY, 3-2-1 con semaforo e bip, START!: musica dall'inizio, tutti partono insieme, ogni rivale col suo spunto (solo runner e libretro, i gate partono subito). In griglia il gas fa salire i giri (contagiri): giri giusti = partenza pulita, gas a fondo = ruote che pattinano, niente gas = motore seduto. Primi 3 s aderenza limitata per tutti (11/11) | `render/partenza.*`, `Game::preparaPartenza`, `avviaLancio`, `GIRI_*`, `LANCIO_*`, `PATTINA_*` |
+| Fermo | fermi in gara per 3 s: a destra compaiono due cubetti che girano (verde Gianni, blu Gesu') e un fumetto piccolo coi puntini "...": annuncio dei personaggi, versione piccola da espandere con gli sprite di Andrea (11/11). Ripartendo sparisce | `render/segnale_personaggi.*`, `Game::aggiornaSegnale` |
 | Arrivo | frenata, pubblico, premiazione per tema e posizione | `premiazione.*` |
 | Consulto finale | FINAL CHECK coi tempi che girano, poi classifica (senza colonna ROUTE, Andrea 09/11) e verdetto: WINNER! col trofeo o YOU FINISHED Nth | `RisultatiFase::disegnaArrivo` |
 
