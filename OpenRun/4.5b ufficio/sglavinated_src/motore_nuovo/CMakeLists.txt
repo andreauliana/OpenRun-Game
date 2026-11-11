@@ -62,6 +62,8 @@ add_library(sglavinated_core
     src/render/premiazione.cpp
     src/render/partenza.h
     src/render/partenza.cpp
+    src/render/segnale_personaggi.h
+    src/render/segnale_personaggi.cpp
     src/input/pad.h
     src/audio/mixer.h
     src/audio/mixer.cpp

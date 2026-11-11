@@ -11,6 +11,7 @@
     "segmenti": 7500,
     "durata_stimata_s": 54
   },
+  "incroci": {"nota": "Andrea 11/11: incrocio a 90 gradi anche qui, nella citta' del livello (zona citta del paesaggio). Toglierlo = cancellare questo campo.", "rettilineo_largo#1": 1},
   "tracciato": ["rettilineo_lungo", "curva_dolce_dx", "autostrada", "rettilineo_largo", "curva_larga_sx", "curva_larga_dx", "rampa_ponte", "ponte", "discesa_ponte", "rettilineo_largo", "curva_stretta_dx", "collina_giu", "dosso", "curva_stretta_sx", "curva_dolce_sx"],
   "segmenti": [
     {"curva": 0.0, "collina": 0.1, "lunghezza": 800},

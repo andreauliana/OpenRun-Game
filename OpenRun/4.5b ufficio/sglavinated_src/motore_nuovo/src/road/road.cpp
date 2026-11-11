@@ -363,6 +363,17 @@ void Road::calcolaDintorni() {
     }
 }
 
+f32 Road::beccheggioPx(f32 z) const {
+    if (segs_.empty() || totalLen_ <= 0) return 0.0f;
+    // Pendenza media attorno all'auto (finestra larga: i dossi brevi non fanno
+    // ondeggiare l'orizzonte), con una soglia sotto cui resta fermo.
+    constexpr f32 MEZZA = 1600.0f, SOGLIA = 0.03f, PX_PER_PENDENZA = 36.0f;
+    const f32 p = (quotaAt(z + MEZZA) - quotaAt(z - MEZZA)) / (2.0f * MEZZA);
+    const f32 a = std::fabs(p) - SOGLIA;
+    if (a <= 0.0f) return 0.0f;
+    return std::clamp(std::copysign(a * PX_PER_PENDENZA, p), -BECCHEGGIO_PX_MAX, BECCHEGGIO_PX_MAX);
+}
+
 bool Road::acquaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     return i >= 0 && segs_[i].acqua;
@@ -442,6 +453,9 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
     const RoadSegment& startSeg = segs_[startIdx];
     const f32 segT = (z0 - acc) / (f32)startSeg.length; // 0..1 dentro il segmento
     const f32 camY = startSeg.p1y + (startSeg.p2y - startSeg.p1y) * segT + CAM_HEIGHT;
+    // Orizzonte del frame: 112 in piano, qualche pixel sotto in salita e sopra
+    // in discesa (stesso arrotondamento del Renderer, che ci appoggia il cielo).
+    const f32 orizzonte = 112.0f + std::round(beccheggioPx(z0));
 
     // Curve: la telecamera guarda sempre lungo la strada (come in OutRun), quindi
     // il tratto sotto l'auto punta al centro dello schermo e solo la strada piu'
@@ -482,12 +496,12 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.worldZ = z;
             ps.scale = s;
             ps.screenX = 160.0f + s * (x - playerX) * 160.0f;
-            ps.screenY = 112.0f - s * (curY - camY) * 112.0f;
+            ps.screenY = orizzonte - s * (curY - camY) * 112.0f;
             ps.carr = carreggiate(z0 + z, latoBivio);
             ps.acqua = seg.acqua;
             ps.sospeso = seg.sospeso;
             ps.galleria = seg.galleria ? 1 : 0;
-            ps.acquaY = 112.0f - s * (seg.quotaAcqua - camY) * 112.0f;
+            ps.acquaY = orizzonte - s * (seg.quotaAcqua - camY) * 112.0f;
             ps.riva = seg.riva;
             ps.luci = seg.luci;
             ps.versoLuci = seg.versoLuci;

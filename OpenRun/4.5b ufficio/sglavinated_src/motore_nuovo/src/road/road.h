@@ -130,6 +130,11 @@ public:
     bool sospesoAt(f32 z) const;
     // true se z e' in galleria (PERC1 D4): niente oggetti, cartelloni o alberi.
     bool galleriaAt(f32 z) const;
+    // Beccheggio della telecamera in pixel (Andrea 11/11): in salita l'orizzonte
+    // scende, in discesa sale, di pochi pixel; zero in piano e sui dossi piccoli.
+    // Dipende solo dalla posizione (niente stato: replay identici).
+    f32 beccheggioPx(f32 z) const;
+    static constexpr f32 BECCHEGGIO_PX_MAX = 7.0f;
     // Indice del segmento che contiene z (con wrap): O(1), tutti i segmenti
     // sono lunghi SEG_LEN (prima si scorreva tutta la lista a ogni chiamata).
     i32 indiceSegmento(f32 z) const;

@@ -1758,9 +1758,13 @@ static TrafficoMisure misuraTraffico() {
         game.render();
         ++m.frames;
         const GameState& st = game.state();
-        if (st.playerFlipping && !ribaltato) ++m.ribaltamenti;
-        ribaltato = st.playerFlipping;
         const Road& road = game.road();
+        // Il gate misura il traffico comune: un ribaltamento contro le auto di
+        // lato dell'incrocio (11/11: incroci anche in lv_01/lv_03/lv_06, il
+        // pilota automatico non le guarda) e' l'incidente voluto, non conta.
+        if (st.playerFlipping && !ribaltato &&
+            std::fabs(road.incrocioD(st.playerZ)) >= Road::INCROCIO_ZONA) ++m.ribaltamenti;
+        ribaltato = st.playerFlipping;
         const bool cambioTappa = st.tappa != tappaPrima;
         for (i32 i = 0; i < Game::TRAFFICO; ++i) {
             const Game::Veicolo& v = game.veicolo(i);
@@ -3129,9 +3133,10 @@ bool verificaTratti(const std::string& outDir) {
 
 // --- Blocco R2 punto 2 (@developer-junior): gate `ciclo`.
 // Attraversa tutta la macchina a stati con input scriptati, come nel runner:
-//   avviaGara() + mostraMenu() -> Splash -> Start -> Menu -> Giu + Start
-//   (gara a tappe) -> Gara (5 s di gas, poi senza gas) -> tempo scaduto ->
-//   FineTempo -> Risultati -> Start -> Menu.
+//   avviaGara() + mostraMenu() -> Splash -> Start -> Menu -> Start
+//   (gara a tappe, prima voce dall'11/11) -> Gara (5 s di gas, poi senza gas)
+//   -> tempo scaduto -> FineTempo -> Risultati (nome: Su + Start, poi
+//   scelta: Su = MAIN MENU + Start) -> Menu.
 // Verifica: sequenza esatta delle fasi, la guida parte (velocita' > 0),
 // nessun ribaltamento, determinismo (due run identici: stessa sequenza,
 // stesse misure, stesso frameHash). Poi due controlli brevi del menu:
@@ -3178,6 +3183,9 @@ static bool verificaCiclo(const std::string& outDir) {
     CicloMisure a, b;
     for (int run = 0; run < 2; ++run) {
         CicloMisure& m = (run == 0) ? a : b;
+        // Le iniziali salvate cambiano il nome di partenza: ogni run parte
+        // senza file, cosi' le due run disegnano lo stesso (stessoHash).
+        if (run == 1) std::remove("salvataggi/giocatore.json");
         Game game(12345u);
         caricaSponsor(game); caricaRivali(game);
         if (!game.avviaGara()) {
@@ -3201,8 +3209,7 @@ static bool verificaCiclo(const std::string& outDir) {
                     if (tickInFase == 5) pressed = Pad::Start;
                     break;
                 case FaseId::Menu:
-                    if (tickInFase == 5) pressed = Pad::Down;   // "GARA A TAPPE"
-                    if (tickInFase == 8) pressed = Pad::Start;
+                    if (tickInFase == 8) pressed = Pad::Start;  // "RACE SERIES" (prima voce)
                     break;
                 case FaseId::Gara:
                     if (frameGara < FRAME_GAS) {
@@ -3216,8 +3223,10 @@ static bool verificaCiclo(const std::string& outDir) {
                 case FaseId::FineTempo:
                     break;
                 case FaseId::Risultati:
-                    if (tickInFase == 0) pressed = Pad::Up;                 // ARC1: cambia il nome al primo frame di Risultati (uguale nelle due run)
+                    if (tickInFase == 0) pressed = Pad::Up;                 // ARC1: prima iniziale Y -> Z (uguale nelle due run)
                     if (tickInFase == 60) pressed = Pad::Start;             // conferma e salva
+                    if (tickInFase == 90) pressed = Pad::Up;                // scelta: RACE SERIES -> MAIN MENU
+                    if (tickInFase == 100) pressed = Pad::Start;
                     break;
             }
             passoCiclo(game, held, pressed);
@@ -3256,12 +3265,11 @@ static bool verificaCiclo(const std::string& outDir) {
 
     // --- ARC1: salvataggio del nome del giocatore (salvataggi/giocatore.json) ---
     // Primo avvio senza file: il file viene rimosso all'avvio del gate, quindi il
-    // primo Start a Risultati (run 0) deve crearlo. Il nome editato ('P' -> 'Q')
+    // primo Start a Risultati deve crearlo. Le iniziali editate ("YOU" -> "ZOU")
     // viene confermato in entrambe le run al primo frame di Risultati, quindi il
     // disegno e' identico e stessoHash resta valido.
-    // Nota: fasi.cpp scrive il campo "nome" di primo livello dall'ultimo valore
-    // caricato, mentre il nome confermato persiste nelle entry della classifica;
-    // la verifica "riletto uguale al giro dopo" si fa sulle entry salvate.
+    // Dall'11/11 le iniziali confermate vanno sia nella classifica sia nel
+    // campo "nome" (la prossima gara riparte da quelle).
     bool arc1Ok = true;
     const std::string percorsoSave = "salvataggi/giocatore.json";
     if (!std::filesystem::exists(percorsoSave)) {
@@ -3271,7 +3279,8 @@ static bool verificaCiclo(const std::string& outDir) {
     GiocatoreDati g = SalvataggiGiocatore::carica();
     bool nomeConfermato = false;
     for (const ClassificaEntry& e : g.classifica)
-        if (e.nome == "QLAYER") { nomeConfermato = true; break; }
+        if (e.nome.compare(0, 3, "ZOU") == 0) { nomeConfermato = true; break; }
+    if (std::string(g.nome).compare(0, 3, "ZOU") != 0) nomeConfermato = false; // il nome resta per la prossima gara
     if (!nomeConfermato) {
         std::printf("ciclo: FALLITO ARC1 (nome cambiato e confermato non riletto nel file)\n");
         arc1Ok = false;
@@ -3313,7 +3322,8 @@ static bool verificaCiclo(const std::string& outDir) {
             game.mostraMenu();
             passoCiclo(game, 0, Pad::Start);  // Splash -> Menu
             passoCiclo(game, 0, 0);
-            passoCiclo(game, 0, Pad::Start);  // Menu: prima voce
+            passoCiclo(game, 0, Pad::Down);   // Menu: seconda voce (dall'11/11)
+            passoCiclo(game, 0, Pad::Start);  // SINGLE RACE, livello solito
             // V47 V4: il menu si scurisce per 0.25 s prima della gara.
             for (i32 k = 0; k < game.frequenzaHz() && game.faseCorrente() != FaseId::Gara; ++k)
                 passoCiclo(game, 0, 0);

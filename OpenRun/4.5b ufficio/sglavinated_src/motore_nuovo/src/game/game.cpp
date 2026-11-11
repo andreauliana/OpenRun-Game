@@ -149,6 +149,15 @@ constexpr f32 RIVALE_SPOSTAMENTO = 200.0f;   // spostamento laterale per sorpass
 // Rivali e traffico grandi come l'auto del giocatore (Andrea 27/10: "piccolini"):
 // 40 px x SPRITE_WORLD_PX x 1.4 = 280 unita', l'auto del giocatore ne copre ~270.
 constexpr f32 SCALA_AUTO = 1.4f;
+// Traffico comune (Andrea 11/11: "un po' piccoline"): sprite 34-42 px, scala
+// 1.9 = ~75 px a schermo vicino, appena sotto i rivali (48 px x 1.7). Le auto
+// di lato dell'incrocio restano INCROCIO_SCALA. L'urto usa URTO_LARGHEZZA, non
+// la scala: guida e collisioni invariate.
+constexpr f32 SCALA_TRAFFICO = 1.9f;
+// Cartello di pericolo prima di ogni incrocio (Andrea 11/11): a destra, a
+// ~0.5 s dal centro a tutta velocita' (in vista da ~2.5 s prima).
+constexpr f32 CARTELLO_INCROCIO_PRIMA = 14000.0f;
+constexpr f32 CARTELLO_INCROCIO_SCALA = 3.4f;  // come i semafori
 // Rivali (Andrea 29/10, "piu' evidenti"): un'auto e un colore per rivale
 // (sprite 48x24, appena piu' grandi del traffico) e una freccia dello stesso
 // colore sopra il tetto (renderer drawSegnalino). Niente nomi di piloti: in
@@ -498,6 +507,30 @@ Game::Game(u32 seed) : seed_(seed), rng_(seed_), fb_(), pal_(), ren_(fb_, pal_),
             for (i32 x = 0; x < 9; ++x)
                 semaforo_.pixels[(size_t)(y * 9 + x)] = righe[y][x] == ' ' ? 0 : (u8)(righe[y][x] - '0');
     }
+    {
+        // Cartello "incrocio pericoloso" (Andrea 11/11): triangolo bordato di
+        // rosso, fondo crema, croce nera, palo grigio. 17x33 pixel; ombra a
+        // destra con dithering a scacchiera (rosso/rosso scuro, crema/crema
+        // scura), niente colori in piu'. Oggetto a se', non e' un cartellone sponsor.
+        static const char* righe[33] = {
+            "        1        ", "       112       ", "       111       ", "      11321      ",
+            "      11312      ", "     1135312     ", "     1135421     ", "    113353421    ",
+            "   11333533421   ", "   11355555312   ", "  1133335334312  ", "  1133335333421  ",
+            " 113333333333421 ", " 111111111111112 ", "21212121212121212", "       667       ",
+            "       666       ", "       667       ", "       666       ", "       667       ",
+            "       666       ", "       667       ", "       666       ", "       667       ",
+            "       666       ", "       667       ", "       666       ", "       667       ",
+            "       666       ", "       667       ", "       666       ", "       667       ",
+            "      76667      "};
+        cartelloIncrocio_.width = 17;
+        cartelloIncrocio_.height = 33;
+        cartelloIncrocio_.palette = {0x00000000u, 0xFFE8203Cu, 0xFF8A1028u, 0xFFF4EED8u, 0xFFC8C0A8u,
+                                     0xFF141418u, 0xFF9A9AA6u, 0xFF5E5E68u};
+        cartelloIncrocio_.pixels.assign(17 * 33, 0);
+        for (i32 y = 0; y < 33; ++y)
+            for (i32 x = 0; x < 17; ++x)
+                cartelloIncrocio_.pixels[(size_t)(y * 17 + x)] = righe[y][x] == ' ' ? 0 : (u8)(righe[y][x] - '0');
+    }
     for (const char* n : {"lato_berlina_gialla", "lato_berlina_verde", "lato_furgone_bianco", "lato_bus_rosso"})
         ren_.aggiungiIncrocioSprite(caricaSpriteRaw(percorsoDati(std::string("motore_nuovo/dati/sprite_raw/traffico_incrocio/") + n + ".sglraw")));
     ren_.impostaLogo(caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw"))); // logo menu (segnaposto)
@@ -532,6 +565,24 @@ void Game::caricaLivello(const std::string& livelloId) {
     if (!daFile) {
         nomiTratti.clear();
         daFile = leggiSegmentiDaFile(radiceLivello, descs) && !descs.empty();
+    }
+    // Incroci per livello (Andrea 11/11: "potrebbe essere messo da qualche
+    // altra parte"): campo opzionale "incroci" di livello.json, {"tratto": n}
+    // o {"tratto#2": n} come per il paesaggio. Aggiunge incroci al tratto di
+    // quel livello senza toccare tratti.json: curve, colline e lunghezze uguali.
+    if (radiceLivello && jsonIsObject(*radiceLivello) && nomiTratti.size() == descs.size()) {
+        JsonValue campoIncroci;
+        if (jsonGet(jsonAsObject(*radiceLivello), "incroci", campoIncroci) && jsonIsObject(campoIncroci)) {
+            const JsonObject& perTratto = jsonAsObject(campoIncroci);
+            std::map<std::string, i32> volte;
+            for (size_t k = 0; k < descs.size(); ++k) {
+                const i32 n = ++volte[nomiTratti[k]];
+                JsonValue v;
+                if ((jsonGet(perTratto, nomiTratti[k] + "#" + std::to_string(n), v) ||
+                     jsonGet(perTratto, nomiTratti[k], v)) && jsonIsNumber(v))
+                    descs[k].incroci = std::clamp((i32)jsonAsNumber(v), 0, 4);
+            }
+        }
     }
     // Paesaggio a zone (Andrea 06/11): zona di ogni tratto da livello.json
     // "paesaggio" (base + tratti, "nome#2" = seconda volta che il tratto
@@ -1203,7 +1254,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
     ren_.impostaTema(tema);
 }
 
-bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
+bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa, const std::string& tappaScelta) {
     // V8 (Caricamento): avvio di una gara completa (tappe + init della prima
     // tappa + rivali + griglia di partenza). Riga di log catturata dal gate.
     const auto cronoInizio = std::chrono::steady_clock::now();
@@ -1230,6 +1281,7 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
             }
         }
     }
+    if (soloPrimaTappa && !tappaScelta.empty() && trovaTappa(tappaScelta)) partenza = tappaScelta;
     if (partenza.empty() || !trovaTappa(partenza)) return false;
 
     // Lunghezza nominale di ogni tappa: serve ai rivali per il proprio percorso
@@ -1260,6 +1312,20 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
         std::chrono::steady_clock::now() - cronoInizio).count();
     std::printf("CARICAMENTO gara %s %.1f ms\n", partenza.c_str(), (double)msGara);
     return true;
+}
+
+std::vector<std::string> Game::elencoTappe(const std::string& fileTappe) const {
+    std::vector<std::string> ids;
+    JsonReader file(leggiFileTesto(percorsoDati(fileTappe)));
+    JsonValue elenco;
+    if (file.parse() && jsonIsObject(file.valore()) &&
+        jsonGet(jsonAsObject(file.valore()), "tappe", elenco) && jsonIsArray(elenco))
+        for (const JsonValue& t : jsonAsArray(elenco)) {
+            JsonValue campo;
+            if (jsonIsObject(t) && jsonGet(jsonAsObject(t), "id", campo) && jsonIsString(campo))
+                ids.push_back(jsonAsString(campo));
+        }
+    return ids;
 }
 
 bool Game::tappaConBivio(const std::string& id) const {
@@ -1647,7 +1713,7 @@ void Game::aggiungiSpriteTraffico() {
         SpriteInstance s;
         s.worldZ = road_.playerZ + zRel;
         s.worldX = c.centro[indice] + v.x * (c.doppia ? c.fattore : 1.0f);
-        s.scale = SCALA_AUTO;
+        s.scale = SCALA_TRAFFICO;
         s.sprite = ren_.trafficoSprite(v.spriteIdx);
         s.paletteBase = 10; // sagoma sintetica se manca lo sprite
         sprites_.push_back(s);
@@ -2153,6 +2219,7 @@ void Game::update() {
     if (scenaStrada()) {
         aggiornaGuida(dt);
         aggiornaIncroci(dt);
+        aggiornaSegnale(dt);
     } else {
         aggiornaMenu(dt);
     }
@@ -2969,6 +3036,8 @@ void Game::render() {
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
     drawMusica();
+    // Segnale dei personaggi da fermo (Andrea 11/11): sovrimpressione a parte.
+    if (!pausa_ && segnaleK_ > 0.0f) disegnaSegnalePersonaggi(fb_, segnaleT_, segnaleK_);
     // Conto alla rovescia (Andrea 08/11): sovrimpressione a parte, non HUD.
     if (partenzaT_ >= 0.0f && partenzaT_ < PARTENZA_FINE_S) disegnaPartenza(fb_, ren_, partenzaT_);
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
@@ -2980,6 +3049,21 @@ void Game::render() {
     // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).
     // Si disegnera' solo con gli sprite veri; i gate leggono scenaShow().
     fasi_.dissolvenza(fb_); // V47 V4: schiarita dal menu alla partenza
+}
+
+void Game::aggiornaSegnale(f32 dt) {
+    // Solo a gara aperta: niente griglia, arrivo, tempo scaduto o incidente in corso.
+    const bool corsa = fasi_.attuale() == FaseId::Gara && !inPartenza() && !arrivo_ && !tempoScaduto_ &&
+        !playerFlipping_;
+    if (corsa && player_.speed < SEGNALE_FERMO_V) segnaleFermoS_ += dt;
+    else segnaleFermoS_ = 0.0f;
+    if (segnaleFermoS_ >= SEGNALE_ATTESA_S) {
+        if (segnaleK_ <= 0.0f) segnaleT_ = 0.0f; // riparte da capo
+        segnaleK_ = std::min(1.0f, segnaleK_ + dt / SEGNALE_ENTRA_S);
+    } else {
+        segnaleK_ = std::max(0.0f, segnaleK_ - dt / SEGNALE_ESCE_S);
+    }
+    if (segnaleK_ > 0.0f) segnaleT_ += dt;
 }
 
 void Game::aggiornaSalto(f32 dt) {
@@ -3351,6 +3435,15 @@ void Game::ordinaSpriteFissi() {
         };
         cartelloni_.erase(std::remove_if(cartelloni_.begin(), cartelloni_.end(), sullIncrocio), cartelloni_.end());
         oggettiStrada_.erase(std::remove_if(oggettiStrada_.begin(), oggettiStrada_.end(), sullIncrocio), oggettiStrada_.end());
+        // Cartello di pericolo (11/11): libero il bordo destro intorno, si legge da solo.
+        auto sulCartello = [this](const SpriteInstance& s) {
+            if (s.worldX <= 0.0f) return false;
+            for (const f32 zc : road_.incroci())
+                if (std::fabs(s.worldZ - (zc - CARTELLO_INCROCIO_PRIMA)) < 900.0f) return true;
+            return false;
+        };
+        cartelloni_.erase(std::remove_if(cartelloni_.begin(), cartelloni_.end(), sulCartello), cartelloni_.end());
+        oggettiStrada_.erase(std::remove_if(oggettiStrada_.begin(), oggettiStrada_.end(), sulCartello), oggettiStrada_.end());
     }
     auto perZ = [](const SpriteInstance& a, const SpriteInstance& b) { return a.worldZ < b.worldZ; };
     std::stable_sort(cartelloni_.begin(), cartelloni_.end(), perZ);
@@ -3627,6 +3720,16 @@ void Game::aggiungiSpriteIncroci() {
                 s.sprite = &semaforo_;
                 scenaSprites_.push_back(s);
             }
+        const f32 zCart = zc - CARTELLO_INCROCIO_PRIMA;
+        const f32 zRelCart = zCart - road_.playerZ;
+        if (zRelCart > Road::Z_NEAR && zRelCart <= (f32)(Road::DRAW_DIST * Road::SEG_LEN)) {
+            SpriteInstance s;
+            s.worldZ = zCart;
+            s.worldX = Road::ROAD_HALF_WORLD * road_.larghezzaAt(zCart) + 300.0f;
+            s.scale = CARTELLO_INCROCIO_SCALA;
+            s.sprite = &cartelloIncrocio_;
+            scenaSprites_.push_back(s);
+        }
     }
     if (incrocioAttivo_ < 0 || incrocioAttivo_ >= (i32)road_.incroci().size()) return;
     const f32 zc = road_.incroci()[(size_t)incrocioAttivo_];
