@@ -15,6 +15,7 @@ constexpr f32 PASSO = 400.0f;
 constexpr f32 H_CIUFFO = 300.0f;
 constexpr f32 H_CESPUGLIO = 600.0f;
 constexpr f32 H_ALBERO = 2900.0f;
+constexpr i32 SCOPERTA_PASSO = 12;     // segmenti fra un gruppo e l'altro sullo sfondo del ponte
 constexpr f32 H_FRECCIA = 760.0f;
 constexpr f32 PX_EDIFICIO = 27.0f;          // un pixel di palazzo = 27 unita' (alto 64x128 = 3456)
 constexpr f32 H_ARREDO_ALTO = 1280.0f;      // come prima (OGGETTO_ALTEZZA_MONDO)
@@ -283,6 +284,70 @@ void disponiTerraPonte(const Road& road, const PezziPaesaggio& pz, const PezziPo
                 if (caso() < 0.16f) { const Sprite* s = scegli(pz.cespugli); metti(s, lato, zz, tra(600.0f, 4000.0f), H_CESPUGLIO * tra(0.9f, 1.3f)); }
                 if (caso() < 0.12f * pz.densitaAlberi) { const Sprite* s = scegli(pz.alberi); metti(s, lato, zz, tra(800.0f, 7000.0f), H_ALBERO * tra(0.85f, 1.15f)); }
                 if (caso() < 0.06f) mettiTema(lato, zz, tra(600.0f, 2500.0f));
+            }
+        }
+    }
+
+    // Sfondo da scoprire (Andrea 11/11): dal ponte alto si vede tutta la costa
+    // sotto la discesa. Non oggetti sparsi a caso ma piccoli gruppi composti,
+    // anche molto lontani di lato: si leggono da lassu' come paesaggio e poi,
+    // scendendo, scivolano ai lati uno alla volta. Generatore a parte: gli
+    // oggetti di prima restano dove erano.
+    Rng rndS(seme ^ 0x53434F50u);
+    auto casoS = [&rndS]() { return (f32)rndS.next(10000) / 10000.0f; };
+    auto traS = [&casoS](f32 a, f32 b) { return a + (b - a) * casoS(); };
+    auto scegliS = [&rndS](const std::vector<const Sprite*>& v) -> const Sprite* {
+        return v.empty() ? nullptr : v[rndS.next((u32)v.size())];
+    };
+    auto mettiS = [&](const Sprite* s, f32 lato, f32 z, f32 distanza, f32 altezza, u8 anima = 0) {
+        if (!s) return;
+        const f32 scala = scalaPer(s, altezza);
+        SpriteInstance o;
+        o.worldZ = z;
+        o.worldX = lato * (bordo + distanza + 0.5f * (f32)s->width * Renderer::SPRITE_WORLD_PX * scala);
+        o.scale = scala;
+        o.sprite = s;
+        o.anima = anima;
+        o.fase = traS(0.0f, 6.28f);
+        out.push_back(o);
+    };
+    for (i32 i = 0; i < n; i += SCOPERTA_PASSO) {
+        const RoadSegment& sg = segs[(size_t)i];
+        if (!sg.sospeso || sg.acqua) continue;
+        const f32 z = (f32)i * (f32)Road::SEG_LEN;
+        const i32 riva = sg.riva;
+        const bool mare = riva >= 0 && riva < Road::RIVA_ACQUA - 2;
+        const bool spiaggia = riva >= Road::RIVA_ACQUA + 2 && riva < Road::RIVA_ACQUA + Road::RIVA_SABBIA;
+        const bool prato = riva < 0 || riva >= Road::RIVA_ACQUA + Road::RIVA_SABBIA + Road::RIVA_SFUMA;
+        // Un lato per volta, alternato con un po' di caso: la vista resta leggibile.
+        const f32 lato = ((i / SCOPERTA_PASSO) & 1) ? 1.0f : -1.0f;
+        const f32 lontano = traS(3500.0f, 22000.0f);
+        if (mare) {
+            // Barche ormeggiate lungo la costa, lontane: si vedono dal ponte.
+            if (casoS() < 0.5f) mettiS(pp.barca, lato, z, lontano, H_BARCA * traS(0.8f, 1.1f), 1);
+        } else if (spiaggia) {
+            // Stabilimento: una fila di ombrelloni parallela alla battigia.
+            const i32 fila = 3 + (i32)rndS.next(4);
+            const f32 d0 = traS(1500.0f, 12000.0f);
+            for (i32 k = 0; k < fila; ++k)
+                mettiS(pp.ombrellone, lato, z + traS(-150.0f, 150.0f), d0 + (f32)k * 900.0f, H_OMBRELLONE);
+            if (casoS() < 0.4f) mettiS(pp.scoglio, -lato, z, traS(4000.0f, 16000.0f), H_SCOGLIO * traS(1.0f, 1.8f));
+        } else if (prato) {
+            if (casoS() < 0.65f) {
+                // Boschetto: alberi stretti attorno a un centro, piu' alti in mezzo.
+                const i32 alberi = 4 + (i32)rndS.next(5);
+                for (i32 k = 0; k < alberi; ++k) {
+                    const f32 r = traS(0.0f, 1.0f);
+                    mettiS(scegliS(pz.alberi), lato, z + traS(-900.0f, 900.0f) * r, lontano + traS(-1600.0f, 1600.0f) * r,
+                           H_ALBERO * (1.2f - 0.4f * r) * traS(0.9f, 1.1f));
+                }
+                for (i32 k = 0; k < 3; ++k)
+                    mettiS(scegliS(pz.cespugli), lato, z + traS(-1100.0f, 1100.0f), lontano + traS(-2000.0f, 2000.0f),
+                           H_CESPUGLIO * traS(0.9f, 1.4f));
+            } else {
+                // Un oggetto del tema da solo nel prato, come un punto di riferimento.
+                const Sprite* s = scegliS(tema);
+                if (s) mettiS(s, lato, z, traS(2500.0f, 9000.0f), (f32)s->height * Renderer::SPRITE_WORLD_PX * scalaArredo(s));
             }
         }
     }

@@ -1203,7 +1203,7 @@ void Game::leggiTemaDaFile(const JsonValue* radice) {
     ren_.impostaTema(tema);
 }
 
-bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
+bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa, const std::string& tappaScelta) {
     // V8 (Caricamento): avvio di una gara completa (tappe + init della prima
     // tappa + rivali + griglia di partenza). Riga di log catturata dal gate.
     const auto cronoInizio = std::chrono::steady_clock::now();
@@ -1230,6 +1230,7 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
             }
         }
     }
+    if (soloPrimaTappa && !tappaScelta.empty() && trovaTappa(tappaScelta)) partenza = tappaScelta;
     if (partenza.empty() || !trovaTappa(partenza)) return false;
 
     // Lunghezza nominale di ogni tappa: serve ai rivali per il proprio percorso
@@ -1260,6 +1261,20 @@ bool Game::avviaGara(const std::string& fileTappe, bool soloPrimaTappa) {
         std::chrono::steady_clock::now() - cronoInizio).count();
     std::printf("CARICAMENTO gara %s %.1f ms\n", partenza.c_str(), (double)msGara);
     return true;
+}
+
+std::vector<std::string> Game::elencoTappe(const std::string& fileTappe) const {
+    std::vector<std::string> ids;
+    JsonReader file(leggiFileTesto(percorsoDati(fileTappe)));
+    JsonValue elenco;
+    if (file.parse() && jsonIsObject(file.valore()) &&
+        jsonGet(jsonAsObject(file.valore()), "tappe", elenco) && jsonIsArray(elenco))
+        for (const JsonValue& t : jsonAsArray(elenco)) {
+            JsonValue campo;
+            if (jsonIsObject(t) && jsonGet(jsonAsObject(t), "id", campo) && jsonIsString(campo))
+                ids.push_back(jsonAsString(campo));
+        }
+    return ids;
 }
 
 bool Game::tappaConBivio(const std::string& id) const {
@@ -2091,6 +2106,7 @@ void Game::update() {
     if (scenaStrada()) {
         aggiornaGuida(dt);
         aggiornaIncroci(dt);
+        aggiornaSegnale(dt);
     } else {
         aggiornaMenu(dt);
     }
@@ -2905,6 +2921,8 @@ void Game::render() {
         if (gara_) ren_.drawGara(state_.posizione, state_.concorrenti, numeroTappa_, arrivo_, clock_.frame);
     }
     drawMusica();
+    // Segnale dei personaggi da fermo (Andrea 11/11): sovrimpressione a parte.
+    if (!pausa_ && segnaleK_ > 0.0f) disegnaSegnalePersonaggi(fb_, segnaleT_, segnaleK_);
     // Conto alla rovescia (Andrea 08/11): sovrimpressione a parte, non HUD.
     if (partenzaT_ >= 0.0f && partenzaT_ < PARTENZA_FINE_S) disegnaPartenza(fb_, ren_, partenzaT_);
     if (fasi_.attuale() == FaseId::FineTempo) fasi_.disegna(ren_, fb_); // blocco R2: "TEMPO SCADUTO"
@@ -2916,6 +2934,21 @@ void Game::render() {
     // segnaposto (Andrea 06/11, PR #60: il riquadro attraversava l'HUD).
     // Si disegnera' solo con gli sprite veri; i gate leggono scenaShow().
     fasi_.dissolvenza(fb_); // V47 V4: schiarita dal menu alla partenza
+}
+
+void Game::aggiornaSegnale(f32 dt) {
+    // Solo a gara aperta: niente griglia, arrivo, tempo scaduto o incidente in corso.
+    const bool corsa = fasi_.attuale() == FaseId::Gara && !inPartenza() && !arrivo_ && !tempoScaduto_ &&
+        !playerFlipping_;
+    if (corsa && player_.speed < SEGNALE_FERMO_V) segnaleFermoS_ += dt;
+    else segnaleFermoS_ = 0.0f;
+    if (segnaleFermoS_ >= SEGNALE_ATTESA_S) {
+        if (segnaleK_ <= 0.0f) segnaleT_ = 0.0f; // riparte da capo
+        segnaleK_ = std::min(1.0f, segnaleK_ + dt / SEGNALE_ENTRA_S);
+    } else {
+        segnaleK_ = std::max(0.0f, segnaleK_ - dt / SEGNALE_ESCE_S);
+    }
+    if (segnaleK_ > 0.0f) segnaleT_ += dt;
 }
 
 void Game::aggiornaSalto(f32 dt) {
