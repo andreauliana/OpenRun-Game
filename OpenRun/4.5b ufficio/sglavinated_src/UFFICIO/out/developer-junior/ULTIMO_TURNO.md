@@ -1,9 +1,19 @@
-# ULTIMO_TURNO @developer-junior — 11/11/2026 10:21
-- **Blocco/passo:** V47 seconda lista **VJ4 soak [~]** (4/6) — eseguito **lv_04_cromo**.
-- **File cambiati:** `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga). Nessuna modifica a codice/dati.
-- **Comando ed exit code:**
-  1. `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_soak_1111/lv_04_cromo" lv_04_cromo soak` → exit 0, `GATE OK`.
-- **Esito:** 30000 frame simulati, replay 2x IDENTICO, ms/frame medio 1.573 max 124.742 (picco iniziale/caricamento), nessun crash. Output in `UFFICIO/Officina/Test area/vj4_soak_1111/lv_04_cromo/`.
-- **Gate:** `gate_t1.sh` non eseguito questo turno.
-- **Prossimo passo mio:** VJ4 soak su lv_05_spray, poi lv_06_desktop (uno per turno).
-- **Problemi residui:** J3 [~] bloccato fix src D2 (`game.cpp:2386/2390`); VJ2 [~] attende ispezione visiva Andrea.
+# ULTIMO_TURNO — developer-junior (11/11/2026 11:40)
+
+## Blocco e passo
+- BLOCCO V47 / VJ5 ∞ review del codice (file nuovo rispetto al turno prima: `render/sprite_raw.cpp`).
+
+## File cambiati
+- `motore_nuovo/test/prova_gate.cpp`: aggiunto `spriteVisibile()` + warning se un raw sponsor/rivale/traffico decodifica ma resta tutto trasparente (pixel tutti indice 0).
+- `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `RIASSUNTO.md` (riscritto).
+
+## Comandi ed exit code
+- `cmake --build UFFICIO/Officina/build --target prova_gate` — exit 0.
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_rawvis_1111" lv_02_atomico smoke` — exit 0 GATE OK: 21/21 sponsor e 7/7 rivali caricati e visibili, 0 warning trasparenti, replay 2x IDENTICO, ms/frame medio 0.930 max 3.235.
+
+## Review VJ5 (dettagli in REVIEW_V47.md)
+- `src/render/sprite_raw.cpp:46-67`: scansione lineare palette per ogni pixel, O(npix x |palette|) al caricamento (incide sulle misure V8); consiglio cache colore->indice (risultato identico, voci esistenti immutabili).
+- `sprite_raw.cpp:73-75`: errore → Sprite vuoto silenzioso, nessuna distinzione file mancante vs corrotto (chiamanti come `game.cpp:634` non loggano).
+
+## Esito
+- VJ5 ∞ fatto su file nuovo; nessuno sprite tutto trasparente nei dati attuali. gate_t1.sh non eseguito.

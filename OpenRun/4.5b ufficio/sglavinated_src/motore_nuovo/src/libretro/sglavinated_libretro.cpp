@@ -14,7 +14,8 @@
 //   2) <cartella system di RetroArch>/sglavinated_src;
 //   3) cartella corrente (e sue cartelle superiori).
 // Si puo' anche avviare senza contenuto ("Avvia core"): valgono 2) e 3).
-// Cartelloni sponsor: non caricati nel core (la decodifica PNG e' solo nel runner).
+// Cartelloni sponsor: caricati dai raw .sglraw in motore_nuovo/dati/sprite_raw/sponsor/
+// (la decodifica PNG resta solo nel runner, senza SDL2_image nel core).
 
 #include "libretro/libretro.h"
 #include "game/game.h"
@@ -159,6 +160,26 @@ bool avviaGioco(const char* percorsoContenuto) {
     // Auto del giocatore (P1 punto 4): raw vero se presente, altrimenti sagoma sintetica.
     sgl::Sprite giocatore = sgl::caricaSpriteRaw("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw");
     if (giocatore.width > 0) g_game->impostaGiocatoreSprite(std::move(giocatore));
+    // Cartelloni sponsor: raw .sglraw (chiave "sponsor_id/stile"), come fallback del
+    // runner; decodifica PNG non disponibile nel core.
+    {
+        std::vector<std::pair<std::string, sgl::Sprite>> sponsorSprites;
+        std::error_code sec;
+        for (const auto& e : std::filesystem::directory_iterator(
+                 "motore_nuovo/dati/sprite_raw/sponsor", sec)) {
+            if (sec || !e.is_regular_file()) continue;
+            const auto& p = e.path();
+            if (p.extension() != ".sglraw") continue;
+            const std::string stem = p.stem().string();
+            const auto pos = stem.rfind('_');
+            if (pos == std::string::npos) continue;
+            const std::string id = stem.substr(0, pos);
+            const std::string stile = stem.substr(pos + 1);
+            sgl::Sprite s = sgl::caricaSpriteRaw(p.string());
+            if (s.width > 0) sponsorSprites.emplace_back(id + "/" + stile, std::move(s));
+        }
+        if (!sponsorSprites.empty()) g_game->setSponsorSprites(std::move(sponsorSprites));
+    }
 
     g_game->abilitaPartenza(true); // griglia e 3-2-1-START (Andrea 08/11)
     if (!g_game->avviaGara()) g_game->init(); // gara a tappe; senza percorso_gara.json pista singola

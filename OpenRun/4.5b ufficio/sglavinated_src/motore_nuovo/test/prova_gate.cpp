@@ -95,6 +95,15 @@ void salvaPPM(const std::string& path, const u32* px, int w, int h) {
     std::fclose(f);
 }
 
+// Un raw che decodifica (header e dimensioni valide) ma resta tutto trasparente
+// (pixel tutti indice 0) vale come mancante: il file c'e', il contenuto no
+// (es. conversione con alpha sotto 128 dappertutto). VJ5 11/11 su sprite_raw.cpp.
+bool spriteVisibile(const Sprite& s) {
+    for (u8 idx : s.pixels)
+        if (idx != 0) return true;
+    return false;
+}
+
 // Cartelloni sponsor veri (raw SGLR generati da strumenti_py/png_a_raw.py): stesso
 // ordine e stessi sponsor_id del runner (runner/sponsor_loader.cpp), cosi' il gate
 // disegna gli stessi sprite del gioco. Da chiamare PRIMA di init().
@@ -107,9 +116,17 @@ void caricaSponsor(Game& game) {
     for (const char* id : kSponsorId) {
         for (const char* stile : kStile) {
             Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/sponsor/") + id + "_" + stile + ".sglraw");
-            if (s.width > 0) sprites.push_back({std::string(id) + "/" + stile, std::move(s)});
+            if (s.width > 0) {
+                if (!spriteVisibile(s))
+                    std::printf("prova_gate: cartellone sponsor %s/%s tutto trasparente\n", id, stile);
+                sprites.push_back({std::string(id) + "/" + stile, std::move(s)});
+            }
+            else std::printf("prova_gate: cartellone sponsor %s/%s non trovato\n", id, stile);
         }
     }
+    // Conteggio esplicito: un raw mancante non deve passare in silenzio (stesso
+    // rilievo fatto al caricamento sponsor del core libretro, VJ5 11/11).
+    std::printf("prova_gate: cartelloni sponsor %zu/%d caricati\n", sprites.size(), 21);
     game.setSponsorSprites(std::move(sprites));
 }
 
@@ -119,7 +136,11 @@ void caricaRivali(Game& game) {
     std::vector<Sprite> sprites;
     for (const char* colore : kRivale) {
         Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/rivali/auto_rivale_") + colore + "_retro.sglraw");
-        if (s.width > 0) sprites.push_back(std::move(s));
+        if (s.width > 0) {
+            if (!spriteVisibile(s))
+                std::printf("prova_gate: sprite rivale %s tutto trasparente\n", colore);
+            sprites.push_back(std::move(s));
+        }
         else std::printf("prova_gate: sprite rivale %s non trovato\n", colore);
     }
     game.setRivaliSprites(std::move(sprites));
@@ -128,7 +149,11 @@ void caricaRivali(Game& game) {
     std::vector<Sprite> traffico;
     for (const char* nome : kTraffico) {
         Sprite s = caricaSpriteRaw(std::string("motore_nuovo/dati/sprite_raw/traffico/traffico_") + nome + "_retro.sglraw");
-        if (s.width > 0) traffico.push_back(std::move(s));
+        if (s.width > 0) {
+            if (!spriteVisibile(s))
+                std::printf("prova_gate: sprite traffico %s tutto trasparente\n", nome);
+            traffico.push_back(std::move(s));
+        }
         else std::printf("prova_gate: sprite traffico %s non trovato\n", nome);
     }
     game.setTrafficoSprites(std::move(traffico));
