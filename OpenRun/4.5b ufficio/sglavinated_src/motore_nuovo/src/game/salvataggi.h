@@ -17,7 +17,8 @@ struct ClassificaEntry {
 // Dati del giocatore: nome salvato (fino a 6 caratteri) e classifica Top-10.
 struct GiocatoreDati {
     char nome[7] = {'P', 'L', 'A', 'Y', 'E', 'R', '\0'}; // spazi = posto libero
-    std::vector<ClassificaEntry> classifica;
+    std::vector<ClassificaEntry> classifica;        // gara a tappe (RACE SERIES)
+    std::vector<ClassificaEntry> classificaSingola; // corsa singola (Andrea 11/11: tabelle separate)
 };
 
 // Persistenza del giocatore (blocco ARC1).

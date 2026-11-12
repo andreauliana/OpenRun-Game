@@ -81,6 +81,38 @@ bool SalvataggiGiocatore::creaDirectorySeManca() {
     return true;
 }
 
+namespace {
+void leggiClassifica(const JsonObject& root, const char* chiave, std::vector<ClassificaEntry>& out) {
+    JsonValue cv;
+    if (!jsonGet(root, chiave, cv) || !jsonIsArray(cv)) return;
+    for (const JsonValue& e : jsonAsArray(cv)) {
+        if (!jsonIsObject(e)) continue;
+        const JsonObject& o = jsonAsObject(e);
+        ClassificaEntry entry;
+        JsonValue nv2, pv, dv;
+        if (!jsonGet(o, "nome", nv2) || !jsonIsString(nv2)) continue;
+        entry.nome = jsonAsString(nv2);
+        if (entry.nome.size() > 6) entry.nome.resize(6);
+        while (entry.nome.size() < 6) entry.nome.push_back(' ');
+        entry.punti = jsonGet(o, "punti", pv) && jsonIsNumber(pv) ? (i32)jsonAsNumber(pv) : 0;
+        entry.data = jsonGet(o, "data", dv) && jsonIsString(dv) ? jsonAsString(dv) : std::string("0000-00-00");
+        out.push_back(std::move(entry));
+    }
+}
+
+void scriviClassifica(std::FILE* f, const char* chiave, const std::vector<ClassificaEntry>& c, bool ultima) {
+    std::fprintf(f, "  \"%s\": [\n", chiave);
+    i32 n = 0; // massimo 10, ordinati per punti decrescenti
+    for (const ClassificaEntry& e : c) {
+        if (n > 0) std::fprintf(f, ",\n");
+        std::fprintf(f, "    {\"nome\": \"%s\", \"punti\": %d, \"data\": \"%s\"}",
+                     jsonEscape(e.nome).c_str(), e.punti, jsonEscape(e.data).c_str());
+        if (++n >= 10) break;
+    }
+    std::fprintf(f, "\n  ]%s\n", ultima ? "" : ",");
+}
+} // namespace
+
 GiocatoreDati SalvataggiGiocatore::carica() {
     GiocatoreDati g;
     std::string testo = leggiFile(PERCORSO);
@@ -101,26 +133,9 @@ GiocatoreDati SalvataggiGiocatore::carica() {
         normalizzaNome(g.nome);
     }
 
-    // Classifica (massimo 10, come salvata).
-    JsonValue cv;
-    if (jsonGet(root, "classifica", cv) && jsonIsArray(cv)) {
-        const JsonArray& arr = jsonAsArray(cv);
-        for (const JsonValue& e : arr) {
-            if (!jsonIsObject(e)) continue;
-            const JsonObject& o = jsonAsObject(e);
-            ClassificaEntry entry;
-            JsonValue nv2, pv, dv;
-            if (!jsonGet(o, "nome", nv2) || !jsonIsString(nv2)) continue;
-            entry.nome = jsonAsString(nv2);
-            if (entry.nome.size() > 6) entry.nome.resize(6);
-            while (entry.nome.size() < 6) entry.nome.push_back(' ');
-            if (!jsonGet(o, "punti", pv) || !jsonIsNumber(pv)) entry.punti = 0;
-            else entry.punti = (i32)jsonAsNumber(pv);
-            if (jsonGet(o, "data", dv) && jsonIsString(dv)) entry.data = jsonAsString(dv);
-            else entry.data = "0000-00-00";
-            g.classifica.push_back(std::move(entry));
-        }
-    }
+    // Classifiche (massimo 10 ciascuna, come salvate): gara a tappe e corsa singola.
+    leggiClassifica(root, "classifica", g.classifica);
+    leggiClassifica(root, "classifica_singola", g.classificaSingola);
     return g;
 }
 
@@ -141,17 +156,8 @@ bool SalvataggiGiocatore::salva(const GiocatoreDati& g) {
 
     std::fprintf(f, "{\n");
     std::fprintf(f, "  \"nome\": \"%s\",\n", jsonEscape(nomeVis).c_str());
-    std::fprintf(f, "  \"classifica\": [\n");
-    // massimo 10, ordinati per punti decrescenti
-    i32 n = 0;
-    for (const ClassificaEntry& e : g.classifica) {
-        if (n > 0) std::fprintf(f, ",\n");
-        std::fprintf(f, "    {\"nome\": \"%s\", \"punti\": %d, \"data\": \"%s\"}",
-                     jsonEscape(e.nome).c_str(), e.punti, jsonEscape(e.data).c_str());
-        ++n;
-        if (n >= 10) break;
-    }
-    std::fprintf(f, "\n  ]\n");
+    scriviClassifica(f, "classifica", g.classifica, false);
+    scriviClassifica(f, "classifica_singola", g.classificaSingola, true);
     std::fprintf(f, "}\n");
     if (std::fflush(f) != 0) { std::fclose(f); return false; }
     std::fclose(f);

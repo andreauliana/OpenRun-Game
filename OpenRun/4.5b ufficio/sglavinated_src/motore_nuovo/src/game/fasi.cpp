@@ -371,22 +371,34 @@ public:
         i32 puntiPerKm = PUNTI_PER_KM_DEFAULT;
         i32 bonusTempo = BONUS_TEMPO_RESIDUO_DEFAULT;
         i32 bonusCheckpoint = BONUS_CHECKPOINT_DEFAULT;
+        std::vector<i32> bonusPosizione; // dal primo in giu' (vuoto = nessun bonus)
         JsonReader punteggio(leggiFileTesto("motore_nuovo/dati/punteggio.json"));
         if (punteggio.parse() && jsonIsObject(punteggio.valore())) {
             const JsonObject& o = jsonAsObject(punteggio.valore());
             puntiPerKm = jsonNumero(o, "punti_per_km", PUNTI_PER_KM_DEFAULT);
             bonusTempo = jsonNumero(o, "bonus_tempo_residuo_per_secondo", BONUS_TEMPO_RESIDUO_DEFAULT);
             bonusCheckpoint = jsonNumero(o, "bonus_checkpoint", BONUS_CHECKPOINT_DEFAULT);
+            JsonValue bv;
+            if (jsonGet(o, "bonus_posizione", bv) && jsonIsArray(bv))
+                for (const JsonValue& v : jsonAsArray(bv)) bonusPosizione.push_back(jsonIsNumber(v) ? (i32)jsonAsNumber(v) : 0);
         }
         const f32 km = gioco.distanzaKm();
         const i32 tappeCompletate = gioco.numeroTappa() - 1;
         punteggio_ = (i32)(km * puntiPerKm) + (i32)(gioco.tempoResiduoS() * bonusTempo)
             + tappeCompletate * bonusCheckpoint;
-        if (punteggio_ < 0) punteggio_ = 0;
         // Arrivo: classifica della gara sul tempo di ognuno (Andrea 29/10).
         arrivo_.clear();
         if (gioco.arrivato())
             for (const Game::Classificato& c : gioco.classificaArrivo()) arrivo_.push_back(c);
+        // Bonus per la posizione d'arrivo (Andrea 11/11 sera: i punti devono
+        // avere senso nel gioco): dati/punteggio.json "bonus_posizione",
+        // dal primo in giu'. Senza arrivo (tempo scaduto) niente bonus.
+        if (!arrivo_.empty()) {
+            size_t pos = 0;
+            for (size_t i = 0; i < arrivo_.size(); ++i) if (arrivo_[i].giocatore) pos = i;
+            if (pos < bonusPosizione.size()) punteggio_ += bonusPosizione[pos];
+        }
+        if (punteggio_ < 0) punteggio_ = 0;
         passo_ = arrivo_.empty() ? Passo::Nome : Passo::Ranking;
     }
     void aggiorna(Game& gioco, f32 dt) override {
@@ -463,15 +475,18 @@ private:
         g.nome[6] = '\0';
         ClassificaEntry e;
         e.nome = nomeVis_; e.punti = punteggio_; e.data = "0000-00-00"; // core senza orologio di sistema
-        g.classifica.push_back(e);
-        std::stable_sort(g.classifica.begin(), g.classifica.end(),
+        // Due tabelle (Andrea 11/11 sera): gara a tappe e corsa singola
+        // hanno punti di taglia diversa e non si confrontano.
+        std::vector<ClassificaEntry>& lista = singola_ ? g.classificaSingola : g.classifica;
+        lista.push_back(e);
+        std::stable_sort(lista.begin(), lista.end(),
                          [](const ClassificaEntry& a, const ClassificaEntry& b) { return a.punti > b.punti; });
-        if (g.classifica.size() > 10) g.classifica.resize(10);
+        if (lista.size() > 10) lista.resize(10);
         SalvataggiGiocatore::salva(g); // se non si puo' scrivere (sola lettura) si gioca lo stesso
 
         tabella_.clear();
         bool messo = false;
-        for (const ClassificaEntry& r : g.classifica) {
+        for (const ClassificaEntry& r : lista) {
             std::string n = r.nome;
             while (!n.empty() && n.back() == ' ') n.pop_back();
             const bool nostro = !messo && n == nomeVis_ && r.punti == punteggio_;
@@ -482,7 +497,7 @@ private:
             JsonReader finta(leggiFileTesto("motore_nuovo/dati/classifica_finta.json"));
             if (finta.parse() && jsonIsObject(finta.valore())) {
                 JsonValue elencoV;
-                if (jsonGet(jsonAsObject(finta.valore()), "giocatori", elencoV) && jsonIsArray(elencoV))
+                if (jsonGet(jsonAsObject(finta.valore()), singola_ ? "giocatori_singola" : "giocatori", elencoV) && jsonIsArray(elencoV))
                     for (const JsonValue& v : jsonAsArray(elencoV)) {
                         if (!jsonIsObject(v)) continue;
                         const JsonObject& o = jsonAsObject(v);
@@ -540,7 +555,9 @@ private:
     void disegnaScelta(Renderer& ren, Framebuffer& fb) const {
         pannello(fb, 48, 4, 271, 214);
         const char* titolo = "HIGH SCORES";
-        titoloSpaziato(ren, 160, 9, titolo, 0xFFFFFFFFu, 1, 2);
+        titoloSpaziato(ren, 160, 6, titolo, 0xFFFFFFFFu, 1, 2);
+        const char* quale = singola_ ? "SINGLE RACE" : "RACE SERIES";
+        ren.drawTesto(160 - ren.larghezzaTesto(quale, 0) / 2, 21, quale, 0xFFA0A0A0u, 0, true);
         char buf[32];
         for (size_t i = 0; i < tabella_.size(); ++i) {
             const PunteggioEntry& e = tabella_[i];
