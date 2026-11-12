@@ -1,16 +1,27 @@
 {
   "licenza": "CC-BY-4.0",
   "autore": "@developer (blocco R2, classifica fittizia placeholder per i risultati; da curare con @grafico)",
-  "descrizione": "Classifica fittizia: riempie la tabella HIGH SCORES di fine gara quando salvataggi/giocatore.json ha meno di 10 record. Punti alla portata del gioco (Andrea 11/11: una vittoria in corsa singola vale circa 60 punti).",
+  "descrizione": "Classifica fittizia: riempie la tabella HIGH SCORES di fine gara quando salvataggi/giocatore.json ha meno di 10 record. Due elenchi (Andrea 11/11 sera): giocatori = gara a tappe, giocatori_singola = corsa singola. Punti alla portata del gioco, col bonus di posizione di punteggio.json.",
   "giocatori": [
-    {"nome": "ALE", "punti": 900},
-    {"nome": "BEN", "punti": 700},
-    {"nome": "SIM", "punti": 520},
-    {"nome": "LUC", "punti": 380},
-    {"nome": "MAR", "punti": 260},
-    {"nome": "GIA", "punti": 170},
-    {"nome": "FIO", "punti": 110},
-    {"nome": "LEO", "punti": 70},
-    {"nome": "ANN", "punti": 40}
+    {"nome": "ALE", "punti": 1400},
+    {"nome": "BEN", "punti": 1200},
+    {"nome": "SIM", "punti": 1000},
+    {"nome": "LUC", "punti": 850},
+    {"nome": "MAR", "punti": 700},
+    {"nome": "GIA", "punti": 550},
+    {"nome": "FIO", "punti": 400},
+    {"nome": "LEO", "punti": 250},
+    {"nome": "ANN", "punti": 120}
+  ],
+  "giocatori_singola": [
+    {"nome": "ALE", "punti": 420},
+    {"nome": "BEN", "punti": 380},
+    {"nome": "SIM", "punti": 340},
+    {"nome": "LUC", "punti": 300},
+    {"nome": "MAR", "punti": 250},
+    {"nome": "GIA", "punti": 200},
+    {"nome": "FIO", "punti": 150},
+    {"nome": "LEO", "punti": 100},
+    {"nome": "ANN", "punti": 60}
   ]
 }
