@@ -1,15 +1,16 @@
 # REVIEW V47 (riscritta) — @developer-junior
-Turno 12/11 09:34, VJ5 ∞.
+Turno 12/11 09:55, VJ5 ∞.
 
 ## Cambio rivisto
-- File: `motore_nuovo/src/render/framebuffer.cpp`, `motore_nuovo/src/render/framebuffer.h` (diversi dai turni prima: paesaggio, road.h, partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*, replay.cpp). Review statica; nessun cambio src locale.
+- File: `motore_nuovo/src/road/road.cpp` (+`motore_nuovo/src/road/road_segment.h`) — diverso da renderer/mixer/framebuffer/paesaggio/road.h/partenza/salvataggi/fasi/libretro/game/player/replay. Review statica, nessun cambio src locale.
 
 ## Rilievi
-1. **framebuffer.cpp:21-27 — `hline` loop per-pixel:** dopo clamp/swap riempie con `for (i32 x = x0; x <= x1; ++x) buf_[y*WIDTH+x]=color;`. Semplificazione: ottenere puntatore riga `u32* r = buf_.data() + y*WIDTH` e usare `std::fill_n(r + x0, x1 - x0 + 1, color)` (comportamento identico, più leggibile e potenzialmente vettorizzabile).
-2. **framebuffer.cpp:29-39 — `fillRect` doppio loop:** stesso pattern per ogni riga; semplificazione analoga con `std::fill_n` per riga all'interno del loop su `y` (riduce rumore, stesso esito).
-3. **framebuffer.h/cpp — bounds e semantica:** `get` ritorna 0 fuori bounds (ok), `put` ignora fuori bounds, estremi inclusivi coerenti con uso renderer (es. clip galleria). Nessun problema funzionale rilevato.
+1. **road.cpp:179-188,200,203-204 — chiusura direzione e rettilineo bivio:** il residuo di curvatura è calcolato sui segmenti con `curve != 0` (passata 1) e la correzione è sottratta solo dove `seg.curve != 0` (200), mantenendo i dritti perfettamente dritti come da commento. Nel tratto bivio (164-175,203-204) le curve vengono però forzate a 0 dopo la correzione (`pesoDritto>=1 => 0`, altrimenti scala): l'azzeramento/scala post-correzione può reintrodurre un piccolo scarto di direzione locale nella zona bivio (il bivio resta speciale e a fine tappa il ramo è ricentrato), da verificare solo se si osserva deriva.
+2. **road.cpp:74-81 — raccordi entrata/uscita:** se `ee+uu > n` i raccordi vengono scalati proporzionalmente per non sovrapporsi (ok); con valori molto piccoli l'arrotondamento intero può ridurre leggermente una delle rampe, comportamento accettabile.
+3. **road.cpp:164-175,227-235 — rettilineo/piano del bivio:** attivato solo se `conRettilineo` lascia margine per i raccordi (`aDritto-BIVIO_RACCORDO>0` e `bDritto+BIVIO_RACCORDO<nSeg`), altrimenti nessuna modifica (fallback sicuro). Le quote sono raccordate verso `quotaDritto` con `pesoDritto` (229-234).
+4. **road_segment.h:** campi e commenti coerenti con l'uso in road.cpp (portali 1/4/5-7, riva/luci/incrocio/galleria, traffico/larghezza).
 
 ## Prova
-- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0 (12/11 09:34).
-- `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0934" lv_01_neon caricamento` exit 0 (`GATE CARICAMENTO OK`, init 9.4 ms, avviaGara 7.8/7.9 ms).
+- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0 (12/11 09:55).
+- `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_road_0955" lv_02_atomico caricamento` exit 0, `GATE CARICAMENTO OK` (init 11.0 ms, avviaGara 10.4/7.8 ms, soglia 1000 ms).
 - gate_t1.sh: non eseguito.
