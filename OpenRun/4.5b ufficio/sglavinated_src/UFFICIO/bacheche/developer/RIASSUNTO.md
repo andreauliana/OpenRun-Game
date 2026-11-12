@@ -1,11 +1,9 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 11/11/2026 13:22 (Turno 3)
-- V47 V6 [~]: libretro allineato al runner (`src/libretro/sglavinated_libretro.cpp`, timing 50/60 Hz da config, griglia/3-2-1, pausa, musica/radio, salvataggi, flusso menu-gara-risultati). Build libretro exit 0.
-- V47 V7 [~]: prealloc render `terraOrdine_.reserve(128)` in `motore_nuovo/src/render/renderer.cpp`; `cmake --build ... --target prova_gate` exit 0.
-- V47 V9 ∞ lv_03_foglie: percorso exit 0 "GATE PERCORSO OK" (2273 frame, 0% fuori); smoke exit 0 "GATE OK" ms/frame medio 0.984 max 3.630 (<8 ms), replay IDENTICO.
-- Caricamento lv_03_foglie: livello 2.8-3.5 ms, init 5.3-7.5 ms.
+- Data/ora: 12/11/2026 09:17 (Turno 1)
+- V47 V9 ∞ fluidita' lv_04_cromo (terzo giro): percorso exit 0 "GATE PERCORSO OK" (2114 frame, 35.2 s, 0% fuori); smoke exit 0 "GATE OK" ms/frame medio 1.612 max 3.685 (<8 ms), replay IDENTICO.
+- Caricamento lv_04_cromo: livello 3.4-4.8 ms, init 6.1-9.9 ms (<1 s).
 - Nessun alleggerimento gameplay/dati (frame e caricamento sotto soglia); nessun cambio costanti gameplay.
-- V9 ciclo recente: lv_04, lv_05, lv_06, lv_01, lv_02, lv_03 misurati OK.
-- Gate: gate_t1.sh non eseguito (solo prova_gate lv_03 + build prova_gate in questo turno).
-- Prossimo: V47 V9 ∞ fluidita' lv_04_cromo.
+- Terzo giro V9: lv_01 ok (08:56), lv_02 ok (09:05), lv_03 ok (09:09), lv_04 ok (questo turno).
+- Gate: gate_t1.sh non eseguito (solo prova_gate lv_04 in questo turno).
+- Prossimo: V9 ∞ fluidita' lv_05_spray.
 - Vincoli: HUD/auto giocatore/runner non toccati.

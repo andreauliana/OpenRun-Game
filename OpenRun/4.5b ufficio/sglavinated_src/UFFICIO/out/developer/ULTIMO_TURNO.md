@@ -1,14 +1,10 @@
-Blocco/passo: V47 V9 ∞ fluidita' lv_03_foglie + V7 prealloc render (turno 11/11/2026 13:22).
-File cambiati:
-- motore_nuovo/src/render/renderer.cpp (terraOrdine_ reserve 64->128)
-- UFFICIO/bacheche/developer/diario.md (riga turno)
-- UFFICIO/bacheche/developer/RIASSUNTO.md (riscritto)
-- UFFICIO/out/developer/ULTIMO_TURNO.md (riscritto)
+# ULTIMO TURNO developer — 12/11/2026 09:17
 
-Comandi ed exit code:
-- ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v47_v9_lv03_percorso" lv_03_foglie percorso -> exit 0 ("GATE PERCORSO OK", 2273 frame, 0% fuori)
-- ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v47_v9_lv03_smoke" lv_03_foglie smoke -> exit 0 ("GATE OK", ms/frame medio 0.984 max 3.630, replay IDENTICO, caricamento 2.8-7.5 ms)
-- cmake --build UFFICIO/Officina/build --target prova_gate -> exit 0
-
-Gate: gate_t1.sh non eseguito.
-Prossimo: V47 V9 ∞ fluidita' lv_04_cromo.
+- Blocco e passo: BLOCCO V47 @developer — V9 ∞ fluidita' a giro, terzo giro, lv_04_cromo.
+- Eseguito: prova_gate `percorso` e `smoke` su lv_04_cromo.
+- File cambiati: `UFFICIO/bacheche/developer/diario.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/out/developer/ULTIMO_TURNO.md` (solo scritture di turno). Nessun codice/dato: tutto sotto soglia.
+- Comandi ed exit code:
+  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_percorso" lv_04_cromo percorso` — exit 0, "GATE PERCORSO OK": 2114 frame (35.2 s @ 60 Hz), fuori strada 0.0%, caricamento livello 3.9 ms init 9.9 ms.
+  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_smoke" lv_04_cromo smoke` — exit 0, "GATE OK": ms/frame medio 1.612 max 3.685 (<8 ms), replay 2x IDENTICO, caricamento livello 3.4-4.8 ms init 6.1-9.9 ms.
+- gate_t1.sh non eseguito in questo turno.
+- Prossimo: V9 ∞ fluidita' lv_05_spray.

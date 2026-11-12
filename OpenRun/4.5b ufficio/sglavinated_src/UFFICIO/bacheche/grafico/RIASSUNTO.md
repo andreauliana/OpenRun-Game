@@ -1,8 +1,11 @@
-# RIEPILOGO — @grafico (11/11/2026 13:20)
-1. V47 VG2 [~] giro 27 (11/11 13:20): 20 frasi migliorate in `motore_nuovo/dati/frasi.json` (ids 0,1,3,4,6,7,8,10,12,14,15,16,17,20,25,34,35,36,40,42) — solo `linea1`/`linea2` EN, `it1`/`it2` intatti, max 16 char.
-2. Script: `UFFICIO/Dipartimento Grafico/TOOLS/vg2_giro27.py`. Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/verifica_frasi_vg2.py"` exit 0 (156 frasi, regole ok).
-3. File turno: `motore_nuovo/dati/frasi.json`, `UFFICIO/Dipartimento Grafico/TOOLS/vg2_giro27.py`, `UFFICIO/bacheche/grafico/diario.md` (+1), `RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-4. Prossimo: giro 28 VG2 (20 frasi/turno) o passo ∞ VG3 (confronto date PNG Andrea in `Libreria/assets_originali/scenari/` vs `.sglraw`).
-5. Gate: non eseguito (11/11 13:20). Ultimo verde noto: ctest 27/27 sul main del 10/11 (RICHIESTA_APERTA).
-6. Mai: HUD/UI, auto giocatore, logo/menu, premiazione, sponsor (solo Andrea), scenari/skyline Andrea, parapetti ponte. Licenze: zero esterne, zero Sega.
-7. Chiusi: MIG1 G1 [ANNULLATO], MIG1 G2 [x], V47 VG1 [x], V47 V5 frasi [x], PERC1, AUTO1, G-A1, G-P1. Nessuna review richiesta. Nessun blocco bloccato.
+# RIEPILOGO — @grafico (12/11/2026 09:13)
+1. V47 VG3 (∞) giro 5: rieseguito controllo date/contenuto PNG→`.sglraw` con `vg3_date_png_raw.py` (scenari + skyline a data + gruppi 1:1 fuori da scenari; `giocatore` escluso, bloccato).
+2. Esito: 87 raw scenari (81 uguali a byte, 6 skyline a data, 0 diversi) + 54 raw altri gruppi tutti allineati; 0 da convertire, 0 PNG piu' nuovi.
+3. Residuo noto: `sprite/rivali/auto_giocatore_sbandata.png` senza raw e senza riferimento nel motore; non cancellato, non convertito.
+4. Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` exit 0 (12/11 09:13). Nessuna conversione lanciata.
+5. Turno: `diario.md` (+1), `RIASSUNTO.md`, `STATUS_GRAFICO_PER_CAPO.md`, `ULTIMO_TURNO.md` riscritti.
+6. Prossimo: VG3 giro 6 (stesso controllo, ripetibile) o passo ∞ indicato dal Capo.
+7. Gate: gate non eseguito (12/11 09:13).
+8. Mai: HUD/UI, auto giocatore, logo/menu, premiazione, sponsor (solo Andrea), scenari/skyline Andrea. Licenze: zero esterne, zero Sega.
+9. Chiusi: MIG1 G1 [ANNULLATO], MIG1 G2 [x], V47 VG1 [x], V47 V5 frasi [x], VG2 [x], PERC1, AUTO1, G-A1, G-P1, PIST1.
+10. Nessuna review richiesta; nessun blocco bloccato.

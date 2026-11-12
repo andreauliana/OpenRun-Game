@@ -1,16 +1,14 @@
 # REVIEW V47 (riscritta) — @developer-junior
-Turno 11/11 13:17, VJ5 ∞.
+Turno 12/11 09:11, VJ5 ∞.
 
 ## Cambio rivisto
-- `motore_nuovo/src/libretro/sglavinated_libretro.cpp`: aggiornamento AV info in `avviaGioco` (commit f64bfdd).
+- File: `motore_nuovo/src/road/road.h` (file diverso dai turni prima: partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*). Review statica; ultimo cambio @developer in src non verificabile via git (shell non disponibile).
 
 ## Rilievi
-- `sglavinated_libretro.cpp:191-197` (`avviaGioco`): dopo il caricamento si fa `retro_get_system_av_info(&av)` e si rimanda lo stesso struct con `RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO` senza modificarlo. Il commento afferma di voler aggiornare il timing in base a `config.json` (50/60 Hz) se diverso dal default, ma non viene letto `leggiFrequenzaDaConfig()` né aggiornato `av.timing.fps`. È un no-op ridondante (e potenzialmente fonte di confusione). Due opzioni: (1) rimuovere il blocco se non serve, (2) applicare realmente la frequenza da config (aggiornando `av.timing.fps` e, se necessario, gli altri campi) prima di inviarla al frontend. Attualmente non fa quanto il commento dichiara.
-- (precedente) `sglavinated_libretro.cpp:185-189`: se `avviaGara()` fallisce si passa a `init()` poi `mostraMenu()`; se ha successo resta in gara preparata ma si chiama comunque `mostraMenu()` - dipendenza da macchina a stati da verificare.
-- (precedente) `sglavinated_libretro.cpp:258-261` (`retro_reset`): reset forza `mostraMenu()` anche dopo esito gara; assicurare stato pulito.
-- (precedente) `sglavinated_libretro.cpp:270-272`: combo `Start+B` intercettata prima di `update()` può interferire con pausa "Start da solo".
-- (precedente) `sglavinated_libretro.cpp:111-122`: nessun `RETRO_DEVICE_KEYBOARD` (pausa/inserimento nome). Considerare callback tastiera o documentare solo pad.
+1. **road.h:107 — membro pubblico `Road::acqua` inutilizzato/duplicato:** `class Road` dichiara `f32 acqua = 0.0f;` (riga 107) con commento duplicato alle righe 104-106, ma il campo acqua di tracciato e' gestito da `SegmentDesc::acqua` (riga 70) e dai campi dei segmenti/proiezione (`seg.acqua`, `ps.acqua`); nessun uso di `Road::acqua` come membro dell'istanza nel sorgente. Semplificazione: rimuovere membro e commento morto per evitare confusione con `SegmentDesc::acqua` e `acquaAt()`.
+2. **road.h:97-99, 129-132 — API incroci/acquaAt coerenti:** `incrocioD` usa indice segmento + `incrociZ_` con sentinel 1e9f; `acquaAt/sospesoAt/galleriaAt` delegano a `indiceSegmento` (ritorno -1 gestito). Nessun errore evidente letto.
+3. **Nota correlata (road.cpp:339):** formattazione compatta `if (bivio_) {        const i32 inizio...` su una riga sola (stile), non funzionale.
 
 ## Prova
-- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0 (11/11 13:17, prima della review).
-- gate_t1.sh non eseguito (non richiesto).
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` non eseguito: shell non disponibile in questo turno (ricompilazione VJ5 non verificabile).
+- gate_t1.sh: non eseguito.

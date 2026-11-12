@@ -1,11 +1,9 @@
-# STATUS GRAFICO PER CAPO — 11/11/2026 11:47
-Stato: V47 VG2 [~] giro 17 completato
-Lavoro: 20 frasi migliorate in `motore_nuovo/dati/frasi.json` (ids 11,23,26,35,53,65,66,89,90,93,98,103,107,119,124,127,130,139,149,152; primo passaggio sulle frasi mai toccate nei giri 11-16), solo `linea1`/`linea2` EN, `it1`/`it2` intatti, max 16 caratteri
-Script: `UFFICIO/Dipartimento Grafico/TOOLS/vg2_giro17.py`
-Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/verifica_frasi_vg2.py"` exit 0 (156/156 frasi, regole ok)
-Gate: non eseguito (11/11 11:47)
-Prossimo: VG2 giro 18 (20 frasi/turno, restano ~26 frasi mai toccate). Poi VG3 (∞): date PNG Andrea in `Libreria/assets_originali/scenari/` vs `.sglraw`
-Licenze: zero esterne, zero Sega
-Blocchi chiusi: MIG1 G1 annullato, MIG1 G2 [x], V47 VG1 [x], V47 V5 frasi [x]
-Review richiesta: nessuna
-Lacune/blocchi: nessuno; `UFFICIO/out/grafico/ULTIMO_TURNO.md` non scrivibile (fuori allowlist ruolo), handoff qui
+# STATUS GRAFICO PER CAPO — 12/11/2026 09:13
+Stato: V47 VG3 (∞) giro 5 completato — VG2 chiuso da Claude l'11/11, non si riscrive
+Lavoro: rieseguito controllo date+contenuto PNG→`.sglraw` (scenari, 6 skyline a data, gruppi 1:1 rivali/traffico/traffico_incrocio/pubblico/ui/logo/sponsor; `giocatore` escluso, area bloccata). Nessun PNG di Andrea ritoccato, nessun file convertito.
+Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` exit 0 (12/11 09:13) — 87 raw scenari (81 uguali a byte, 6 skyline a data) + 54 raw altri gruppi tutti allineati; 0 da convertire, 0 PNG piu' nuovi.
+Residuo noto: `sprite/rivali/auto_giocatore_sbandata.png` senza `.sglraw` e senza riferimento nel motore; segnalato, non cancellato e non convertito.
+Gate: gate non eseguito (12/11 09:13).
+Prossimo: VG3 giro 6 (stesso controllo, ripetibile) o passo ∞ indicato dal Capo.
+Licenze/provenienza: zero asset esterni, zero Sega.
+Review richiesta: nessuna. Blocchi/lacune: nessuno.
