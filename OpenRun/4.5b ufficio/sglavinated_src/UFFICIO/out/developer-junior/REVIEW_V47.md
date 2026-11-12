@@ -1,14 +1,15 @@
 # REVIEW V47 (riscritta) — @developer-junior
-Turno 12/11 09:19, VJ5 ∞.
+Turno 12/11 09:34, VJ5 ∞.
 
 ## Cambio rivisto
-- File: `motore_nuovo/src/core/replay.cpp` (file diverso dai turni prima: road.h, partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*). Review statica; ultimo cambio @developer in src: nessuna modifica locale (`git status --short -- motore_nuovo/src` vuoto), commit recenti 578f086/3df3114/da6c52b gia' rivisti.
+- File: `motore_nuovo/src/render/framebuffer.cpp`, `motore_nuovo/src/render/framebuffer.h` (diversi dai turni prima: paesaggio, road.h, partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*, replay.cpp). Review statica; nessun cambio src locale.
 
 ## Rilievi
-1. **replay.cpp:9,19-21 — registrazione troncata silenziosamente oltre la capacita':** `startRecord()` fa `reserve(4096)` (riga 9) ma `record()` scarta i frame se `inputs.size() >= inputs.capacity()` (riga 20) senza segnale/errore. Per replay lunghi (>4096 frame) la registrazione viene troncata e in playback `next()` restituisce 0 a fine buffer (riga 24), producendo divergenza non evidente. Possibile errore se usato per run lunghe; semplificazione/mitigazione: permettere crescita oltre la riserva (accettando riallocazioni) o segnalare overflow/troncamento esplicito.
-2. **replay.cpp:14,23-25 — playback sicuro a lettura:** `startPlayback` usa move, indice azzerato; `next()` fa bounds check e ritorna 0 a fine stream. Coerente.
+1. **framebuffer.cpp:21-27 — `hline` loop per-pixel:** dopo clamp/swap riempie con `for (i32 x = x0; x <= x1; ++x) buf_[y*WIDTH+x]=color;`. Semplificazione: ottenere puntatore riga `u32* r = buf_.data() + y*WIDTH` e usare `std::fill_n(r + x0, x1 - x0 + 1, color)` (comportamento identico, più leggibile e potenzialmente vettorizzabile).
+2. **framebuffer.cpp:29-39 — `fillRect` doppio loop:** stesso pattern per ogni riga; semplificazione analoga con `std::fill_n` per riga all'interno del loop su `y` (riduce rumore, stesso esito).
+3. **framebuffer.h/cpp — bounds e semantica:** `get` ritorna 0 fuori bounds (ok), `put` ignora fuori bounds, estremi inclusivi coerenti con uso renderer (es. clip galleria). Nessun problema funzionale rilevato.
 
 ## Prova
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` avviato 12/11 (timeout strumento 120s, interrotto in corso ~test 7/27, primi 6 Passed visibili); exit code non disponibile.
-- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0919" lv_01_neon caricamento` exit 0 (`GATE CARICAMENTO OK`, 12/11).
+- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0 (12/11 09:34).
+- `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0934" lv_01_neon caricamento` exit 0 (`GATE CARICAMENTO OK`, init 9.4 ms, avviaGara 7.8/7.9 ms).
 - gate_t1.sh: non eseguito.

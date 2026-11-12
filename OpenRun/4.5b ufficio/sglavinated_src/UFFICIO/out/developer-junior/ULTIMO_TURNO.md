@@ -1,6 +1,9 @@
-# ULTIMO TURNO — @developer-junior (12/11 09:19)
-- Blocco e passo: V47, VJ5 ∞ (review del codice, file src diverso).
-- Passo fatto: review statica `motore_nuovo/src/core/replay.cpp` (nessun cambio src locale, git status src vuoto).
-- Rilievi: (1) replay.cpp:9,19-21 `record()` tronca silenziosamente oltre capacita' 4096 riservata (rischio replay lunghi/divergenza, `next()` poi ritorna 0); semplificazione/mitigazione: crescita o segnale overflow. (2) playback bounds ok.
-- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
-- Comando ed exit code: `sh UFFICIO/Officina/TOOL/run_tests.sh` avviato 12/11 (timeout strumento 120s, interrotto ~test 7/27, primi 6 Passed), exit code n/d. `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0919" lv_01_neon caricamento` exit 0 (`GATE CARICAMENTO OK`). gate_t1.sh non eseguito.
+# ULTIMO_TURNO @developer-junior
+- Blocco/passo: V47 VJ5 ∞ (review codice, file diverso dai precedenti). Turno 12/11 09:34.
+- File cambiati: `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
+- Review: `motore_nuovo/src/render/framebuffer.cpp`/`.h` (nessun cambio src locale). Rilievi: `hline` 21-27 e `fillRect` 29-39 usano loop per-pixel; semplificazione `std::fill_n` per span di riga (stesso comportamento). Bounds/semantica ok.
+- Comandi ed exit code (12/11 09:34):
+  - `cmake --build UFFICIO/Officina/build --target prova_gate` -> exit 0
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0934" lv_01_neon caricamento` -> exit 0 (`GATE CARICAMENTO OK`)
+- gate_t1.sh: non eseguito.
+- Problemi residui: rilievo VJ5 non bloccante (semplificazione); nessuna modifica a src.
