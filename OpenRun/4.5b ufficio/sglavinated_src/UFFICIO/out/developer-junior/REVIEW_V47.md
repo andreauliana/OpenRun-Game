@@ -1,14 +1,14 @@
 # REVIEW V47 (riscritta) — @developer-junior
-Turno 12/11 09:11, VJ5 ∞.
+Turno 12/11 09:19, VJ5 ∞.
 
 ## Cambio rivisto
-- File: `motore_nuovo/src/road/road.h` (file diverso dai turni prima: partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*). Review statica; ultimo cambio @developer in src non verificabile via git (shell non disponibile).
+- File: `motore_nuovo/src/core/replay.cpp` (file diverso dai turni prima: road.h, partenza.cpp, salvataggi.cpp, fasi.cpp, libretro.cpp, game.cpp/player.*). Review statica; ultimo cambio @developer in src: nessuna modifica locale (`git status --short -- motore_nuovo/src` vuoto), commit recenti 578f086/3df3114/da6c52b gia' rivisti.
 
 ## Rilievi
-1. **road.h:107 — membro pubblico `Road::acqua` inutilizzato/duplicato:** `class Road` dichiara `f32 acqua = 0.0f;` (riga 107) con commento duplicato alle righe 104-106, ma il campo acqua di tracciato e' gestito da `SegmentDesc::acqua` (riga 70) e dai campi dei segmenti/proiezione (`seg.acqua`, `ps.acqua`); nessun uso di `Road::acqua` come membro dell'istanza nel sorgente. Semplificazione: rimuovere membro e commento morto per evitare confusione con `SegmentDesc::acqua` e `acquaAt()`.
-2. **road.h:97-99, 129-132 — API incroci/acquaAt coerenti:** `incrocioD` usa indice segmento + `incrociZ_` con sentinel 1e9f; `acquaAt/sospesoAt/galleriaAt` delegano a `indiceSegmento` (ritorno -1 gestito). Nessun errore evidente letto.
-3. **Nota correlata (road.cpp:339):** formattazione compatta `if (bivio_) {        const i32 inizio...` su una riga sola (stile), non funzionale.
+1. **replay.cpp:9,19-21 — registrazione troncata silenziosamente oltre la capacita':** `startRecord()` fa `reserve(4096)` (riga 9) ma `record()` scarta i frame se `inputs.size() >= inputs.capacity()` (riga 20) senza segnale/errore. Per replay lunghi (>4096 frame) la registrazione viene troncata e in playback `next()` restituisce 0 a fine buffer (riga 24), producendo divergenza non evidente. Possibile errore se usato per run lunghe; semplificazione/mitigazione: permettere crescita oltre la riserva (accettando riallocazioni) o segnalare overflow/troncamento esplicito.
+2. **replay.cpp:14,23-25 — playback sicuro a lettura:** `startPlayback` usa move, indice azzerato; `next()` fa bounds check e ritorna 0 a fine stream. Coerente.
 
 ## Prova
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` non eseguito: shell non disponibile in questo turno (ricompilazione VJ5 non verificabile).
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` avviato 12/11 (timeout strumento 120s, interrotto in corso ~test 7/27, primi 6 Passed visibili); exit code non disponibile.
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_turno1_0919" lv_01_neon caricamento` exit 0 (`GATE CARICAMENTO OK`, 12/11).
 - gate_t1.sh: non eseguito.
