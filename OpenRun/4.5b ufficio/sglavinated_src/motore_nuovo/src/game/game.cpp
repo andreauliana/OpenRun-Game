@@ -247,6 +247,30 @@ constexpr f32 RIVALE_SCHIVA_DIST = 12000.0f;   // traffico entro questa distanza
 constexpr f32 RIVALE_SCHIVA_LATERALE = 330.0f; // sovrapposizione laterale (unita' mondo)
 constexpr f32 RIVALE_SCHIVA_MARGINE = 480.0f;  // passa a questa distanza laterale dal veicolo
 constexpr f32 RIVALE_SCHIVA_PER_S = 1500.0f;   // cambio corsia rapido per schivare
+// Sportellata piu' facile (Andrea 11/11 sera: "e' difficile colpire di lato
+// un'altra auto, non gira di lato abbastanza in fretta"). Sterzando verso
+// un'auto vicina (da poco dietro a SPORTELLATA_Z_AVANTI davanti) lo scarto
+// di lato e' piu' secco (SPORTELLATA_GUIZZO); arrivandole addosso di lato con
+// almeno SPORTELLATA_V_LAT unita'/s il colpo vale anche sul suo muso (fino a
+// SPORTELLATA_Z_DIETRO dietro la finestra di contatto: prima li' ci si
+// passava attraverso) e sulla sua coda (fino a SPORTELLATA_Z_DAVANTI davanti:
+// prima ci si infilava dietro); piu' lo scarto e' veloce piu' il rivale viene
+// spostato (fino a +SPORTELLATA_FORZA_EXTRA).
+constexpr f32 SPORTELLATA_V_LAT = 300.0f;
+constexpr f32 SPORTELLATA_GUIZZO = 1.45f;
+constexpr f32 SPORTELLATA_Z_AVANTI = 600.0f;
+constexpr f32 SPORTELLATA_Z_DIETRO = 250.0f;
+constexpr f32 SPORTELLATA_Z_DAVANTI = 250.0f;
+constexpr f32 SPORTELLATA_FORZA_EXTRA = 0.6f;
+// Gomme che lavorano in curva (Andrea 11/11 sera: "curve lunghe piu'
+// realistiche, un'auto da corsa grossa e forte"). Tenere la curva costa
+// velocita': sterzando dentro, l'auto perde CURVA_ATTRITO x carico al secondo
+// (carico = |curva| x v^2). In una curva lunga a 0.45 la punta scende di
+// circa il 7-10%, in quella dopo la galleria (0.26) di circa il 4%: si esce
+// piu' forte se si sterza il giusto o si alza un attimo il piede. Le gomme
+// si sentono (stridio leggero, CURVA_STRIDIO).
+constexpr f32 CURVA_ATTRITO = 0.12f;
+constexpr f32 CURVA_STRIDIO = 0.30f;
 constexpr f32 AFFIANCATA_DX = 650.0f;          // auto "affiancata" per lo sterzo pieno della sportellata
 // Chi arriva da dietro passa accanto al giocatore a questa distanza laterale
 // (Andrea 08/11: prima si spostava sull'altro lato della strada e non lo si
@@ -1049,7 +1073,7 @@ void Game::init(const std::string& livelloId) {
     grigliaPrec_ = false;
     lancioS_ = -1.0f;
     lancioPresa_ = 1.0f;
-    player_.vLat = 0.0f;
+    player_.smorzaLaterale(0.0f);
     player_.spintaLat = 0.0f;
     player_.presaSterzo = 1.0f;
     player_.accelMax = 1.0e9f;
@@ -2276,7 +2300,7 @@ void Game::aggiornaGuida(f32 dt) {
             player_.speed = 0.0f;
             player_.offroad = false;
             road_.playerX = player_.x;
-            player_.vLat = 0.0f;
+            player_.smorzaLaterale(0.0f);
             player_.spintaLat = 0.0f;
             sovrasterzo_ = 0.0f;
             testacodaS_ = 0.0f;
@@ -2343,15 +2367,17 @@ void Game::aggiornaGuida(f32 dt) {
         // Sportellata (Andrea 08/11): sterzando verso un'auto affiancata lo
         // sterzo resta pieno anche alla punta, cosi' la si puo' colpire di lato.
         player_.caloPunta = Player::caloPuntaNormale();
+        player_.guizzo = 1.0f;
         if (std::abs(player_.sterzo()) > 0.1f && !playerFlipping_) {
             const f32 giro = (f32)road_.totalLength();
             for (const auto& s : sprites_) {
                 f32 dz = std::fmod(s.worldZ - road_.playerZ, giro);
                 if (dz < 0.0f) dz += giro;
                 const f32 dx = s.worldX - player_.x;
-                if (dz > Game::URTO_Z_MIN - 300.0f && dz < Game::URTO_Z_MAX && std::abs(dx) < AFFIANCATA_DX &&
-                    dx * player_.sterzo() > 0.0f) {
+                if (dz > Game::URTO_Z_MIN - 300.0f && dz < Game::URTO_Z_MAX + SPORTELLATA_Z_AVANTI &&
+                    std::abs(dx) < AFFIANCATA_DX && dx * player_.sterzo() > 0.0f) {
                     player_.caloPunta = 0.0f;
+                    if (gara_) player_.guizzo = SPORTELLATA_GUIZZO; // scarto secco verso l'auto (11/11 sera)
                     break;
                 }
             }
@@ -2468,7 +2494,7 @@ void Game::aggiornaGuida(f32 dt) {
                 // Testacoda: la coda non e' stata ripresa.
                 testacodaS_ = TESTACODA_S;
                 player_.speed *= TESTACODA_RESTA;
-                player_.vLat *= 0.3f;
+                player_.smorzaLaterale(0.3f);
                 angolo = 0.0f;
                 segnaBotta(latoSovra_ > 0 ? -1 : 1);
                 urtoTraffico_ = false;
@@ -2476,6 +2502,8 @@ void Game::aggiornaGuida(f32 dt) {
                 urtoEffettoS_ = urtoEffettoDurataS_;
                 mixer_.suonaUrto(false);
             }
+            // Gomme che lavorano: tenere la curva costa un po' di velocita'.
+            if (libera && dentro > 0.0f) player_.speed *= std::pow(1.0f - CURVA_ATTRITO * carico, dentro * dt);
             sovrasterzo_ = angolo * (f32)latoSovra_;
             if (angolo > 0.0f) player_.speed *= std::pow(SOVRA_FRENO_PER_S, angolo * dt);
             player_.presaSterzo = 1.0f - SOVRA_PRESA_STERZO * angolo;
@@ -2687,16 +2715,27 @@ void Game::aggiornaGuida(f32 dt) {
                 f32 dz = std::fmod(s.worldZ - road_.playerZ, giro);
                 if (dz < 0.0f) dz += giro;
                 const f32 dx = s.worldX - player_.x;
-                if (dz > Game::URTO_Z_MIN && dz < URTO_Z_DAVANTI - 50.0f && std::abs(dx) < URTO_LARGHEZZA) {
+                const bool fianco = dz > Game::URTO_Z_MIN && dz < URTO_Z_DAVANTI - 50.0f && std::abs(dx) < URTO_LARGHEZZA;
+                // Muso dell'altra auto contro il nostro fianco dietro (11/11 sera).
+                // ... o il nostro muso contro la sua coda, poco davanti.
+                const bool quarto = gara_ && std::abs(dx) < URTO_LARGHEZZA &&
+                    ((dz > Game::URTO_Z_MIN - SPORTELLATA_Z_DIETRO && dz <= Game::URTO_Z_MIN) ||
+                     (dz >= URTO_Z_DAVANTI - 50.0f && dz < Game::URTO_Z_MAX + SPORTELLATA_Z_DAVANTI));
+                if (fianco || quarto) {
                     const f32 sterzo = player_.sterzo();
-                    const f32 dSterzo = sterzo - sterzoPrec_;
-                    // Sterzo rapido verso l'auto affiancata: la sportellata va a segno.
-                    if (!playerBump_ && assistenzaBivio_ <= 0.0f && !arrivo_ &&
-                        dx * sterzo > 0.0f && dx * dSterzo > 0.0f && std::abs(dSterzo) > 0.22f) {
+                    // Sportellata: si sterza verso l'auto e ci si arriva con
+                    // abbastanza velocita' laterale. (Prima serviva un colpo di
+                    // sterzo di 0.22 in un frame, ma la rampa ne fa al massimo
+                    // 0.13: non partiva mai.)
+                    if (!playerBump_ && assistenzaBivio_ <= 0.0f && !arrivo_ && dx * sterzo > 0.0f &&
+                        dx * player_.vLat > 0.0f && std::abs(player_.vLat) > SPORTELLATA_V_LAT) {
                         urto(spritesFonte_[k], dx, false);
                         break;
                     }
-                    player_.x = s.worldX + (dx > 0.0f ? -URTO_LARGHEZZA : URTO_LARGHEZZA);
+                    if (fianco) {
+                        player_.x = s.worldX + (dx > 0.0f ? -URTO_LARGHEZZA : URTO_LARGHEZZA);
+                        if (dx * player_.vLat > 0.0f) player_.smorzaLaterale(0.0f); // appoggiati: niente slancio dentro la carrozzeria
+                    }
                 }
             }
         }
@@ -2744,7 +2783,7 @@ void Game::aggiornaGuida(f32 dt) {
     }
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
-    mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max(derapata_, 0.8f * pattinamento_)); // gomme che stridono in derapata
+    mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max({derapata_, 0.8f * pattinamento_, CURVA_STRIDIO * sgommata_})); // gomme che stridono in derapata
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
@@ -3244,8 +3283,11 @@ void Game::urto(i32 fonte, f32 dx, bool tamponamento) {
         v.x = std::clamp(v.x - lato * 260.0f, -RIVALE_X_MAX * 2.5f, RIVALE_X_MAX * 2.5f);
     } else {
         Rivale& r = rivali_[fonte];
-        r.x = std::clamp(r.x - lato * 160.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
-        r.xObiettivo = std::clamp(r.x - lato * 200.0f, -RIVALE_X_MAX, RIVALE_X_MAX);
+        // Piu' lo scarto del giocatore e' veloce, piu' il rivale viene spostato (11/11 sera).
+        const f32 forza = tamponamento ? 1.0f
+            : 1.0f + SPORTELLATA_FORZA_EXTRA * std::min(1.0f, std::abs(player_.vLat) / 1000.0f);
+        r.x = std::clamp(r.x - lato * 160.0f * forza, -RIVALE_X_MAX, RIVALE_X_MAX);
+        r.xObiettivo = std::clamp(r.x - lato * 200.0f * forza, -RIVALE_X_MAX, RIVALE_X_MAX);
         r.passo *= tamponamento ? 1.03f : 0.92f; // spinto avanti, o sbandata di fianco
         // MIG1 D2: sportellata efficace - il rivale sbanda e si riprende in ~5 s.
         if (!tamponamento) r.sbandataS = 5.0f;

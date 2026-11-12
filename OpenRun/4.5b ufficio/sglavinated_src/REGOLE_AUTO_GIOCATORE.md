@@ -64,14 +64,22 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   11/11: "quando e' veloce deve girare di lato un po' di piu'", prima 780),
   pieno da 1/4 della punta, `STEER_CALO_PUNTA = 0.05` (alla punta ~800
   unita'/s).
-- **Peso (Andrea 11/11: "una sportiva incollata all'asfalto, ne' troppo
-  leggera ne' troppo pesante"):** l'auto ha una velocita' laterale
-  (`Player::vLat`) che insegue sterzo + spinta della curva con un ritardo che
-  cresce col quadrato della velocita' (`INERZIA_BASE_S = 0.04` piano,
-  `+ INERZIA_PUNTA_S = 0.20` alla punta). Piano e' pronta; forte si sente il
-  peso e in uscita di curva lo slancio verso l'esterno va ripreso con lo
-  sterzo. La spinta della curva non sposta piu' l'auto direttamente: passa da
-  `Player::spintaLat`.
+- **Peso (Andrea 11/11; rivisto la sera: "non gira di lato abbastanza in
+  fretta", "curve lunghe piu' realistiche, un'auto da corsa grossa e forte,
+  reattiva"):** la velocita' laterale ha due parti con ritardi diversi
+  (player.h). Lo **sterzo** risponde subito anche alla punta
+  (`INERZIA_STERZO_BASE_S = 0.03`, `+ INERZIA_STERZO_PUNTA_S = 0.05` alla
+  punta; la mattina dell'11/11 era 0.24 s per tutto). La **spinta della curva**
+  (`Player::spintaLat`) arriva piano (`INERZIA_SPINTA_BASE_S = 0.10`,
+  `+ INERZIA_SPINTA_PUNTA_S = 0.35`): entrando in una curva lunga il carico
+  sale in circa 1 s, in uscita lo slancio verso l'esterno resta un attimo e
+  va ripreso.
+- **Gomme che lavorano in curva (Andrea 11/11 sera):** sterzando DENTRO la
+  curva l'auto perde `CURVA_ATTRITO = 0.12` x carico al secondo (carico =
+  |curva| x v^2): tenere la curva costa velocita' (curva lunga a 0.45 a
+  sterzo tenuto: circa -5% al secondo; a colpetti quasi niente). Stridio
+  leggero delle gomme (`CURVA_STRIDIO = 0.30` x sgommata), anche negli scarti
+  secchi alla punta.
 - **Sovrasterzo e controsterzo (Andrea 11/11, sostituisce la derapata
   dell'08/11):** sotto il limite di aderenza (carico = |curva| x v^2 sotto
   `PRESA_LIMITE = 0.38`) l'auto e' incollata e segue lo sterzo. Oltre il
@@ -118,13 +126,23 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   sportellata contro i rivali (`AFFIANCATA_DX`, `URTO_SPINTA_RIVALE`,
   `RIVALE_SORPASSO_DX`), danni/KO/recupero dei rivali e il volo dei paletti
   abbattuti. Sterzo (`STEER_*`), peso (`INERZIA_*`, `vLat`), curve
-  (`CURVA_SPINTA_V2`), sovrasterzo e testacoda (`PRESA_*`, `SOVRA_*`,
+  (`CURVA_SPINTA_V2`, `CURVA_ATTRITO`), sportellata del giocatore
+  (`SPORTELLATA_*`), sovrasterzo e testacoda (`PRESA_*`, `SOVRA_*`,
   `TESTACODA_*`), partenza e pattinamento (`GIRI_*`, `LANCIO_*`, `PATTINA_*`,
   spunto dei rivali), incidenti e tempi restano bloccati.
-- **Sportellata (Andrea 08/11):** sterzando verso un'auto affiancata lo sterzo
-  e' pieno anche alla punta (`AFFIANCATA_DX = 650`, game.cpp), cosi' si riesce
-  a colpirla di lato. I rivali che arrivano da dietro passano a
-  `RIVALE_SORPASSO_DX = 360` dal giocatore (prima scappavano a 450 dal centro).
+- **Sportellata (Andrea 08/11; 11/11 sera: "e' difficile colpire di lato
+  un'altra auto"):** sterzando verso un'auto vicina (`AFFIANCATA_DX = 650` di
+  lato, da poco dietro a `SPORTELLATA_Z_AVANTI = 600` davanti) lo sterzo e'
+  pieno anche alla punta e lo scarto e' piu' secco (`SPORTELLATA_GUIZZO =
+  1.45`). Arrivandole addosso di lato con almeno `SPORTELLATA_V_LAT = 300`
+  unita'/s il colpo vale anche sul suo muso (`SPORTELLATA_Z_DIETRO = 250`
+  dietro la finestra di contatto: prima ci si passava attraverso) e sulla sua
+  coda (`SPORTELLATA_Z_DAVANTI = 250` davanti: prima ci si infilava dietro).
+  Piu' lo scarto e' veloce piu' il rivale viene spostato (fino a +60%,
+  `SPORTELLATA_FORZA_EXTRA`). Prove (12 partenze in mezzo al gruppo): i
+  tentativi a segno passano dal 38% a circa il 50%, in 0.45 s invece di 0.56.
+  Il comportamento dei rivali non cambia (Andrea: "va bene cosi'"). I rivali
+  che arrivano da dietro passano a `RIVALE_SORPASSO_DX = 360` dal giocatore.
 - **Tempi delle tappe (Andrea 08/11: "basta schiacciare l'acceleratore e
   arrivi alla fine"):** `tempo_limite_s` di ogni livello = circa 1.45 volte il
   tempo del bot pulito del gate gara (lv_01 50, lv_02 58, lv_03 59, lv_04 48,
