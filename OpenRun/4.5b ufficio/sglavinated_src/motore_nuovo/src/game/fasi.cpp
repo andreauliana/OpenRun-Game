@@ -569,7 +569,12 @@ private:
             ren.drawTesto(80 - ren.larghezzaTesto(buf, 1), y, buf, pos == 1 ? ACCENTO : col, 1, true);
             ren.drawTesto(104, y, e.nome.c_str(), col, 1, true);
             std::snprintf(buf, sizeof(buf), "%d", e.punti);
-            ren.drawTesto(240 - ren.larghezzaTesto(buf, 1), y, buf, col, 1, true);
+            const i32 xPunti = 240 - ren.larghezzaTesto(buf, 1);
+            // Puntini fra nome e punti (Andrea 12/11: troppo vuoto in mezzo),
+            // uno ogni 3 px sulla riga di base, grigi come i separatori.
+            for (i32 x = 104 + ren.larghezzaTesto(e.nome.c_str(), 1) + 4; x < xPunti - 4; x += 3)
+                fb.fillRect(x, y + 6, x, y + 6, e.nostro ? 0xFFFFFFFFu : 0xFF9898B0u); // come le linee della classifica
+            ren.drawTesto(xPunti, y, buf, col, 1, true);
         }
         fb.fillRect(56, 145, 263, 145, 0xFF9898B0u);
         static const char* voci[3] = { "RACE SERIES", "SINGLE RACE", "MAIN MENU" };
