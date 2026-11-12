@@ -3234,7 +3234,7 @@ static bool verificaCiclo(const std::string& outDir) {
                 case FaseId::FineTempo:
                     break;
                 case FaseId::Risultati:
-                    if (tickInFase == 0) pressed = Pad::Up;                 // ARC1: prima iniziale Y -> Z (uguale nelle due run)
+                    if (tickInFase == 0) pressed = Pad::Up;                 // ARC1: prima lettera P -> Q (uguale nelle due run)
                     if (tickInFase == 60) pressed = Pad::Start;             // conferma e salva
                     if (tickInFase == 90) pressed = Pad::Up;                // scelta: RACE SERIES -> MAIN MENU
                     if (tickInFase == 100) pressed = Pad::Start;
@@ -3276,7 +3276,7 @@ static bool verificaCiclo(const std::string& outDir) {
 
     // --- ARC1: salvataggio del nome del giocatore (salvataggi/giocatore.json) ---
     // Primo avvio senza file: il file viene rimosso all'avvio del gate, quindi il
-    // primo Start a Risultati deve crearlo. Le iniziali editate ("YOU" -> "ZOU")
+    // primo Start a Risultati deve crearlo. Le iniziali editate ("PLAYER" -> "QLAYER")
     // viene confermato in entrambe le run al primo frame di Risultati, quindi il
     // disegno e' identico e stessoHash resta valido.
     // Dall'11/11 le iniziali confermate vanno sia nella classifica sia nel
@@ -3290,8 +3290,8 @@ static bool verificaCiclo(const std::string& outDir) {
     GiocatoreDati g = SalvataggiGiocatore::carica();
     bool nomeConfermato = false;
     for (const ClassificaEntry& e : g.classifica)
-        if (e.nome.compare(0, 3, "ZOU") == 0) { nomeConfermato = true; break; }
-    if (std::string(g.nome).compare(0, 3, "ZOU") != 0) nomeConfermato = false; // il nome resta per la prossima gara
+        if (e.nome == "QLAYER") { nomeConfermato = true; break; }
+    if (std::string(g.nome) != "QLAYER") nomeConfermato = false; // il nome resta per la prossima gara
     if (!nomeConfermato) {
         std::printf("ciclo: FALLITO ARC1 (nome cambiato e confermato non riletto nel file)\n");
         arc1Ok = false;

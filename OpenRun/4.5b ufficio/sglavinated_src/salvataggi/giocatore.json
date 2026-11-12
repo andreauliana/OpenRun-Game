@@ -1,5 +1,5 @@
 {
-  "nome": "PLAYER",
+  "nome": "YOU",
   "classifica": [
     {"nome": "PLAYER", "punti": 750, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 747, "data": "0000-00-00"},
@@ -7,8 +7,9 @@
     {"nome": "PLAYER", "punti": 743, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 736, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 725, "data": "0000-00-00"},
+    {"nome": "YOU   ", "punti": 725, "data": "0000-00-00"},
+    {"nome": "YOU   ", "punti": 699, "data": "0000-00-00"},
     {"nome": "LJXBQ ", "punti": 327, "data": "0000-00-00"},
-    {"nome": "PLAYER", "punti": 39, "data": "0000-00-00"},
-    {"nome": "SI8XCM", "punti": 24, "data": "0000-00-00"}
+    {"nome": "YOU   ", "punti": 53, "data": "0000-00-00"}
   ]
 }

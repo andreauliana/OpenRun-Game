@@ -5,6 +5,7 @@
 #include "render/partenza.h"
 #include "render/framebuffer.h"
 #include "render/renderer.h"
+#include "render/font_titolo.h"
 #include <algorithm>
 #include <cmath>
 
@@ -27,14 +28,12 @@ void punto(Framebuffer& fb, i32 x, i32 y, u32 c) {
 
 // Testo con contorno scuro di 1 px per scala (si legge su cielo e skyline).
 void testoContornato(Renderer& ren, i32 cx, i32 cy, const char* t, u32 c, i32 scala) {
-    const i32 w = Renderer::larghezzaTesto(t, scala);
-    const i32 h = 8 * scala;
-    const i32 x = cx - w / 2, y = cy - h / 2;
-    const i32 o = std::max(1, scala / 2);
-    for (i32 dy = -o; dy <= o; dy += o)
-        for (i32 dx = -o; dx <= o; dx += o)
-            if (dx || dy) ren.drawTesto(x + dx, y + dy, t, SCURO, scala, false);
-    ren.drawTesto(x, y, t, c, scala, false);
+    // Andrea 11/11 sera: font grassetto Born2bSporty (piu' pieno e con piu'
+    // dettagli) e la sola ombra trasparente di 1 px al posto del contorno a 8 passi.
+    const i32 w = Renderer::larghezzaTitolo(t, scala);
+    const i32 h = (FONT_TITOLO_BASE - FONT_TITOLO_CIMA + 1) * scala;
+    const i32 x = cx - w / 2, y = cy - h / 2 - FONT_TITOLO_CIMA * scala;
+    ren.drawTitolo(x, y, t, c, scala, true);
 }
 
 // Luce rotonda (raggio r) con alone a trama quando e' accesa.
@@ -85,10 +84,10 @@ void disegnaPartenza(Framebuffer& fb, Renderer& ren, f32 t) {
 
     if (conto < 0) {
         // Attesa: "GET READY" fermo, si spegne solo un attimo prima del 3.
-        if (t < PARTENZA_ATTESA_S - 0.2f) testoContornato(ren, cx, PARTENZA_CENTRO_Y, "GET READY", 0xFFFFFFFFu, 3);
+        if (t < PARTENZA_ATTESA_S - 0.2f) testoContornato(ren, cx, PARTENZA_CENTRO_Y, "Get ready", 0xFFFFFFFFu, 2);
         return;
     }
-    // Cifra o START: entra grande e si assesta (8 -> 6), sparisce poco prima del numero dopo.
+    // Cifra o START: entra grande e si assesta (6 -> 4), sparisce poco prima del numero dopo.
     const f32 dal = conto > 0 ? std::fmod(t - PARTENZA_ATTESA_S, PARTENZA_PASSO_S) : t - PARTENZA_VIA_S;
     if (conto > 0) {
         if (dal > 0.82f) return;
@@ -100,11 +99,11 @@ void disegnaPartenza(Framebuffer& fb, Renderer& ren, f32 t) {
                 if (d <= 1.0f && trama(cx + x, PARTENZA_CENTRO_Y + y, 0.85f - 0.5f * d))
                     punto(fb, cx + x, PARTENZA_CENTRO_Y + y, SCURO);
             }
-        const i32 scala = dal < 0.05f ? 8 : (dal < 0.1f ? 7 : 6);
+        const i32 scala = dal < 0.05f ? 6 : (dal < 0.1f ? 5 : 4);
         const char cifra[2] = {(char)('0' + conto), 0};
         testoContornato(ren, cx, PARTENZA_CENTRO_Y, cifra, COLORE_CONTO[conto], scala);
     } else {
-        const i32 scala = dal < 0.05f ? 6 : 5;
+        const i32 scala = dal < 0.05f ? 4 : 3;
         // START lampeggia verde/bianco nell'ultimo terzo, poi si spegne.
         const bool bianco = dal > PARTENZA_START_S * 0.66f && std::fmod(dal, 0.16f) < 0.08f;
         testoContornato(ren, cx, PARTENZA_CENTRO_Y, "START!", bianco ? 0xFFFFFFFFu : VERDE, scala);

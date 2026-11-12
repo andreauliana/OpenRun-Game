@@ -457,7 +457,7 @@ private:
     std::vector<std::pair<f32, i32>> spriteOrd_; // ordine di disegno sprite: {zRel, indice} (riusato)
     std::vector<f32> copertura_; // per campione: riga piu' alta della strada piu' vicina (riusato)
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
-    void drawSkyline(const Sprite& s);
+    void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo
     // da (tappa che finisce), t = 1 solo a (tappa nuova); i pixel trasparenti
     // lasciano vedere il cielo di tema_, gia' interpolato da drawRoad.
