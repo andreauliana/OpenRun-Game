@@ -1,9 +1,11 @@
-# STATUS GRAFICO PER CAPO — 12/11/2026 09:30
-Stato: V47 VG3 (∞) giro 7 completato — VG2 chiuso da Claude l'11/11, non si riscrive.
-Lavoro: rieseguito controllo date+contenuto PNG→`.sglraw` (scenari, 6 skyline a data, gruppi 1:1 rivali/traffico/traffico_incrocio/pubblico/ui/logo/sponsor; `giocatore` escluso). Nessun PNG di Andrea ritoccato, nessun file convertito.
-Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` exit 0 (12/11 09:30) — 87 raw scenari (81 uguali a byte, 6 skyline a data) + 54 raw altri gruppi tutti allineati; 0 da convertire, 0 PNG piu' nuovi; tutto allineato.
-Residuo noto: `sprite/rivali/auto_giocatore_sbandata.png` senza `.sglraw` e senza riferimento nel motore; segnalato, non cancellato e non convertito.
-Gate: gate non eseguito (12/11 09:30).
-Prossimo: VG3 giro 8 (stesso controllo, ripetibile) o passo ∞ indicato dal Capo.
-Licenze/provenienza: zero asset esterni, zero Sega.
-Review richiesta: nessuna. Blocchi/lacune: nessuno.
+# STATUS_GRAFICO_PER_CAPO — 13/11/2026 09:16
+- **Stato:** VG3 (∞) giro 18 completato, tutto allineato.
+- **Materiali creati/modificati:** nessun PNG/raw convertito (0 da convertire). Solo bacheca/out aggiornati: `diario.md` (+1), `RIASSUNTO.md`.
+- **Comandi ed esiti:**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0. 188 PNG Libreria (142 confrontati con un raw, 46 non motore noti, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0. Raw oggetti aggiornati 0 (81 controllati).
+- **Catalogo/licenze:** zero risorse esterne, zero Sega. Nessuna modifica a catalogo/licenze.
+- **Controlli:** confronto date/contenuto PNG↔raw e copertura Libreria verdi; gate non eseguito (13/11 09:16).
+- **Lacune/blocchi:** residuo noto `sprite/rivali/auto_giocatore_sbandata.png` senza raw, non usato dal motore (non cancellato). Nessun PNG di Andrea più nuovo: VG3 in attesa di ridisegni.
+- **Review richiesta:** nessuna.
+- **Prossimo:** VG3 ∞ — ricontrollare e convertire solo PNG di Andrea più nuovi.

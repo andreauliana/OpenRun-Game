@@ -1,4 +1,4 @@
-# Pacchetto per Claude — 2026-11-10 05:46
+# Pacchetto per Claude — 2026-11-12 16:24
 Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOGO_MATTINA.md, ANDREA_REVIEW.md e SCAMBIO.md. Dai verdetto, correggi la rotta, aiutami a rispondere alle decisioni a blocchi."
 
 ## Stato blocchi
@@ -82,9 +82,9 @@ Incolla in Claude (con accesso alla cartella): "Leggi questo pacchetto, RIEPILOG
 347:## BLOCCO PERC1 — @developer + @developer-junior + @grafico — percorsi piu' vari e migliorie di guida (Andrea 08/11)
 359:| Stato | [x] | (Claude 08/11 sera: chiuso, approvato da Andrea; si prosegue con MIG1) |
 365:## BLOCCO MIG1 — @grafico + @developer + @developer-junior — AREA MIG1: migliorie di grafica e di gara (Andrea 08/11 sera)
-395:| Stato | [ ] | (Claude 08/11 sera: nuovo, da Andrea) |
-400:## BLOCCO V47 — avanti verso la v4.7 (continuo) @developer @developer-junior @grafico @capo
-420:| Stato | [ ] | (Claude 08/11 notte, da Andrea: lavoro continuo, nessuna attesa) |
+401:| Stato | [x] | (Claude 10/11: chiuso) |
+406:## BLOCCO V47 — avanti verso la v4.7 (continuo) @developer @developer-junior @grafico @capo
+448:| Stato | [~] | (Claude 10/11: seconda lista, lavoro continuo, nessuna attesa) |
 
 ## Decisioni aperte
 
@@ -95,14 +95,14 @@ GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
-quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
+quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 39
-blocchi da fare [ ]: 7
+blocchi fatti [x]: 43
+blocchi da fare [ ]: 4
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 3 | REVIEWER | 2026-11-10 04:12 | [APERTA]
+### CHECKPOINT 3 | REVIEWER | 2026-11-12 16:20 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
@@ -119,14 +119,14 @@ GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
-quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
+quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 39
-blocchi da fare [ ]: 7
+blocchi fatti [x]: 43
+blocchi da fare [ ]: 4
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
 
-### CHECKPOINT 4 | REVIEWER | 2026-11-10 05:46 | [APERTA]
+### CHECKPOINT 4 | REVIEWER | 2026-11-12 16:24 | [APERTA]
 OK      sintassi modelli.sh
 OK      sintassi modo_locale.sh
 OK      sintassi recap.sh
@@ -143,9 +143,9 @@ GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
   senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
-quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
+quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
-blocchi fatti [x]: 39
-blocchi da fare [ ]: 7
+blocchi fatti [x]: 43
+blocchi da fare [ ]: 4
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)

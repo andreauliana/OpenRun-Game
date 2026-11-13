@@ -1,10 +1,6 @@
-# RIASSUNTO — @capo (Turno 1, ora 1 di 12, 12/11, verifica)
-- Fonti lette (solo): `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna RISPOSTA nuova; base legacy 08/11 intoccata; G1 annullato/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47, passi ∞), `SCAMBIO_RECENTE.md` (+ checkpoint/handoff).
-- Tappa attiva: **MIG1 [~] review + V47 [~]**. Gate green riportato (Officina 11/11: ctest 27/27, gate_t1 exit 0, 6/6 PERCORSO OK; picco 55.27 ms lv_05 smoke isolato da valutare). **Nessun CP chiuso** (review indipendenti autore≠revisore non registrate in dossier). CP-005/006/007 CHIUSI (CP-006 non riaprire); CP-002/003/004, DECO1, F60 APERTI.
-- Allineamento: MIG1 D1-D5,G2,J1-J4 [x] handoff (nota Claude 11/11) ma review non in dossier — **costanti di guida NON si toccano**. VG2 **[x] chiuso** → @grafico solo ∞ VG3.
-- V47: V9 lv_01 exit 0 max 3.420 ms < 8 (prossimo lv_02); VJ4 soak 4/6 (restano lv_05-06); VJ5 salvataggi 12:55; V6 review parziale da consolidare. VJ2 DEFAULT non blocca.
-- **@developer** (`UFFICIO/out/developer/ULTIMO_TURNO.md`): V9 ∞ lv_02; V7/V8 se serve. No costanti MIG1/legacy.
-- **@developer-junior** (`UFFICIO/out/developer-junior/`): VJ4 lv_05-06; consolidare review V6 in `REVIEW_V47.md`; VJ5 ∞.
-- **@grafico** (`UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`): ∞ VG3 (PNG scenari vs `.sglraw`, convertire solo se più nuovo; no sponsor/asset Andrea).
-- **@capo**: `STATI_PROPOSTI.md` riscritto, STATO_CORRENTE/registro append-only aggiornati.
-- **FINITO:** no. **PER_CLAUDE:** no. Domande ad Andrea: nessuna (DEFAULT: si prosegue).
+# RIASSUNTO — @capo (Turno 1, ora 1 di 12, 13/11)
+- Fonti: `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11 intoccata; G1/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47 ∞), `SCAMBIO_RECENTE.md`, checkpoint/handoff.
+- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate non rieseguito dal capo; verdi riportati (Officina 13/11: V9 lv_04_cromo exit 0, medio 1.728 max 4.176 ms, replay IDENTICO, ctest 27/27; storico gate_t1 exit 0). **Nessun CP chiuso** (review incrociate non registrate). CP-005/006/007 CHIUSI (CP-006 non riaprire); CP-002/003/004,DECO1,F60 APERTI.
+- @developer V9 ∞: lv_04 ok → **prossimo lv_05_spray**. @developer-junior VJ4 2/6 (lv_02 max 43.207 ms) → **prossimo lv_03_foglie**; review V6 da consolidare; VJ5 ∞ altro `src/`. @grafico VG3 giro 16 ok → **∞** (residuo `ULTIMO_TURNO.md` noto).
+- Deleghe 4.6: dev `UFFICIO/out/developer/ULTIMO_TURNO.md`; junior `UFFICIO/out/developer-junior/REVIEW_V47.md`,`RIASSUNTO.md`; grafico `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`.
+- **FINITO:** no (∞). **PER_CLAUDE:** no. Domande Andrea: nessuna (DEFAULT prosegue). Costanti guida/MIG1/legacy e asset Andrea: **NON si toccano**. VJ2: ispezione Andrea, DEFAULT non blocca.

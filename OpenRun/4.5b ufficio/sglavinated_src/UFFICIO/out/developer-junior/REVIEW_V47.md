@@ -1,12 +1,11 @@
-# REVIEW V47 (riscritta) — @developer-junior
-Turno 12/11 10:03, VJ4 soak (1/6).
+# REVIEW V47 (@developer-junior)
+Riscritto 13/11 09:14 — VJ5 ∞
 
-## VJ4 Soak
-| Livello | Comando | Exit | Replay | ms/frame medio | ms/frame max | Note |
-|---|---|---:|---|---:|---:|---|
-| lv_01_neon | `prova_gate "UFFICIO/Officina/Test area/vj4_soak_lv01_1003" lv_01_neon soak` (dopo `cmake --build ... --target prova_gate` exit 0) | 0 | IDENTICO (2x), GATE OK | 1.881 | 51.219 (limite 20) | 30000 frame, nessun crash, speed@60 154.11, offroad frame 157 |
+## VJ5 13/11 09:14 — review ultimo cambio `src/` (`motore_nuovo/src/game/fasi.cpp`, da6c52b)
+Contesto: `git log -1 -- motore_nuovo/src` = da6c52b "HIGH SCORES: puntini fra nome e punti..." (nessun cambio src più recente). Loop puntini righe 572-577.
 
-## VJ5 ultimo (09:55, riferimento)
-- `src/road/road.cpp`+`road_segment.h`: chiusura direzione solo su curve!=0; azzeramento/scala curve nel rettilineo bivio post-correzione può reintrodurre piccolo residuo locale. Raccordi scalati se sovrapposti ok. Nessun cambio src.
+- **Rilievo (incoerenza visiva/commento, ancora presente)** `fasi.cpp:576`: puntini disegnati con `e.nostro ? 0xFFFFFFFFu : 0xFF9898B0u`; per riga `nostro` restano bianco fisso mentre nome/punti/posizione usano `col` calcolato a riga 567 (`lampeggio_` -> ACCENTO o bianco), quindi i puntini non seguono il blink del testo.
+- **Incoerenza col commento** `fasi.cpp:574-575`: commento indica puntini "grigi come i separatori", ma il ramo `nostro` è bianco fisso.
+- **Semplificazione suggerita**: usare `e.nostro ? col : 0xFF9898B0u` per coerenza col blink, oppure sempre `0xFF9898B0u` se devono restare separatori fissi; allineare commento e colore.
 
-gate_t1.sh non eseguito.
+Nessun cambio applicato (sola lettura src). Verifica turno: `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0. gate_t1.sh non eseguito.

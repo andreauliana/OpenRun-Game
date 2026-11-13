@@ -1,11 +1,11 @@
-# RIEPILOGO — @grafico (12/11/2026 10:19)
-1. V47 VG3 (∞) giro 13: rieseguito controllo date/contenuto PNG→`.sglraw` con `vg3_date_png_raw.py` (scenari + skyline a data + gruppi 1:1 fuori da scenari; `giocatore` escluso).
-2. Esito: 87 raw scenari (81 uguali a byte, 6 skyline a data, 0 diversi) + 54 raw altri gruppi tutti allineati; 0 da convertire, 0 PNG piu' nuovi. Tutto allineato.
-3. Residuo noto: `sprite/rivali/auto_giocatore_sbandata.png` senza raw e senza riferimento nel motore; non cancellato, non convertito.
-4. Verifica: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` exit 0 (12/11 10:19). Nessuna conversione lanciata.
-5. Turno: `diario.md` (+1), `RIASSUNTO.md`, `ULTIMO_TURNO.md` riscritti.
-6. Prossimo: VG3 giro 14 (stesso controllo, ripetibile) o passo ∞ indicato dal Capo.
-7. Gate: gate non eseguito (12/11 10:19).
+# RIEPILOGO — @grafico (13/11/2026 09:16)
+1. V47 VG3 (∞) giro 18: rieseguiti `vg3_date_png_raw.py` e `converti_oggetti_raw.py`.
+2. `vg3_date_png_raw.py` exit 0: 188 PNG Libreria (142 confrontati con un raw, 46 non motore noti, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire.
+3. `converti_oggetti_raw.py` exit 0: raw oggetti aggiornati 0 (81 controllati).
+4. Residuo noto invariato: `sprite/rivali/auto_giocatore_sbandata.png` senza raw e non usato dal motore; non cancellato.
+5. Nessun PNG di Andrea piu' nuovo; VG3 resta in attesa di ridisegni da convertire.
+6. File turno: `diario.md` (+1), `RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
+7. Gate: gate non eseguito (13/11 09:16).
 8. Mai: HUD/UI, auto giocatore, logo/menu, premiazione, sponsor (solo Andrea), scenari/skyline Andrea. Licenze: zero esterne, zero Sega.
 9. Chiusi: MIG1 G1 [ANNULLATO], MIG1 G2 [x], V47 VG1 [x], V47 V5 frasi [x], VG2 [x], PERC1, AUTO1, G-A1, G-P1, PIST1.
-10. Nessuna review richiesta; nessun blocco bloccato.
+10. Prossimo: VG3 ∞ — ricontrollare PNG/sglraw al prossimo turno e convertire solo i nuovi.

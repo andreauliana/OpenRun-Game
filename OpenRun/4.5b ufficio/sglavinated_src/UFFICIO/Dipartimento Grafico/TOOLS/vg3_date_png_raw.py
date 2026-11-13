@@ -12,9 +12,15 @@
 # la stessa regola: contenuto diverso = da convertire. Un PNG senza raw non blocca
 # l'exit: non e' un asset che il motore legge (es. residuo auto_giocatore_sbandata).
 # Il gruppo giocatore resta fuori del tutto: e' area bloccata (auto di Andrea).
+# In fondo c'e' il controllo di copertura: ogni PNG della Libreria deve essere o
+# confrontato con un raw, o appartenere a una categoria non-motore nota (anteprime
+# UI, font, area bloccata di Andrea, varianti legacy). Un PNG nuovo in un percorso
+# non mappato fa fallire il controllo: cosi' un ridisegno di Andrea fuori posto non
+# resta invisibile.
 # Non scrive nulla: solo diagnosi. Exit 0 se tutto allineato, 1 se c'e' da convertire.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
+import fnmatch
 import struct
 from datetime import datetime
 from pathlib import Path
@@ -47,6 +53,25 @@ ASSETS = RADICE / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali"
 # PNG senza raw e senza riferimento nel motore (residui di vecchie varianti, non
 # cancellabili da qui). Si segnalano ma non contano come guasto: nessuna conversione.
 RESIDUI_NON_MOTORE = {"sprite/rivali/auto_giocatore_sbandata.png"}
+# PNG della Libreria che il motore non legge come sprite: anteprime UI generate,
+# font (il motore usa il .ttf), area bloccata di Andrea (auto e pose), varianti
+# legacy non usate. Pattern sul percorso relativo a assets_originali/.
+NON_MOTORE = (
+    "ui/font/*/font.png",
+    "ui/hud/*/hud_preview.png",
+    "ui/menu/*/menu_preview.png",
+    "ui/risultati/*/risultati_preview.png",
+    "ui/splash/splash_avvio.png",
+    "ui/titolo/*/title.png",
+    "sprite/giocatore/*.png",
+    "sprite/giocatore_pose/*.png",
+    "sprite/auto_gt/*.png",
+    "sprite/auto/variante*/auto.png",
+    "palette/*/palette.png",
+    "skyline/*/skyline_trama.png",
+    "skyline/varianteB_*/skyline.png",
+    "skyline/varianteC_*/skyline.png",
+)
 
 
 def data(p):
@@ -101,6 +126,44 @@ def png_altri_orfani():
         stile = png.stem[len("cartellone_"):]
         raw = RAW_ROOT / "sponsor" / f"{png.parent.name}_{stile}.sglraw"
         yield png, "sponsor", raw
+
+
+def png_coperti():
+    """Percorsi (relativi a assets_originali/) dei PNG gia' confrontati con un raw."""
+    coperti = set()
+    for png, _livello, _nome in png_oggetti():
+        coperti.add(png.relative_to(ASSETS).as_posix())
+    for rel, _gruppo in ALTRI:
+        for png in (ASSETS / rel).glob("*.png"):
+            coperti.add(png.relative_to(ASSETS).as_posix())
+    for png in (ASSETS / "sponsor").glob("*/cartellone_*.png"):
+        coperti.add(png.relative_to(ASSETS).as_posix())
+    for rel in SKYLINE.values():
+        if (ASSETS / rel).exists():
+            coperti.add(rel)
+    return coperti
+
+
+def png_non_motore(rel):
+    return any(fnmatch.fnmatchcase(rel, pat) for pat in NON_MOTORE)
+
+
+def controllo_copertura():
+    """Ogni PNG della Libreria o e' confrontato, o e' non-motore noto, o e' sospetto."""
+    coperti = png_coperti()
+    totale = noti = fuori = 0
+    for png in sorted(ASSETS.rglob("*.png")):
+        totale += 1
+        rel = png.relative_to(ASSETS).as_posix()
+        if rel in coperti:
+            continue
+        if png_non_motore(rel):
+            noti += 1
+            continue
+        fuori += 1
+        print(f"PNG-FUORI-COPERTURA {rel}: png {data(png)} (nessun raw e nessuna categoria nota)")
+    print(f"png nella Libreria: {totale} (confrontati con un raw {totale - noti - fuori}, non motore noti {noti})")
+    return fuori
 
 
 def main():
@@ -197,6 +260,7 @@ def main():
     print(f"contenuto diverso da convertire: {diversi}")
     print(f"png piu' nuovi ma contenuto uguale: {png_piu_nuovo}")
     print(f"raw senza png sorgente: {senza_png}")
+    fuori_copertura = controllo_copertura()
     return (
         0
         if diversi == 0
@@ -206,6 +270,7 @@ def main():
         and altri_diversi == 0
         and altri_senza == 0
         and altri_orfani == 0
+        and fuori_copertura == 0
         else 1
     )
 
