@@ -1,10 +1,14 @@
-# ULTIMO TURNO developer
-- Data/ora: 13/11/2026 09:18 (Turno 1)
-- Blocco: V47 V9 ∞ fluidita' a giro — lv_02_atomico (sesto giro). Passo: misura percorso+smoke; verifica <8 ms.
-- File cambiati (codice/test/dati): nessuno (misure entro soglia, nessun alleggerimento necessario).
+# ULTIMO_TURNO developer
+- Data/ora: 13/11/2026 09:55
+- Blocco: V47 — V9 ∞ fluidita' a giro, lv_01_neon (settimo giro)
+- Passo: gate `percorso` + `smoke`, verifica ms/frame e caricamento, nessun alleggerimento (max 4.381 ms < 8 ms)
+- File cambiati:
+  - `UFFICIO/bacheche/developer/diario.md` (append riga turno)
+  - `UFFICIO/bacheche/developer/RIASSUNTO.md` (riscritto)
+  - `UFFICIO/out/developer/ULTIMO_TURNO.md` (riscritto)
 - Comandi ed exit code:
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno6" lv_02_atomico percorso` → exit 0, "GATE PERCORSO OK" (2466 frame, 41.1 s, 0% fuori, car 24.4 ms init 41.0 ms).
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno6_smoke2" lv_02_atomico smoke` → exit 0, "GATE OK", ms/frame medio 5.704 max 45.135 (freddo), replay 2x IDENTICO.
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno6_smoke3" lv_02_atomico smoke` → exit 0, "GATE OK", ms/frame medio 1.262 max 4.613 (<8 ms), replay 2x IDENTICO, car 5.1-6.2 ms init 8.5-11.4 ms.
-- Gate: gate_t1.sh non eseguito.
-- Esito: livello gia' sotto soglia, nessun cambio di resa/codice. Prossimo V9 ∞ lv_03_foglie (sesto giro).
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno7" lv_01_neon percorso` -> exit 0
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno7_smoke" lv_01_neon smoke` -> exit 0
+- Esito: "GATE PERCORSO OK" 1978 frame (33.0 s), fuori strada 0 frame (0.0%); "GATE OK" ms/frame medio 1.140 max 4.381, replay IDENTICO; caricamento 3.6-6.2 ms, init 6.7-11.9 ms
+- Gate: gate_t1.sh non eseguito
+- Prossimo: V9 ∞ lv_02_atomico (settimo giro)
