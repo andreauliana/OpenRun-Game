@@ -83,6 +83,9 @@ public:
     void setEnabled(bool e) { enabled_ = e; }
     void setMusicVolume(f32 v) { musicVol_ = v; } // 0.0 - 1.0
     void setEngineVolume(f32 v) { engineVol_ = v; }
+    // Motore campionato (Andrea 13/11): accensione.wav, minimo.wav, pieno.wav (mono 16 bit)
+    // nella cartella data, tagliati da strumenti_py/taglia_motore.py. false = resta il sintetico.
+    bool caricaMotore(const std::string& cartella);
 
     i32 currentTrack() const { return curTrack_; }
     i32 numTracks() const { return (i32)brani_.size(); }
@@ -100,6 +103,14 @@ private:
 
     u32 sampleRate_;        // output: 44100 Hz
     f32 phase_ = 0.0f;      // fase accumulata del suono motore
+    // Motore campionato: due giri (minimo e pieno) letti a velocita' variabile e mescolati.
+    struct Campione { std::vector<f32> dati; u32 rate = 0; };
+    Campione motAcc_, motMin_, motPieno_;
+    f64 posAcc_ = -1.0, posMin_ = 0.0, posPieno_ = 0.0; // posAcc_ < 0: accensione ferma
+    f32 motLiv_ = 0.0f;     // volume del motore (segue i giri senza scatti)
+    f32 motRpm_ = 0.0f;     // giri filtrati (cambio di tono morbido)
+    f32 motSpentoS_ = 10.0f; // secondi a motore spento (riaccendendo suona l'accensione)
+    f32 motoreCampionato(f32 rpm);
     bool enabled_ = true;
     f32 musicVol_ = 0.65f;
     f32 engineVol_ = 0.35f;

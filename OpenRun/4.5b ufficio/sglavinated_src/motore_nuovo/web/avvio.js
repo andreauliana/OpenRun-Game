@@ -6,6 +6,8 @@
   var HOME = window.OPENRUN_HOME || "/";
   var box = document.getElementById("openrun-box");
   if (!box) return;
+  // Telefono e tablet: il gioco non parte (serve una tastiera), resta il bottone home.
+  var soloTouch = window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
   var canvas = document.getElementById("canvas");
   var avvio = box.querySelector(".or-avvio");
   var messaggio = box.querySelector(".or-messaggio");
@@ -38,7 +40,7 @@
   };
 
   function parti() {
-    if (partito) return;
+    if (partito || soloTouch) return;
     partito = true;
     messaggio.classList.remove("or-via");
     messaggio.textContent = "LOADING";

@@ -11,7 +11,17 @@ $openrun = trailingslashit( get_stylesheet_directory_uri() ) . 'openrun/'; ?>
 	</div>
 </div>
 <link rel="stylesheet" href="<?php echo esc_url( $openrun . 'openrun.css' ); ?>">
-<style>#openrun-box { --or-spazio: 96px; } /* il menu a pillola del sito resta sopra il gioco */</style>
+<style>
+#openrun-box { --or-spazio: 96px; } /* il menu a pillola del sito resta sopra il gioco */
+/* Telefono e tablet (solo touch): niente gioco, solo il ritorno alla home (Andrea 13/11). */
+#openrun-box .or-mobile { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  #openrun-box .or-schermo, #openrun-box .or-barra { display: none; }
+  #openrun-box .or-mobile { display: flex; flex-direction: column; align-items: center; gap: 1.2em;
+    padding: 3rem 1rem; text-align: center; }
+  #openrun-box .or-bottone { color: #000; background: #b4f02c; padding: .6em 1.2em; text-decoration: none; }
+}
+</style>
 <!-- OPENRUN_BLOCCO -->
 <script>
 	window.OPENRUN_BASE = "<?php echo esc_js( $openrun ); ?>";
