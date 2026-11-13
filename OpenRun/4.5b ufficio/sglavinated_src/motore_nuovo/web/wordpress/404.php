@@ -26,6 +26,9 @@ $openrun = trailingslashit( get_stylesheet_directory_uri() ) . 'openrun/'; ?>
 <script>
 	window.OPENRUN_BASE = "<?php echo esc_js( $openrun ); ?>";
 	window.OPENRUN_HOME = "<?php echo esc_js( home_url( '/' ) ); ?>";
+	// Classifica online (blocco openrun in functions.php): indirizzo e token della pagina.
+	window.OPENRUN_API = "<?php echo esc_js( rest_url( 'openrun/v1/classifica' ) ); ?>";
+	window.OPENRUN_NONCE = "<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>";
 </script>
 <script src="<?php echo esc_url( $openrun . 'avvio.js' ); ?>"></script>
 <br>

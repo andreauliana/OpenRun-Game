@@ -69,6 +69,35 @@
     canvas.focus({ preventScroll: true });
   });
 
+  // Classifica online (solo se la pagina da' OPENRUN_API): i punteggi nuovi della
+  // classifica locale vanno al sito, uno alla volta. La classifica del gioco resta locale.
+  function inviaPunteggi() {
+    if (!window.OPENRUN_API || !window.Module || !Module.FS) return;
+    var g;
+    try { g = JSON.parse(Module.FS.readFile("/sglavinated_src/salvataggi/giocatore.json", { encoding: "utf8" })); } catch (e) { return; }
+    var inviati = {};
+    try { inviati = JSON.parse(localStorage.getItem("openrun_inviati") || "{}"); } catch (e) {}
+    var voci = [];
+    [["classifica", "serie"], ["classifica_singola", "singola"]].forEach(function (t) {
+      (g[t[0]] || []).forEach(function (v) {
+        var chiave = t[1] + "|" + v.nome + "|" + v.punti + "|" + v.data;
+        if (!inviati[chiave] && v.punti > 0) voci.push({ chiave: chiave, nome: v.nome, punti: v.punti, tipo: t[1] });
+      });
+    });
+    if (!voci.length) return;
+    var v = voci[0];
+    fetch(window.OPENRUN_API, { method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-WP-Nonce": window.OPENRUN_NONCE || "" },
+      body: JSON.stringify({ nome: v.nome, punti: v.punti, tipo: v.tipo }) })
+      .then(function (r) {
+        if (r.ok || r.status === 400) { // 400: dati scartati dal sito, non si riprova
+          inviati[v.chiave] = 1;
+          try { localStorage.setItem("openrun_inviati", JSON.stringify(inviati)); } catch (e) {}
+        }
+      }, function () {});
+  }
+  setInterval(inviaPunteggi, 35000);
+
   // Salvataggi (classifica, nome): si scrivono anche quando si chiude la pagina.
   function salva() { try { if (Module.FS) Module.FS.syncfs(false, function () {}); } catch (e) {} }
   window.addEventListener("pagehide", salva);
