@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Run</title>
+<!-- Pagina 404 semplice (sito senza WordPress): la cartella openrun/ sta nella radice del sito. -->
+<link rel="stylesheet" href="/openrun/openrun.css">
+<style>
+  html, body { margin: 0; min-height: 100%; background: #000; }
+  body { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; }
+</style>
+</head>
+<body>
+<!-- OPENRUN_BLOCCO -->
+<script>
+  window.OPENRUN_BASE = "/openrun/"; // cartella del gioco (con / iniziale: la 404 si apre da ogni indirizzo)
+  window.OPENRUN_HOME = "/";         // dove porta EXIT
+</script>
+<script src="/openrun/avvio.js"></script>
+</body>
+</html>

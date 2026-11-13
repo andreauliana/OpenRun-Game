@@ -104,6 +104,36 @@ target_link_libraries(sglavinated_core PUBLIC xmp_lite)
 # Target: sglavinated_runner — runner desktop/terminal con SDL2 (solo test).
 # Richiede SDL2 (video + audio). Non e' parte del core.
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Target: openrun (solo build web, Emscripten): lo stesso runner SDL2 compilato
+# per il browser. Si usa con web/build_web.sh, che prepara la cartella da
+# copiare sul sito (404.html + openrun/). Dettagli in web/LEGGIMI.md.
+# ---------------------------------------------------------------------------
+if(EMSCRIPTEN)
+    add_executable(openrun src/runner/main.cpp src/runner/sponsor_loader.cpp)
+    target_include_directories(openrun PRIVATE src)
+    target_link_libraries(openrun PRIVATE sglavinated_core)
+    target_compile_options(openrun PRIVATE "SHELL:-sUSE_SDL=2")
+    # Dati del gioco nel pacchetto openrun.data, allo stesso percorso del desktop
+    # (/sglavinated_src/motore_nuovo/dati). Fuori i documenti e il brano non usato.
+    # Il percorso del repo ha uno spazio ("4.5b ufficio"): si passa da un link
+    # nella cartella di build, cosi' il percorso sulla riga di comando e' relativo.
+    file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/dati" "${CMAKE_CURRENT_BINARY_DIR}/dati_web" SYMBOLIC)
+    set(SGL_DATI_WEB "dati_web@/sglavinated_src/motore_nuovo/dati")
+    target_link_options(openrun PRIVATE
+        "SHELL:-sUSE_SDL=2"
+        "SHELL:-sASYNCIFY"
+        "SHELL:-sSTACK_SIZE=8MB"          # Game vive sullo stack di main()
+        "SHELL:-sALLOW_MEMORY_GROWTH=1"
+        "SHELL:-sENVIRONMENT=web"
+        "SHELL:-sEXPORTED_RUNTIME_METHODS=FS"
+        "-lidbfs.js"
+        "SHELL:--preload-file ${SGL_DATI_WEB}"
+        "SHELL:--exclude-file *.md"
+        "SHELL:--exclude-file *SepteJungle2.xm")
+    set_target_properties(openrun PROPERTIES SUFFIX ".js")
+endif()
+
 find_package(SDL2 QUIET)
 find_package(SDL2_image CONFIG QUIET) # PNG (cartelloni sponsor) nel runner di test; target SDL2_image::SDL2_image
 if(NOT TARGET SDL2_image::SDL2_image AND NOT TARGET SDL2::SDL2_image)
