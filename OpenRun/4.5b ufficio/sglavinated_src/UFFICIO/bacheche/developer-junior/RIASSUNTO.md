@@ -1,10 +1,10 @@
 # RIASSUNTO @developer-junior
-Riscritto 14/11 08:53 (turno V47 VJ4).
+Riscritto 14/11 10:09 (turno V47 VJ5 ∞).
 - Ruolo: test `motore_nuovo/test/` e prove via `prova_gate`; sola lettura `src/`, nessun codice prodotto senza autorizzazione.
-- **VJ3 CHIUSO 6/6 livelli**: lv_01 0.03%, lv_02 0.19%, lv_04 0.03%, lv_05 0.24%, lv_06 0.09%; replay 2x IDENTICO ovunque. lv_03 anomalo 4.44% (50 Hz piu' lento), segnalato al @developer.
-- Nuovo modo `frequenza_confronto` in `prova_gate` (soglia 2.0%, exit 22) misura 60 vs 50 Hz; `gate_t1.sh` non lo usa.
-- **VJ4 soak in corso (1 livello/turno)**: lv_01-lv_04 fatti in precedenza; **lv_05_spray 14/11 exit 0** (30000 frame, replay IDENTICO, ms/frame medio 2.013 max 42.081). Resta lv_06_desktop, poi VJ5 ∞.
-- lv_05 resta il livello piu' pesante finora (medio ~2.0-2.6 ms/frame, picchi isolati alti da carico macchina).
-- Rilievo VJ5 invariato: `src/game/fasi.cpp:576` puntini riga `nostro` bianco fisso vs `col` lampeggiante (567), commento 574-575 incoerente.
-- Da fare a mano (fuori perimetro): `git checkout -- salvataggi/giocatore.json` (cancellato nel working tree).
+- **VJ3 CHIUSO 6/6**: 60/50 Hz replay IDENTICO su tutti; delta ok tranne lv_03 4.44% (segnalato a @developer).
+- **VJ4 CHIUSO 6/6 soak**: tutti exit 0, replay IDENTICO, nessun crash; lv_05 medio 2.013 max 42.081, lv_06 medio 1.536 max 8.926.
+- **VJ5 ∞ 14/11 10:09**: `git log -1 --oneline -- motore_nuovo/src` exit 0, `git status --short -- motore_nuovo/src` exit 0, ultimo `da6c52b`. Review `fasi.cpp:512-520` (`salva`/tabella HIGH SCORES): se `posizione_>10` dopo sort+resize sostituisce `tabella_.back()` col giocatore, rompendo l'ordine per punteggio in decima riga.
+- Rilievi VJ5 aperti: `show.cpp:141-145` off-road reset/notifica ogni frame; `game.cpp:2377-2383` finestra affiancata ampia/asimmetrie; `fasi.cpp:572-576` puntini colore `nostro`; `fasi.cpp:512-520` ordine tabella forzata.
+- Da fare a mano (fuori perimetro): `git checkout -- salvataggi/giocatore.json`.
+- Prossimo passo ∞: VJ5 review altro file/cambio `src/` in `REVIEW_V47.md`.
 - gate_t1.sh non eseguito in questo turno.

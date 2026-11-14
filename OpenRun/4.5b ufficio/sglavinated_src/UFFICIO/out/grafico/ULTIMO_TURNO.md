@@ -1,8 +1,11 @@
-# ULTIMO_TURNO — @grafico (11/11/2026 10:53)
-- Blocco/passo: V47 VG2 giro 12 (20 frasi)
-- File cambiati: `motore_nuovo/dati/frasi.json`, `UFFICIO/Dipartimento Grafico/TOOLS/vg2_giro12.py`
-- Bacheca/out: `UFFICIO/bacheche/grafico/diario.md` (+1), `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`
-- Comando: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/verifica_frasi_vg2.py"`
-- Exit code: 0
-- Gate: gate non eseguito
-- Note: solo `linea1`/`linea2` EN modificate; `it1`/`it2` intatti; max 16, maiuscolo, no accenti.
+# ULTIMO_TURNO — @grafico (14/11/2026 09:34)
+- Blocco/passo: V47 VG3 ∞ giro 32 — confronto date PNG Libreria/scenari vs .sglraw e conversione se piu' nuovi.
+- File cambiati: `UFFICIO/bacheche/grafico/diario.md` (+1), `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
+- Comandi:
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0 (188 PNG: 142 confrontati, 46 non motore, 0 fuori copertura; 87 raw scenari 81 a byte + 6 skyline a data; 54 altri gruppi allineati; 0 da convertire; gruppi raw noti 8, sconosciuti 0).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0 (raw oggetti aggiornati 0, errori 0).
+- Esito: tutto allineato, nessun PNG Andrea piu' nuovo, nessuna conversione.
+- Residuo noto: `sprite/rivali/auto_giocatore_sbandata.png` senza raw, non usato dal motore (non cancellato).
+- Gate: non eseguito (14/11 09:34).
+- Licenze/provenienza: nessuna risorsa esterna; nessun materiale Sega.
+- Prossimo: VG3 ∞ — ricontrollare al prossimo turno.
