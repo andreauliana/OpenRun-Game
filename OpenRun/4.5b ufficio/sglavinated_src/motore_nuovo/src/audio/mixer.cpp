@@ -3,6 +3,7 @@
 #include "xmp.h"
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <algorithm>
 
 namespace sgl {
@@ -33,6 +34,101 @@ Mixer::~Mixer() {
     if (!xmp_) return;
     if (suona_) { xmp_end_player(ctx(xmp_)); xmp_release_module(ctx(xmp_)); }
     xmp_free_context(ctx(xmp_));
+}
+
+namespace {
+// WAV PCM 16 bit (mono o stereo -> mono). Cerca il blocco "fmt " e "data".
+bool leggiWav(const std::string& path, std::vector<f32>& out, u32& rate) {
+    FILE* f = std::fopen(path.c_str(), "rb");
+    if (!f) return false;
+    std::vector<u8> b;
+    u8 buf[4096];
+    size_t n;
+    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) b.insert(b.end(), buf, buf + n);
+    std::fclose(f);
+    auto u32le = [&](size_t i) { return (u32)b[i] | ((u32)b[i + 1] << 8) | ((u32)b[i + 2] << 16) | ((u32)b[i + 3] << 24); };
+    if (b.size() < 12 || std::memcmp(b.data(), "RIFF", 4) != 0 || std::memcmp(b.data() + 8, "WAVE", 4) != 0) return false;
+    u32 canali = 0, bit = 0;
+    for (size_t i = 12; i + 8 <= b.size();) {
+        const u32 len = u32le(i + 4);
+        const size_t d = i + 8;
+        if (d + len > b.size()) break;
+        if (std::memcmp(b.data() + i, "fmt ", 4) == 0 && len >= 16) {
+            canali = b[d + 2] | (b[d + 3] << 8);
+            rate = u32le(d + 4);
+            bit = b[d + 14] | (b[d + 15] << 8);
+        } else if (std::memcmp(b.data() + i, "data", 4) == 0 && canali > 0 && bit == 16) {
+            const size_t campioni = len / (2 * canali);
+            out.resize(campioni);
+            for (size_t k = 0; k < campioni; ++k) {
+                f32 s = 0.0f;
+                for (u32 c = 0; c < canali; ++c) {
+                    const size_t p = d + (k * canali + c) * 2;
+                    s += (f32)(i16)(b[p] | (b[p + 1] << 8));
+                }
+                out[k] = s / (f32)canali;
+            }
+            return campioni > 1;
+        }
+        i = d + len + (len & 1);
+    }
+    return false;
+}
+
+// Lettura con interpolazione lineare; giro = ricomincia dall'inizio.
+f32 leggiCampione(const std::vector<f32>& d, f64& pos, f64 passo, bool giro) {
+    const size_t n = d.size();
+    if (giro) while (pos >= (f64)n) pos -= (f64)n;
+    const size_t i0 = (size_t)pos;
+    if (i0 >= n) return 0.0f;
+    const size_t i1 = (i0 + 1 < n) ? i0 + 1 : (giro ? 0 : i0);
+    const f32 fr = (f32)(pos - (f64)i0);
+    pos += passo;
+    return d[i0] + (d[i1] - d[i0]) * fr;
+}
+} // namespace
+
+bool Mixer::caricaMotore(const std::string& cartella) {
+    Campione a, m, p;
+    if (!leggiWav(cartella + "minimo.wav", m.dati, m.rate) || !leggiWav(cartella + "pieno.wav", p.dati, p.rate))
+        return false;
+    if (!leggiWav(cartella + "accensione.wav", a.dati, a.rate)) a.dati.clear();
+    motAcc_ = std::move(a);
+    motMin_ = std::move(m);
+    motPieno_ = std::move(p);
+    return true;
+}
+
+// Un campione di motore (Andrea 13/11): al minimo il giro "minimo", spingendo sfuma
+// nel giro "pieno"; il tono sale con i giri. Dopo un po' di silenzio, riaccendendo
+// suona l'avviamento.
+f32 Mixer::motoreCampionato(f32 rpm) {
+    const f32 dtC = 1.0f / (f32)sampleRate_;
+    // rpm < 0: pausa, motore zitto ma ancora acceso (alla ripresa niente avviamento).
+    if (rpm > 1.0f && motSpentoS_ > 1.0f && !motAcc_.dati.empty()) posAcc_ = 0.0;
+    if (rpm > 1.0f) motSpentoS_ = 0.0f;
+    else if (rpm >= 0.0f) motSpentoS_ += dtC;
+    rpm = std::max(0.0f, rpm);
+    motRpm_ += (rpm - motRpm_) * (1.0f - std::exp(-dtC / 0.08f));
+    const f32 r = std::max(0.0f, std::min(1.2f, motRpm_ / 8000.0f));
+    const f32 livVoluto = rpm > 1.0f ? 0.55f + 0.45f * std::min(1.0f, r) : 0.0f;
+    motLiv_ += (livVoluto - motLiv_) * (1.0f - std::exp(-dtC / 0.15f));
+    f32 s = 0.0f;
+    if (motLiv_ > 0.001f) {
+        f32 w = (r - 0.12f) / 0.4f; // 0 = minimo, 1 = pieno
+        w = std::max(0.0f, std::min(1.0f, w));
+        w = w * w * (3.0f - 2.0f * w);
+        const f64 kMin = (f64)motMin_.rate / (f64)sampleRate_;
+        const f64 kPieno = (f64)motPieno_.rate / (f64)sampleRate_;
+        const f32 sm = leggiCampione(motMin_.dati, posMin_, kMin * (0.85 + 0.7 * r), true);
+        const f32 sp = leggiCampione(motPieno_.dati, posPieno_, kPieno * (0.7 + 0.75 * r), true);
+        s = (sm * (1.0f - w) + sp * w) * motLiv_;
+    }
+    if (posAcc_ >= 0.0) {
+        s += leggiCampione(motAcc_.dati, posAcc_, (f64)motAcc_.rate / (f64)sampleRate_, false);
+        if (posAcc_ >= (f64)motAcc_.dati.size()) posAcc_ = -1.0;
+    }
+    return s * engineVol_ * 0.5f;
 }
 
 bool Mixer::aggiungiBrano(const std::string& path, const std::string& titolo) {
@@ -335,16 +431,22 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
 
     // Suono motore: due oscillatori con fase accumulata (niente click tra frame).
     f32 base = 40.0f + engineRpm * 0.6f; // Hz fondamentale
-    f32 amp = 3000.0f * (engineRpm / 8000.0f);
+    f32 amp = 3000.0f * (std::max(0.0f, engineRpm) / 8000.0f);
     if (amp > 12000.0f) amp = 12000.0f;
 
     f32 phaseInc = base / (f32)sampleRate_;
     const f32 aStridio = 1.0f - std::exp(-1.0f / (0.06f * (f32)sampleRate_)); // ~60 ms per salire o scendere
 
     for (i32 i = 0; i < frames; ++i) {
-        f32 eng = amp * (std::sin(2.0f * PI * phase_) +
-                         0.4f * std::sin(2.0f * PI * phase_ * 2.0f));
-        f32 l = eng * engineVol_, r = l;
+        f32 l;
+        if (!motMin_.dati.empty()) {
+            l = motoreCampionato(engineRpm);
+        } else {
+            const f32 eng = amp * (std::sin(2.0f * PI * phase_) +
+                                   0.4f * std::sin(2.0f * PI * phase_ * 2.0f));
+            l = eng * engineVol_;
+        }
+        f32 r = l;
         if (urtoN_ >= 0) { const f32 u = sfxUrto(); l += u; r += u; }
         stridio_ += (stridioVoluto_ - stridio_) * aStridio;
         if (stridio_ > 0.002f) { const f32 st = sfxStridio(); l += st; r += st; }

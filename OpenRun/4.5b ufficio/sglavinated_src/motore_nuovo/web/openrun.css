@@ -1,0 +1,22 @@
+#openrun-box { --or-testo: #d8d8e0; --or-tenue: #6a6a78; --or-accento: #b4f02c;
+  position: relative; background: #000; color: var(--or-testo); line-height: 1.4; font-family: "Born2bSporty"; font-size: 1.15rem; }
+#openrun-box .or-schermo { position: relative; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; width: min(100%, calc((100vh - var(--or-spazio, 0px) - 2rem) * 320 / 224)); aspect-ratio: 320 / 224; }
+#openrun-box #canvas { width: 100% !important; height: 100% !important; display: block; outline: none;
+  image-rendering: pixelated; image-rendering: crisp-edges; background: #000; border: 0; }
+#openrun-box .or-avvio { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 1.2em; text-align: center; cursor: pointer; padding: 0 1rem; }
+#openrun-box .or-titolo { font-family: "Born2bSporty"; font-weight: bold; margin: 0;
+  font-size: clamp(2.25rem, 8vw, 84px); line-height: 1; letter-spacing: 0.03em; color: #fff; }
+#openrun-box .or-sotto { color: var(--or-tenue); }
+#openrun-box .or-via { color: var(--or-accento); animation: or-lampeggia 1s steps(2) infinite; }
+@keyframes or-lampeggia { 50% { opacity: 0; } }
+#openrun-box .or-barra { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 1rem;
+  color: var(--or-tenue); font-size: 14px; }
+#openrun-box .or-barra a, #openrun-box .or-barra button { color: var(--or-tenue); background: none; border: 0;
+  font: inherit; padding: 0; margin: 0; cursor: pointer; text-decoration: none; text-transform: none; box-shadow: none; }
+#openrun-box .or-barra a:hover, #openrun-box .or-barra button:hover { color: var(--or-testo); }
+#openrun-box .or-nascosto { display: none !important; }
+#openrun-box:fullscreen { display: flex; flex-direction: column; justify-content: center; width: 100vw; height: 100vh; }
+#openrun-box:fullscreen .or-schermo { width: min(100vw, calc((100vh - 2rem) * 320 / 224)); }
+@media (max-width: 600px) { #openrun-box .or-tasti { display: none; } }

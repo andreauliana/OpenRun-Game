@@ -52,3 +52,7 @@ OpenRun/*.zip
 
 # Copia sbagliata della cartella UFFICIO fuori da sglavinated_src (quella vera e' in sglavinated_src/UFFICIO)
 /OpenRun/4.5b ufficio/UFFICIO/
+
+# Build web (web/build_web.sh): si rigenera, non va nel repo
+OpenRun/4.5b ufficio/sglavinated_src/build_web/
+OpenRun/4.5b ufficio/sglavinated_src/motore_nuovo/web/sito/

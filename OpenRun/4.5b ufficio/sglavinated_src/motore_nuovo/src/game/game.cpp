@@ -908,6 +908,8 @@ void Game::caricaMusica() {
     // e "gara": [{...}, ...]. Senza file o brani si gioca con il solo motore (nessun crash).
     if (musicaCaricata_) return;
     musicaCaricata_ = true;
+    // Motore campionato (Andrea 13/11): senza i WAV resta il motore sintetico di prima.
+    mixer_.caricaMotore(percorsoDati("motore_nuovo/dati/audio/motore/"));
     JsonReader r(leggiFileTesto(percorsoDati("motore_nuovo/dati/audio/playlist.json")));
     if (!r.parse() || !jsonIsObject(r.valore())) return;
     auto aggiungi = [this](const JsonValue& b) {
@@ -2229,7 +2231,7 @@ void Game::update() {
         // Tutto fermo; la musica continua piano e ovattata, motore spento.
         mixer_.setOvattato(0.85f);
         mixer_.setSgommata(0.0f);
-        mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, 0.0f);
+        mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, -1.0f); // -1: motore in pausa (niente nuova accensione)
         return;
     }
     ren_.aggiornaTransizioneTema(dt); // transizione graduale tema tra tappe (FORK1 punto 6)
@@ -2781,6 +2783,7 @@ void Game::aggiornaGuida(f32 dt) {
     } else if (pattinamento_ > 0.0f) {
         rpm = std::max(rpm, 3000.0f + 4500.0f * pattinamento_); // ruote a vuoto: il motore urla
     }
+    rpm = std::max(rpm, 800.0f); // auto ferma: il motore resta al minimo (Andrea 13/11)
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
     mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max({derapata_, 0.8f * pattinamento_, CURVA_STRIDIO * sgommata_})); // gomme che stridono in derapata

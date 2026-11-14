@@ -11,6 +11,9 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 using namespace sgl; // runner: puo' usare i tipi del nucleo senza prefisso
 
@@ -243,6 +246,32 @@ u64 leggiPadHeld(const Uint8* kb, const Controller& c, f32& axisLX, f32& axisLY)
     return held;
 }
 
+#ifdef __EMSCRIPTEN__
+// Versione browser (pagina web): il ciclo resta lo stesso del desktop, ma a ogni
+// fotogramma restituisce il controllo al browser (Asyncify) aspettando il suo refresh.
+EM_ASYNC_JS(void, webAttendiFotogramma, (), {
+    await new Promise(function (r) { requestAnimationFrame(function () { r(); }); });
+});
+// Salvataggi (classifica, nome) nella memoria del browser (IndexedDB): la cartella
+// salvataggi/ si monta prima di partire e si rilegge quello che c'era.
+EM_ASYNC_JS(void, webMontaSalvataggi, (), {
+    var dir = '/sglavinated_src/salvataggi';
+    try { FS.mkdir(dir); } catch (e) {}
+    try { FS.mount(IDBFS, {}, dir); } catch (e) { return; }
+    await new Promise(function (r) { FS.syncfs(true, function () { r(); }); });
+});
+// Copia i salvataggi in IndexedDB (ogni qualche secondo e alla chiusura della pagina).
+EM_JS(void, webScriviSalvataggi, (), {
+    if (Module.sglSync) return;
+    Module.sglSync = true;
+    FS.syncfs(false, function () { Module.sglSync = false; });
+});
+// Voce ESCI del menu: nel browser non si chiude niente, decide la pagina (Module.sglEsci).
+EM_JS(void, webEsci, (), {
+    if (typeof Module.sglEsci === 'function') Module.sglEsci();
+});
+#endif
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -255,6 +284,9 @@ int main(int argc, char** argv) {
     }
 
     const Opzioni opz = leggiOpzioni(argc, argv);
+#ifdef __EMSCRIPTEN__
+    webMontaSalvataggi();
+#endif
     if (!trovaRadiceProgetto(argv[0], opz.radiceDati)) return 2;
     {
         std::error_code ec;
@@ -382,8 +414,10 @@ int main(int argc, char** argv) {
         SDL_Event ev;
         while (SDL_PollEvent(&ev)) {
             if (ev.type == SDL_QUIT) running = false;
+#ifndef __EMSCRIPTEN__ // nel browser Esc serve a uscire dallo schermo intero
             if (ev.type == SDL_KEYDOWN && ev.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                 running = false;
+#endif
             if (ev.type == SDL_KEYDOWN && ev.key.keysym.scancode == SDL_SCANCODE_F11) {
                 const bool fs = (SDL_GetWindowFlags(win) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
                 SDL_SetWindowFullscreen(win, fs ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -420,7 +454,9 @@ int main(int argc, char** argv) {
             game.setInput(pad);
 
             // Uscita dal pad (sul Pi spesso non c'e' tastiera): Select + Start.
+#ifndef __EMSCRIPTEN__
             if ((pad.held & (Pad::Select | Pad::Start)) == (Pad::Select | Pad::Start)) running = false;
+#endif
 
             // Tasto R (tastiera) oppure Start+B (pad): prossimo brano radio,
             // solo al fronte (tenendo premuto non salta piu' brani).
@@ -434,7 +470,12 @@ int main(int argc, char** argv) {
             }
 
             game.update();
+#ifdef __EMSCRIPTEN__
+            if (game.uscitaRichiesta()) { webEsci(); running = false; } // ESCI: la pagina decide dove andare
+            if (frames % 300 == 0) webScriviSalvataggi();
+#else
             if (game.uscitaRichiesta()) running = false; // voce ESCI del menu
+#endif
             // Render a ogni tick, come prima: il framebuffer (e quindi frameHash)
             // dipende solo dai tick, non da quante volte lo schermo si aggiorna.
             game.render();
@@ -483,6 +524,10 @@ int main(int argc, char** argv) {
             if (crt.maschera) SDL_RenderCopy(sdlRen, crt.maschera, nullptr, nullptr);
         }
         SDL_RenderPresent(sdlRen); // con vsync attende il refresh dello schermo
+#ifdef __EMSCRIPTEN__
+        webAttendiFotogramma(); // il browser disegna e gestisce tastiera/pad
+        continue;
+#endif
 
         // Senza vsync il ciclo dorme fino al prossimo tick (non consuma CPU a vuoto).
         if (!vsync) {
