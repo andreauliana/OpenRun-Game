@@ -1,11 +1,12 @@
-# STATUS_GRAFICO_PER_CAPO — 13/11/2026 09:16
-- **Stato:** VG3 (∞) giro 18 completato, tutto allineato.
-- **Materiali creati/modificati:** nessun PNG/raw convertito (0 da convertire). Solo bacheca/out aggiornati: `diario.md` (+1), `RIASSUNTO.md`.
-- **Comandi ed esiti:**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0. 188 PNG Libreria (142 confrontati con un raw, 46 non motore noti, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire.
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0. Raw oggetti aggiornati 0 (81 controllati).
-- **Catalogo/licenze:** zero risorse esterne, zero Sega. Nessuna modifica a catalogo/licenze.
-- **Controlli:** confronto date/contenuto PNG↔raw e copertura Libreria verdi; gate non eseguito (13/11 09:16).
-- **Lacune/blocchi:** residuo noto `sprite/rivali/auto_giocatore_sbandata.png` senza raw, non usato dal motore (non cancellato). Nessun PNG di Andrea più nuovo: VG3 in attesa di ridisegni.
-- **Review richiesta:** nessuna.
-- **Prossimo:** VG3 ∞ — ricontrollare e convertire solo PNG di Andrea più nuovi.
+# STATUS_GRAFICO_PER_CAPO — 14/11/2026 08:27
+- **Stato:** V47, passo VG3 (∞) giro 28 completato. PNG di Andrea e raw del motore allineati: 0 conversioni necessarie.
+- **Materiali creati/modificati:** `UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py` (lo script che scrive i raw): radice ricavata da `__file__` (funziona da qualunque cartella), un PNG illeggibile da PIL ora stampa `PNG-ILLEGGIBILE` e viene saltato senza fermare gli altri (exit 1 a fine giro), scrittura atomica (tmp + `os.replace`) così un'interruzione non lascia raw a metà, rilettura di ogni raw scritto con `VERIFICA-FALLITA` se il disco non coincide, nuova opzione `--autotest`. Nessun PNG/raw convertito. Bacheca: `diario.md` (+1 riga), `RIASSUNTO.md` riscritto; questo status riscritto.
+- **Comandi ed esiti (eseguiti in questo turno 14/11 08:25-08:27):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0. 188 PNG Libreria (142 confrontati con un raw, 46 non motore noti, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire, gruppi raw noti 8 / sconosciuti 0.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0. Raw oggetti aggiornati 0, errori 0.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py" --autotest` — exit 0. `autotest conversione: OK` (PNG valido → byte SGLR, PNG troncato → saltato, scrittura atomica verificata).
+- **Catalogo/licenze:** zero risorse esterne, zero Sega. Catalogo e attribuzioni invariati, nessuna risorsa proposta promossa.
+- **Controlli:** confronto date/contenuto PNG↔raw, copertura Libreria, copertura gruppi raw e percorso negativo dello script di conversione: tutti verdi. Gate build/test: non eseguito — non pertinente, nessun codice C++ toccato.
+- **Lacune/blocchi:** `UFFICIO/out/grafico/ULTIMO_TURNO.md` non è scrivibile dal mio ruolo (permesso negato): uso questo status come unico handoff. Residuo noto `sprite/rivali/auto_giocatore_sbandata.png` senza raw, non usato dal motore, non cancellato.
+- **Review richiesta:** nessuna (nessuna review assegnata a questo turno).
+- **Prossimo:** VG3 ∞ — ricontrollare date/contenuto e convertire solo i PNG di Andrea più nuovi.

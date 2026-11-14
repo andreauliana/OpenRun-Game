@@ -17,7 +17,11 @@
 # UI, font, area bloccata di Andrea, varianti legacy). Un PNG nuovo in un percorso
 # non mappato fa fallire il controllo: cosi' un ridisegno di Andrea fuori posto non
 # resta invisibile.
-# Non scrive nulla: solo diagnosi. Exit 0 se tutto allineato, 1 se c'e' da convertire.
+# Non scrive nulla: solo diagnosi. Exit 0 se tutto allineato, 1 se c'e' da convertire
+# o se un gruppo di dati/sprite_raw non ha una regola di conversione.
+# Un PNG che PIL non riesce ad aprire (salvato a meta', troncato) non fa crashare il
+# controllo: si segnala PNG-ILLEGGIBILE, conta come errore (exit 1), e gli altri esiti
+# restano visibili.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 import fnmatch
@@ -90,9 +94,13 @@ def png_sorgente(nome, livello):
 
 
 def raw_atteso(png):
-    with Image.open(png) as im:
-        rgba = im.convert("RGBA")
-        return b"SGLR" + struct.pack("<II", rgba.width, rgba.height) + rgba.tobytes()
+    """Byte del raw che il motore si aspetta, o None se il PNG non si legge."""
+    try:
+        with Image.open(png) as im:
+            rgba = im.convert("RGBA")
+            return b"SGLR" + struct.pack("<II", rgba.width, rgba.height) + rgba.tobytes()
+    except (OSError, ValueError):
+        return None
 
 
 def png_oggetti():
@@ -148,6 +156,24 @@ def png_non_motore(rel):
     return any(fnmatch.fnmatchcase(rel, pat) for pat in NON_MOTORE)
 
 
+# Gruppi di dati/sprite_raw che il motore legge. "giocatore" e' l'area bloccata di
+# Andrea (conversione fatta a mano): resta l'unico gruppo non confrontato, ma deve
+# comunque essere previsto qui. Un gruppo nuovo senza regola fa fallire il controllo:
+# cosi' una cartella di raw aggiunta (o spostata) non resta invisibile come succedeva
+# quando si guardavano solo i PNG della Libreria.
+GRUPPI_RAW = {"giocatore", "scenari", "sponsor"} | {g for _, g in ALTRI}
+
+
+def controllo_gruppi_raw():
+    ignoti = 0
+    for cartella in sorted(p for p in RAW_ROOT.iterdir() if p.is_dir()):
+        if cartella.name not in GRUPPI_RAW:
+            ignoti += 1
+            print(f"RAW-GRUPPO-IGNOTO {cartella.name}: nessuna regola di conversione")
+    print(f"gruppi di raw noti: {len(GRUPPI_RAW)}, sconosciuti: {ignoti}")
+    return ignoti
+
+
 def controllo_copertura():
     """Ogni PNG della Libreria o e' confrontato, o e' non-motore noto, o e' sospetto."""
     coperti = png_coperti()
@@ -180,7 +206,11 @@ def main():
             senza_png += 1
             righe.append(f"MANCA-PNG  {livello}/{nome}.sglraw ({data(raw)})")
             continue
-        if raw.read_bytes() != raw_atteso(png):
+        atteso = raw_atteso(png)
+        if atteso is None:
+            diversi += 1
+            righe.append(f"PNG-ILLEGGIBILE {livello}/{nome}: png {data(png)} non apribile da PIL")
+        elif raw.read_bytes() != atteso:
             diversi += 1
             righe.append(f"DIVERSO    {livello}/{nome}: png {data(png)} raw {data(raw)}")
         elif png.stat().st_mtime > raw.stat().st_mtime:
@@ -231,7 +261,11 @@ def main():
                 altri_senza += 1
                 print(f"ALTRI-MANCA-PNG {gruppo}/{raw.stem}: raw {data(raw)}")
                 continue
-            if raw.read_bytes() != raw_atteso(png):
+            atteso = raw_atteso(png)
+            if atteso is None:
+                altri_diversi += 1
+                print(f"ALTRI-ILLEGGIBILE {gruppo}/{raw.stem}: png {data(png)} non apribile da PIL")
+            elif raw.read_bytes() != atteso:
                 altri_diversi += 1
                 print(f"ALTRI-DIVERSO   {gruppo}/{raw.stem}: png {data(png)} raw {data(raw)}")
             elif png.stat().st_mtime > raw.stat().st_mtime:
@@ -261,6 +295,7 @@ def main():
     print(f"png piu' nuovi ma contenuto uguale: {png_piu_nuovo}")
     print(f"raw senza png sorgente: {senza_png}")
     fuori_copertura = controllo_copertura()
+    gruppi_ignoti = controllo_gruppi_raw()
     return (
         0
         if diversi == 0
@@ -271,9 +306,26 @@ def main():
         and altri_senza == 0
         and altri_orfani == 0
         and fuori_copertura == 0
+        and gruppi_ignoti == 0
         else 1
     )
 
 
 if __name__ == "__main__":
+    import sys
+
+    if "--autotest" in sys.argv:
+        # Prova del percorso negativo senza toccare Libreria o dati/sprite_raw:
+        # un PNG valido deve dare byte SGLR, uno troncato deve dare None.
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            buono = Path(td) / "buono.png"
+            rotto = Path(td) / "rotto.png"
+            Image.new("RGBA", (2, 2), (10, 20, 30, 255)).save(buono)
+            dati = buono.read_bytes()
+            rotto.write_bytes(dati[: len(dati) // 2])
+            ok = (raw_atteso(buono) or b"")[:4] == b"SGLR" and raw_atteso(rotto) is None
+        print("autotest raw_atteso: " + ("OK" if ok else "FALLITO"))
+        raise SystemExit(0 if ok else 1)
     raise SystemExit(main())

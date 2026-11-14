@@ -3183,9 +3183,36 @@ static void passoCiclo(Game& game, u64 held, u64 pressed) {
     game.render();
 }
 
+// VJ3 14/11: il gate "ciclo" deve partire senza salvataggio, ma prima lo
+// cancellava per sempre: un `salvataggi/giocatore.json` gia' presente (anche
+// versionato) spariva dal repo. Ora viene spostato in `.gate_bak` all'avvio e
+// rimesso a posto all'uscita, anche se il test esce prima.
+struct BackupSalvataggio {
+    static const char* const kSuffisso;
+    std::string percorso;
+    bool attivo = false;
+    explicit BackupSalvataggio(const char* p) : percorso(p) {
+        std::error_code ec;
+        if (std::filesystem::exists(percorso)) {
+            std::filesystem::rename(percorso, percorso + kSuffisso, ec);
+            attivo = !ec;
+        }
+    }
+    ~BackupSalvataggio() {
+        if (!attivo) return;
+        std::error_code ec;
+        std::filesystem::rename(percorso + kSuffisso, percorso, ec);
+        if (ec) std::printf("ciclo: ATTENZIONE salvataggio non ripristinato (%s)\n", ec.message().c_str());
+    }
+    BackupSalvataggio(const BackupSalvataggio&) = delete;
+    BackupSalvataggio& operator=(const BackupSalvataggio&) = delete;
+};
+const char* const BackupSalvataggio::kSuffisso = ".gate_bak";
+
 static bool verificaCiclo(const std::string& outDir) {
-    // ARC1: primo avvio senza file di salvataggio (lo rimuove se un giro precedente lo ha lasciato).
-    std::remove("salvataggi/giocatore.json");
+    // ARC1: primo avvio senza file di salvataggio. Un salvataggio preesistente
+    // viene messo da parte e ripristinato alla fine (vedi BackupSalvataggio).
+    const BackupSalvataggio salvataggioMessoDaParte("salvataggi/giocatore.json");
     std::filesystem::create_directories(outDir);
     const i32 FRAME_MAX = 60 * 300;   // tetto di sicurezza: 5 minuti a 60 Hz
     const i32 FRAME_GAS = 300;        // 5 s di gas, poi la macchina rallenta e il tempo scade
@@ -3552,83 +3579,122 @@ bool verificaEspansioneTracciato() {
 }
 
 // --- Frequenza: verifica determinismo e tempi di giro a 50/60 Hz ---
-// Esegue un giro guidato alla frequenza indicata, due run identici,
-// verifica replay IDENTICO, ms/frame <= 20 e riporta i secondi di giro.
-// La frequenza viene impostata temporaneamente in config.json e ripristinata.
-bool verificaFrequenza(const std::string& outDir, const std::string& livello, i32 frequenza) {
-    i32 frequenzaPrecedente = ::impostaFrequenzaDaConfig(frequenza);
-    f32 dt = 1.0f / (f32)frequenza;
-    bool ok = true;
-    f32 secondiA = 0.0f, secondiB = 0.0f;
-    double msMaxA = 0.0, msMaxB = 0.0, msMedioA = 0.0, msMedioB = 0.0;
-    std::vector<u32> hashA, hashB;
+// Esegue un giro guidato alla frequenza gia' impostata in config.json.
+struct EsitoGiroFrequenza {
+    f32 secondi = 0.0f;
+    double msMedio = 0.0;
+    double msMax = 0.0;
+    std::vector<u32> hash;
+    bool giroFinito = false;
+};
 
-    for (int run = 0; run < 2 && ok; ++run) {
-        Game game(12345u);
-        game.init(livello);
-        f32 giro = (f32)game.road().totalLength();
-        f32 percorso = 0.0f, zPrima = 0.0f;
-        i32 frame = 0;
-        double msTot = 0.0, msMax = 0.0;
-        const i32 FRAME_MAX = 60000;
-        std::vector<u32>& hash = (run == 0) ? hashA : hashB;
+static EsitoGiroFrequenza misuraGiroFrequenza(const std::string& livello, i32 frequenza) {
+    EsitoGiroFrequenza e;
+    Game game(12345u);
+    game.init(livello);
+    const f32 giro = (f32)game.road().totalLength();
+    f32 percorso = 0.0f, zPrima = 0.0f;
+    i32 frame = 0;
+    double msTot = 0.0;
+    const i32 FRAME_MAX = 60000;
 
-        while (percorso < giro && frame < FRAME_MAX) {
-            Pad pad;
-            pad.held = (u64)Pad::A;
-            const f32 x = game.state().playerX;
-            if (x > 120.0f) pad.held |= (u64)Pad::Left;
-            else if (x < -120.0f) pad.held |= (u64)Pad::Right;
-            game.setInput(pad);
-            auto t0 = std::chrono::steady_clock::now();
-            game.update();
-            game.render();
-            double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
-            msTot += ms;
-            if (ms > msMax) msMax = ms;
+    while (percorso < giro && frame < FRAME_MAX) {
+        Pad pad;
+        pad.held = (u64)Pad::A;
+        const f32 x = game.state().playerX;
+        // Soglia di sterzo proporzionale al passo: a 50 Hz ogni frame copre il 20% in piu'
+        // di strada, quindi la stessa soglia fissa faceva "pompare" la guida automatica e
+        // falsava il confronto dei tempi di giro fra 50 e 60 Hz (VJ3 14/11).
+        const f32 sogliaX = 120.0f * (60.0f / (f32)frequenza);
+        if (x > sogliaX) pad.held |= (u64)Pad::Left;
+        else if (x < -sogliaX) pad.held |= (u64)Pad::Right;
+        game.setInput(pad);
+        auto t0 = std::chrono::steady_clock::now();
+        game.update();
+        game.render();
+        double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+        msTot += ms;
+        if (ms > e.msMax) e.msMax = ms;
 
-            const f32 z = game.state().playerZ;
-            f32 dz = z - zPrima;
-            if (dz < 0.0f) dz += giro;
-            percorso += dz;
-            zPrima = z;
-            hash.push_back(game.frameHash());
-            ++frame;
-        }
-
-        f32 secondi = frame / (f32)frequenza;
-        const double msMedio = frame > 0 ? msTot / frame : 0.0;
-        if (run == 0) { secondiA = secondi; msMaxA = msMax; msMedioA = msMedio; }
-        else { secondiB = secondi; msMaxB = msMax; msMedioB = msMedio; }
-
-        if (frame >= FRAME_MAX) {
-            std::printf("%d Hz: run %d - giro NON completato in %d frame\n", frequenza, run + 1, frame);
-            ok = false;
-        }
+        const f32 z = game.state().playerZ;
+        f32 dz = z - zPrima;
+        if (dz < 0.0f) dz += giro;
+        percorso += dz;
+        zPrima = z;
+        e.hash.push_back(game.frameHash());
+        ++frame;
     }
 
-    bool deterministico = (hashA == hashB);
-    double diffSecondi = (secondiA > 0.0f && secondiB > 0.0f)
-        ? std::abs(secondiA - secondiB) / std::max(secondiA, secondiB) * 100.0
-        : 0.0;
+    e.secondi = frame / (f32)frequenza;
+    e.msMedio = frame > 0 ? msTot / frame : 0.0;
+    e.giroFinito = (frame < FRAME_MAX);
+    return e;
+}
 
-    // Ripristina configurazione originale prima di restituire.
+// Due run identici alla frequenza indicata: replay IDENTICO, ms/frame <= 20,
+// secondi di giro riportati. La frequenza si imposta in config.json e si ripristina.
+bool verificaFrequenza(const std::string& outDir, const std::string& livello, i32 frequenza) {
+    (void)outDir;
+    i32 frequenzaPrecedente = ::impostaFrequenzaDaConfig(frequenza);
+    const EsitoGiroFrequenza a = misuraGiroFrequenza(livello, frequenza);
+    const EsitoGiroFrequenza b = misuraGiroFrequenza(livello, frequenza);
+    // Ripristina configurazione originale subito dopo le misure.
     ::impostaFrequenzaDaConfig(frequenzaPrecedente);
+
+    const bool deterministico = (a.hash == b.hash);
+    const double diffSecondi = (a.secondi > 0.0f && b.secondi > 0.0f)
+        ? std::abs(a.secondi - b.secondi) / std::max(a.secondi, b.secondi) * 100.0
+        : 0.0;
 
     std::printf("frequenza %d Hz: runA=%.2f s (ms/frame medio=%.2f max=%.2f) runB=%.2f s (ms/frame medio=%.2f max=%.2f) "
                 "replay %s diff=%.2f%%\n",
-                frequenza, secondiA, msMedioA, msMaxA, secondiB, msMedioB, msMaxB,
+                frequenza, a.secondi, a.msMedio, a.msMax, b.secondi, b.msMedio, b.msMax,
                 deterministico ? "IDENTICO" : "DIVERSO", diffSecondi);
 
-    if (!ok) { std::printf("FALLITO: giro non completato\n"); return false; }
+    if (!a.giroFinito || !b.giroFinito) { std::printf("FALLITO: giro non completato\n"); return false; }
     if (!deterministico) { std::printf("FALLITO: non deterministico\n"); return false; }
     // Media e non massimo: sul Mac con gli agenti al lavoro (o con ctest -j8)
     // un frame isolato supera 20 ms per il carico della macchina, non del gioco.
-    if (msMedioA > MAX_MS_FRAME || msMedioB > MAX_MS_FRAME) {
+    if (a.msMedio > MAX_MS_FRAME || b.msMedio > MAX_MS_FRAME) {
         std::printf("FALLITO: troppo lento\n");
         return false;
     }
     std::printf("GATE FREQUENZA %d Hz OK\n", frequenza);
+    return true;
+}
+
+// VJ3 (14/11): il modo "frequenza" confronta solo le due run della stessa frequenza,
+// non 60 Hz con 50 Hz: uno scarto del 4.7% sul tempo di giro passava lo stesso.
+// Qui si misura lo stesso giro alle due frequenze e si confrontano i secondi.
+constexpr double MAX_DIFF_FREQUENZA_PCT = 2.0;
+
+bool verificaFrequenzaConfronto(const std::string& livello) {
+    const i32 frequenzaPrecedente = ::impostaFrequenzaDaConfig(60);
+    const EsitoGiroFrequenza a60 = misuraGiroFrequenza(livello, 60);
+    ::impostaFrequenzaDaConfig(50);
+    const EsitoGiroFrequenza a50 = misuraGiroFrequenza(livello, 50);
+    ::impostaFrequenzaDaConfig(frequenzaPrecedente);
+
+    const double diff = (a60.secondi > 0.0f && a50.secondi > 0.0f)
+        ? std::abs((double)a60.secondi - (double)a50.secondi)
+              / std::max((double)a60.secondi, (double)a50.secondi) * 100.0
+        : 0.0;
+
+    std::printf("confronto %s: 60 Hz=%.2f s (ms/frame medio=%.2f) 50 Hz=%.2f s (ms/frame medio=%.2f) "
+                "diff=%.2f%% (limite %.2f%%)\n",
+                livello.c_str(), a60.secondi, a60.msMedio, a50.secondi, a50.msMedio,
+                diff, MAX_DIFF_FREQUENZA_PCT);
+
+    if (!a60.giroFinito || !a50.giroFinito) {
+        std::printf("FALLITO: giro non completato a una delle due frequenze\n");
+        return false;
+    }
+    if (diff > MAX_DIFF_FREQUENZA_PCT) {
+        std::printf("FALLITO: il tempo di giro cambia con la frequenza (%.2f%% > %.2f%%)\n",
+                    diff, MAX_DIFF_FREQUENZA_PCT);
+        return false;
+    }
+    std::printf("GATE FREQUENZA CONFRONTO OK\n");
     return true;
 }
 
@@ -3688,6 +3754,7 @@ int main(int argc, char** argv) {
     // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
     if (argc > 1 && argv[1][0] == '-') {
         std::printf("uso: prova_gate [cartella_out=UFFICIO/out/debugger] [livello=lv_01_neon] [modo=smoke] [hz=60]\n");
+        std::printf("modi: smoke percorso gara curve sterzo crash accelerazione screenshot pali sportellata frequenza frequenza_confronto soak\n");
         return 0;
     }
     const std::string outDir = argc > 1 ? argv[1] : "UFFICIO/out/debugger";
@@ -3891,6 +3958,11 @@ int main(int argc, char** argv) {
         const i32 frequenza = argc > 4 ? std::atoi(argv[4]) : 60;
         const bool ok = verificaFrequenza(outDir, livello, frequenza);
         return ok ? 0 : 15;
+    }
+
+    if (modo == "frequenza_confronto") {
+        const bool ok = verificaFrequenzaConfronto(livello);
+        return ok ? 0 : 22;
     }
 
     if (modo == "decorazioni") {

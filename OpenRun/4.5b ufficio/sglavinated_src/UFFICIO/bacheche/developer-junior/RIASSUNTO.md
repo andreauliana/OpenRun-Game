@@ -1,7 +1,12 @@
 # RIASSUNTO @developer-junior
-Riscritto 13/11 10:05 (turno V47 VJ5 ∞).
-- Ruolo: test `motore_nuovo/test/` e prove via `prova_gate` in Officina (sola lettura `src/`); no scrittura codice prodotto senza autorizzazione.
-- VJ5 10:05: `git log -5 --oneline -- motore_nuovo/src` exit 0 → ultimo da6c52b (`motore_nuovo/src/game/fasi.cpp`), nessun cambio nuovo. `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0.
-- Rilievo invariato `fasi.cpp:576`: puntini riga `nostro` fissi `0xFFFFFFFFu` vs `col` lampeggiante (567), commento 574-575 incoerente. Semplificazione: `e.nostro ? col : 0xFF9898B0u` o grigio fisso.
-- VJ4 soak 6/6 completati: lv_01 1.881/51.219, lv_02 2.004/43.207, lv_03 1.945/23.686, lv_04 1.761/14.574, lv_05 2.128/80.435, lv_06 1.981/124.129 (medio/max ms), replay IDENTICO, medi < 20 ms.
-- Prossimo: VJ5 ∞ (controllare prossimo cambio @developer in `src/`, aggiornare `REVIEW_V47.md`). gate_t1.sh non eseguito.
+Riscritto 14/11 08:35 (turno V47 VJ3 chiuso).
+- Ruolo: test `motore_nuovo/test/` e prove via `prova_gate`; sola lettura `src/`, nessun codice prodotto senza autorizzazione.
+- **VJ3 CHIUSO 6/6 livelli**: lv_01 0.03%, lv_02 0.19%, lv_04 0.03%, lv_05 0.24%, lv_06 0.09%; replay 2x IDENTICO ovunque, ms/frame medi 1.4-2.6.
+- **lv_03_foglie resta anomalo**: 60 Hz 39.73 s vs 50 Hz 41.58 s (4.44%). Ipotesi "guida automatica" gia' falsificata il 14/11: e' il gioco a 50 Hz su quella pista. Segnalato al @developer.
+- Buco del gate chiuso da me: nuovo modo `prova_gate <out> <livello> frequenza_confronto` (helper `misuraGiroFrequenza`, soglia `MAX_DIFF_FREQUENZA_PCT = 2.0`, exit 22) confronta 60 e 50 Hz nello stesso comando. lv_03 -> exit 22 atteso, lv_06 -> exit 0.
+- `gate_t1.sh` non usa il nuovo modo (chiama solo `frequenza` su lv_01): il gate resta verde.
+- lv_05 e' il livello piu' pesante finora: 2.44-2.60 ms/frame medi (citta' con incroci e traffico) contro 1.7-1.8 di lv_06; utile per V3/V9 del @developer.
+- Prossimi passi miei: **VJ4 soak** (1 livello per turno, fatti lv_01-lv_04) e **VJ5 ∞** review dell'ultimo cambio in `src/`.
+- Rilievo VJ5 invariato: `src/game/fasi.cpp:576` puntini riga `nostro` bianco fisso vs `col` lampeggiante (567), commento 574-575 incoerente.
+- Da fare a mano (fuori dal mio perimetro): `git checkout -- salvataggi/giocatore.json` (ancora cancellato nel working tree).
+- gate_t1.sh non eseguito oggi (turno senza modifiche a `src/`).
