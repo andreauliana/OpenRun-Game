@@ -1,16 +1,9 @@
 # ULTIMO_TURNO developer
-- Data/ora: 14/11/2026 08:36
-- Blocco/passo: V47 V9 ∞ fluidita' — lv_01_neon (ottavo giro)
-- File cambiati:
-  - UFFICIO/bacheche/developer/diario.md (append 1 riga)
-  - UFFICIO/bacheche/developer/RIASSUNTO.md (riscritto)
-  - UFFICIO/out/developer/ULTIMO_TURNO.md (riscritto)
-  - nessun file di codice/dati: passo ∞ di sola misura, valore sotto soglia
-- Comandi ed exit code:
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno8" lv_01_neon percorso` -> exit 0, "GATE PERCORSO OK" (1978 frame, 33.0 s, 0% fuori)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno8_smoke2" lv_01_neon smoke` -> exit 0, "GATE OK" medio 1.192 max 3.729 (<8 ms), replay IDENTICO
-  - `sh UFFICIO/Officina/TOOL/gate_t1.sh` -> exit 0, "GATE T1: TUTTO OK" (6/6 percorso, gara 4 bivi, 50/60 Hz, screenshot P1)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno8_controllo" lv_05_spray smoke` -> exit 0, "GATE OK" max 6.709 ms
-- Misure: lv_01 caricamento 3.8-4.9 ms, init 6.8-9.1 ms; max frame 3.729 ms, nessun alleggerimento
-- Nota: in gate_t1 lo smoke lv_05_spray segna max 9.560 ms (freddo); isolato 6.709 ms, non riproducibile
-- Prossimo: V9 ∞ lv_02_atomico (ottavo giro)
+- Data/ora: 14/11/2026 09:13
+- Blocco/passo: V47 V9 ∞ fluidita' lv_03_foglie (ottavo giro)
+- File cambiati: UFFICIO/bacheche/developer/diario.md, UFFICIO/bacheche/developer/RIASSUNTO.md, UFFICIO/out/developer/ULTIMO_TURNO.md
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno8" lv_03_foglie percorso` — exit 0 ("GATE PERCORSO OK", 2384 frame, 39.7 s, 0% fuori, caricamento 4.2 ms, init 8.7 ms)
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno8_smoke" lv_03_foglie smoke` — exit 0 ("GATE OK", ms/frame medio 1.253 max 3.747, replay IDENTICO, caricamento 3.3-12.4 ms, init 6.1-18.4 ms)
+- Esito: nessun punto >8 ms stabile, nessun alleggerimento necessario; resa e replay invariati.
+- gate_t1.sh: non eseguito.
+- Prossimo: V9 ∞ lv_04_cromo (ottavo giro).

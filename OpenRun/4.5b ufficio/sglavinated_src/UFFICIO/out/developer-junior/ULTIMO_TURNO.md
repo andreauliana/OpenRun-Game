@@ -1,15 +1,12 @@
 # ULTIMO TURNO @developer-junior
-14/11/2026 08:35 — BLOCCO V47, passo **VJ3 chiuso (6/6 livelli)** + chiusura buco del test.
-File cambiati:
-- `motore_nuovo/test/prova_gate.cpp`: estratto helper `misuraGiroFrequenza` (misura riusabile, soglia di sterzo normalizzata al passo), nuovo `verificaFrequenzaConfronto` + modo `frequenza_confronto` (soglia 2.0%, exit 22), riga di aiuto aggiornata.
-- `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/{diario,RIASSUNTO}.md`, questo file.
-Comandi ed esiti (14/11, uno per riga, da `sglavinated_src/`):
-- `cmake --build UFFICIO/Officina/build --target prova_gate` -> exit 0.
-- `prova_gate .../lv_05_60 lv_05_spray frequenza 60` -> exit 0, 45.03 s, replay IDENTICO.
-- `prova_gate .../lv_05_50 lv_05_spray frequenza 50` -> exit 0, 44.92 s, IDENTICO (delta 0.24%).
-- `prova_gate .../lv_06_60 lv_06_desktop frequenza 60` -> exit 0, 35.23 s, IDENTICO.
-- `prova_gate .../lv_06_50 lv_06_desktop frequenza 50` -> exit 0, 35.20 s, IDENTICO (delta 0.09%).
-- `prova_gate .../confronto_lv_03 lv_03_foglie frequenza_confronto` -> **exit 22**, 39.73 vs 41.58 s, diff 4.44% > 2.00% (anomalia nota, @developer).
-- `prova_gate .../confronto_lv_06 lv_06_desktop frequenza_confronto` -> exit 0, 35.23 vs 35.20 s, diff 0.09%.
-Uscite in `UFFICIO/Officina/Test area/vj3_14nov/`. gate_t1.sh: **non eseguito** in questo turno.
-Residuo: lv_03 perde 1.85 s di giro a 50 Hz (costo per-frame non scalato da `dt`); lv_05 e' il livello piu' pesante (2.44-2.60 ms/frame).
+14/11/2026 08:53 — BLOCCO V47, passo **VJ4 soak lv_05_spray**.
+- Blocco: V47 VJ4 (soak, 1 livello/turno). Fatti in precedenza lv_01-lv_04; questo turno lv_05; resta lv_06 poi VJ5 ∞.
+- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_soak_lv05" lv_05_spray soak`
+- Exit code: **0** (GATE OK).
+- Esito: 30000 frame, replay 2x IDENTICO, nessun crash.
+- Misure: `ms/frame medio=2.013 max=42.081` (limite 20 ms), `speed@60=154.11 speed@1=8.43`, `zFinale=738213.1`, offroad raggiunto frame 157.
+- Caricamento: livello 12.9 ms (run1) / 3.3 ms (run2), init 25.1 / 6.1 ms.
+- Output: `UFFICIO/Officina/Test area/vj4_soak_lv05/`.
+- gate_t1.sh: **non eseguito** in questo turno.
+- Residui: lv_03_foglie anomalia 50/60 Hz (4.44%) per @developer; `salvataggi/giocatore.json` da ripristinare a mano; VJ5 rilievo `src/game/fasi.cpp:576` invariato.
