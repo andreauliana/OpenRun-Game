@@ -35,6 +35,7 @@
       var spazio = parseFloat(getComputedStyle(box).getPropertyValue("--or-spazio")) || 0;
       var su = box.getBoundingClientRect().top + window.scrollY - spazio;
       window.scrollTo({ top: Math.max(0, su), behavior: "smooth" });
+      setTimeout(leggiOnline, 3000); // dopo che il gioco ha montato la cartella salvataggi
     },
     sglEsci: function () { window.location.href = HOME; } // voce EXIT del menu
   };
@@ -71,6 +72,19 @@
 
   // Classifica online (solo se la pagina da' OPENRUN_API): i punteggi nuovi della
   // classifica locale vanno al sito, uno alla volta. La classifica del gioco resta locale.
+  // Classifica online -> salvataggi/classifica_online.json, che HIGH SCORES unisce
+  // alla classifica locale. Se il sito non risponde resta la locale.
+  function scriviOnline(c) {
+    try {
+      if (c && Module.FS) Module.FS.writeFile("/sglavinated_src/salvataggi/classifica_online.json", JSON.stringify(c));
+    } catch (e) {}
+  }
+  function leggiOnline() {
+    if (!window.OPENRUN_API) return;
+    fetch(window.OPENRUN_API, { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; })
+      .then(scriviOnline, function () {});
+  }
   function inviaPunteggi() {
     if (!window.OPENRUN_API || !window.Module || !Module.FS) return;
     var g;
@@ -90,6 +104,7 @@
       headers: { "Content-Type": "application/json", "X-WP-Nonce": window.OPENRUN_NONCE || "" },
       body: JSON.stringify({ nome: v.nome, punti: v.punti, tipo: v.tipo }) })
       .then(function (r) {
+        if (r.ok) r.json().then(scriviOnline, function () {});
         if (r.ok || r.status === 400) { // 400: dati scartati dal sito, non si riprova
           inviati[v.chiave] = 1;
           try { localStorage.setItem("openrun_inviati", JSON.stringify(inviati)); } catch (e) {}
@@ -97,6 +112,7 @@
       }, function () {});
   }
   setInterval(inviaPunteggi, 35000);
+  setInterval(leggiOnline, 120000);
 
   // Salvataggi (classifica, nome): si scrivono anche quando si chiude la pagina.
   function salva() { try { if (Module.FS) Module.FS.syncfs(false, function () {}); } catch (e) {} }

@@ -486,12 +486,28 @@ private:
 
         tabella_.clear();
         bool messo = false;
-        for (const ClassificaEntry& r : lista) {
-            std::string n = r.nome;
+        auto aggiungi = [&](std::string n, i32 punti) {
             while (!n.empty() && n.back() == ' ') n.pop_back();
-            const bool nostro = !messo && n == nomeVis_ && r.punti == punteggio_;
+            for (const PunteggioEntry& t : tabella_) if (t.nome == n && t.punti == punti) return; // gia' presente
+            const bool nostro = !messo && n == nomeVis_ && punti == punteggio_;
             messo = messo || nostro;
-            tabella_.push_back({n, r.punti, nostro});
+            tabella_.push_back({n, punti, nostro});
+        };
+        for (const ClassificaEntry& r : lista) aggiungi(r.nome, r.punti);
+        // Versione browser (Andrea 15/11): la pagina scrive qui la classifica online del
+        // sito; si unisce a quella locale. Senza file (desktop, sito irraggiungibile)
+        // resta solo la locale.
+        {
+            JsonReader online(leggiFileTesto("salvataggi/classifica_online.json"));
+            JsonValue elencoV;
+            if (online.parse() && jsonIsObject(online.valore())
+                && jsonGet(jsonAsObject(online.valore()), singola_ ? "singola" : "serie", elencoV) && jsonIsArray(elencoV))
+                for (const JsonValue& v : jsonAsArray(elencoV)) {
+                    if (!jsonIsObject(v)) continue;
+                    JsonValue nv;
+                    if (!jsonGet(jsonAsObject(v), "nome", nv) || !jsonIsString(nv)) continue;
+                    aggiungi(jsonAsString(nv), jsonNumero(jsonAsObject(v), "punti", 0));
+                }
         }
         if (tabella_.size() < (size_t)RIGHE_TABELLA) {
             JsonReader finta(leggiFileTesto("motore_nuovo/dati/classifica_finta.json"));
