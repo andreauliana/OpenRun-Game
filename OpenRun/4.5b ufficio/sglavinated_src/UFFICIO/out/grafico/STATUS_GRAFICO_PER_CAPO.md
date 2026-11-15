@@ -1,11 +1,12 @@
-# STATUS_GRAFICO_PER_CAPO — 14/11/2026 09:59
-- **Stato:** V47, passo VG3 (∞) giro 36 completato. PNG di Andrea e raw del motore allineati: 0 conversioni necessarie.
-- **Materiali creati/modificati:** nessun asset grafico o tool modificato. Bacheca: `UFFICIO/bacheche/grafico/diario.md` (+1 riga), `UFFICIO/bacheche/grafico/RIASSUNTO.md` riscritto.
-- **Comandi ed esiti (eseguiti in questo turno 14/11 09:59):**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0. 188 PNG Libreria (142 confrontati con un raw, 46 non motore noti, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire, gruppi raw noti 8 / sconosciuti 0.
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0. Raw oggetti aggiornati 0, errori 0.
-- **Catalogo/licenze:** zero risorse esterne, zero Sega. Catalogo e attribuzioni invariati, nessuna risorsa proposta promossa.
-- **Controlli:** confronto date/contenuto PNG↔raw e copertura: verdi. Gate build/test: non eseguito (14/11 09:59) — non pertinente, nessun codice C++ toccato.
-- **Lacune/blocchi:** residuo noto `sprite/rivali/auto_giocatore_sbandata.png` senza raw, non usato dal motore, non cancellato.
-- **Review richiesta:** nessuna (nessuna review assegnata a questo turno).
-- **Prossimo:** VG3 ∞ — ricontrollare date/contenuto e convertire solo i PNG di Andrea più nuovi.
+# STATUS_GRAFICO_PER_CAPO — 15/11/2026 09:27
+
+- **Stato:** V47, passo VG3 (∞) giro 40 completato. Nessun PNG di Andrea da convertire (0), tutto allineato.
+- **Materiali creati/modificati:** nessun PNG/raw/catalogo/TOOL modificato in questo turno. Bacheca: `diario.md` (+1 riga), `RIASSUNTO.md` riscritto. Handoff: `ULTIMO_TURNO.md` riscritto.
+- **Comandi ed esiti (eseguiti in questo turno 15/11 09:27):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0. 188 PNG (142 confrontati, 46 non motore, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire, gruppi noti 8 / sconosciuti 0.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0. raw oggetti aggiornati 0, errori 0.
+- **Catalogo/licenze:** invariato dal giro 39 (184 elementi, 166 raw tracciati, 0 senza voce, 0 PNG non catalogati; ultima verifica exit 0 15/11 08:50). Zero risorse esterne, zero Sega, CC0-1.0. I 4 `mancante` sono noti e fuori portata: `font.antonio` (ttf assente) e i 3 personaggi `gianni`/`gesu`/`ufo` (disegni di Andrea).
+- **Controlli:** date/contenuto PNG↔raw allineati; nessun codice C++ toccato. Gate build/test: non eseguito (15/11 09:27).
+- **Lacune/blocchi:** residuo noto `sprite/rivali/auto_giocatore_sbandata.png` senza raw e non caricato dal motore; area auto di Andrea, non cancellato e non ritoccato.
+- **Review richiesta:** nessuna.
+- **Prossimo:** VG3 ∞ — a ogni turno: `vg3_date_png_raw.py` e `converti_oggetti_raw.py` (convertire solo se un PNG di Andrea è più nuovo); mantenere verdi le verifiche catalogo.

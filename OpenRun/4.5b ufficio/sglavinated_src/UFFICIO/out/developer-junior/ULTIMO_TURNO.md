@@ -1,11 +1,6 @@
-# ULTIMO TURNO @developer-junior
-Data: 14/11 10:09 — blocco V47 VJ5 ∞ (review codice)
-
-- **Blocco/passo:** VJ5 review codice (ultimo cambio `src`: `da6c52b`, nessun cambio nuovo).
-- **File cambiati (turno):** `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md` (1 riga).
-- **Comandi ed exit code:**
-  - `git log -1 --oneline -- motore_nuovo/src` — exit 0 (output: `da6c52b ...`)
-  - `git status --short -- motore_nuovo/src` — exit 0 (nessun output)
-- **Esito review:** `motore_nuovo/src/game/fasi.cpp:512-520` (`RisultatiFase::salva`, tabella HIGH SCORES): dopo sort desc e `resize(RIGHE_TABELLA)`, se `posizione_ > RIGHE_TABELLA` viene forzato `tabella_.back()` con la riga del giocatore; la decima riga può risultare fuori ordine per punteggio rispetto alle altre. Possibile semplificazione: mantenere ordinamento coerente e mostrare comunque la posizione reale del giocatore.
-- **Nessun cambio src/test/dati.**
-- **Gate:** gate_t1.sh non eseguito.
+Turno 15/11 2026 10:43 (@developer-junior, VJ5 ∞).
+Blocco/passo: VJ5 ∞ — review ultimo cambio src (`57ac3f5`) su `motore_nuovo/src/game/game.cpp:1809-1814`.
+File cambiati: `motore_nuovo/test/prova_gate.cpp`, `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
+Comandi ed exit code: `git log -5 --oneline -- motore_nuovo/src` exit 0 (`57ac3f5`); `git status --short -- motore_nuovo/src` exit 0; `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0; `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_replay_turno3" lv_01_neon replay` exit 0 (GATE REPLAY OK, cap/size 4096). gate_t1.sh non eseguito.
+Review nuovo: in `aggiornaRivali` `lentaCurva = 1.0f - clamp(curvaQui * RIVALE_CURVA_SCALE * r.bravura, 0, RIVALE_CURVA_SLOW_MAX)` (`:1810-1811`) ma il commento dice "i rivali piu' bravi soffrono meno la curva" (`:1809`); `r.bravura` 0.92..1.08 (`:1530-1531`) aumenta il rallentamento dei piu' bravi (intento invertito). Proposta: fattore bravura invertito/centrato e verifica tempi rivali.
+Prossimo ∞: altra review `src/`.

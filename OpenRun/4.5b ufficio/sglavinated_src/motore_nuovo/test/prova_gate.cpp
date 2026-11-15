@@ -15,6 +15,8 @@
 //                           ms/frame, screenshot PPM per livello)
 //                sponsor_raw (VJ5: raw dei cartelloni visti dal core libretro -
 //                           chiavi "id/stile", decodifica, stili dei livelli)
+//                motore (VJ5: motore campionato - WAV minimo/pieno/accensione,
+//                        pausa zitta con rpm -1, sintetico senza WAV, determinismo)
 //                urto (RIV punto a: urto con un avversario, nessun ribaltamento,
 //                      velocita' > 0 dopo l'urto, controlli attivi entro 1.5 s;
 //                      AUTO1 J-A1: pose dell'auto - dritto, sterzo pieno sx/dx,
@@ -35,6 +37,8 @@
 using i32 = std::int32_t;
 #include "game/game.h"
 #include "game/salvataggi.h" // ARC1: SalvataggiGiocatore (salvataggi/giocatore.json)
+#include "audio/mixer.h"     // VJ5: motore campionato (Mixer::caricaMotore)
+#include "core/replay.h"     // VJ5: limite registrazione replay (4096 frame)
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
 #include "core/json_mini.h"
@@ -326,6 +330,119 @@ bool verificaCaricamento(const std::string& livello) {
     if (msInit > LIMITE_MS) { std::printf("FALLITO: init oltre %.0f ms\n", LIMITE_MS); ok = false; }
     if (msGara > LIMITE_MS) { std::printf("FALLITO: avvio gara oltre %.0f ms\n", LIMITE_MS); ok = false; }
     if (msSeconda > LIMITE_MS) { std::printf("FALLITO: cambio tappa oltre %.0f ms\n", LIMITE_MS); ok = false; }
+    return ok;
+}
+
+// VJ5 15/11 10:43: rilievo game.cpp:1809-1814 curva rivali: `lentaCurva` usa
+//   `curvaQui * RIVALE_CURVA_SCALE * r.bravura` ma il commento dice "i rivali
+//   piu' bravi soffrono meno la curva"; bravura 0.92..1.08 aumenta il rallentamento
+//   dei piu' bravi (fattore inverso rispetto all'intento). Verifica da fare in src.
+// VJ5 15/11: motore campionato (mixer.cpp, caricaMotore/motoreCampionato del commit
+// 57ac3f5). Prova le due strade: i WAV in dati/audio/motore/ (minimo, pieno,
+// accensione) e il sintetico di prima quando i WAV mancano. rpm -1 = pausa
+// (game.cpp:2234): motore zitto, senza nuova accensione alla ripresa (mixer.cpp:107-110:
+// la pausa non conta come spegnimento). Misurato: accensione in testa al primo avvio,
+// nessuna accensione dopo 2 s di pausa; la pausa presa durante l'accensione resta
+// solo informativa (rilievo in REVIEW_V47.md, non un FALLITO).
+bool verificaMotoreCampionato() {
+    const std::string cartella = "motore_nuovo/dati/audio/motore/";
+    const i32 FRAMES = 44100; // 1 s a 44100 Hz
+    auto suona = [](Mixer& m, f32 rpm, i32 frames, std::vector<i16>& out) {
+        out.assign((size_t)frames * 2, 0);
+        const i32 passo = 512;
+        for (i32 f = 0; f < frames; f += passo)
+            m.mix(out.data() + (size_t)f * 2, std::min(passo, frames - f), rpm);
+    };
+    auto rms = [](const std::vector<i16>& v, size_t da = 0) {
+        double s = 0.0;
+        size_t n = 0;
+        for (size_t i = da; i < v.size(); ++i) { s += (double)v[i] * (double)v[i]; ++n; }
+        return n ? std::sqrt(s / (double)n) : 0.0;
+    };
+    auto picco = [](const std::vector<i16>& v) {
+        i32 p = 0;
+        for (i16 x : v) { const i32 q = x < 0 ? -(i32)x : (i32)x; if (q > p) p = q; }
+        return p;
+    };
+
+    std::vector<i16> buf, bufIdle, bufPieno, bufPausa, bufSint;
+    Mixer a;
+    const bool caricati = a.caricaMotore(cartella);
+    suona(a, 800.0f, FRAMES, buf);  bufIdle = buf;
+    suona(a, 8000.0f, FRAMES, buf); bufPieno = buf;
+    suona(a, -1.0f, FRAMES, buf);   bufPausa = buf;
+
+    // Stessa sequenza su un secondo mixer: il motore deve essere deterministico.
+    Mixer b;
+    b.caricaMotore(cartella);
+    std::vector<i16> buf2, buf2Idle;
+    suona(b, 800.0f, FRAMES, buf2); buf2Idle = buf2;
+    const bool stessoSegnale = (bufIdle == buf2Idle);
+
+    // Senza i WAV resta il motore sintetico: nessun crash e segnale non zitto.
+    Mixer c;
+    const bool wavTrovati = c.caricaMotore("cartella_motore_inesistente/");
+    suona(c, 4000.0f, FRAMES, bufSint);
+
+    // Ripresa dopo la pausa (mixer.cpp:107-110): il motore era acceso (rpm>1 -> spentoS_=0),
+    // la pausa (-1) non lo spegne, quindi alla ripresa NON deve risuonare l'accensione.
+    // Sequenza: 1 s al minimo (accensione in testa), 2 s di pausa, 1 s al minimo.
+    auto piccoTesta = [](const std::vector<i16>& v, size_t campioni) {
+        i32 p = 0;
+        for (size_t i = 0; i < campioni && i < v.size(); ++i) {
+            const i32 q = v[i] < 0 ? -(i32)v[i] : (i32)v[i];
+            if (q > p) p = q;
+        }
+        return p;
+    };
+    Mixer d;
+    d.caricaMotore(cartella);
+    std::vector<i16> bufAvvio, bufDopo;
+    suona(d, 800.0f, FRAMES, bufAvvio);   // primo avvio: accensione nei primi 0.3 s
+    suona(d, -1.0f, 2 * FRAMES, buf);     // pausa lunga
+    suona(d, 800.0f, FRAMES, bufDopo);    // ripresa: solo il giro al minimo
+    const size_t testa = (size_t)(0.3 * 44100.0) * 2; // 0.3 s, L+R alternati
+    const i32 piccoAvvio = picco(bufAvvio);   // 1 s: accensione + giro al minimo
+    const i32 piccoDopo = picco(bufDopo);     // 1 s: solo giro al minimo
+
+    // Informativo: pausa presa mentre suona l'accensione (mixer.cpp:127-130 somma
+    // l'accensione anche con rpm<0). Rilievo per @developer, qui solo misurato.
+    // Confronto: pausa a 0.1 s (accensione in corso) contro pausa a 2 s (accensione finita).
+    Mixer e;
+    e.caricaMotore(cartella);
+    suona(e, 800.0f, 4410, buf);          // 0.1 s: l'accensione e' partita
+    suona(e, -1.0f, FRAMES, buf);         // pausa: l'accensione continua?
+    const i32 piccoPausaAvvio = piccoTesta(buf, testa);
+    Mixer f;
+    f.caricaMotore(cartella);
+    suona(f, 800.0f, 2 * FRAMES, buf);    // 2 s: accensione finita, motore a regime
+    suona(f, -1.0f, FRAMES, buf);         // pausa pulita
+    const i32 piccoPausaPulita = piccoTesta(buf, testa);
+
+    const double rIdle = rms(bufIdle), rPieno = rms(bufPieno);
+    // In pausa il motore si spegne con la sua dissolvenza (~0.5 s): si guarda la coda.
+    const double rPausa = rms(bufPausa, bufPausa.size() * 4 / 5), rSint = rms(bufSint);
+    std::printf("modo: motore, campione: %s, 1 s a 44100 Hz per prova\n", cartella.c_str());
+    std::printf("motore: WAV caricati=%s sintetico senza WAV=%s\n",
+                caricati ? "si" : "no", (!wavTrovati && rSint > 100.0) ? "si" : "no");
+    std::printf("motore rms: minimo@800=%.1f pieno@8000=%.1f pausa(-1, ultimi 0.2 s)=%.2f sintetico@4000=%.1f picco=%d\n",
+                rIdle, rPieno, rPausa, rSint, picco(bufIdle));
+    std::printf("motore replay 2x: %s\n", stessoSegnale ? "IDENTICO" : "DIVERSO");
+    std::printf("motore ripresa: picco 1 s primo avvio=%d dopo 2 s pausa=%d\n", piccoAvvio, piccoDopo);
+    std::printf("motore pausa durante l'accensione (primi 0.3 s) picco=%d; pausa pulita=%d\n",
+                piccoPausaAvvio, piccoPausaPulita);
+
+    bool ok = true;
+    if (!caricati) { std::printf("FALLITO: caricaMotore() non legge minimo/pieno\n"); ok = false; }
+    if (rIdle < 100.0) { std::printf("FALLITO: motore al minimo troppo zitto\n"); ok = false; }
+    if (picco(bufIdle) > 32000) { std::printf("FALLITO: motore oltre il fondo scala\n"); ok = false; }
+    if (rPieno <= rIdle) { std::printf("FALLITO: a 8000 giri il motore non sale\n"); ok = false; }
+    if (rPausa > 10.0) { std::printf("FALLITO: motore non zitto in pausa (-1)\n"); ok = false; }
+    if (!stessoSegnale) { std::printf("FALLITO: due mixer identici danno segnali diversi\n"); ok = false; }
+    if (!wavTrovati && rSint < 100.0) { std::printf("FALLITO: senza WAV il sintetico non suona\n"); ok = false; }
+    if (piccoAvvio < 4000) { std::printf("FALLITO: primo avvio senza accensione\n"); ok = false; }
+    if (piccoDopo >= piccoAvvio) { std::printf("FALLITO: accensione risuonata dopo la pausa\n"); ok = false; }
+    if (piccoPausaPulita > 1500) { std::printf("FALLITO: pausa pulita rumorosa (accensione residua)\n"); ok = false; }
     return ok;
 }
 
@@ -3750,6 +3867,36 @@ bool verificaRivaVJ2(const std::string& outDir, const std::string& livello) {
     return saved >= 3;
 }
 
+// VJ5 15/11: rilievo aperto game.cpp:2794 + replay.cpp (record in Playback).
+bool verificaReplay() {
+    sgl::Replay r;
+    r.startRecord();
+    const i32 n = 5000;
+    for (i32 i = 0; i < n; ++i) r.record((u64)(i & 0xFF));
+    const bool capOk = r.inputs.capacity() == 4096;
+    const bool sizeOk = r.inputs.size() == 4096;
+    bool valoriOk = true;
+    for (i32 i = 0; i < 4096 && i < (i32)r.inputs.size(); ++i)
+        if (r.inputs[(size_t)i] != (u64)(i & 0xFF)) { valoriOk = false; break; }
+    std::printf("replay: capacity=%zu size=%zu dopo %d record (atteso cap/size 4096)\n",
+                r.inputs.capacity(), r.inputs.size(), n);
+    if (!capOk) std::printf("  VIOLAZIONE: capacity != 4096\n");
+    if (!sizeOk) std::printf("  VIOLAZIONE: size != 4096 (troncamento/crescita inattesa)\n");
+    if (!valoriOk) std::printf("  VIOLAZIONE: valori registrati non coerenti\n");
+
+    std::vector<u64> copia = r.inputs;
+    r.startPlayback(std::move(copia));
+    bool playbackOk = true;
+    for (i32 i = 0; i < 4096; ++i) {
+        if (r.next() != (u64)(i & 0xFF)) { playbackOk = false; break; }
+    }
+    const bool fineOk = r.next() == 0 && r.next() == 0;
+    if (!playbackOk) std::printf("  VIOLAZIONE: playback non restituisce la sequenza registrata\n");
+    if (!fineOk) std::printf("  VIOLAZIONE: playback oltre fine non restituisce 0\n");
+
+    return capOk && sizeOk && valoriOk && playbackOk && fineOk;
+}
+
 int main(int argc, char** argv) {
     // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
     if (argc > 1 && argv[1][0] == '-') {
@@ -3995,6 +4142,18 @@ int main(int argc, char** argv) {
         std::printf("%s\n", ok ? "GATE CARICAMENTO OK"
                                : "FALLITO: caricamento livello/menu/gara oltre la soglia V8");
         return ok ? 0 : 30;
+    }
+
+    if (modo == "motore") {
+        const bool ok = verificaMotoreCampionato();
+        std::printf("%s\n", ok ? "GATE MOTORE OK" : "FALLITO: motore campionato (mixer.cpp)");
+        return ok ? 0 : 31;
+    }
+
+    if (modo == "replay") {
+        const bool ok = verificaReplay();
+        std::printf("%s\n", ok ? "GATE REPLAY OK" : "FALLITO: replay (troncamento/capacita')");
+        return ok ? 0 : 32;
     }
 
     // --- modo smoke (default) ---

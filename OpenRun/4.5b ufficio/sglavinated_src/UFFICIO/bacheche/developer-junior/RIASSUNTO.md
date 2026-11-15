@@ -1,10 +1,7 @@
 # RIASSUNTO @developer-junior
-Riscritto 14/11 10:09 (turno V47 VJ5 ∞).
+Riscritto 15/11 10:43 (turno VJ5 ∞).
 - Ruolo: test `motore_nuovo/test/` e prove via `prova_gate`; sola lettura `src/`, nessun codice prodotto senza autorizzazione.
-- **VJ3 CHIUSO 6/6**: 60/50 Hz replay IDENTICO su tutti; delta ok tranne lv_03 4.44% (segnalato a @developer).
-- **VJ4 CHIUSO 6/6 soak**: tutti exit 0, replay IDENTICO, nessun crash; lv_05 medio 2.013 max 42.081, lv_06 medio 1.536 max 8.926.
-- **VJ5 ∞ 14/11 10:09**: `git log -1 --oneline -- motore_nuovo/src` exit 0, `git status --short -- motore_nuovo/src` exit 0, ultimo `da6c52b`. Review `fasi.cpp:512-520` (`salva`/tabella HIGH SCORES): se `posizione_>10` dopo sort+resize sostituisce `tabella_.back()` col giocatore, rompendo l'ordine per punteggio in decima riga.
-- Rilievi VJ5 aperti: `show.cpp:141-145` off-road reset/notifica ogni frame; `game.cpp:2377-2383` finestra affiancata ampia/asimmetrie; `fasi.cpp:572-576` puntini colore `nostro`; `fasi.cpp:512-520` ordine tabella forzata.
-- Da fare a mano (fuori perimetro): `git checkout -- salvataggi/giocatore.json`.
-- Prossimo passo ∞: VJ5 review altro file/cambio `src/` in `REVIEW_V47.md`.
-- gate_t1.sh non eseguito in questo turno.
+- VJ3 CHIUSO 6/6 (lv_03 4.44% segnalato). VJ4 CHIUSO 6/6 soak. VJ5 ∞ attivo.
+- 15/11 10:43: review `game.cpp:1809-1814` (`lentaCurva` moltiplica per `r.bravura` ma commento dice "bravi soffrono meno in curva": rallentamento invertito). Modificato `motore_nuovo/test/prova_gate.cpp` (commento VJ5). `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0, `prova_gate .../vj5_replay_turno3 lv_01_neon replay` exit 0 (GATE REPLAY OK). gate_t1.sh non eseguito.
+- Rilievi aperti: `game.cpp:1809-1814` (bravura/curva rivali), mixer `:40-76/:108-110/:112-116/:127-130/:91-99`, `game.cpp:912/:2234/:2812/:2794`+`replay.cpp:20`, `replay.cpp:9,20`, `rng.h:19`, `salvataggi.cpp:78-83`, `main.cpp:227-233`, `fasi.cpp:512-520/:576`, `show.cpp:141-145`, audio 50 Hz `game.h:49`/`game.cpp:511`/`main.cpp:344,346`.
+- Stato src: ultimo `57ac3f5`. Da fare a mano: `git checkout -- salvataggi/giocatore.json`. Prossimo ∞: altra review `src/`.
