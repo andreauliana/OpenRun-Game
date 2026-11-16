@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Controlla assets_originali/CATALOGO_GRAFICO.json (lo scrive @grafico).
+"""Controlla GRAFICA/CATALOGO_GRAFICO.json (lo scrive @grafico).
 
 Uso, dalla radice progetto, un solo comando senza pipe:
     python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py
 Fallisce (exit 1) se: id doppi, stato non previsto, file o raw inesistenti per un
-elemento non 'mancante'. Avvisa (senza fallire) per i PNG di assets_originali/
+elemento non 'mancante'. Avvisa (senza fallire) per i PNG di GRAFICA/
 cartelloni, sprite, oggetti e skyline che non compaiono nel catalogo.
 """
 import glob, json, os, sys
 
-# La Libreria del Dipartimento Grafico e' l'unica copia degli asset. Nel catalogo i "file"
-# iniziano con assets_originali/ (relativi alla Libreria), i "raw" con motore_nuovo/.
-LIBRERIA = "UFFICIO/Dipartimento Grafico/Libreria"
-CATALOGO = LIBRERIA + "/assets_originali/CATALOGO_GRAFICO.json"
+# GRAFICA/ e' l'unica copia degli asset. Nel catalogo i "file"
+# iniziano con GRAFICA/ (relativi a sglavinated_src), i "raw" con motore_nuovo/.
+LIBRERIA = "."  # i percorsi del catalogo partono da sglavinated_src (GRAFICA/...)
+CATALOGO = LIBRERIA + "/GRAFICA/CATALOGO_GRAFICO.json"
 
 
 def percorso(f):
-    return os.path.join(LIBRERIA, f) if f.startswith("assets_originali/") else f
+    return os.path.join(LIBRERIA, f) if f.startswith("GRAFICA/") else f
 
 if not os.path.exists(CATALOGO):
     print(f"FALLITO: {CATALOGO} non trovato. Lanciare dalla radice progetto (sglavinated_src).")
@@ -37,8 +37,8 @@ for e in cat["elementi"]:
         usati.add(f)
         if e.get("stato") != "mancante" and not os.path.exists(percorso(f)): err.append(f"{i}: file inesistente {f}")
 
-fuori = [f for pat in ("assets_originali/sponsor/*/*.png", "assets_originali/sprite/**/*.png",
-                       "assets_originali/scenari/*/*/oggetti/*.png", "assets_originali/scenari/*/*/skyline.png")
+fuori = [f for pat in ("GRAFICA/sponsor/*/*.png", "GRAFICA/sprite/**/*.png",
+                       "GRAFICA/scenari/*/oggetti/*.png", "GRAFICA/scenari/*/skyline.png")
          for f in (os.path.relpath(g, LIBRERIA) for g in glob.glob(os.path.join(glob.escape(LIBRERIA), pat), recursive=True))
          if f not in usati]
 

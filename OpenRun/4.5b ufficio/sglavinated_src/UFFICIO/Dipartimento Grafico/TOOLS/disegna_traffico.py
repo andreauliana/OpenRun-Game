@@ -3,13 +3,13 @@
 # Disegnati da zero con Pillow, vista da dietro. Nessun asset Sega. Licenza CC0-1.0.
 # Forme diverse dalle auto da corsa dei rivali (utilitaria alta, furgone,
 # berlina, camioncino) e colori smorzati, cosi' si distinguono a colpo d'occhio.
-# Produce: Libreria/assets_originali/sprite/traffico/traffico_<nome>_retro.png
+# Produce: GRAFICA/sprite/traffico/traffico_<nome>_retro.png
 # Poi: python3 motore_nuovo/strumenti_py/png_a_raw.py (scrive i .sglraw).
 import os
 from PIL import Image, ImageDraw
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.abspath(os.path.join(BASE, "..", "Libreria", "assets_originali", "sprite", "traffico"))
+OUT = os.path.abspath(os.path.join(BASE, "..", "..", "..", "GRAFICA", "sprite", "traffico"))
 os.makedirs(OUT, exist_ok=True)
 
 NERO = (20, 20, 26)

@@ -1,32 +1,55 @@
-# Inventario grafica (16/11/2026)
+# Inventario grafica v4.7 (riferimento legacy, 16/11/2026)
 
-Controllo fatto su `main` f2f3581. Come:
+Questo e' l'elenco di riferimento: in `GRAFICA/` c'e' solo cio' che il gioco usa.
+Un asset nuovo entra solo se il gioco lo carica, con PNG in `GRAFICA/` + `.sglraw` in
+`motore_nuovo/dati/sprite_raw/` + voce in `GRAFICA/CATALOGO_GRAFICO.json`.
 
-1. Il gioco (core senza SDL, `prova_gate`) e' stato avviato su tutti e 6 i livelli
-   (modi smoke, decorazioni, gara, ciclo, urto, sponsor_raw, percorso, espansione)
-   con un registro di ogni `.sglraw` aperto da `caricaSpriteRaw`.
-2. Per i file che non risultavano aperti si e' letto il codice che li carica
-   (`game.cpp`, `runner/main.cpp`, `sponsor_loader.cpp`, `libretro`), i JSON dei
-   livelli e i convertitori (`converti_oggetti_raw.py`, `png_a_raw.py`,
-   `font_a_header.py`, `trama_scenari.py`, `CATALOGO_GRAFICO.json`).
+## Dove sono le cose
 
-Il gioco legge solo i `.sglraw` in `motore_nuovo/dati/sprite_raw/`. I PNG di
-`Libreria/assets_originali/` sono gli originali da cui i convertitori fanno i raw
-(eccezione: i cartelloni sponsor, che il runner SDL legge anche come PNG).
+```
+sglavinated_src/
+  GRAFICA/                         originali da ridisegnare (stesso nome, stessa misura)
+    scenari/<livello>/skyline.png  cielo e citta' del livello
+    scenari/<livello>/oggetti/     obj_<nome>.png = oggetti a bordo strada
+    scenari/comuni/oggetti/        frecce, galleria, ponte e mare (tutti i livelli)
+    sprite/giocatore_pose/         la tua auto (dritta, sx1..sx4, stop)
+    sprite/giocatore/              ruote, fumo, luci stop
+    sprite/rivali/  traffico/  traffico_incrocio/  pubblico/
+    sponsor/<sponsor>/             cartelloni (solo Andrea)
+    ui/logo/  ui/font/varianteB/   logo segnaposto, font HUD
+    font/born2bsporty/             font dei titoli
+    CATALOGO_GRAFICO.json          PNG -> raw
+  motore_nuovo/dati/sprite_raw/    i raw che il gioco legge (generati, non a mano)
+  motore_nuovo/dati/audio/musica/  la musica (.xm)
+  UFFICIO/Dipartimento Grafico/    TOOLS/ (convertitori) + questo inventario
+```
 
-## Cosa usa il gioco (143 raw, ognuno col suo PNG originale)
+Dopo aver ridisegnato un PNG, da `sglavinated_src/`:
+- oggetti dei livelli e comuni: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"`
+- pose dell'auto: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_pose_auto.py"`
+- skyline (con la trama Bayer): `python3 "UFFICIO/Dipartimento Grafico/TOOLS/trama_scenari.py"`
+- sponsor, rivali, traffico, pubblico: `python3 motore_nuovo/strumenti_py/png_a_raw.py`
 
-| Cartella in `sprite_raw/` | N. | File |
+## Come e' stato controllato
+
+Il gioco (core, `prova_gate`) e' stato avviato su tutti e 6 i livelli (smoke, decorazioni, gara,
+ciclo, urto, sponsor_raw, percorso, espansione) con un registro di ogni `.sglraw` aperto; per il
+resto si sono letti codice, JSON dei livelli e convertitori. Dopo lo spostamento i convertitori
+rifatti danno raw identici a prima.
+
+## Cosa usa il gioco (149 raw, ognuno col suo PNG in `GRAFICA/`)
+
+| `sprite_raw/` | N. | File |
 |---|---|---|
-| `giocatore/pose/` | 10 | auto_dritta, auto_sx1..sx4, auto_stop_dritta, auto_stop_sx1..sx4 (pose di Andrea; destra = specchio) |
-| `giocatore/` | 7 | ruota_1..3, fumo_1..3, luci_stop |
-| `pubblico/` | 4 (+6) | pubblico_a/b_su/giu; supporto_a/b_relax/parla/esulta = partenza cinematografica (solo runner) |
+| `giocatore/pose/` | 10 | auto_dritta, auto_sx1..sx4, auto_stop_dritta, auto_stop_sx1..sx4 (destra = specchio) |
+| `giocatore/` | 7 | ruota_1..3, fumo_1..3, luci_stop (+ `auto_giocatore.json`, punti per ruote e fumo) |
+| `pubblico/` | 10 | pubblico_a/b_su/giu (arrivo); supporto_a/b_relax/parla/esulta (partenza) |
 | `rivali/` | 7 | auto_rivale_<colore>_retro |
 | `traffico/` | 4 | traffico_*_retro |
 | `traffico_incrocio/` | 4 | lato_berlina_gialla/verde, lato_bus_rosso, lato_furgone_bianco |
 | `sponsor/` | 21 | 7 sponsor x 3 stili (li ridisegna solo Andrea) |
 | `ui/` | 1 | logo_openrun (segnaposto) |
-| `scenari/comuni/` | 12 | barca, boa, faro, scoglio, ombrellone, motoscafo, freccia_curva_dx/sx, freccia_cresta_dx/sx, parete_galleria, luce_galleria |
+| `scenari/comuni/` | 12 (+1) | barca, boa, faro, scoglio, ombrellone, motoscafo, freccia_curva_dx/sx, freccia_cresta_dx/sx, parete_galleria, luce_galleria; (+ guardrail: disegno di Andrea, oggi non usato) |
 | `scenari/lv_01_neon/` | 12 | skyline, albero, cespuglio, ciuffo, edificio_alto/medio/basso, bidone, cassetta, lampione, palina, palo_neon |
 | `scenari/lv_02_atomico/` | 13 | skyline, albero, cespuglio, ciuffo, edificio_alto/medio/basso, bancone_drive_in, cupola, freccia, panchina_cromata, segnale_atomico, torre_razzo |
 | `scenari/lv_03_foglie/` | 12 | skyline, albero, cespuglio, ciuffo, edificio_alto/medio/basso, foglia_gigante, fungo_psico, insegna_fumosa, panchina_curva, panchina_fumo |
@@ -34,97 +57,41 @@ Il gioco legge solo i `.sglraw` in `motore_nuovo/dati/sprite_raw/`. I PNG di
 | `scenari/lv_05_spray/` | 11 | skyline, albero, cespuglio, ciuffo, edificio_alto/medio/basso, bidone, cassonetto, serranda_spray, transenna |
 | `scenari/lv_06_desktop/` | 14 | skyline, albero, albero_fiori, albero_pino, cespuglio, cespuglio_fiori, ciuffo, edificio_alto/medio/basso, case_computer, delfino_cartone, icona_cartella, pali_cavi |
 
-Pose che il gioco cerca ma non ci sono ancora (va bene, sono facoltative):
-`auto_dx1..4` (si usa lo specchio delle sx), `auto_salita`, `auto_discesa` e i loro `auto_stop_*`.
+Pose che il gioco cerca ma non ci sono ancora (facoltative): `auto_dx1..4` (si usa lo specchio),
+`auto_salita`, `auto_discesa` e i loro `auto_stop_*`.
 
-Altri originali tenuti perche' servono a un convertitore:
-- `ui/font/varianteB/font.png` -> `font_a_header.py` -> `src/render/font_hud.h` (font HUD compilato).
-- `sprite/auto_gt/auto_rosso_corsa.png` -> `png_a_raw.py` -> `giocatore/auto_giocatore.sglraw` (core libretro).
-- `skyline/varianteA_futurista/` -> skyline di lv_04_cromo (+ `skyline_trama.png` scritto da `trama_scenari.py`).
-- `font/born2bsporty/Born2bSportyV2.ttf` (titoli e numeri HUD).
+Altri file tenuti perche' servono: `ui/font/varianteB/font.png` (-> `font_hud.h`, font HUD),
+`font/born2bsporty/Born2bSportyV2.ttf` (-> `font_titolo.h`), `scenari/lv_04_cromo/skyline_trama.png`.
 
-## Tolti in questo giro (57 file, tutti mai caricati e mai convertiti in un raw usato)
+## Musica
 
-Per riaverli: `git checkout f2f3581 -- "<percorso>"` (f2f3581 = main prima della pulizia).
-
-| Cosa | File | Perche' |
-|---|---|---|
-| Rivali visti di lato | `sprite/rivali/auto_rivale_<7 colori>_lato.png` + 7 `.sglraw` | nessun codice li carica (si usano solo i `_retro`) |
-| Parapetto del ponte | `scenari/comuni/oggetti/parapetto.png` + `.sglraw` | parapetti cancellati da Andrea (ponte aperto) |
-| Sbandata auto giocatore | `sprite/rivali/auto_giocatore_sbandata.png` | mai convertito, mai usato |
-| Auto varianti D5 | `sprite/auto_gt/auto_argento_lunare.png`, `auto_neon_cyan.png` | mai convertite; l'auto e' quella disegnata da Andrea |
-| Auto varianti D6 | `sprite/auto/varianteA/B/C/` (3 PNG + manifest) | gia' "scartato" in catalogo |
-| Palette livello 1 (blocco F, ottobre) | `palette/` (3 PNG + json + manifest) | il motore non le legge |
-| Skyline B e C (blocco F) | `skyline/varianteB_synthwave/`, `skyline/varianteC_psichedelico/` | nessun livello le usa |
-| Anteprime UI bianco e nero (D7) | `ui/menu/` (A,B,C), `ui/hud/`, `ui/risultati/`, `ui/splash/`, `ui/titolo/` | solo immagini di prova; menu, HUD e risultati sono disegnati dal codice |
-| Font A e C | `ui/font/varianteA/`, `ui/font/varianteC/` | il gioco usa solo la variante B |
-
-Tolte anche le 21 voci corrispondenti da `CATALOGO_GRAFICO.json`
-(`check_catalogo_grafico.py`: 0 errori) e rigenerato `INDICE_ASSET.json/.md`
-con `strumenti_py/indice_assets.py`.
-
-## Cartelle tolte (Andrea 16/11: "puoi togliere folder non usate")
-
-Nessuno script, convertitore o codice le leggeva (controllato: `converti_oggetti_raw.py` rifatto = 0 raw cambiati, 0 errori).
-
-- `scenari/lv_01..03/`: le cartelle di scenario senza immagini (`*_varianteB`, `*_varianteC`,
-  `scenario_lv_0x_0y`, `scenario_0x_01_varianteA`): solo `manifest.json` e `palette.json` di ottobre.
-  Restano solo `scenario_<tema>_0x_varianteA/` (skyline + `oggetti/obj_*.png`).
-- `sglavinated_src/bacheche/`: copia vecchia dei diari; le bacheche vere sono in `UFFICIO/bacheche/`.
-- `assets_originali/genera_bloccoF.py`: generatore delle palette e skyline B/C tolte.
-
-## Tenuti, ma da decidere (Andrea)
-
-- `scenari/comuni/oggetti/guardrail.png` + `.sglraw`: disegno di Andrea (PR #93), oggi il gioco non lo usa.
-- `sprite/auto_gt/auto_giocatore_*.png` (7) + i loro `.sglraw` in `giocatore/`: auto degli agenti,
-  il codice le carica solo se manca la `auto_dritta` di Andrea (riserva). Si possono togliere
-  insieme a quelle righe di codice in `game.cpp` e `prova_gate.cpp`.
-- `motore_nuovo/docs/*.png` (3 immagini di documentazione, fuori dalla grafica del gioco).
-
-## Musica: dove sono i progetti tracker
-
-I progetti audio sono i file `.xm` stessi (formato FastTracker 2, si aprono e si
-modificano con MilkyTracker o OpenMPT): non c'e' un file sorgente separato.
-
-`sglavinated_src/motore_nuovo/dati/audio/musica/`
+I progetti tracker sono i `.xm` stessi (FastTracker 2: si aprono con MilkyTracker o OpenMPT),
+in `motore_nuovo/dati/audio/musica/`; chi suona dove sta in `motore_nuovo/dati/audio/playlist.json`:
 - `beatmastaz.xm` = menu
-- `asplajungle4.xm` = gara
-- `SepteJungle2.xm` = non usato (tolto dalla playlist da Andrea il 29/10, escluso dalla build web)
-- quale brano va dove: `motore_nuovo/dati/audio/playlist.json`
+- `asplajungle4.xm` = gara (prima e seconda tappa, e corsa singola)
+- `SepteJungle2.xm` = ultima tappa della gara a tappe (Andrea 16/11)
 - suoni del motore (non tracker): `motore_nuovo/dati/audio/motore/*.wav`
 
-Nel repo non e' mai esistito altro formato tracker (.mod, .it, .s3m, .xrns...).
-Se Andrea ha versioni di lavoro (es. con campioni o progetti di un altro programma), sono solo sul suo computer.
+Nel repo non c'e' mai stato altro formato tracker.
 
-## Proposta: cartelle piu' semplici (spostamenti da scegliere, NON fatti in questa PR)
+## Tolto il 16/11 (pulizia v4.7)
 
-Le cartelle vuote o inutili sono gia' tolte (sopra). Qui sotto solo gli spostamenti,
-che cambiano percorsi e quindi vanno decisi.
+Per riavere un file: `git checkout f2f3581 -- "<vecchio percorso>"` (f2f3581 = main prima della pulizia;
+i vecchi percorsi iniziano con `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`).
 
-Oggi un PNG da ridisegnare sta 9 livelli sotto la radice, per esempio
-`OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_albero.png`.
-
-**Opzione A (consigliata, rischio basso).** Spostare solo gli originali, il motore non cambia:
-
-```
-sglavinated_src/
-  GRAFICA/                 <- ex Libreria/assets_originali
-    auto/                  pose di Andrea + ruote, fumo, stop
-    rivali/  traffico/  pubblico/  ui/  font/  sponsor/
-    livelli/lv_01_neon/    skyline.png + obj_*.png (senza scenario_*_varianteA/oggetti/)
-    livelli/comuni/
-  MUSICA/                  <- solo un LEGGIMI che punta a motore_nuovo/dati/audio/musica
-  motore_nuovo/            (invariato: il gioco legge da qui)
-  UFFICIO/                 (agenti, strumenti, archivio)
-```
-
-Da aggiornare: convertitori in `TOOLS/`, `CATALOGO_GRAFICO.json`, `check_catalogo_grafico.py`,
-il caricatore PNG degli sponsor nel runner (1 riga), i testi per gli agenti. Una PR, poi si
-ricompila e si prova.
-
-**Opzione B (piu' pulita, piu' lavoro).** Come A, e in piu' togliere i livelli
-`OpenRun/4.5b ufficio/sglavinated_src/` portando tutto in `OpenRun/`.
-Cambiano anche gli script (`comandi/`, `pi/`, `run.sh`, ciclo agenti) e la tua cartella locale:
-meglio farla quando gli agenti sono fermi.
-
-**Opzione C.** Lasciare tutto com'e', solo questo inventario.
+- Auto vecchia degli agenti (7 pose + `auto_rosso_corsa`, `auto_argento_lunare`, `auto_neon_cyan`) e
+  `giocatore/auto_giocatore*.sglraw`, con le righe di codice che la caricavano come riserva
+  (`game.cpp`, `prova_gate.cpp`, core libretro, `png_a_raw.py`) e `disegna_auto_giocatore.py`.
+- Auto varianti D6 (anni 50, futurista, punk), `auto_giocatore_sbandata.png`.
+- Rivali visti di lato (7 PNG + 7 raw), parapetto del ponte (PNG + raw).
+- Palette e skyline B/C del blocco F (+ `genera_bloccoF.py`).
+- Anteprime UI in bianco e nero (menu A/B/C, HUD, risultati, splash, titolo) e font A/C
+  (+ `genera_splash.py`, `disegna_risultati.py`).
+- Cartelle di scenario senza immagini (varianti B/C, `scenario_lv_*`), la vecchia
+  `sglavinated_src/bacheche/`, la `Libreria/` (README, `CATALOGO_RISORSE.md`, `CREDITI.md` vecchio,
+  `Shared asset/` vuota dal 18/10), `OGGETTI_LIVELLI.md` (sostituito da questo file).
+- Script una tantum del grafico: `aggiorna_catalogo_g1/lv456.py`, `completa_deco1_*.py`,
+  `genera_bloccoL.py`, `genera_scenari_lv456.py`, `genera_v47_vg1_quadro.py`,
+  `_scrivi_ultimo_turno_vg3_32.py`, `_riepilogo_varianti.json`.
+- Spostati: `assets_originali/` -> `GRAFICA/`; `scenari/<livello>/scenario_<tema>_0N_varianteA/*` ->
+  `scenari/<livello>/*`; `skyline/varianteA_futurista/` -> `scenari/lv_04_cromo/`.

@@ -1,12 +1,12 @@
 {
   "id": "menu_principale",
-  "descrizione": "Menu principale come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con assets_originali/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: assets_originali/ui/font/varianteB/font.png (+ font.json). Titolo: assets_originali/ui/titolo/varianteB/title.png (Antonio Bold OFL-1.1).",
+  "descrizione": "Menu principale come dati (letto da motore_nuovo/src/ui/). Variante selezionata: B (Lofi Jungle), tema bianco e nero, risoluzione 320x224. Stato BOZZA: i PNG della variante B sono stati rigenerati in bianco e nero (decisione D7) con GRAFICA/ui/genera_ui_b.py e tornano 'definitiva' solo dopo approvazione. Font: GRAFICA/ui/font/varianteB/font.png (+ font.json). Titolo: GRAFICA/ui/titolo/varianteB/title.png (Antonio Bold OFL-1.1).",
   "stato": "bozza",
   "licenza": "MIT",
   "autore": "@grafico (Dipartimento Grafico)",
-  "url": "interno al progetto: assets_originali/ui/",
+  "url": "interno al progetto: GRAFICA/ui/",
   "variante": "B",
-  "asset_dir": "../../UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui",
+  "asset_dir": "../../GRAFICA/ui",
   "font_sheet": "font/varianteB/font.png",
   "font_meta": "font/varianteB/font.json",
   "titolo_immagine": "titolo/varianteB/title.png",
@@ -92,5 +92,5 @@
   ],
   "voce_iniziale": 0,
   "regole_disegno": "ogni voce e' il riquadro (x,y,w,h) della riga; etichetta disegnata in (x+6, y+(h-7)/2) con font 5x7 scala 1; colonna destra = valore 'azione' in MAIUSCOLO, destralignata con fine testo a x+w-6 sulla stessa riga; la voce iniziale (voce_iniziale) e' disegnata a inverso: riquadro pieno colore 'sel', testo 'testo_sel' e 'azione_sel'; cornice e hint dai campi omonimi; nessun altro elemento a schermo",
-  "note_tema": "Tema bianco e nero (decisione D7): nessun colore cromatico, solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Preview menu/varianteB/menu_preview.png generata da assets_originali/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti. Layout posizioni elemento come riferimento strutturale all'originale (nessun asset Sega copiato)."
+  "note_tema": "Tema bianco e nero (decisione D7): nessun colore cromatico, solo nero/bianco/grigi (R=G=B su ogni pixel), max 16 colori. Preview menu/varianteB/menu_preview.png generata da GRAFICA/ui/genera_ui_b.py leggendo questo file, quindi preview e motore restano coerenti. Layout posizioni elemento come riferimento strutturale all'originale (nessun asset Sega copiato)."
 }

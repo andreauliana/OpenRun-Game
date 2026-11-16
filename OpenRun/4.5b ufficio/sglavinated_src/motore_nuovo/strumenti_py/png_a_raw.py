@@ -5,10 +5,10 @@
 # Usa solo la libreria standard di Python 3 (zlib). Da lanciare dalla radice
 # del progetto (sglavinated_src):
 #   python3 motore_nuovo/strumenti_py/png_a_raw.py
-# Legge:  assets_originali/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
-#         assets_originali/sprite/rivali/auto_rivale_<colore>_retro.png (7 rivali, RIV punto b)
-#         assets_originali/sprite/traffico/traffico_<nome>_retro.png (4 veicoli di traffico)
-#         assets_originali/sprite/pubblico/pubblico_<gruppo>_<posa>.png (pubblico all'arrivo)
+# Legge:  GRAFICA/sponsor/<id>/cartellone_<stile>.png  (7 sponsor x 3 stili)
+#         GRAFICA/sprite/rivali/auto_rivale_<colore>_retro.png (7 rivali, RIV punto b)
+#         GRAFICA/sprite/traffico/traffico_<nome>_retro.png (4 veicoli di traffico)
+#         GRAFICA/sprite/pubblico/pubblico_<gruppo>_<posa>.png (pubblico all'arrivo)
 # Scrive: motore_nuovo/dati/sprite_raw/sponsor/<id>_<stile>.sglraw
 #         motore_nuovo/dati/sprite_raw/rivali/auto_rivale_<colore>_retro.sglraw
 #         motore_nuovo/dati/sprite_raw/traffico/traffico_<nome>_retro.sglraw
@@ -19,7 +19,7 @@ import zlib
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent.parent
-ASSETS = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sponsor"
+ASSETS = PROJECT / "GRAFICA" / "sponsor"
 OUTDIR = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "sponsor"
 
 SPONSOR_STILI = [
@@ -141,7 +141,7 @@ def main():
         "auto_rivale_bianco_retro", "auto_rivale_arancio_retro",
         "auto_rivale_viola_retro",
     ]
-    ASSETS_RIVALE = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "rivali"
+    ASSETS_RIVALE = PROJECT / "GRAFICA" / "sprite" / "rivali"
     for nome in RIVALE_FILES:
         src = ASSETS_RIVALE / (nome + ".png")
         if not src.exists():
@@ -159,7 +159,7 @@ def main():
     # Traffico comune (Andrea 27/10): 4 veicoli, disegnati da
     # UFFICIO/Dipartimento Grafico/TOOLS/disegna_traffico.py.
     OUTDIR_TRAFFICO = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "traffico"
-    ASSETS_TRAFFICO = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "traffico"
+    ASSETS_TRAFFICO = PROJECT / "GRAFICA" / "sprite" / "traffico"
     for nome in TRAFFICO_FILES:
         src = ASSETS_TRAFFICO / (nome + ".png")
         if not src.exists():
@@ -174,29 +174,10 @@ def main():
             f.write(rgba)
         print(f"scritto {dst} ({w}x{h})")
         n += 1
-    # Auto del giocatore (P1 punto 4): sprite vero al posto del rettangolo sintetico.
-    # Variante predefinita tra le 3 approvate in catalogo (tipo auto_giocatore, D5).
-    OUTDIR_GIOCATORE = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "giocatore"
-    ASSETS_GIOCATORE = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "auto_gt"
-    GIOCATORE_FILES = ["auto_rosso_corsa"]
-    for nome in GIOCATORE_FILES:
-        src = ASSETS_GIOCATORE / (nome + ".png")
-        if not src.exists():
-            print(f"salta (manca): {src}")
-            continue
-        w, h, rgba = leggi_png(src)
-        dst = OUTDIR_GIOCATORE / "auto_giocatore.sglraw"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        with open(dst, "wb") as f:
-            f.write(MAGIC)
-            f.write(struct.pack("<II", w, h))
-            f.write(rgba)
-        print(f"scritto {dst} ({w}x{h})")
-        n += 1
     # Pubblico all'arrivo (Andrea 29/10), disegnato da
     # UFFICIO/Dipartimento Grafico/TOOLS/disegna_pubblico.py.
     OUTDIR_PUBBLICO = PROJECT / "motore_nuovo" / "dati" / "sprite_raw" / "pubblico"
-    ASSETS_PUBBLICO = PROJECT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "sprite" / "pubblico"
+    ASSETS_PUBBLICO = PROJECT / "GRAFICA" / "sprite" / "pubblico"
     for nome in PUBBLICO_FILES:
         src = ASSETS_PUBBLICO / (nome + ".png")
         if not src.exists():
@@ -212,7 +193,7 @@ def main():
         print(f"scritto {dst} ({w}x{h})")
         n += 1
     print(f"convertiti {n} sprite in raw (sponsor {OUTDIR}, rivali {OUTDIR_RIVALE}, traffico {OUTDIR_TRAFFICO}, "
-          f"giocatore {OUTDIR_GIOCATORE}, pubblico {OUTDIR_PUBBLICO})")
+          f"pubblico {OUTDIR_PUBBLICO})")
 
 
 if __name__ == "__main__":

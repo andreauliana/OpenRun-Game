@@ -1,0 +1,1760 @@
+{
+   "_meta": {
+      "descrizione": "Catalogo unico delle risorse grafiche: un elemento per riga, con stato. Lo scrive solo @grafico; gli altri lo leggono.",
+      "licenza": "CC0-1.0",
+      "stati": {
+         "mancante": "serve ma non esiste",
+         "bozza": "prima prova, non usare nel gioco",
+         "in_costruzione": "in lavorazione, usabile solo nei test",
+         "pronto": "finito, in attesa dell'ok di Andrea",
+         "approvato": "scelto da Andrea (ANDREA_REVIEW.md)",
+         "scartato": "da non usare; il file resta come storico",
+         "segnaposto": "disegno provvisorio al posto di quello di Andrea, da sostituire con lo stesso nome e la stessa misura"
+      },
+      "regole": [
+         "Il motore e i test usano solo elementi pronto o approvato (in_costruzione solo nei test).",
+         "Ogni file nuovo di GRAFICA/ entra qui con il suo id prima di essere usato.",
+         "Percorsi relativi a sglavinated_src/. 'raw' e' la versione per il motore (png_a_raw.py); per i gruppi con piu' file il campo 'raw_elenco' elenca i raw del motore.",
+         "Controllo: python3 motore_nuovo/strumenti_py/check_catalogo_grafico.py"
+      ]
+   },
+   "elementi": [
+      {
+         "id": "sponsor.brinis_udine.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/brinis_udine/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.brinis_udine.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/brinis_udine/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.brinis_udine.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/brinis_udine/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/brinis_udine_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.canna_bis.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/canna_bis/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.canna_bis.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/canna_bis/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.canna_bis.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/canna_bis/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/canna_bis_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.curve_pericolose.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/curve_pericolose/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.curve_pericolose.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/curve_pericolose/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.curve_pericolose.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/curve_pericolose/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/curve_pericolose_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.erba_medica.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/erba_medica/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.erba_medica.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/erba_medica/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.erba_medica.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/erba_medica/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/erba_medica_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.green_box.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/green_box/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.green_box.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/green_box/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.green_box.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/green_box/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/green_box_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.piston_high.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/piston_high/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.piston_high.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/piston_high/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.piston_high.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/piston_high/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/piston_high_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.slow_down.neon",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/slow_down/cartellone_neon.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_neon.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.slow_down.atomico",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/slow_down/cartellone_atomico.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_atomico.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "sponsor.slow_down.foglie",
+         "tipo": "cartellone",
+         "stato": "approvato",
+         "file": "GRAFICA/sponsor/slow_down/cartellone_foglie.png",
+         "raw": "motore_nuovo/dati/sprite_raw/sponsor/slow_down_foglie.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
+      },
+      {
+         "id": "scenario.lv_01_neon.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "GRAFICA/scenari/lv_01_neon/skyline.png",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/skyline.sglraw"
+      },
+      {
+         "id": "oggetto.lv_01_neon.bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_bidone.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A. obj_bidone_copy rimosso (vedi note storico)",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/bidone.sglraw"
+      },
+      {
+         "id": "oggetto.lv_01_neon.cassetta",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_cassetta.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/cassetta.sglraw"
+      },
+      {
+         "id": "oggetto.lv_01_neon.lampione",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_lampione.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/lampione.sglraw"
+      },
+      {
+         "id": "oggetto.lv_01_neon.palina",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_palina.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palina.sglraw"
+      },
+      {
+         "id": "oggetto.lv_01_neon.palo_neon",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_palo_neon.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/palo_neon.sglraw"
+      },
+      {
+         "id": "scenario.lv_02_atomico.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "GRAFICA/scenari/lv_02_atomico/skyline.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/skyline.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.bancone_drive_in",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_bancone_drive_in.png",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/bancone_drive_in.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.cupola",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_cupola.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/cupola.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.freccia",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_freccia.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/freccia.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.panchina_cromata",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_panchina_cromata.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/panchina_cromata.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.segnale_atomico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_segnale_atomico.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_05_spray"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/segnale_atomico.sglraw"
+      },
+      {
+         "id": "oggetto.lv_02_atomico.torre_razzo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_torre_razzo.png",
+         "livelli": [
+            "lv_02_atomico",
+            "lv_04_cromo"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/torre_razzo.sglraw"
+      },
+      {
+         "id": "scenario.lv_03_foglie.skyline",
+         "tipo": "skyline",
+         "stato": "approvato",
+         "file": "GRAFICA/scenari/lv_03_foglie/skyline.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/skyline.sglraw"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.foglia_gigante",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_foglia_gigante.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/foglia_gigante.sglraw"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.fungo_psico",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_fungo_psico.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/fungo_psico.sglraw"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.insegna_fumosa",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_insegna_fumosa.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/insegna_fumosa.sglraw"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.panchina_curva",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_panchina_curva.png",
+         "livelli": [
+            "lv_03_foglie",
+            "lv_06_desktop"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_curva.sglraw"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.panchina_fumo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_panchina_fumo.png",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "D6: variante A. Altezza >=32x96",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_fumo.sglraw"
+      },
+      {
+         "id": "ui.font",
+         "tipo": "ui",
+         "stato": "approvato",
+         "file": "GRAFICA/ui/font/varianteB/font.png",
+         "nota": "D7: variante B (primaria); varianti A,C in catalogo voci correlate"
+      },
+      {
+         "id": "font.antonio",
+         "tipo": "font",
+         "stato": "mancante",
+         "file": "GRAFICA/font/antonio/Antonio-Bold.ttf",
+         "nota": "D4; file assente dalla Libreria (controllo catalogo 15/11): in font/ c'e' solo born2bsporty. Il gioco usa Born2bSporty. Se serve Antonio, va fornito il ttf con la sua licenza."
+      },
+      {
+         "id": "auto.traffico",
+         "tipo": "auto_traffico",
+         "stato": "pronto",
+         "file": [
+            "GRAFICA/sprite/traffico/traffico_utilitaria_bianca_retro.png",
+            "GRAFICA/sprite/traffico/traffico_furgone_grigio_retro.png",
+            "GRAFICA/sprite/traffico/traffico_berlina_blu_retro.png",
+            "GRAFICA/sprite/traffico/traffico_camioncino_beige_retro.png"
+         ],
+         "raw_elenco": [
+            "motore_nuovo/dati/sprite_raw/traffico/traffico_utilitaria_bianca_retro.sglraw",
+            "motore_nuovo/dati/sprite_raw/traffico/traffico_furgone_grigio_retro.sglraw",
+            "motore_nuovo/dati/sprite_raw/traffico/traffico_berlina_blu_retro.sglraw",
+            "motore_nuovo/dati/sprite_raw/traffico/traffico_camioncino_beige_retro.sglraw"
+         ],
+         "nota": "Traffico comune in gara (Andrea 27/10): 4 veicoli civili vista dietro, disegnati da zero con TOOLS/disegna_traffico.py (Claude), raw in motore_nuovo/dati/sprite_raw/traffico/ via png_a_raw.py. Disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/: stesso nome e misura."
+      },
+      {
+         "id": "scena.arrivo.pubblico",
+         "tipo": "pubblico_arrivo",
+         "stato": "pronto",
+         "file": [
+            "GRAFICA/sprite/pubblico/pubblico_a_giu.png",
+            "GRAFICA/sprite/pubblico/pubblico_a_su.png",
+            "GRAFICA/sprite/pubblico/pubblico_b_giu.png",
+            "GRAFICA/sprite/pubblico/pubblico_b_su.png"
+         ],
+         "raw_elenco": [
+            "motore_nuovo/dati/sprite_raw/pubblico/pubblico_a_giu.sglraw",
+            "motore_nuovo/dati/sprite_raw/pubblico/pubblico_a_su.sglraw",
+            "motore_nuovo/dati/sprite_raw/pubblico/pubblico_b_giu.sglraw",
+            "motore_nuovo/dati/sprite_raw/pubblico/pubblico_b_su.sglraw"
+         ],
+         "nota": "Pubblico all'arrivo (Andrea 29/10): due file di persone dietro la transenna, ai lati della strada prima e dopo il traguardo della tappa d'arrivo. Due gruppi (a, b) in due pose (giu = braccia giu', su = esultano): il motore alterna le pose. 40x26 px, disegnati da zero con TOOLS/disegna_pubblico.py (Claude); raw in motore_nuovo/dati/sprite_raw/pubblico/ via png_a_raw.py. Per ridisegnarli: stesso nome e misura, poi png_a_raw.py."
+      },
+      {
+         "id": "sprite.supporto.a_relax",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_a_relax.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_a_relax.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa relax (a). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.supporto.a_parla",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_a_parla.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_a_parla.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa parla (a). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.supporto.a_esulta",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_a_esulta.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_a_esulta.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa esulta (a). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.supporto.b_relax",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_b_relax.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_b_relax.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa relax (b). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.supporto.b_parla",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_b_parla.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_b_parla.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa parla (b). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "sprite.supporto.b_esulta",
+         "tipo": "gruppo_supporto_partenza",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/pubblico/supporto_b_esulta.png",
+         "raw": "motore_nuovo/dati/sprite_raw/pubblico/supporto_b_esulta.sglraw",
+         "nota": "Gruppo di supporto ai lati della griglia di partenza, posa esulta (b). In gioco, base legacy approvata da Andrea 08/11; catalogato il 15/11 perche' mancava. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "personaggio.gianni",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "Gianni la foglia, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "personaggio.gesu",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "Gesu', animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "personaggio.ufo",
+         "tipo": "personaggio",
+         "stato": "mancante",
+         "file": [],
+         "nota": "UFO, animato; disegno di Andrea se presente in ../ANDREA/sprite_ritoccati/"
+      },
+      {
+         "id": "skyline.futurista",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/skyline.png",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "megastrutture notturne; scelta per lv_04_cromo, serve l'ok di Andrea",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/skyline.sglraw"
+      },
+      {
+         "id": "scenario.lv_05_spray.skyline",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/skyline.png",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). Skyline punk: capannoni, ciminiere, muri a spray. Disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/skyline.sglraw"
+      },
+      {
+         "id": "scenario.lv_06_desktop.skyline",
+         "tipo": "skyline",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/skyline.png",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). Skyline desktop: prato, cielo con nuvole, finestre bevel. Disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/skyline.sglraw"
+      },
+      {
+         "id": "scenario.lv_04_cromo.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "GRAFICA/scenari/lv_04_cromo/oggetti/obj_guard_rail_cromo.png",
+            "GRAFICA/scenari/lv_04_cromo/oggetti/obj_lampione_lama.png",
+            "GRAFICA/scenari/lv_04_cromo/oggetti/obj_robot_servizio.png",
+            "GRAFICA/scenari/lv_04_cromo/oggetti/obj_pilone_cromo.png"
+         ],
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: guard-rail cromati, lampioni a lama, robot di servizio, pilone cromo. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "scenario.lv_05_spray.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "GRAFICA/scenari/lv_05_spray/oggetti/obj_bidone.png",
+            "GRAFICA/scenari/lv_05_spray/oggetti/obj_transenna.png",
+            "GRAFICA/scenari/lv_05_spray/oggetti/obj_cassonetto.png",
+            "GRAFICA/scenari/lv_05_spray/oggetti/obj_serranda_spray.png"
+         ],
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: bidoni, transenne, cassonetti, serranda spray. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "scenario.lv_06_desktop.oggetti",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": [
+            "GRAFICA/scenari/lv_06_desktop/oggetti/obj_pali_cavi.png",
+            "GRAFICA/scenari/lv_06_desktop/oggetti/obj_case_computer.png",
+            "GRAFICA/scenari/lv_06_desktop/oggetti/obj_delfino_cartone.png",
+            "GRAFICA/scenari/lv_06_desktop/oggetti/obj_icona_cartella.png"
+         ],
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). 4 oggetti propri: pali con cavi, case-computer, delfini di cartone, icona cartella. Nessun prestito. Vedi voci oggetto individuali per i raw."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.guard_rail_cromo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_guard_rail_cromo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/guard_rail_cromo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). guard-rail cromato, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.lampione_lama",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_lampione_lama.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/lampione_lama.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). lampione a lama, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.robot_servizio",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_robot_servizio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/robot_servizio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). robot di servizio, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.pilone_cromo",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_pilone_cromo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/pilone_cromo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Variante A (D6). pilone cromo, stile futurista/cromo. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.bidone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_bidone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/bidone.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). bidone industriale, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.transenna",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_transenna.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/transenna.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). transenna da cantiere, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.cassonetto",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_cassonetto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/cassonetto.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). cassonetto rifiuti, stile punk/spray. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_05_spray.serranda_spray",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_serranda_spray.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/serranda_spray.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Variante A (D6). serranda con scritte spray, stile punk. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.pali_cavi",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_pali_cavi.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/pali_cavi.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). pali con cavi, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.case_computer",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_case_computer.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/case_computer.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). case computer, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.delfino_cartone",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_delfino_cartone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/delfino_cartone.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). delfino di cartone, stile desktop. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.icona_cartella",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_icona_cartella.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/icona_cartella.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Variante A (D6). icona cartella, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "storico, non usato (rimosso obj_bidone_copy): il file 'obj_bidone copy.png' non esiste piu', quindi nessun percorso a catalogo; id corretto perche' era doppio con obj_insegna_neon"
+      },
+      {
+         "id": "oggetto.lv_03_foglie.scenario_foglie_03_varianteB.obj_insegna_fumosa",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "scartato",
+         "file": [],
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "doppio oggetto varianteB non scelto (D6 variante A); file storico, non usare"
+      },
+      {
+         "id": "auto.rivale.rosso",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_rosso_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_rosso_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' rosso corsa 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.azzurro",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_azzurro_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_azzurro_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' azzurro 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.giallo",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_giallo_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_giallo_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' giallo 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.verde",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_verde_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_verde_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' verde 48x24 (ridisegnata 29/10, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.bianco",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_bianco_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_bianco_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' bianco 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.arancio",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_arancio_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_arancio_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' arancio 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "auto.rivale.viola",
+         "tipo": "auto_rivale",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/rivali/auto_rivale_viola_retro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_viola_retro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "RIV: auto rivale vista dietro, coupe' viola 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.comuni.guardrail",
+         "tipo": "oggetto_bordo_strada",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/guardrail.png",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PIST1 G-P1: guardrail dell'autostrada, comune a tutti i temi, acciaio neutro, 48x32 (livelli con tratto autostrada). Originale, disegnato da zero, nessun materiale Sega.",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/guardrail.sglraw"
+      },
+      {
+         "id": "auto.giocatore.posa.dritta",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dritta.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw",
+         "nota": "Disegnata da Andrea (06/11): posa dritta dell'auto del giocatore, tre quarti dall'alto. Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
+      },
+      {
+         "id": "auto.giocatore.stop.dritta",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
+         "nota": "Stop accesi sopra la posa dritta, sovrapposti in frenata (06/11). Prima versione di Claude ricavata dai fanali di Andrea; Andrea puo' ridisegnarla. Stessa misura della posa, il resto trasparente. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 1, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 2, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx3.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 3, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.sx4",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx4.sglraw",
+         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 4, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.stop.sx1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx1.sglraw",
+         "nota": "Stop accesi per la posa sx1, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx2.sglraw",
+         "nota": "Stop accesi per la posa sx2, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx3.sglraw",
+         "nota": "Stop accesi per la posa sx3, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.stop.sx4",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
+         "nota": "Stop accesi per la posa sx4, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/ruota_1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_1.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore sinistra vista da dietro, passo 1 di rotazione, 12x10; la destra e' questa specchiata. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega. Posizioni in sprite/giocatore/auto_giocatore.json."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/ruota_2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_2.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore passo 2 di rotazione, 12x10. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.ruota_3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/ruota_3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/ruota_3.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): ruota posteriore passo 3 di rotazione, 12x10. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.luci_stop",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/luci_stop.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/luci_stop.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fanale stop acceso 12x4 con riga luminosa, specchiato a destra, sovrapposto in frenata. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_1",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/fumo_1.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_1.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo scarico/danni passo 1 (compatto), 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_2",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/fumo_2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_2.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo passo 2, 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "auto.giocatore.componente.fumo_3",
+         "tipo": "auto_giocatore",
+         "stato": "pronto",
+         "file": "GRAFICA/sprite/giocatore/fumo_3.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/fumo_3.sglraw",
+         "nota": "AUTO1 G-A1 (07/11): fumo passo 3 (disperso), 16x16, dithering Bayer 4x4. Originale, TOOLS/disegna_componenti_auto.py, CC0-1.0, nessun materiale Sega."
+      },
+      {
+         "id": "oggetto.lv_01_neon.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/ciuffo.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/cespuglio.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/albero.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_alto.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_medio.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_01_neon.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_01_neon/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_01_neon/edificio_basso.sglraw",
+         "livelli": [
+            "lv_01_neon"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/ciuffo.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/cespuglio.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/albero.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_alto.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_medio.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_02_atomico.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_02_atomico/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_02_atomico/edificio_basso.sglraw",
+         "livelli": [
+            "lv_02_atomico"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/ciuffo.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/cespuglio.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/albero.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_alto.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_medio.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_03_foglie.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_03_foglie/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/edificio_basso.sglraw",
+         "livelli": [
+            "lv_03_foglie"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/ciuffo.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/cespuglio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/albero.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_alto.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_medio.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_04_cromo.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_04_cromo/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_04_cromo/edificio_basso.sglraw",
+         "livelli": [
+            "lv_04_cromo"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/ciuffo.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 24x12 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/cespuglio.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 40x24 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/albero.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 48x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_alto.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_medio.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_05_spray.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_05_spray/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_05_spray/edificio_basso.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.ciuffo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_ciuffo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/ciuffo.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.cespuglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_cespuglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/cespuglio.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_albero.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_alto",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_edificio_alto.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_alto.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x128 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_medio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_edificio_medio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_medio.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 64x96 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.edificio_basso",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_edificio_basso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/edificio_basso.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): segnaposto 96x64 da TOOLS/disegna_paesaggio.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_curva_dx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/freccia_curva_dx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_curva_dx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_curva_sx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/freccia_curva_sx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_curva_sx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Paesaggio a zone (06/11): cartello di curva 32x40 sul lato esterno, comune a tutti i temi, da TOOLS/disegna_paesaggio.py. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_cresta_dx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/freccia_cresta_dx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_cresta_dx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G1 (08/11): cartello freccia curva cieca con segno del dosso, 32x40 come freccia_curva_dx, da TOOLS/genera_freccia_cresta.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.freccia_cresta_sx",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/freccia_cresta_sx.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/freccia_cresta_sx.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G1 (08/11): cartello freccia curva cieca con segno del dosso, 32x40 come freccia_curva_sx, da TOOLS/genera_freccia_cresta.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.parete_galleria",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/parete_galleria.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/parete_galleria.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G2 (08/11): parete galleria 32x32 tile ripetibile, palette piccola + Bayer 4x4, da TOOLS/genera_galleria.py, originale CC0-1.0, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.luce_galleria",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/luce_galleria.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/luce_galleria.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "PERC1 G2 (08/11): luce plafoniera galleria 16x8, palette piccola + Bayer 4x4, da TOOLS/genera_galleria.py, originale CC0-1.0, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.boa",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/boa.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/boa.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 16x32 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.barca",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/barca.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/barca.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 64x64 (barca a vela piu grande e dettagliata, dondola e deriva) sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.scoglio",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/scoglio.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/scoglio.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 48x24 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.faro",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/faro.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/faro.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 32x128 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.ombrellone",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/ombrellone.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/ombrellone.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 32x32 sul terreno basso sotto il ponte e le rampe, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.comuni.motoscafo",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/comuni/oggetti/motoscafo.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/motoscafo.sglraw",
+         "livelli": [
+            "lv_01_neon",
+            "lv_02_atomico",
+            "lv_03_foglie",
+            "lv_04_cromo",
+            "lv_05_spray",
+            "lv_06_desktop"
+         ],
+         "nota": "Dintorni del ponte (07/11): segnaposto 64x32, motoscafo che naviga avanti e indietro sul mare sotto il ponte, comune a tutti i temi, da TOOLS/disegna_ponte.py, originale, nessun materiale Sega. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero_pino",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_albero_pino.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero_pino.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.albero_fiori",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_albero_fiori.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/albero_fiori.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "oggetto.lv_06_desktop.cespuglio_fiori",
+         "tipo": "oggetto_paesaggio",
+         "stato": "pronto",
+         "file": "GRAFICA/scenari/lv_06_desktop/oggetti/obj_cespuglio_fiori.png",
+         "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_06_desktop/cespuglio_fiori.sglraw",
+         "livelli": [
+            "lv_06_desktop"
+         ],
+         "nota": "Livello desktop (07/11, Andrea: piu' pixelati, carini e vari, stile icone Windows 98): disegno a pixel 2x, contorno nero, tavolozza a 16 colori e ombra a scacchi, da TOOLS/disegna_paesaggio_w98.py, originale. Andrea lo ridisegna con lo stesso nome e la stessa misura."
+      },
+      {
+         "id": "ui.logo.openrun",
+         "tipo": "logo",
+         "stato": "segnaposto",
+         "file": "GRAFICA/ui/logo/logo_openrun.png",
+         "raw": "motore_nuovo/dati/sprite_raw/ui/logo_openrun.sglraw",
+         "livelli": [],
+         "nota": "Andrea 08/11: logo del menu SEGNAPOSTO, solo la scritta OPEN RUN, niente decorazioni. Andrea lo ridisegna (stesso nome) e lancia genera_logo_placeholder.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_berlina_gialla",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "GRAFICA/sprite/traffico_incrocio/lato_berlina_gialla.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_berlina_gialla.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_berlina_verde",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "GRAFICA/sprite/traffico_incrocio/lato_berlina_verde.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_berlina_verde.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_furgone_bianco",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_furgone_bianco.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      },
+      {
+         "id": "auto.incrocio.lato_bus_rosso",
+         "tipo": "auto_incrocio",
+         "stato": "segnaposto",
+         "file": "GRAFICA/sprite/traffico_incrocio/lato_bus_rosso.png",
+         "raw": "motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_bus_rosso.sglraw",
+         "livelli": [
+            "lv_05_spray"
+         ],
+         "nota": "Auto di lato che attraversano gli incroci in citta' (Claude 08/11). Muso a destra, il motore la specchia. Andrea la puo' ridisegnare con stesso nome e misura, poi genera_traffico_incrocio.py --solo-raw."
+      }
+   ]
+}

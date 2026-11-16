@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Converte il font pixel dell'HUD (assets_originali/ui/font/varianteB/font.png
+"""Converte il font pixel dell'HUD (GRAFICA/ui/font/varianteB/font.png
 + font.json) in motore_nuovo/src/render/font_hud.h, cosi' il core disegna i
 testi senza decodificare PNG. Uso, dalla radice sglavinated_src:
     python3 motore_nuovo/strumenti_py/font_a_header.py
@@ -9,7 +9,7 @@ import json
 import sys
 from PIL import Image
 
-UI = "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/ui/"
+UI = "GRAFICA/ui/"
 META = UI + "font/varianteB/font.json"
 OUT = "motore_nuovo/src/render/font_hud.h"
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Caricamento cartelloni sponsor per il runner SDL2.
-// Decodifica i PNG di assets_originali/sponsor/ (originali, CC0-1.0, generati da
-// assets_originali/sponsor/genera_sponsor.py) in sgl::Sprite indicizzati con
+// Decodifica i PNG di GRAFICA/sponsor/ (originali, CC0-1.0, generati da
+// GRAFICA/sponsor/genera_sponsor.py) in sgl::Sprite indicizzati con
 // palette RGBA di proprieta'. Il core C++ non decodifica immagini: resta privo
 // di SDL e di qualsiasi dipendenza da piattaforma.
 #include "sponsor_loader.h"
@@ -20,7 +20,7 @@ namespace sgl {
 namespace {
 
 // I 7 sponsor fittizi del catalogo e i 3 stili (neon, atomico, foglie): i nomi
-// corrispondono alle sottocartelle di assets_originali/sponsor/ (v. CATALOGO_SPONSOR.json).
+// corrispondono alle sottocartelle di GRAFICA/sponsor/ (v. CATALOGO_SPONSOR.json).
 const char* kSponsorId[7] = {
     "curve_pericolose", "brinis_udine", "piston_high", "canna_bis",
     "slow_down", "erba_medica", "green_box"};

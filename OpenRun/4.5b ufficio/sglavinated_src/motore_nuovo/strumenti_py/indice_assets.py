@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Indice unico degli asset di assets_originali/ (libreria interna).
+"""Indice unico degli asset di GRAFICA/ (libreria interna).
 
 Uso, dalla radice progetto, un solo comando senza pipe:
     python3 motore_nuovo/strumenti_py/indice_assets.py
 
-Scrive assets_originali/INDICE_ASSET.json (un record per file: percorso, categoria,
+Scrive GRAFICA/INDICE_ASSET.json (un record per file: percorso, categoria,
 livello, variante, dimensioni PNG, byte, sha1, licenza e stato dal manifest piu' vicino,
-scelta di Andrea, avvisi) e assets_originali/INDICE_ASSET.md (riassunto, lacune, avvisi).
+scelta di Andrea, avvisi) e GRAFICA/INDICE_ASSET.md (riassunto, lacune, avvisi).
 Solo libreria standard. Rilanciare dopo ogni generazione di asset.
 """
 import hashlib, json, os, re, struct, sys, time
 
-LIBRERIA = "UFFICIO/Dipartimento Grafico/Libreria"
-RADICE = LIBRERIA + "/assets_originali"
+LIBRERIA = "."
+RADICE = "GRAFICA"
 SALTA = {".DS_Store", "__pycache__", "INDICE_ASSET.json", "INDICE_ASSET.md"}
 
 # Scelte gia' prese da Andrea (ANDREA_REVIEW.md).
@@ -85,7 +85,7 @@ def main():
             if nome.startswith("genera") and nome.endswith(".py"):
                 generatori[os.path.dirname(rel)] = st.st_mtime
             man = manifest_vicino(rel, cache)
-            r = {"percorso": "assets_originali/" + rel,
+            r = {"percorso": "GRAFICA/" + rel,
                  "categoria": rel.split("/")[0] if "/" in rel else "(radice)",
                  "tipo": os.path.splitext(nome)[1].lstrip(".").lower(),
                  "byte": st.st_size,
@@ -130,14 +130,14 @@ def main():
         if r["tipo"] != "png":
             continue
         for d, t in generatori.items():
-            if r["percorso"].startswith("assets_originali/" + d + "/") and r["mtime"] + 1 < t:
+            if r["percorso"].startswith("GRAFICA/" + d + "/") and r["mtime"] + 1 < t:
                 r["flag"].append("da_rigenerare")
                 break
 
     lacune = []
     for nome, pref, chiave, minimo in SERVE:
         n = sum(1 for r in record if r["tipo"] == "png"
-                and r["percorso"].startswith("assets_originali/" + pref) and chiave in r["percorso"])
+                and r["percorso"].startswith("GRAFICA/" + pref) and chiave in r["percorso"])
         lacune.append({"serve": nome, "trovati": n, "minimo": minimo, "ok": n >= minimo})
 
     adesso = time.strftime("%Y-%m-%d %H:%M")
@@ -151,7 +151,7 @@ def main():
         c[0] += 1; c[1] += r["tipo"] == "png"; c[2] += r["byte"]; c[3] += bool(r["flag"])
     avvisi = [r for r in record if r["flag"]]
     md = ["# Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)", "",
-          f"Aggiornato: {adesso} — {len(record)} file in assets_originali/.", "",
+          f"Aggiornato: {adesso} — {len(record)} file in GRAFICA/.", "",
           "## Cosa serve per il primo livello giocabile", "",
           "| Serve | Trovati | Minimo | Stato |", "|---|---|---|---|"]
     md += [f"| {l['serve']} | {l['trovati']} | {l['minimo']} | {'OK' if l['ok'] else 'MANCA'} |" for l in lacune]

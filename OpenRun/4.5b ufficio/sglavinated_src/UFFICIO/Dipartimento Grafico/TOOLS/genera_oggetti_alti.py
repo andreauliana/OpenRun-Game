@@ -125,16 +125,16 @@ def pali_cavi(c):
     c.rect(26, 0, 30, 26, DESK_BLU)            # isolatori/testa
 
 SPEC = [
-    ("scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_lampione.png", 48, 128, lampione_neon),
-    ("scenari/lv_01_neon/scenario_neon_01_varianteA/oggetti/obj_palo_neon.png", 32, 128, palo_neon),
-    ("scenari/lv_02_atomico/scenario_atomico_02_varianteA/oggetti/obj_torre_razzo.png", 64, 144, torre_razzo),
-    ("scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_lampione_lama.png", 40, 128, lampione_lama),
-    ("scenari/lv_04_cromo/scenario_cromo_04_varianteA/oggetti/obj_pilone_cromo.png", 48, 144, pilone_cromo),
-    ("scenari/lv_06_desktop/scenario_desktop_06_varianteA/oggetti/obj_pali_cavi.png", 56, 128, pali_cavi),
+    ("scenari/lv_01_neon/oggetti/obj_lampione.png", 48, 128, lampione_neon),
+    ("scenari/lv_01_neon/oggetti/obj_palo_neon.png", 32, 128, palo_neon),
+    ("scenari/lv_02_atomico/oggetti/obj_torre_razzo.png", 64, 144, torre_razzo),
+    ("scenari/lv_04_cromo/oggetti/obj_lampione_lama.png", 40, 128, lampione_lama),
+    ("scenari/lv_04_cromo/oggetti/obj_pilone_cromo.png", 48, 144, pilone_cromo),
+    ("scenari/lv_06_desktop/oggetti/obj_pali_cavi.png", 56, 128, pali_cavi),
 ]
 
 SRC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))  # sglavinated_src
-ROOT = os.path.join(SRC, "UFFICIO", "Dipartimento Grafico", "Libreria", "assets_originali")
+ROOT = os.path.join(SRC, "GRAFICA")
 ok = True
 for rel, w, h, disegna in SPEC:
     path = os.path.join(ROOT, rel)

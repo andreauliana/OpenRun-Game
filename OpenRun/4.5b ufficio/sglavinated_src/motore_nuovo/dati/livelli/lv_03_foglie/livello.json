@@ -137,7 +137,7 @@
       "oggetto.lv_03_foglie.panchina_curva"
     ],
     "stile_cartellone": "foglie",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
+    "nota": "id di GRAFICA/CATALOGO_GRAFICO.json"
   },
   "paesaggio": {
     "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. viale delle foglie: tanti alberi a macchie, due paesi viola.",

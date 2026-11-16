@@ -1017,10 +1017,9 @@ void Game::init(const std::string& livelloId) {
     // "pronto", @grafico): dritta, sterzo leggero/forte a sinistra e destra,
     // salita, discesa. Caricati una volta all'avvio; se un raw manca resta il
     // rettangolo sintetico, mai un crash.
-    // Pose dell'auto (Andrea 06/11): prima quelle di Andrea in
-    // sprite_raw/giocatore/pose/ (TOOLS/converti_pose_auto.py); se manca la
-    // sua dritta si usano i fotogrammi degli agenti del 06/11 come riserva.
-    // Gli stili non si mischiano: con la dritta di Andrea si caricano solo le sue.
+    // Pose dell'auto (Andrea 06/11): solo quelle di Andrea in
+    // sprite_raw/giocatore/pose/ (TOOLS/converti_pose_auto.py). L'auto degli
+    // agenti usata come riserva e' stata tolta il 16/11 (pulizia v4.7).
     static const char* const POSE[POSA_GIOCATORE_COUNT] = {
         "auto_dritta", "auto_sx1", "auto_sx2", "auto_sx3", "auto_sx4",
         "auto_dx1", "auto_dx2", "auto_dx3", "auto_dx4", "auto_salita", "auto_discesa"};
@@ -1045,27 +1044,8 @@ void Game::init(const std::string& livelloId) {
             std::string("motore_nuovo/dati/sprite_raw/giocatore/fumo_") + std::to_string(k + 1) + ".sglraw")));
     caricaPuntiComponentiGiocatore(ren_, percorsoDati(
         "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.json"));
-    if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
-        struct FrameGiocatore { i32 posa; const char* nome; };
-        static const FrameGiocatore AGENTI[] = {
-            {POSA_GIOCATORE_DRITTA, "auto_giocatore_dritta"},
-            {POSA_GIOCATORE_SX_2, "auto_giocatore_sterzo_sx_leggero"},
-            {POSA_GIOCATORE_SX_4, "auto_giocatore_sterzo_sx_forte"},
-            {POSA_GIOCATORE_DX_2, "auto_giocatore_sterzo_dx_leggero"},
-            {POSA_GIOCATORE_DX_4, "auto_giocatore_sterzo_dx_forte"},
-            {POSA_GIOCATORE_SALITA, "auto_giocatore_salita"},
-            {POSA_GIOCATORE_DISCESA, "auto_giocatore_discesa"},
-        };
-        for (const FrameGiocatore& f : AGENTI)
-            ren_.impostaGiocatoreSprite(f.posa, caricaSpriteRaw(percorsoDati(
-                std::string("motore_nuovo/dati/sprite_raw/giocatore/") + f.nome + ".sglraw")));
-    }
-    if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0) {
-        // Compatibilita': raw storico con la sola auto dritta (auto_giocatore.sglraw).
-        Sprite vecchio = caricaSpriteRaw(percorsoDati("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw"));
-        if (vecchio.width > 0) ren_.impostaGiocatoreSprite(POSA_GIOCATORE_DRITTA, std::move(vecchio));
-        else std::printf("giocatore: raw motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore_dritta.sglraw mancante\n");
-    }
+    if (ren_.giocatoreSprite(POSA_GIOCATORE_DRITTA)->width <= 0)
+        std::printf("giocatore: raw motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw mancante\n");
 
     road_.playerZ = 0.0f;
     road_.playerX = 0.0f;

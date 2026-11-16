@@ -1,5 +1,7 @@
 # Dipartimento Grafico
 
-Reparto del @grafico. Qui confluiranno strumenti e libreria grafica.
+Reparto del @grafico: strumenti (`TOOLS/`) e inventario (`INVENTARIO_ASSET.md`, riferimento legacy 16/11).
 
-Asset in `Libreria/assets_originali/` e `Libreria/`; il @grafico non deve duplicarli in giro. Le specifiche grafiche si leggono, ma non sono modificabili da @developer/@developer-junior.
+Gli originali grafici stanno in `sglavinated_src/GRAFICA/` (unica copia). Il gioco legge i `.sglraw` di
+`motore_nuovo/dati/sprite_raw/`, fatti dai convertitori di `TOOLS/` e da `motore_nuovo/strumenti_py/png_a_raw.py`.
+Le specifiche grafiche si leggono, ma non sono modificabili da @developer/@developer-junior.

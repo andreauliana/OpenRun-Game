@@ -12,7 +12,7 @@
 #
 # Il PNG originale NON viene toccato: si scrive skyline_trama.png accanto, e da
 # quello il .sglraw che usa il gioco. Per tornare all'originale: --originale.
-# Tecnica, forza e numero di zone per livello: Libreria/assets_originali/scenari/trama.json.
+# Tecnica, forza e numero di zone per livello: GRAFICA/scenari/trama.json.
 #
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/trama_scenari.py"            tutti i livelli
@@ -27,19 +27,19 @@ from PIL import Image
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.abspath(os.path.join(BASE, "..", "..", ".."))
-ASSETS = os.path.join(SRC, "UFFICIO", "Dipartimento Grafico", "Libreria", "assets_originali")
+ASSETS = os.path.join(SRC, "GRAFICA")
 RAW = os.path.join(SRC, "motore_nuovo", "dati", "sprite_raw", "scenari")
 CONFIG = os.path.join(ASSETS, "scenari", "trama.json")
 
 # Skyline usato in gioco da ogni livello (come in completa_deco1_lv123.py,
 # completa_deco1_lv04_skyline.py e genera_scenari_lv456.py).
 SKYLINE = {
-    "lv_01_neon": "scenari/lv_01_neon/scenario_neon_01_varianteA/skyline.png",
-    "lv_02_atomico": "scenari/lv_02_atomico/scenario_atomico_02_varianteA/skyline.png",
-    "lv_03_foglie": "scenari/lv_03_foglie/scenario_foglie_03_varianteA/skyline.png",
-    "lv_04_cromo": "skyline/varianteA_futurista/skyline.png",
-    "lv_05_spray": "scenari/lv_05_spray/scenario_spray_05_varianteA/skyline.png",
-    "lv_06_desktop": "scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline.png",
+    "lv_01_neon": "scenari/lv_01_neon/skyline.png",
+    "lv_02_atomico": "scenari/lv_02_atomico/skyline.png",
+    "lv_03_foglie": "scenari/lv_03_foglie/skyline.png",
+    "lv_04_cromo": "scenari/lv_04_cromo/skyline.png",
+    "lv_05_spray": "scenari/lv_05_spray/skyline.png",
+    "lv_06_desktop": "scenari/lv_06_desktop/skyline.png",
 }
 PREDEFINITO = {"tecnica": "bayer", "forza": 0.5, "zone": 2}
 

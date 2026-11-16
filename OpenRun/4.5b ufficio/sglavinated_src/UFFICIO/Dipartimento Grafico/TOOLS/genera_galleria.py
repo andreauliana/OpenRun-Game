@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC0-1.0
 # G2 PERC1: genera parete_galleria (32x32, tile ripetibile, palette piccola + Bayer 4x4)
-# e luce_galleria (16x8). Scrive PNG in Libreria/assets_originali/scenari/comuni/oggetti/
+# e luce_galleria (16x8). Scrive PNG in GRAFICA/scenari/comuni/oggetti/
 # e raw SGLR in motore_nuovo/dati/sprite_raw/scenari/comuni/.
 # Lanciare da sglavinated_src: python3 "UFFICIO/Dipartimento Grafico/TOOLS/genera_galleria.py"
 # Non sovrascrive i PNG che esistono gia' (Andrea li ridisegna, 10/11), salvo --forza.
@@ -12,7 +12,7 @@ import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-OBJ = ROOT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "scenari" / "comuni" / "oggetti"
+OBJ = ROOT / "GRAFICA" / "scenari" / "comuni" / "oggetti"
 RAW = ROOT / "motore_nuovo" / "dati" / "sprite_raw" / "scenari" / "comuni"
 MAGIC = b"SGLR"
 

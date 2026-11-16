@@ -5,7 +5,7 @@
 # Due gruppi (a, b) in due pose: braccia giu' e braccia su. Il motore alterna
 # le pose per farli esultare e mette i gruppi ai lati della strada, prima e
 # dopo il traguardo.
-# Produce: Libreria/assets_originali/sprite/pubblico/pubblico_<gruppo>_<posa>.png (40x26)
+# Produce: GRAFICA/sprite/pubblico/pubblico_<gruppo>_<posa>.png (40x26)
 # Poi: python3 motore_nuovo/strumenti_py/png_a_raw.py (scrive i .sglraw).
 # Per ridisegnarli a mano: stesso nome e stessa misura, poi png_a_raw.py.
 import os
@@ -13,7 +13,7 @@ import random
 from PIL import Image, ImageDraw
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.abspath(os.path.join(BASE, "..", "Libreria", "assets_originali", "sprite", "pubblico"))
+OUT = os.path.abspath(os.path.join(BASE, "..", "..", "..", "GRAFICA", "sprite", "pubblico"))
 os.makedirs(OUT, exist_ok=True)
 
 W, H = 40, 26

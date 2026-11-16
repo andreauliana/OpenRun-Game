@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC0-1.0
 # G1 PERC1: genera freccia_cresta_dx/sx (stessa misura/stile di freccia_curva, segno del dosso).
-# Scrive PNG in Libreria/assets_originali/scenari/comuni/oggetti/ e raw SGLR in motore_nuovo/dati/sprite_raw/scenari/comuni/.
+# Scrive PNG in GRAFICA/scenari/comuni/oggetti/ e raw SGLR in motore_nuovo/dati/sprite_raw/scenari/comuni/.
 # Lanciare da sglavinated_src: python3 "UFFICIO/Dipartimento Grafico/TOOLS/genera_freccia_cresta.py"
 import struct
 import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-OBJ = ROOT / "UFFICIO" / "Dipartimento Grafico" / "Libreria" / "assets_originali" / "scenari" / "comuni" / "oggetti"
+OBJ = ROOT / "GRAFICA" / "scenari" / "comuni" / "oggetti"
 RAW = ROOT / "motore_nuovo" / "dati" / "sprite_raw" / "scenari" / "comuni"
 MAGIC = b"SGLR"
 

@@ -253,7 +253,7 @@ bool verificaSponsorCore() {
 }
 
 // VJ5 (16/11, passo infinito, file nuovo): il runner decodifica i PNG di
-// `assets_originali/sponsor/` con le 7x3 combinazioni fisse della sua tabella
+// `GRAFICA/sponsor/` con le 7x3 combinazioni fisse della sua tabella
 // (`runner/sponsor_loader.cpp:24-27`) e, se un PNG manca o non decodifica,
 // ripiega in silenzio sul raw gia' convertito (`sponsor_loader.cpp:98-110`):
 // un PNG nuovo di Andrea non riconvertito resta invisibile senza avviso.
@@ -721,30 +721,14 @@ bool verificaPoseAuto(const std::string& livello) {
     std::error_code ec;
     fs::create_directories(dirOut, ec);
 
-    // Pose come le carica Game::init: prima sprite_raw/giocatore/pose/ (Andrea),
-    // se manca la dritta i fotogrammi degli agenti, poi il raw storico.
+    // Pose come le carica Game::init: solo sprite_raw/giocatore/pose/ (Andrea).
     static const char* const POSE[POSA_GIOCATORE_COUNT] = {
         "auto_dritta", "auto_sx1", "auto_sx2", "auto_sx3", "auto_sx4",
         "auto_dx1", "auto_dx2", "auto_dx3", "auto_dx4", "auto_salita", "auto_discesa"};
     const std::string dirPose = "motore_nuovo/dati/sprite_raw/giocatore/pose/";
-    const std::string dirAgenti = "motore_nuovo/dati/sprite_raw/giocatore/";
     Sprite pose[POSA_GIOCATORE_COUNT];
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         pose[k] = caricaSpriteRaw(dirPose + POSE[k] + ".sglraw");
-    if (pose[POSA_GIOCATORE_DRITTA].width <= 0) {
-        static const struct { i32 posa; const char* nome; } AGENTI[] = {
-            {POSA_GIOCATORE_DRITTA, "auto_giocatore_dritta"},
-            {POSA_GIOCATORE_SX_2, "auto_giocatore_sterzo_sx_leggero"},
-            {POSA_GIOCATORE_SX_4, "auto_giocatore_sterzo_sx_forte"},
-            {POSA_GIOCATORE_DX_2, "auto_giocatore_sterzo_dx_leggero"},
-            {POSA_GIOCATORE_DX_4, "auto_giocatore_sterzo_dx_forte"},
-            {POSA_GIOCATORE_SALITA, "auto_giocatore_salita"},
-            {POSA_GIOCATORE_DISCESA, "auto_giocatore_discesa"}};
-        for (const auto& f : AGENTI)
-            pose[f.posa] = caricaSpriteRaw(dirAgenti + f.nome + ".sglraw");
-    }
-    if (pose[POSA_GIOCATORE_DRITTA].width <= 0)
-        pose[POSA_GIOCATORE_DRITTA] = caricaSpriteRaw(dirAgenti + "auto_giocatore.sglraw");
     if (pose[POSA_GIOCATORE_DRITTA].width <= 0) {
         std::printf("  pose auto: FALLITO (raw della posa dritta mancante)\n");
         return false;
@@ -753,8 +737,7 @@ bool verificaPoseAuto(const std::string& livello) {
     for (i32 k = POSA_GIOCATORE_SX_1; k <= POSA_GIOCATORE_DX_4; ++k)
         haSterzo = haSterzo || pose[k].width > 0;
     if (!haSterzo) {
-        std::printf("  pose auto: FALLITO (nessuna posa di sterzo in %s o %s)\n",
-                    dirPose.c_str(), dirAgenti.c_str());
+        std::printf("  pose auto: FALLITO (nessuna posa di sterzo in %s)\n", dirPose.c_str());
         return false;
     }
 
@@ -2991,7 +2974,7 @@ static bool leggiStringArray(const sgl::JsonValue& val, std::vector<std::string>
 
 static std::map<std::string, CatalogoEntry> caricaCatalogo() {
     std::map<std::string, CatalogoEntry> m;
-    std::ifstream f("UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CATALOGO_GRAFICO.json");
+    std::ifstream f("GRAFICA/CATALOGO_GRAFICO.json");
     if (!f.is_open()) return m;
     std::stringstream ss;
     ss << f.rdbuf();
@@ -3033,7 +3016,7 @@ static bool catalogoHa(const std::map<std::string, CatalogoEntry>& cat, const st
     bool perLivello = ce.livelli.empty();
     for (const auto& lv : ce.livelli) if (lv == livello) { perLivello = true; break; }
     if (!perLivello) { motivo = "id preso in prestito da altro livello"; return false; }
-    std::string filePath = "UFFICIO/Dipartimento Grafico/Libreria/" + ce.file;
+    std::string filePath = ce.file; // GRAFICA/... relativo a sglavinated_src
     std::string rawPath = ce.raw;
     if (!std::filesystem::exists(filePath)) { motivo = "file inesistente " + ce.file; return false; }
     if (!std::filesystem::exists(rawPath)) { motivo = "raw inesistente " + ce.raw; return false; }

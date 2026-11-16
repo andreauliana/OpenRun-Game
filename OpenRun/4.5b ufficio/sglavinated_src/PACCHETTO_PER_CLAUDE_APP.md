@@ -94,7 +94,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -118,7 +118,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -142,7 +142,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43

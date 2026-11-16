@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC0-1.0
 # Passo VG3 (@grafico): confronta i PNG di Andrea in
-# UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari/ con i raw che
+# GRAFICA/scenari/ con i raw che
 # il motore legge (motore_nuovo/dati/sprite_raw/scenari/).
 # Per ogni raw cerca il PNG sorgente (stessa regola di converti_oggetti_raw.py:
 # varianteA/oggetti/obj_<nome>.png, oppure comuni/oggetti/<nome>.png) e dice se il
@@ -12,7 +12,7 @@
 # la stessa regola: contenuto diverso = da convertire. Un PNG senza raw non blocca
 # l'exit: non e' un asset che il motore legge (es. residuo auto_giocatore_sbandata).
 # Il gruppo giocatore resta fuori del tutto: e' area bloccata (auto di Andrea).
-# In fondo c'e' il controllo di copertura: ogni PNG della Libreria deve essere o
+# In fondo c'e' il controllo di copertura: ogni PNG di GRAFICA deve essere o
 # confrontato con un raw, o appartenere a una categoria non-motore nota (anteprime
 # UI, font, area bloccata di Andrea, varianti legacy). Un PNG nuovo in un percorso
 # non mappato fa fallire il controllo: cosi' un ridisegno di Andrea fuori posto non
@@ -32,7 +32,7 @@ from pathlib import Path
 from PIL import Image
 
 RADICE = Path(__file__).resolve().parents[3]
-SCENARI = RADICE / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari"
+SCENARI = RADICE / "GRAFICA/scenari"
 RAW = RADICE / "motore_nuovo/dati/sprite_raw/scenari"
 RAW_ROOT = RADICE / "motore_nuovo/dati/sprite_raw"
 # Gruppi con PNG -> raw 1:1 fuori da scenari/. Il gruppo giocatore resta fuori:
@@ -46,20 +46,20 @@ ALTRI = (
 )
 # Stesso elenco di trama_scenari.py: chi disegna lo skyline di ogni livello.
 SKYLINE = {
-    "lv_01_neon": "scenari/lv_01_neon/scenario_neon_01_varianteA/skyline.png",
-    "lv_02_atomico": "scenari/lv_02_atomico/scenario_atomico_02_varianteA/skyline.png",
-    "lv_03_foglie": "scenari/lv_03_foglie/scenario_foglie_03_varianteA/skyline.png",
-    "lv_04_cromo": "skyline/varianteA_futurista/skyline.png",
-    "lv_05_spray": "scenari/lv_05_spray/scenario_spray_05_varianteA/skyline.png",
-    "lv_06_desktop": "scenari/lv_06_desktop/scenario_desktop_06_varianteA/skyline.png",
+    "lv_01_neon": "scenari/lv_01_neon/skyline.png",
+    "lv_02_atomico": "scenari/lv_02_atomico/skyline.png",
+    "lv_03_foglie": "scenari/lv_03_foglie/skyline.png",
+    "lv_04_cromo": "scenari/lv_04_cromo/skyline.png",
+    "lv_05_spray": "scenari/lv_05_spray/skyline.png",
+    "lv_06_desktop": "scenari/lv_06_desktop/skyline.png",
 }
-ASSETS = RADICE / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali"
+ASSETS = RADICE / "GRAFICA"
 # PNG senza raw e senza riferimento nel motore (residui di vecchie varianti, non
 # cancellabili da qui). Si segnalano ma non contano come guasto: nessuna conversione.
 RESIDUI_NON_MOTORE = {"sprite/rivali/auto_giocatore_sbandata.png"}
-# PNG della Libreria che il motore non legge come sprite: anteprime UI generate,
+# PNG di GRAFICA che il motore non legge come sprite: anteprime UI generate,
 # font (il motore usa il .ttf), area bloccata di Andrea (auto e pose), varianti
-# legacy non usate. Pattern sul percorso relativo a assets_originali/.
+# legacy non usate. Pattern sul percorso relativo a GRAFICA/.
 NON_MOTORE = (
     "ui/font/*/font.png",
     "ui/hud/*/hud_preview.png",
@@ -86,11 +86,8 @@ def png_sorgente(nome, livello):
     if livello == "comuni":
         png = SCENARI / "comuni" / "oggetti" / f"{nome}.png"
         return png if png.exists() else None
-    for variante in sorted((SCENARI / livello).glob("*varianteA")):
-        png = variante / "oggetti" / f"obj_{nome}.png"
-        if png.exists():
-            return png
-    return None
+    png = SCENARI / livello / "oggetti" / f"obj_{nome}.png"
+    return png if png.exists() else None
 
 
 def raw_atteso(png):
@@ -113,7 +110,7 @@ def png_oggetti():
 
 
 def png_altri(raw, gruppo):
-    """PNG sorgente per un raw dei gruppi 1:1 (stesso nome, cartella della Libreria)."""
+    """PNG sorgente per un raw dei gruppi 1:1 (stesso nome, cartella di GRAFICA)."""
     for rel, g in ALTRI:
         if g == gruppo:
             png = ASSETS / rel / f"{raw.stem}.png"
@@ -137,7 +134,7 @@ def png_altri_orfani():
 
 
 def png_coperti():
-    """Percorsi (relativi a assets_originali/) dei PNG gia' confrontati con un raw."""
+    """Percorsi (relativi a GRAFICA/) dei PNG gia' confrontati con un raw."""
     coperti = set()
     for png, _livello, _nome in png_oggetti():
         coperti.add(png.relative_to(ASSETS).as_posix())
@@ -160,7 +157,7 @@ def png_non_motore(rel):
 # Andrea (conversione fatta a mano): resta l'unico gruppo non confrontato, ma deve
 # comunque essere previsto qui. Un gruppo nuovo senza regola fa fallire il controllo:
 # cosi' una cartella di raw aggiunta (o spostata) non resta invisibile come succedeva
-# quando si guardavano solo i PNG della Libreria.
+# quando si guardavano solo i PNG di GRAFICA.
 GRUPPI_RAW = {"giocatore", "scenari", "sponsor"} | {g for _, g in ALTRI}
 
 
@@ -175,7 +172,7 @@ def controllo_gruppi_raw():
 
 
 def controllo_copertura():
-    """Ogni PNG della Libreria o e' confrontato, o e' non-motore noto, o e' sospetto."""
+    """Ogni PNG di GRAFICA o e' confrontato, o e' non-motore noto, o e' sospetto."""
     coperti = png_coperti()
     totale = noti = fuori = 0
     for png in sorted(ASSETS.rglob("*.png")):
@@ -188,7 +185,7 @@ def controllo_copertura():
             continue
         fuori += 1
         print(f"PNG-FUORI-COPERTURA {rel}: png {data(png)} (nessun raw e nessuna categoria nota)")
-    print(f"png nella Libreria: {totale} (confrontati con un raw {totale - noti - fuori}, non motore noti {noti})")
+    print(f"png in GRAFICA: {totale} (confrontati con un raw {totale - noti - fuori}, non motore noti {noti})")
     return fuori
 
 
@@ -315,7 +312,7 @@ if __name__ == "__main__":
     import sys
 
     if "--autotest" in sys.argv:
-        # Prova del percorso negativo senza toccare Libreria o dati/sprite_raw:
+        # Prova del percorso negativo senza toccare GRAFICA o dati/sprite_raw:
         # un PNG valido deve dare byte SGLR, uno troncato deve dare None.
         import tempfile
 
