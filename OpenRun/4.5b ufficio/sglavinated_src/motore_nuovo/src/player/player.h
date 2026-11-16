@@ -20,7 +20,10 @@ public:
     f32 z = 0.0f;             // posizione assoluta sul tracciato
     bool offroad = false;     // fuori dalla carreggiata
     bool sulBordo = false;    // ancora in strada ma sul bordo (rumble): frena appena
-    i32 gear = 1;             // marcia (1 o 2) - per HUD e feeling
+    i32 gear = 1;             // marcia (1..MARCE), cambio automatico - per HUD, contagiri e motore
+    static constexpr i32 MARCE = 3;
+    // Giri motore 0..1 nella marcia inserita (contagiri e suono del motore).
+    f32 giri() const;
 
     f32 maxSpeed() const { return MAX_SPEED; }
     // Comando di sterzo corrente -1 (sinistra) .. +1 (destra), con rampa
@@ -113,6 +116,12 @@ private:
     static constexpr f32 BORDO_SPINTA = 0.5f;
     static constexpr f32 BORDO_PUNTA = 0.88f;
     static constexpr f32 BORDO_SLOW_PER_SEC = 0.85f;
+    // Cambio automatico (Andrea 16/11: tre marce). Soglie in unita'/s su 250:
+    // 1a -> 2a a 90 (~105 km/h), 2a -> 3a a 170 (~200 km/h); in scalata
+    // 15 unita' piu' sotto. Dopo la cambiata i giri ripartono da 0.55.
+    static constexpr f32 MARCIA_SU[MARCE - 1] = {90.0f, 170.0f};
+    static constexpr f32 MARCIA_GIU[MARCE - 1] = {75.0f, 155.0f};
+    static constexpr f32 GIRI_DOPO_CAMBIATA = 0.55f;
 };
 
 } // namespace sgl

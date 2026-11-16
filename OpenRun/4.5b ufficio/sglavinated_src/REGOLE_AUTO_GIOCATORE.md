@@ -31,6 +31,13 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 - Curve: sterzando dentro una curva veloce la posa sale di 1-2 livelli e
   l'auto scivola fino a ~5 px verso l'esterno (`CURVA_DERIVA_SCHERMO = 140`).
 - L'auto resta centrata (x = 160 + piccolo spostamento con lo sterzo).
+- Derapata (Andrea 16/11, "nelle curve maggiore derapata"): coda fuori di
+  piu' a schermo (`DERAPATA_DERIVA_SCHERMO = 170`, era 120). Pose disegnate da
+  Andrea invariate.
+- Cambio automatico a tre marce (Andrea 16/11, prima due): 1a -> 2a a 90,
+  2a -> 3a a 170 unita'/s (scalata a 75 e 155). Contagiri e suono del motore
+  salgono in ogni marcia e calano a ogni cambiata (`Player::giri()`,
+  `MARCIA_SU`, `MARCIA_GIU`, `GIRI_DOPO_CAMBIATA = 0.55` in player.h).
 
 ## Comportamento (motore_nuovo/src/game/game.cpp)
 - **Curve (Andrea 08/11):** la curva spinge l'auto verso l'ESTERNO (curva a destra -> spinta a sinistra, col quadrato della velocita'); si tiene la curva sterzando DENTRO, cioe' a destra in una curva a destra. Prima il segno era invertito e bisognava sterzare dalla parte opposta: non rimetterlo.
@@ -82,17 +89,17 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   secchi alla punta.
 - **Sovrasterzo e controsterzo (Andrea 11/11, sostituisce la derapata
   dell'08/11):** sotto il limite di aderenza (carico = |curva| x v^2 sotto
-  `PRESA_LIMITE = 0.38`) l'auto e' incollata e segue lo sterzo. Oltre il
-  limite, sterzando forte DENTRO (sterzo >= 0.5) col gas premuto, la coda
+  `PRESA_LIMITE = 0.30`, era 0.38 fino al 16/11) l'auto e' incollata e segue lo sterzo. Oltre il
+  limite, sterzando forte DENTRO (sterzo >= 0.4, era 0.5) col gas premuto, la coda
   parte: l'angolo (`sovrasterzo_`, 0..1) cresce (`SOVRA_CRESCITA = 1.3`/s a
-  carico pieno, `PRESA_PIENA = 0.80`), il muso punta dentro e l'auto viene
+  carico pieno, `PRESA_PIENA = 0.70`, era 0.80), il muso punta dentro e l'auto viene
   tirata verso l'interno (`SOVRA_LAT = 1500` unita'/s ad angolo pieno); lo
   sterzo sposta meno l'auto (`SOVRA_PRESA_STERZO = 0.75`: le ruote tengono
   l'angolo). Il **controsterzo** (sterzare dalla parte opposta al muso)
   riprende la coda (`SOVRA_RECUPERO = 2.4`/s); sterzo al centro
-  (`SOVRA_CALO`), carico sotto il limite (`SOVRA_PRESA_TORNA`) o gas alzato
+  (`SOVRA_CALO`), carico sotto il limite (`SOVRA_PRESA_TORNA = 0.8`, era 1.2: la scivolata dura di piu' in uscita) o gas alzato
   (`SOVRA_SENZA_GAS`) la fanno rientrare. Le gomme che strisciano tolgono
-  velocita' (`SOVRA_FRENO_PER_S = 0.88`). Se l'angolo arriva in fondo:
+  velocita' (`SOVRA_FRENO_PER_S = 0.93`, era 0.88). Se l'angolo arriva in fondo:
   **testacoda** (velocita' al 40%, botta, l'auto gira su se stessa per 0.7 s
   con le pose piene alternate, sterzo inutile intanto). Si vede: posa che punta
   dentro la curva anche controsterzando, coda fuori di qualche pixel, 1 px di

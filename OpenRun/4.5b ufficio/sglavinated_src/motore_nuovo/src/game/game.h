@@ -476,6 +476,7 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     };
     struct Rivale {
         f32 progresso = 0.0f; // distanza percorsa dalla partenza (tutte le tappe)
+        f32 oltreArrivo = 0.0f; // strada fatta dopo il traguardo (Andrea 16/11: resta visibile oltre la linea)
         f32 x = 0.0f, xObiettivo = 0.0f; // posizione nella corsia
         f32 passo = 0.0f, passoMax = 0.0f; // velocita' in unita' di strada al secondo
         i32 ramo = 1;   // ramo preso ai bivi (-1 sinistra, +1 destra)
@@ -518,6 +519,10 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     // stessa regola di ripetizione di caricaLivello), senza costruire la Road.
     f32 lunghezzaNominaleTappa(const std::string& livelloId) const;
     void avanzaTappaRivale(Rivale& r); // cambio tappa o arrivo del rivale
+    // Rivali gia' oltre la check line (Andrea 16/11): quota sulla strada del
+    // giocatore (lunghezza tappa + progresso nella nuova), -1 se non visibile.
+    f32 zOltreCheckLine(const Rivale& r, i32 tappaGiocatore, i32 tappaDopo, bool& mioRamo) const;
+    void aggiungiSpriteRivale(const Rivale& r, i32 i, f32 zLocale, bool mioRamo = false);
     std::vector<f32> lunghezzeTappe_;  // parallelo a tappe_
     void preparaBivio();
     // Bivio leggibile e checkpoint (Andrea 11/11): colori delle due mete

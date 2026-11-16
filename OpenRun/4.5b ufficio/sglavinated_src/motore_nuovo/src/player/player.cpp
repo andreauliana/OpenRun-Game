@@ -63,8 +63,22 @@ void Player::update(f32 dt) {
     if (speed > MAX_SPEED) speed = MAX_SPEED;
     // Avanzamento sulla strada (gestito anche da Game, qui si tiene la z locale).
     z += speed * dt;
-    // Marcia: semplice per HUD (soglia in unita'/secondo, come speed).
-    gear = (speed > 110.0f) ? 2 : 1;
+    // Cambio automatico a tre marce (Andrea 16/11, prima due): sale alle
+    // soglie MARCIA_SU, scende un po' sotto (MARCIA_GIU) cosi' non fa avanti e
+    // indietro sulla soglia. I giri ripartono piu' bassi a ogni cambiata.
+    if (gear < 1) gear = 1;
+    while (gear < MARCE && speed > MARCIA_SU[gear - 1]) ++gear;
+    while (gear > 1 && speed < MARCIA_GIU[gear - 2]) --gear;
+}
+
+f32 Player::giri() const {
+    // Giri motore 0..1 nella marcia inserita: da GIRI_DOPO_CAMBIATA (appena
+    // cambiato) a 1 sulla soglia della marcia dopo; in prima da 0.
+    const f32 da = gear <= 1 ? 0.0f : MARCIA_SU[gear - 2];
+    const f32 a = gear >= MARCE ? MAX_SPEED : MARCIA_SU[gear - 1];
+    const f32 base = gear <= 1 ? 0.0f : GIRI_DOPO_CAMBIATA;
+    const f32 t = std::clamp((speed - da) / (a - da), 0.0f, 1.0f);
+    return base + (1.0f - base) * t;
 }
 
 f32 Player::spintaA(f32 v) {

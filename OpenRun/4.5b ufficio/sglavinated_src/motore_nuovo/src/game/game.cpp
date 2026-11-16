@@ -94,17 +94,17 @@ constexpr f32 CURVA_DERIVA_SCHERMO = 140.0f; // Andrea 07/11: scivolata visiva v
 // rientrare piano. Se l'angolo arriva in fondo: testacoda (velocita' al 40%,
 // l'auto gira su se stessa per un attimo). Le gomme che strisciano tolgono
 // velocita' (SOVRA_FRENO_PER_S). Fumo, stridio e posa come la derapata di prima.
-constexpr f32 PRESA_LIMITE = 0.38f;   // carico oltre cui le gomme posteriori mollano
-constexpr f32 PRESA_PIENA = 0.80f;    // carico a cui la coda parte alla velocita' massima
-constexpr f32 SOVRA_STERZO_MIN = 0.5f; // sterzo dentro che fa partire la coda
+constexpr f32 PRESA_LIMITE = 0.30f;   // carico oltre cui le gomme posteriori mollano (16/11: era 0.38, "piu' derapata")
+constexpr f32 PRESA_PIENA = 0.70f;    // carico a cui la coda parte alla velocita' massima (16/11: era 0.80)
+constexpr f32 SOVRA_STERZO_MIN = 0.4f; // sterzo dentro che fa partire la coda (16/11: era 0.5)
 constexpr f32 SOVRA_CRESCITA = 1.3f;  // angolo al secondo a carico pieno e sterzo pieno dentro
 constexpr f32 SOVRA_RECUPERO = 2.4f;  // controsterzo pieno: angolo ripreso al secondo
 constexpr f32 SOVRA_CALO = 0.7f;      // sterzo al centro: l'angolo cala da solo
-constexpr f32 SOVRA_PRESA_TORNA = 1.2f; // sotto il limite le gomme riprendono presto
+constexpr f32 SOVRA_PRESA_TORNA = 0.8f; // sotto il limite le gomme riprendono (16/11: era 1.2, la scivolata dura di piu' in uscita)
 constexpr f32 SOVRA_SENZA_GAS = 0.9f;  // gas alzato: il peso torna sulle ruote dietro
 constexpr f32 SOVRA_LAT = 1500.0f;     // unita'/s verso l'interno ad angolo pieno
 constexpr f32 SOVRA_PRESA_STERZO = 0.75f; // ad angolo pieno lo sterzo sposta l'auto solo del 25%
-constexpr f32 SOVRA_FRENO_PER_S = 0.88f;  // velocita' persa al secondo ad angolo pieno
+constexpr f32 SOVRA_FRENO_PER_S = 0.93f;  // velocita' persa al secondo ad angolo pieno (16/11: era 0.88, derapare costa un po' meno)
 constexpr f32 TESTACODA_RESTA = 0.40f;    // velocita' che resta dopo un testacoda
 constexpr f32 TESTACODA_S = 0.7f;         // l'auto gira su se stessa (pose alternate)
 // Partenza e pattinamento (Andrea 11/11: "al conto alla rovescia il giocatore
@@ -123,7 +123,7 @@ constexpr f32 LANCIO_ACC = 55.0f;       // unita'/s^2 a partenza perfetta (~150 
 constexpr f32 PATTINA_S = 1.6f;         // ruote che girano a vuoto dopo una partenza a fondo
 constexpr f32 PATTINA_PRESA = 0.75f;    // a pattinamento pieno la spinta cala del 75%
 constexpr f32 RIPARTENZA_PATTINA = 0.5f; // dopo un incidente si riparte con un po' di pattinamento
-constexpr f32 DERAPATA_DERIVA_SCHERMO = 120.0f; // scivolata visiva in piu' (unita' di offsetX)
+constexpr f32 DERAPATA_DERIVA_SCHERMO = 170.0f; // scivolata visiva in piu' (unita' di offsetX; 16/11: era 120)
 // Quando l'auto e' fuori strada la spinta di curva si moltiplica per questo
 // fattore (<1): lo sterzo verso la strada deve poter far rientrare l'auto
 // senza essere contrastato dalla spinta centrifuga.
@@ -1577,6 +1577,7 @@ void Game::inizializzaRivali() {
         r.nPercorso = 0;
         r.passoPercorso = 0;
         r.tempoArrivoS = -1.0f;
+        r.oltreArrivo = 0.0f;
         r.segnalinoS = 0.0f;
         r.vicino = false;
         // Sorgente RNG per le scelte del bivio di questo rivale (deterministico
@@ -1771,9 +1772,25 @@ void Game::aggiornaRivali() {
     sprites_.clear();
     spritesFonte_.clear();
     const i32 tappaGiocatore = indiceTappa(tappaId_);
+    // Tappa oltre la check line sul ramo scelto dal giocatore (-1 prima della scelta).
+    i32 tappaDopo = -1;
+    if (latoBivio_ != 0 && !corsaSingola_)
+        if (const Tappa* t = trovaTappa(tappaId_))
+            tappaDopo = indiceTappa(latoBivio_ < 0 ? t->sinistra : t->destra);
     for (i32 i = 0; i < RIVALI; ++i) {
         Rivale& r = rivali_[i];
-        if (r.tempoArrivoS >= 0.0f) continue; // gia' al traguardo: fuori dalla corsa
+        if (r.tempoArrivoS >= 0.0f) {
+            // Gia' al traguardo: fuori dalla corsa. Finche' il giocatore non
+            // arriva, chi ha appena passato la linea davanti a lui prosegue al
+            // suo passo oltre il traguardo invece di sparire (Andrea 16/11).
+            if (!arrivo_ && r.nPercorso > 0 && r.percorso[r.nPercorso - 1] == tappaGiocatore &&
+                tappaGiocatore >= 0 && tappaGiocatore < (i32)lunghezzeTappe_.size() &&
+                r.oltreArrivo < 60000.0f) {
+                r.oltreArrivo += r.passo * dt;
+                aggiungiSpriteRivale(r, i, lunghezzeTappe_[(size_t)tappaGiocatore] + r.oltreArrivo);
+            }
+            continue;
+        }
         const f32 avvicina = spunto ? 1.0f - std::exp(-dt / r.spuntoS) : avvicinaBase;
         // Partenza (Andrea 11/11): nei primi SPUNTO_FINO_S secondi i rivali
         // accelerano come il giocatore (stessa spinta, Player::spintaA), con la
@@ -1813,6 +1830,11 @@ void Game::aggiornaRivali() {
             r.progresso += distanza;
             r.progressoTappa += distanza;
             avanzaTappaRivale(r);
+            // Andrea 16/11: chi ha gia' passato la check line resta visibile
+            // oltre la linea, sulla strada che il giocatore vede davanti.
+            bool mioRamo = false;
+            const f32 oltre = zOltreCheckLine(r, tappaGiocatore, tappaDopo, mioRamo);
+            if (oltre >= 0.0f) aggiungiSpriteRivale(r, i, oltre, mioRamo);
             continue;
         }
         const f32 zLocale = r.progressoTappa; // dentro la tappa (la strada del giocatore)
@@ -1892,6 +1914,9 @@ void Game::aggiornaRivali() {
         for (i32 j = 0; j < RIVALI; ++j) {
             if (j == i) continue;
             const Rivale& q = rivali_[j];
+            // Chi ha gia' tagliato il traguardo non fa da muro sulla linea
+            // (16/11: i rivali dietro restavano fermi e poi scattavano indietro).
+            if (q.tempoArrivoS >= 0.0f) continue;
             if (!(q.passoPercorso < q.nPercorso && q.percorso[q.passoPercorso] == tappaGiocatore)) continue;
             if (std::abs(r.x - q.x) >= RIVALE_LATERALE_MIN) continue;
             const f32 dzTappa = q.progressoTappa - r.progressoTappa;
@@ -1958,7 +1983,15 @@ void Game::aggiornaRivali() {
         // Tappa finita o traguardo raggiunto in questo frame: non si disegna
         // piu' sulla strada del giocatore.
         if (r.tempoArrivoS >= 0.0f || r.passoPercorso >= r.nPercorso ||
-            r.percorso[r.passoPercorso] != tappaGiocatore) continue;
+            r.percorso[r.passoPercorso] != tappaGiocatore) {
+            // Ha passato la check line in questo frame: si continua a vederlo
+            // oltre la linea (prima spariva qui e ricompariva al passaggio del giocatore).
+            bool mioRamo = false;
+            f32 oltre = zOltreCheckLine(r, tappaGiocatore, tappaDopo, mioRamo);
+            if (r.tempoArrivoS >= 0.0f && !arrivo_) oltre = r.progressoTappa; // traguardo appena passato
+            if (oltre >= 0.0f) aggiungiSpriteRivale(r, i, oltre, mioRamo);
+            continue;
+        }
         // Le auto sono solide: chi arriva da dietro non attraversa il giocatore.
         const bool nelBivio = road_.bivioAttivo() && zLocale >= road_.bivioInizioZ();
         if (!nelBivio && distacco <= Game::URTO_Z_MIN && r.progresso > mio + Game::URTO_Z_MIN &&
@@ -1980,21 +2013,46 @@ void Game::aggiornaRivali() {
         if (!r.vicino && distAss < SEGNALINO_VICINO_Z) { r.vicino = true; r.segnalinoS = SEGNALINO_DURATA_S; }
         else if (r.vicino && distAss > SEGNALINO_LONTANO_Z) r.vicino = false;
         if (r.segnalinoS > 0.0f) r.segnalinoS = std::max(0.0f, r.segnalinoS - dt);
-        if (zRel <= 0.0f || zRel > 60000.0f || zLocale >= giro + 60000.0f) continue;
-        // Sul bivio ogni avversario segue il suo ramo.
-        const Road::Carreggiate c = road_.carreggiate(zLocale, latoBivio_);
-        const i32 indice = latoBivio_ == 0 ? (r.ramo < 0 ? 0 : 1) : (r.ramo == latoBivio_ ? 0 : 1);
-        SpriteInstance s;
-        s.worldZ = road_.playerZ + zRel;
-        s.worldX = c.centro[indice] + r.x * c.fattore;
-        s.scale = SCALA_RIVALE;
-        s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
-        s.paletteBase = r.colore;
-        const bool segnalinoAcceso = tempoTotaleS() < SEGNALINO_PARTENZA_S || r.segnalinoS > 0.0f;
-        s.segnalino = segnalinoAcceso ? COLORI_RIVALI[r.spriteIdx >= 0 ? r.spriteIdx : i] : 0u;
-        sprites_.push_back(s);
-        spritesFonte_.push_back(i);
+        if (zLocale >= giro + 60000.0f) continue;
+        aggiungiSpriteRivale(r, i, zLocale);
     }
+}
+
+f32 Game::zOltreCheckLine(const Rivale& r, i32 tappaGiocatore, i32 tappaDopo, bool& mioRamo) const {
+    // Rivale gia' nella tappa oltre la check line: quota sulla strada che il
+    // giocatore vede davanti = lunghezza della tappa del giocatore + quanto ha
+    // gia' fatto nella nuova. Sul ramo scelto dal giocatore se la sua tappa e'
+    // quella che segue (anche se ci e' arrivato da un altro percorso), sul suo
+    // ramo se ha appena lasciato la tappa del giocatore per l'altra strada.
+    // -1 se non va disegnato.
+    mioRamo = false;
+    if (r.tempoArrivoS >= 0.0f || r.passoPercorso >= r.nPercorso || r.progressoTappa > 60000.0f) return -1.0f;
+    if (tappaGiocatore < 0 || tappaGiocatore >= (i32)lunghezzeTappe_.size()) return -1.0f;
+    const f32 lung = lunghezzeTappe_[(size_t)tappaGiocatore];
+    if (tappaDopo >= 0 && r.percorso[r.passoPercorso] == tappaDopo) {
+        mioRamo = true;
+        return lung + r.progressoTappa;
+    }
+    if (r.passoPercorso >= 1 && r.percorso[r.passoPercorso - 1] == tappaGiocatore) return lung + r.progressoTappa;
+    return -1.0f;
+}
+
+void Game::aggiungiSpriteRivale(const Rivale& r, i32 i, f32 zLocale, bool mioRamo) {
+    const f32 zRel = zLocale - road_.playerZ;
+    if (zRel <= 0.0f || zRel > 60000.0f) return;
+    // Sul bivio ogni avversario segue il suo ramo (anche oltre la check line).
+    const Road::Carreggiate c = road_.carreggiate(zLocale, latoBivio_);
+    const i32 indice = mioRamo ? 0 : latoBivio_ == 0 ? (r.ramo < 0 ? 0 : 1) : (r.ramo == latoBivio_ ? 0 : 1);
+    SpriteInstance s;
+    s.worldZ = road_.playerZ + zRel;
+    s.worldX = c.centro[indice] + r.x * c.fattore;
+    s.scale = SCALA_RIVALE;
+    s.sprite = r.spriteIdx >= 0 ? ren_.rivaleSprite(r.spriteIdx) : nullptr; // RIV punto b: sprite vero se disponibile
+    s.paletteBase = r.colore;
+    const bool segnalinoAcceso = tempoTotaleS() < SEGNALINO_PARTENZA_S || r.segnalinoS > 0.0f;
+    s.segnalino = segnalinoAcceso ? COLORI_RIVALI[r.spriteIdx >= 0 ? r.spriteIdx : i] : 0u;
+    sprites_.push_back(s);
+    spritesFonte_.push_back(i);
 }
 
 void Game::fineTappa(f32 avanzo) {
@@ -2786,8 +2844,11 @@ void Game::aggiornaGuida(f32 dt) {
     showManager_.aggiorna(gi); // risultato letto da showDati() / disegnoShow_
     disegnoShow_.aggiorna(tempoGiocoS_, showManager_); // stesso tempo (secondi)!
 
-    // 6) Audio sintetico del motore (rpm proporzionato alla velocita').
-    f32 rpm = player_.speed / player_.maxSpeed() * 8000.0f;
+    // 6) Audio sintetico del motore: i giri seguono la marcia (Andrea 16/11,
+    // cambio automatico a tre marce): salgono in ogni marcia e calano a ogni
+    // cambiata, cosi' le marce si sentono.
+    f32 rpm = 1200.0f + player_.giri() * 6800.0f;
+    if (player_.speed < 1.0f) rpm = 0.0f; // ferma: minimo (sotto)
     // In griglia il gas fa rombare il motore a vuoto (l'auto resta ferma).
     if (inPartenza()) {
         rpm = 900.0f + giriGriglia_ * (GIRI_ATTESA + 1800.0f);
@@ -3062,10 +3123,9 @@ void Game::render() {
         h.km = km_;
         h.totaleS = (f32)frameGara_ / (f32)frequenzaHz_;
         h.tempoExtra = tempoExtraS_ > 0.0f ? tempoBonusS_ : 0;
-        // Contagiri del cambio automatico a due marce: sale in LOW, riparte piu' alto in HIGH.
-        const f32 v = player_.speed / player_.maxSpeed();
-        constexpr f32 CAMBIO = 110.0f / 250.0f;
-        h.giri = player_.gear <= 1 ? v / CAMBIO : 0.45f + 0.55f * (v - CAMBIO) / (1.0f - CAMBIO);
+        // Contagiri del cambio automatico a tre marce (Andrea 16/11): sale in
+        // ogni marcia e a ogni cambiata riparte piu' basso (Player::giri).
+        h.giri = player_.giri();
         // Partenza (Andrea 11/11): in griglia il contagiri mostra i giri del
         // gas; con le ruote che pattinano il motore va su anche se l'auto no.
         if (inPartenza()) h.giri = giriGriglia_;
