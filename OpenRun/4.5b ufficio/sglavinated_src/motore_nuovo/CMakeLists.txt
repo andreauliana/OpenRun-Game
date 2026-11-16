@@ -129,8 +129,7 @@ if(EMSCRIPTEN)
         "SHELL:-sEXPORTED_RUNTIME_METHODS=FS"
         "-lidbfs.js"
         "SHELL:--preload-file ${SGL_DATI_WEB}"
-        "SHELL:--exclude-file *.md"
-        "SHELL:--exclude-file *SepteJungle2.xm")
+        "SHELL:--exclude-file *.md")
     set_target_properties(openrun PROPERTIES SUFFIX ".js")
 endif()
 

@@ -925,6 +925,12 @@ void Game::caricaMusica() {
     primoBranoGara_ = mixer_.numTracks();
     if (jsonGet(jsonAsObject(r.valore()), "gara", gara) && jsonIsArray(gara))
         for (const JsonValue& b : jsonAsArray(gara)) aggiungi(b);
+    numBraniGara_ = mixer_.numTracks() - primoBranoGara_;
+    // Andrea 16/11: brano proprio per l'ultima tappa della gara a tappe
+    // (quella senza bivio, che finisce all'arrivo). Facoltativo.
+    JsonValue ultima;
+    if (jsonGet(jsonAsObject(r.valore()), "ultima_tappa", ultima) && aggiungi(ultima))
+        branoUltimaTappa_ = mixer_.numTracks() - 1;
 }
 
 void Game::aggiornaRadio() {
@@ -934,10 +940,16 @@ void Game::aggiornaRadio() {
     const bool inGara = f != FaseId::Splash && f != FaseId::Menu;
     if (inGara && !radioInGara_) ++radioGara_;
     radioInGara_ = inGara;
-    const i32 braniGara = mixer_.numTracks() - primoBranoGara_;
+    const i32 braniGara = numBraniGara_;
     i32 voluto = branoMenu_;
     if (inGara && braniGara > 0)
         voluto = primoBranoGara_ + (radioGara_ + std::max(0, numeroTappa_ - 1)) % braniGara;
+    // Ultima tappa della gara a tappe (niente bivio dopo): il suo brano, se c'e'.
+    // In corsa singola restano i brani della gara.
+    if (inGara && branoUltimaTappa_ >= 0 && !corsaSingola_ && numeroTappa_ > 1) {
+        const Tappa* t = trovaTappa(tappaId_);
+        if (t && t->sinistra.empty() && t->destra.empty()) voluto = branoUltimaTappa_;
+    }
     if (voluto >= 0 && voluto != mixer_.currentTrack()) mixer_.selezionaBrano(voluto);
 }
 

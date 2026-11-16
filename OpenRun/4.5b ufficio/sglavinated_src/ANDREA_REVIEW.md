@@ -10,7 +10,7 @@ Unico documento di Andrea che gli agenti leggono. **Precedenza assoluta** su tut
 4. `RICHIESTA_APERTA.md` — il vostro blocco (dal 10/11: V47, seconda lista con passi sempre disponibili ∞).
 5. La vostra bacheca (`RIASSUNTO.md`, `DIARIO_RECENTE.md`).
 
-Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti), `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/OGGETTI_LIVELLI.md` (oggetti e PNG), `CATALOGO_GRAFICO.json`.
+Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti), `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md` (quali PNG e raw usa il gioco, dal 16/11), `CATALOGO_GRAFICO.json`.
 
 ## 2. Base legacy 08/11 — fatto, approvato, NON si tocca
 
@@ -26,6 +26,7 @@ Andrea 08/11: "segna tutto come ok per me". Tutto quello che c'e' oggi nel gioco
 - **Partenza** (griglia, pubblico, 3-2-1-START) se la PR #84 e' nel main.
 - **Menu**: logo SEGNAPOSTO "OPEN RUN" (`Libreria/assets_originali/ui/logo/logo_openrun.png`) + le voci. **Niente altre scritte, decorazioni o elementi**: il logo e il menu li fa Andrea.
 - **Cartelloni sponsor** (`Libreria/assets_originali/sponsor/`): **li tocca solo Andrea**. Il 09/11 ha fatto ripristinare gli originali; nessun agente li ridisegna, rigenera o ritocca (ne' PNG ne' raw). Se Andrea cambia un PNG, si converte in raw e basta.
+- **Pulizia grafica 16/11 (legacy)**: tolti gli asset e le cartelle che il gioco non usava (rivali di lato, parapetto, auto D5/D6, palette e skyline del blocco F, anteprime UI bianco e nero, font A/C, cartelle di scenario senza immagini, vecchia `bacheche/` fuori da UFFICIO). Elenco in `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`. **Non si rigenerano** (niente `genera_bloccoL.py`, `genera_ui_b.py` per le anteprime, `disegna_rivali.py` per le viste di lato) e non si creano varianti nuove: un asset nuovo entra solo se il gioco lo carica, col suo PNG + raw + voce nel catalogo.
 - **Grafica di Andrea**: auto, logo, sfondi dei livelli e oggetti li ridisegna lui. Se un suo PNG cambia, lo si converte (`png_a_raw.py` o lo script indicato nel catalogo) e basta, senza ritoccarlo. Le vecchie varianti non usate (gruppo B) sono state cancellate da Andrea l'08/11: non si rigenerano.
 
 ## 3. Vocabolario di gioco (azioni definite e testate)
