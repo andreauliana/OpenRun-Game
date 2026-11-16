@@ -243,6 +243,8 @@ private:
     bool musicaCaricata_ = false;
     i32 branoMenu_ = -1;      // indice nel mixer del brano del menu (-1 = nessuno)
     i32 primoBranoGara_ = 0;  // i brani della gara vengono dopo
+    i32 branoUltimaTappa_ = -1; // playlist "ultima_tappa" (Andrea 16/11): brano della tappa d'arrivo
+    i32 numBraniGara_ = 0;     // brani della lista "gara" (a giro)
     i32 radioGara_ = -1;      // avanza a ogni gara e con R / Start+B
     bool radioInGara_ = false;
     void drawMusica(); // spettro e battito in gara
