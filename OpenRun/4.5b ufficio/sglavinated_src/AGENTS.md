@@ -25,6 +25,7 @@ sglavinated_src/
 
 La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
 **Cartelle (Andrea 08/11):** si scrive solo dentro `UFFICIO/` (la tua bacheca `UFFICIO/bacheche/<ruolo>/`, le tue uscite `UFFICIO/out/<ruolo>/`, Officina, Dipartimento Grafico) e in `motore_nuovo/` quando il blocco lo chiede. Vietato creare cartelle nuove o file alla radice di `sglavinated_src/`; niente file .md in `motore_nuovo/test/`.
+**Grafica (Andrea 16/11, legacy):** la Libreria contiene solo gli originali che il gioco usa (elenco: `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`). Ogni PNG usato ha il suo `.sglraw` in `motore_nuovo/dati/sprite_raw/` e una voce in `CATALOGO_GRAFICO.json`. Vietato rimettere varianti, anteprime o bozze non caricate dal gioco; vietato ricreare le cartelle tolte il 16/11. La musica sta in `motore_nuovo/dati/audio/musica/*.xm` (i progetti tracker sono questi file) e la tocca solo Andrea.
 
 **Chi scrive dove (Andrea 08/11, permessi in `.opencode/agents/`):**
 | Ruolo | Scrive | Legge |

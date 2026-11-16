@@ -63,6 +63,16 @@ Tolte anche le 21 voci corrispondenti da `CATALOGO_GRAFICO.json`
 (`check_catalogo_grafico.py`: 0 errori) e rigenerato `INDICE_ASSET.json/.md`
 con `strumenti_py/indice_assets.py`.
 
+## Cartelle tolte (Andrea 16/11: "puoi togliere folder non usate")
+
+Nessuno script, convertitore o codice le leggeva (controllato: `converti_oggetti_raw.py` rifatto = 0 raw cambiati, 0 errori).
+
+- `scenari/lv_01..03/`: le cartelle di scenario senza immagini (`*_varianteB`, `*_varianteC`,
+  `scenario_lv_0x_0y`, `scenario_0x_01_varianteA`): solo `manifest.json` e `palette.json` di ottobre.
+  Restano solo `scenario_<tema>_0x_varianteA/` (skyline + `oggetti/obj_*.png`).
+- `sglavinated_src/bacheche/`: copia vecchia dei diari; le bacheche vere sono in `UFFICIO/bacheche/`.
+- `assets_originali/genera_bloccoF.py`: generatore delle palette e skyline B/C tolte.
+
 ## Tenuti, ma da decidere (Andrea)
 
 - `scenari/comuni/oggetti/guardrail.png` + `.sglraw`: disegno di Andrea (PR #93), oggi il gioco non lo usa.
@@ -86,7 +96,10 @@ modificano con MilkyTracker o OpenMPT): non c'e' un file sorgente separato.
 Nel repo non e' mai esistito altro formato tracker (.mod, .it, .s3m, .xrns...).
 Se Andrea ha versioni di lavoro (es. con campioni o progetti di un altro programma), sono solo sul suo computer.
 
-## Proposta: cartelle piu' semplici (da scegliere, NON fatto in questa PR)
+## Proposta: cartelle piu' semplici (spostamenti da scegliere, NON fatti in questa PR)
+
+Le cartelle vuote o inutili sono gia' tolte (sopra). Qui sotto solo gli spostamenti,
+che cambiano percorsi e quindi vanno decisi.
 
 Oggi un PNG da ridisegnare sta 9 livelli sotto la radice, per esempio
 `OpenRun/4.5b ufficio/sglavinated_src/UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari/lv_03_foglie/scenario_foglie_03_varianteA/oggetti/obj_albero.png`.

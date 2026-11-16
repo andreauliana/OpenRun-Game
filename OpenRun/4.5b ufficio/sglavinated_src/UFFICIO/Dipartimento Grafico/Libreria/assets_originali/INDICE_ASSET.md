@@ -1,6 +1,6 @@
 # Indice asset (generato da strumenti_py/indice_assets.py — non modificare a mano)
 
-Aggiornato: 2026-11-16 19:08 — 244 file in assets_originali/.
+Aggiornato: 2026-11-16 19:11 — 207 file in assets_originali/.
 
 ## Cosa serve per il primo livello giocabile
 
@@ -22,10 +22,10 @@ Aggiornato: 2026-11-16 19:08 — 244 file in assets_originali/.
 
 | Categoria | File | PNG | Byte | Con avvisi |
 |---|---|---|---|---|
-| (radice) | 5 | 0 | 120369 | 0 |
+| (radice) | 4 | 0 | 98168 | 0 |
 | font | 2 | 0 | 56460 | 0 |
 | ricerca | 6 | 0 | 12435 | 0 |
-| scenari | 136 | 85 | 99807 | 15 |
+| scenari | 100 | 85 | 70446 | 15 |
 | skyline | 3 | 2 | 8341 | 0 |
 | sponsor | 31 | 21 | 64064 | 0 |
 | sprite | 54 | 50 | 35608 | 12 |
