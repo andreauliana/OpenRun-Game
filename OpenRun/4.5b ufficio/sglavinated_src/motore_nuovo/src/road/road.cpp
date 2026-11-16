@@ -366,12 +366,27 @@ void Road::calcolaDintorni() {
 f32 Road::beccheggioPx(f32 z) const {
     if (segs_.empty() || totalLen_ <= 0) return 0.0f;
     // Pendenza media attorno all'auto (finestra larga: i dossi brevi non fanno
-    // ondeggiare l'orizzonte), con una soglia sotto cui resta fermo.
-    constexpr f32 MEZZA = 1600.0f, SOGLIA = 0.03f, PX_PER_PENDENZA = 36.0f;
+    // ondeggiare l'orizzonte). Andrea 16/11: "la linea dell'orizzonte varii
+    // leggermente, per ponti o dossi, o certe grandi curve": soglia piu' bassa
+    // (0.012, era 0.03) e piu' pixel per pendenza (48, erano 36), cosi' anche
+    // dune e rampe dei ponti muovono l'orizzonte di qualche pixel. La soglia
+    // si toglie (non taglia): il movimento parte da zero, senza scatti.
+    constexpr f32 MEZZA = 1600.0f, SOGLIA = 0.012f, PX_PER_PENDENZA = 48.0f;
     const f32 p = (quotaAt(z + MEZZA) - quotaAt(z - MEZZA)) / (2.0f * MEZZA);
     const f32 a = std::fabs(p) - SOGLIA;
-    if (a <= 0.0f) return 0.0f;
-    return std::clamp(std::copysign(a * PX_PER_PENDENZA, p), -BECCHEGGIO_PX_MAX, BECCHEGGIO_PX_MAX);
+    const f32 pendenza = a > 0.0f ? std::copysign(a * PX_PER_PENDENZA, p) : 0.0f;
+    // Grandi curve: curvatura media sui prossimi ~3000 unita' (si sente
+    // arrivare e se ne va piano). Oltre CURVA_DA l'orizzonte si sposta fino a
+    // CURVA_PX: giu' in curva a destra (leggera salita), su in curva a
+    // sinistra (leggera discesa). Le curve normali non lo muovono.
+    constexpr f32 CURVA_DA = 0.35f, CURVA_PIENA = 0.85f, CURVA_PX = 2.5f;
+    constexpr i32 CAMPIONI = 8;
+    f32 somma = 0.0f;
+    for (i32 k = 0; k < CAMPIONI; ++k) somma += curvaAt(z + (f32)k * 400.0f);
+    const f32 c = somma / (f32)CAMPIONI;
+    const f32 t = std::clamp((std::fabs(c) - CURVA_DA) / (CURVA_PIENA - CURVA_DA), 0.0f, 1.0f);
+    const f32 curva = std::copysign(CURVA_PX * t * t * (3.0f - 2.0f * t), c);
+    return std::clamp(pendenza + curva, -BECCHEGGIO_PX_MAX, BECCHEGGIO_PX_MAX);
 }
 
 bool Road::acquaAt(f32 z) const {
