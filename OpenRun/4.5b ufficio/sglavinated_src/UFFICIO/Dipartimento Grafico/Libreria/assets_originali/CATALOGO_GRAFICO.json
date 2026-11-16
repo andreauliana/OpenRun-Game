@@ -251,20 +251,6 @@
          "nota": "D2/D2b; originale ripristinato 09/11, lo ridisegna solo Andrea"
       },
       {
-         "id": "auto.argento_lunare",
-         "tipo": "auto_giocatore",
-         "stato": "approvato",
-         "file": "assets_originali/sprite/auto_gt/auto_argento_lunare.png",
-         "nota": "D5"
-      },
-      {
-         "id": "auto.neon_cyan",
-         "tipo": "auto_giocatore",
-         "stato": "approvato",
-         "file": "assets_originali/sprite/auto_gt/auto_neon_cyan.png",
-         "nota": "D5"
-      },
-      {
          "id": "auto.rosso_corsa",
          "tipo": "auto_giocatore",
          "stato": "approvato",
@@ -492,60 +478,11 @@
          "raw": "motore_nuovo/dati/sprite_raw/scenari/lv_03_foglie/panchina_fumo.sglraw"
       },
       {
-         "id": "ui.hud",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/hud/varianteB/hud_preview.png",
-         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8 chiusa da @capo con DEFAULT, non da Andrea)"
-      },
-      {
-         "id": "ui.menu",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/menu/varianteB/menu_preview.png",
-         "nota": "D7: variante B (anteprima) - produzione finita, in attesa ok Andrea (D8)"
-      },
-      {
-         "id": "ui.titolo",
-         "tipo": "ui",
-         "stato": "approvato",
-         "file": "assets_originali/ui/titolo/varianteB/title.png",
-         "nota": "D7: variante B (primaria); menu/HUD usano variante B coerente"
-      },
-      {
          "id": "ui.font",
          "tipo": "ui",
          "stato": "approvato",
          "file": "assets_originali/ui/font/varianteB/font.png",
          "nota": "D7: variante B (primaria); varianti A,C in catalogo voci correlate"
-      },
-      {
-         "id": "ui.font_a",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/font/varianteA/font.png",
-         "nota": "D7: variante A - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
-      },
-      {
-         "id": "ui.font_c",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/font/varianteC/font.png",
-         "nota": "D7: variante C - font pixel 5x7, stato pronto in attesa dell'ok di Andrea (la proposta non e' uno stato valido del catalogo)"
-      },
-      {
-         "id": "ui.splash",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/splash/splash_avvio.png",
-         "nota": "Schermata splash/avvio (Loading) B/N 320x224, prima bozza R2 punto 3, da approvare da Andrea (LOOP1). Nessun materiale Sega."
-      },
-      {
-         "id": "ui.risultati",
-         "tipo": "ui",
-         "stato": "pronto",
-         "file": "assets_originali/ui/risultati/varianteB/risultati_preview.png",
-         "nota": "Schermata risultati variante B B/N 320x224, R2 punto 3, da approvare da Andrea. Dati in motore_nuovo/dati/ui/risultati.json. Nessun materiale Sega."
       },
       {
          "id": "font.antonio",
@@ -870,27 +807,6 @@
          "nota": "Variante A (D6). icona cartella, stile desktop Windows 95. Disegnato da zero, nessun materiale Sega."
       },
       {
-         "id": "sprite.auto.varianteA_anni50",
-         "tipo": "auto_giocatore",
-         "stato": "scartato",
-         "file": "assets_originali/sprite/auto/varianteA_anni50/auto.png",
-         "nota": "variante auto anni '50 non scelta (D6 variante A); file storico, non usare"
-      },
-      {
-         "id": "sprite.auto.varianteB_futurista",
-         "tipo": "auto_giocatore",
-         "stato": "scartato",
-         "file": "assets_originali/sprite/auto/varianteB_futurista/auto.png",
-         "nota": "variante auto futurista non scelta (D6 variante A); file storico, non usare"
-      },
-      {
-         "id": "sprite.auto.varianteC_punk",
-         "tipo": "auto_giocatore",
-         "stato": "scartato",
-         "file": "assets_originali/sprite/auto/varianteC_punk/auto.png",
-         "nota": "variante auto punk non scelta (D6 variante A); file storico, non usare"
-      },
-      {
          "id": "oggetto.lv_01_neon.scenario_neon_01_varianteB.obj_bidone_copy",
          "tipo": "oggetto_bordo_strada",
          "stato": "scartato",
@@ -1020,138 +936,6 @@
             "lv_06_desktop"
          ],
          "nota": "RIV: auto rivale vista dietro, coupe' viola 48x24 (aggiunta 29/10: un'auto per rivale, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.rosso.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_rosso_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_rosso_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV: auto rivale vista di lato (curve), modello rosso. Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.azzurro.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_azzurro_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_azzurro_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV: auto rivale vista di lato (curve), modello azzurro. Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.giallo.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_giallo_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_giallo_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello giallo 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.verde.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_verde_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_verde_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello verde 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.bianco.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_bianco_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_bianco_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello bianco 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.arancio.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_arancio_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_arancio_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello arancio 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.rivale.viola.lato",
-         "tipo": "auto_rivale",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_rivale_viola_lato.png",
-         "raw": "motore_nuovo/dati/sprite_raw/rivali/auto_rivale_viola_lato.sglraw",
-         "livelli": [
-            "lv_01_neon",
-            "lv_02_atomico",
-            "lv_03_foglie",
-            "lv_04_cromo",
-            "lv_05_spray",
-            "lv_06_desktop"
-         ],
-         "nota": "RIV punto 3: auto rivale vista di lato (curve), modello viola 44x16 (06/11, TOOLS/disegna_rivali.py). Originale, disegnata da zero, nessun materiale Sega."
-      },
-      {
-         "id": "auto.giocatore.sbandata",
-         "tipo": "auto_giocatore",
-         "stato": "pronto",
-         "file": "assets_originali/sprite/rivali/auto_giocatore_sbandata.png",
-         "nota": "RIV: fotogramma di sbandata auto giocatore (urto rivale), disegnato da zero, nessun materiale Sega."
-      },
-      {
-         "id": "oggetto.comuni.parapetto",
-         "tipo": "oggetto_bordo_strada",
-         "stato": "pronto",
-         "file": "assets_originali/scenari/comuni/oggetti/parapetto.png",
-         "livelli": [
-            "lv_01_neon",
-            "lv_04_cromo",
-            "lv_06_desktop"
-         ],
-         "nota": "PIST1 G-P1: parapetto del ponte, comune a tutti i temi, colori neutri, 32x48 (ponte su lv_01/lv_04/lv_06). Rigenerato turno 4 06/11/2026, originale, disegnato da zero, nessun materiale Sega. CC0-1.0.",
-         "raw": "motore_nuovo/dati/sprite_raw/scenari/comuni/parapetto.sglraw"
       },
       {
          "id": "oggetto.comuni.guardrail",
