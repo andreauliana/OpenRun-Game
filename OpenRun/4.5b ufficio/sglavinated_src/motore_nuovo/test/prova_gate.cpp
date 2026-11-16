@@ -17,6 +17,8 @@
 //                           chiavi "id/stile", decodifica, stili dei livelli)
 //                motore (VJ5: motore campionato - WAV minimo/pieno/accensione,
 //                        pausa zitta con rpm -1, sintetico senza WAV, determinismo)
+//                json (VJ5: autotest del lettore JSON minimo e dei dati letti
+//                      all'avvio: casi validi/rotti, escape, file veri)
 //                urto (RIV punto a: urto con un avversario, nessun ribaltamento,
 //                      velocita' > 0 dopo l'urto, controlli attivi entro 1.5 s;
 //                      AUTO1 J-A1: pose dell'auto - dritto, sterzo pieno sx/dx,
@@ -36,12 +38,17 @@
 #include <cstdint>
 using i32 = std::int32_t;
 #include "game/game.h"
+#include "render/crt.h"
 #include "game/salvataggi.h" // ARC1: SalvataggiGiocatore (salvataggi/giocatore.json)
 #include "audio/mixer.h"     // VJ5: motore campionato (Mixer::caricaMotore)
 #include "core/replay.h"     // VJ5: limite registrazione replay (4096 frame)
 #include "render/framebuffer.h"
 #include "render/sprite_raw.h"
 #include "core/json_mini.h"
+#include "render/partenza.h"    // VJ5: conto alla rovescia partenza
+#include "render/premiazione.h" // VJ5: tema premiazione da id livello
+#include "render/segnale_personaggi.h" // VJ5: segnale da fermo (cubetti/fumetto)
+#include "game/paesaggio.h"     // VJ5: zone paesaggio (aperto/periferia/citta/autostrada)
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -245,6 +252,114 @@ bool verificaSponsorCore() {
     return ok;
 }
 
+// VJ5 (16/11, passo infinito, file nuovo): il runner decodifica i PNG di
+// `assets_originali/sponsor/` con le 7x3 combinazioni fisse della sua tabella
+// (`runner/sponsor_loader.cpp:24-27`) e, se un PNG manca o non decodifica,
+// ripiega in silenzio sul raw gia' convertito (`sponsor_loader.cpp:98-110`):
+// un PNG nuovo di Andrea non riconvertito resta invisibile senza avviso.
+// Qui la tabella si legge DAL sorgente del runner (non da una copia nel test),
+// cosi' tabella, PNG sulla radice e dati non possono divergere in silenzio:
+//  1. gli id/stili del runner sono 7x3 e identici alla tabella del gate;
+//  2. ogni combinazione ha il suo PNG nella radice dichiarata dal loader;
+//  3. ogni PNG e' un file non vuoto (una troncatura = IMG_Load fallito).
+bool verificaSponsorPng() {
+    namespace fs = std::filesystem;
+    auto leggiTesto = [](const std::string& percorso) {
+        std::ifstream f(percorso);
+        std::stringstream ss;
+        ss << f.rdbuf();
+        return ss.str();
+    };
+    // Stringhe fra doppi apici del blocco `chiave ... ;` nel sorgente.
+    auto stringheDi = [](const std::string& testo, const std::string& chiave,
+                         std::vector<std::string>& out) {
+        const size_t inizio = testo.find(chiave);
+        if (inizio == std::string::npos) return false;
+        const size_t fine = testo.find(';', inizio);
+        if (fine == std::string::npos) return false;
+        bool aperta = false;
+        std::string corrente;
+        for (size_t i = inizio + chiave.size(); i < fine; ++i) {
+            const char c = testo[i];
+            if (c == '"') {
+                if (aperta) out.push_back(corrente);
+                corrente.clear();
+                aperta = !aperta;
+            } else if (aperta) {
+                corrente.push_back(c);
+            }
+        }
+        return !out.empty() && !aperta;
+    };
+    const std::string cpp = leggiTesto("motore_nuovo/src/runner/sponsor_loader.cpp");
+    const std::string hdr = leggiTesto("motore_nuovo/src/runner/sponsor_loader.h");
+    if (cpp.empty() || hdr.empty()) {
+        std::printf("FALLITO: sorgenti del runner sponsor non leggibili\n");
+        return false;
+    }
+    std::vector<std::string> ids, stili;
+    if (!stringheDi(cpp, "kSponsorId[7]", ids) || !stringheDi(cpp, "kStile[3]", stili)) {
+        std::printf("FALLITO: tabelle kSponsorId/kStile non riconosciute in sponsor_loader.cpp\n");
+        return false;
+    }
+    bool ok = true;
+    std::printf("sponsor png: runner %zu sponsor x %zu stili\n", ids.size(), stili.size());
+    if (ids.size() != 7 || stili.size() != 3) {
+        std::printf("FALLITO: tabelle runner %zu x %zu (attese 7 x 3)\n", ids.size(), stili.size());
+        ok = false;
+    }
+    // Tabella del runner = tabella del gate (una copia stantia nel test non passa).
+    for (const char* id : kSponsorId)
+        if (std::find(ids.begin(), ids.end(), std::string(id)) == ids.end()) {
+            std::printf("FALLITO: runner senza lo sponsor %s che il gate disegna\n", id);
+            ok = false;
+        }
+    for (const char* stile : kStile)
+        if (std::find(stili.begin(), stili.end(), std::string(stile)) == stili.end()) {
+            std::printf("FALLITO: runner senza lo stile %s che il gate disegna\n", stile);
+            ok = false;
+        }
+    // Radice dichiarata dal loader (default del prototipo): si segue il sorgente,
+    // cosi' un cambio di cartella non lascia il gate a controllare una copia vuota.
+    std::string radice;
+    const size_t posRadice = hdr.find("radice = \"");
+    if (posRadice != std::string::npos) {
+        const size_t a = posRadice + std::strlen("radice = \"");
+        const size_t b = hdr.find('"', a);
+        if (b != std::string::npos) radice = hdr.substr(a, b - a);
+    }
+    if (radice.empty()) {
+        std::printf("FALLITO: radice dei cartelloni non dichiarata in sponsor_loader.h\n");
+        return false;
+    }
+    i32 trovati = 0;
+    for (const std::string& id : ids) {
+        for (const std::string& stile : stili) {
+            const std::string png = radice + "/" + id + "/cartellone_" + stile + ".png";
+            std::error_code se;
+            const bool regolare = fs::is_regular_file(png, se) && !se;
+            const std::uintmax_t byte = regolare ? fs::file_size(png, se) : 0;
+            if (!regolare || se || byte == 0) {
+                std::printf("FALLITO: PNG mancante o vuoto %s (il runner userebbe il raw)\n",
+                            png.c_str());
+                ok = false;
+                continue;
+            }
+            ++trovati;
+        }
+    }
+    const i32 attesi = (i32)(ids.size() * stili.size());
+    std::printf("sponsor png: %d/%d PNG in %s\n", trovati, attesi, radice.c_str());
+    if (trovati != attesi) ok = false;
+    // Rilievo: l'intestazione promette "vettore vuoto" senza SDL2_image, il codice
+    // ripiega sui raw (comportamento voluto: qui si controlla che il commento lo dica).
+    if (hdr.find("vettore vuoto") != std::string::npos &&
+        cpp.find("caricaSpriteRaw") != std::string::npos)
+        std::printf("sponsor png: rilievo, sponsor_loader.h:16-17 dice \"vettore vuoto\" "
+                    "ma .cpp:98-110 ripiega sui raw\n");
+    return ok;
+}
+
 // Auto rivali (RIV punto b): sprite veri dal catalogo, stesso percorso del runner.
 void caricaRivali(Game& game) {
     static const char* kRivale[7] = { "rosso", "azzurro", "giallo", "verde", "bianco", "arancio", "viola" };
@@ -344,6 +459,12 @@ bool verificaCaricamento(const std::string& livello) {
 // la pausa non conta come spegnimento). Misurato: accensione in testa al primo avvio,
 // nessuna accensione dopo 2 s di pausa; la pausa presa durante l'accensione resta
 // solo informativa (rilievo in REVIEW_V47.md, non un FALLITO).
+// VJ5 16/11: aggiunta la prova "3 s filati a 800 giri" per il nuovo
+//   `rpm = std::max(rpm, 800.0f)` (game.cpp:2786): in gara il motore non scende mai
+//   sotto il minimo, l'accensione deve restare una sola (picco 3 s < 3000 e < 1 s).
+//   Rilievo nuovo del turno (web, stesso commit): blocco.html:10-14 `.or-mobile`
+//   non e' nascosto da openrun.css, solo da wordpress/404.php: su 404.html il
+//   blocco "play it on a computer" compare anche su desktop. Vedi REVIEW_V47.md.
 bool verificaMotoreCampionato() {
     const std::string cartella = "motore_nuovo/dati/audio/motore/";
     const i32 FRAMES = 44100; // 1 s a 44100 Hz
@@ -384,6 +505,17 @@ bool verificaMotoreCampionato() {
     const bool wavTrovati = c.caricaMotore("cartella_motore_inesistente/");
     suona(c, 4000.0f, FRAMES, bufSint);
 
+    // VJ5 16/11: caricaMotore fallisce su cartella inesistente dopo caricamento riuscito:
+    // mixer.h:88 dice "resta il sintetico", ma mixer.cpp:91-99 ritorna false senza azzerare
+    // motAcc_/motMin_/motPieno_ (campioni/stato residuo). Qui misurato: ritorno ed rms dopo fail.
+    Mixer h;
+    h.caricaMotore(cartella);
+    suona(h, 800.0f, FRAMES, buf); // avanza stato interno
+    const bool fallitoRicarica = !h.caricaMotore("cartella_motore_inesistente/");
+    std::vector<i16> bufDopoFail;
+    suona(h, 800.0f, FRAMES, bufDopoFail);
+    const double rDopoFail = rms(bufDopoFail);
+
     // Ripresa dopo la pausa (mixer.cpp:107-110): il motore era acceso (rpm>1 -> spentoS_=0),
     // la pausa (-1) non lo spegne, quindi alla ripresa NON deve risuonare l'accensione.
     // Sequenza: 1 s al minimo (accensione in testa), 2 s di pausa, 1 s al minimo.
@@ -419,6 +551,20 @@ bool verificaMotoreCampionato() {
     suona(f, -1.0f, FRAMES, buf);         // pausa pulita
     const i32 piccoPausaPulita = piccoTesta(buf, testa);
 
+    // Misura nuova (game.cpp:2786 `rpm = std::max(rpm, 800.0f)`): in gara il motore non
+    // scende mai sotto il minimo, quindi l'accensione deve suonare una volta sola e non
+    // ripetersi a ogni secondo. 3 s filati a 800 giri: solo il primo ha l'avviamento.
+    Mixer g;
+    g.caricaMotore(cartella);
+    std::vector<i16> bufContinuo1, bufContinuo3;
+    suona(g, 800.0f, FRAMES, buf);        // 1 s: accensione + giro al minimo
+    bufContinuo1 = buf;
+    suona(g, 800.0f, FRAMES, buf);        // 2 s: solo giro al minimo
+    suona(g, 800.0f, FRAMES, buf);        // 3 s: solo giro al minimo
+    bufContinuo3 = buf;
+    const i32 piccoPrimoSec = picco(bufContinuo1);
+    const i32 piccoTerzoSec = picco(bufContinuo3);
+
     const double rIdle = rms(bufIdle), rPieno = rms(bufPieno);
     // In pausa il motore si spegne con la sua dissolvenza (~0.5 s): si guarda la coda.
     const double rPausa = rms(bufPausa, bufPausa.size() * 4 / 5), rSint = rms(bufSint);
@@ -431,6 +577,10 @@ bool verificaMotoreCampionato() {
     std::printf("motore ripresa: picco 1 s primo avvio=%d dopo 2 s pausa=%d\n", piccoAvvio, piccoDopo);
     std::printf("motore pausa durante l'accensione (primi 0.3 s) picco=%d; pausa pulita=%d\n",
                 piccoPausaAvvio, piccoPausaPulita);
+    std::printf("motore continuo 3 s a 800 giri: picco 1 s=%d picco 3 s=%d\n",
+                piccoPrimoSec, piccoTerzoSec);
+    std::printf("motore ricarica fallita dopo OK: ritorno false=%s rms@800 dopo fail=%.1f\n",
+                fallitoRicarica ? "si" : "no", rDopoFail);
 
     bool ok = true;
     if (!caricati) { std::printf("FALLITO: caricaMotore() non legge minimo/pieno\n"); ok = false; }
@@ -443,6 +593,9 @@ bool verificaMotoreCampionato() {
     if (piccoAvvio < 4000) { std::printf("FALLITO: primo avvio senza accensione\n"); ok = false; }
     if (piccoDopo >= piccoAvvio) { std::printf("FALLITO: accensione risuonata dopo la pausa\n"); ok = false; }
     if (piccoPausaPulita > 1500) { std::printf("FALLITO: pausa pulita rumorosa (accensione residua)\n"); ok = false; }
+    // Il giro al minimo da solo picca ~1700 (misurato), l'accensione ~7000: 3000 separa i due.
+    if (piccoTerzoSec >= 3000) { std::printf("FALLITO: accensione risuonata a motore sempre acceso\n"); ok = false; }
+    if (piccoTerzoSec >= piccoPrimoSec) { std::printf("FALLITO: 3 s uguale al primo secondo (accensione persa o ciclo)\n"); ok = false; }
     return ok;
 }
 
@@ -3894,14 +4047,452 @@ bool verificaReplay() {
     if (!playbackOk) std::printf("  VIOLAZIONE: playback non restituisce la sequenza registrata\n");
     if (!fineOk) std::printf("  VIOLAZIONE: playback oltre fine non restituisce 0\n");
 
-    return capOk && sizeOk && valoriOk && playbackOk && fineOk;
+    r.stop();
+    const bool stopOk = !r.active() && r.inputs.empty() && r.playbackIndex == 0;
+    if (!stopOk) std::printf("  VIOLAZIONE: stop() non azzera stato replay\n");
+
+    return capOk && sizeOk && valoriOk && playbackOk && fineOk && stopOk;
+}
+
+// VJ5 16/11: autotest del lettore JSON minimo (core/json_mini.h) e dei dati che
+// il motore legge all'avvio. Il lettore e' scritto a mano (parsing
+// ricorsivo-discendente) e un suo errore non fa crash: fa ripiegare in silenzio
+// il gioco sul tracciato di emergenza, quindi va fissato con casi espliciti.
+// VJ5 16/11 rilievi non bloccanti (qui solo misurati, non fatti fallire):
+// - json_mini.h:215-221 skipWs non salta il BOM UTF-8: un file salvato con BOM
+//   (editor Windows, target XP/98) risulta illeggibile -> fallback silenzioso;
+// - json_mini.h:187-206 leggiNumero usa strtod: accetta anche "0x10" (esa
+//   float C99) pur essendo JSON non valido;
+// - json_mini.h:109 le chiavi duplicate restano la PRIMA (emplace), non l'ultima.
+bool verificaJson() {
+    i32 errori = 0;
+    auto valido = [&](const char* nome, const std::string& testo) {
+        JsonReader r(testo);
+        if (!r.parse()) { std::printf("json: VIOLAZIONE %s doveva essere valido\n", nome); ++errori; return false; }
+        return true;
+    };
+    auto rifiutato = [&](const char* nome, const std::string& testo) {
+        JsonReader r(testo);
+        if (r.parse()) { std::printf("json: VIOLAZIONE %s doveva essere rifiutato\n", nome); ++errori; }
+    };
+
+    // 1) Valori scalari e struttura, come nei livello.json veri.
+    const std::string documento =
+        R"({"a":1,"b":-3.5e2,"c":"x","d":true,"e":null,"f":[],"g":{"h":[1,{"i":2}]}})";
+    if (valido("documento", documento)) {
+        JsonReader r(documento);
+        r.parse();
+        const JsonObject& o = jsonAsObject(r.valore());
+        JsonValue v;
+        const bool aOk = jsonGet(o, "a", v) && jsonIsNumber(v) && jsonAsNumber(v) == 1.0;
+        const bool bOk = jsonGet(o, "b", v) && jsonIsNumber(v) && jsonAsNumber(v) == -350.0;
+        const bool cOk = jsonGet(o, "c", v) && jsonIsString(v) && jsonAsString(v) == "x";
+        const bool dOk = jsonGet(o, "d", v) && std::holds_alternative<bool>(v.v) && std::get<bool>(v.v);
+        const bool eOk = jsonGet(o, "e", v) && std::holds_alternative<JsonNull>(v.v);
+        const bool fOk = jsonGet(o, "f", v) && jsonIsArray(v) && jsonAsArray(v).empty();
+        const bool mancaOk = !jsonGet(o, "zz", v);
+        bool gOk = false;
+        if (jsonGet(o, "g", v) && jsonIsObject(v)) {
+            JsonValue h;
+            if (jsonGet(jsonAsObject(v), "h", h) && jsonIsArray(h) && jsonAsArray(h).size() == 2) {
+                const JsonArray& a = jsonAsArray(h);
+                JsonValue i;
+                gOk = jsonIsNumber(a[0]) && jsonAsNumber(a[0]) == 1.0 && jsonIsObject(a[1]) &&
+                      jsonGet(jsonAsObject(a[1]), "i", i) && jsonIsNumber(i) && jsonAsNumber(i) == 2.0;
+            }
+        }
+        if (!aOk) { std::printf("json: VIOLAZIONE intero\n"); ++errori; }
+        if (!bOk) { std::printf("json: VIOLAZIONE numero con esponente\n"); ++errori; }
+        if (!cOk) { std::printf("json: VIOLAZIONE stringa\n"); ++errori; }
+        if (!dOk) { std::printf("json: VIOLAZIONE true\n"); ++errori; }
+        if (!eOk) { std::printf("json: VIOLAZIONE null\n"); ++errori; }
+        if (!fOk) { std::printf("json: VIOLAZIONE array vuoto\n"); ++errori; }
+        if (!mancaOk) { std::printf("json: VIOLAZIONE chiave assente trovata\n"); ++errori; }
+        if (!gOk) { std::printf("json: VIOLAZIONE oggetto annidato in array\n"); ++errori; }
+
+        // Copia profonda (jsonGet/assegnazioni copiano): l'oggetto copiato resta leggibile.
+        JsonValue copia = r.valore();
+        if (!jsonIsObject(copia) || jsonAsObject(copia).size() != o.size()) {
+            std::printf("json: VIOLAZIONE copia profonda dell'oggetto\n");
+            ++errori;
+        }
+    }
+
+    // 2) Escape nelle stringhe (frasi.json e hud.json ne fanno uso).
+    const std::string conEscape = R"({"s":"a\"b\\c\nd\u00e8"})";
+    if (valido("escape", conEscape)) {
+        JsonReader r(conEscape);
+        r.parse();
+        JsonValue v;
+        std::string atteso = "a\"b\\c\nd";
+        atteso += "\xC3\xA8"; // e' in UTF-8 (U+00E8)
+        if (!jsonGet(jsonAsObject(r.valore()), "s", v) || !jsonIsString(v) || jsonAsString(v) != atteso) {
+            std::printf("json: VIOLAZIONE escape \\\" \\\\ \\n \\u00e8\n");
+            ++errori;
+        }
+    }
+
+    // 3) Spazi e righe come nei file veri (indentati).
+    valido("spazi", " \t\r\n [ \n { \t } \n , \r\n 2 ] \n ");
+    valido("annidato", "[[],[[]],[[2]]]");
+
+    // 4) Documenti rotti: devono fallire (il gioco ripiega sul default, niente crash).
+    rifiutato("vuoto", "");
+    rifiutato("solo spazi", "   \n\t ");
+    rifiutato("oggetto troncato", "{\"a\":1");
+    rifiutato("chiave senza virgolette", "{a:1}");
+    rifiutato("due punti mancanti", "{\"a\" 1}");
+    rifiutato("valore mancante", "{\"a\":}");
+    rifiutato("virgola finale array", "[1,]");
+    rifiutato("virgola finale oggetto", "{\"a\":1,}");
+    rifiutato("stringa non chiusa", "\"non chiusa");
+    rifiutato("literal troncato", "tru");
+    rifiutato("solo segno", "-");
+    rifiutato("due valori", "1 2");
+    rifiutato("parentesi in piu'", "[]]");
+    rifiutato("commento", "1 // x");
+    rifiutato("escape sconosciuto", "\"a\\qb\"");
+
+    // 5) I dati veri letti dal motore all'avvio si devono leggere tutti.
+    const char* DATI[] = {
+        "motore_nuovo/dati/config.json",
+        "motore_nuovo/dati/percorso_gara.json",
+        "motore_nuovo/dati/tracciati/tratti.json",
+        "motore_nuovo/dati/tracciati/regole.json",
+        "motore_nuovo/dati/ui/hud.json",
+        "motore_nuovo/dati/ui/menu.json",
+        "motore_nuovo/dati/ui/risultati.json",
+        "motore_nuovo/dati/audio/playlist.json",
+        "motore_nuovo/dati/frasi.json",
+        "motore_nuovo/dati/finali.json",
+        "motore_nuovo/dati/punteggio.json",
+        "motore_nuovo/dati/classifica_finta.json",
+        "motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.json",
+    };
+    i32 fileOk = 0;
+    for (const char* p : DATI) {
+        std::ifstream f(p, std::ios::binary);
+        std::string testo((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        JsonReader r(testo);
+        if (!f || testo.empty() || !r.parse()) {
+            std::printf("json: VIOLAZIONE dati %s illeggibile (byte %zu)\n", p, testo.size());
+            ++errori;
+            continue;
+        }
+        ++fileOk;
+    }
+    for (i32 lv = 1; lv <= 6; ++lv) {
+        const char* NOMI[] = {"lv_01_neon", "lv_02_atomico", "lv_03_foglie", "lv_04_cromo", "lv_05_spray", "lv_06_desktop"};
+        const std::string p = std::string("motore_nuovo/dati/livelli/") + NOMI[lv - 1] + "/livello.json";
+        std::ifstream f(p, std::ios::binary);
+        std::string testo((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        JsonReader r(testo);
+        // Game::caricaLivello richiede un oggetto alla radice (game.cpp:575).
+        if (!f || testo.empty() || !r.parse() || !jsonIsObject(r.valore())) {
+            std::printf("json: VIOLAZIONE dati %s illeggibile o radice non oggetto\n", p.c_str());
+            ++errori;
+            continue;
+        }
+        ++fileOk;
+    }
+
+    // Informativo (non fallisce): comportamento del lettore col BOM UTF-8 in testa.
+    {
+        std::string conBom = "\xEF\xBB\xBF{\"a\":1}";
+        JsonReader r(conBom);
+        const bool bomLetto = r.parse();
+        std::printf("json: BOM UTF-8 in testa: %s (rilievo json_mini.h:215-221)\n",
+                    bomLetto ? "tollerato" : "RIFIUTATO");
+    }
+
+    // Informativo (non fallisce): quello che il lettore accetta pur non essendo JSON.
+    {
+        JsonReader r("{\"a\":0x10}");
+        JsonValue v;
+        if (r.parse() && jsonGet(jsonAsObject(r.valore()), "a", v) && jsonIsNumber(v))
+            std::printf("json: 0x10 ACCETTATO come %.1f (rilievo json_mini.h:187-206)\n", jsonAsNumber(v));
+        else
+            std::printf("json: 0x10 rifiutato\n");
+        JsonReader d(R"({"a":1,"a":2})");
+        if (d.parse() && jsonGet(jsonAsObject(d.valore()), "a", v) && jsonIsNumber(v))
+            std::printf("json: chiave duplicata resta a=%.1f (rilievo json_mini.h:109)\n", jsonAsNumber(v));
+    }
+
+    std::printf("json: %d file di dati letti, %d errori\n", (int)fileOk, (int)errori);
+    return errori == 0;
+}
+
+// VJ5 16/11 (∞): autotest CRT (render/crt.cpp), area mai rivista. Verifica
+// sbavatura 1-2-1 + guadagno luce e maschera R/G/B con riga di scanline.
+// Rilievo misurato (non bloccante qui): crtMaschera/crtSbava non validano w/h
+// negativi (vettore/loop potenzialmente invalidi se chiamati male); i casi qui
+// coprono dimensioni normali e zero (scala<=0 normalizzata a 1).
+bool verificaCrt() {
+    i32 errori = 0;
+    const u32 rosso = 0xFFFF0000u;
+    const u32 verde = 0xFF00FF00u;
+    const u32 blu = 0xFF0000FFu;
+    const u32 grigio = 0xFF808080u;
+
+    // Sbavatura: 1-2-1 sui vicini, poi *5/16 di guadagno (LUCE_NUM/DEN_SHIFT).
+    // Riga [rosso, verde, blu] -> x=1: (rosso + 2*verde + blu) = [255,510,255], *5/16 = [79,159,79].
+    u32 src1[3] = {rosso, verde, blu};
+    u32 dst1[3] = {0, 0, 0};
+    crtSbava(src1, dst1, 3, 1);
+    const u32 atteso1 = 0xFF4F9F4Fu; // (79,159,79)
+    if (dst1[1] != atteso1) {
+        std::printf("crt: VIOLAZIONE sbavatura centro 0x%08X atteso 0x%08X\n", dst1[1], atteso1);
+        ++errori;
+    }
+    // Uniforme: 1-2-1 somma 4x poi *5/16 = guadagno x1.25 (crt.cpp LUCE_NUM/DEN_SHIFT),
+    // il calo lo compensa la maschera; 0x80 -> 0xA0.
+    u32 src2[2] = {grigio, grigio};
+    u32 dst2[2] = {0, 0};
+    crtSbava(src2, dst2, 2, 1);
+    const u32 grigioBoost = 0xFFA0A0A0u;
+    if (dst2[0] != grigioBoost || dst2[1] != grigioBoost) {
+        std::printf("crt: VIOLAZIONE uniforme 0x%08X 0x%08X atteso 0x%08X\n", dst2[0], dst2[1], grigioBoost);
+        ++errori;
+    }
+
+    // Maschera: scala 3 => fosfori R,G,B per colonna e scanline scura sull'ultima riga.
+    std::vector<u32> m = crtMaschera(1, 1, 3);
+    if (m.size() != 9u) { std::printf("crt: VIOLAZIONE size maschera %zu atteso 9\n", m.size()); ++errori; }
+    else {
+        auto can = [](u32 c, int shift) { return (i32)((c >> shift) & 0xFFu); };
+        const bool topOk = can(m[0], 16) == 255 && can(m[0], 8) == 200 && can(m[0], 0) == 200 &&
+                           can(m[1], 16) == 200 && can(m[1], 8) == 255 && can(m[1], 0) == 200 &&
+                           can(m[2], 16) == 200 && can(m[2], 8) == 200 && can(m[2], 0) == 255;
+        // Riga di scanline (y==2, scala 3 => 140/255): R = 255*140/255 = 140, altri = 200*140/255 = 109.
+        const bool scanOk = can(m[6], 16) == 140 && can(m[6], 8) == 109 && can(m[6], 0) == 109;
+        if (!topOk) { std::printf("crt: VIOLAZIONE fosfori riga piena\n"); ++errori; }
+        if (!scanOk) { std::printf("crt: VIOLAZIONE scanline 0x%08X\n", m[6]); ++errori; }
+    }
+    // scala <= 0 normalizzata a 1; dimensioni zero sicure.
+    if (crtMaschera(2, 2, 0).size() != 4u) { std::printf("crt: VIOLAZIONE scala 0\n"); ++errori; }
+    if (!crtMaschera(0, 5, 2).empty()) { std::printf("crt: VIOLAZIONE w=0\n"); ++errori; }
+
+    std::printf("crt: %d errori\n", (int)errori);
+    return errori == 0;
+}
+
+// VJ5 16/11 (∞): classifica fittizia (motore_nuovo/dati/classifica_finta.json),
+// usata da fasi.cpp per riempire la tabella HIGH SCORES quando i salvataggi hanno
+// meno di 10 voci. Verifica struttura, campi e coerenza dei due elenchi
+// (gara a tappe / corsa singola) senza toccare src.
+bool verificaClassificaFinta() {
+    i32 errori = 0;
+    std::ifstream f("motore_nuovo/dati/classifica_finta.json", std::ios::binary);
+    std::string testo((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    JsonReader r(testo);
+    if (!f || testo.empty() || !r.parse() || !jsonIsObject(r.valore())) {
+        std::printf("classifica_finta: VIOLAZIONE file illeggibile o radice non oggetto\n");
+        return false;
+    }
+    const JsonObject& root = jsonAsObject(r.valore());
+    const char* liste[2] = {"giocatori", "giocatori_singola"};
+    for (const char* chiave : liste) {
+        JsonValue v;
+        if (!jsonGet(root, chiave, v) || !jsonIsArray(v)) {
+            std::printf("classifica_finta: VIOLAZIONE array mancante %s\n", chiave);
+            ++errori;
+            continue;
+        }
+        const JsonArray& a = jsonAsArray(v);
+        if (a.empty()) {
+            std::printf("classifica_finta: VIOLAZIONE %s vuoto\n", chiave);
+            ++errori;
+        }
+        if (a.size() > 10u) {
+            std::printf("classifica_finta: VIOLAZIONE %s ha %zu voci (>10)\n", chiave, a.size());
+            ++errori;
+        }
+        double prevPunti = 1e18;
+        for (size_t i = 0; i < a.size(); ++i) {
+            if (!jsonIsObject(a[i])) {
+                std::printf("classifica_finta: VIOLAZIONE %s[%zu] non oggetto\n", chiave, i);
+                ++errori;
+                continue;
+            }
+            const JsonObject& e = jsonAsObject(a[i]);
+            JsonValue vn, vp;
+            const bool nomeOk = jsonGet(e, "nome", vn) && jsonIsString(vn);
+            const bool puntiOk = jsonGet(e, "punti", vp) && jsonIsNumber(vp);
+            if (!nomeOk || !puntiOk) {
+                std::printf("classifica_finta: VIOLAZIONE %s[%zu] campi nome/punti\n", chiave, i);
+                ++errori;
+                continue;
+            }
+            const std::string& nome = jsonAsString(vn);
+            const double punti = jsonAsNumber(vp);
+            if (nome.empty() || nome.size() > 6u) {
+                std::printf("classifica_finta: VIOLAZIONE %s[%zu] nome '%s' (atteso 1..6 char)\n",
+                            chiave, i, nome.c_str());
+                ++errori;
+            }
+            if (punti < 0.0) {
+                std::printf("classifica_finta: VIOLAZIONE %s[%zu] punti negativi %.1f\n", chiave, i, punti);
+                ++errori;
+            }
+            // Informativo: le voci fittizie sono attese in ordine decrescente per punteggio.
+            if (punti > prevPunti) {
+                std::printf("classifica_finta: NOTA %s[%zu] non decrescente (%.1f dopo %.1f)\n",
+                            chiave, i, punti, prevPunti);
+            }
+            prevPunti = punti;
+        }
+    }
+    std::printf("classifica_finta: %d errori\n", (int)errori);
+    return errori == 0;
+}
+
+// VJ5: conto alla rovescia partenza (render/partenza.cpp) e tema premiazione
+// (render/premiazione.cpp, temaPremioDaLivello). Solo logica pura, niente draw.
+bool verificaPaesaggio() {
+    i32 errori = 0;
+    auto attZona = [&](const char* nome, Zona att, Zona riserva, const char* et) {
+        const Zona got = zonaDaNome(nome, riserva);
+        if (got != att) {
+            std::printf("paesaggio: zonaDaNome(%s) atteso %d ottenuto %d\n", et, (int)att, (int)got);
+            ++errori;
+        }
+    };
+    attZona("aperto", Zona::Aperto, Zona::Nessuna, "aperto");
+    attZona("periferia", Zona::Periferia, Zona::Nessuna, "periferia");
+    attZona("citta", Zona::Citta, Zona::Nessuna, "citta");
+    attZona("autostrada", Zona::Autostrada, Zona::Nessuna, "autostrada");
+    attZona("nessuna", Zona::Nessuna, Zona::Aperto, "nessuna");
+    attZona("altro", Zona::Citta, Zona::Citta, "fallback riserva");
+    auto attNome = [&](Zona z, const char* att, const char* et) {
+        const char* got = nomeZona(z);
+        if (std::strcmp(got, att) != 0) {
+            std::printf("paesaggio: nomeZona(%s) atteso %s ottenuto %s\n", et, att, got ? got : "(null)");
+            ++errori;
+        }
+    };
+    attNome(Zona::Aperto, "aperto", "aperto");
+    attNome(Zona::Periferia, "periferia", "periferia");
+    attNome(Zona::Citta, "citta", "citta");
+    attNome(Zona::Autostrada, "autostrada", "autostrada");
+    attNome(Zona::Nessuna, "nessuna", "nessuna");
+    auto attTratto = [&](const char* tratto, Zona base, Zona att, const char* et) {
+        const Zona got = zonaPredefinitaTratto(tratto, base);
+        if (got != att) {
+            std::printf("paesaggio: zonaPredefinitaTratto(%s) atteso %d ottenuto %d\n", et, (int)att, (int)got);
+            ++errori;
+        }
+    };
+    attTratto("autostrada", Zona::Aperto, Zona::Autostrada, "autostrada");
+    attTratto("citta", Zona::Aperto, Zona::Citta, "citta");
+    attTratto("ponte", Zona::Citta, Zona::Nessuna, "ponte");
+    attTratto("rampa_ponte", Zona::Citta, Zona::Nessuna, "rampa_ponte");
+    attTratto("discesa_ponte", Zona::Citta, Zona::Nessuna, "discesa_ponte");
+    attTratto("retto", Zona::Periferia, Zona::Periferia, "base");
+    std::printf("paesaggio: errori=%d\n", errori);
+    return errori == 0;
+}
+
+bool verificaPartenza() {
+    i32 errori = 0;
+    auto atteso = [&](f32 t, i32 want, const char* nome) {
+        const i32 got = contoPartenza(t);
+        if (got != want) {
+            std::printf("partenza: %s t=%.3f atteso %d ottenuto %d\n", nome, t, want, got);
+            ++errori;
+        }
+    };
+    // Fasi: <ATTESA = attesa (-1), [ATTESA,VIA) = 3,2,1, [VIA,FINE) = START (0), >=FINE = finito (-2).
+    atteso(0.0f, -1, "inizio");
+    atteso(PARTENZA_ATTESA_S - 0.01f, -1, "fine attesa");
+    atteso(PARTENZA_ATTESA_S + 0.01f, 3, "conto 3");
+    atteso(PARTENZA_ATTESA_S + PARTENZA_PASSO_S - 0.01f, 3, "fine 3");
+    atteso(PARTENZA_ATTESA_S + PARTENZA_PASSO_S + 0.01f, 2, "conto 2");
+    atteso(PARTENZA_ATTESA_S + 2.0f * PARTENZA_PASSO_S + 0.01f, 1, "conto 1");
+    atteso(PARTENZA_VIA_S - 0.01f, 1, "fine 1");
+    atteso(PARTENZA_VIA_S + 0.01f, 0, "start");
+    atteso(PARTENZA_FINE_S - 0.01f, 0, "fine start");
+    atteso(PARTENZA_FINE_S + 0.01f, -2, "finito");
+    atteso(PARTENZA_FINE_S + 5.0f, -2, "dopo");
+
+    // temaPremioDaLivello: cerca sottostringhe note, sconosciuto -> Neon.
+    struct CasoTema { const char* id; TemaPremio att; const char* nome; };
+    const CasoTema temi[] = {
+        {"lv_01_neon", TemaPremio::Neon, "neon"},
+        {"lv_02_atomico", TemaPremio::Atomico, "atomico"},
+        {"lv_03_foglie", TemaPremio::Foglie, "foglie"},
+        {"lv_04_cromo", TemaPremio::Cromo, "cromo"},
+        {"lv_05_spray", TemaPremio::Spray, "spray"},
+        {"lv_06_desktop", TemaPremio::Desktop, "desktop"},
+        {"sconosciuto", TemaPremio::Neon, "fallback"},
+    };
+    for (const auto& c : temi) {
+        const TemaPremio got = temaPremioDaLivello(c.id);
+        if (got != c.att) {
+            std::printf("premiazione: tema %s (%s) atteso %d ottenuto %d\n",
+                        c.nome, c.id, (int)c.att, (int)got);
+            ++errori;
+        }
+    }
+    std::printf("partenza: errori=%d (v2)\n", errori);
+    return errori == 0;
+}
+
+// VJ5 16/11 (∞): segnale dei personaggi da fermo (render/segnale_personaggi.*),
+// logica di comparsa/uscita (costanti) e disegno deterministico a trama.
+bool verificaSegnalePersonaggi() {
+    i32 errori = 0;
+    if (!(SEGNALE_ATTESA_S > 0.0f && SEGNALE_ENTRA_S > 0.0f && SEGNALE_ESCE_S > 0.0f)) {
+        std::printf("segnale: VIOLAZIONE tempi non positivi\n");
+        ++errori;
+    }
+    if (!(SEGNALE_FERMO_V > 0.0f && SEGNALE_FERMO_V < 5.0f)) {
+        std::printf("segnale: VIOLAZIONE soglia fermo %.3f\n", SEGNALE_FERMO_V);
+        ++errori;
+    }
+
+    auto contaPixel = [](const Framebuffer& fb) {
+        i32 n = 0;
+        for (i32 y = 0; y < Framebuffer::HEIGHT; ++y)
+            for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
+                if (fb.get(x, y) != 0u) ++n;
+        return n;
+    };
+
+    Framebuffer fb;
+    fb.clear(0u);
+    disegnaSegnalePersonaggi(fb, 1.0f, 0.0f);
+    if (contaPixel(fb) != 0) {
+        std::printf("segnale: VIOLAZIONE k=0 deve lasciare il frame vuoto\n");
+        ++errori;
+    }
+
+    fb.clear(0u);
+    disegnaSegnalePersonaggi(fb, 1.2f, 1.0f); // t>0.8: cubetti + fumetto
+    const i32 pixelSegnale = contaPixel(fb);
+    if (pixelSegnale < 40) {
+        std::printf("segnale: VIOLAZIONE pochi pixel disegnati (%d)\n", pixelSegnale);
+        ++errori;
+    }
+
+    fb.clear(0u);
+    disegnaSegnalePersonaggi(fb, 0.4f, 1.0f); // t<=0.8: solo cubetti, niente fumetto
+    const i32 pixelCubetti = contaPixel(fb);
+    if (pixelCubetti < 20 || pixelCubetti >= pixelSegnale) {
+        std::printf("segnale: VIOLAZIONE cubetti/fumetto incoerenti (%d vs %d)\n",
+                    pixelCubetti, pixelSegnale);
+        ++errori;
+    }
+
+    std::printf("segnale: %d errori (%d px cubetti, %d px con fumetto)\n",
+                (int)errori, (int)pixelCubetti, (int)pixelSegnale);
+    return errori == 0;
 }
 
 int main(int argc, char** argv) {
     // "--help" & co. are not an output folder (an agent created "--help/" by mistake).
     if (argc > 1 && argv[1][0] == '-') {
         std::printf("uso: prova_gate [cartella_out=UFFICIO/out/debugger] [livello=lv_01_neon] [modo=smoke] [hz=60]\n");
-        std::printf("modi: smoke percorso gara curve sterzo crash accelerazione screenshot pali sportellata frequenza frequenza_confronto soak\n");
+        std::printf("modi: smoke percorso gara curve sterzo crash accelerazione screenshot pali sportellata frequenza frequenza_confronto soak motore json replay crt partenza paesaggio\n");
         return 0;
     }
     const std::string outDir = argc > 1 ? argv[1] : "UFFICIO/out/debugger";
@@ -4137,6 +4728,13 @@ int main(int argc, char** argv) {
         return ok ? 0 : 27;
     }
 
+    if (modo == "sponsor_png") {
+        const bool ok = verificaSponsorPng();
+        std::printf("%s\n", ok ? "GATE SPONSOR PNG OK"
+                               : "FALLITO: tabella del runner o PNG cartelloni fuori posto");
+        return ok ? 0 : 34;
+    }
+
     if (modo == "caricamento") {
         const bool ok = verificaCaricamento(livello);
         std::printf("%s\n", ok ? "GATE CARICAMENTO OK"
@@ -4150,10 +4748,46 @@ int main(int argc, char** argv) {
         return ok ? 0 : 31;
     }
 
+    if (modo == "json") {
+        const bool ok = verificaJson();
+        std::printf("%s\n", ok ? "GATE JSON OK" : "FALLITO: lettore JSON o dati illeggibili");
+        return ok ? 0 : 33;
+    }
+
     if (modo == "replay") {
         const bool ok = verificaReplay();
         std::printf("%s\n", ok ? "GATE REPLAY OK" : "FALLITO: replay (troncamento/capacita')");
         return ok ? 0 : 32;
+    }
+
+    if (modo == "crt") {
+        const bool ok = verificaCrt();
+        std::printf("%s\n", ok ? "GATE CRT OK" : "FALLITO: filtro CRT (crt.cpp)");
+        return ok ? 0 : 35;
+    }
+
+    if (modo == "partenza") {
+        const bool ok = verificaPartenza();
+        std::printf("%s\n", ok ? "GATE PARTENZA OK" : "FALLITO: partenza/premiazione (render)");
+        return ok ? 0 : 36;
+    }
+
+    if (modo == "paesaggio") {
+        const bool ok = verificaPaesaggio();
+        std::printf("%s\n", ok ? "GATE PAESAGGIO OK" : "FALLITO: paesaggio (zone)");
+        return ok ? 0 : 37;
+    }
+
+    if (modo == "classifica") {
+        const bool ok = verificaClassificaFinta();
+        std::printf("%s\n", ok ? "GATE CLASSIFICA OK" : "FALLITO: classifica_finta.json");
+        return ok ? 0 : 38;
+    }
+
+    if (modo == "segnale") {
+        const bool ok = verificaSegnalePersonaggi();
+        std::printf("%s\n", ok ? "GATE SEGNALE OK" : "FALLITO: segnale personaggi (render)");
+        return ok ? 0 : 39;
     }
 
     // --- modo smoke (default) ---

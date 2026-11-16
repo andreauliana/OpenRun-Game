@@ -1,6 +1,17 @@
-Turno 15/11 2026 10:43 (@developer-junior, VJ5 ∞).
-Blocco/passo: VJ5 ∞ — review ultimo cambio src (`57ac3f5`) su `motore_nuovo/src/game/game.cpp:1809-1814`.
-File cambiati: `motore_nuovo/test/prova_gate.cpp`, `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
-Comandi ed exit code: `git log -5 --oneline -- motore_nuovo/src` exit 0 (`57ac3f5`); `git status --short -- motore_nuovo/src` exit 0; `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0; `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_replay_turno3" lv_01_neon replay` exit 0 (GATE REPLAY OK, cap/size 4096). gate_t1.sh non eseguito.
-Review nuovo: in `aggiornaRivali` `lentaCurva = 1.0f - clamp(curvaQui * RIVALE_CURVA_SCALE * r.bravura, 0, RIVALE_CURVA_SLOW_MAX)` (`:1810-1811`) ma il commento dice "i rivali piu' bravi soffrono meno la curva" (`:1809`); `r.bravura` 0.92..1.08 (`:1530-1531`) aumenta il rallentamento dei piu' bravi (intento invertito). Proposta: fattore bravura invertito/centrato e verifica tempi rivali.
-Prossimo ∞: altra review `src/`.
+# ULTIMO TURNO @developer-junior (16/11 13:31)
+
+## Blocco e passo
+- BLOCCO V47, VJ5 ∞ (review codice + test motore). Review `audio/mixer.cpp:91-99`/`mixer.h:88` (src invariato, ultimo `57ac3f5`).
+
+## File cambiati
+- `motore_nuovo/test/prova_gate.cpp`: `verificaMotoreCampionato()` esteso con probe ricarica fallita post-load OK.
+- `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`: riscritti.
+- `UFFICIO/bacheche/developer-junior/diario.md`: aggiunta riga turno.
+
+## Comandi ed exit code
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27).
+- `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0.
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_motore_1611d" lv_01_neon motore` exit 0 (`GATE MOTORE OK`, "ricarica fallita dopo OK: ritorno false=si rms@800 dopo fail=901.8"). gate_t1.sh non eseguito.
+
+## Esito
+- Rilievo confermato/misurato: `mixer.cpp:91-99` fail post-load lascia campioni/stato residuo (contratto `mixer.h:88` "resta il sintetico"). Nessun cambio src. gate_t1.sh non eseguito.

@@ -1,6 +1,7 @@
-# RIASSUNTO — @capo (Turno 2, ora 2 di 12, 15/11)
+# RIASSUNTO — @capo (Turno 2, ora 2 di 12, 16/11)
 - Fonti lette: `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11 intoccata; G1/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47, passi ∞), `SCAMBIO_RECENTE.md`, checkpoint/handoff.
-- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate T1 storico verde (CP-006 **CHIUSO**, non riaprire). Gate non rieseguito dal capo; verdi riportati: dev V9 lv_04_cromo 11° exit 0 1.548/4.440 ms replay IDENTICO → lv_05 11°; junior VJ5 review audio 50 Hz (nessun test), VJ3 4/6; grafico VG3 giro 40 exit 0, 0 da convertire.
-- **Checkpoint:** nessun CP chiudibile (gate+review autore≠revisore non registrati in dossier). CP-005/006/007 CHIUSI; CP-002/003/004, DECO1, F60, MIG1/V47 APERTI/[~].
-- **Deleghe 4.6:** @developer V9 lv_05 11° ∞ (`UFFICIO/out/developer/ULTIMO_TURNO.md`, rev. @developer-junior); @developer-junior VJ5 ∞ review/consolidare + VJ3 lv_05-lv_06 se eseguito (`UFFICIO/out/developer-junior/`, rev. @developer); @grafico VG3 ∞ (`UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`).
+- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate T1 storico verde (CP-006 **CHIUSO**, non riaprire). Gate non rieseguito dal capo.
+- Handoff 16/11 correnti: @developer V9 lv_03 14° exit 0 (percorso 2384f/39.7s/0% fuori, smoke 1.220/3.582 ms, replay IDENTICO) → lv_04 14°; @developer-junior VJ5 review `mixer.cpp:91-99` + test motore (`run_tests.sh` exit 0 ctest 27/27, `prova_gate motore` exit 0), `src/` invariato, VJ3 4/6; @grafico VG3 giro 57 0 da convertire (exit 0).
+- **Checkpoint:** nessun CP chiudibile (gate+review autore≠revisore non registrate in dossier). CP-005/006/007 CHIUSI; CP-002/003/004, DECO1, F60, MIG1/V47 APERTI/[~].
+- **Deleghe 4.6:** @developer V9 lv_04 14° ∞ (rev. @developer-junior); @developer-junior VJ5 ∞ review/consolidare + VJ3 lv_05-lv_06 se eseguito (rev. @developer); @grafico VG3 ∞ (`UFFICIO/out/<ruolo>/`).
 - **FINITO:** no (∞). **PER_CLAUDE:** no. Domande Andrea: nessuna (DEFAULT prosegue). Legacy/costanti guida/sponsor-asset: **NON si toccano**. Pi 400 non verificato.
