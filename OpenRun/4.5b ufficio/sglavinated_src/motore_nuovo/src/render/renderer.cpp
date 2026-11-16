@@ -1310,27 +1310,43 @@ u32 Renderer::coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, 
     }
 }
 
-u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
-    u32 c;
+void Renderer::preparaTexGalleria() const {
+    // Colore base di ogni texel: trama del grafico (parete_galleria) o, senza
+    // PNG, cemento a corsi con trama Bayer. Poi tinta del tema e 7 livelli di buio.
     const Sprite* t = oggettoSprite(galleriaParete_);
-    if (t && t->width > 0 && t->height > 0) {
-        const i32 tx = ((u % t->width) + t->width) % t->width;
-        const i32 ty = ((v % t->height) + t->height) % t->height;
-        const u8 idx = t->pixels[(size_t)(ty * t->width + tx)];
-        c = !t->palette.empty() ? t->palette[idx % t->palette.size()] : pal_[t->paletteBase + idx];
-        if ((c >> 24) == 0) c = 0xFF3A3A44u;
-    } else {
-        // Senza PNG: cemento a corsi con trama Bayer.
-        const i32 tu = ((u % 32) + 32) % 32, tv = ((v % 32) + 32) % 32;
-        c = (tv < 2 || tu == 0) ? 0xFF26262Eu : (BAYER4[tv & 3][tu & 3] < 6 ? 0xFF4C4C58u : 0xFF5E5E6Au);
-    }
-    // Un filo del colore della tappa nel cemento: il tema resta riconoscibile.
-    c = lerpColore(c, tema_.rumbleAlt, 0.10f);
+    const bool png = t && t->width > 0 && t->height > 0;
+    texGalleriaW_ = png ? t->width : 32;
+    texGalleriaH_ = png ? t->height : 32;
+    texGalleriaTema_ = tema_.rumbleAlt;
+    texGalleriaLut_.resize((size_t)texGalleriaW_ * (size_t)texGalleriaH_ * TEX_GALLERIA_LIVELLI);
+    for (i32 ty = 0; ty < texGalleriaH_; ++ty)
+        for (i32 tx = 0; tx < texGalleriaW_; ++tx) {
+            u32 c;
+            if (png) {
+                const u8 idx = t->pixels[(size_t)(ty * t->width + tx)];
+                c = !t->palette.empty() ? t->palette[idx % t->palette.size()] : pal_[t->paletteBase + idx];
+                if ((c >> 24) == 0) c = 0xFF3A3A44u;
+            } else {
+                c = (ty < 2 || tx == 0) ? 0xFF26262Eu : (BAYER4[ty & 3][tx & 3] < 6 ? 0xFF4C4C58u : 0xFF5E5E6Au);
+            }
+            // Un filo del colore della tappa nel cemento: il tema resta riconoscibile.
+            c = lerpColore(c, tema_.rumbleAlt, 0.10f);
+            u32* dst = &texGalleriaLut_[((size_t)ty * (size_t)texGalleriaW_ + (size_t)tx) * TEX_GALLERIA_LIVELLI];
+            for (i32 k = 0; k < TEX_GALLERIA_LIVELLI; ++k)
+                dst[k] = lerpColore(c, 0xFF000000u, (f32)k / 6.0f);
+        }
+    texGalleriaOk_ = true;
+}
+
+u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
+    if (!texGalleriaOk_ || texGalleriaTema_ != tema_.rumbleAlt) preparaTexGalleria();
+    const i32 tx = ((u % texGalleriaW_) + texGalleriaW_) % texGalleriaW_;
+    const i32 ty = ((v % texGalleriaH_) + texGalleriaH_) % texGalleriaH_;
     // Buio a trama: due livelli vicini mescolati con la Bayer (niente sfumature piene).
     const f32 q = std::clamp(buio, 0.0f, 0.95f) * 6.0f;
     const i32 base = (i32)q;
     const bool su = (f32)BAYER4[v & 3][u & 3] / 16.0f < q - (f32)base;
-    return lerpColore(c, 0xFF000000u, (f32)(base + (su ? 1 : 0)) / 6.0f);
+    return texGalleriaLut_[((size_t)ty * (size_t)texGalleriaW_ + (size_t)tx) * TEX_GALLERIA_LIVELLI + (size_t)(base + (su ? 1 : 0))];
 }
 
 void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w, bool accesa) {
