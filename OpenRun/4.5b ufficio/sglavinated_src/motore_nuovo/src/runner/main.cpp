@@ -21,9 +21,15 @@ namespace {
 
 constexpr i32 WINDOW_SCALE = 2; // finestra 640x448 per comodita' sul desktop
 constexpr i32 MAX_TICK_PER_FRAME = 5; // recupero massimo dopo un intoppo (evita la "spirale")
-// Coda audio: si tengono in coda al massimo questi frame di gioco (~80 ms a 50 Hz).
-// Oltre, il frame si scarta: la latenza resta bassa anche se il video rallenta.
-constexpr u32 AUDIO_MAX_FRAME_IN_CODA = 4;
+// Coda audio. La musica avanza solo quando il gioco fa un tick, quindi un tick
+// il cui audio non entra in coda e' musica saltata (brano piu' veloce). Per
+// questo non si scarta mai: con la coda piena il tick aspetta il suo turno
+// (l'audio comanda il tempo), e il passo si regola di poco (+-0.5%, non si
+// sente) per tenere la coda vicino all'obiettivo anche se l'orologio della
+// scheda audio e quello del sistema non vanno proprio uguali.
+constexpr u32 AUDIO_FRAME_OBIETTIVO = 2;  // frame di gioco in coda a regime (~33 ms)
+constexpr u32 AUDIO_MAX_FRAME_IN_CODA = MAX_TICK_PER_FRAME + 2; // oltre: il tick aspetta
+constexpr f64 AUDIO_CORREZIONE_PASSO = 0.005;
 constexpr const char* PROJECT_DATA_MARKER =
     "motore_nuovo/dati/livelli/lv_01_neon/livello.json";
 
@@ -341,6 +347,7 @@ int main(int argc, char** argv) {
     want.callback = nullptr;
     SDL_AudioDeviceID audioDev = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
     if (audioDev == 0) SDL_Log("audio non disponibile: %s (si gioca senza suono)", SDL_GetError());
+    else SDL_Log("audio: %d Hz, %d canali, blocco %d campioni", have.freq, have.channels, have.samples);
     const u32 audioFrameBytes = (u32)(sgl::Game::AUDIO_FRAME_SAMPLES * 2 * sizeof(sgl::i16));
     // Precarica un frame di silenzio: assorbe le piccole irregolarita' del primo avvio.
     std::vector<sgl::i16> silenzio((size_t)sgl::Game::AUDIO_FRAME_SAMPLES * 2, 0);
@@ -403,6 +410,9 @@ int main(int argc, char** argv) {
     // il gioco andava all'83% e l'audio (735 campioni a tick) restava a corto.
     const u64 freq = SDL_GetPerformanceFrequency();
     const u64 tickLen = freq / (u64)game.frequenzaHz();
+    // Byte di un tick di audio (735 campioni stereo a 60 Hz, 882 a 50 Hz).
+    const u32 tickAudioBytes = (u32)(44100 / game.frequenzaHz()) * 2 * (u32)sizeof(sgl::i16);
+    u64 attese = 0; // tick rimandati perche' la coda audio era piena (log)
     u64 prev = SDL_GetPerformanceCounter();
     u64 acc = tickLen; // primo frame: un tick subito
     u64 heldPrev = 0;
@@ -440,9 +450,24 @@ int main(int argc, char** argv) {
         prev = now;
         if (acc > tickLen * MAX_TICK_PER_FRAME) acc = tickLen * MAX_TICK_PER_FRAME;
 
+        // Passo del tick corretto di poco secondo la coda audio (vedi sopra).
+        u64 passo = tickLen;
+        if (audioDev) {
+            const u32 inCoda = SDL_GetQueuedAudioSize(audioDev) / tickAudioBytes;
+            if (inCoda > AUDIO_FRAME_OBIETTIVO) passo = tickLen + (u64)((f64)tickLen * AUDIO_CORREZIONE_PASSO);
+            else if (inCoda < AUDIO_FRAME_OBIETTIVO) passo = tickLen - (u64)((f64)tickLen * AUDIO_CORREZIONE_PASSO);
+        }
+
         bool aggiornato = false;
-        while (acc >= tickLen && running) {
-            acc -= tickLen;
+        bool attesaAudio = false;
+        while (acc >= passo && running) {
+            // Coda piena: il tick aspetta il prossimo giro invece di buttare musica.
+            if (audioDev && SDL_GetQueuedAudioSize(audioDev) >= tickAudioBytes * AUDIO_MAX_FRAME_IN_CODA) {
+                ++attese;
+                attesaAudio = true;
+                break;
+            }
+            acc -= passo;
 
             // Input del tick con i fronti (pressed/released) calcolati in un solo punto.
             const Uint8* kb = SDL_GetKeyboardState(nullptr);
@@ -481,18 +506,18 @@ int main(int argc, char** argv) {
             game.render();
             aggiornato = true;
 
-            // Audio del tick in coda (scartato solo se la coda e' gia' piena).
-            if (audioDev && SDL_GetQueuedAudioSize(audioDev) < audioFrameBytes * AUDIO_MAX_FRAME_IN_CODA) {
+            // Audio del tick in coda: sempre, cosi' la musica non salta mai avanti.
+            if (audioDev) {
                 const auto& ab = game.audio();
                 SDL_QueueAudio(audioDev, ab.data(), (Uint32)(ab.size() * sizeof(sgl::i16)));
             }
 
             ++frames;
             if (frames % 60 == 0) {
-                SDL_Log("frame %llu  hash=%08x  speed=%.1f x=%.0f offroad=%d",
+                SDL_Log("frame %llu  hash=%08x  speed=%.1f x=%.0f offroad=%d  audio attese=%llu",
                         (unsigned long long)frames, game.frameHash(),
                         game.state().playerSpeed, game.state().playerX,
-                        game.state().playerOffroad ? 1 : 0);
+                        game.state().playerOffroad ? 1 : 0, (unsigned long long)attese);
             }
         }
 
@@ -530,7 +555,8 @@ int main(int argc, char** argv) {
 #endif
 
         // Senza vsync il ciclo dorme fino al prossimo tick (non consuma CPU a vuoto).
-        if (!vsync) {
+        if (!vsync && attesaAudio) SDL_Delay(1); // la scheda audio deve ancora suonare la coda
+        else if (!vsync) {
             const u64 dopo = SDL_GetPerformanceCounter();
             const u64 accOra = acc + (dopo - prev);
             if (accOra < tickLen) {
