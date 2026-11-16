@@ -157,9 +157,7 @@ bool avviaGioco(const char* percorsoContenuto) {
         if (s.width > 0) trafficoSprites.push_back(std::move(s));
     }
     g_game->setTrafficoSprites(std::move(trafficoSprites));
-    // Auto del giocatore (P1 punto 4): raw vero se presente, altrimenti sagoma sintetica.
-    sgl::Sprite giocatore = sgl::caricaSpriteRaw("motore_nuovo/dati/sprite_raw/giocatore/auto_giocatore.sglraw");
-    if (giocatore.width > 0) g_game->impostaGiocatoreSprite(std::move(giocatore));
+    // Auto del giocatore: le pose di Andrea le carica Game::init (sprite_raw/giocatore/pose/).
     // Cartelloni sponsor: raw .sglraw (chiave "sponsor_id/stile"), come fallback del
     // runner; decodifica PNG non disponibile nel core.
     {

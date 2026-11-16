@@ -9,7 +9,7 @@ QUI="$(cd "$(dirname "$0")" && pwd)"
 MOTORE="$(cd "$QUI/.." && pwd)"
 BUILD="$MOTORE/../build_web"
 SITO="$QUI/sito"
-FONT="$MOTORE/../UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf"
+FONT="$MOTORE/../GRAFICA/font/born2bsporty/Born2bSportyV2.ttf"
 
 if ! command -v emcmake >/dev/null 2>&1; then
     echo "emcmake non trovato: attiva emsdk prima (source ~/emsdk/emsdk_env.sh)" >&2

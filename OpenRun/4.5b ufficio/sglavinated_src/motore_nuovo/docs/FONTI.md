@@ -89,7 +89,7 @@ Conclusioni del censimento (per il reparto tecnico e Andrea):
 |-------|------|-------|
 | PIANO_V3.md (blocco 4, 8, 9, 11, Decisione) | File locale del progetto | Letto, verificato |
 | RAPPORTO_FATTIBILITA.md | File locale del progetto | Letto, verificato |
-| censimento_motori_outrun.md (assets_originali/ricerca/) | File locale del progetto | Letto, verificato |
+| censimento_motori_outrun.md (GRAFICA/ricerca/) | File locale del progetto | Letto, verificato |
 | ANDREA_REVIEW.md (voci D1, D2) | Fonte canonica locale per feedback e decisioni di Andrea | Letto, verificato |
 | VISIONE.md, ARCHIVIO_V87.md, FEDELTA.md, MODULI_E_REPARTI.md, CATALOGO_PERSONAGGI.md | File locali del progetto | Letti, verificati |
 | https://github.com/djyt/cannonball (+ docs/license.txt) | Web | Pagina e licenza lette e citate nei documenti del progetto |

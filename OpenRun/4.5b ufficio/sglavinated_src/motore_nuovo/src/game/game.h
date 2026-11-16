@@ -92,8 +92,8 @@ public:
     void setRivaliSprites(std::vector<Sprite> sprites);
     // Traffico comune (Andrea 27/10): sprite dei veicoli civili, prima di avviaGara().
     void setTrafficoSprites(std::vector<Sprite> sprites);
-    // P1 punto 4: sprite vero dell'auto del giocatore (raw in
-    // sprite_raw/giocatore/auto_giocatore.sglraw); il Renderer lo disegna al
+    // Imposta la posa dritta dell'auto del giocatore da fuori (oggi nessuno la usa:
+    // le pose di Andrea le carica init). Il Renderer la disegna al
     // posto del rettangolo sintetico. Se manca il raw resta la sagoma sintetica.
     void impostaGiocatoreSprite(Sprite sprite);
     // Numero di cartelloni posizionati bordo strada nella pista corrente.
@@ -296,7 +296,7 @@ private:
     // Arrivo sulla strada (Andrea 29/10): linea a scacchi, pubblico ai lati
     // dietro le transenne, l'auto frena da sola e si ferma, poi la classifica.
     void preparaArrivo();     // sulla tappa d'arrivo: linea e pubblico
-    void caricaSpriteFolla(); // dati/sprite_raw/pubblico/ (PNG in assets_originali/sprite/pubblico/)
+    void caricaSpriteFolla(); // dati/sprite_raw/pubblico/ (PNG in GRAFICA/sprite/pubblico/)
     void frenataArrivo(f32 dt);
     // La strada si disegna e si aggiorna in gara, a fine tempo e sotto i
     // pannelli di fine gara (Andrea 11/11: anche dopo il tempo scaduto, come

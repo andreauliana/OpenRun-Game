@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: CC0-1.0
-# Riconverte gli oggetti bordo strada della Libreria nei raw che il motore legge
+# Riconverte gli oggetti bordo strada di GRAFICA nei raw che il motore legge
 # (motore_nuovo/dati/sprite_raw/scenari/<livello>/<nome>.sglraw), cosi' i PNG
 # ridisegnati dal grafico (es. oggetti alti 27/10) arrivano davvero nel gioco.
-# Per ogni raw oggetto gia' presente cerca obj_<nome>.png nella variante A del
-# livello e lo riscrive se il PNG e' diverso. Formato: "SGLR" + u32 LE w + u32 LE h + RGBA8888.
+# Per ogni raw oggetto gia' presente cerca obj_<nome>.png in
+# GRAFICA/scenari/<livello>/oggetti/ e lo riscrive se il PNG e' diverso. Formato: "SGLR" + u32 LE w + u32 LE h + RGBA8888.
 # Scrittura atomica (file temporaneo + os.replace): il motore non vede mai un raw
 # a meta' se la conversione viene interrotta.
 # Un PNG che PIL non riesce ad aprire (salvato a meta', troncato) non ferma gli
@@ -21,16 +21,13 @@ from pathlib import Path
 from PIL import Image
 
 RADICE = Path(__file__).resolve().parents[3]
-SCENARI = RADICE / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari"
+SCENARI = RADICE / "GRAFICA/scenari"
 RAW = RADICE / "motore_nuovo/dati/sprite_raw/scenari"
 
 
 def png_variante_a(livello, nome):
-    for variante in sorted((SCENARI / livello).glob("*varianteA")):
-        png = variante / "oggetti" / f"obj_{nome}.png"
-        if png.exists():
-            return png
-    return None
+    png = SCENARI / livello / "oggetti" / f"obj_{nome}.png"
+    return png if png.exists() else None
 
 
 def leggi_png(png):

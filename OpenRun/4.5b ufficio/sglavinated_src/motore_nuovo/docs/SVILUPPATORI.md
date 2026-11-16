@@ -31,4 +31,4 @@ Il checkpoint di `strumenti/ciclo.sh` lancia `UFFICIO/Officina/TOOL/gate_t1.sh`:
 - `src/libretro/sglavinated_libretro.cpp` avvia la gara. Il core NON compila ancora: manca `libretro.h` (`-DBUILD_LIBRETRO=ON` dà errore). Prossimo passo: aggiungere l'header ufficiale (licenza MIT) in `libreria/libretro/` e collegarlo in CMake.
 
 ## Da fare nel motore
-- Skyline e oggetti di bordo strada: sono nel catalogo (`assets_originali/CATALOGO_GRAFICO.json`, `tema_grafico` del livello) ma il renderer non li disegna ancora.
+- Skyline e oggetti di bordo strada: sono nel catalogo (`GRAFICA/CATALOGO_GRAFICO.json`, `tema_grafico` del livello) ma il renderer non li disegna ancora.

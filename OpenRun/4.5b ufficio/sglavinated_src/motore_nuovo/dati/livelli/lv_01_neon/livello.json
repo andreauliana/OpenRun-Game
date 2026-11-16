@@ -134,7 +134,7 @@
       "oggetto.lv_01_neon.cassetta"
     ],
     "stile_cartellone": "neon",
-    "nota": "id di assets_originali/CATALOGO_GRAFICO.json"
+    "nota": "id di GRAFICA/CATALOGO_GRAFICO.json"
   },
   "paesaggio": {
     "nota": "Paesaggio a zone (Andrea 06/11): zona di ogni tratto (aperto, periferia, citta, autostrada, nessuna). Tratti non elencati: autostrada e citta hanno la loro zona, ponte e rampe nessuna, gli altri la base. 'nome#2' = seconda volta che il tratto compare. notte di neon: si parte in periferia, campagna con palme, autostrada illuminata, citta' sul viale largo, ponte, curve in campagna.",

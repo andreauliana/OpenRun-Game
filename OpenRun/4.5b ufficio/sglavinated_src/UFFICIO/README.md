@@ -4,10 +4,7 @@ Area operativa coordinata da @capo. Capo assegna task e revisori, raccoglie prov
 
 ```text
 UFFICIO/
-├── Dipartimento Grafico/
-│   ├── TOOLS/
-│   └── Libreria/
-│       └── Shared asset/
+├── Dipartimento Grafico/     TOOLS/ + INVENTARIO_ASSET.md (originali in ../GRAFICA/)
 ├── Officina/
 │   ├── TOOL/
 │   ├── build/

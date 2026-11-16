@@ -42,7 +42,7 @@ Tutti i moduli stanno in `motore_nuovo/src/`. Nessun modulo dipende da SDL2 (sol
 |---|---|---|---|
 | core | `src/core/` | contatore frame, RNG con seme, stato globale, replay input, hash frame ogni 60 | `dati/config.json` |
 | road | `src/road/` | strada a segmenti, curve, colline, posizione auto, traffico base, scorrimento | `dati/livelli/*/livello.json` |
-| render | `src/render/` | framebuffer software 320x224, disegno strada, sprite scalati, palette | `assets_originali/` (PNG) |
+| render | `src/render/` | framebuffer software 320x224, disegno strada, sprite scalati, palette | `GRAFICA/` (PNG) |
 | audio | `src/audio/` | mixer int16 stereo, brani e radio da `dati/audio/playlist.json` | `dati/audio/playlist.json` |
 | input | `src/input/` | lettura pad tipo RetroPad, mappatura tasti | `dati/config.json` |
 | personaggi / gameplay | `src/gameplay/` (era `src/personaggi/`) | Gianni, Gesu', UFO: logica show, scelta frasi, escalation, inattivita' | `dati/frasi.json`, `dati/personaggi/*/`, `dati/show_logica.md` |
@@ -105,7 +105,7 @@ Immagini: PNG. Audio: .xm (riferimento di Andrea, sostituibile via playlist).
 |---|---|---|---|
 | C | nucleo (core, road, render, input, audio base), runner SDL2, core libretro (stub se non fattibile), strada con curve e salite, auto giocatore, 50 fps | B (questi documenti) | [x] (consegna @developer; build/fps da verificare su Pi 400, blocco H) |
 | D | personaggi/gameplay: Gianni, Gesu', UFO, fumetti, escalation, inattivita' | C | [x] |
-| K/L/M | 3 livelli di prova (dati/livelli), scenari (assets_originali/scenari), UI (font, menu, HUD) | B, D | [x] / [~] vedi RICHIESTA.md |
+| K/L/M | 3 livelli di prova (dati/livelli), scenari (GRAFICA/scenari), UI (font, menu, HUD) | B, D | [x] / [~] vedi RICHIESTA.md |
 | fx | razzo B (tasto B), sollevamento auto ad alta velocita', effetti colore crash | C | [ ] |
 | Replay/test | determinismo, hash ogni 60 frame, misura frame Pi 400 | C | [~] (blocco H, da Pi 400) |
 | N (facoltativo, solo dopo C) | ROM Mega Drive originale .md tutta nuova (fattibilita' toolchain 68000) | C | [ ] |

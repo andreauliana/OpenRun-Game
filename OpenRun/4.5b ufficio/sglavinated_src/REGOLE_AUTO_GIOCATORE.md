@@ -7,7 +7,7 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 
 ## Grafica
 - L'auto la disegna **solo Andrea** a mano (Pixelorama). Cartella:
-  `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sprite/giocatore_pose/`.
+  `GRAFICA/sprite/giocatore_pose/`.
 - Pose: `auto_dritta.png`, `auto_sx1..sx4.png` (sterzo a sinistra, 4 = pieno),
   `auto_dx1..dx4.png` facoltative (senza, il gioco specchia le sx),
   `auto_salita.png` / `auto_discesa.png` facoltative. Stop accesi:

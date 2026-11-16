@@ -3,8 +3,8 @@
 # Passo VG3 (@grafico), copertura inversa: ogni .sglraw che il motore legge deve
 # comparire nel catalogo (campo "raw" di un elemento), cosi' licenza e provenienza
 # restano tracciate. I due controlli esistenti guardano l'altro verso:
-#   check_catalogo_grafico.py -> PNG della Libreria devono essere catalogati
-#   vg3_date_png_raw.py       -> PNG Libreria vs raw del motore
+#   check_catalogo_grafico.py -> PNG di GRAFICA devono essere catalogati
+#   vg3_date_png_raw.py       -> PNG di GRAFICA vs raw del motore
 # Qui si parte dai raw e si cerca l'elemento di catalogo.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw e' tracciato, 1 altrimenti.
 # Lanciare da sglavinated_src/:
@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parents[3]
-CATALOGO = RADICE / "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/CATALOGO_GRAFICO.json"
+CATALOGO = RADICE / "GRAFICA/CATALOGO_GRAFICO.json"
 RAW_ROOT = RADICE / "motore_nuovo/dati/sprite_raw"
 
 cat = json.loads(CATALOGO.read_text(encoding="utf-8"))

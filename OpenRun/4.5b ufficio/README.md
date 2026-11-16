@@ -9,12 +9,12 @@ sglavinated_src/
 ├── DIREZIONE_ARTISTICA.md  mood, temi dei livelli, sponsor, regole grafiche
 ├── REGOLE_AUTO_GIOCATORE.md  guida e auto (bloccate)
 ├── AGENTS.md · VISIONE.md · TAPPE.md · SCAMBIO.md
-├── motore_nuovo/           il gioco: codice C++, dati, test
+├── GRAFICA/                originali grafici del gioco (PNG da ridisegnare) + catalogo
+├── motore_nuovo/           il gioco: codice C++, dati, test (musica: dati/audio/musica/*.xm)
 └── UFFICIO/
     ├── Dipartimento Grafico/
-    │   ├── TOOLS/
-    │   └── Libreria/
-    │       └── Shared asset/
+    │   ├── TOOLS/          convertitori PNG -> raw
+    │   └── INVENTARIO_ASSET.md
     ├── Officina/
     │   ├── TOOL/
     │   ├── build/
@@ -49,7 +49,9 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 - `sglavinated_src/` — regole e richieste: `ANDREA_REVIEW.md` (decisioni di Andrea, precedenza su tutto), `RICHIESTA.md` (lavoro degli agenti), `DIREZIONE_ARTISTICA.md`, `REGOLE_AUTO_GIOCATORE.md`, `AGENTS.md`, `TAPPE.md` (v4.6 chiusa, piano v4.7), `VISIONE.md`, `SCAMBIO.md`.
 - `sglavinated_src/.opencode/agents/` — definizioni dei ruoli.
 - `sglavinated_src/motore_nuovo/` — il motore e il gioco in C++17 (src, dati, docs, test, strumenti_py). E' la "ENGINE COMPILER" dell'ufficio: resta qui perche' tutti i percorsi dei dati partono da `motore_nuovo/`.
-- `sglavinated_src/UFFICIO/Dipartimento Grafico/` — `Libreria/assets_originali/` (asset originali in uso, `CATALOGO_GRAFICO.json`), `Libreria/Shared asset/`, `TOOLS/` (script del grafico), `OGGETTI_LIVELLI.md` (oggetti dei livelli e PNG da modificare).
+- `sglavinated_src/GRAFICA/` — gli originali grafici in uso (PNG da ridisegnare, stesso nome e misura) e `CATALOGO_GRAFICO.json`. Per livello: `scenari/<livello>/skyline.png` e `scenari/<livello>/oggetti/obj_*.png`.
+- `sglavinated_src/UFFICIO/Dipartimento Grafico/` — `TOOLS/` (convertitori e script del grafico), `INVENTARIO_ASSET.md` (cosa usa il gioco, riferimento legacy 16/11).
+- `sglavinated_src/motore_nuovo/dati/audio/musica/` — la musica: i progetti tracker `.xm` (si aprono con MilkyTracker o OpenMPT), scelti in `dati/audio/playlist.json`.
 - `sglavinated_src/UFFICIO/Officina/` — `TOOL/` (gate e build), `Test area/` (log e screenshot dei test, ignorati da git), `build/`.
 - `sglavinated_src/UFFICIO/bacheche/<ruolo>/` e `UFFICIO/out/<ruolo>/` — diario e consegne di ogni agente; `UFFICIO/Checkpoint Revision/` — dossier del capo; `UFFICIO/archivio_per_claude/` — note vecchie e file fuori posto.
 

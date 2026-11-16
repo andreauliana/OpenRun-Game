@@ -360,7 +360,7 @@ int main(int argc, char** argv) {
 
     // Cartelloni sponsor: decodificati qui (runner, SDL2_image) e consegnati al
     // core PRIMA di init(), che li posiziona bordo strada in modo deterministico.
-    auto sponsorSprites = sgl::caricaSponsorSprite("UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor"); // (sponsor_id, Sprite) per abbinamento a livello.json
+    auto sponsorSprites = sgl::caricaSponsorSprite("GRAFICA/sponsor"); // (sponsor_id, Sprite) per abbinamento a livello.json
     game.setSponsorSprites(std::move(sponsorSprites));
 
     // Auto rivali: sprite veri dal catalogo (raw prodotti da strumenti_py/png_a_raw.py),

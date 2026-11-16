@@ -6,7 +6,7 @@ Metti il tuo file al posto di quello esistente, poi dalla cartella `sglavinated_
     python3 motore_nuovo/strumenti_py/png_a_raw.py
 
 e rilancia il gioco. (Se un tipo di file non viene convertito da quello script, chiedi a Claude.)
-Tutti i percorsi qui sotto partono da `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`.
+Tutti i percorsi qui sotto partono da `GRAFICA/`.
 Stile: palette piccola (max 16 colori per sprite) + dithering (Bayer, Atkinson, halftone), pixel art.
 Gli agenti non sovrascrivono mai un tuo PNG.
 

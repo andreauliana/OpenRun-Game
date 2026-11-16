@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Elenca i PNG della Libreria che non compaiono in CATALOGO_GRAFICO.json.
+"""Elenca i PNG di GRAFICA che non compaiono in CATALOGO_GRAFICO.json.
 
 Stessa regola di motore_nuovo/strumenti_py/check_catalogo_grafico.py (che li conta
 e avvisa senza fallire): cartelloni, sprite, oggetti e skyline. Serve a decidere,
@@ -17,14 +17,14 @@ import pathlib
 import sys
 
 RADICE = pathlib.Path(__file__).resolve().parents[3]
-LIBRERIA = RADICE / "UFFICIO/Dipartimento Grafico/Libreria"
-CATALOGO = LIBRERIA / "assets_originali/CATALOGO_GRAFICO.json"
+LIBRERIA = RADICE  # percorsi del catalogo: GRAFICA/...
+CATALOGO = LIBRERIA / "GRAFICA/CATALOGO_GRAFICO.json"
 
 PATTERN = (
-    "assets_originali/sponsor/*/*.png",
-    "assets_originali/sprite/**/*.png",
-    "assets_originali/scenari/*/*/oggetti/*.png",
-    "assets_originali/scenari/*/*/skyline.png",
+    "GRAFICA/sponsor/*/*.png",
+    "GRAFICA/sprite/**/*.png",
+    "GRAFICA/scenari/*/oggetti/*.png",
+    "GRAFICA/scenari/*/skyline.png",
 )
 
 

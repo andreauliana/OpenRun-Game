@@ -173,7 +173,7 @@ public:
     }
     void disegna(Renderer& ren, Framebuffer& fb) const override {
         // Logo segnaposto OPEN RUN (Andrea 08/11): solo la scritta, nient'altro.
-        // Il PNG e' in Libreria/assets_originali/ui/logo/logo_openrun.png.
+        // Il PNG e' in GRAFICA/ui/logo/logo_openrun.png.
         if (ren.haLogo()) ren.drawLogo(160, 50);
         else {
             const char* titolo = "OPEN RUN";

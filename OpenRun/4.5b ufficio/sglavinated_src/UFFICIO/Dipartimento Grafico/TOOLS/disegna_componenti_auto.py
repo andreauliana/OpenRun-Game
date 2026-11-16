@@ -24,7 +24,7 @@ from PIL import Image, ImageDraw
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(BASE, "..", "..", ".."))
-LIB = os.path.abspath(os.path.join(BASE, "..", "Libreria", "assets_originali"))
+LIB = os.path.abspath(os.path.join(BASE, "..", "..", "..", "GRAFICA"))
 OUT_PNG = os.path.join(LIB, "sprite", "giocatore")
 OUT_RAW = os.path.join(ROOT, "motore_nuovo", "dati", "sprite_raw", "giocatore")
 os.makedirs(OUT_PNG, exist_ok=True)

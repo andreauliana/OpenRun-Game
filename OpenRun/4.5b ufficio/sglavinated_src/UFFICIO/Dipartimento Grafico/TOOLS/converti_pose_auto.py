@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: CC0-1.0
 # Pose dell'auto del giocatore disegnate da Andrea (06/11): tre quarti
 # dall'alto, 4 per lato + salita/discesa. Converte i PNG di
-#   Libreria/assets_originali/sprite/giocatore_pose/auto_<posa>.png
+#   GRAFICA/sprite/giocatore_pose/auto_<posa>.png
 # nei raw che il motore legge in motore_nuovo/dati/sprite_raw/giocatore/pose/.
 # Pose: dritta, sx1..sx4 (1 = appena girata, 4 = sterzo pieno), dx1..dx4
 # (facoltative: se mancano il gioco specchia le sx), salita, discesa.
@@ -16,7 +16,7 @@ from PIL import Image
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(BASE, "..", "..", ".."))
-SRC = os.path.join(BASE, "..", "Libreria", "assets_originali", "sprite", "giocatore_pose")
+SRC = os.path.join(BASE, "..", "..", "..", "GRAFICA", "sprite", "giocatore_pose")
 DST = os.path.join(ROOT, "motore_nuovo", "dati", "sprite_raw", "giocatore", "pose")
 POSE = ["dritta"] + [f"sx{k}" for k in range(1, 5)] + [f"dx{k}" for k in range(1, 5)] + ["salita", "discesa"]
 os.makedirs(DST, exist_ok=True)

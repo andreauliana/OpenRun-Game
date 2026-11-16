@@ -9,7 +9,7 @@ Richiede Pillow. Rigenerare l'header ogni volta che cambia il font."""
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-TTF = "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf"
+TTF = "GRAFICA/font/born2bsporty/Born2bSportyV2.ttf"
 OUT = "motore_nuovo/src/render/font_titolo.h"
 PPEM = 16  # 1 pixel del font = 64 unita' su 1024
 

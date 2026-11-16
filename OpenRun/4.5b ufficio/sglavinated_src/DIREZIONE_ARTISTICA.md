@@ -30,7 +30,7 @@ Ogni livello ha uno stile dichiarato in livello.json (`stile`):
 | lv_06_desktop | Blue sky, green fields surroundings, wild animals, Nature, birds, folder symbols and operating system icons, long dark and coloured connecting cables, motheboard circuits, Internet Culture, meme, colori: rosa shoking, azzurro, lime green, pink |
 
 ## Sponsor finti (cartelloni lungo la strada)
-Tutti inventati, mai marchi veri. Grafica in `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/sponsor/` (generatore `genera_sponsor.py`, catalogo `CATALOGO_SPONSOR.json`), una versione per stile (neon, atomico, foglie).
+Tutti inventati, mai marchi veri. Grafica in `GRAFICA/sponsor/` (generatore `genera_sponsor.py`, catalogo `CATALOGO_SPONSOR.json`), una versione per stile (neon, atomico, foglie).
 
 | Sponsor | Settore | Slogan |
 |---|---|---|

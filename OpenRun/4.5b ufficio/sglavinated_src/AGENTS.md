@@ -6,11 +6,14 @@ Queste regole si applicano agli agenti OpenCode avviati da `sglavinated_src/`. L
 
 ```text
 sglavinated_src/
+├── GRAFICA/                         # originali grafici usati dal gioco (PNG + catalogo), dal 16/11
+│   ├── scenari/<livello>/           # skyline.png + oggetti/obj_*.png; scenari/comuni/oggetti/
+│   ├── sprite/  sponsor/  ui/  font/
+│   └── CATALOGO_GRAFICO.json
 ├── UFFICIO/                         # coordinamento del Capo
 │   ├── Dipartimento Grafico/        # Area di lavoro per @grafico
 │   │   ├── TOOLS/                   # strumenti creativi @grafico
-│   │   └── Libreria/                # asset
-│   │       └── Shared asset/        # asset approvati per la produzione
+│   │   └── INVENTARIO_ASSET.md      # cosa usa il gioco (riferimento legacy 16/11)
 │   └── Officina/                    # @developer + @developer-junior
 │       ├── TOOL/                    # strumenti di sviluppo
 │       ├── ENGINE COMPILER/         # destinazione dei sorgenti di prodotto
@@ -23,27 +26,27 @@ sglavinated_src/
 
 ## Migrazione graduale
 
-La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano ancora `motore_nuovo/`, `assets_originali/`, `libreria/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
+La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano `motore_nuovo/` e `GRAFICA/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
 **Cartelle (Andrea 08/11):** si scrive solo dentro `UFFICIO/` (la tua bacheca `UFFICIO/bacheche/<ruolo>/`, le tue uscite `UFFICIO/out/<ruolo>/`, Officina, Dipartimento Grafico) e in `motore_nuovo/` quando il blocco lo chiede. Vietato creare cartelle nuove o file alla radice di `sglavinated_src/`; niente file .md in `motore_nuovo/test/`.
-**Grafica (Andrea 16/11, legacy):** la Libreria contiene solo gli originali che il gioco usa (elenco: `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`). Ogni PNG usato ha il suo `.sglraw` in `motore_nuovo/dati/sprite_raw/` e una voce in `CATALOGO_GRAFICO.json`. Vietato rimettere varianti, anteprime o bozze non caricate dal gioco; vietato ricreare le cartelle tolte il 16/11. La musica sta in `motore_nuovo/dati/audio/musica/*.xm` (i progetti tracker sono questi file) e la tocca solo Andrea.
+**Grafica (Andrea 16/11, legacy):** `GRAFICA/` contiene solo gli originali che il gioco usa (elenco: `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`). Ogni PNG usato ha il suo `.sglraw` in `motore_nuovo/dati/sprite_raw/` e una voce in `CATALOGO_GRAFICO.json`. Vietato rimettere varianti, anteprime o bozze non caricate dal gioco; vietato ricreare le cartelle tolte il 16/11. La musica sta in `motore_nuovo/dati/audio/musica/*.xm` (i progetti tracker sono questi file) e la tocca solo Andrea.
 
 **Chi scrive dove (Andrea 08/11, permessi in `.opencode/agents/`):**
 | Ruolo | Scrive | Legge |
 |---|---|---|
-| @grafico | `UFFICIO/Dipartimento Grafico/**` (Libreria, TOOLS, Shared asset, catalogo), `motore_nuovo/dati/sprite_raw/**` (solo con `png_a_raw.py`), `dati/ui`, `dati/testi`, `frasi.json`, anteprime in `UFFICIO/Officina/Test area/grafico/` | tutto |
-| @developer | `motore_nuovo/src/**`, CMake, `dati/livelli`, `dati/tracciati`, `config.json` e gli altri dati di gioco, `strumenti_py/`, `UFFICIO/Officina/TOOL/**` | tutto, Libreria compresa (mai modificarla) |
+| @grafico | `GRAFICA/**` (originali e catalogo), `UFFICIO/Dipartimento Grafico/**` (TOOLS, inventario), `motore_nuovo/dati/sprite_raw/**` (solo con `png_a_raw.py`), `dati/ui`, `dati/testi`, `frasi.json`, anteprime in `UFFICIO/Officina/Test area/grafico/` | tutto |
+| @developer | `motore_nuovo/src/**`, CMake, `dati/livelli`, `dati/tracciati`, `config.json` e gli altri dati di gioco, `strumenti_py/`, `UFFICIO/Officina/TOOL/**` | tutto, `GRAFICA/` compresa (mai modificarla) |
 | @developer-junior | test `motore_nuovo/test/*.cpp`, `dati/tracciati/regole.json`, `UFFICIO/Officina/TOOL/**` | tutto |
 | @capo | `UFFICIO/Checkpoint Revision/**`, `UFFICIO/out/capo/STATI_PROPOSTI.md` | tutto |
-Ognuno scrive anche la propria bacheca e il proprio `UFFICIO/out/<ruolo>/`. L'Officina legge la Libreria e la converte, ma **non la sovrascrive**; il grafico **non tocca** codice, livelli e tracciati. Se serve un cambio nell'altro reparto: una riga in `PER_CLAUDE.md` o nel RIASSUNTO. `ANDREA_REVIEW.md` e `RICHIESTA.md` li scrivono solo Andrea e Claude.
+Ognuno scrive anche la propria bacheca e il proprio `UFFICIO/out/<ruolo>/`. L'Officina legge `GRAFICA/` e la converte, ma **non la sovrascrive**; il grafico **non tocca** codice, livelli e tracciati. Se serve un cambio nell'altro reparto: una riga in `PER_CLAUDE.md` o nel RIASSUNTO. `ANDREA_REVIEW.md` e `RICHIESTA.md` li scrivono solo Andrea e Claude.
 
-Dal 19 ottobre 2026 `assets_originali/` dedicata ai @developer e' la copia di `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/` riservata a Libreria asset in lavorazione del @grafico. Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
+Dal 16/11 `GRAFICA/` e' l'unica copia degli originali grafici (prima `UFFICIO/Dipartimento Grafico/Libreria/assets_originali/`). Non creare copie parallele nelle cartelle di destinazione e non considerare vuote le nuove cartelle come fonti di produzione. I log e gli artefatti generati dal gate vanno invece in `UFFICIO/Officina/build/` e `UFFICIO/Officina/Test area/`.
 
 ## Ruoli
 
 | Ruolo | Responsabilità | Scrittura |
 |---|---|---|
 | @capo | Assegna task, responsabile, revisore, percorsi e criteri; aggrega esiti; gestisce checkpoint e documenti per Andrea. Non scrive codice/asset e non sostituisce la review tecnica. | `UFFICIO/Checkpoint Revision/`, documenti di coordinamento assegnati |
-| @grafico | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `Shared asset/`. | Percorsi grafici assegnati; in fase 1 `assets_originali/`, `libreria/` e dati UI/testo assegnati |
+| @grafico | Produce, cura e cataloga asset; verifica provenienza/licenza; integra la ricerca di risorse libere. È l'unico ruolo che aggiorna `GRAFICA/`. | Percorsi grafici assegnati; in fase 1 `GRAFICA/`, `libreria/` e dati UI/testo assegnati |
 | @developer | Guida codice C++, integrazione, CMake e build multipiattaforma; rivede il lavoro del @developer-junior quando designato. | Codice e configurazione assegnati; in fase 1 i percorsi attivi sotto `motore_nuovo/` e `UFFICIO/Officina/TOOL/` |
 | @developer-junior | Contribuisce a codice, test, strumenti e diagnosi delle task; rivede il lavoro del @developer quando designato. | Solo percorsi del task; in fase 1 test in `motore_nuovo/test/` e codice assegnato |
 
@@ -53,7 +56,7 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 
 - Default: scrittura negata. Ogni task indica responsabile, revisore indipendente, percorsi scrivibili e criteri di completamento.
 - Capo scrive in `UFFICIO/Checkpoint Revision/`; gli altri ruoli non modificano né cancellano checkpoint o revisioni aggregate.
-- @grafico è l'unico scrittore di `Shared asset/`. Gli @developer lo leggono e lo usano senza copiarlo o alterarlo; le richieste di modifica tornano al Grafico.
+- @grafico è l'unico scrittore di `GRAFICA/`. Gli @developer lo leggono e lo usano senza copiarlo o alterarlo; le richieste di modifica tornano al Grafico.
 - Gli sviluppatori scrivono solo il codice, i test e gli strumenti assegnati. Il Grafico e il Capo leggono i materiali pertinenti, ma non scrivono codice di prodotto.
 - `build/` e gli output in `Test area/` sono generati: nessuno li modifica manualmente. Gli @developer possono eseguire build e test consentiti; il revisore legge diff, log ed esiti.
 - Nessun ruolo cancella file o modifica aree fuori dal proprio incarico. Le allowlist OpenCode negano le scritture fuori dai percorsi del ruolo.
@@ -63,7 +66,7 @@ Agenti e modelli sono intercambiabili: le responsabilità seguono il ruolo asseg
 
 1. Ogni consegna registra file modificati, scopo, test e comando eseguito, esito misurabile, problemi residui e provenienza/licenza per materiale esterno.
 2. La review tecnica è peer review: @developer rivede il @developer-junior; il @developer-junior rivede il @developer se assegnato. L'autore non è il proprio unico revisore e non approva la release.
-3. Il Grafico verifica formato, catalogo, provenienza e licenza prima della pubblicazione in `Shared asset/`.
+3. Il Grafico verifica formato, catalogo, provenienza e licenza prima di mettere un file in `GRAFICA/`.
 4. Il Capo verifica completezza delle review, prove, esiti e decisioni di Andrea; non si autovaluta come revisore tecnico né dichiara una build verificata senza prova registrata.
 5. Review negativa o incompleta: il Capo registra i rilievi nel checkpoint, assegna la correzione all'autore e richiede una nuova review indipendente. Se il revisore autorizzato non è disponibile, il checkpoint resta in attesa.
 6. All'avvio il Capo usa `UFFICIO/Checkpoint Revision/STATO_CORRENTE.md` come riferimento sintetico, quindi consulta il `REGISTRO_REVISIONI.md` e il solo dossier attivo necessario. Per i task grafici consulta `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`; per codice/build/test consulta `UFFICIO/Officina/STATUS_OFFICINA.md`. Se il checkpoint coinvolge entrambi i reparti, legge entrambi gli status.

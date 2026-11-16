@@ -5,8 +5,7 @@ model: opencode/iceman-free
 mode: subagent
 permission:
   read:
-    "UFFICIO/Dipartimento Grafico/Libreria/assets_originali/**": allow
-    "UFFICIO/Dipartimento Grafico/Libreria/**": allow   
+    "GRAFICA/**": allow
     "UFFICIO/Officina/**" : allow     
     "motore_nuovo/dati/livelli/**": allow
   edit:

@@ -10,7 +10,7 @@ import struct
 from PIL import Image, ImageDraw
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-LIB = os.path.abspath(os.path.join(BASE, "..", "Libreria", "assets_originali"))
+LIB = os.path.abspath(os.path.join(BASE, "..", "..", "..", "GRAFICA"))
 OUT = os.path.join(LIB, "sprite", "rivali")
 ROOT = os.path.abspath(os.path.join(BASE, "..", "..", ".."))
 RAW = os.path.join(ROOT, "motore_nuovo", "dati", "sprite_raw", "rivali")
@@ -32,7 +32,7 @@ def salvo_raw(nome, img):
 
 # Colori delle 7 auto rivali (Andrea 29/10: "leggermente migliori nel
 # design", una per rivale). Per cambiare un'auto basta ritoccare il PNG in
-# Libreria (stesso nome e stessa misura) e rilanciare png_a_raw.py.
+# GRAFICA (stesso nome e stessa misura) e rilanciare png_a_raw.py.
 # body = carrozzeria, luce = riflesso sul cofano, dark = ombre e bordi,
 # striscia = fascia da corsa (None = senza), alettone = 0 basso, 1 alto.
 PALETTES = {

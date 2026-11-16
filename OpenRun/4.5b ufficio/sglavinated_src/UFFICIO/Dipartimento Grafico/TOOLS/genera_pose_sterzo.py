@@ -20,7 +20,7 @@ import sys
 from PIL import Image
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(BASE, "..", "Libreria", "assets_originali", "sprite", "giocatore_pose")
+SRC = os.path.join(BASE, "..", "..", "..", "GRAFICA", "sprite", "giocatore_pose")
 SOVRASCRIVI = "--sovrascrivi" in sys.argv
 
 # Maximum shift of the top row at full steering (level 4), in pixels of the

@@ -126,7 +126,7 @@ Richiesta/Esito: scritto UFFICIO/out/capo/RIEPILOGO_MATTINA.md (max 40 righe): f
 1. **Alta — quota open source sotto soglia (regola 10):** 18.1% < 50% (risultato controllo automatico fornito). I byte di `UFFICIO/out/` (screenshot PPM, log) non ereditano licenza e contano come chiusi (`strumenti_py/quota_open.py:22-29`; elenco nel catalogo: `UFFICIO/out/debugger/*.png/*.log/*.ppm`).
    *Correzione:* dichiarare la licenza (`manifest.json` con `"licenza"` nelle cartelle `UFFICIO/out/debugger/*`, oppure escludere output di test dal conteggio, d'accordo con @capo), rilanciare `python3 motore_nuovo/strumenti_py/quota_open.py` e riportare il valore >= 50% in `SCAMBIO.md`. Senza questo la consegna non rispetta la regola 10.
 
-2. **Media — `assets_originali/INDICE_ASSET.md:5`:** nota stantia `> Primo indice da elenco cartelle: niente dimensioni PNG ne' duplicati veri`, contraddetta da `motore_nuovo/strumenti_py/indice_assets.py:100-127` (già calcola w/h, sha1 e flag `duplicato_di:`).
+2. **Media — `GRAFICA/INDICE_ASSET.md:5`:** nota stantia `> Primo indice da elenco cartelle: niente dimensioni PNG ne' duplicati veri`, contraddetta da `motore_nuovo/strumenti_py/indice_assets.py:100-127` (già calcola w/h, sha1 e flag `duplicato_di:`).
    *Correzione:* rilanciare `python3 motore_nuovo/strumenti_py/indice_assets.py` (il file dichiara "non modificare a mano"); il template attuale non emette più quella nota.
 
 3. **Media — `motore_nuovo/test/prova_gate.cpp:89`:** in modalità `soak` la condizione dello screenshot fuoristrada usa `SMOKE_FRAMES - 1` (499) invece di `TOTAL_FRAMES - 1`; a 30000 frame lo screenshot di chiusura non viene salvato. Sostituire `SMOKE_FRAMES - 1` con `TOTAL_FRAMES - 1`.
@@ -160,17 +160,17 @@ blocchi da fare [ ]: 7
 [0m
 > reviewer · nemotron-3.5-super-vl-free
 Leggo i quattro file richiesti in parallelo.
-[0m→ [0mRead assets_originali/INDICE_ASSET.md 
+[0m→ [0mRead GRAFICA/INDICE_ASSET.md 
 [0m→ [0mRead motore_nuovo/test/VOCE_SCAMBIO_1144.md 
-[0m→ [0mRead assets_originali/INDICE_ASSET.json 
+[0m→ [0mRead GRAFICA/INDICE_ASSET.json 
 [0m→ [0mRead motore_nuovo/test/prova_gate.cpp 
 > reviewer · nemotron-3.5-super-vl-free
 VERDETTO: OK — nessun problema.
 
 Ho verificato solo i quattro file indicati (nessuna scansione completa del progetto, nessun consiglio per agente):
 
-- `assets_originali/INDICE_ASSET.json`: indice generato (293 file), ogni voce ha `licenza` dichiarata (CC0-1.0 / OFL-1.1). Le 4 lacune con `ok: false` (traffico, Gianni, Gesù, UFO) sono già tracciate come "non difetti" in `motore_nuovo/test/VOCE_SCAMBIO_1144.md`, non sono difetti del file.
-- `assets_originali/INDICE_ASSET.md`: speculare del JSON, generato da `indice_assets.py` (non da modificare a mano), coerente.
+- `GRAFICA/INDICE_ASSET.json`: indice generato (293 file), ogni voce ha `licenza` dichiarata (CC0-1.0 / OFL-1.1). Le 4 lacune con `ok: false` (traffico, Gianni, Gesù, UFO) sono già tracciate come "non difetti" in `motore_nuovo/test/VOCE_SCAMBIO_1144.md`, non sono difetti del file.
+- `GRAFICA/INDICE_ASSET.md`: speculare del JSON, generato da `indice_assets.py` (non da modificare a mano), coerente.
 - `motore_nuovo/test/VOCE_SCAMBIO_1144.md`: voce `[CHIUSA]`; esiti gate misurati (exit 0, replay 2x IDENTICO, ms/frame entro i 20 ms), quota open 99.8%.
 - `motore_nuovo/test/prova_gate.cpp`: intestazione SPDX-MIT, rilievo precedente sul `% SMOKE_FRAMES` già risolto/chiuso (commenti righe 89-90), nessun file di prodotto toccato.
 
@@ -222,21 +222,21 @@ La voce 1143 (debugger, 14:05) dice H [x] e "50 fps stabili": non confermato. Il
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 15:53 | [APERTA]
 1. (alta) `../../../DIREZIONE_ARTISTICA.md:11` — riga `Personaggi`: Gianni, Gesù, UFO "vengono presi da Andrea da precedente integrazione ROM .md Sega e da importare nel asset C++". Viola la regola 1 AGENTS.md (nessun materiale della ROM originale Sega: sprite, tracciati, personaggi derivati) e contrasta con `motore_nuovo/docs/LICENZE.md:71` e `FONTI.md:69` (dati portati, mai codice/asset Sega).
-   Correzione: dichiarare i personaggi come creazioni originali di Andrea/progetto, rimuovere il riferimento ROM .md Sega, e registrarli in `assets_originali/CREDITI.md` e `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`.
+   Correzione: dichiarare i personaggi come creazioni originali di Andrea/progetto, rimuovere il riferimento ROM .md Sega, e registrarli in `GRAFICA/CREDITI.md` e `motore_nuovo/docs/CATALOGO_PERSONAGGI.md`.
 
 2. (media) `../../../DIREZIONE_ARTISTICA.md:1` (testata) — manca la dichiarazione di licenza (SPDX o manifest.json), richiesta dalla regola 10 AGENTS.md e da `motore_nuovo/docs/LICENZE.md:77` per ogni file dati/testi del progetto.
-   Correzione: aggiungere in testata `# SPDX-License-Identifier: CC-BY-4.0` (testo creativo, per `LICENZE.md:14`) oppure dichiarare la licenza nel `manifest.json` della cartella `assets_originali/`.
+   Correzione: aggiungere in testata `# SPDX-License-Identifier: CC-BY-4.0` (testo creativo, per `LICENZE.md:14`) oppure dichiarare la licenza nel `manifest.json` della cartella `GRAFICA/`.
 
-Cosa ho verificato: `../../../DIREZIONE_ARTISTICA.md` (43 righe), `assets_originali/CREDITI.md` (19 righe, tutte le voci interne al progetto, CC0-1.0 / CC-BY-4.0, nessuna risorsa esterna ancora usata), `motore_nuovo/docs/LICENZE.md` e `FONTI.md`. Non ho scansionato il resto del progetto. I controlli automatici già riportati sono OK (nessuna ROM Sega, open 99.8% ≥ 50%, sintassi script OK); nessun rischio rilevabile da questo file di direzione artistica.
+Cosa ho verificato: `../../../DIREZIONE_ARTISTICA.md` (43 righe), `GRAFICA/CREDITI.md` (19 righe, tutte le voci interne al progetto, CC0-1.0 / CC-BY-4.0, nessuna risorsa esterna ancora usata), `motore_nuovo/docs/LICENZE.md` e `FONTI.md`. Non ho scansionato il resto del progetto. I controlli automatici già riportati sono OK (nessuna ROM Sega, open 99.8% ≥ 50%, sintassi script OK); nessun rischio rilevabile da questo file di direzione artistica.
 
 ### CHECKPOINT 1 | REVIEWER | 2026-10-17 16:58 | [APERTA]
 Ho letto solo i 9 file indicati più CREDITI.md e il manifest del font (contesto stretto per la regola 2). Controlli eseguiti: intestazioni SPDX/MIT su tutto il codice; licenze in INDICE_ASSET.json (CC0-1.0 per asset interni, OFL-1.1 per il font, tutte compatibili); nessun materiale Sega (commenti citano OutRun/Jake Gordon/Lou's solo come riferimenti di progettazione, non codice/asset); determinismo regola 5b (`dt = 1/50` fisso, RNG con seed, nessun orologio di sistema nella logica di gioco, `std::chrono` solo nel test harness); prestazioni (gate: ms/frame medio 0,071 max 0,157, limite 20; replay 2x identico; offroad raggiunto) ben dentro il budget Pi 400/50 fps; INDICE_ASSET.json e .md coerenti (293 file, stesse lacune già note e dichiarate come non difetti: traffico, Gianni, Gesù, UFO); prova_gate.cpp:96-97 è un commento giustificato (falso positivo del reviewer già risolto, non un bug).
 
 Problema azionabile (1/2):
 
-1. `assets_originali/CREDITI.md` — manca la risorsa esterna scelta con decisione D4 (regola 2: ogni risorsa esterna va in CREDITI con autore, licenza, URL). Il font `assets_originali/font/antonio/Antonio-Bold.ttf` è segnato `originale: false` in INDICE_ASSET.json e usato per titoli/fumetti, ma non è in CREDITI.md.
-   Correzione: aggiungi in fondo alla tabella (dopo riga 19) i dati già verificati in `assets_originali/font/antonio/manifest.json`:
-   `| assets_originali/font/antonio/Antonio-Bold.ttf | Impallari Type (Pablo Impallari) | OFL-1.1 | https://fonts.google.com/specimen/Antonio |`
+1. `GRAFICA/CREDITI.md` — manca la risorsa esterna scelta con decisione D4 (regola 2: ogni risorsa esterna va in CREDITI con autore, licenza, URL). Il font `GRAFICA/font/antonio/Antonio-Bold.ttf` è segnato `originale: false` in INDICE_ASSET.json e usato per titoli/fumetti, ma non è in CREDITI.md.
+   Correzione: aggiungi in fondo alla tabella (dopo riga 19) i dati già verificati in `GRAFICA/font/antonio/manifest.json`:
+   `| GRAFICA/font/antonio/Antonio-Bold.ttf | Impallari Type (Pablo Impallari) | OFL-1.1 | https://fonts.google.com/specimen/Antonio |`
 
 Nessun altro problema nei file revisionati. Una volta corretto CREDITI.md, il blocco è pulito per il checkpoint.
 
@@ -1595,7 +1595,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 39
@@ -1619,7 +1619,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 39
@@ -1643,7 +1643,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 39
@@ -1667,7 +1667,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8187825 di 8243357 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 39
@@ -1691,7 +1691,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8181235 di 8236767 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 40
@@ -1715,7 +1715,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8196417 di 8251949 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 42
@@ -1739,7 +1739,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8197473 di 8253005 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 42
@@ -1763,7 +1763,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1787,7 +1787,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1811,7 +1811,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1835,7 +1835,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1859,7 +1859,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.3% (8278918 di 8334450 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1883,7 +1883,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.4% (8631211 di 8686743 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43
@@ -1907,7 +1907,7 @@ OK      comando claude presente (review automatica possibile)
 GATE SCREENSHOT P1 OK
 GATE T1: TUTTO OK
 catalogo: 11 righe, 2 cartelle
-  senza licenza aperta: UFFICIO/Dipartimento Grafico/Libreria/assets_originali/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
 quota open: 99.4% (8631211 di 8686743 byte), soglia 50.0%
 bacheche controllate, limite 5.0 MB
 blocchi fatti [x]: 43

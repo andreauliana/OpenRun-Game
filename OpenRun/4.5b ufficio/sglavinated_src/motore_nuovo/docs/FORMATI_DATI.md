@@ -52,7 +52,7 @@ Campi:
 | traffico | oggetto | sì | densità e tipo veicoli di traffico (senza asset Sega) |
 | punti_show | array di oggetti | no | frame o posizioni in cui partono show (Gianni/Gesu'/UFO) |
 | moduli_fx | oggetto | no | flag on/off per moduli fx (razzo_b, sollevamento_auto, effetto_colore_crash) |
-| scenario | stringa | no | riferimento allo scenario per @scenografo (assets_originali/scenari/<id>/) |
+| scenario | stringa | no | riferimento allo scenario per @scenografo (GRAFICA/scenari/<id>/) |
 | tempo_limite_frame | numero (frame) | no | tempo limite con checkpoint che ridanno tempo |
 | checkpoint | array | no | posizioni dei checkpoint |
 | musica | oggetto | no | radio iniziale e brani (riferimento playlist.json) |
@@ -99,7 +99,7 @@ Esempio (livello 1 di prova):
 
 ## 4. Sprite e personaggi
 
-Sprite: file PNG nelle cartelle di appartenenza (auto del giocatore in `assets_originali/sprite/`, scenari in `assets_originali/scenari/<id>/`). Ogni personaggio ha:
+Sprite: file PNG nelle cartelle di appartenenza (auto del giocatore in `GRAFICA/sprite/`, scenari in `GRAFICA/scenari/<id>/`). Ogni personaggio ha:
 
 - `dati/personaggi/<id>/manifest.json` con campi obbligatori per `check_catalogo.py`: `id`, `ruolo`, `file`, `crediti`, `licenza`. Campi consigliati: `nome`, `descrizione`, `stato` (`nuovo`/`hack`/`idea`), `source_v87`, `frasi_n`, `id_frasi`, `tabelle_show`, `note_v87_non_riportate`.
 - `dati/personaggi/<id>/fumetti.json`: elenco fumetti del personaggio.

@@ -18,7 +18,7 @@ PROPRIETARI = [
     ("motore_nuovo/test/", "developer-junior"),
     ("libreria/codice/", "developer"),
     ("libreria/test/", "developer-junior"),
-    ("UFFICIO/Dipartimento Grafico/Libreria/", "grafico"),
+    ("GRAFICA/", "grafico"),
     ("tools/", "Claude"),
 ]
 FUORI_POSTO = ("UFFICIO/bacheche/", "UFFICIO/out/")

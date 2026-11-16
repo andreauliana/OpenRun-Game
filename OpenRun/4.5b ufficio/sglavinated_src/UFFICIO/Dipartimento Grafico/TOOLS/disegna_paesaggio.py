@@ -23,17 +23,17 @@ import sys
 from pathlib import Path
 from PIL import Image
 
-SCENARI = Path("UFFICIO/Dipartimento Grafico/Libreria/assets_originali/scenari")
+SCENARI = Path("GRAFICA/scenari")
 RAW = Path("motore_nuovo/dati/sprite_raw/scenari")
 
 # Cartella "variante A" che il gioco usa gia' per gli oggetti di ogni livello.
 CARTELLA = {
-    "lv_01_neon": "scenario_neon_01_varianteA",
-    "lv_02_atomico": "scenario_atomico_02_varianteA",
-    "lv_03_foglie": "scenario_foglie_03_varianteA",
-    "lv_04_cromo": "scenario_cromo_04_varianteA",
-    "lv_05_spray": "scenario_spray_05_varianteA",
-    "lv_06_desktop": "scenario_desktop_06_varianteA",
+    "lv_01_neon": ".",
+    "lv_02_atomico": ".",
+    "lv_03_foglie": ".",
+    "lv_04_cromo": ".",
+    "lv_05_spray": ".",
+    "lv_06_desktop": ".",
 }
 
 BAYER4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]

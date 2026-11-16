@@ -34,8 +34,8 @@ Il file `motore_nuovo/LICENSE` (testo completo MIT) copre tutto il codice.
 | SPEC_GAMEPLAY.md | motore_nuovo/dati/SPEC_GAMEPLAY.md | CC-BY-4.0 (SPDX) | blocco D |
 | gameplay/*.h/*.cpp | motore_nuovo/src/gameplay/ | MIT (SPDX) | blocco D |
 | livelli/*.json | motore_nuovo/dati/livelli/ | CC-BY-4.0 (manifest) | blocco K |
-| ui/*.json + assets | assets_originali/ui/ | CC-BY-4.0 / MIT (manifest) | blocco M |
-| asset varianti | assets_originali/sprite, skyline, palette/ | CC0-1.0 (manifest) | blocco F |
+| ui/*.json + assets | GRAFICA/ui/ | CC-BY-4.0 / MIT (manifest) | blocco M |
+| asset varianti | GRAFICA/sprite, skyline, palette/ | CC0-1.0 (manifest) | blocco F |
 | Brani radio .bin | shots/pcmr_M.bin, pcmr_A.bin | CC-BY-4.0 (Andrea) | riferimento, sostituibili |
 
 ---
@@ -75,7 +75,7 @@ Nessun codice, asset, sprite, tracciato o musica della ROM originale Sega entra 
 ## 5. Obblighi per ogni nuovo file
 
 1. Dichiarare la licenza: `SPDX-License-Identifier: MIT` (codice) o `CC-BY-4.0` (dati/grafiche) in testata o `manifest.json`.
-2. Ogni risorsa esterna in `assets_originali/CREDITI.md` (autore, licenza, URL).
+2. Ogni risorsa esterna in `GRAFICA/CREDITI.md` (autore, licenza, URL).
 3. Prima di consegnare: `python3 motore_nuovo/strumenti_py/quota_open.py` (soglia 50%) e, se ci sono personaggi, `python3 motore_nuovo/strumenti_py/check_catalogo.py`.
 
 ---
