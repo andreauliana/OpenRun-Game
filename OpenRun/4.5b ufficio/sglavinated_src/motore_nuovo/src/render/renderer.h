@@ -178,7 +178,7 @@ public:
     // Galleria (PERC1 G2 del grafico): indici in oggettoSprite() della trama
     // parete_galleria (32x32) e della plafoniera luce_galleria (16x8); -1 =
     // disegno a codice. Indici e non puntatori: il vettore puo' crescere.
-    void impostaGalleriaSprites(i32 parete, i32 luce) { galleriaParete_ = parete; galleriaLuce_ = luce; }
+    void impostaGalleriaSprites(i32 parete, i32 luce) { galleriaParete_ = parete; galleriaLuce_ = luce; texGalleriaOk_ = false; }
     // Disegna gli sprite ordinati per distanza (piu' lontani prima).
     // totalLen: lunghezza totale del tracciato (per il wrap di zRel quando
     // playerZ avvolge sul giro; gli sprite usano worldZ assoluto).
@@ -349,7 +349,7 @@ public:
     void impostaLogo(Sprite s) { logo_ = std::move(s); }
     bool haLogo() const { return logo_.width > 0; }
     void drawLogo(i32 cx, i32 y);
-    void clearOggettoSprites() { oggettoSprites_.clear(); galleriaParete_ = galleriaLuce_ = -1; }
+    void clearOggettoSprites() { oggettoSprites_.clear(); galleriaParete_ = galleriaLuce_ = -1; texGalleriaOk_ = false; }
     // Imposta lo skyline della tappa in corso (DECO1 2b): sprite vuoto = cielo piatto.
     // Il Renderer conserva una copia (skylineSprite_ e skylineA_); va invocato in
     // init()/fineTappa(), mai nel ciclo di gioco.
@@ -413,6 +413,16 @@ private:
     // Colore della trama della galleria in (u, v) (unita' texel, si ripete),
     // gia' tinta del tema e scurita di `buio` (0 = piena luce, 1 = nero).
     u32 texGalleria(i32 u, i32 v, f32 buio) const;
+    // Tabella della trama della galleria (16/11, prestazioni): per ogni texel
+    // il colore gia' tinto del tema e scurito nei 7 livelli di buio (0..6/6).
+    // Stessi conti di prima fatti una volta per tappa invece che per pixel:
+    // l'immagine resta identica. Si rifa' se cambiano trama o colore del tema.
+    void preparaTexGalleria() const;
+    static constexpr i32 TEX_GALLERIA_LIVELLI = 7;
+    mutable std::vector<u32> texGalleriaLut_;
+    mutable i32 texGalleriaW_ = 0, texGalleriaH_ = 0;
+    mutable u32 texGalleriaTema_ = 0;
+    mutable bool texGalleriaOk_ = false;
     // Graffiti throw-up: maschera a bolle del testo (0 muro, 1 bordo nero,
     // 2 contorno, 3 riempimento, 4 lucido, 5 estrusione), calcolata una volta.
     struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px, ombra; };
