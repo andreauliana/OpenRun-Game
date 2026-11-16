@@ -27,6 +27,8 @@ sglavinated_src/
 
 Regola (Andrea 08/11): gli agenti non creano cartelle nuove fuori da `UFFICIO/` e `motore_nuovo/`.
 
+Progetti audio: .xm in motore_nuovo/dati/audio/musica (non toccare x terzi)
+
 ## Avvio
 ```
 cd "$HOME/<percorso folder>"
