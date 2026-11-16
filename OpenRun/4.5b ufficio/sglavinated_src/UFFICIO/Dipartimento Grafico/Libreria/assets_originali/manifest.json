@@ -5,7 +5,6 @@
   "originale": true,
   "riferimenti_sega": false,
   "copre": [
-    "genera_bloccoF.py",
     "MAPPA_LIVELLI_SPONSOR.json",
     "tutti gli asset in sottocartelle (ciascuna puo' avere manifest piu' specifico)"
   ],
