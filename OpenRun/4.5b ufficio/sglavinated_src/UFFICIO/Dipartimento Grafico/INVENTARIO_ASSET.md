@@ -12,7 +12,7 @@ sglavinated_src/
     scenari/<livello>/skyline.png  cielo e citta' del livello
     scenari/<livello>/oggetti/     obj_<nome>.png = oggetti a bordo strada
     scenari/comuni/oggetti/        frecce, galleria, ponte e mare (tutti i livelli)
-    sprite/giocatore_pose/         la tua auto (dritta, sx1..sx4, stop)
+    sprite/giocatore_pose/         la tua auto (dritta, sx4; 50x30, 17/11)
     sprite/giocatore/              ruote, fumo, luci stop
     sprite/rivali/  traffico/  traffico_incrocio/  pubblico/
     sponsor/<sponsor>/             cartelloni (solo Andrea)
@@ -41,7 +41,7 @@ rifatti danno raw identici a prima.
 
 | `sprite_raw/` | N. | File |
 |---|---|---|
-| `giocatore/pose/` | 10 | auto_dritta, auto_sx1..sx4, auto_stop_dritta, auto_stop_sx1..sx4 (destra = specchio) |
+| `giocatore/pose/` | 2 | auto_dritta, auto_sx4 (car-custom-v2 di Andrea, 50x30, 17/11; destra = specchio; sx1..sx3 e stop da disegnare) |
 | `giocatore/` | 7 | ruota_1..3, fumo_1..3, luci_stop (+ `auto_giocatore.json`, punti per ruote e fumo) |
 | `pubblico/` | 10 | pubblico_a/b_su/giu (arrivo); supporto_a/b_relax/parla/esulta (partenza) |
 | `rivali/` | 7 | auto_rivale_<colore>_retro |
