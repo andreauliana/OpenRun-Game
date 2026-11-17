@@ -49,6 +49,7 @@ using i32 = std::int32_t;
 #include "render/premiazione.h" // VJ5: tema premiazione da id livello
 #include "render/segnale_personaggi.h" // VJ5: segnale da fermo (cubetti/fumetto)
 #include "game/paesaggio.h"     // VJ5: zone paesaggio (aperto/periferia/citta/autostrada)
+#include "gameplay/escalation.h" // VJ5: escalation errori (crash/uscite/decadimento)
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -4003,8 +4004,79 @@ bool verificaRivaVJ2(const std::string& outDir, const std::string& livello) {
     return saved >= 3;
 }
 
+// VJ5 17/11: escalation errori (gameplay/escalation.h) - livelli 0-3, uscite alternate,
+// decadimento a tempo, reset.
+bool verificaEscalation() {
+    sgl::gameplay::Escalation e;
+    bool ok = e.errori() == 0 && e.livello() == 0;
+
+    e.notificaCrash(10);
+    ok = ok && e.errori() == 1 && e.livello() == 0; // 0-1 -> 0
+    e.notificaCrash(20);
+    ok = ok && e.errori() == 2 && e.livello() == 1; // 2-3 -> 1
+    e.notificaCrash(30);
+    e.notificaCrash(40);
+    ok = ok && e.errori() == 4 && e.livello() == 2; // 4-5 -> 2
+    e.notificaCrash(50);
+    e.notificaCrash(60);
+    ok = ok && e.errori() == 6 && e.livello() == 3; // >=6 -> 3
+
+    // Decadimento: ogni 100 frame senza errori -1 errore.
+    e.aggiorna(60, 100);   // appena notificato a 60
+    ok = ok && e.errori() == 6;
+    e.aggiorna(161, 100);  // +101 -> 1 periodo
+    ok = ok && e.errori() == 5 && e.livello() == 2;
+    e.aggiorna(1000, 100); // molti periodi -> azzera
+    ok = ok && e.errori() == 0 && e.livello() == 0;
+
+    // Uscite strada: una su due conta, l'istante si aggiorna sempre.
+    e.reset();
+    e.notificaUscitaStrada(5);  // conta (prima)
+    ok = ok && e.errori() == 1;
+    e.notificaUscitaStrada(6);  // non conta
+    ok = ok && e.errori() == 1;
+    e.notificaUscitaStrada(7);  // conta
+    ok = ok && e.errori() == 2 && e.livello() == 1;
+    e.aggiorna(108, 100);       // 1 periodo dopo ultimo errore (frame 7)
+    ok = ok && e.errori() == 1;
+
+    e.reset();
+    ok = ok && e.errori() == 0 && e.livello() == 0;
+    e.aggiorna(500, 0); // decadimentoFrame 0: non deve dividere/crashare
+    ok = ok && e.errori() == 0;
+
+    // VJ5 17/11b: molti errori => livello saturo a 3 ma contatore cresce senza cap
+    // (recupero lungo: 1 decadimento non basta a scendere dal livello massimo).
+    e.reset();
+    for (int i = 0; i < 30; ++i) e.notificaCrash((sgl::u32)(i * 10));
+    ok = ok && e.errori() == 30 && e.livello() == 3;
+    e.aggiorna(400, 100); // +1 periodo rispetto all'ultimo crash (290)
+    ok = ok && e.errori() == 29 && e.livello() == 3;
+
+    // VJ5 17/11c: soglie livello (7/8, 14/15, 21/22 errori).
+    e.reset();
+    for (int i = 0; i < 7; ++i) e.notificaCrash(1);
+    ok = ok && e.errori() == 7 && e.livello() == 0;
+    e.notificaCrash(1);
+    ok = ok && e.errori() == 8 && e.livello() == 1;
+    for (int i = 0; i < 6; ++i) e.notificaCrash(1);
+    ok = ok && e.errori() == 14 && e.livello() == 1;
+    e.notificaCrash(1);
+    ok = ok && e.errori() == 15 && e.livello() == 2;
+    for (int i = 0; i < 6; ++i) e.notificaCrash(1);
+    ok = ok && e.errori() == 21 && e.livello() == 2;
+    e.notificaCrash(1);
+    ok = ok && e.errori() == 22 && e.livello() == 3;
+
+    if (!ok) std::printf("  VIOLAZIONE: escalation (crash/uscite/livelli/decadimento/reset)\n");
+    return ok;
+}
+
 // VJ5 15/11: rilievo aperto game.cpp:2794 + replay.cpp (record in Playback).
 bool verificaReplay() {
+    sgl::Replay r0;
+    const bool inizialeOk = !r0.active() && r0.inputs.empty() && r0.playbackIndex == 0 && r0.next() == 0;
+
     sgl::Replay r;
     r.startRecord();
     const i32 n = 5000;
@@ -4016,6 +4088,7 @@ bool verificaReplay() {
         if (r.inputs[(size_t)i] != (u64)(i & 0xFF)) { valoriOk = false; break; }
     std::printf("replay: capacity=%zu size=%zu dopo %d record (atteso cap/size 4096)\n",
                 r.inputs.capacity(), r.inputs.size(), n);
+    if (!inizialeOk) std::printf("  VIOLAZIONE: stato iniziale replay non neutro\n");
     if (!capOk) std::printf("  VIOLAZIONE: capacity != 4096\n");
     if (!sizeOk) std::printf("  VIOLAZIONE: size != 4096 (troncamento/crescita inattesa)\n");
     if (!valoriOk) std::printf("  VIOLAZIONE: valori registrati non coerenti\n");
@@ -4034,7 +4107,7 @@ bool verificaReplay() {
     const bool stopOk = !r.active() && r.inputs.empty() && r.playbackIndex == 0;
     if (!stopOk) std::printf("  VIOLAZIONE: stop() non azzera stato replay\n");
 
-    return capOk && sizeOk && valoriOk && playbackOk && fineOk && stopOk;
+    return inizialeOk && capOk && sizeOk && valoriOk && playbackOk && fineOk && stopOk;
 }
 
 // VJ5 16/11: autotest del lettore JSON minimo (core/json_mini.h) e dei dati che
@@ -4771,6 +4844,12 @@ int main(int argc, char** argv) {
         const bool ok = verificaSegnalePersonaggi();
         std::printf("%s\n", ok ? "GATE SEGNALE OK" : "FALLITO: segnale personaggi (render)");
         return ok ? 0 : 39;
+    }
+
+    if (modo == "escalation") {
+        const bool ok = verificaEscalation();
+        std::printf("%s\n", ok ? "GATE ESCALATION OK" : "FALLITO: escalation (gameplay)");
+        return ok ? 0 : 40;
     }
 
     // --- modo smoke (default) ---
