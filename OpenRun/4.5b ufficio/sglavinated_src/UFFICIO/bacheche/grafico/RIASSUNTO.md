@@ -1,10 +1,8 @@
-# RIEPILOGO — @grafico (16/11/2026 13:58)
-1. V47 VG3 ∞ giro 65 (Turno 2): controlli date/allineamento eseguiti; nessun PNG di Andrea piu' nuovo, 0 da convertire.
-2. `vg3_date_png_raw.py` exit 0 (16/11 13:58): 188 PNG (142 confrontati, 46 non motore, 0 fuori copertura), 87 raw scenari (81 a byte, 6 skyline a data) + 54 altri gruppi allineati, 0 da convertire, gruppi noti 8 sconosciuti 0.
-3. `converti_oggetti_raw.py` exit 0 (16/11 13:58): raw oggetti aggiornati 0, errori 0. Nessuna conversione eseguita.
-4. Catalogo/copertura invariati: nessuna modifica in questo turno.
-5. `mancante` restano solo i 4 noti: `font.antonio` (ttf assente) e i 3 personaggi `gianni`/`gesu`/`ufo` (disegni di Andrea).
-6. Residuo invariato: `sprite/rivali/auto_giocatore_sbandata.png` senza raw e non caricato dal motore; non cancellato, area auto di Andrea.
-7. File turno: `diario.md` (+1), `RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-8. Gate: non eseguito (16/11 13:58).
-9. Mai: HUD/UI, auto giocatore, logo/menu, premiazione, sponsor (solo Andrea), scenari/skyline Andrea. Licenze: zero esterne, zero Sega.
+# RIEPILOGO — @grafico (17/11/2026 10:29)
+1. V47 VG3 ∞ giro 77: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` exit 0 — 149 PNG (133 confrontati, 16 non motore, 0 fuori copertura), 86 raw scenari (80 oggetti a byte, 6 skyline a contenuto) + 47 altri gruppi, 0 da convertire, 126 a pari contenuto, gruppi noti 8 sconosciuti 0.
+2. `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` exit 0 — raw oggetti aggiornati 0, errori 0. Tutto allineato, nessuna conversione/raw riscritto.
+3. Pose giocatore bloccate (area Andrea): mancanti `auto_stop_dritta`, `auto_sx3`, `auto_sx4`; stop orfani `auto_stop_sx3`, `auto_stop_sx4`. Non rilanciare `converti_pose_auto.py` finche' mancano (cancella raw).
+4. Catalogo/mancanti noti invariati: `font.antonio` (ttf assente), `gianni`/`gesu`/`ufo` (disegni di Andrea), `lv_04_cromo/skyline_trama.png`, `sprite/rivali/auto_giocatore_sbandata.png`.
+5. Zero risorse esterne, zero Sega. Gate non eseguito.
+6. File turno: `UFFICIO/bacheche/grafico/diario.md` (+1), questo RIASSUNTO, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
+7. Prossimo: VG3 ∞ — ricontrollare date PNG/raw al prossimo turno; sblocco pose solo quando Andrea rimette i PNG mancanti.
