@@ -952,7 +952,7 @@
          "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_dritta.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw",
-         "nota": "Disegnata da Andrea (06/11): posa dritta dell'auto del giocatore, tre quarti dall'alto. Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
+         "nota": "Disegnata da Andrea (car-custom-v2, 17/11): posa dritta dell'auto del giocatore, 50x30, scala 1 a schermo (50 px). Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
       },
       {
          "id": "auto.giocatore.stop.dritta",
@@ -960,23 +960,23 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
-         "nota": "PNG assente in GRAFICA dopo la migrazione del 16/11 (controllo 17/11); il raw auto_stop_dritta.sglraw c'e' ed e' caricato dal motore (game.cpp). Da riavere da git f2f3581 (vecchio percorso .../Libreria/assets_originali/sprite/giocatore_pose/auto_stop.png) o da ridisegnare Andrea: area bloccata, non si rigenera dal raw. Attenzione: rilanciare TOOLS/converti_pose_auto.py senza il PNG cancella il raw."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx1",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx1.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
-         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 1, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx2",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2.sglraw",
-         "nota": "Segnaposto (06/11) generato da TOOLS/genera_pose_sterzo.py dalla posa dritta di Andrea: sterzo a sinistra livello 2, fianco destro e ruota anteriore visibili. Andrea lo ridisegna a mano; il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx3",
@@ -984,47 +984,47 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx3.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx3.sglraw",
-         "nota": "PNG assente in GRAFICA dopo la migrazione del 16/11 (controllo 17/11); il raw auto_sx3.sglraw c'e' ed e' caricato dal motore (game.cpp, posa sx3). Da riavere da git f2f3581 o da ridisegnare Andrea: area bloccata, non si rigenera dal raw. Il PNG del suo stop (auto_stop_sx3.png) invece c'e': manca solo la posa base. Attenzione: rilanciare TOOLS/converti_pose_auto.py senza questo PNG cancella il raw della posa e anche quello del suo stop."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx4",
          "tipo": "auto_giocatore",
-         "stato": "mancante",
+         "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx4.sglraw",
-         "nota": "PNG assente in GRAFICA dopo la migrazione del 16/11 (controllo 17/11); il raw auto_sx4.sglraw c'e' ed e' caricato dal motore (game.cpp, posa sx4). Da riavere da git f2f3581 o da ridisegnare Andrea: area bloccata, non si rigenera dal raw. Il PNG del suo stop (auto_stop_sx4.png) invece c'e': manca solo la posa base. Attenzione: rilanciare TOOLS/converti_pose_auto.py senza questo PNG cancella il raw della posa e anche quello del suo stop."
+         "nota": "Disegnata da Andrea (car-custom-v2-sx, 17/11): sterzo pieno a sinistra, fianco destro visibile, 50x30. Il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx1",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx1.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx1.sglraw",
-         "nota": "Stop accesi per la posa sx1, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx2",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx2.sglraw",
-         "nota": "Stop accesi per la posa sx2, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx3",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx3.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx3.sglraw",
-         "nota": "Stop accesi per la posa sx3, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa. 17/11: la posa base auto_sx3.png manca in GRAFICA; una conversione delle pose cancellerebbe anche questo raw (lo stop si converte solo con la sua posa)."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx4",
          "tipo": "auto_giocatore",
-         "stato": "pronto",
+         "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
-         "nota": "Stop accesi per la posa sx4, generati con la posa da TOOLS/genera_pose_sterzo.py (06/11). Andrea li ridisegna insieme alla posa. 17/11: la posa base auto_sx4.png manca in GRAFICA; una conversione delle pose cancellerebbe anche questo raw (lo stop si converte solo con la sua posa)."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.componente.ruota_1",
