@@ -952,7 +952,7 @@
          "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_dritta.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta.sglraw",
-         "nota": "Disegnata da Andrea (car-custom-v2, 17/11): posa dritta dell'auto del giocatore, 50x30, scala 1 a schermo (50 px). Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
+         "nota": "Disegnata da Andrea (car-custom, 18/11): posa dritta dell'auto del giocatore, 52x30, scala 1 a schermo. Le altre pose (sx1-4, dx1-4, salita, discesa) stessa misura; TOOLS/converti_pose_auto.py."
       },
       {
          "id": "auto.giocatore.stop.dritta",
@@ -960,7 +960,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx1",
@@ -968,7 +968,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx1.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx2",
@@ -976,7 +976,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx3",
@@ -984,7 +984,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx3.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx3.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.posa.sx4",
@@ -992,7 +992,15 @@
          "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx4.sglraw",
-         "nota": "Disegnata da Andrea (car-custom-v2-sx, 17/11): sterzo pieno a sinistra, fianco destro visibile, 50x30. Il gioco specchia per la destra. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Disegnata da Andrea (car-custom-sx, 18/11): sterzo pieno a sinistra, fianco SINISTRO visibile (muso a sinistra, coda a destra), 52x30. Niente specchio: lo specchio scambierebbe i due passeggeri, ogni posa va disegnata per entrambi i lati. Solo Andrea disegna l'auto del giocatore."
+      },
+      {
+         "id": "auto.giocatore.posa.dx4",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dx4.sglraw",
+         "nota": "Disegnata da Andrea (car-custom-dx, 18/11): sterzo pieno a destra, fianco DESTRO visibile (muso a destra, coda a sinistra), 52x30. Non e' lo specchio della sx (passeggeri negli stessi posti). Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx1",
@@ -1000,7 +1008,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx1.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx1.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx2",
@@ -1008,7 +1016,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx2.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx3",
@@ -1016,7 +1024,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx3.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx3.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.stop.sx4",
@@ -1024,7 +1032,7 @@
          "stato": "mancante",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel nuovo disegno car-custom-v2 (50x30). Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
       },
       {
          "id": "auto.giocatore.componente.ruota_1",

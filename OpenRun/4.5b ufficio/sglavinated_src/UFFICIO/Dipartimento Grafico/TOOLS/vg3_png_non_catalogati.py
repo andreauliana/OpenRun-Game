@@ -29,13 +29,7 @@ PATTERN = (
 
 # PNG fuori dal catalogo per decisione, non per dimenticanza: un PNG nuovo qui
 # deve avere un motivo scritto (e un PNG noto che sparisce non va piu' stampato).
-# car-custom-v2.png e' la tavola sorgente di Andrea da cui converti_pose_auto.py
-# ritaglia le pose dell'auto del giocatore: il motore non la legge (usa i raw in
-# sprite_raw/giocatore/pose/), l'area e' bloccata e non si cataloga come asset.
-NOTI_NON_ASSET = {
-    "GRAFICA/sprite/giocatore_pose/car-custom-v2.png":
-        "tavola sorgente delle pose dell'auto di Andrea (area bloccata), non letta dal motore",
-}
+NOTI_NON_ASSET = {}
 
 
 def main() -> int:
