@@ -1955,6 +1955,12 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const Sprite* st = &stopSprites_[idxPosa];
             if (st->width == s->width && st->height == s->height) stop = st;
         }
+        // Capelli mossi (Andrea 18/11): stesso disegno con le ciocche spostate.
+        const Sprite* corpo = s;
+        if (fx && fx->capelliMossi && idxPosa >= 0 && idxPosa < POSA_GIOCATORE_COUNT) {
+            const Sprite* cb = &capelliSprites_[idxPosa];
+            if (cb->width == s->width && cb->height == s->height) corpo = cb;
+        }
         auto grezzo = [&](const Sprite* sp, i32 tx, i32 ty) -> u32 {
             const u8 idx = sp->pixels[ty * sp->width + tx];
             if (!sp->palette.empty()) return sp->palette[idx % (i32)sp->palette.size()];
@@ -1971,7 +1977,7 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
         auto texel = [&](i32 tx, i32 ty) -> u32 {
             const i32 sx = tx;
             if (specchia) tx = s->width - 1 - tx;
-            u32 col = grezzo(s, tx, ty);
+            u32 col = grezzo(corpo, tx, ty);
             if ((col >> 24) == 0) return col;
             if (stop) {
                 const u32 acceso = grezzo(stop, tx, ty);

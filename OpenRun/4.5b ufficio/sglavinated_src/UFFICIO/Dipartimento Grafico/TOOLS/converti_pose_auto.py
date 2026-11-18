@@ -46,6 +46,23 @@ if immagini:
         with open(raw, "wb") as f:
             f.write(b"SGLR" + struct.pack("<II", im.width, im.height) + im.tobytes())
         print(f"scritto {raw} ({im.width}x{im.height})")
+    # Capelli mossi (facoltativi, Andrea 18/11): auto_<posa>_b.png, la stessa
+    # posa intera con le ciocche della passeggera spostate. Il gioco la alterna
+    # alla posa quando l'auto corre. Stessa misura e stesso ritaglio della posa.
+    for p in POSE:
+        png = os.path.join(SRC, f"auto_{p}_b.png")
+        raw = os.path.join(DST, f"auto_{p}_b.sglraw")
+        if not os.path.exists(png) or p not in immagini:
+            if os.path.exists(raw):
+                os.remove(raw)
+            continue
+        im = Image.open(png).convert("RGBA")
+        if im.size != immagini[p].size:
+            print(f"ATTENZIONE auto_{p}_b.png: {im.size[0]}x{im.size[1]}, la posa e' {immagini[p].size[0]}x{immagini[p].size[1]}")
+        im = im.crop(box) if box else im
+        with open(raw, "wb") as f:
+            f.write(b"SGLR" + struct.pack("<II", im.width, im.height) + im.tobytes())
+        print(f"scritto {raw} ({im.width}x{im.height})")
     # Stop accesi (facoltativi): auto_stop.png per la dritta, auto_stop_<posa>.png
     # per le altre. Stessa misura della posa, solo i fanali accesi, il resto
     # trasparente. Il gioco li sovrappone alla posa quando si frena.

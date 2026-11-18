@@ -1030,6 +1030,10 @@ void Game::init(const std::string& livelloId) {
     for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
         ren_.impostaStopSprite(k, caricaSpriteRaw(percorsoDati(
             std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_") + (POSE[k] + 5) + ".sglraw")));
+    // Capelli mossi della passeggera (Andrea 18/11, facoltativi): auto_<posa>_b.sglraw.
+    for (i32 k = 0; k < POSA_GIOCATORE_COUNT; ++k)
+        ren_.impostaCapelliSprite(k, caricaSpriteRaw(percorsoDati(
+            std::string("motore_nuovo/dati/sprite_raw/giocatore/pose/") + POSE[k] + "_b.sglraw")));
     // AUTO1 A2: componenti dell'auto (G-A1, @grafico): ruote, luci stop e
     // fumo, piu' le posizioni per fotogramma di auto_giocatore.json. Caricati
     // una volta per partita; se un raw o il file mancano vale il disegno
@@ -3044,6 +3048,14 @@ void Game::render() {
         ? std::min(1.0f, 1.4f * player_.speed / player_.maxSpeed()) : 0.0f;
     fx.atterraggioS = atterraggioS_;
     fx.forzaAtterraggio = forzaAtterraggio_;
+    // Capelli al vento (Andrea 18/11): da ferma restano fermi; in corsa le
+    // ciocche alternano due disegni, piu' svelte con la velocita' (3-8 cambi al
+    // secondo) e con un ritmo un po' irregolare, come una raffica.
+    if (player_.speed > 0.5f && player_.maxSpeed() > 0.0f && !playerFlipping_) {
+        const f32 v = std::min(1.0f, player_.speed / player_.maxSpeed());
+        const f32 fase = tempoGiocoS_ * (3.0f + 5.0f * v) + 0.6f * std::sin(tempoGiocoS_ * 1.7f);
+        fx.capelliMossi = ((i32)fase & 1) != 0;
+    }
     // In curva l'auto scivola di qualche pixel verso l'esterno sullo schermo
     // (fino a ~5 px, CURVA_DERIVA_SCHERMO unita' * 0.035), poi torna al centro.
     // Derapata (Andrea 08/11): la coda va verso l'esterno e l'auto trema di un

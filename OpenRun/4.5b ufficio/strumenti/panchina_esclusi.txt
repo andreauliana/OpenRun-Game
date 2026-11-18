@@ -14,3 +14,6 @@ opencode/jev-1.13-free
 opencode/nemotron-3.5-super-vl-free
 opencode/nemotron-3.5-lightning-free
 opencode/nemotron-3-ultra-free
+# 18 nov 2026 (Andrea): glm-5.3-flash-free ritirato da OpenCode il 18/11; longcat-2.5-free lasciato fuori (100 richieste/giorno, la preview aveva gia' dato problemi il 25/10).
+opencode/glm-5.3-flash-free
+opencode/longcat-2.5-free
