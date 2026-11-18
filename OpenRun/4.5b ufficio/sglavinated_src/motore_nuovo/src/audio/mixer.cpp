@@ -26,6 +26,7 @@ constexpr f32 OVATTATO_FC_PIENA = 18000.0f; // Hz: filtro aperto
 constexpr f32 OVATTATO_FC_CHIUSA = 650.0f;  // Hz: tutto ovattato
 constexpr f32 OVATTATO_TEMPO_S = 0.12f;     // quanto ci mette ad aprirsi/chiudersi
 constexpr f32 STRIDIO_VOLUME = 3600.0f;     // stridio pieno: si sente sopra il motore, sotto la musica
+constexpr f32 VOCE_STERZO_VOLUME = 0.35f;   // voce dello sterzo: picco ~10000, sopra lo stridio
 } // namespace
 
 Mixer::Mixer(u32 sampleRate) : sampleRate_(sampleRate) {}
@@ -37,7 +38,8 @@ Mixer::~Mixer() {
 }
 
 namespace {
-// WAV PCM 16 bit (mono o stereo -> mono). Cerca il blocco "fmt " e "data".
+// WAV PCM 16 bit o 8 bit (mono o stereo -> mono). Cerca il blocco "fmt " e "data".
+// L'8 bit (senza segno, come nei WAV) torna sulla stessa scala del 16 bit.
 bool leggiWav(const std::string& path, std::vector<f32>& out, u32& rate) {
     FILE* f = std::fopen(path.c_str(), "rb");
     if (!f) return false;
@@ -57,14 +59,15 @@ bool leggiWav(const std::string& path, std::vector<f32>& out, u32& rate) {
             canali = b[d + 2] | (b[d + 3] << 8);
             rate = u32le(d + 4);
             bit = b[d + 14] | (b[d + 15] << 8);
-        } else if (std::memcmp(b.data() + i, "data", 4) == 0 && canali > 0 && bit == 16) {
-            const size_t campioni = len / (2 * canali);
+        } else if (std::memcmp(b.data() + i, "data", 4) == 0 && canali > 0 && (bit == 16 || bit == 8)) {
+            const u32 byte = bit / 8;
+            const size_t campioni = len / (byte * canali);
             out.resize(campioni);
             for (size_t k = 0; k < campioni; ++k) {
                 f32 s = 0.0f;
                 for (u32 c = 0; c < canali; ++c) {
-                    const size_t p = d + (k * canali + c) * 2;
-                    s += (f32)(i16)(b[p] | (b[p + 1] << 8));
+                    const size_t p = d + (k * canali + c) * byte;
+                    s += bit == 16 ? (f32)(i16)(b[p] | (b[p + 1] << 8)) : ((f32)b[p] - 128.0f) * 256.0f;
                 }
                 out[k] = s / (f32)canali;
             }
@@ -129,6 +132,14 @@ f32 Mixer::motoreCampionato(f32 rpm) {
         if (posAcc_ >= (f64)motAcc_.dati.size()) posAcc_ = -1.0;
     }
     return s * engineVol_ * 0.5f;
+}
+
+bool Mixer::caricaVoceSterzo(const std::string& path) {
+    Campione v;
+    if (!leggiWav(path, v.dati, v.rate) || v.rate == 0) return false;
+    voceSterzo_ = std::move(v);
+    posVoce_ = -1.0;
+    return true;
 }
 
 bool Mixer::aggiungiBrano(const std::string& path, const std::string& titolo) {
@@ -454,6 +465,12 @@ void Mixer::mix(i16* out, i32 frames, f32 engineRpm) {
         if (checkN_ >= 0) { const f32 c = sfxCheckpoint(); l += c; r += c; }
         if (sorpassoN_ >= 0) { const f32 sp = sfxSorpasso(); l += sp; r += sp; }
         if (palettoN_ >= 0) { const f32 pl = sfxPaletto(); l += pl; r += pl; }
+        if (posVoce_ >= 0.0) {
+            const f32 v = VOCE_STERZO_VOLUME *
+                leggiCampione(voceSterzo_.dati, posVoce_, (f64)voceSterzo_.rate / (f64)sampleRate_, false);
+            l += v; r += v;
+            if (posVoce_ >= (f64)voceSterzo_.dati.size()) posVoce_ = -1.0;
+        }
         if (musica) {
             // Lettura del nastro con interpolazione lineare tra due campioni.
             const f32 passo = tonoT_ >= 0.0f ? rapportoTono(tonoT_) : 1.0f;

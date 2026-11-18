@@ -65,6 +65,12 @@ public:
     void suonaSorpasso() { sorpassoN_ = 0; }
     // MIG1 D5: paletto abbattuto che vola (effetto nuovo, in aggiunta).
     void suonaPaletto() { palettoN_ = 0; }
+    // Voce dello sterzo (Andrea 18/11, effetto nuovo): jingle vocale 8 bit
+    // (dati/audio/effetti/voce_sterzo.wav) che suona insieme allo stridio.
+    // Se sta gia' suonando non riparte da capo. false = file assente: niente voce.
+    bool caricaVoceSterzo(const std::string& path);
+    void suonaVoceSterzo() { if (!voceSterzo_.dati.empty() && posVoce_ < 0.0) posVoce_ = 0.0; }
+    bool voceSterzoInCorso() const { return posVoce_ >= 0.0; }
     // Musica ferma durante il conto alla rovescia: al ritorno (false) il brano
     // riparte dall'inizio, cosi' la traccia comincia insieme allo START.
     void setMusicaFerma(bool ferma) {
@@ -164,6 +170,9 @@ private:
     // --- MIG1 D5: paletto che vola ---
     i32 palettoN_ = -1;
     f32 sfxPaletto();
+    // --- Voce dello sterzo (Andrea 18/11) ---
+    Campione voceSterzo_;
+    f64 posVoce_ = -1.0;     // posizione nel campione (-1 = zitta)
 };
 
 } // namespace sgl
