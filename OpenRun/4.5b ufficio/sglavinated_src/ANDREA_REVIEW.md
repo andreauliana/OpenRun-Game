@@ -44,13 +44,15 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Punta in rettilineo | dopo 1 s l'auto si stacca di 3 px, ombra piu' scura | `SOLLEVAMENTO_*` |
 | Dosso | piccolo salto, atterraggio con sospensioni e polvere | `SALTO_*` |
 | Fuori strada | rallenta e trema; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `RIENTRO_S` |
-| Ciglio | primo tocco rallenta e si ricorda, il secondo forte e' incidente | game.cpp |
+| Ciglio | primo tocco rallenta, rimbalza verso la strada e si ricorda, il secondo forte e' incidente (rimbalzo: Andrea 18/11) | `toccaCiglio`, `CIGLIO_RIMBALZO` |
+| Centrifuga (18/11) | curva veloce con lo sterzo mollato: l'auto scivola fuori con fumo e stridio, il muso resta girato dentro; arrivare al bordo cosi' sopra il 55% della punta e' incidente | `CENTRIFUGA_*` |
 | Tamponare il traffico | botta forte, l'auto rimbalza, clacson | `URTO_*_TRAFFICO` |
 | Sportellata a un rivale | sterzando verso l'auto vicina lo scarto e' secco; vale anche su muso e coda del rivale; piu' lo scarto e' veloce piu' viene spostato (11/11 sera) | `AFFIANCATA_DX`, `SPORTELLATA_*`, `URTO_SPINTA_RIVALE` |
 | Sportellate ripetute | memoria dei colpi: a 3.5 sopra il 40% l'auto vola e fa incidente | `colpiMemoria_` |
 | Incidente | sale fino a 30 px girando, atterra, riparte da fermo nello stesso punto | game.cpp |
 | Danni al rivale | -3% di punta a botta, alla 4a KO per 4 s, triangolo acceso | `RIVALE_DANNO`, `RIVALE_KO_*` |
-| Paletti | si abbattono passandoci sopra, volano, -3% | `abbattiPali`, `PALO_X` |
+| Paletti | si abbattono passandoci sopra all'altezza dell'auto, volano sull'erba (si vedono, 18/11), -3% | `abbattiPali`, `PALO_X`, `PALO_AUTO_Z` |
+| Rivali (18/11) | si disegnano sul ramo che prendono davvero; chi non era in vista entra solo da lontano o da dietro; sbagliano le curve forti secondo carattere (vanno larghi, perdono velocita', a volte incidente); incidente anche prendendo in pieno un'auto dell'incrocio o tamponando il traffico (saltano, girano, si fermano a bordo strada e ripartono) | `aggiornaRivali`, `RIVALE_ERRORE_*`, `RIVALE_INCIDENTE_*` |
 | Cartelloni | sopra meta' punta incidente, sotto botta secca | game.cpp |
 | Incrocio | semaforo sempre verde: le auto di lato passano di continuo (aspettano solo il traffico normale). Prenderne una: sopra meta' punta incidente, sotto botta di traffico. Alla punta, sollevato, ci si passa sopra. Anche i rivali ci sbattono e rallentano | `aggiornaIncroci`, `urtoIncrocio` |
 | Pausa | Start da solo sul pad, o Invio (anche del tastierino): tutto fermo, scritta PAUSE, musica ovattata; Start di nuovo riprende | `Game::update` |
