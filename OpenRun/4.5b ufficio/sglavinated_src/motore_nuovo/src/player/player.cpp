@@ -34,7 +34,8 @@ void Player::update(f32 dt) {
     const f32 risposta = std::min(1.0f, v / STEER_V_PIENA) * (1.0f - caloPunta * v * v);
     // Peso (Andrea 11/11): la velocita' laterale insegue sterzo + spinte con
     // un ritardo che cresce con la velocita' (pronta piano, pesante forte).
-    const f32 obiettivoSterzo = steer_ * STEER_MAX * risposta * presaSterzo * guizzo;
+    const f32 sterzoCurvo = steer_ * (STEER_MORBIDO + (1.0f - STEER_MORBIDO) * std::abs(steer_));
+    const f32 obiettivoSterzo = sterzoCurvo * STEER_MAX * risposta * presaSterzo * guizzo;
     const f32 tauSterzo = INERZIA_STERZO_BASE_S + INERZIA_STERZO_PUNTA_S * v * v;
     const f32 tauSpinta = INERZIA_SPINTA_BASE_S + INERZIA_SPINTA_PUNTA_S * v * v;
     vSterzo += (obiettivoSterzo - vSterzo) * (1.0f - std::exp(-dt / tauSterzo));

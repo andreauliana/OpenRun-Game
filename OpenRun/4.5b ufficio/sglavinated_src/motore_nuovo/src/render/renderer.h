@@ -27,6 +27,10 @@ struct SpriteInstance {
     // senza sprite; scale = quota in unita' mondo), 6 pesce che salta (senza sprite).
     u8 anima = 0;
     f32 fase = 0.0f;
+    // Rivale in incidente (Andrea 18/11): salto in aria (unita' mondo, sopra
+    // la strada) e sprite specchiato a scatti mentre gira su se stesso.
+    f32 alza = 0.0f;
+    bool specchia = false;
 };
 
 // Memoria degli urti sull'auto del giocatore (Andrea 29/10): ammaccature che
@@ -323,6 +327,13 @@ public:
     // strada e scorrono via con essa; mai sotto la riga delle ruote.
     struct DetritoRender { f32 zRel = 0.0f; f32 worldX = 0.0f; f32 k = 1.0f; f32 v = 0.0f; i32 lato = 1; };
     void drawDetriti(const DetritoRender* v, i32 n);
+    // Paletti gia' abbattuti (Andrea 18/11): quota assoluta e lato; il
+    // paletto in piedi li' non si disegna piu' (vola via, non si sdoppia).
+    static constexpr i32 PALI_ABBATTUTI_MAX = 12;
+    void impostaPaliAbbattuti(const f32* z, const i32* lato, i32 n) {
+        nPaliAbbattuti_ = std::min(n, PALI_ABBATTUTI_MAX);
+        for (i32 i = 0; i < nPaliAbbattuti_; ++i) { paliAbbattutiZ_[i] = z[i]; paliAbbattutiLato_[i] = lato[i]; }
+    }
     const Sprite* risolviPosa(i32 posa, bool& specchia, f32& sterzoResiduo) const;
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
@@ -452,6 +463,9 @@ private:
     static constexpr f32 ONDA_PASSO_Z = 260.0f;     // righe di onde sull'acqua (unita' mondo)
     static constexpr f32 ONDA_PASSO_X = 520.0f;     // larghezza di una cella di riflesso
     void drawRoadsideMarkers(f32 playerZ);
+    f32 paliAbbattutiZ_[PALI_ABBATTUTI_MAX] = {};
+    i32 paliAbbattutiLato_[PALI_ABBATTUTI_MAX] = {};
+    i32 nPaliAbbattuti_ = 0;
     // Dintorni del ponte e transizioni (Andrea 07/11).
     void drawPila(const Road::ProjectedSeg& p);                 // pila del viadotto sotto le rampe
     void drawFianco(const Road::ProjectedSeg& p);               // spessore dell'impalcato

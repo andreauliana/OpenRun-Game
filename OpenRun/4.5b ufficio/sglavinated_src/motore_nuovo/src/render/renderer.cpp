@@ -1516,6 +1516,10 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         // bocca (Andrea 11/11: prima facevano una riga bianca sulle pareti).
         const bool oltreBocca = dentroGalleria_ && p.worldZ >= clipGalleriaZ_;
         for (i32 side : {-1, 1}) {
+            bool abbattuto = false; // Andrea 18/11: il paletto abbattuto vola via, qui non c'e' piu'
+            for (i32 k = 0; k < nPaliAbbattuti_ && !abbattuto; ++k)
+                abbattuto = paliAbbattutiLato_[k] == side && std::fabs(playerZ + p.worldZ - paliAbbattutiZ_[k]) < 100.0f;
+            if (abbattuto) continue;
             const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * (halfRoad + width * 2.0f));
             if (oltreBocca && (!clipGalleria_ || x - width / 2 < clipGx0_ || x + width / 2 > clipGx1_ ||
                                bottom - height < clipGy0_)) continue;
@@ -1716,6 +1720,7 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
         const f32 scala = proj * SPRITE_WORLD_PX * s.scale;
         clipAttivo_ = clipGalleria_ && zRel >= clipGalleriaZ_;
+        if (s.alza > 0.0f) sy -= proj * s.alza; // rivale che salta nell'incidente
         drawSprite(s, sx, sy, scala);
         clipAttivo_ = false;
         if (s.segnalino && nSegnalini < SEGNALINI_MAX) {
@@ -1778,9 +1783,10 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         if (ty1 <= ty0) ty1 = ty0 + 1;
         const i32 ty = (ty0 + ty1) / 2;
         for (i32 sx = sxIni; sx < sxFin; ++sx) {
-            const i32 tx0 = (i32)((i64)sx * sw / w);
+            i32 tx0 = (i32)((i64)sx * sw / w);
             i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
             if (tx1 <= tx0) tx1 = tx0 + 1;
+            if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
             u32 col = texel((tx0 + tx1) / 2, ty);
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto

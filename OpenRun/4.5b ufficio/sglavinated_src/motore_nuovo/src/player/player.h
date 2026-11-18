@@ -99,7 +99,13 @@ private:
     static constexpr f32 STEER_V_PIENA = 0.25f;
     static constexpr f32 STEER_CALO_PUNTA = 0.05f; // 06/11 0.35, 08/11 mattina 0.25; 08/11 pomeriggio 0.05: "fa fatica a muoversi tra destra e sinistra ad alte velocita'"
     static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
-    static constexpr f32 STEER_RITORNO_PER_S = 12.0f; // pieno -> 0 in ~0.08 s
+    // Andrea 18/11 (nota sullo sterzo di riferimento): il volante torna al
+    // centro piu' lento di quanto sterza (era 12/s, pieno -> 0 in 0.08 s):
+    // a colpetti la curva si tiene meglio, mollarlo del tutto la lascia.
+    static constexpr f32 STEER_RITORNO_PER_S = 5.0f; // pieno -> 0 in 0.2 s
+    // Risposta non lineare (stessa nota): un colpetto sposta poco, lo sterzo
+    // pieno e' deciso. Spostamento = sterzo x (MORBIDO + (1 - MORBIDO) x |sterzo|).
+    static constexpr f32 STEER_MORBIDO = 0.35f;
     // Peso (Andrea 11/11, rivisto la sera): ritardo da ferma + parte che
     // cresce col quadrato della velocita'. Sterzo: 0.03 -> 0.08 s alla punta
     // (prima 0.24 s per tutto: "non gira di lato abbastanza in fretta").

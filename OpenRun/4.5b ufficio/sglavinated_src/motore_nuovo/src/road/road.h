@@ -35,6 +35,7 @@ public:
     static constexpr i32 BIVIO_RETTILINEO_DOPO = 0;
     static constexpr i32 BIVIO_RACCORDO = 120;
     static constexpr f32 BIVIO_DIST = 1900.0f;     // centro di ogni ramo a bivio aperto (unita' mondo)
+    static constexpr f32 SVOLTA_RAMPA_S = 1.5f;     // la curva via del ramo non scelto entra in 1.5 s (Andrea 18/11)
     static constexpr f32 BIVIO_SVOLTA = 4.0e-4f;   // quanto il ramo non scelto si allontana (curva via). Aumentato (feedback Andrea 23/10, FORK1: prova runner Mac): i due rami del bivio divergono di piu' cosi' l'auto sul ramo scelto non tocca i bordi della parte centrale al bivio.
 
     Road();
