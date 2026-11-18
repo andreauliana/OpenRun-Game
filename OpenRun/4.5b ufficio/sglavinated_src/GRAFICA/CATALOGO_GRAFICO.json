@@ -957,10 +957,10 @@
       {
          "id": "auto.giocatore.stop.dritta",
          "tipo": "auto_giocatore",
-         "stato": "mancante",
+         "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dritta.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Stop accesi (Claude 18/11, su richiesta di Andrea): i fanali a trapezio del disegno di Andrea accesi di rosso, riga alta piu' chiara; sovrapposti alla posa in frenata."
       },
       {
          "id": "auto.giocatore.posa.sx1",
@@ -973,10 +973,10 @@
       {
          "id": "auto.giocatore.posa.sx2",
          "tipo": "auto_giocatore",
-         "stato": "mancante",
+         "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Passaggio di mezzo dello sterzo (Claude 18/11, su richiesta di Andrea): ricavato solo dai pixel di auto_sx4 di Andrea, fianco dimezzato, teste intatte, retro spostato a meta' (2 px) e largo 32 px fra dritta (34) e sterzo pieno (30). Andrea puo' ritoccarlo."
       },
       {
          "id": "auto.giocatore.posa.sx3",
@@ -1013,10 +1013,10 @@
       {
          "id": "auto.giocatore.stop.sx2",
          "tipo": "auto_giocatore",
-         "stato": "mancante",
+         "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx2.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx2.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Stop accesi (Claude 18/11, su richiesta di Andrea): i fanali a trapezio del disegno di Andrea accesi di rosso, riga alta piu' chiara; sovrapposti alla posa in frenata."
       },
       {
          "id": "auto.giocatore.stop.sx3",
@@ -1029,10 +1029,74 @@
       {
          "id": "auto.giocatore.stop.sx4",
          "tipo": "auto_giocatore",
-         "stato": "mancante",
+         "stato": "approvato",
          "file": "GRAFICA/sprite/giocatore_pose/auto_stop_sx4.png",
          "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_sx4.sglraw",
-         "nota": "Da disegnare (Andrea, 17/11): manca nel disegno car-custom di Andrea. Il vecchio PNG e il raw sono stati tolti perche' erano dell'auto vecchia. Solo Andrea disegna l'auto del giocatore."
+         "nota": "Stop accesi (Claude 18/11, su richiesta di Andrea): i fanali a trapezio del disegno di Andrea accesi di rosso, riga alta piu' chiara; sovrapposti alla posa in frenata."
+      },
+      {
+         "id": "auto.giocatore.posa.dx2",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dx2.sglraw",
+         "nota": "Passaggio di mezzo dello sterzo (Claude 18/11, su richiesta di Andrea): ricavato solo dai pixel di auto_dx4 di Andrea, fianco dimezzato, teste intatte, retro spostato a meta' (2 px) e largo 32 px fra dritta (34) e sterzo pieno (30). Andrea puo' ritoccarlo."
+      },
+      {
+         "id": "auto.giocatore.capelli.dritta",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dritta_b.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dritta_b.sglraw",
+         "nota": "Capelli mossi (Claude 18/11, su richiesta di Andrea): stessa posa con le ciocche basse di lei e il ciuffo di lui spostati di 1 px; il gioco la alterna alla posa quando l'auto corre."
+      },
+      {
+         "id": "auto.giocatore.capelli.sx2",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx2_b.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx2_b.sglraw",
+         "nota": "Capelli mossi (Claude 18/11, su richiesta di Andrea): stessa posa con le ciocche basse di lei e il ciuffo di lui spostati di 1 px; il gioco la alterna alla posa quando l'auto corre."
+      },
+      {
+         "id": "auto.giocatore.capelli.sx4",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_sx4_b.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx4_b.sglraw",
+         "nota": "Capelli mossi (Claude 18/11, su richiesta di Andrea): stessa posa con le ciocche basse di lei e il ciuffo di lui spostati di 1 px; il gioco la alterna alla posa quando l'auto corre."
+      },
+      {
+         "id": "auto.giocatore.capelli.dx2",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dx2_b.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dx2_b.sglraw",
+         "nota": "Capelli mossi (Claude 18/11, su richiesta di Andrea): stessa posa con le ciocche basse di lei e il ciuffo di lui spostati di 1 px; il gioco la alterna alla posa quando l'auto corre."
+      },
+      {
+         "id": "auto.giocatore.stop.dx2",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_dx2.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dx2.sglraw",
+         "nota": "Stop accesi (Claude 18/11, su richiesta di Andrea): i fanali a trapezio del disegno di Andrea accesi di rosso, riga alta piu' chiara; sovrapposti alla posa in frenata."
+      },
+      {
+         "id": "auto.giocatore.capelli.dx4",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_dx4_b.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_dx4_b.sglraw",
+         "nota": "Capelli mossi (Claude 18/11, su richiesta di Andrea): stessa posa con le ciocche basse di lei e il ciuffo di lui spostati di 1 px; il gioco la alterna alla posa quando l'auto corre."
+      },
+      {
+         "id": "auto.giocatore.stop.dx4",
+         "tipo": "auto_giocatore",
+         "stato": "approvato",
+         "file": "GRAFICA/sprite/giocatore_pose/auto_stop_dx4.png",
+         "raw": "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_stop_dx4.sglraw",
+         "nota": "Stop accesi (Claude 18/11, su richiesta di Andrea): i fanali a trapezio del disegno di Andrea accesi di rosso, riga alta piu' chiara; sovrapposti alla posa in frenata."
       },
       {
          "id": "auto.giocatore.componente.ruota_1",

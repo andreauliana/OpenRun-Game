@@ -52,6 +52,7 @@ struct EffettiAuto {
     f32 polvere = 0.0f;      // 0..1 fuori strada: zolle che schizzano dalle ruote
     f32 atterraggioS = -1.0f;// secondi dall'atterraggio di un salto (< 0 = nessuno)
     f32 forzaAtterraggio = 0.0f; // 0..1 quanto era alto il salto
+    bool capelliMossi = false;   // Andrea 18/11: fotogramma con i capelli mossi dal vento
 };
 
 // RIV punto 3 (finto 3D alla OutRun): fotogrammi dell'auto del giocatore,
@@ -326,6 +327,7 @@ public:
     void clearGiocatoreSprite() {
         for (Sprite& s : giocatoreSprites_) s = Sprite{};
         for (Sprite& s : stopSprites_) s = Sprite{};
+        for (Sprite& s : capelliSprites_) s = Sprite{};
         for (Sprite& s : ruotaSprites_) s = Sprite{};
         luciStopSprite_ = Sprite{};
         for (Sprite& s : fumoSprites_) s = Sprite{};
@@ -337,6 +339,14 @@ public:
     void impostaStopSprite(i32 posa, Sprite sprite) {
         if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) return;
         stopSprites_[posa] = std::move(sprite);
+    }
+    // Capelli mossi (Andrea 18/11): per ogni posa un secondo disegno intero
+    // della stessa misura (auto_<posa>_b) con le ciocche della passeggera
+    // spostate. Il gioco lo alterna alla posa quando l'auto corre.
+    // Facoltativo: se manca, la posa resta ferma.
+    void impostaCapelliSprite(i32 posa, Sprite sprite) {
+        if (posa < 0 || posa >= POSA_GIOCATORE_COUNT) return;
+        capelliSprites_[posa] = std::move(sprite);
     }
     // Aggiunge uno sprite decorativo a bordo strada caricato una volta (DECO1 2c).
     // Il Renderer ne e' proprietario; il chiamante memorizza solo l'indice.
@@ -483,6 +493,7 @@ private:
     std::vector<Sprite> sponsorSprites_;    // cartelloni 128x64, caricati una volta (zero alloc in gioco)
     std::vector<Sprite> oggettoSprites_;      // oggetti decorativi bordo strada (DECO1 2c)
     Sprite stopSprites_[POSA_GIOCATORE_COUNT];      // stop accesi per posa (facoltativi)
+    Sprite capelliSprites_[POSA_GIOCATORE_COUNT];   // posa con i capelli mossi (facoltativa, Andrea 18/11)
     Sprite giocatoreSprites_[POSA_GIOCATORE_COUNT]; // auto del giocatore per posa (P1 punto 4, RIV punto 3); vuoto = rettangolo sintetico
     Sprite ruotaSprites_[3];                        // componenti ruota_1..3 (AUTO1 A2)
     const Road* roadCorr_ = nullptr;               // strada del frame (incroci), impostata da drawRoad
