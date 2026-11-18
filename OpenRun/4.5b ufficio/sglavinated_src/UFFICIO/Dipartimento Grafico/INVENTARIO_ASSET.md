@@ -41,7 +41,7 @@ rifatti danno raw identici a prima.
 
 | `sprite_raw/` | N. | File |
 |---|---|---|
-| `giocatore/pose/` | 3 | auto_dritta, auto_sx4, auto_dx4 (car-custom di Andrea, 52x30, 18/11; niente specchio, ogni posa disegnata per entrambi i lati; sx1..sx3, dx1..dx3 e stop da disegnare) |
+| `giocatore/pose/` | 15 | auto_dritta, auto_sx4, auto_dx4 (car-custom di Andrea, 52x30, 18/11; niente specchio); auto_sx2/dx2 passaggio di mezzo, auto_<posa>_b capelli al vento, auto_stop_<posa> stop accesi (Claude 18/11 dai pixel di Andrea; sx1, sx3, dx1, dx3, salita, discesa da disegnare) |
 | `giocatore/` | 7 | ruota_1..3, fumo_1..3, luci_stop (+ `auto_giocatore.json`, punti per ruote e fumo) |
 | `pubblico/` | 10 | pubblico_a/b_su/giu (arrivo); supporto_a/b_relax/parla/esulta (partenza) |
 | `rivali/` | 7 | auto_rivale_<colore>_retro |
