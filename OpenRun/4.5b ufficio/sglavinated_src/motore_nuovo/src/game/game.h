@@ -376,6 +376,10 @@ private:
     // scivola verso l'esterno (0..1); arrivando al bordo cosi' e' incidente.
     f32 centrifuga_ = 0.0f;
     f32 avvisoPareggio_ = 0.0f;    // 0..1: stridio leggero vicino alla velocita' giusta della curva
+    // Voce dello sterzo (Andrea 18/11): parte quando le gomme cominciano a
+    // stridere sterzando forte; si riarma solo quando lo stridio si spegne.
+    bool voceSterzoArmata_ = true;
+    f32 voceSterzoAttesaS_ = 0.0f; // secondi prima che possa ripartire
     f32 posaLivello_ = 0.0f;       // posa mostrata, -4..4: passa per le pose di mezzo (sx2/dx2)
     i32 latoSovra_ = 1;            // lato verso cui punta il muso (interno della curva)
     f32 testacodaS_ = 0.0f;        // secondi di testacoda rimasti

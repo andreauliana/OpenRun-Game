@@ -329,6 +329,14 @@ constexpr f32 SPORTELLATA_FORZA_EXTRA = 0.6f;
 // si sentono (stridio leggero, CURVA_STRIDIO).
 constexpr f32 CURVA_ATTRITO = 0.12f;
 constexpr f32 CURVA_STRIDIO = 0.30f;
+// Voce dello sterzo (Andrea 18/11, effetto nuovo): il jingle vocale parte
+// quando la sgommata supera SOGLIA con lo sterzo oltre STERZO_MIN. Poi tace
+// finche' la sgommata non scende sotto RIARMO (curva finita) e comunque per
+// almeno PAUSA_S secondi: una volta per curva, non a ogni frame.
+constexpr f32 VOCE_STERZO_SOGLIA = 0.40f;
+constexpr f32 VOCE_STERZO_RIARMO = 0.15f;
+constexpr f32 VOCE_STERZO_MIN = 0.60f;
+constexpr f32 VOCE_STERZO_PAUSA_S = 8.0f;
 constexpr f32 AFFIANCATA_DX = 650.0f;          // auto "affiancata" per lo sterzo pieno della sportellata
 // Chi arriva da dietro passa accanto al giocatore a questa distanza laterale
 // (Andrea 08/11: prima si spostava sull'altro lato della strada e non lo si
@@ -968,6 +976,8 @@ void Game::caricaMusica() {
     musicaCaricata_ = true;
     // Motore campionato (Andrea 13/11): senza i WAV resta il motore sintetico di prima.
     mixer_.caricaMotore(percorsoDati("motore_nuovo/dati/audio/motore/"));
+    // Voce dello sterzo (Andrea 18/11): senza il file si gioca senza voce.
+    mixer_.caricaVoceSterzo(percorsoDati("motore_nuovo/dati/audio/effetti/voce_sterzo.wav"));
     JsonReader r(leggiFileTesto(percorsoDati("motore_nuovo/dati/audio/playlist.json")));
     if (!r.parse() || !jsonIsObject(r.valore())) return;
     auto aggiungi = [this](const JsonValue& b) {
@@ -1124,6 +1134,8 @@ void Game::init(const std::string& livelloId) {
     sovrasterzo_ = 0.0f;
     centrifuga_ = 0.0f;
     avvisoPareggio_ = 0.0f;
+    voceSterzoArmata_ = true;
+    voceSterzoAttesaS_ = 0.0f;
     posaLivello_ = 0.0f;
     latoSovra_ = 1;
     testacodaS_ = 0.0f;
@@ -3031,6 +3043,15 @@ void Game::aggiornaGuida(f32 dt) {
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
     mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max({derapata_, 0.8f * pattinamento_, CURVA_STRIDIO * sgommata_,
                                                          PAREGGIO_STRIDIO * avvisoPareggio_})); // gomme che stridono in derapata
+    // Voce dello sterzo (Andrea 18/11): insieme allo stridio, una volta per curva.
+    voceSterzoAttesaS_ = std::max(0.0f, voceSterzoAttesaS_ - dt);
+    if (sgommata_ < VOCE_STERZO_RIARMO) voceSterzoArmata_ = true;
+    if (voceSterzoArmata_ && voceSterzoAttesaS_ <= 0.0f && sgommata_ >= VOCE_STERZO_SOGLIA &&
+        std::abs(player_.sterzo()) >= VOCE_STERZO_MIN && !playerFlipping_ && !arrivo_ && !inPartenza()) {
+        mixer_.suonaVoceSterzo();
+        voceSterzoArmata_ = false;
+        voceSterzoAttesaS_ = VOCE_STERZO_PAUSA_S;
+    }
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
