@@ -26,7 +26,7 @@ Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     copertura_.reserve((size_t)Road::DRAW_DIST * 4);
     // V47 V7/V9: buffer per-frame di drawRoad/drawSprites con capienza piena
     // per evitare riallocazioni nel ciclo (oggetti terra/scena variano per livello).
-    terraOrdine_.reserve(512);
+    terraOrdine_.reserve(1024);
     spriteOrd_.reserve(1024);  // scena completa: rivali + traffico + incroci + fissi visibili
 }
 
