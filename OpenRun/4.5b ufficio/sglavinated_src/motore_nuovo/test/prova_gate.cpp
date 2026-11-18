@@ -2891,7 +2891,9 @@ bool verificaBivioBordi(const std::string& outDir) {
                 }
                 if (s.latoBivio != 0 && latoPrev == 0) sceltaPresa = true; // blocco scelta: lo script ha gia' scelto all'ingresso
                 latoPrev = s.latoBivio;
-                if (!inBivio && road.bivioAttivo() && s.playerZ > road.bivioInizioZ()) inBivio = true; // entrato in zona bivio
+                // Zona del bivio di questo frame (18/11: prima restava vera per sempre dopo il
+                // primo bivio e un incidente all'incrocio della tappa dopo contava come "nel bivio").
+                inBivio = road.bivioAttivo() && s.playerZ > road.bivioInizioZ();
                 if (s.playerOffroad) {
                     if (++offRun > maxOffRun) maxOffRun = offRun;
                 } else offRun = 0;

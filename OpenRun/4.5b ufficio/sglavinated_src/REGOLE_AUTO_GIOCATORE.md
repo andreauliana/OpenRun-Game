@@ -190,9 +190,21 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   volte su tre in 1-1.5 s, curve 0.3 di rado.
 - **Ciglio**: al primo tocco l'auto rimbalza verso la strada (`CIGLIO_RIMBALZO = 380`
   unita'/s) con un sobbalzo, invece di strisciare nell'erba.
-- **Sterzo** (player.h, dalla nota sullo sterzo di riferimento): il volante torna al
-  centro in 0.2 s (`STEER_RITORNO_PER_S = 5`, era 12) e la risposta non e'
-  lineare (`STEER_MORBIDO = 0.35`: un colpetto sposta poco, pieno resta pieno).
+- **Sterzo** (player.h, documento "Esperienza di guida di riferimento", proposte 2
+  e 3): volante pieno in 0.06 s (`STEER_RAMPA_PER_S = 16`, era 8), ritorno al
+  centro in 0.12 s (`STEER_RITORNO_PER_S = 8`, era 12: ora piu' lento della
+  pressione) e risposta non lineare (`STEER_MORBIDO = 0.35`: un colpetto sposta
+  poco, pieno resta pieno).
+- **Pareggio** (proposte 1 e 4): ogni curva ha la sua velocita' giusta, quella a
+  cui lo sterzo pieno (`Player::sterzoPieno`) pareggia la spinta
+  (`CURVA_SPINTA_V2` x |curva| x v^2). Dall'85% del pareggio, a sterzo pieno
+  dentro, stridio leggero d'avviso (`PAREGGIO_AVVISO`, `PAREGGIO_STRIDIO`); oltre,
+  centrifuga anche a sterzo pieno (piena al +30%, `PAREGGIO_MARGINE`). Col gas il
+  sovrasterzo resta come prima.
+- **Fuori strada a due zone** (proposta 5, player.h `ERBA_*`): nell'erba vicino al
+  bordo la velocita' scende verso il 72% della punta (~210 km/h) a 100
+  unita'/s^2; oltre 100 unita' piu' in fuori verso il 30% (~88 km/h) a 150; sotto
+  il tetto l'erba frena solo un poco. Prima: -40% al secondo ovunque.
 - **Pose di mezzo**: la posa mostrata passa per `auto_sx2`/`auto_dx2` (24 livelli
   al secondo, ritorno al doppio, `POSA_LIVELLI_PER_S`): prima lo sterzo digitale
   saltava da dritta a sx4 in 2 frame.

@@ -59,7 +59,12 @@ void Player::update(f32 dt) {
         if (sulBordo) speed *= std::pow(BORDO_SLOW_PER_SEC, dt); // il bordo frena un po' di piu'
     }
     // Rallentamento fuori strada: l'erba/terra frena l'auto.
-    if (offroad) speed *= std::pow(OFFROAD_SLOW_PER_SEC, dt);
+    if (offroad) {
+        const bool profonda = fuoriOltre > ERBA_ZONA_PROFONDA;
+        const f32 tetto = (profonda ? ERBA_TETTO_PROFONDO : ERBA_TETTO_VICINO) * MAX_SPEED;
+        if (speed > tetto) speed = std::max(tetto, speed - (profonda ? ERBA_CALO_PROFONDO : ERBA_CALO_VICINO) * dt);
+        else speed *= std::pow(ERBA_ATTRITO_PER_S, dt);
+    }
     if (speed < 0.0f) speed = 0.0f;
     if (speed > MAX_SPEED) speed = MAX_SPEED;
     // Avanzamento sulla strada (gestito anche da Game, qui si tiene la z locale).
@@ -99,6 +104,7 @@ void Player::vincolaAllaCorsia() {
     const f32 limiteX = X_LIMIT + extra;
     const f32 rel = x - centroCorsia;
     offroad = (rel < -limite) || (rel > limite);
+    fuoriOltre = offroad ? std::abs(rel) - limite : 0.0f;
     sulBordo = !offroad && std::abs(rel) > limite - (1.0f - BORDO_INIZIO) * OFFROAD_LIMIT * std::min(1.0f, larghezzaCorsia);
     if (rel > limiteX)  { x = centroCorsia + limiteX; vSterzo = std::min(vSterzo, 0.0f); vSpinta = std::min(vSpinta, 0.0f); vLat = vSterzo + vSpinta; }
     if (rel < -limiteX) { x = centroCorsia - limiteX; vSterzo = std::max(vSterzo, 0.0f); vSpinta = std::max(vSpinta, 0.0f); vLat = vSterzo + vSpinta; }

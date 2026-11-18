@@ -43,7 +43,8 @@ Queste azioni sono il linguaggio del gioco. **Restano come sono.** Una novita' s
 | Testacoda | coda non ripresa: velocita' al 40%, botta, l'auto gira su se stessa 0.7 s | `TESTACODA_*` |
 | Punta in rettilineo | dopo 1 s l'auto si stacca di 3 px, ombra piu' scura | `SOLLEVAMENTO_*` |
 | Dosso | piccolo salto, atterraggio con sospensioni e polvere | `SALTO_*` |
-| Fuori strada | rallenta e trema; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `RIENTRO_S` |
+| Fuori strada | rallenta e trema; due zone (18/11): vicino al bordo tetto 72% della punta, piu' fuori 30%; incidente solo dopo 2 s e sopra il 30% | `OFFROAD_*`, `ERBA_*`, `RIENTRO_S` |
+| Pareggio (18/11) | ogni curva ha la sua velocita' giusta: a sterzo pieno vicino al limite le gomme stridono piano, oltre si scivola fuori anche sterzando | `PAREGGIO_*`, `Player::sterzoPieno` |
 | Ciglio | primo tocco rallenta, rimbalza verso la strada e si ricorda, il secondo forte e' incidente (rimbalzo: Andrea 18/11) | `toccaCiglio`, `CIGLIO_RIMBALZO` |
 | Centrifuga (18/11) | curva veloce con lo sterzo mollato: l'auto scivola fuori con fumo e stridio, il muso resta girato dentro; arrivare al bordo cosi' sopra il 55% della punta e' incidente | `CENTRIFUGA_*` |
 | Tamponare il traffico | botta forte, l'auto rimbalza, clacson | `URTO_*_TRAFFICO` |
