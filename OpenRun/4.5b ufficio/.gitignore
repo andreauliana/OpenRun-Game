@@ -7,6 +7,8 @@ sglavinated_src/STOP
 sglavinated_src/*.log
 sglavinated_src/log_agenti/
 sglavinated_src/CONTROLLO.md
+# Pacchetto per Claude: lo riscrive ciclo.sh a fine giro
+sglavinated_src/PACCHETTO_PER_CLAUDE_APP.md
 sglavinated_src/*_RECENTE.md
 sglavinated_src/RICHIESTA_APERTA.md
 sglavinated_src/ASSEMBLEE_APERTE.md
@@ -27,6 +29,8 @@ build_*/
 sglavinated_src/motore_nuovo/build*/
 # Log dei test prova_gate (si rigenerano a ogni gate; erano circa 9 MB nella repo)
 sglavinated_src/UFFICIO/out/collaudatore/**/prova_gate*.log
+# Uscite del prova_gate lanciato a mano (vecchio percorso del debugger): si rigenerano
+sglavinated_src/UFFICIO/out/debugger/
 # File temporanei del checkpoint automatico (ciclo.sh)
 sglavinated_src/.auto_rosso
 sglavinated_src/.auto_verifica.tmp

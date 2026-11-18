@@ -5,7 +5,7 @@ Progetto di ricerca grafica e sviluppo tramite AI di andreauliana.com in progres
 ```text
 sglavinated_src/
 ├── ANDREA_REVIEW.md        decisioni di Andrea (precedenza su tutto)
-├── RICHIESTA.md            blocchi di lavoro per gli agenti (oggi: MIG1)
+├── RICHIESTA.md            blocchi di lavoro aperti per gli agenti (oggi: V47)
 ├── DIREZIONE_ARTISTICA.md  mood, temi dei livelli, sponsor, regole grafiche
 ├── REGOLE_AUTO_GIOCATORE.md  guida e auto (bloccate)
 ├── AGENTS.md · VISIONE.md · TAPPE.md · SCAMBIO.md
@@ -64,7 +64,7 @@ Sul Pi 400: `sh "<da aggiornare>/pi/compila_e_installa.sh"`.
 1. Il lavoro dei ruoli precedenti e' stato tolto il 08/11 (resta nella storia di git).
 2. La panchina modelli e' in `strumenti/panchina.txt`.
 3. Il @capo lavora al primo giro e poi ogni terzo giro (3, 6, 9...).
-4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `UFFICIO/bacheche/`, `UFFICIO/out/` e negli script). Il ciclo base fa girare @developer, @developer-junior e @grafico (per escludere il grafico: `AGENTI_ATTIVI="developer developer-junior"`). Il giro parallelo `strumenti/giro.sh` usa @developer, @developer-junior e @grafico. Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
+4. Ruoli 4.6: @capo, @developer, @developer-junior, @grafico (stessi nomi in AGENTS.md, `.opencode/agents/`, `UFFICIO/bacheche/`, `UFFICIO/out/` e negli script). Il ciclo base fa girare @developer, @developer-junior e @grafico (per escludere il grafico: `AGENTI_ATTIVI="developer developer-junior"`). Il @ si usa solo davanti al nome di un ruolo: negli header `## BLOCCO` di RICHIESTA.md e' il tag che gli script leggono per scegliere chi lavora.
 5. Un file, un ruolo: `frasi.json` e `CREDITI.md` li scrive solo il @grafico.
 6. `RICHIESTA.md` e' aggiornato solo nei nomi dei ruoli e nei percorsi.
 
@@ -93,5 +93,5 @@ Lo script trova da solo `~/Documents/llama.cpp/build/bin/llama-server` (altrimen
 
 In `opencode.json` i provider locali hanno `timeout`, `headerTimeout` e `chunkTimeout` a 1 ora: su CPU il modello legge il prompt di OpenCode (circa 10.000 token) in 5-6 minuti senza mandare niente, e il timeout normale lo interrompeva a 3 minuti. Su un Mac Intel il modello gira sul processore: e' lento, per questo restano la pausa e un solo agente alla volta. Il modello locale e' molto piu' debole dei free: va bene per passi piccoli, diario, test e documenti, non per modifiche C++ grandi.
 
-## Stato al passaggio (17 ott 2026)
-Tappa 1. Gate reale OK (3 livelli, replay 2x identico, 0,09 ms/frame, soak 30000 frame). Aperti: H, P1, T1-RUN (punto 4 sprite veri nel gate, punto 8 test di Andrea su Mac e Pi 400), M, J. MD0 e T5 in attesa.
+## Pulizia del 18/11/2026
+Tolti gli script doppi o fermi (`strumenti/giro.sh`, `strumenti/recap.sh`, `strumenti/avvia.command`), le uscite di test finite in git (`UFFICIO/out/debugger/`), tre script usa-e-getta del grafico e le review di blocchi chiusi: restano nella storia di git. I blocchi chiusi di `RICHIESTA.md` e le righe vecchie del registro del capo sono in `UFFICIO/archivio_per_claude/`. Il ciclo si avvia sempre con `sh comandi/v3.sh start`; il riepilogo per Claude e' `sglavinated_src/PACCHETTO_PER_CLAUDE_APP.md`, rigenerato dal ciclo (non piu' in git).
