@@ -2,7 +2,8 @@
 
 - `voce_sterzo.wav`: jingle vocale dello sterzo (Andrea 18/11, "steer-wicked").
   Suona insieme allo stridio delle gomme quando si sterza forte in curva,
-  una volta per curva (vedi `VOCE_STERZO_*` in `src/game/game.cpp`).
+  al massimo una volta per curva e solo nel 15% delle occasioni, come evento
+  raro (vedi `VOCE_STERZO_*` in `src/game/game.cpp`).
   Formato leggero per il Pi: mono, 8 bit, 11025 Hz (~25 KB). Fade in/out
   sono quelli di Andrea nel file: la conversione toglie solo il silenzio.
   Monofonico: se la voce sta gia' suonando non riparte e non si sovrappone.
