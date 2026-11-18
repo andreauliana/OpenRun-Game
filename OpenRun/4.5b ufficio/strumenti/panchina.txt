@@ -1,5 +1,5 @@
 opencode/deepseek-v4.1-flash-free
-opencode/glm-5.3-flash-free
+opencode/hy4-flash-free
 opencode/mimo-v2.6-flash-free
 opencode/iceman-free
 opencode/big-pickle
