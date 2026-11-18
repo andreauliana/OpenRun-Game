@@ -1,12 +1,12 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 18/11/2026 12:13 (Turno 1)
-- V9 ∞ fluidita' lv_05_spray (diciassettesimo giro).
-- Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0.
-- Percorso (v9_lv05_turno20) exit 0 "GATE PERCORSO OK" (2739 frame, 45.7 s, 0% fuori).
-  Cmd: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno20" lv_05_spray percorso
-- Smoke (v9_lv05_turno20_smoke) exit 0 "GATE OK" ms/frame medio 1.314 max 3.740 (<8 ms), replay IDENTICO.
-  Cmd: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno20_smoke" lv_05_spray smoke
-- Max frame sotto soglia 8 ms: nessun alleggerimento (resa invariata).
+- Data/ora: 18/11/2026 12:41 (Turno 1)
+- V9 ∞ fluidita' lv_06_desktop (diciassettesimo giro).
+- File codice: `motore_nuovo/src/render/renderer.cpp` reserve terraOrdine_ 384->512, spriteOrd_ 512->1024.
+- Build/rebuild: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0 (x2).
+- Percorso pre/post (v9_lv06_turno21, v9_lv06_turno21_post) exit 0 "GATE PERCORSO OK" (2113 frame, 35.2 s, 0% fuori).
+- Smoke pre (v9_lv06_turno21_smoke) exit 0 "GATE OK" ms/frame medio 1.386 max 19.988 (>8 ms), replay IDENTICO.
+- Smoke post (v9_lv06_turno21_post_smoke) exit 0 "GATE OK" ms/frame medio 1.332 max 46.368, replay IDENTICO.
+- Max frame >8 ms: micro-ottimizzazione reserve applicata, resa e replay invariati.
 - gate_t1.sh non eseguito.
-- Prossimo V9 ∞ lv_06_desktop (diciassettesimo giro).
+- Prossimo V9 ∞ lv_01_neon (diciottesimo giro).
 - Vincoli: HUD/auto giocatore/runner/costanti gameplay/tracciati invariati.
