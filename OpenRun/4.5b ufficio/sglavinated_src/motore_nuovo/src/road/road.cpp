@@ -436,7 +436,11 @@ Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
         const f32 oltre = zAbs > blocco ? zAbs - blocco : 0.0f;
         const f32 l = (f32)lato;
         c.centro[0] = l * (d - BIVIO_DIST);
-        c.centro[1] = -l * (d + BIVIO_DIST) - l * BIVIO_SVOLTA * oltre * oltre;
+        // Il ramo non scelto curva via piano dopo la scelta (Andrea 18/11: i
+        // rivali su quel ramo sparivano di colpo, la curva via entrava tutta
+        // in un frame): la svolta cresce in SVOLTA_RAMPA_S secondi.
+        const f32 rampaSvolta = std::min(1.0f, secondiDaSceltaBivio_ / SVOLTA_RAMPA_S);
+        c.centro[1] = -l * (d + BIVIO_DIST) - l * BIVIO_SVOLTA * rampaSvolta * rampaSvolta * oltre * oltre;
         // Subito dopo la scelta il ramo e' stretto (fattore 0.6); torna a 1.0 in
         // circa 1 secondo cosi' il cambio tappa non scatta in larghezza.
         const f32 ramp = secondiDaSceltaBivio_ >= 1.0f ? 1.0f : secondiDaSceltaBivio_;

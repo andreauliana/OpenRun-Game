@@ -372,6 +372,10 @@ private:
     f32 derapata_ = 0.0f;          // 0..1, segue l'obiettivo con un ritardo
     // Sovrasterzo, testacoda, pattinamento e partenza (Andrea 11/11).
     f32 sovrasterzo_ = 0.0f;       // angolo della coda -1..1 (+ = muso a destra)
+    // Centrifuga (Andrea 18/11): in curva veloce, sterzo mollato, l'auto
+    // scivola verso l'esterno (0..1); arrivando al bordo cosi' e' incidente.
+    f32 centrifuga_ = 0.0f;
+    f32 posaLivello_ = 0.0f;       // posa mostrata, -4..4: passa per le pose di mezzo (sx2/dx2)
     i32 latoSovra_ = 1;            // lato verso cui punta il muso (interno della curva)
     f32 testacodaS_ = 0.0f;        // secondi di testacoda rimasti
     f32 pattinamento_ = 0.0f;      // 0..1 ruote dietro che girano a vuoto
@@ -511,6 +515,17 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
         f32 vLancio = 0.0f;        // velocita' della partenza (unita' del giocatore)
         i32 carattere = RIV_CAR_NORMALE; // MIG1 D3
         f32 vendettaS = 0.0f;            // MIG1 D3: cerca il giocatore dopo una sua sportellata
+        // Andrea 18/11 ("anche i rivali possono rallentare e fare un incidente,
+        // per esempio all'incrocio"): secondi d'incidente rimasti. L'auto
+        // salta, gira (sprite specchiato a scatti) e si ferma, poi riparte.
+        f32 incidenteS = 0.0f;
+        // Andrea 18/11 ("il rivale non deve sparire in corsa stranamente"):
+        // disegnato al frame prima. Un rivale che non era in vista entra solo
+        // lontano (piccolo) o da sotto la telecamera, mai a meta' strada.
+        bool mostrato = true;
+        bool inCurvaForte = false; // gia' "tirato il dado" per questa curva (errori in curva, 18/11)
+        f32 erroreS = 0.0f;        // secondi di curva sbagliata: largo, gomme che stridono, piu' lento
+        bool disegnatoOra = false;
     };
     static constexpr i32 RIVALI = 7;
     const Tappa* trovaTappa(const std::string& id) const;
@@ -521,8 +536,9 @@ f32 transizioneTemaS_ = 1.0f; // durata transizione graduale tema tra tappe (sec
     void avanzaTappaRivale(Rivale& r); // cambio tappa o arrivo del rivale
     // Rivali gia' oltre la check line (Andrea 16/11): quota sulla strada del
     // giocatore (lunghezza tappa + progresso nella nuova), -1 se non visibile.
-    f32 zOltreCheckLine(const Rivale& r, i32 tappaGiocatore, i32 tappaDopo, bool& mioRamo) const;
-    void aggiungiSpriteRivale(const Rivale& r, i32 i, f32 zLocale, bool mioRamo = false);
+    f32 zOltreCheckLine(const Rivale& r, i32 tappaGiocatore, i32 tappaDopo, bool& mioRamo, i32& ramo) const;
+    void aggiungiSpriteRivale(Rivale& r, i32 i, f32 zLocale, bool mioRamo = false, i32 ramo = 0);
+    void incidenteRivale(Rivale& r); // Andrea 18/11: il rivale va a sbattere e riparte
     std::vector<f32> lunghezzeTappe_;  // parallelo a tappe_
     void preparaBivio();
     // Bivio leggibile e checkpoint (Andrea 11/11): colori delle due mete

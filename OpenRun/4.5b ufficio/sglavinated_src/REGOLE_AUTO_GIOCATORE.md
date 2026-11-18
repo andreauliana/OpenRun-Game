@@ -177,3 +177,25 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   `PALO_X = 860` dal centro corsia): volano via girando, -3% di velocita',
   piccolo sobbalzo. Cartelloni: sopra meta' punta incidente, sotto botta secca
   (-40%).
+
+## Rivista da Andrea il 18/11 (curva, bordi, sterzo, pose)
+- **Centrifuga** (game.cpp `CENTRIFUGA_*`): "se mollo lo sterzo in velocita' devo
+  andare fuori piu' facilmente; nelle curve ampie si deve sentire la centrifuga".
+  Oltre `CENTRIFUGA_DA = 0.20` di carico (|curva| x v^2), con lo sterzo che non
+  tiene la curva (sotto `CENTRIFUGA_TIENE = 0.4` dentro), la spinta verso
+  l'esterno cresce fino al doppio (`CENTRIFUGA_EXTRA = 1.0`) in 0.35 s; fumo,
+  stridio, coda fuori e muso girato dentro (posa di mezzo). Al bordo con
+  centrifuga >= 0.3 e sopra il 55% della punta: incidente. Prove (sterzo mollato
+  alla punta): curve 0.6 incidente in ~0.9 s quasi sempre, curve 0.45 circa due
+  volte su tre in 1-1.5 s, curve 0.3 di rado.
+- **Ciglio**: al primo tocco l'auto rimbalza verso la strada (`CIGLIO_RIMBALZO = 380`
+  unita'/s) con un sobbalzo, invece di strisciare nell'erba.
+- **Sterzo** (player.h, dalla nota sullo sterzo di riferimento): il volante torna al
+  centro in 0.2 s (`STEER_RITORNO_PER_S = 5`, era 12) e la risposta non e'
+  lineare (`STEER_MORBIDO = 0.35`: un colpetto sposta poco, pieno resta pieno).
+- **Pose di mezzo**: la posa mostrata passa per `auto_sx2`/`auto_dx2` (24 livelli
+  al secondo, ritorno al doppio, `POSA_LIVELLI_PER_S`): prima lo sterzo digitale
+  saltava da dritta a sx4 in 2 frame.
+- **Paletti**: si abbattono all'altezza dell'auto (`PALO_AUTO_Z = 900` davanti alla
+  telecamera) e quello in piedi sparisce: prima il volo partiva gia' dietro lo
+  schermo e non si vedeva.
