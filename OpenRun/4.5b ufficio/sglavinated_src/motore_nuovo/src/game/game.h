@@ -380,6 +380,7 @@ private:
     // stridere sterzando forte; si riarma solo quando lo stridio si spegne.
     bool voceSterzoArmata_ = true;
     f32 voceSterzoAttesaS_ = 0.0f; // secondi prima che possa ripartire
+    Rng rndVoce_{0x2545F491u};     // tiro a sorte (mai riseminato: scorre tra le gare) della voce (evento raro, Andrea 18/11)
     f32 posaLivello_ = 0.0f;       // posa mostrata, -4..4: passa per le pose di mezzo (sx2/dx2)
     i32 latoSovra_ = 1;            // lato verso cui punta il muso (interno della curva)
     f32 testacodaS_ = 0.0f;        // secondi di testacoda rimasti

@@ -337,6 +337,11 @@ constexpr f32 VOCE_STERZO_SOGLIA = 0.40f;
 constexpr f32 VOCE_STERZO_RIARMO = 0.15f;
 constexpr f32 VOCE_STERZO_MIN = 0.60f;
 constexpr f32 VOCE_STERZO_PAUSA_S = 8.0f;
+// Evento raro (Andrea 18/11 sera: "il 15% di quello che suona adesso"): a
+// ogni occasione buona la voce parte solo con questa probabilita' (su 100).
+// Le occasioni scartate contano come suonate (riarmo e pausa uguali), cosi'
+// la frequenza e' proprio il 15% di prima.
+constexpr u32 VOCE_STERZO_PROBABILITA = 15;
 constexpr f32 AFFIANCATA_DX = 650.0f;          // auto "affiancata" per lo sterzo pieno della sportellata
 // Chi arriva da dietro passa accanto al giocatore a questa distanza laterale
 // (Andrea 08/11: prima si spostava sull'altro lato della strada e non lo si
@@ -3048,7 +3053,10 @@ void Game::aggiornaGuida(f32 dt) {
     if (sgommata_ < VOCE_STERZO_RIARMO) voceSterzoArmata_ = true;
     if (voceSterzoArmata_ && voceSterzoAttesaS_ <= 0.0f && sgommata_ >= VOCE_STERZO_SOGLIA &&
         std::abs(player_.sterzo()) >= VOCE_STERZO_MIN && !playerFlipping_ && !arrivo_ && !inPartenza()) {
-        mixer_.suonaVoceSterzo();
+        // Il frame del momento entra nel tiro: ogni partita e' diversa (dipende
+        // da come si guida), ma con gli stessi input il risultato e' lo stesso.
+        const u32 tiro = (rndVoce_.next() ^ ((u32)clock_.frame * 2654435761u)) % 100u;
+        if (tiro < VOCE_STERZO_PROBABILITA) mixer_.suonaVoceSterzo();
         voceSterzoArmata_ = false;
         voceSterzoAttesaS_ = VOCE_STERZO_PAUSA_S;
     }
