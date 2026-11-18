@@ -1,11 +1,13 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (17/11/2026 09:46)
+# STATUS_GRAFICO_PER_CAPO — @grafico (18/11/2026 12:08)
 
-- Stato: allineato (VG3 ∞ giro 71)
-- Controlli turno:
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0 (149 PNG: 133 confrontati, 16 non motore, 0 fuori copertura; 86 raw scenari 80 a byte + 6 skyline a contenuto; 47 altri gruppi; 0 da convertire, 126 pari contenuto; gruppi noti 8, sconosciuti 0)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/converti_oggetti_raw.py"` — exit 0 (raw oggetti aggiornati 0, errori 0)
-- Esito: nessun PNG Andrea piu' nuovo, nessuna conversione/raw riscritto.
-- Bloccato (area Andrea): pose giocatore mancanti `auto_stop_dritta`, `auto_sx3`, `auto_sx4`; stop orfani `auto_stop_sx3`, `auto_stop_sx4`. Non rilanciare `converti_pose_auto.py`.
+- Stato: allineato (VG3 ∞ giro 80); nessuna conversione necessaria. Nessun blocco mio aperto oltre VG3 (VG2 chiuso).
+- Controllo turno: `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — stampa "exit 0" (145 PNG: 133 confrontati, 12 non motore, 0 fuori copertura; 86 raw scenari: 80 oggetti a byte + 6/6 skyline a contenuto; 47 altri gruppi; da convertire 0, 126 a pari contenuto; gruppi raw noti 8, sconosciuti 0; pose auto 2/2 allineate).
+- Catalogo, due controlli in più: `vg3_raw_senza_catalogo.py` exit 0 (142 raw del motore, 142 tracciati, 0 senza voce); `vg3_png_non_catalogati.py` exit 0.
+- Modifica del turno: `UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py` — lista `NOTI_NON_ASSET` con motivo (`sprite/giocatore_pose/car-custom-v2.png` = tavola sorgente delle pose di Andrea, area bloccata, non letta dal motore) e conteggio separato "da decidere"/"noti": prima 1 non catalogato, ora 0 da decidere.
+- Catalogo JSON non toccato: le voci "mancante" con `raw` previsto restano, sono la convenzione accettata da `check_catalogo_grafico.py` (che esenta lo stato "mancante").
+- Pose auto: 2 PNG + 2 raw allineati (auto_dritta, auto_sx4), altre pose "mancante"; area bloccata, non toccata.
+- Esito: zero PNG/raw scritti, zero riscritture; catalogo e provenienza coerenti.
 - Residui noti: `font.antonio` ttf assente, `gianni`/`gesu`/`ufo` disegni di Andrea, `lv_04_cromo/skyline_trama.png`, `sprite/rivali/auto_giocatore_sbandata.png`.
-- Gate: non eseguito (17/11/2026 09:46). Licenze/provenienza: nessuna risorsa esterna; zero Sega.
-- File turno: `UFFICIO/bacheche/grafico/diario.md`, `UFFICIO/bacheche/grafico/RIASSUNTO.md`, questo status. `ULTIMO_TURNO.md` non aggiornato (permesso negato in scrittura).
+- Gate: non eseguito (fuori dal blocco VG3). Licenze: nessuna risorsa esterna, zero Sega.
+- File turno: diario (+1 riga), RIASSUNTO, questo status. `ULTIMO_TURNO.md` non riscrivibile (permesso negato): vale questo file.
+- Review richiesta: nessuna.

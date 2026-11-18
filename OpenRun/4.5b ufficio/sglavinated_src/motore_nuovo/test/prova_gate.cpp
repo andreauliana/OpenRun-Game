@@ -4053,19 +4053,18 @@ bool verificaEscalation() {
     e.aggiorna(400, 100); // +1 periodo rispetto all'ultimo crash (290)
     ok = ok && e.errori() == 29 && e.livello() == 3;
 
-    // VJ5 17/11c: soglie livello (7/8, 14/15, 21/22 errori).
+    // VJ5 17/11c (corretto 18/11): livello = errori/2 con massimo 3, da 6
+    // errori in su resta 3 (SPEC_GAMEPLAY.md:52; escalation.h:9,56-59). Le
+    // soglie 7/8-14/15-21/22 scritte il 17/11 non hanno riscontro in nessun
+    // documento del repo: gate escalation era exit 40 (18/11 11:35).
     e.reset();
     for (int i = 0; i < 7; ++i) e.notificaCrash(1);
-    ok = ok && e.errori() == 7 && e.livello() == 0;
+    ok = ok && e.errori() == 7 && e.livello() == 3;
     e.notificaCrash(1);
-    ok = ok && e.errori() == 8 && e.livello() == 1;
-    for (int i = 0; i < 6; ++i) e.notificaCrash(1);
-    ok = ok && e.errori() == 14 && e.livello() == 1;
-    e.notificaCrash(1);
-    ok = ok && e.errori() == 15 && e.livello() == 2;
-    for (int i = 0; i < 6; ++i) e.notificaCrash(1);
-    ok = ok && e.errori() == 21 && e.livello() == 2;
-    e.notificaCrash(1);
+    ok = ok && e.errori() == 8 && e.livello() == 3;
+    for (int i = 0; i < 7; ++i) e.notificaCrash(1);
+    ok = ok && e.errori() == 15 && e.livello() == 3;
+    for (int i = 0; i < 7; ++i) e.notificaCrash(1);
     ok = ok && e.errori() == 22 && e.livello() == 3;
 
     if (!ok) std::printf("  VIOLAZIONE: escalation (crash/uscite/livelli/decadimento/reset)\n");

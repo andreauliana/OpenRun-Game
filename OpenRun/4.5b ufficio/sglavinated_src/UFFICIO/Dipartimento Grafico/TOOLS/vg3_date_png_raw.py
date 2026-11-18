@@ -572,6 +572,24 @@ if __name__ == "__main__":
         )
         ok = ok and ok_conta
         print("autotest conta_pose: " + ("OK" if ok_conta else "FALLITO"))
+        # Skyline: il PNG grezzo non si confronta col raw (la trama lo ricompone),
+        # quindi la prova negativa e' che la ricomposizione segua il disegno: due PNG
+        # diversi devono dare raw SGLR diversi. Se trama_scenari.py non si importa il
+        # confronto degli skyline ripiega sulla data e la prova non si puo' fare.
+        modulo = modulo_trama()
+        if modulo is None:
+            print("autotest raw_skyline_atteso: SALTO (trama_scenari.py non importabile)")
+        else:
+            with tempfile.TemporaryDirectory() as td:
+                a = Path(td) / "sk_a.png"
+                b = Path(td) / "sk_b.png"
+                Image.new("RGBA", (8, 8), (12, 34, 56, 255)).save(a)
+                Image.new("RGBA", (8, 8), (210, 120, 40, 255)).save(b)
+                ra = raw_skyline_atteso(a, "lv_01_neon", modulo) or b""
+                rb = raw_skyline_atteso(b, "lv_01_neon", modulo) or b""
+            ok_sky = ra[:4] == b"SGLR" and rb[:4] == b"SGLR" and ra != rb
+            ok = ok and ok_sky
+            print("autotest raw_skyline_atteso: " + ("OK" if ok_sky else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()
