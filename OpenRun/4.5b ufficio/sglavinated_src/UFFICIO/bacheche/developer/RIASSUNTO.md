@@ -1,12 +1,12 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 18/11/2026 13:06 (Turno 1)
-- V9 ∞ fluidita' lv_02_atomico (diciottesimo giro).
-- File codice: `motore_nuovo/src/render/renderer.cpp` (reserve `terraOrdine_` 512->1024).
-- Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0 (pre e post).
-- Percorso (v9_lv02_turno18 / post) exit 0 "GATE PERCORSO OK" (2464 frame, 41.1 s, 0% fuori).
-- Smoke pre (v9_lv02_turno18_smoke) exit 0 "GATE OK" ms/frame medio 1.028 max 3.489, replay IDENTICO.
-- Smoke post (v9_lv02_turno18_post_smoke) exit 0 "GATE OK" ms/frame medio 1.033 max 4.233, replay IDENTICO.
-- Caricamento 4.3-5.5 ms + init 7.9-12.1 ms (post).
-- gate_t1.sh non eseguito.
-- Prossimo V9 ∞ lv_03_foglie (diciottesimo giro).
-- Vincoli: HUD/auto giocatore/runner/costanti gameplay/tracciati invariati.
+- Data/ora: 18/11/2026 17:25 (Turno 4)
+- Blocco: V9 ∞ fluidita' lv_06_desktop (ventesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: early return se area schermo vuota dopo clip).
+- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre).
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK (2113 frame, 35.2 s, 0% fuori).
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.229 max 8.141 (>8), replay IDENTICO.
+- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (post).
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK.
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.170 max 3.947, replay IDENTICO.
+- Gate: gate_t1.sh non eseguito.
+- Esito: max ridotto < 8 ms, ottimizzazione applicata e verificata. Prossimo V9 ∞ lv_01_neon (ventunesimo giro).

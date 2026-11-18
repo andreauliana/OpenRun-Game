@@ -1,15 +1,14 @@
-# ULTIMO TURNO @developer-junior (18/11 12:56)
-## Blocco e passo
-- V47 VJ5 ∞ — review stato attuale src (working tree renderer.cpp).
-
-## File cambiati
-- `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto)
-- `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto)
-- `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga)
-- `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto)
-
-## Comando ed exit code
-- Nessuno eseguito (review sola lettura). Precedente: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0, ctest 27/27 (18/11 12:45).
-
-## Esito
-- Rilievo invariato: `renderer.cpp:29-30` reserve 512/1024 magiche; `drawSprites:1650` `resize` senza garanzia capacity (rischio rialloc V7). Suggerimenti in REVIEW_V47. gate non eseguito in questo turno.
+# ULTIMO TURNO @developer-junior
+- Turno: 18/11/2026 17:29 — V47 VJ5 ∞ (review ultimo cambio src)
+- Blocco/passo: review diff `motore_nuovo/src` (M `motore_nuovo/src/render/renderer.cpp`, working tree) e aggiornamento `REVIEW_V47.md`.
+- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`.
+- Comandi ed exit code:
+  - `git status --short -- motore_nuovo/src` -> exit 0 (`M motore_nuovo/src/render/renderer.cpp`)
+  - `git diff --stat -- motore_nuovo/src` -> exit 0 (`1 file changed, 44 insertions(+), 23 deletions(-)`)
+  - `git log -5 --oneline -- motore_nuovo/src` -> exit 0
+  - `git diff -- motore_nuovo/src/render/renderer.cpp` -> exit 0 (diff ispezionato)
+  - lettura `renderer.cpp`/`renderer.h` e `REVIEW_V47.md`/diario/RIASSUNTO/ULTIMO_TURNO precedenti -> ok
+  - `nl -ba ... | sed -n ...` -> negati (`permission.rejected`)
+- Esito: `copertura_` fa resize se `size()!=projs_.size()` (`render/renderer.cpp:188`) mentre nello stesso diff `spriteOrd_` e' grow-only (`:1667-1668`); indicizzazione `copertura_` solo fino a `projs_.size()` (`:191-192,202,237`) => semplificazione `if (copertura_.size() < projs_.size())` per evitare resize a scendere. Rilievi invariati: cache `mascheraGraffito` per identita puntatore (`:1201,1247,1303-1304`), reserve fisse/puntatori stabili incroci e altri sprite, possibili rialloc `spriteOrd_`/`terraOrdine_` oltre 2048 (`:29-30,173-181,1667`).
+- gate_t1.sh: non eseguito.
+- Problemi residui: backlog warning/fragilità in `game.cpp`, `mixer.cpp:91-99`, `salvataggi.cpp`, `escalation.h`, `core/json_mini.h`, `replay.cpp`, `paesaggio.cpp`.

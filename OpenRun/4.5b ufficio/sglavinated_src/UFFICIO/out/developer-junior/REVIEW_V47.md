@@ -1,18 +1,14 @@
 # REVIEW V47 (@developer-junior)
-Riscritto 18/11 12:56 (turno VJ5).
+Riscritto 18/11 17:29 (turno VJ5).
 
 ## VJ4 soak (completato 17/11)
-- 17/11: soak lv_01-lv_06 tutti exit 0 (GATE OK, 30000 frame, replay 2x IDENTICO, nessun crash). gate_t1.sh non eseguito.
+- lv_01-lv_06: tutti exit 0 (GATE OK, 30000 frame, replay 2x IDENTICO, nessun crash).
 
-## VJ5 ∞ review src — stato attuale (working tree)
-- 18/11 12:56: `motore_nuovo/src/render/renderer.cpp:29-30` (`Renderer::Renderer`) reserve fisse `terraOrdine_.reserve(512)`, `spriteOrd_.reserve(1024)`. `drawRoad` (`:157-169`) fa `push_back` su `terraOrdine_` fino a oggetti terra visibili: se >512 rialloca nel ciclo (V7). `drawSprites` (`:1650`) fa `spriteOrd_.resize(sprites.size())`: se `sprites.size()` > capacity corrente rialloca; con base 1024 basta una scena più grande per rialloc silenziosa. Semplificazioni: in `Renderer::impostaOggettiTerra` (`renderer.h:177`, chiamato da `game.cpp:514`) riservare `terraOrdine_` da `oggettiTerra_->size()` (o cap+log); prima di `resize` in `drawSprites` assicurare `spriteOrd_.capacity() >= sprites.size()` (reserve/log una tantum o cap documentato).
-- 18/11 12:45: stesso rilievo (diff locale) sintetizzato sopra; invariato allo stato attuale.
-- Cumulativo (note precedenti): `game.cpp:734-736` skyline senza warning raw mancante/vuoto; `:1037-1046` asset opzionali senza warning; `:3201-3204,3254-3256` warning folla/supporto solo indice 0; `:1026-1048` warning solo `auto_dritta`; `:1032` `(POSE[k]+5)` fragile.
+## VJ5 ∞ review src — turno 18/11 17:29 (ultimo diff: M `motore_nuovo/src/render/renderer.cpp`)
+- Stato: `git diff --stat -- motore_nuovo/src` exit 0 (`1 file changed, 44 insertions(+), 23 deletions(-)`, working tree). `git status --short -- motore_nuovo/src` exit 0 (`M motore_nuovo/src/render/renderer.cpp`). `git diff -- motore_nuovo/src/render/renderer.cpp` exit 0 (ispezionato). Diff: reserve/prealloc, `copertura_` resize condizionale, riuso `distI`/`proj`, grow-only `spriteOrd_` con sort/draw su `nSprite`, ottimizzazioni drawSprite/graffiti.
+- Possibile errore/semplificazione (incoerenza high-water-mark): `copertura_` ora fa `if (copertura_.size() != projs_.size()) copertura_.resize(projs_.size());` (`render/renderer.cpp:188`, `copertura_.reserve(Road::DRAW_DIST)` `:26`) ma nello stesso diff `spriteOrd_` e' reso grow-only con `if (spriteOrd_.size() < sprites.size()) spriteOrd_.resize(sprites.size());` (`:1667-1668`). `copertura_` e' indicizzato solo fino a `projs_.size()` (`:191-192,202,237`), quindi se `projs_.size()` oscilla tra frame il resize a scendere e' inutile. Semplificazione: usare `if (copertura_.size() < projs_.size()) copertura_.resize(projs_.size());` per coerenza high-water-mark/zero rialloc evitabili.
+- Rilievi invariati: `mascheraGraffito` cache per identita puntatore `m.testo == testo` e salva puntatore (`:1201,1247`), ref da `graffiti_` (`:37,1303-1304`, uso attuale sicuro con letterali `kGraf` `:687-689,703`); `incrocioSprites_.reserve(16)` con 2 `push_back`/tipo (`:46`, `renderer.h:258-266`) e accessor `Sprite*` stabili (`renderer.h:268-271`, usi `game.cpp:559,3682,3843`); reserve fisse/accessor a puntatore per sponsor/oggetto/rivali/traffico (`:33-34,44-45,49-61`, `renderer.h:230-232,239-255,343-345`); `spriteOrd_`/`terraOrdine_` possono riallocare oltre 2048 (`:29-30,173-181,1667`).
 
-## Rilievi aperti (sintesi)
-- `game.cpp:3719,3693` div/`a.passo`; `:1645,1673,1678,1679` `trafficoAt` non clampato; `:1809-1814` bravura/curva.
-- `mixer.cpp:91-99`; `salvataggi.cpp:78-83/:145-147/:108-109`; `fasi.cpp:512-536`.
-- `gameplay/escalation.h:24,35,62`; `core/json_mini.h` BOM/`0x`/dup; `replay.cpp:20-21`; `paesaggio.cpp:113-114/:238-239`. VJ3 chiuso.
-
-## Verifica turno 18/11 12:56
-- Nessun comando eseguito (review sola lettura). Precedente: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 — ctest 27/27 Passed (297.30 s, 18/11 12:45). gate_t1.sh non eseguito.
+## Rilievi aperti (backlog)
+- `game.cpp` (`:734-736,1026-1048,3201-3256,3693,3719`), `mixer.cpp:91-99`, `salvataggi.cpp`, `escalation.h`, `core/json_mini.h`, `replay.cpp`, `paesaggio.cpp`.
+- gate_t1.sh non eseguito in questo turno.

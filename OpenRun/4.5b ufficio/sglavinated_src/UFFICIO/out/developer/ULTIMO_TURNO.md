@@ -1,13 +1,13 @@
-# ULTIMO_TURNO developer
-- Blocco/passo: V47 V9 ∞ fluidita' a giro — lv_02_atomico (diciottesimo giro).
-- File cambiati: `motore_nuovo/src/render/renderer.cpp` (reserve `terraOrdine_` 512->1024).
-- Comandi ed exit code:
-  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno18" lv_02_atomico percorso` exit 0 ("GATE PERCORSO OK", 2464 frame, 41.1 s, 0% fuori)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno18_smoke" lv_02_atomico smoke` exit 0 ("GATE OK", ms/frame medio 1.028 max 3.489, replay IDENTICO)
-  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0 (post)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno18_post" lv_02_atomico percorso` exit 0 ("GATE PERCORSO OK")
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno18_post_smoke" lv_02_atomico smoke` exit 0 ("GATE OK", ms/frame medio 1.033 max 4.233, replay IDENTICO)
-- Esito: lv_02_atomico <8 ms, resa/replay invariati.
-- gate_t1.sh: non eseguito.
-- Prossimo: V9 ∞ lv_03_foglie (diciottesimo giro).
+# ULTIMO_TURNO developer (max 15 righe)
+- Data/ora: 18/11/2026 17:25 (Turno 4)
+- Blocco/passo: V9 ∞ fluidita' lv_06_desktop (ventesimo giro)
+- File cambiati: motore_nuovo/src/render/renderer.cpp; UFFICIO/bacheche/developer/diario.md; UFFICIO/bacheche/developer/RIASSUNTO.md; UFFICIO/out/developer/ULTIMO_TURNO.md
+- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre)
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK (2113 frame, 35.2 s, 0% fuori)
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.229 max 8.141 (>8), replay IDENTICO
+- Modifica: drawSprite early return se area schermo vuota dopo clip
+- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (post)
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.170 max 3.947, replay IDENTICO
+- gate_t1.sh non eseguito
+- Prossimo: V9 ∞ lv_01_neon (ventunesimo giro)

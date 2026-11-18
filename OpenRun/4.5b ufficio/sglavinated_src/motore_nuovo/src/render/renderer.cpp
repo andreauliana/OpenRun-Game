@@ -23,11 +23,27 @@ constexpr u8 BAYER4[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 
 Renderer::Renderer(Framebuffer& fb, const Palette& pal) : fb_(fb), pal_(pal) {
     // Preallocato una volta: zero allocazioni per frame nel ciclo di gioco.
     projs_.reserve(Road::DRAW_DIST);
-    copertura_.reserve((size_t)Road::DRAW_DIST * 4);
+    copertura_.reserve(Road::DRAW_DIST);
     // V47 V7/V9: buffer per-frame di drawRoad/drawSprites con capienza piena
     // per evitare riallocazioni nel ciclo (oggetti terra/scena variano per livello).
-    terraOrdine_.reserve(1024);
-    spriteOrd_.reserve(1024);  // scena completa: rivali + traffico + incroci + fissi visibili
+    terraOrdine_.reserve(2048);
+    spriteOrd_.reserve(2048);  // scena completa: rivali + traffico + incroci + fissi visibili
+    // V47 V9 (18/11, lv_05 turno18): sprite di sponsor/oggetti caricati una
+    // volta per livello; reserve evita riallocazioni del vettore in carica.
+    sponsorSprites_.reserve(64);
+    oggettoSprites_.reserve(64);
+    // V47 V9 (18/11, lv_06 turno18): maschere graffito create al volo in galleria
+    // (max 3 testi base); reserve evita riallocazioni durante il render.
+    graffiti_.reserve(8);
+    // V47 V9 (18/11, lv_02 turno19): buffer tubo galleria (pixel coperti da
+    // pareti/soffitto) preallocato a piena capienza schermo; evita riallocazione
+    // al primo ingresso in galleria.
+    tubo_.reserve((size_t)Framebuffer::WIDTH * Framebuffer::HEIGHT);
+    // V47 V9 (18/11, lv_01 turno19): sprite di rivali/traffico/incroci caricati
+    // una volta all'avvio; reserve evita riallocazioni del vettore in carica.
+    rivaleSprites_.reserve(8);
+    trafficoSprites_.reserve(16);
+    incrocioSprites_.reserve(16);
 }
 
 i32 Renderer::aggiungiSponsorSprite(Sprite sprite) {
@@ -169,7 +185,7 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     }
     // Copertura: per ogni campione, la riga piu' alta raggiunta dalla strada
     // piu' vicina (da li' in giu' lo schermo e' gia' strada o terreno vicino).
-    copertura_.resize(projs_.size());
+    if (copertura_.size() != projs_.size()) copertura_.resize(projs_.size());
     f32 cop = (f32)Framebuffer::HEIGHT;
     for (size_t k = 0; k < projs_.size(); ++k) {
         copertura_[k] = cop;
@@ -378,8 +394,9 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 misto = (temaOltreAttivo_ && giro_ > 0.0f)
                               ? std::clamp((zAvanti - (giro_ - FASCIA_TERRENO)) / FASCIA_TERRENO, 0.0f, 1.0f) : 0.0f;
         const bool oltre = misto >= 0.5f;
-        const u32 grassNuovo = band ? temaOltre_.erba : temaOltre_.erbaAlt;
-        const u32 grass = misto >= 1.0f ? grassNuovo : grassQui;
+        const u32 grassNuovoTema = (misto > 0.0f) ? (band ? temaOltre_.erba : temaOltre_.erbaAlt) : 0u;
+        u32 grass = grassQui;
+        if (misto >= 1.0f) grass = grassNuovoTema;
         const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
         if (y >= orizzonte_ && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
@@ -398,7 +415,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             } else if (misto > 0.0f && misto < 1.0f && y < Framebuffer::HEIGHT) {
                 u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
                 for (i32 x = tx0; x <= tx1; ++x)
-                    riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < misto ? grassNuovo : grassQui;
+                    riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < misto ? grassNuovoTema : grassQui;
             } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
@@ -414,8 +431,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // fra segmenti contigui (nessun gradino ai confini).
         i32 rw = (i32)(hwBase * 0.14f);
         if (rw < 1) rw = 1;
-        const f32 invZ = (1.0f - t) / next.worldZ + t / cur.worldZ;
-        const f32 distance = invZ > 0.0f ? 1.0f / invZ : next.worldZ;
+        const f32 distance = distI; // riuso invZi/distI calcolati sopra (V9 lv_05 turno22)
         // Fase ancorata alla pista (playerZ + distanza), come i paletti: le
         // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
         f32 dashPhase = std::fmod(playerZ + distance, LANE_DASH_CYCLE);
@@ -1201,6 +1217,7 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
     };
     constexpr i32 R = 6, PAD = 2, H = 8, SCACCHI = 4; // scacchiera: 4 celle per lato
     std::vector<std::vector<bool>> col; // colonne di celle del testo
+    col.reserve(std::char_traits<char>::length(testo) * (FONT_HUD_W + 1));
     for (const char* t = testo; *t; ++t) {
         if (!col.empty()) col.emplace_back(H, false); // una cella fra le lettere
         if (*t == ' ') { col.emplace_back(H, false); col.emplace_back(H, false); continue; }
@@ -1647,8 +1664,9 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
     // Ordina per distanza dalla telecamera decrescente (dietro prima). zRel
     // calcolato una volta per sprite (sort + draw) invece di rifare std::fmod
     // a ogni confronto e nel ciclo di disegno. spriteOrd_ riusato (zero alloc).
-    spriteOrd_.resize(sprites.size());
-    for (i32 i = 0; i < (i32)sprites.size(); ++i) {
+    if (spriteOrd_.size() < sprites.size()) spriteOrd_.resize(sprites.size());
+    const size_t nSprite = sprites.size();
+    for (i32 i = 0; i < (i32)nSprite; ++i) {
         f32 z = sprites[i].worldZ - playerZ;
         if (totalLen > 0.0f) {
             z = std::fmod(z, totalLen);
@@ -1656,11 +1674,12 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         }
         spriteOrd_[i] = {z, i};
     }
-    std::sort(spriteOrd_.begin(), spriteOrd_.end(),
+    std::sort(spriteOrd_.begin(), spriteOrd_.begin() + nSprite,
               [](const auto& a, const auto& b) { return a.first > b.first; });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
     i32 nSegnalini = 0;
-    for (const auto& o : spriteOrd_) {
+    for (size_t k = 0; k < nSprite; ++k) {
+        const auto& o = spriteOrd_[k];
         const auto& s = sprites[o.second];
         const f32 zRel = o.first;
         // Dietro la telecamera, o cosi' vicino da coprire lo schermo intero
@@ -1668,6 +1687,7 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         if (zRel < Road::Z_NEAR) continue;
         // Stessa proiezione della strada: s = depth/z, sx = W/2 + s*(worldX - camX)*W/2.
         f32 scl = Road::DEPTH / zRel;
+        const f32 proj = scl * (f32)Framebuffer::WIDTH * 0.5f;
         // Base verticale: screenY del primo segmento con worldZ >= zRel
         // (lo sprite appoggia sulla carreggiata al suo punto di profondita').
         // lower_bound su projs_ ordinato: O(log DRAW_DIST) invece di O(sprite x DRAW_DIST).
@@ -1678,11 +1698,10 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         // worldX e' laterale rispetto all'asse della strada: si parte dal centro strada
         // proiettato a quella profondita' (it->screenX, che include curve e camera), cosi'
         // cartelloni e oggetti seguono le curve invece di restare su una retta.
-        f32 sx = it->screenX + scl * s.worldX * (f32)Framebuffer::WIDTH / 2;
+        f32 sx = it->screenX + proj * s.worldX;
         if (!s.sprite) {
-            const f32 projectionScale = scl * (f32)Framebuffer::WIDTH / 2;
-            const i32 w = std::max(4, (i32)(26.0f * projectionScale));
-            const i32 h = std::max(3, (i32)(18.0f * projectionScale));
+            const i32 w = std::max(4, (i32)(26.0f * proj));
+            const i32 h = std::max(3, (i32)(18.0f * proj));
             const i32 cx = (i32)sx;
             const i32 cy = (i32)sy;
             fb_.fillRect(cx - w / 2, cy - h, cx + w / 2, cy, pal_[s.paletteBase]);
@@ -1692,10 +1711,10 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
             if (s.segnalino && nSegnalini < SEGNALINI_MAX) segnalini_[nSegnalini++] = {cx, cy - h, h, s.segnalino};
             continue;
         }
-        // Scala in pixel: stessa proiezione della strada (scl * W/2 per unita' mondo)
+        // Scala in pixel: stessa proiezione della strada (proj per unita' mondo)
         // per le unita' mondo di un pixel sprite. Prima si passava scl da solo
         // (~0.001 a distanza): w e h valevano 0 e nessuno sprite compariva mai.
-        const f32 scala = scl * (f32)Framebuffer::WIDTH / 2 * SPRITE_WORLD_PX * s.scale;
+        const f32 scala = proj * SPRITE_WORLD_PX * s.scale;
         clipAttivo_ = clipGalleria_ && zRel >= clipGalleriaZ_;
         drawSprite(s, sx, sy, scala);
         clipAttivo_ = false;
@@ -1738,8 +1757,8 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         syIni = std::max(syIni, clipGy0_ - y0);
         sxIni = std::max(sxIni, clipGx0_ - x0);
         sxFin = std::min(sxFin, clipGx1_ + 1 - x0);
-        if (sxFin <= sxIni || syFin <= syIni) return;
     }
+    if (sxFin <= sxIni || syFin <= syIni) return;
     const i32 sw = s.sprite->width;
     const i32 sh = s.sprite->height;
     const u8* px = s.sprite->pixels.data();
@@ -1769,9 +1788,11 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
             // in uno sprite da 32) non spariscono a intermittenza quando la
             // larghezza a schermo cambia di frame in frame. Da vicino (area di
             // 1 texel) il risultato e' identico al campionamento semplice.
-            for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry)
-                for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
-                    col = texel(rx, ry);
+            if ((col >> 24) == 0 && (tx1 - tx0 > 1 || ty1 - ty0 > 1)) {
+                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry)
+                    for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
+                        col = texel(rx, ry);
+            }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
             if (clipAttivo_ && inTubo(x0 + sx, y0 + sy)) continue; // dietro la parete
             fb_.put(x0 + sx, y0 + sy, col);
