@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "core/types.h"
+#include <algorithm>
 #include "input/pad.h"
 
 namespace sgl {
@@ -68,6 +69,12 @@ public:
     // Spinta a tutto gas alla velocita' v (unita'/s^2), la stessa di update():
     // i rivali la usano per partire come il giocatore (Andrea 11/11).
     static f32 spintaA(f32 v);
+    // Spostamento laterale a sterzo pieno alla velocita' attuale (unita'/s),
+    // la stessa formula di update(): serve alla regola del pareggio (Game).
+    f32 sterzoPieno() const {
+        const f32 v = speed / MAX_SPEED;
+        return STEER_MAX * std::min(1.0f, v / STEER_V_PIENA) * (1.0f - caloPunta * v * v) * presaSterzo;
+    }
     bool freno() const { return accel_ < 0.0f; }
     // Calcola offroad e applica il limite laterale rispetto alla corsia.
     void vincolaAllaCorsia();
@@ -98,11 +105,12 @@ private:
     static constexpr f32 STEER_MAX = 840.0f; // Andrea 06/11 sera 700 (era 600); 08/11 pomeriggio 780: "farei muovere di piu' il veicolo"; 11/11 840: "quando e' veloce deve girare di lato un po' di piu'"
     static constexpr f32 STEER_V_PIENA = 0.25f;
     static constexpr f32 STEER_CALO_PUNTA = 0.05f; // 06/11 0.35, 08/11 mattina 0.25; 08/11 pomeriggio 0.05: "fa fatica a muoversi tra destra e sinistra ad alte velocita'"
-    static constexpr f32 STEER_RAMPA_PER_S = 8.0f;   // 0 -> pieno in 0.125 s
+    static constexpr f32 STEER_RAMPA_PER_S = 16.0f;  // 0 -> pieno in 0.06 s (18/11, documento sterzo: era 0.125 s)
     // Andrea 18/11 (nota sullo sterzo di riferimento): il volante torna al
-    // centro piu' lento di quanto sterza (era 12/s, pieno -> 0 in 0.08 s):
+    // centro piu' lento di quanto sterza (era 12/s, pieno -> 0 in 0.08 s; ora
+    // 0.06 s per sterzare e 0.12 s per tornare, proposta 2 del documento):
     // a colpetti la curva si tiene meglio, mollarlo del tutto la lascia.
-    static constexpr f32 STEER_RITORNO_PER_S = 5.0f; // pieno -> 0 in 0.2 s
+    static constexpr f32 STEER_RITORNO_PER_S = 8.0f; // pieno -> 0 in 0.12 s (meta' della pressione)
     // Risposta non lineare (stessa nota): un colpetto sposta poco, lo sterzo
     // pieno e' deciso. Spostamento = sterzo x (MORBIDO + (1 - MORBIDO) x |sterzo|).
     static constexpr f32 STEER_MORBIDO = 0.35f;
@@ -115,7 +123,18 @@ private:
     static constexpr f32 INERZIA_SPINTA_BASE_S = 0.10f;
     static constexpr f32 INERZIA_SPINTA_PUNTA_S = 0.35f;
     // Rallentamento fuori strada: decadimento al secondo. pow(0.99,50) ~ 0.605.
-    static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f;
+    static constexpr f32 OFFROAD_SLOW_PER_SEC = 0.6050f; // (storico: dal 18/11 le due zone qui sotto)
+    // Fuori strada a due zone (Andrea 18/11, dalla nota sullo sterzo di
+    // riferimento): nell'erba vicino al bordo la velocita' scende verso il 72%
+    // della punta (~210 km/h), piu' in fuori verso il 30% (~88 km/h), a passo
+    // costante; sotto il tetto l'erba frena solo un poco.
+    static constexpr f32 ERBA_ZONA_PROFONDA = 100.0f;   // oltre il limite di tanto: zona profonda
+    static constexpr f32 ERBA_TETTO_VICINO = 0.72f;
+    static constexpr f32 ERBA_TETTO_PROFONDO = 0.30f;
+    static constexpr f32 ERBA_CALO_VICINO = 100.0f;     // unita'/s^2 (~2 km/h per frame a 60 Hz)
+    static constexpr f32 ERBA_CALO_PROFONDO = 150.0f;   // ~3 km/h per frame
+    static constexpr f32 ERBA_ATTRITO_PER_S = 0.92f;    // sotto il tetto
+    f32 fuoriOltre = 0.0f; // quanto oltre il limite della corsia (unita'), 0 in strada
     // Bordo: ultimo 15% prima del fuori strada (feedback Andrea 23/10). Spinta
     // dimezzata, punta all'88%; a gas rilasciato perde un 15% in piu' al secondo.
     static constexpr f32 BORDO_INIZIO = 0.85f;

@@ -122,6 +122,9 @@ constexpr f32 CENTRIFUGA_EXTRA = 1.0f;
 constexpr f32 CENTRIFUGA_SALITA_S = 0.35f;
 constexpr f32 CENTRIFUGA_CALO_S = 0.25f;
 constexpr f32 CENTRIFUGA_TIENE = 0.4f;     // sterzo dentro che tiene la curva
+constexpr f32 PAREGGIO_MARGINE = 0.3f;    // spinta oltre lo sterzo pieno del 30%: scivolata piena
+constexpr f32 PAREGGIO_AVVISO = 0.85f;    // dall'85% del pareggio le gomme cominciano a stridere
+constexpr f32 PAREGGIO_STRIDIO = 0.45f;   // volume dello stridio d'avviso (pieno = derapata)
 constexpr f32 CENTRIFUGA_SCHIANTO = 0.3f;  // scivolata oltre cui il bordo e' incidente
 constexpr f32 CENTRIFUGA_V_SCHIANTO = 0.55f;
 // Ciglio (Andrea 18/11: "la reazione ai lati deve essere migliore"): al tocco
@@ -1120,6 +1123,7 @@ void Game::init(const std::string& livelloId) {
     derapata_ = 0.0f;
     sovrasterzo_ = 0.0f;
     centrifuga_ = 0.0f;
+    avvisoPareggio_ = 0.0f;
     posaLivello_ = 0.0f;
     latoSovra_ = 1;
     testacodaS_ = 0.0f;
@@ -2712,7 +2716,20 @@ void Game::aggiornaGuida(f32 dt) {
             {
                 const f32 oltre = std::clamp((carico - CENTRIFUGA_DA) / (PRESA_PIENA - CENTRIFUGA_DA), 0.0f, 1.0f);
                 const f32 tiene = std::clamp(dentro / CENTRIFUGA_TIENE, 0.0f, 1.0f);
-                const f32 obiettivo = libera && angolo < 0.05f ? oltre * (1.0f - tiene) : 0.0f;
+                // Pareggio (Andrea 18/11, nota sullo sterzo di riferimento): ogni
+                // curva ha la sua velocita' giusta, quella a cui lo sterzo pieno
+                // tiene la linea. Piu' forte, anche a sterzo pieno l'auto scivola
+                // fuori: la spinta supera lo sterzo e la centrifuga si vede.
+                const f32 capacita = std::max(1.0f, player_.sterzoPieno());
+                const f32 spintaFuori = CURVA_SPINTA_V2 * std::abs(curvaQui) * vRel * vRel;
+                const f32 pareggio = std::clamp((spintaFuori / capacita - 1.0f) / PAREGGIO_MARGINE, 0.0f, 1.0f);
+                const f32 obiettivo = libera && angolo < 0.05f ? std::max(oltre * (1.0f - tiene), pareggio) : 0.0f;
+                // Avviso (Andrea 18/11, proposta 4 del documento): a sterzo pieno
+                // dentro, vicino al pareggio, le gomme stridono piano prima che
+                // l'auto scivoli: si sente il limite.
+                const f32 rapporto = spintaFuori / capacita;
+                avvisoPareggio_ = libera && dentro >= 0.9f && vRel > 0.5f
+                    ? std::clamp((rapporto - PAREGGIO_AVVISO) / (1.0f - PAREGGIO_AVVISO), 0.0f, 1.0f) : 0.0f;
                 centrifuga_ = obiettivo > centrifuga_ ? std::min(obiettivo, centrifuga_ + dt / CENTRIFUGA_SALITA_S)
                                                       : std::max(obiettivo, centrifuga_ - dt / CENTRIFUGA_CALO_S);
             }
@@ -3012,7 +3029,8 @@ void Game::aggiornaGuida(f32 dt) {
     rpm = std::max(rpm, 800.0f); // auto ferma: il motore resta al minimo (Andrea 13/11)
     // Musica ovattata fuori strada e durante l'incidente (Andrea 07/11).
     mixer_.setOvattato(playerFlipping_ ? 1.0f : (player_.offroad ? 0.75f : 0.0f));
-    mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max({derapata_, 0.8f * pattinamento_, CURVA_STRIDIO * sgommata_})); // gomme che stridono in derapata
+    mixer_.setSgommata(playerFlipping_ ? 0.0f : std::max({derapata_, 0.8f * pattinamento_, CURVA_STRIDIO * sgommata_,
+                                                         PAREGGIO_STRIDIO * avvisoPareggio_})); // gomme che stridono in derapata
     mixer_.mix(audioBuf_.data(), (i32)audioBuf_.size() / 2, rpm);
     visualizzatore_.aggiorna(mixer_.info(), dt);
 
