@@ -1,12 +1,15 @@
 # Ultimo turno developer (max 15 righe)
-- 19/11/2026 12:32, Turno 3.
-- Blocco/pass: V9 ∞ Fluidita' a giro — lv_03_foglie (ventitreesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp, motore_nuovo/src/render/renderer.h (drawSprite: i quattro array per-colonna colTx0_/colTx1_/colTxMid_/colCerca_ raccolti in un unico array di record ColCamp; un solo puntatore avanza nel loop colonna invece di quattro; stessi valori, stessa immagine).
-- Comando: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre e post).
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno42" lv_03_foglie percorso -> exit 0 "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno42_smoke" lv_03_foglie smoke -> exit 0 "GATE OK", ms/frame medio 0.999 max 3.573, replay IDENTICO, frameHash 0 3593059909.
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno42_post" lv_03_foglie percorso -> exit 0 "GATE PERCORSO OK".
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno42_post_smoke" lv_03_foglie smoke -> exit 0 "GATE OK", medio 1.162 max 5.559, replay IDENTICO, frameHash identici al pre.
-- Comando: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (eseguito 19/11/2026 12:32).
-- Esito: micro-ottimizzazione della localita' di cache nel campionamento sprite; resa e replay invariati (frameHash identici pre/post), frame medio ~1 ms ben sotto 8 ms. Nessun valore di gameplay toccato.
-- Prossimo: V9 ∞ lv_04_cromo (ventitreesimo giro).
+- Data/ora: 19/11/2026 13:14, Turno 3.
+- Blocco/passo: V9 ∞ fluidita' a giro — lv_05_spray (ventitreesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp (drawSprite: i texel dell'area di ricerca del texel pieno si leggono con un puntatore che avanza di 1 per colonna e di sw per riga, invece di indicizzare rigaCerca[rx] a ogni campione; stessi texel, stesso ordine, frameHash identici).
+- Scopo: alleggerire l'accesso ai texel nel loop di ricerca del renderer senza cambiare la resa.
+- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre e post).
+- Comando percorso pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_pre" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando smoke pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_pre_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.943 ms max 3.340 ms, replay IDENTICO, frameHash 0 4250821778.
+- Comando percorso post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_post" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando smoke post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_post_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.957 ms max 3.287 ms, replay IDENTICO, frameHash identici al pre.
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; eseguito 19/11/2026 13:14.
+- Comando negato: date "+%d/%m/%Y %H:%M" (Permission denied: shell); ora turno usata 13:14.
+- Regolazione auto del giocatore: nessuna (drawPlayerCar, risolviPosa e costanti intatti).
+- Esito: modifica pixel-identica (frameHash invariati, replay IDENTICO), frame medio ~0.95 ms ben sotto soglia 8 ms. Nessuna review chiesta dal blocco.
+- Prossimo: V9 ∞ lv_06_desktop (ventitreesimo giro).

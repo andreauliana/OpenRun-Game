@@ -1768,12 +1768,19 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     const i32 sh = s.sprite->height;
     const u8* px = s.sprite->pixels.data();
     const u32* spPal = palettePropria ? s.sprite->palette.data() : nullptr;
+    // V9 ∞ (19/11, lv_04_cromo giro 23): offset di palette e puntatore ai colori
+    // del motore sono costanti in tutto drawSprite. Portarli in locali evita di
+    // rileggere il membro s.paletteBase e di passare per operator[] a ogni texel
+    // campionato nel loop piu' caldo. La maschera &255 resta identica a quella di
+    // Palette::operator[], quindi indici, immagine e replay non cambiano.
+    const i32 palBase = s.paletteBase;
+    const u32* const palRaw = pal_.dati();
     // Colore di un indice di texel; alpha 0 = trasparente.
     auto coloreIdx = [&](u8 idx) -> u32 {
         // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
         if (spPal) return spPal[idx % nPalette];
         // Palette del motore: indice 0 = trasparente.
-        return idx == 0 ? 0u : pal_[s.paletteBase + idx];
+        return idx == 0 ? 0u : palRaw[(palBase + idx) & 255];
     };
     // V9 ∞ (19/11, lv_04_cromo): ty e' costante dentro una riga schermo, quindi
     // l'indirizzo della riga sorgente (ty * sw) si calcola una volta per riga
@@ -1851,10 +1858,16 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
                 // (rx su [tx0,tx1), ry su [ty0,ty1)), stessa immagine.
                 // V9 ∞ (giro 23): la base e' gia' pronta da rigaCercaBase (calcolata
                 // una volta per riga schermo fuori dal ciclo colonna).
-                const u8* rigaCerca = rigaCercaBase;
-                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, rigaCerca += sw) {
-                    for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
-                        col = coloreIdx(rigaCerca[rx]);
+                // V9 ∞ (19/11, lv_05_spray giro 23): i texel dell'area di ricerca
+                // si leggono con un puntatore che avanza di 1 per colonna e di sw
+                // per riga, invece di indicizzare rigaCerca[rx] a ogni campione.
+                // Stesso ordine di texel (rx su [tx0,tx1), ry su [ty0,ty1)),
+                // stessi colori, stessa immagine e replay identico.
+                const u8* pCerca = rigaCercaBase + tx0;
+                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, pCerca += sw) {
+                    const u8* fineRiga = pCerca + (tx1 - tx0);
+                    for (const u8* q = pCerca; (col >> 24) == 0 && q < fineRiga; ++q)
+                        col = coloreIdx(*q);
                 }
             }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)

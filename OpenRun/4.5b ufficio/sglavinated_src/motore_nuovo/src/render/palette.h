@@ -12,6 +12,7 @@ class Palette {
 public:
     Palette();
     u32 operator[](i32 idx) const { return colors_[idx & 255]; }
+    const u32* dati() const { return colors_.data(); } // accesso diretto ai colori (drawSprite)
     i32 size() const { return 256; }
 private:
     std::array<u32, 256> colors_;
