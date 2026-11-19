@@ -1,10 +1,11 @@
-# RIASSUNTO — @grafico (18/11/2026 17:33, Turno 4, giro 100)
+# RIASSUNTO — @grafico (19/11/2026 08:50, Turno 1, giro 102)
 - **Blocco:** V47 VG3 ∞ — confronto PNG `GRAFICA/scenari/` e gruppi vs `.sglraw`, coerenza catalogo/raw.
-- **Esito:** tutto allineato, nessuna conversione necessaria.
+- **Esito:** nessuna conversione necessaria (contenuto diverso da convertire 0).
 - **Comandi (exit 0):** `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"`.
-- **Dettaglio:** 145 PNG (133 confrontati, 12 non motore, 0 fuori copertura), 86 raw scenari (80 oggetti a byte, 6 skyline a contenuto) + 47 altri gruppi, 0 da convertire, 126 pari contenuto, pose 2/2 allineate.
-- **Catalogo:** 142/142 raw tracciati (0 senza voce); 0 PNG non catalogati (1 noto non-asset: `car-custom-v2.png`).
+- **Dettaglio:** 160 PNG in GRAFICA (133 confrontati, 27 non motore), 86 raw scenari (skyline 6 allineati, 0 da rigenerare) + 47 altri gruppi, 0 da convertire.
+- **Giocatore (area bloccata Andrea):** 10 PNG presenti, mancanti 5 pose `_b` (dritta/dx2/dx4/sx2/sx4), confronto contenuto saltato.
+- **Catalogo/non catalogati:** 155/155 raw motore tracciati (0 senza voce); 3 PNG non catalogati in `giocatore_pose` (`car-custom.png`, `car-custom-dx.png`, `car-custom-sx.png`), non toccati.
 - **File turno:** `UFFICIO/bacheche/grafico/diario.md`, `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-- **Gate:** non eseguito (18/11 17:33).
+- **Gate:** non eseguito (19/11 08:50).
 - **Licenze/Sega:** zero risorse esterne, zero materiale Sega.
-- **Prossimo:** VG3 ∞ — ricontrollare se ci sono PNG Andrea più nuovi.
+- **Prossimo:** VG3 ∞ — ricontrollare se ci sono PNG Andrea più nuovi o convertibili.

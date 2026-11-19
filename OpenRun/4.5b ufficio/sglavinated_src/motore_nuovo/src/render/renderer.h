@@ -490,6 +490,12 @@ private:
     std::vector<std::pair<f32, const SpriteInstance*>> terraOrdine_; // riusato (zero alloc a regime)
     std::vector<std::pair<f32, i32>> spriteOrd_; // ordine di disegno sprite: {zRel, indice} (riusato)
     std::vector<f32> copertura_; // per campione: riga piu' alta della strada piu' vicina (riusato)
+    // V9 ∞ (19/11, lv_02 atomico): in drawSprite il texel orizzontale tx0/tx1
+    // dipende solo dalla colonna schermo, non dalla riga. Precalcolato una
+    // volta per colonna (al massimo WIDTH colonne visibili) invece che per
+    // ogni pixel: stessa immagine, meno divisioni a 64 bit nel loop.
+    i32 colTx0_[Framebuffer::WIDTH];
+    i32 colTx1_[Framebuffer::WIDTH];
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

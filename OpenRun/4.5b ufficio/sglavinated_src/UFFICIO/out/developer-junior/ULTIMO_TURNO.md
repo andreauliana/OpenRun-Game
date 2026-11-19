@@ -1,14 +1,14 @@
-# ULTIMO TURNO @developer-junior
-- Turno: 18/11/2026 17:29 — V47 VJ5 ∞ (review ultimo cambio src)
-- Blocco/passo: review diff `motore_nuovo/src` (M `motore_nuovo/src/render/renderer.cpp`, working tree) e aggiornamento `REVIEW_V47.md`.
-- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md`.
-- Comandi ed exit code:
-  - `git status --short -- motore_nuovo/src` -> exit 0 (`M motore_nuovo/src/render/renderer.cpp`)
-  - `git diff --stat -- motore_nuovo/src` -> exit 0 (`1 file changed, 44 insertions(+), 23 deletions(-)`)
-  - `git log -5 --oneline -- motore_nuovo/src` -> exit 0
-  - `git diff -- motore_nuovo/src/render/renderer.cpp` -> exit 0 (diff ispezionato)
-  - lettura `renderer.cpp`/`renderer.h` e `REVIEW_V47.md`/diario/RIASSUNTO/ULTIMO_TURNO precedenti -> ok
-  - `nl -ba ... | sed -n ...` -> negati (`permission.rejected`)
-- Esito: `copertura_` fa resize se `size()!=projs_.size()` (`render/renderer.cpp:188`) mentre nello stesso diff `spriteOrd_` e' grow-only (`:1667-1668`); indicizzazione `copertura_` solo fino a `projs_.size()` (`:191-192,202,237`) => semplificazione `if (copertura_.size() < projs_.size())` per evitare resize a scendere. Rilievi invariati: cache `mascheraGraffito` per identita puntatore (`:1201,1247,1303-1304`), reserve fisse/puntatori stabili incroci e altri sprite, possibili rialloc `spriteOrd_`/`terraOrdine_` oltre 2048 (`:29-30,173-181,1667`).
-- gate_t1.sh: non eseguito.
-- Problemi residui: backlog warning/fragilità in `game.cpp`, `mixer.cpp:91-99`, `salvataggi.cpp`, `escalation.h`, `core/json_mini.h`, `replay.cpp`, `paesaggio.cpp`.
+# Ultimo turno developer-junior
+- Data/ora: 19/11/2026 08:35-08:45 — Turno 2.
+- Blocco e passo: V47, VJ5 ∞ review del codice (ultimo cambio del @developer in `src/`), con prova VJ1 dopo il passo V9.
+- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), una riga in `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto).
+- Diff ispezionato: M `motore_nuovo/src/render/renderer.cpp` (18+/4-) e M `render/renderer.h` (6+); `framebuffer.cpp` invariato dal turno 08:15 (`git status --short`, `git diff --stat -- motore_nuovo/src`, `git diff -- motore_nuovo/src` tutti exit 0).
+- Cambio: in `Renderer::drawSprite` tx0/tx1 della colonna (e lo specchio) precalcolati una volta per colonna in `colTx0_`/`colTx1_` (`renderer.cpp:1784-1793`, membri `renderer.h:497-498`); il ciclo riga legge l'array (`:1800-1803`) invece di due divisioni a 64 bit per pixel.
+- Rilievo: nessun errore — `sxIni >= max(0,-x0)` e `sxFin <= min(w,WIDTH-x0)` (`renderer.cpp:1759-1766`) implicano `nCol <= WIDTH` (indici dentro gli array) e il return `:1766` precede il precalc; formula identica (clamp `tx1<=tx0` poi specchio) => stessi texel. Nota: replay A/B = stesso binario (`prova_gate.cpp:1089`), quindi la resa e' garantita solo dall'ispezione (`frameHash` copre il framebuffer, `game.cpp:3895-3903`, ma senza hash del build precedente).
+- Semplificazione segnalata: `drawLuceGalleria` fa `x * s->width / w` a ogni pixel (`renderer.cpp:1385`, `ty` gia' fuori dal ciclo `:1381`) — luce di galleria di lv_02/lv_05 -> precalc per colonna come in `drawSprite`, da misurare con V9.
+- Misura: smoke lv_02 medio 0.988 / max 3.558 ms, sotto la soglia 8 ms di V9 (passo non necessario su lv_02); nessun run "prima" disponibile, delta del passo non misurato.
+- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0 (build `prova_gate`, ctest 27/27 pass, 295.08 s).
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_1911" lv_02_atomico percorso` -> exit 0 (GATE PERCORSO OK, 2476 frame, fuori strada 0).
+- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_1911" lv_02_atomico smoke` -> exit 0 (GATE OK, ms/frame medio 0.988 max 3.558, replay 2x IDENTICO).
+- Gate ufficiale: `gate_t1.sh` non eseguito in questo turno.
+- Review: `UFFICIO/out/developer-junior/REVIEW_V47.md` riscritto (richiesto dal passo VJ5). Nessun altro file .md scritto.

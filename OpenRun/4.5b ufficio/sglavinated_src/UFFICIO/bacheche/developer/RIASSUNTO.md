@@ -1,12 +1,12 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 18/11/2026 17:25 (Turno 4)
-- Blocco: V9 ∞ fluidita' lv_06_desktop (ventesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: early return se area schermo vuota dopo clip).
+- Data/ora: 19/11/2026 08:31 (Turno 1).
+- Blocco: V9 ∞ fluidita' lv_02_atomico (ventunesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: tx0/tx1 e specchio calcolati una volta per colonna schermo, non per pixel; frameHash identico).
 - cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK (2113 frame, 35.2 s, 0% fuori).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.229 max 8.141 (>8), replay IDENTICO.
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31" lv_02_atomico percorso -> exit 0, GATE PERCORSO OK (2476 frame, 41.3 s, 0% fuori).
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_smoke" lv_02_atomico smoke -> exit 0, GATE OK medio 1.108 max 3.508, replay IDENTICO.
 - cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (post).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post" lv_06_desktop percorso -> exit 0, GATE PERCORSO OK.
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv06_turno29_post_smoke" lv_06_desktop smoke -> exit 0, GATE OK ms/frame medio 1.170 max 3.947, replay IDENTICO.
-- Gate: gate_t1.sh non eseguito.
-- Esito: max ridotto < 8 ms, ottimizzazione applicata e verificata. Prossimo V9 ∞ lv_01_neon (ventunesimo giro).
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_post" lv_02_atomico percorso -> exit 0, GATE PERCORSO OK.
+- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_post_smoke" lv_02_atomico smoke -> exit 0, GATE OK medio 0.981 max 3.605, replay IDENTICO.
+- Gate: gate_t1.sh non eseguito; prova_gate singoli eseguiti il 19/11/2026 alle 08:31.
+- Esito: medio 1.108 -> 0.981 ms, resa identica per frameHash. Prossimo V9 ∞ lv_03_foglie.

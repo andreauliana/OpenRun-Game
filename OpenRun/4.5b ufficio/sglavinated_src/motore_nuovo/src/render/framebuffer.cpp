@@ -23,7 +23,11 @@ void Framebuffer::hline(i32 x0, i32 x1, i32 y, u32 color) {
     if (x0 > x1) std::swap(x0, x1);
     if (x0 < 0) x0 = 0;
     if (x1 >= WIDTH) x1 = WIDTH - 1;
-    for (i32 x = x0; x <= x1; ++x) buf_[y * WIDTH + x] = color;
+    // V9 lv_01_neon turno30: base della riga calcolata una volta, non a ogni
+    // pixel (hline e' il primitivo piu' usato dal renderer: strada, cordoli,
+    // pareti, linee). Stessi pixel, stessa resa.
+    u32* riga = buf_.data() + (size_t)y * WIDTH;
+    for (i32 x = x0; x <= x1; ++x) riga[x] = color;
 }
 
 void Framebuffer::fillRect(i32 x0, i32 y0, i32 x1, i32 y1, u32 color) {
@@ -33,9 +37,11 @@ void Framebuffer::fillRect(i32 x0, i32 y0, i32 x1, i32 y1, u32 color) {
     if (y0 < 0) y0 = 0;
     if (x1 >= WIDTH) x1 = WIDTH - 1;
     if (y1 >= HEIGHT) y1 = HEIGHT - 1;
-    for (i32 y = y0; y <= y1; ++y)
+    for (i32 y = y0; y <= y1; ++y) {
+        u32* riga = buf_.data() + (size_t)y * WIDTH; // V9 lv_01_neon turno30
         for (i32 x = x0; x <= x1; ++x)
-            buf_[y * WIDTH + x] = color;
+            riga[x] = color;
+    }
 }
 
 } // namespace sgl

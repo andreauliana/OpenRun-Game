@@ -1776,6 +1776,21 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // Palette del motore: indice 0 = trasparente.
         return idx == 0 ? 0u : pal_[s.paletteBase + idx];
     };
+    // V9 ∞ (19/11, lv_02 atomico): tx0/tx1 (e lo specchio) dipendono solo
+    // dalla colonna schermo sx, non dalla riga sy. Precalcolarli una volta per
+    // colonna invece che per pixel elimina due divisioni a 64 bit per pixel;
+    // gli indici restano identici riga per riga, quindi l'immagine non cambia.
+    // nCol <= WIDTH (sxIni/sxFin sono ritagliati allo schermo, al piu' WIDTH).
+    const i32 nCol = sxFin - sxIni;
+    for (i32 c = 0; c < nCol; ++c) {
+        const i32 sx = sxIni + c;
+        i32 tx0 = (i32)((i64)sx * sw / w);
+        i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
+        if (tx1 <= tx0) tx1 = tx0 + 1;
+        if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
+        colTx0_[c] = tx0;
+        colTx1_[c] = tx1;
+    }
     for (i32 sy = syIni; sy < syFin; ++sy) {
         // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
         const i32 ty0 = (i32)((i64)sy * sh / h);
@@ -1783,10 +1798,9 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         if (ty1 <= ty0) ty1 = ty0 + 1;
         const i32 ty = (ty0 + ty1) / 2;
         for (i32 sx = sxIni; sx < sxFin; ++sx) {
-            i32 tx0 = (i32)((i64)sx * sw / w);
-            i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
-            if (tx1 <= tx0) tx1 = tx0 + 1;
-            if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
+            const i32 c = sx - sxIni;
+            const i32 tx0 = colTx0_[c];
+            const i32 tx1 = colTx1_[c];
             u32 col = texel((tx0 + tx1) / 2, ty);
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
