@@ -1,6 +1,6 @@
-# STATI PROPOSTI — Turno 1 (ora 0 di 12), coordinamento 19/11/2026, @capo
+# STATI PROPOSTI — Turno 2 (ora 3 di 12), coordinamento 19/11/2026, @capo
 
-**Tappa attiva:** v4.7 — **MIG1 [~] (review)** + **V47 [~] continuo** (passi ∞). Gate T1 storico verde (**CP-006 CHIUSO, non riaprire**). Base legacy 08/11 e vocabolario **NON si toccano** (`ANDREA_REVIEW.md` precedenza assoluta). G1 ANNULLATO (sponsor/cartelloni solo Andrea). Nessuna `RISPOSTA DI ANDREA` nuova; decisioni aperte: nessuna. Gate non rieseguito dal capo. `SCAMBIO_RECENTE.md` CHECKPOINT 1-2-3 [APERTE]: controlli automatici verdi (**non peer review in dossier**). Nessun CP con gate+review indipendenti (autore≠revisore) registrati da chiudere.
+**Tappa attiva:** v4.7 — **MIG1 [~] (review)** + **V47 [~] continuo** (passi ∞). Gate T1 storico verde (**CP-006 CHIUSO, non riaprire**). Base legacy 08/11 e vocabolario **NON si toccano** (`ANDREA_REVIEW.md` precedenza assoluta). G1 ANNULLATO (sponsor/cartelloni solo Andrea). Nessuna `RISPOSTA DI ANDREA` nuova; decisioni aperte: nessuna. Gate non rieseguito dal capo. `SCAMBIO_RECENTE.md` CHECKPOINT 1-3 [APERTE]: controlli automatici verdi (**non peer review in dossier**). Nessun CP con gate+review indipendenti (autore≠revisore) registrati da chiudere.
 
 ## Stati proposti
 
@@ -11,26 +11,26 @@
 | CP-002/003/004, DECO1, F60 | **APERTI [~]** | dossier in `UFFICIO/Checkpoint Revision/` | Review indipendenti/prove mancanti; nessuna chiusura. |
 | MIG1 (review) | **[~]** | handoff dev/junior, dossier CP | Costanti guida/vocabolario/legacy intoccabili; review incrociate non consolidate in dossier. |
 | V47 V1-V5, VJ1, VG2 | **[x] handoff / [~]** | `UFFICIO/out/developer-junior/REVIEW_V47.md` | V6/review da consolidare. VJ2 [~] ispezione Andrea, **DEFAULT non blocca**. |
-| V47 V9 ∞ | **[~]** | `UFFICIO/out/developer/ULTIMO_TURNO.md` 19/11 08:31 | lv_02_atomico 21°: build exit 0 pre/post; `percorso` exit 0 post (2476f, 41.3s, 0% fuori); smoke post exit 0 medio 0.981 max 3.605 ms (<8), replay IDENTICO. `gate_t1.sh` non eseguito. **Prossimo:** lv_03_foglie 21°. |
+| V47 V9 ∞ | **[~]** | `UFFICIO/out/developer/ULTIMO_TURNO.md` 19/11 11:10 | lv_04_cromo 22°: build exit 0 pre/post; `percorso` exit 0 pre/post (2125f, 35.4s, 0% fuori); smoke post exit 0 medio 1.054 max 3.540 ms, replay IDENTICO. **Prossimo:** lv_05_spray 22°. |
 | V47 VJ3 ∞ | **[~] 4/6** | `UFFICIO/out/developer-junior/REVIEW_V47.md` | lv_01-lv_04 50/60 Hz exit 0, replay IDENTICO; lv_03 delta 4.70% segnalato. **Prossimi:** lv_05_spray, lv_06_desktop (ricompila prima). |
 | V47 VJ4 ∞ | **[x] 6/6** | `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` | Soak 6/6 exit 0, replay IDENTICO, nessun crash. |
-| V47 VJ5 ∞ | **[~]** | `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` 19/11 08:45 | Review drawSprite tx precalc `renderer.cpp:1784-1793`/`renderer.h:497-498`: nessun errore (indici/resa equivalenti), nota replay stesso binario; semplificazione `drawLuceGalleria` segnalata. `run_tests.sh` exit 0 ctest 27/27 (295.08s); percorso/smoke lv_02 exit 0, replay IDENTICO. Backlog VJ5 aperto. |
-| V47 VG3 ∞ | **[~]** | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` 18/11 16:14 | Giro 94: 3 script exit 0, 0 da convertire (145 PNG/133 confrontati/12 non motore, 86 raw scenari+47 altri, 142 tracciati catalogo, 126 pari, pose 2/2). 1 noto bloccato Andrea (`car-custom-v2.png`), zero esterni/Sega. |
+| V47 VJ5 ∞ | **[~]** | `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` 19/11 11:18 | Review puntatore riga `drawSprite` `renderer.cpp:1802-1804,1846` (nessun errore, semplificazioni proposte); `run_tests.sh` exit 0 ctest 27/27 (262.18 s); `prova_gate ... lv_04_cromo smoke` exit 0 medio 1.042 max 3.672 ms replay IDENTICO. Prossimo: VJ5 su prossimo diff dev. |
+| V47 VG3 ∞ | **[~]** | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` 18/11 16:14 | Giro 94: 3 script exit 0, 0 da convertire, 126 pari, pose 2/2. 1 noto bloccato Andrea, zero esterni/Sega. |
 
 ## Checkpoint
 - Nessun CP con **gate+review indipendenti (autore≠revisore) registrati in dossier** da chiudere. Nessuna apertura/chiusura.
 - SCAMBIO_RECENTE CHECKPOINT 1-3 [APERTE]: esiti automatici verdi, **non equivalgono a peer review in dossier**.
-- `UFFICIO/Officina/STATUS_OFFICINA.md` (handoff tecnico sintetico): **non prova di approvazione/review**.
+- `UFFICIO/Officina/STATUS_OFFICINA.md`: handoff tecnico sintetico, **non prova di approvazione/review**.
 
 ## Deleghe (ruoli 4.6)
 
 | Ruolo | Consegna (`UFFICIO/out/<ruolo>/`) | Responsabile | Revisore indipendente | Percorsi/criteri | Gate/prova attesa |
 |---|---|---|---|---|---|
-| @developer | `UFFICIO/out/developer/ULTIMO_TURNO.md` | developer | developer-junior | V9 ∞: **lv_03_foglie 21° giro** — gate `percorso`/`smoke`, exit code, ms/frame medio/max, replay IDENTICO; se >8 ms alleggerire **senza cambiare resa/replay**. Valutare rilievi junior VJ5 (es. `drawLuceGalleria` precalc) solo se misurati e compatibili; non toccare legacy/vocabolario/costanti guida/MIG1/HUD/auto/tracciati/audio/sponsor. No `gate_t1.sh` completo salvo richiesta. | Exit code 0, replay IDENTICO, misure ms/frame, log in `UFFICIO/Officina/Test area/`. |
-| @developer-junior | `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `REVIEW_V47.md` | developer-junior | developer | VJ3 **lv_05_spray o lv_06_desktop** 50/60 Hz (ricompila prima; non usare `prova_gate` vecchio), exit code, replay IDENTICO, delta tempi; oppure VJ5 ∞ su prossimo cambio `src/`/consolidare review V6/MIG1/V47 autore≠revisore con file/riga/prove. VJ4 6/6 completato (ripartibile se utile). Nuove prove solo in `motore_nuovo/test/*.cpp` o tool assegnati; non modificare `src/` prodotto. | Righe in `REVIEW_*` (file/riga); eventuale exit code, replay IDENTICO, ms/frame o delta 50/60. |
-| @grafico | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` | grafico | developer-junior (se materiale) / Capo verifica handoff | VG3 ∞: confronta date/contenuto PNG scenari vs `.sglraw`; converti solo se PNG più nuovo con script catalogo, **senza ritoccare il disegno**; se allineato, 1 riga. No sponsor/asset Andrea, no `frasi.json`, no codice/livelli/tracciati. Zero risorse esterne/Sega. | Comandi+exit code, elenco file o "0 da convertire". |
+| @developer | `UFFICIO/out/developer/ULTIMO_TURNO.md` | developer | developer-junior | V9 ∞: **lv_05_spray 22° giro** — `percorso`/`smoke`, exit code, ms/frame medio/max, replay IDENTICO; se >8 ms alleggerire senza cambiare resa/replay. Valutare rilievi VJ5 solo se misurati/compatibili. No legacy/vocabolario/costanti guida/MIG1/HUD/auto/tracciati/audio/sponsor. No `gate_t1.sh` completo salvo richiesta. | Exit 0, replay IDENTICO, misure ms/frame, log in `UFFICIO/Officina/Test area/`. |
+| @developer-junior | `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `REVIEW_V47.md` | developer-junior | developer | VJ5 ∞ su prossimo diff `src/` del @developer (ricompila prima, prova mirata, file/riga) oppure VJ3 **lv_05_spray/lv_06_desktop** 50/60 Hz (exit code, replay IDENTICO, delta tempi); consolidare review V6/MIG1/V47 autore≠revisore se prove registrate. VJ4 6/6. Nuove prove solo in `motore_nuovo/test/*.cpp` o tool assegnati; non modificare `src/`. | Righe in `REVIEW_*` (file/riga); eventuale exit/replay/ms o delta 50/60. |
+| @grafico | `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` | grafico | developer-junior (se materiale) / Capo verifica handoff | VG3 ∞: confronta date/contenuto PNG scenari vs `.sglraw`; converti solo se PNG più nuovo con script catalogo, **senza ritoccare il disegno**; se allineato, 1 riga. No sponsor/asset Andrea, no `frasi.json`, no codice/livelli/tracciati. Zero esterni/Sega. | Comandi+exit code, elenco file o "0 da convertire". |
 
 ## Vincoli
 - Capo scrive solo in `UFFICIO/Checkpoint Revision/**`, `UFFICIO/out/capo/STATI_PROPOSTI.md`, `UFFICIO/bacheche/capo/*`. Percorsi relativi. Nessun file in radice. `REGISTRO_REVISIONI.md` append-only.
-- Legacy 08/11, vocabolario, costanti di guida, HUD/auto/partenza/tracciati/audio, sponsor/cartelloni: **intoccabili**. `RICHIESTA.md` e `SCAMBIO.md` sola lettura.
+- Legacy 08/11, vocabolario, costanti guida, HUD/auto/partenza/tracciati/audio, sponsor/cartelloni: **intoccabili**. `RICHIESTA.md` e `SCAMBIO.md` sola lettura.
 - `FINITO` non creato (passi ∞, blocchi non tutti [x]). `PER_CLAUDE.md` non creato. Domande ad Andrea: nessuna (DEFAULT prosegue; VJ2 non blocca). Pi 400 non verificato.

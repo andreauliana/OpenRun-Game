@@ -1798,8 +1798,14 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // centrale dell'area di colonna, lo stesso per ogni riga schermo:
         // si calcola qui una volta invece che a ogni pixel.
         colTxMid_[c] = (tx0 + tx1) / 2;
+        // V9 ∞ (19/11, lv_05_spray giro 22): l'area di colonna copre piu' di
+        // un texel? Invariante per colonna (tx0/tx1 qui sono gia' mirrorati),
+        // quindi lo calcolo una volta qui invece che a ogni pixel qui sotto.
+        colCerca_[c] = tx1 - tx0 > 1;
     }
-    for (i32 sy = syIni; sy < syFin; ++sy) {
+    i32 screenYRow = y0 + syIni;
+    u32* riga = fb_.data() + (size_t)screenYRow * Framebuffer::WIDTH;
+    for (i32 sy = syIni; sy < syFin; ++sy, ++screenYRow, riga += Framebuffer::WIDTH) {
         // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
         const i32 ty0 = (i32)((i64)sy * sh / h);
         i32 ty1 = (i32)((i64)(sy + 1) * sh / h);
@@ -1810,7 +1816,14 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // ritagliati al framebuffer, quindi fb_.put() rifarebbe due controlli
         // di bounds per pixel. Scrivo direttamente nella riga gia' calcolata:
         // stessi pixel, stessa resa, indirizzo many-pixel-per-row una volta sola.
-        u32* riga = fb_.data() + (size_t)(y0 + sy) * Framebuffer::WIDTH;
+        // V9 ∞ (19/11, lv_04_cromo giro 22): puntatore riga e y schermo avanzano
+        // per incremento invece di (y0 + sy) * WIDTH a ogni riga; stessi indici.
+        // V9 ∞ (19/11, lv_03_foglie giro 22): ty0/ty1 dipendono solo dalla riga
+        // schermo sy, non dalla colonna sx. Il termine "ty1 - ty0 > 1" della
+        // condizione di ricerca del texel pieno e' quindi invariante nel ciclo
+        // sottostante: lo calcolo una volta qui invece che a ogni pixel.
+        // Stessi indici campionati, stessa immagine, replay identico.
+        const bool cercaRiga = ty1 - ty0 > 1;
         for (i32 sx = sxIni; sx < sxFin; ++sx) {
             const i32 c = sx - sxIni;
             const i32 tx0 = colTx0_[c];
@@ -1822,15 +1835,19 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
             // in uno sprite da 32) non spariscono a intermittenza quando la
             // larghezza a schermo cambia di frame in frame. Da vicino (area di
             // 1 texel) il risultato e' identico al campionamento semplice.
-            if ((col >> 24) == 0 && (tx1 - tx0 > 1 || ty1 - ty0 > 1)) {
-                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry) {
-                    const u8* rigaCerca = px + (size_t)ry * sw;
+            if ((col >> 24) == 0 && (colCerca_[c] || cercaRiga)) { // V9 ∞ lv_05_spray: area colonna precalcolata
+                // V9 ∞ (19/11, lv_02_atomico giro 22): la riga sorgente parte da
+                // ty0 e avanza di sw a ogni ry, invece di ricalcolare ry*sw con
+                // una moltiplicazione a 64 bit per riga. Stessi indici campionati
+                // (rx su [tx0,tx1), ry su [ty0,ty1)), stessa immagine.
+                const u8* rigaCerca = px + (size_t)ty0 * sw;
+                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, rigaCerca += sw) {
                     for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
                         col = coloreIdx(rigaCerca[rx]);
                 }
             }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
-            if (clipAttivo_ && inTubo(x0 + sx, y0 + sy)) continue; // dietro la parete
+            if (clipAttivo_ && inTubo(x0 + sx, screenYRow)) continue; // dietro la parete
             riga[x0 + sx] = col; // V9 ∞ lv_03_foglie (bounds gia' garantiti dal clip)
         }
     }

@@ -1,14 +1,11 @@
-# Ultimo turno developer — 19/11/2026 09:53 (Turno 1)
-- Blocco/passo: V9 ∞ fluidita' a giro — lv_01_neon (ventiduesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp, motore_nuovo/src/render/renderer.h.
-- Modifica: in drawSprite si precalcola colTxMid_[c] = (tx0+tx1)/2 per colonna e lo si riusa a ogni riga schermo, invece di rifare il calcolo per pixel. Stessi indici di texel, immagine identica.
-- Comando: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre e post).
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno34" lv_01_neon percorso -> exit 0, GATE PERCORSO OK, 1989 frame, 33.2 s, 0% fuori.
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno34_smoke" lv_01_neon smoke -> exit 0, GATE OK, medio 0.908 max 3.372 ms, replay IDENTICO.
-- Comando negato: "./UFFICIO/Officina/build/prova_gate" ... (Permission denied: shell) per percorso e smoke; rieseguiti senza "./" con exit 0.
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno34_post" lv_01_neon percorso -> exit 0, GATE PERCORSO OK.
-- Comando: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno34_post_smoke" lv_01_neon smoke -> exit 0, GATE OK, medio 0.906 max 3.451 ms, replay IDENTICO.
-- Confronto: frameHash 0/60/120/180/240/300/360/420/480 identici al pre (0 3313943332), replay IDENTICO; medio 0.908 -> 0.906 ms.
-- Comando: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK. Eseguito 19/11/2026 09:53.
-- Log: UFFICIO/Officina/Test area/gate_t1.log.
-- Prossimo: V9 ∞ lv_02_atomico (ventiduesimo giro).
+# Ultimo turno developer
+- Blocco e passo: V9 ∞ fluidita' a giro — lv_05_spray (ventiduesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp, motore_nuovo/src/render/renderer.h (drawSprite: condizione "tx1 - tx0 > 1" precalcolata per colonna in colCerca_, invariante per colonna, invece di a ogni pixel; stessi indici, frameHash identici).
+- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre e post).
+- Comando percorso pre: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno38" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando smoke pre: prova_gate "...v9_lv05_turno38_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.941 max 3.650 ms, replay IDENTICO, frameHash 0 4250821778.
+- Comando percorso post: prova_gate "...v9_lv05_turno38_post" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK".
+- Comando smoke post: prova_gate "...v9_lv05_turno38_post_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.943 max 3.346 ms, replay IDENTICO, frameHash identici al pre.
+- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK" 6/6 "GATE PERCORSO OK" (eseguito 19/11/2026 11:25).
+- Esito: resa e replay invariati (frameHash identici), nessuna regressione, gate completo verde. Frame piu' lento 3.650 ms < 8 ms (soglia V9).
+- Prossimo: V9 ∞ lv_06_desktop (ventiduesimo giro).

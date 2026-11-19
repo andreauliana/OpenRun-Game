@@ -500,6 +500,11 @@ private:
     // (tx0+tx1)/2 calcolato una volta per colonna invece che per pixel schermo.
     // Stesso indice riga per riga: immagine e replay invariati.
     i32 colTxMid_[Framebuffer::WIDTH];
+    // V9 ∞ (19/11, lv_05_spray giro 22): "tx1 - tx0 > 1" (area di colonna piu'
+    // di un texel) dipende solo dalla colonna sx, non dalla riga schermo.
+    // Precalcolato insieme a colTx0_/colTx1_ invece che a ogni pixel: stessa
+    // decisione di ricerca del texel pieno, immagine e replay invariati.
+    bool colCerca_[Framebuffer::WIDTH];
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

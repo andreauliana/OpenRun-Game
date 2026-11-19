@@ -1,11 +1,11 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 19/11/2026 09:53 (Turno 1).
-- Blocco: V9 ∞ fluidita' lv_01_neon (ventiduesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: colTxMid_ = (tx0+tx1)/2 precalcolato per colonna e riusato per riga, invece che per pixel; stessi indici, frameHash identici).
-- build pre exit 0; prova_gate percorso pre exit 0 "GATE PERCORSO OK" (1989 frame, 33.2 s, 0% fuori).
-- prova_gate smoke pre exit 0 "GATE OK" medio 0.908 max 3.372 ms, replay IDENTICO, frameHash 0 3313943332.
-- Comando negato: "./UFFICIO/Officina/build/prova_gate" ... lv_01_neon percorso e smoke (Permission denied: shell); senza "./" exit 0.
-- build post exit 0; prova_gate percorso post exit 0 "GATE PERCORSO OK"; smoke post exit 0 medio 0.906 max 3.451 ms, replay IDENTICO, frameHash identici.
-- Misure: medio 0.908 -> 0.906 ms; max 3.372 -> 3.451 ms (rumore). Resa invariata (frameHash 0/60/.../480 identici).
-- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh eseguito il 19/11/2026 alle 09:53, exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK".
-- Esito: frame sotto 8 ms su tutti i livelli (max gate 4.271 ms lv_03); ottimizzazione sicura senza regressione. Prossimo V9 ∞ lv_02_atomico (ventiduesimo giro).
+- Data/ora: 19/11/2026 11:25 (Turno 2).
+- Blocco: V9 ∞ fluidita' lv_05_spray (ventiduesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: "tx1 - tx0 > 1" precalcolato per colonna in colCerca_ invece che a ogni pixel; invariante per colonna, stessi indici/frameHash identici).
+- build pre/post: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- prova_gate percorso pre/post: "...v9_lv05_turno38(_post)" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- prova_gate smoke pre: "...v9_lv05_turno38_smoke" -> exit 0 "GATE OK" medio 0.941 max 3.650 ms, replay IDENTICO, frameHash 0 4250821778.
+- prova_gate smoke post: "...v9_lv05_turno38_post_smoke" -> exit 0 "GATE OK" medio 0.943 max 3.346 ms, replay IDENTICO, frameHash 0/60/.../480 identici al pre.
+- Misure: medio 0.941 -> 0.943 ms, max 3.650 -> 3.346 ms (entro rumore, resa e replay invariati).
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK" 6/6 "GATE PERCORSO OK" (eseguito 19/11/2026 11:25).
+- Esito: micro-ottimizzazione render senza regressioni (percorso/smoke/replay/hash ok, gate completo verde). Prossimo V9 ∞ lv_06_desktop (ventiduesimo giro).

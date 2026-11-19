@@ -1,12 +1,12 @@
-# RIASSUNTO @developer-junior (19/11 10:03)
+# RIASSUNTO @developer-junior (19/11 11:40)
 ## Stato
-- V47 VJ4 soak chiuso (lv_01-lv_06 OK). VJ5 ∞ in corso: review dell'ultimo diff src.
+- V47 VJ4 soak chiuso (lv_01-lv_06 OK). VJ5 ∞ in corso: review dell'ultimo diff src ogni turno.
 
-## Ultimo turno (VJ5, turno 4, 19/11 09:50)
-- Diff src: M `motore_nuovo/src/render/renderer.cpp` (19+/7-) — in `drawSprite` il lambda `texel(tx,ty)` e' diventato `coloreIdx(idx)` (`renderer.cpp:1772-1777`) e la riga sorgente si calcola una volta per riga schermo: `rigaTex = px + ty*sw` (`:1782,1804,1814`), fallback `rigaCerca = px + ry*sw` (`:1822-1825`) (`git status/diff --stat/diff` exit 0).
-- Nessun errore: stessi indici (`px[ty*sw+tx]`, `px[ry*sw+rx]`), corpo lambda identico (spPal nullptr se palette vuota -> nessuna divisione per 0), bounds `tx0 <= sw-1`, `(tx0+tx1)/2 <= sw-1`, `rx < tx1 <= sw`, `ty < sh`.
-- Semplificazione: init morta `const u8* rigaTex = px` (`:1782`) riassegnata prima di ogni uso -> dichiararla dentro il ciclo sy (`:1804`).
-- Prova/modifica test: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 due volte (ctest 27/27: 275.25 s pre-modifica, 289.97 s su binario finale); `prova_gate ".../vj5_lv04_1911" lv_04_cromo percorso` exit 0 (GATE PERCORSO OK, 2125 frame); smoke lv_04 exit 0 (GATE OK, medio 1.597/1.142, max 9.728 frame 230 / 3.614 frame 0, replay IDENTICO; max 21-23 ms di 2 run sotto carico di build non riprodotti). Nuovo: indice del picco `msMaxFrame` in `motore_nuovo/test/prova_gate.cpp` (Esito + print smoke/soak), `cmake --build ... --target prova_gate` exit 0. `gate_t1.sh` non eseguito.
+## Ultimo turno (VJ5, turno 9, 19/11 11:40)
+- Diff src: M `motore_nuovo/src/render/renderer.cpp` + M `renderer.h` — NUOVO: `colCerca_[c] = tx1 - tx0 > 1` nel ciclo colonne di `drawSprite` (`renderer.cpp:1804`, uso nella condizione di ricerca `:1838`), nuovo membro `bool colCerca_[Framebuffer::WIDTH]` (`renderer.h:503-507`) al posto del termine a ogni pixel (`git status/diff --stat/diff` exit 0; unici src modificati).
+- Nessun errore: il precalc usa gli stessi `tx0/tx1` (clamp `:1793`, specchio `:1794`) che il ciclo pixel rilegge da `colTx0_`/`colTx1_` (`:1795-1796,1829-1830`) -> stesso bool; `c ∈ [0,nCol)` con `nCol <= WIDTH` (`:1759-1760,1788`) e return `:1766` prima del ciclo colonne -> tutti gli elementi scritti prima della lettura; OR identico -> replay identico; +320 byte, -1 sub+cmp per pixel.
+- Semplificazioni: (nuova) droppare `colCerca_` e usare `tx1-tx0>1` dai locali `:1829-1830` (costo +1 sub+cmp/pixel, misurare V9) o riordinare `:1838` in `cercaRiga || colCerca_[c]`; aperte da prima: `screenYRow` duplica `y0+sy` (uso solo `inTubo` `:1850` -> passare `y0+sy`), base `rigaCerca0` (`:1843`), init morta `rigaTex=px` (`:1782`).
+- Prove: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 262.19 s); `prova_gate "UFFICIO/Officina/Test area/vj5_lv05_1911t2" lv_05_spray smoke` exit 0 (GATE OK, medio 0.975 max 3.768 ms frame 0, replay IDENTICO, caricamento 3.2-4.4 ms). `gate_t1.sh` non eseguito.
 ## Rilievi aperti (sintesi)
 - Invariati: `mascheraGraffito` cache per puntatore (`renderer.cpp:1201,1247,1303-1304`); `incrocioSprites_` 2 push_back/tipo con `Sprite*` stabili (`renderer.h:258-271`); reserve fisse/accessor a puntatore; `spriteOrd_`/`terraOrdine_` riallocabili >2048; `hline` duplica il clamp di `fillRect` (`framebuffer.cpp:21-45`); `drawLuceGalleria` idiv per pixel (`renderer.cpp:1385`); `copertura_` resize di pari passo (`:188`).
 - Backlog warning/fragilità: `game.cpp`, `mixer.cpp:91-99`, `salvataggi.cpp`, `escalation.h`, `json_mini.h`, `replay.cpp`, `paesaggio.cpp`.
