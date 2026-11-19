@@ -496,6 +496,10 @@ private:
     // ogni pixel: stessa immagine, meno divisioni a 64 bit nel loop.
     i32 colTx0_[Framebuffer::WIDTH];
     i32 colTx1_[Framebuffer::WIDTH];
+    // V9 ∞ (19/11, lv_01_neon giro 22): texel centrale di colonna,
+    // (tx0+tx1)/2 calcolato una volta per colonna invece che per pixel schermo.
+    // Stesso indice riga per riga: immagine e replay invariati.
+    i32 colTxMid_[Framebuffer::WIDTH];
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

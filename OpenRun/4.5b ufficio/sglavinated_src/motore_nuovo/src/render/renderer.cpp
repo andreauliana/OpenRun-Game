@@ -1794,6 +1794,10 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
         colTx0_[c] = tx0;
         colTx1_[c] = tx1;
+        // V9 ∞ lv_01_neon (giro 22): il texel campionato e' sempre quello
+        // centrale dell'area di colonna, lo stesso per ogni riga schermo:
+        // si calcola qui una volta invece che a ogni pixel.
+        colTxMid_[c] = (tx0 + tx1) / 2;
     }
     for (i32 sy = syIni; sy < syFin; ++sy) {
         // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
@@ -1811,7 +1815,7 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
             const i32 c = sx - sxIni;
             const i32 tx0 = colTx0_[c];
             const i32 tx1 = colTx1_[c];
-            u32 col = coloreIdx(rigaTex[(tx0 + tx1) / 2]);
+            u32 col = coloreIdx(rigaTex[colTxMid_[c]]); // V9 ∞ lv_01_neon: indice per colonna
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
             // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px

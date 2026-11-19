@@ -1,4 +1,4 @@
-# RIASSUNTO — @grafico (19/11/2026 09:16, Turno 1, giro 103)
+# RIASSUNTO — @grafico (19/11/2026 09:51, Turno 1, giro 104)
 - **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `GRAFICA/scenari/` e gruppi vs `.sglraw`, coerenza catalogo/raw.
 - **Esito:** tutto allineato, contenuto diverso da convertire 0 (nessuna conversione).
 - **Comandi (exit 0):** `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"`.
@@ -6,6 +6,6 @@
 - **Giocatore (area bloccata Andrea):** 10 PNG presenti, mancanti 5 pose `_b` (dritta/dx2/dx4/sx2/sx4), confronto contenuto saltato.
 - **Catalogo/non catalogati:** 155/155 raw motore tracciati (0 senza voce); 3 PNG non catalogati in `giocatore_pose` (`car-custom*.png`), non toccati.
 - **File turno:** `UFFICIO/bacheche/grafico/diario.md`, `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-- **Gate:** non eseguito (19/11 09:16).
+- **Gate:** non eseguito (19/11 09:51).
 - **Licenze/Sega:** zero risorse esterne, zero materiale Sega.
 - **Prossimo:** VG3 ∞ — ricontrollare se arrivano PNG Andrea più nuovi o convertibili.

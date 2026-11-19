@@ -1,12 +1,11 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 19/11/2026 09:19 (Turno 1).
-- Blocco: V9 ∞ fluidita' lv_04_cromo (ventunesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: riga sorgente del texel calcolata una volta per riga schermo e riusata nel campionamento e nella ricerca; stessi indici, frameHash identico).
-- build pre exit 0; prova_gate smoke baseline exit 0, medio 1.217 max 5.808 ms, replay IDENTICO.
-- gate_t1.sh pre exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK; lv_04_cromo 2125 frame, 35.4 s, 0% fuori.
-- Comando negato: "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv04_turno33" lv_04_cromo percorso (Permission denied: shell).
-- build post exit 0; gate_t1.sh post exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK, replay IDENTICO.
-- prova_gate smoke post exit 0, medio 1.244 max 3.917 ms, replay IDENTICO, frameHash identici al pre.
-- Misure: medio 1.217 -> 1.244 ms (rumore); max 5.808 -> 3.917 ms. Resa invariata (frameHash 0/60/.../480 identici).
-- Gate: gate_t1.sh eseguito il 19/11/2026 alle 09:19 (pre e post), exit 0 entrambi.
-- Esito: frame gia' sotto 8 ms; ottimizzazione sicura senza regressione. Prossimo V9 ∞ lv_01_neon (ventiduesimo giro).
+- Data/ora: 19/11/2026 09:53 (Turno 1).
+- Blocco: V9 ∞ fluidita' lv_01_neon (ventiduesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: colTxMid_ = (tx0+tx1)/2 precalcolato per colonna e riusato per riga, invece che per pixel; stessi indici, frameHash identici).
+- build pre exit 0; prova_gate percorso pre exit 0 "GATE PERCORSO OK" (1989 frame, 33.2 s, 0% fuori).
+- prova_gate smoke pre exit 0 "GATE OK" medio 0.908 max 3.372 ms, replay IDENTICO, frameHash 0 3313943332.
+- Comando negato: "./UFFICIO/Officina/build/prova_gate" ... lv_01_neon percorso e smoke (Permission denied: shell); senza "./" exit 0.
+- build post exit 0; prova_gate percorso post exit 0 "GATE PERCORSO OK"; smoke post exit 0 medio 0.906 max 3.451 ms, replay IDENTICO, frameHash identici.
+- Misure: medio 0.908 -> 0.906 ms; max 3.372 -> 3.451 ms (rumore). Resa invariata (frameHash 0/60/.../480 identici).
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh eseguito il 19/11/2026 alle 09:53, exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK".
+- Esito: frame sotto 8 ms su tutti i livelli (max gate 4.271 ms lv_03); ottimizzazione sicura senza regressione. Prossimo V9 ∞ lv_02_atomico (ventiduesimo giro).
