@@ -1,11 +1,11 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 19/11/2026 11:25 (Turno 2).
-- Blocco: V9 ∞ fluidita' lv_05_spray (ventiduesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: "tx1 - tx0 > 1" precalcolato per colonna in colCerca_ invece che a ogni pixel; invariante per colonna, stessi indici/frameHash identici).
-- build pre/post: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- prova_gate percorso pre/post: "...v9_lv05_turno38(_post)" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
-- prova_gate smoke pre: "...v9_lv05_turno38_smoke" -> exit 0 "GATE OK" medio 0.941 max 3.650 ms, replay IDENTICO, frameHash 0 4250821778.
-- prova_gate smoke post: "...v9_lv05_turno38_post_smoke" -> exit 0 "GATE OK" medio 0.943 max 3.346 ms, replay IDENTICO, frameHash 0/60/.../480 identici al pre.
-- Misure: medio 0.941 -> 0.943 ms, max 3.650 -> 3.346 ms (entro rumore, resa e replay invariati).
-- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK" 6/6 "GATE PERCORSO OK" (eseguito 19/11/2026 11:25).
-- Esito: micro-ottimizzazione render senza regressioni (percorso/smoke/replay/hash ok, gate completo verde). Prossimo V9 ∞ lv_06_desktop (ventiduesimo giro).
+- Data/ora: 19/11/2026 11:43 (Turno 2).
+- Blocco: V9 ∞ fluidita' lv_06_desktop (ventiduesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: colonna/schermo `scrX` e indice `c` avanzati per incremento invece di ricalcolare `sx-sxIni` e `x0+sx` per pixel; stessi indici/scritture, frameHash identici).
+- Build pre/post: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Prova percorso pre/post: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv06_turno39(_post)" lv_06_desktop percorso -> exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
+- Prova smoke pre: "...v9_lv06_turno39_smoke" lv_06_desktop smoke -> exit 0 "GATE OK" ms/frame medio 1.253 max 26.388, replay IDENTICO, frameHash 0 3627137594.
+- Prova smoke post: "...v9_lv06_turno39_post_smoke" lv_06_desktop smoke -> exit 0 "GATE OK" ms/frame medio 1.138 max 4.106, replay IDENTICO, frameHash 0/60/.../480 identici al pre.
+- Misure: medio 1.253 -> 1.138 ms, max 26.388 (spike) -> 4.106 ms; resa e replay invariati.
+- Gate: gate_t1.sh non eseguito in questo turno.
+- Esito: micro-ottimizzazione render senza regressioni (percorso/smoke/replay/hash ok). Prossimo V9 ∞ lv_01_neon (ventitreesimo giro).

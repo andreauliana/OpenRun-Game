@@ -1824,18 +1824,26 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // sottostante: lo calcolo una volta qui invece che a ogni pixel.
         // Stessi indici campionati, stessa immagine, replay identico.
         const bool cercaRiga = ty1 - ty0 > 1;
-        for (i32 sx = sxIni; sx < sxFin; ++sx) {
-            const i32 c = sx - sxIni;
-            const i32 tx0 = colTx0_[c];
-            const i32 tx1 = colTx1_[c];
-            u32 col = coloreIdx(rigaTex[colTxMid_[c]]); // V9 ∞ lv_01_neon: indice per colonna
+        // V9 ∞ (19/11, lv_06_desktop giro 22): colonna schermo e destinazione
+        // avanzano per incremento invece di sommare sxIni ogni pixel e
+        // ricalcolare x0 + sx; stessa colonna, stessa scrittura.
+        // V9 ∞ (19/11, lv_01_neon giro 23): puntatori alle tabelle per-colonna
+        // invece dell'indice c, stessi valori/ordine e stessa resa.
+        const i32* pTx0 = colTx0_;
+        const i32* pTx1 = colTx1_;
+        const i32* pTxMid = colTxMid_;
+        const bool* pCerca = colCerca_;
+        for (i32 scrX = x0 + sxIni, scrEnd = scrX + nCol; scrX < scrEnd; ++scrX, ++pTx0, ++pTx1, ++pTxMid, ++pCerca) {
+            const i32 tx0 = *pTx0;
+            const i32 tx1 = *pTx1;
+            u32 col = coloreIdx(rigaTex[*pTxMid]); // V9 ∞ lv_01_neon: indice per colonna
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
             // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px
             // in uno sprite da 32) non spariscono a intermittenza quando la
             // larghezza a schermo cambia di frame in frame. Da vicino (area di
             // 1 texel) il risultato e' identico al campionamento semplice.
-            if ((col >> 24) == 0 && (colCerca_[c] || cercaRiga)) { // V9 ∞ lv_05_spray: area colonna precalcolata
+            if ((col >> 24) == 0 && (*pCerca || cercaRiga)) { // V9 ∞ lv_05_spray: area colonna precalcolata
                 // V9 ∞ (19/11, lv_02_atomico giro 22): la riga sorgente parte da
                 // ty0 e avanza di sw a ogni ry, invece di ricalcolare ry*sw con
                 // una moltiplicazione a 64 bit per riga. Stessi indici campionati
@@ -1847,8 +1855,8 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
                 }
             }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
-            if (clipAttivo_ && inTubo(x0 + sx, screenYRow)) continue; // dietro la parete
-            riga[x0 + sx] = col; // V9 ∞ lv_03_foglie (bounds gia' garantiti dal clip)
+            if (clipAttivo_ && inTubo(scrX, screenYRow)) continue; // dietro la parete
+            riga[scrX] = col; // V9 ∞ lv_03_foglie (bounds gia' garantiti dal clip)
         }
     }
 }
