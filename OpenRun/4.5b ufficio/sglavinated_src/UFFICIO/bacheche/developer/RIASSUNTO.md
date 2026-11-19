@@ -1,11 +1,10 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 19/11/2026 11:43 (Turno 2).
-- Blocco: V9 ∞ fluidita' lv_06_desktop (ventiduesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: colonna/schermo `scrX` e indice `c` avanzati per incremento invece di ricalcolare `sx-sxIni` e `x0+sx` per pixel; stessi indici/scritture, frameHash identici).
+- Data/ora: 19/11/2026 12:32 (Turno 3).
+- Blocco: V9 ∞ fluidita' lv_03_foglie (ventitreesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: quattro array per-colonna uniti in un unico array di record ColCamp; un solo puntatore avanza nel loop colonna, campi contigui in cache; stessi valori, frameHash identici).
 - Build pre/post: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- Prova percorso pre/post: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv06_turno39(_post)" lv_06_desktop percorso -> exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
-- Prova smoke pre: "...v9_lv06_turno39_smoke" lv_06_desktop smoke -> exit 0 "GATE OK" ms/frame medio 1.253 max 26.388, replay IDENTICO, frameHash 0 3627137594.
-- Prova smoke post: "...v9_lv06_turno39_post_smoke" lv_06_desktop smoke -> exit 0 "GATE OK" ms/frame medio 1.138 max 4.106, replay IDENTICO, frameHash 0/60/.../480 identici al pre.
-- Misure: medio 1.253 -> 1.138 ms, max 26.388 (spike) -> 4.106 ms; resa e replay invariati.
-- Gate: gate_t1.sh non eseguito in questo turno.
-- Esito: micro-ottimizzazione render senza regressioni (percorso/smoke/replay/hash ok). Prossimo V9 ∞ lv_01_neon (ventitreesimo giro).
+- Percorso pre/post: UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno42(_post)" lv_03_foglie percorso -> exit 0 "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
+- Smoke pre: "...v9_lv03_turno42_smoke" -> exit 0 "GATE OK" ms/frame medio 0.999 max 3.573, replay IDENTICO, frameHash 0 3593059909.
+- Smoke post: "...v9_lv03_turno42_post_smoke" -> exit 0 "GATE OK" ms/frame medio 1.162 max 5.559, replay IDENTICO, frameHash identici al pre.
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh eseguito 19/11/2026 12:32 -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK".
+- Esito: caching dei dati per-colonna senza regressioni, frame medio ~1 ms (< 8 ms). Prossimo V9 ∞ lv_04_cromo (ventitreesimo giro).

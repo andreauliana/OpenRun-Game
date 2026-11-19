@@ -1792,16 +1792,11 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
         if (tx1 <= tx0) tx1 = tx0 + 1;
         if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
-        colTx0_[c] = tx0;
-        colTx1_[c] = tx1;
-        // V9 ∞ lv_01_neon (giro 22): il texel campionato e' sempre quello
-        // centrale dell'area di colonna, lo stesso per ogni riga schermo:
-        // si calcola qui una volta invece che a ogni pixel.
-        colTxMid_[c] = (tx0 + tx1) / 2;
-        // V9 ∞ (19/11, lv_05_spray giro 22): l'area di colonna copre piu' di
-        // un texel? Invariante per colonna (tx0/tx1 qui sono gia' mirrorati),
-        // quindi lo calcolo una volta qui invece che a ogni pixel qui sotto.
-        colCerca_[c] = tx1 - tx0 > 1;
+        // V9 ∞ lv_03_foglie (giro 23): tutti i valori per-colonna in un solo
+        // record contiguo (tx0/tx1 mirrorati, texel centrale, flag area>1).
+        // Stessi valori di prima, solo raggruppati per migliorare la localita'
+        // di cache nel loop colonna qui sotto.
+        colCamp_[c] = { tx0, tx1, (tx0 + tx1) / 2, tx1 - tx0 > 1 };
     }
     i32 screenYRow = y0 + syIni;
     u32* riga = fb_.data() + (size_t)screenYRow * Framebuffer::WIDTH;
@@ -1812,6 +1807,12 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         if (ty1 <= ty0) ty1 = ty0 + 1;
         const i32 ty = (ty0 + ty1) / 2;
         rigaTex = px + (size_t)ty * sw; // V9 ∞ lv_04_cromo: una riga sorgente per riga schermo
+        // V9 ∞ (19/11, lv_02_atomico giro 23): la base della ricerca del texel
+        // pieno (px + ty0*sw) dipende solo dalla riga schermo, non dalla colonna.
+        // Prima veniva ricalcolata (moltiplicazione 64 bit) dentro il ciclo delle
+        // colonne a ogni pixel trasparente; qui si calcola una volta per riga.
+        // Stessi indici campionati (rx su [tx0,tx1), ry su [ty0,ty1)), stessa resa.
+        const u8* rigaCercaBase = px + (size_t)ty0 * sw;
         // V9 ∞ (19/11, lv_03_foglie): sxIni/sxFin e syIni/syFin sono gia'
         // ritagliati al framebuffer, quindi fb_.put() rifarebbe due controlli
         // di bounds per pixel. Scrivo direttamente nella riga gia' calcolata:
@@ -1829,26 +1830,28 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // ricalcolare x0 + sx; stessa colonna, stessa scrittura.
         // V9 ∞ (19/11, lv_01_neon giro 23): puntatori alle tabelle per-colonna
         // invece dell'indice c, stessi valori/ordine e stessa resa.
-        const i32* pTx0 = colTx0_;
-        const i32* pTx1 = colTx1_;
-        const i32* pTxMid = colTxMid_;
-        const bool* pCerca = colCerca_;
-        for (i32 scrX = x0 + sxIni, scrEnd = scrX + nCol; scrX < scrEnd; ++scrX, ++pTx0, ++pTx1, ++pTxMid, ++pCerca) {
-            const i32 tx0 = *pTx0;
-            const i32 tx1 = *pTx1;
-            u32 col = coloreIdx(rigaTex[*pTxMid]); // V9 ∞ lv_01_neon: indice per colonna
+        // V9 ∞ lv_03_foglie (giro 23): un solo puntatore alla tabella di record
+        // per-colonna invece di quattro puntatori ad array separati: tutti i
+        // campi della colonna restano vicini in cache, stessi valori e ordine.
+        const ColCamp* pCol = colCamp_;
+        for (i32 scrX = x0 + sxIni, scrEnd = scrX + nCol; scrX < scrEnd; ++scrX, ++pCol) {
+            const i32 tx0 = pCol->tx0;
+            const i32 tx1 = pCol->tx1;
+            u32 col = coloreIdx(rigaTex[pCol->txMid]); // V9 ∞ lv_01_neon: indice per colonna
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
             // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px
             // in uno sprite da 32) non spariscono a intermittenza quando la
             // larghezza a schermo cambia di frame in frame. Da vicino (area di
             // 1 texel) il risultato e' identico al campionamento semplice.
-            if ((col >> 24) == 0 && (*pCerca || cercaRiga)) { // V9 ∞ lv_05_spray: area colonna precalcolata
+            if ((col >> 24) == 0 && (pCol->cerca || cercaRiga)) { // V9 ∞ lv_05_spray: area colonna precalcolata
                 // V9 ∞ (19/11, lv_02_atomico giro 22): la riga sorgente parte da
                 // ty0 e avanza di sw a ogni ry, invece di ricalcolare ry*sw con
                 // una moltiplicazione a 64 bit per riga. Stessi indici campionati
                 // (rx su [tx0,tx1), ry su [ty0,ty1)), stessa immagine.
-                const u8* rigaCerca = px + (size_t)ty0 * sw;
+                // V9 ∞ (giro 23): la base e' gia' pronta da rigaCercaBase (calcolata
+                // una volta per riga schermo fuori dal ciclo colonna).
+                const u8* rigaCerca = rigaCercaBase;
                 for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, rigaCerca += sw) {
                     for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
                         col = coloreIdx(rigaCerca[rx]);

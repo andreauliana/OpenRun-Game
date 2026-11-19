@@ -490,21 +490,14 @@ private:
     std::vector<std::pair<f32, const SpriteInstance*>> terraOrdine_; // riusato (zero alloc a regime)
     std::vector<std::pair<f32, i32>> spriteOrd_; // ordine di disegno sprite: {zRel, indice} (riusato)
     std::vector<f32> copertura_; // per campione: riga piu' alta della strada piu' vicina (riusato)
-    // V9 ∞ (19/11, lv_02 atomico): in drawSprite il texel orizzontale tx0/tx1
-    // dipende solo dalla colonna schermo, non dalla riga. Precalcolato una
-    // volta per colonna (al massimo WIDTH colonne visibili) invece che per
-    // ogni pixel: stessa immagine, meno divisioni a 64 bit nel loop.
-    i32 colTx0_[Framebuffer::WIDTH];
-    i32 colTx1_[Framebuffer::WIDTH];
-    // V9 ∞ (19/11, lv_01_neon giro 22): texel centrale di colonna,
-    // (tx0+tx1)/2 calcolato una volta per colonna invece che per pixel schermo.
-    // Stesso indice riga per riga: immagine e replay invariati.
-    i32 colTxMid_[Framebuffer::WIDTH];
-    // V9 ∞ (19/11, lv_05_spray giro 22): "tx1 - tx0 > 1" (area di colonna piu'
-    // di un texel) dipende solo dalla colonna sx, non dalla riga schermo.
-    // Precalcolato insieme a colTx0_/colTx1_ invece che a ogni pixel: stessa
-    // decisione di ricerca del texel pieno, immagine e replay invariati.
-    bool colCerca_[Framebuffer::WIDTH];
+    // V9 ∞ (19/11, lv_03_foglie giro 23): i quattro valori per-colonna usati
+    // dal campionamento di drawSprite (tx0/tx1, texel centrale, flag area>1)
+    // stavano in quattro array separati, quindi il loop delle colonne toccava
+    // quattro zone di memoria distanti. Li raccolgo in un'unica tabella di
+    // record: un solo puntatore avanza e tutti i campi di una colonna stanno
+    // nella stessa cache line. Stessi valori, stesso ordine, stessa immagine.
+    struct ColCamp { i32 tx0, tx1, txMid; bool cerca; };
+    ColCamp colCamp_[Framebuffer::WIDTH];
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo
