@@ -88,6 +88,7 @@ struct Esito {
     f32 speed60 = 0.0f;
     i32 firstOffroad = -1;
     double msTot = 0.0, msMax = 0.0;
+    i32 msMaxFrame = -1; // frame del picco: serve per capire se e' il primo (avvio)
     f32 maxX = 0.0f, minX = 0.0f, zFinale = 0.0f;
 };
 
@@ -622,7 +623,7 @@ Esito esegui(const std::string& outDir, const std::string& livello, bool scrivi,
         game.update();
         game.render();
         double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
-        e.msTot += ms; if (ms > e.msMax) e.msMax = ms;
+        e.msTot += ms; if (ms > e.msMax) { e.msMax = ms; e.msMaxFrame = frame; }
 
         const GameState& s = game.state();
         if (s.playerOffroad && e.firstOffroad < 0) e.firstOffroad = frame;
@@ -4651,7 +4652,8 @@ int main(int argc, char** argv) {
         std::printf("accelerazione: %s (speed@1 >= %.1f, speed@60 >= %.1f)\n",
                     accelerazioneOK ? "reattiva" : "lenta", MIN_SPEED_FIRST_FRAME, MIN_SPEED_FRAME_60);
         std::printf("offroad: %s (frame %d)\n", a.firstOffroad >= 0 ? "raggiunto" : "non raggiunto", a.firstOffroad);
-        std::printf("ms/frame medio=%.3f max=%.3f (limite %.0f)\n", msMed, a.msMax, MAX_MS_FRAME);
+        std::printf("ms/frame medio=%.3f max=%.3f (frame %d) (limite %.0f)\n",
+                    msMed, a.msMax, a.msMaxFrame, MAX_MS_FRAME);
         std::printf("replay 2x: %s", deterministico ? "IDENTICO" : "DIVERSO");
         if (!deterministico) std::printf(" (prima divergenza al frame %d)\n", primaDivergenza);
 
@@ -4872,7 +4874,8 @@ int main(int argc, char** argv) {
     std::printf("accelerazione: %s (speed@1 >= %.1f, speed@60 >= %.1f)\n",
                 accelerazioneOK ? "reattiva" : "lenta", MIN_SPEED_FIRST_FRAME, MIN_SPEED_FRAME_60);
     std::printf("offroad: %s (frame %d)\n", a.firstOffroad >= 0 ? "raggiunto" : "non raggiunto", a.firstOffroad);
-    std::printf("ms/frame medio=%.3f max=%.3f (limite %.0f)\n", msMed, a.msMax, MAX_MS_FRAME);
+    std::printf("ms/frame medio=%.3f max=%.3f (frame %d) (limite %.0f)\n",
+                msMed, a.msMax, a.msMaxFrame, MAX_MS_FRAME);
     std::printf("replay 2x: %s", deterministico ? "IDENTICO" : "DIVERSO");
     if (!deterministico) std::printf(" (prima divergenza al frame %d)\n", primaDivergenza);
 

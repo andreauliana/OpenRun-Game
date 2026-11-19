@@ -1,12 +1,12 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 19/11/2026 08:31 (Turno 1).
-- Blocco: V9 ∞ fluidita' lv_02_atomico (ventunesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp + renderer.h (drawSprite: tx0/tx1 e specchio calcolati una volta per colonna schermo, non per pixel; frameHash identico).
-- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31" lv_02_atomico percorso -> exit 0, GATE PERCORSO OK (2476 frame, 41.3 s, 0% fuori).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_smoke" lv_02_atomico smoke -> exit 0, GATE OK medio 1.108 max 3.508, replay IDENTICO.
-- cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (post).
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_post" lv_02_atomico percorso -> exit 0, GATE PERCORSO OK.
-- "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv02_turno31_post_smoke" lv_02_atomico smoke -> exit 0, GATE OK medio 0.981 max 3.605, replay IDENTICO.
-- Gate: gate_t1.sh non eseguito; prova_gate singoli eseguiti il 19/11/2026 alle 08:31.
-- Esito: medio 1.108 -> 0.981 ms, resa identica per frameHash. Prossimo V9 ∞ lv_03_foglie.
+- Data/ora: 19/11/2026 09:19 (Turno 1).
+- Blocco: V9 ∞ fluidita' lv_04_cromo (ventunesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp (drawSprite: riga sorgente del texel calcolata una volta per riga schermo e riusata nel campionamento e nella ricerca; stessi indici, frameHash identico).
+- build pre exit 0; prova_gate smoke baseline exit 0, medio 1.217 max 5.808 ms, replay IDENTICO.
+- gate_t1.sh pre exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK; lv_04_cromo 2125 frame, 35.4 s, 0% fuori.
+- Comando negato: "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv04_turno33" lv_04_cromo percorso (Permission denied: shell).
+- build post exit 0; gate_t1.sh post exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK, replay IDENTICO.
+- prova_gate smoke post exit 0, medio 1.244 max 3.917 ms, replay IDENTICO, frameHash identici al pre.
+- Misure: medio 1.217 -> 1.244 ms (rumore); max 5.808 -> 3.917 ms. Resa invariata (frameHash 0/60/.../480 identici).
+- Gate: gate_t1.sh eseguito il 19/11/2026 alle 09:19 (pre e post), exit 0 entrambi.
+- Esito: frame gia' sotto 8 ms; ottimizzazione sicura senza regressione. Prossimo V9 ∞ lv_01_neon (ventiduesimo giro).

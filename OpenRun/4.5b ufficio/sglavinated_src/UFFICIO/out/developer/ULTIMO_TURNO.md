@@ -1,14 +1,14 @@
-# Ultimo turno developer
-- Data/ora: 19/11/2026 08:31 — Turno 1.
-- Blocco e passo: V9 ∞ fluidita' a giro — lv_02_atomico (ventunesimo giro).
-- File cambiati: `motore_nuovo/src/render/renderer.cpp` e `motore_nuovo/src/render/renderer.h` — in `drawSprite` il texel orizzontale tx0/tx1 (con lo specchio) e' precalcolato una volta per colonna schermo in due array di appoggio invece di due divisioni a 64 bit per pixel. Nessun pixel cambiato: frameHash 0/60/120/180/240/300/360/420/480 identici al pre, replay IDENTICO.
-- Build pre: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0.
-- Percorso pre: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno31" lv_02_atomico percorso` -> exit 0, GATE PERCORSO OK (2476 frame, 41.3 s @ 60 Hz, 0% fuori strada).
-- Smoke pre: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno31_smoke" lv_02_atomico smoke` -> exit 0, GATE OK, ms/frame medio 1.108 max 3.508, replay 2x IDENTICO.
-- Build post: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0.
-- Percorso post: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno31_post" lv_02_atomico percorso` -> exit 0, GATE PERCORSO OK (2476 frame, 41.3 s, 0% fuori).
-- Smoke post: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno31_post_smoke" lv_02_atomico smoke` -> exit 0, GATE OK, ms/frame medio 0.981 max 3.605, replay 2x IDENTICO.
-- Misura: medio 1.108 -> 0.981 ms (-0.127), max 3.508 -> 3.605 ms (rumore); soglia V9 di 8 ms rispettata, resa identica per frameHash.
-- Gate ufficiale: `gate_t1.sh` non eseguito in questo turno; i test `prova_gate` sopra sono stati eseguiti il 19/11/2026 alle 08:31.
-- Review: non chiesta dal blocco V9. Nessun altro file .md scritto.
-- Prossimo: V9 ∞ lv_03_foglie (ventunesimo giro).
+# Ultimo turno developer — 19/11/2026 09:19
+- Blocco e passo: V9 ∞ fluidita' a giro, lv_04_cromo (ventunesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp — drawSprite: la riga sorgente del texel (ty*sw) si calcola una volta per riga schermo (rigaTex) e si riusa nel campionamento centrale; nella ricerca del texel pieno si calcola una riga per ry invece di una moltiplicazione per texel. Stessi indici, stessa resa. Auto del giocatore non toccata.
+- Comando pre: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Baseline smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno33" lv_04_cromo smoke -> exit 0, medio 1.217 max 5.808 ms, replay IDENTICO, frameHash 0 4118572995.
+- gate_t1.sh pre: exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; lv_04_cromo 2125 frame (35.4 s @60 Hz), 0% fuori.
+- Comando negato: "./UFFICIO/Officina/build/prova_gate" "UFFICIO/Officina/Test area/v9_lv04_turno33" lv_04_cromo percorso (Permission denied: shell) — percorso singolo non eseguito, coperto da gate_t1.sh.
+- Comando post: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- gate_t1.sh post: exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK", tutti i replay IDENTICO.
+- Post smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno33b" lv_04_cromo smoke -> exit 0, medio 1.244 max 3.917 ms, replay IDENTICO, frameHash identici al pre.
+- Misure: medio 1.217 -> 1.244 ms (rumore di sistema), max 5.808 -> 3.917 ms; entrambi sotto 8 ms (soglia V9) e 20 ms (soglia gate).
+- Resa: frameHash a 0/60/120/180/240/300/360/420/480 identici prima/dopo (4118572995, 4130951328, 3421541886, 1466017791, 3413013574, 2306845164, 3903500910, 860850955, 2106311310).
+- Gate: gate_t1.sh eseguito in questo turno il 19/11/2026 alle 09:19 (pre e post), exit 0 entrambi. Log: UFFICIO/Officina/Test area/gate_t1.log.
+- Prossimo passo: V9 ∞ lv_01_neon (ventiduesimo giro).

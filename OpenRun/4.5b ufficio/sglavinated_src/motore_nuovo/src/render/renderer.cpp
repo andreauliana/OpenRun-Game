@@ -1768,14 +1768,18 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     const i32 sh = s.sprite->height;
     const u8* px = s.sprite->pixels.data();
     const u32* spPal = palettePropria ? s.sprite->palette.data() : nullptr;
-    // Colore del texel (tx, ty); alpha 0 = trasparente.
-    auto texel = [&](i32 tx, i32 ty) -> u32 {
-        const u8 idx = px[ty * sw + tx];
+    // Colore di un indice di texel; alpha 0 = trasparente.
+    auto coloreIdx = [&](u8 idx) -> u32 {
         // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
         if (spPal) return spPal[idx % nPalette];
         // Palette del motore: indice 0 = trasparente.
         return idx == 0 ? 0u : pal_[s.paletteBase + idx];
     };
+    // V9 ∞ (19/11, lv_04_cromo): ty e' costante dentro una riga schermo, quindi
+    // l'indirizzo della riga sorgente (ty * sw) si calcola una volta per riga
+    // invece di una moltiplicazione a ogni texel campionato. Stessi indici,
+    // stessa immagine. rigaTex punta alla riga della riga schermo corrente.
+    const u8* rigaTex = px;
     // V9 ∞ (19/11, lv_02 atomico): tx0/tx1 (e lo specchio) dipendono solo
     // dalla colonna schermo sx, non dalla riga sy. Precalcolarli una volta per
     // colonna invece che per pixel elimina due divisioni a 64 bit per pixel;
@@ -1797,11 +1801,17 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         i32 ty1 = (i32)((i64)(sy + 1) * sh / h);
         if (ty1 <= ty0) ty1 = ty0 + 1;
         const i32 ty = (ty0 + ty1) / 2;
+        rigaTex = px + (size_t)ty * sw; // V9 ∞ lv_04_cromo: una riga sorgente per riga schermo
+        // V9 ∞ (19/11, lv_03_foglie): sxIni/sxFin e syIni/syFin sono gia'
+        // ritagliati al framebuffer, quindi fb_.put() rifarebbe due controlli
+        // di bounds per pixel. Scrivo direttamente nella riga gia' calcolata:
+        // stessi pixel, stessa resa, indirizzo many-pixel-per-row una volta sola.
+        u32* riga = fb_.data() + (size_t)(y0 + sy) * Framebuffer::WIDTH;
         for (i32 sx = sxIni; sx < sxFin; ++sx) {
             const i32 c = sx - sxIni;
             const i32 tx0 = colTx0_[c];
             const i32 tx1 = colTx1_[c];
-            u32 col = texel((tx0 + tx1) / 2, ty);
+            u32 col = coloreIdx(rigaTex[(tx0 + tx1) / 2]);
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
             // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px
@@ -1809,13 +1819,15 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
             // larghezza a schermo cambia di frame in frame. Da vicino (area di
             // 1 texel) il risultato e' identico al campionamento semplice.
             if ((col >> 24) == 0 && (tx1 - tx0 > 1 || ty1 - ty0 > 1)) {
-                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry)
+                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry) {
+                    const u8* rigaCerca = px + (size_t)ry * sw;
                     for (i32 rx = tx0; (col >> 24) == 0 && rx < tx1; ++rx)
-                        col = texel(rx, ry);
+                        col = coloreIdx(rigaCerca[rx]);
+                }
             }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
             if (clipAttivo_ && inTubo(x0 + sx, y0 + sy)) continue; // dietro la parete
-            fb_.put(x0 + sx, y0 + sy, col);
+            riga[x0 + sx] = col; // V9 ∞ lv_03_foglie (bounds gia' garantiti dal clip)
         }
     }
 }

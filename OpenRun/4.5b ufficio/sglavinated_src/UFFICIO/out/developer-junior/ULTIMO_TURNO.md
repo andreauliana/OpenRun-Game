@@ -1,14 +1,14 @@
 # Ultimo turno developer-junior
-- Data/ora: 19/11/2026 08:35-08:45 — Turno 2.
-- Blocco e passo: V47, VJ5 ∞ review del codice (ultimo cambio del @developer in `src/`), con prova VJ1 dopo il passo V9.
-- File cambiati: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), una riga in `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto).
-- Diff ispezionato: M `motore_nuovo/src/render/renderer.cpp` (18+/4-) e M `render/renderer.h` (6+); `framebuffer.cpp` invariato dal turno 08:15 (`git status --short`, `git diff --stat -- motore_nuovo/src`, `git diff -- motore_nuovo/src` tutti exit 0).
-- Cambio: in `Renderer::drawSprite` tx0/tx1 della colonna (e lo specchio) precalcolati una volta per colonna in `colTx0_`/`colTx1_` (`renderer.cpp:1784-1793`, membri `renderer.h:497-498`); il ciclo riga legge l'array (`:1800-1803`) invece di due divisioni a 64 bit per pixel.
-- Rilievo: nessun errore — `sxIni >= max(0,-x0)` e `sxFin <= min(w,WIDTH-x0)` (`renderer.cpp:1759-1766`) implicano `nCol <= WIDTH` (indici dentro gli array) e il return `:1766` precede il precalc; formula identica (clamp `tx1<=tx0` poi specchio) => stessi texel. Nota: replay A/B = stesso binario (`prova_gate.cpp:1089`), quindi la resa e' garantita solo dall'ispezione (`frameHash` copre il framebuffer, `game.cpp:3895-3903`, ma senza hash del build precedente).
-- Semplificazione segnalata: `drawLuceGalleria` fa `x * s->width / w` a ogni pixel (`renderer.cpp:1385`, `ty` gia' fuori dal ciclo `:1381`) — luce di galleria di lv_02/lv_05 -> precalc per colonna come in `drawSprite`, da misurare con V9.
-- Misura: smoke lv_02 medio 0.988 / max 3.558 ms, sotto la soglia 8 ms di V9 (passo non necessario su lv_02); nessun run "prima" disponibile, delta del passo non misurato.
-- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0 (build `prova_gate`, ctest 27/27 pass, 295.08 s).
-- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_1911" lv_02_atomico percorso` -> exit 0 (GATE PERCORSO OK, 2476 frame, fuori strada 0).
-- Comando: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_1911" lv_02_atomico smoke` -> exit 0 (GATE OK, ms/frame medio 0.988 max 3.558, replay 2x IDENTICO).
+- Data/ora: 19/11/2026 09:32-09:52 — Turno 1 (turno 4 di VJ5 oggi).
+- Blocco e passo: V47, VJ5 ∞ review dell'ultimo cambio del @developer in `src/`, con prova VJ1 sul passo V9 lv_04_cromo.
+- File cambiati: `motore_nuovo/test/prova_gate.cpp` (indice del picco ms), `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), una riga in `UFFICIO/bacheche/developer-junior/diario.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto).
+- Diff ispezionata: M `motore_nuovo/src/render/renderer.cpp` (19+/7-, unico file src) — `git status --short`, `git diff --stat -- motore_nuovo/src`, `git diff -- motore_nuovo/src` tutti exit 0.
+- Cambio: in `Renderer::drawSprite` il lambda `texel(tx,ty)` e' diventato `coloreIdx(idx)` (`renderer.cpp:1772-1777`) e la riga sorgente si calcola una volta per riga schermo (`rigaTex = px` `:1782`, `rigaTex = px + (size_t)ty*sw` `:1804`, uso `:1814`; fallback `rigaCerca = px + ry*sw` `:1822-1825`).
+- Rilievo: nessun errore. Stessi indici (`rigaTex[(tx0+tx1)/2] == px[ty*sw+tx]`, `rigaCerca[rx] == px[ry*sw+rx]`), corpo lambda identico a `texel` (`spPal[idx%nPalette]` / `idx==0 ? 0 : pal_[...]`; `spPal` nullptr se palette vuota -> nessuna divisione per 0). Bounds: `tx0 <= sw-1` anche con specchia, `(tx0+tx1)/2 <= (2*sw-1)/2 = sw-1`, `rx < tx1 <= sw`, `ty < sh` -> nessun accesso fuori `pixels`. Scrittura `riga[x0+sx]` e clipp invariati (review turno 3).
+- Semplificazione segnalata: `const u8* rigaTex = px` (`renderer.cpp:1782`) e' inizializzazione morta (riassegnata `:1804` prima dell'unico uso `:1814`) -> dichiararla dentro il ciclo sy.
+- Comando: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0 (build `prova_gate` + ctest 27/27 pass, 275.25 s).
+- Comando: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv04_1911" lv_04_cromo percorso` -> exit 0 (GATE PERCORSO OK, 2125 frame, fuori strada 0).
+- Comando: `UFFICIO/Officina/build/prova_gate ".../vj5_lv04_1911c" lv_04_cromo smoke` -> exit 0 (GATE OK, medio 1.597 max 9.728 al frame 230) e `.../vj5_lv04_1911d` -> exit 0 (GATE OK, medio 1.142 max 3.614 al frame 0); replay 2x IDENTICO. Due run precedenti sotto carico di build avevano max 21.257/22.894 ms: frame identico hash, non riprodotti -> rumore di macchina.
+- Codice di test: aggiunto `Esito::msMaxFrame` + stampa `(frame N)` nei modi smoke e soak di `motore_nuovo/test/prova_gate.cpp` (perimetro test) per diagnosticare il picco; `cmake --build UFFICIO/Officina/build --target prova_gate` -> exit 0.
 - Gate ufficiale: `gate_t1.sh` non eseguito in questo turno.
 - Review: `UFFICIO/out/developer-junior/REVIEW_V47.md` riscritto (richiesto dal passo VJ5). Nessun altro file .md scritto.
