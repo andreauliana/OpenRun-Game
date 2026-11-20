@@ -1,15 +1,12 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 19/11/2026 13:14, Turno 3.
-- Blocco/passo: V9 ∞ fluidita' a giro — lv_05_spray (ventitreesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp (drawSprite: i texel dell'area di ricerca del texel pieno si leggono con un puntatore che avanza di 1 per colonna e di sw per riga, invece di indicizzare rigaCerca[rx] a ogni campione; stessi texel, stesso ordine, frameHash identici).
-- Scopo: alleggerire l'accesso ai texel nel loop di ricerca del renderer senza cambiare la resa.
-- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0 (pre e post).
-- Comando percorso pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_pre" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
-- Comando smoke pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_pre_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.943 ms max 3.340 ms, replay IDENTICO, frameHash 0 4250821778.
-- Comando percorso post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_post" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
-- Comando smoke post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno44_post_smoke" lv_05_spray smoke -> exit 0 "GATE OK" medio 0.957 ms max 3.287 ms, replay IDENTICO, frameHash identici al pre.
-- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; eseguito 19/11/2026 13:14.
-- Comando negato: date "+%d/%m/%Y %H:%M" (Permission denied: shell); ora turno usata 13:14.
-- Regolazione auto del giocatore: nessuna (drawPlayerCar, risolviPosa e costanti intatti).
-- Esito: modifica pixel-identica (frameHash invariati, replay IDENTICO), frame medio ~0.95 ms ben sotto soglia 8 ms. Nessuna review chiesta dal blocco.
-- Prossimo: V9 ∞ lv_06_desktop (ventitreesimo giro).
+# Ultimo turno developer
+- Data/ora: 20/11/2026 11:22 (Turno 1).
+- Blocco e passo: V9 ∞ fluidita' a giro — lv_05_spray (ventiquattresimo giro, turno 50).
+- File cambiati: motore_nuovo/src/render/renderer.cpp — drawSprite: nel loop pixel il controllo `clipAttivo_ && inTubo(scrX, screenYRow)` (che rifaceva bounds check e il prodotto y*WIDTH per pixel) sostituito con `clipTubo && tuboRiga[scrX]`, dove `clipTubo = clipAttivo_ && dentroGalleria_` e' costante in tutto drawSprite e `tuboRiga` e' la base della riga di `tubo_` calcolata una volta per riga schermo. scrX/screenYRow sono gia' ritagliati al framebuffer (syIni/syFin, sxIni/sxFin), dunque sempre in range: stessi pixel ritagliati, frameHash identici, resa invariata.
+- Comando pre build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Comando pre percorso: prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno50_pre" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando pre smoke: prova_gate "...v9_lv05_turno50_pre_smoke" lv_05_spray smoke -> exit 0 "GATE OK", medio 0.809 ms, max 3.390, replay IDENTICO, frameHash 0 4250821778.
+- Comando post build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Comando post percorso: prova_gate "...v9_lv05_turno50_post" lv_05_spray percorso -> exit 0 "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando post smoke: prova_gate "...v9_lv05_turno50_post_smoke" lv_05_spray smoke -> exit 0 "GATE OK", medio 0.796 ms, max 3.184, replay IDENTICO, frameHash identici al pre.
+- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; eseguito il 20/11/2026 alle 11:22 in questo turno (Turno 1).
+- Esito: frame medio ~0.80 ms (< 8 ms), max al frame 0 di caricamento; nessun punto lento da alleggerire. Nessuna review chiesta dal blocco. Prossimo V9 ∞ lv_06_desktop (ventiquattresimo giro).

@@ -242,9 +242,13 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
             drawPila(vicino);
         if (visibile && lontano.luci >= 0 && (lontano.index % LUCI_OGNI_SEG) == 0 && !vicino.carr.doppia)
             drawLuciTerra(vicino);
-        const auto& segsR = road.segments();
-        const bool imbocco = lontano.portale == 4 && !lontano.galleria && !projs_.front().galleria && !segsR.empty() &&
-                             segsR[(size_t)((lontano.index + 1) % (i32)segsR.size())].galleria;
+        // V9 ∞ (20/11, lv_01_neon giro 24): road.segments() e' un getter inline
+        // che ritorna una const reference; qui veniva richiamato a ogni segmento
+        // del ciclo pur avendo `segs` gia' in scope all'inizio di drawRoad.
+        // Riuso `segs`: stessi segmenti, stessa imboccatura di galleria, nessun
+        // cambiamento alla resa o al replay.
+        const bool imbocco = lontano.portale == 4 && !lontano.galleria && !projs_.front().galleria && !segs.empty() &&
+                             segs[(size_t)((lontano.index + 1) % (i32)segs.size())].galleria;
         if (imbocco)
             drawImboccoGalleria(vicino, coperto); // entrata vista da fuori
         else if (lontano.portale == 6) drawCuspideBivio(vicino, coperto);
@@ -346,6 +350,16 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 hwNear = pxNear * Road::ROAD_HALF_WORLD * cur.carr.fattore;
     const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
     const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
+    // V9 ∞ lv_04_cromo giro 24: il centro proiettato di ogni ramo (cNear/cFar)
+    // dipende solo da cur/next e da r, non dalla riga y del trapezio. Calcolarlo
+    // una volta per trapezio invece che a ogni riga evita 2 moltiplicazioni e
+    // 2 addizioni per ramo per riga nel loop caldo. Stessi valori in virgola
+    // mobile: lx/rx (troncature a intero) e la resa restano identici.
+    f32 centroNear[2], centroFar[2];
+    for (i32 r = 0; r < rami; ++r) {
+        centroNear[r] = cur.screenX + cur.carr.centro[r] * pxNear;
+        centroFar[r]  = next.screenX + next.carr.centro[r] * pxFar;
+    }
 
     // Strada sospesa: parapetto basso grigio/bianco al posto del rumble; ai
     // lati niente erba alla quota della strada (il terreno e' gia' stato
@@ -363,6 +377,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const bool bivioAperto = rami == 2;
     const f32 nasoZ = roadCorr_ ? roadCorr_->bivioNasoZ() : 0.0f;
     const u32 lane   = pal_[1];
+    // V9 lv_02 turno47: se calcolare la distanza dall'incrocio dipende solo
+    // da cur/next e dallo stato del livello (invarianti per tutto il trapezio),
+    // non dalla riga y. Lo valutiamo una volta fuori dal ciclo per riga invece
+    // di rivalutare roadCorr_->incroci().empty() a ogni riga. Stessi valori.
+    const bool calcolaIncrocio = roadCorr_ && !sospeso && !galleria && rami == 1
+                                 && !roadCorr_->incroci().empty();
 
     for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
@@ -376,8 +396,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // principale prima e dopo. dInc = distanza dal centro dell'incrocio.
         const f32 invZi = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distI = invZi > 0.0f ? 1.0f / invZi : next.worldZ;
-        const f32 dIncS = (roadCorr_ && !sospeso && !galleria && rami == 1 && !roadCorr_->incroci().empty())
-                              ? roadCorr_->incrocioD(playerZ + distI) : 1e9f;
+        const f32 dIncS = calcolaIncrocio ? roadCorr_->incrocioD(playerZ + distI) : 1e9f;
         const f32 dInc = std::fabs(dIncS);
         const bool incStrada = dInc < Road::INCROCIO_MEZZA;
         const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
@@ -452,15 +471,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         f32 bx0[2] = {0.0f, 0.0f}, bx1[2] = {0.0f, 0.0f};
         if (bivioAperto)
             for (i32 r = 0; r < 2; ++r) {
-                const f32 cN = cur.screenX + cur.carr.centro[r] * pxNear;
-                const f32 cF = next.screenX + next.carr.centro[r] * pxFar;
+                const f32 cN = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
+                const f32 cF = centroFar[r];
                 const f32 c = cF + (cN - cF) * t;
                 bx0[r] = c - hw;
                 bx1[r] = c + hw;
             }
         for (i32 r = 0; r < rami; ++r) {
-            const f32 cNear = cur.screenX + cur.carr.centro[r] * pxNear;
-            const f32 cFar  = next.screenX + next.carr.centro[r] * pxFar;
+            const f32 cNear = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
+            const f32 cFar  = centroFar[r];
             const f32 cx = cFar + (cNear - cFar) * t;
             const i32 lx = (i32)(cx - hw);
             const i32 rx = (i32)(cx + hw);
@@ -1764,6 +1783,13 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         sxFin = std::min(sxFin, clipGx1_ + 1 - x0);
     }
     if (sxFin <= sxIni || syFin <= syIni) return;
+    // V9 ∞ (20/11, lv_05_spray giro 24): clipAttivo_ e dentroGalleria_ sono
+    // costanti per tutto drawSprite. inTubo() rifarebbe a ogni pixel opaque i
+    // controlli di bounds (scrX/screenYRow sono gia' ritagliati al framebuffer
+    // qui sopra, dunque sempre in range) e il prodotto y*WIDTH. Precalcolo qui
+    // la condizione e, per riga, la base della tabella tubo_: il testo per pixel
+    // diventa un solo accesso indicizzato. Stessi pixel ritagliati, stessa resa.
+    const bool clipTubo = clipAttivo_ && dentroGalleria_;
     const i32 sw = s.sprite->width;
     const i32 sh = s.sprite->height;
     const u8* px = s.sprite->pixels.data();
@@ -1775,13 +1801,23 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     // Palette::operator[], quindi indici, immagine e replay non cambiano.
     const i32 palBase = s.paletteBase;
     const u32* const palRaw = pal_.dati();
-    // Colore di un indice di texel; alpha 0 = trasparente.
-    auto coloreIdx = [&](u8 idx) -> u32 {
-        // Palette RGBA di proprietà dello sprite (colori dei cartelloni sponsor).
-        if (spPal) return spPal[idx % nPalette];
-        // Palette del motore: indice 0 = trasparente.
-        return idx == 0 ? 0u : palRaw[(palBase + idx) & 255];
-    };
+    // V9 ∞ (20/11, lv_06_desktop giro 24): la tabella di lookup 256 voci viene
+    // costruita solo quando cambia la configurazione della palette. Ogni voce
+    // contiene esattamente il colore che restituiva coloreIdx(idx): palette RGBA
+    // di proprieta' dello sprite (cartelloni sponsor, `idx % nPalette`) oppure
+    // palette del motore con indice 0 trasparente (`palRaw[(palBase+idx)&255]`).
+    // Il loop piu' caldo fa cosi' una sola lettura in tabella per texel, senza
+    // ramo `if (spPal)`, modulo e maschera. Stessi colori, stessa immagine,
+    // replay identico. La palette del motore e' `const` (contenuti statici).
+    if (colLutPal_ != spPal || colLutBase_ != palBase || colLutNPal_ != nPalette) {
+        colLutPal_ = spPal;
+        colLutBase_ = palBase;
+        colLutNPal_ = nPalette;
+        for (i32 idx = 0; idx < 256; ++idx)
+            colLut_[idx] = spPal ? spPal[idx % nPalette]
+                                 : (idx == 0 ? 0u : palRaw[(palBase + idx) & 255]);
+    }
+    const u32* const colLut = colLut_;
     // V9 ∞ (19/11, lv_04_cromo): ty e' costante dentro una riga schermo, quindi
     // l'indirizzo della riga sorgente (ty * sw) si calcola una volta per riga
     // invece di una moltiplicazione a ogni texel campionato. Stessi indici,
@@ -1807,7 +1843,11 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     }
     i32 screenYRow = y0 + syIni;
     u32* riga = fb_.data() + (size_t)screenYRow * Framebuffer::WIDTH;
-    for (i32 sy = syIni; sy < syFin; ++sy, ++screenYRow, riga += Framebuffer::WIDTH) {
+    // V9 ∞ lv_05_spray (giro 24): base della riga di tubo_ calcolata una volta
+    // per riga schermo (screenYRow e' costante nel ciclo colonna sottostante).
+    const u8* tuboRiga = clipTubo ? (tubo_.data() + (size_t)screenYRow * Framebuffer::WIDTH) : nullptr;
+    for (i32 sy = syIni; sy < syFin; ++sy, ++screenYRow, riga += Framebuffer::WIDTH,
+             tuboRiga = clipTubo ? tuboRiga + Framebuffer::WIDTH : nullptr) {
         // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
         const i32 ty0 = (i32)((i64)sy * sh / h);
         i32 ty1 = (i32)((i64)(sy + 1) * sh / h);
@@ -1842,9 +1882,12 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
         // campi della colonna restano vicini in cache, stessi valori e ordine.
         const ColCamp* pCol = colCamp_;
         for (i32 scrX = x0 + sxIni, scrEnd = scrX + nCol; scrX < scrEnd; ++scrX, ++pCol) {
-            const i32 tx0 = pCol->tx0;
-            const i32 tx1 = pCol->tx1;
-            u32 col = coloreIdx(rigaTex[pCol->txMid]); // V9 ∞ lv_01_neon: indice per colonna
+            u32 col = colLut[rigaTex[pCol->txMid]]; // V9 ∞ lv_06_desktop: lookup diretto
+            // V9 ∞ (20/11, lv_03_foglie giro 24): tx0/tx1 si leggono solo nel
+            // ramo di ricerca del texel pieno (pixel trasparente di sprite
+            // rimpicciolito); prima venivano caricati a ogni colonna anche col
+            // texel centrale opaco, quando il ramo non serviva. Stessi indici,
+            // stessa immagine, replay identico.
             // Sprite rimpicciolito: un pixel schermo copre piu' texel. Se il
             // texel centrale e' trasparente si cerca un texel pieno nel resto
             // dell'area, cosi' i dettagli sottili (il fusto di un palo largo 2 px
@@ -1863,15 +1906,17 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
                 // per riga, invece di indicizzare rigaCerca[rx] a ogni campione.
                 // Stesso ordine di texel (rx su [tx0,tx1), ry su [ty0,ty1)),
                 // stessi colori, stessa immagine e replay identico.
+                const i32 tx0 = pCol->tx0;
+                const i32 largh = pCol->tx1 - tx0; // V9 ∞ lv_03_foglie giro 24: una volta per colonna
                 const u8* pCerca = rigaCercaBase + tx0;
-                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, pCerca += sw) {
-                    const u8* fineRiga = pCerca + (tx1 - tx0);
+                const u8* fineRiga = pCerca + largh; // V9 ∞ lv_03_foglie giro 24: avanza con pCerca
+                for (i32 ry = ty0; (col >> 24) == 0 && ry < ty1; ++ry, pCerca += sw, fineRiga += sw) {
                     for (const u8* q = pCerca; (col >> 24) == 0 && q < fineRiga; ++q)
-                        col = coloreIdx(*q);
+                        col = colLut[*q]; // V9 ∞ lv_06_desktop: lookup diretto
                 }
             }
             if ((col >> 24) == 0) continue; // trasparente (canale alpha nullo)
-            if (clipAttivo_ && inTubo(scrX, screenYRow)) continue; // dietro la parete
+            if (clipTubo && tuboRiga[scrX]) continue; // dietro la parete (V9 ∞ lv_05_spray)
             riga[scrX] = col; // V9 ∞ lv_03_foglie (bounds gia' garantiti dal clip)
         }
     }

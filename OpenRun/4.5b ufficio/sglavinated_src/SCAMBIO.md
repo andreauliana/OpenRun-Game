@@ -2154,3 +2154,51 @@ blocchi fatti [x]: 3
 blocchi da fare [ ]: 2
 
 OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 7 | REVIEWER | 2026-11-19 21:23 | [APERTA]
+OK      sintassi ciclo.sh
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+quota open: 99.4% (8502858 di 8558390 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 3
+blocchi da fare [ ]: 2
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)
+
+### CHECKPOINT 8 | REVIEWER | 2026-11-19 21:26 | [APERTA]
+OK      sintassi ciclo.sh
+OK      sintassi modelli.sh
+OK      sintassi modo_locale.sh
+OK      sintassi set_model.sh
+OK      sintassi start_process_brains.sh
+OK      sintassi verifica.sh
+OK      sintassi vivo.sh
+OK      sintassi run.sh
+OK      nessuna ROM Sega presente
+OK      opencode installato
+OK      comando claude presente (review automatica possibile)
+== TUTTO OK ==
+GATE SCREENSHOT P1 OK
+GATE T1: TUTTO OK
+catalogo: 11 righe, 2 cartelle
+  senza licenza aperta: GRAFICA/font/born2bsporty/Born2bSportyV2.ttf (CC0-1.0 (pubblico dominio))
+quota open: 99.4% (8509006 di 8564538 byte), soglia 50.0%
+bacheche controllate, limite 5.0 MB
+blocchi fatti [x]: 3
+blocchi da fare [ ]: 2
+
+OK (controlli automatici verdi: review del modello saltata, zero crediti)

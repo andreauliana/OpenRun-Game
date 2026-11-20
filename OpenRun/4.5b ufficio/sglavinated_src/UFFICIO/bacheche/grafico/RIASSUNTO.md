@@ -1,11 +1,12 @@
-# RIASSUNTO — @grafico (19/11/2026 13:07, Turno 3, giro 114)
-- **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `GRAFICA/scenari/` e gruppi vs `.sglraw`, coerenza catalogo/raw.
-- **Esito:** tutto allineato, contenuto diverso da convertire 0 (nessuna conversione).
-- **Comandi (exit 0):** `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"`; `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"`.
-- **Dettaglio:** 160 PNG (133 confrontati, 27 non motore); scenari 86 raw, skyline 6 allineati, 0 da rigenerare; altri gruppi 47, 0 da convertire.
-- **Giocatore (area bloccata Andrea):** 10 PNG presenti, mancanti 5 pose `_b`; confronto contenuto saltato.
-- **Catalogo/non catalogati:** 155/155 raw motore tracciati (0 senza voce); 3 PNG non catalogati in `giocatore_pose` (`car-custom*.png`), non toccati.
-- **File turno:** `UFFICIO/bacheche/grafico/diario.md`, `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-- **Gate:** non eseguito (19/11 13:07).
+# RIASSUNTO — @grafico (20/11/2026 11:18, Turno 1, giro 119)
+- **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `.sglraw`, conversione ridisegni di Andrea.
+- **Esito controllo:** `vg3_date_png_raw.py` exit 1 per un solo flag: `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` (`.png.png` di Andrea 10:42); da convertire 0, contenuto diverso 0.
+- **PNG/raw:** 161 PNG in GRAFICA (134 confrontati, 27 non motore), 80 oggetti senza raw 0, skyline 6/6 allineati, altri gruppi 47 raw/45 allineati, png senza raw 1, gruppi raw noti 8/sconosciuti 0.
+- **Blocco residuo:** `lato_furgone_bianco.png.png` non catalogato; il PNG registrato `lato_furgone_bianco.png` (16/11) e il suo raw sono intatti. Non rinominato ne' convertito: serve decisione Andrea.
+- **Catalogo (exit 0):** 155 raw motore / 155 tracciati, 0 senza voce; voci di catalogo con 'raw' 159.
+- **Non catalogati (exit 0):** 4 = 3 `car-custom*` in giocatore_pose (area Andrea) + il `.png.png`.
+- **Giocatore (area bloccata):** 10 PNG, mancanti 5 pose `_b`, confronto contenuto saltato, nessuna conversione.
+- **File turno:** nessun asset/raw cambiato (nulla da convertire); `diario.md`, `RIASSUNTO.md`. `ULTIMO_TURNO.md` non scrivibile (permesso negato).
+- **Gate:** non eseguito (20/11 11:18).
 - **Licenze/Sega:** zero risorse esterne, zero materiale Sega.
-- **Prossimo:** VG3 ∞ — ricontrollare se arrivano PNG Andrea più nuovi o convertibili.
+- **Prossimo:** VG3 ∞ — attendere esito Andrea su `lato_furgone_bianco.png.png`; ricontrollare nuovi PNG.

@@ -498,6 +498,16 @@ private:
     // nella stessa cache line. Stessi valori, stesso ordine, stessa immagine.
     struct ColCamp { i32 tx0, tx1, txMid; bool cerca; };
     ColCamp colCamp_[Framebuffer::WIDTH];
+    // V9 ∞ (20/11, lv_06_desktop giro 24): LUT colore-indice da 256 voci,
+    // ricalcolata solo quando cambia la configurazione della palette (puntatore
+    // palette propria, offset paletteBase, numero colori). Rimuove dal loop piu'
+    // caldo di drawSprite il ramo `if (spPal)`, il modulo `% nPalette` e la
+    // maschera `& 255`: resta una sola lettura in tabella per texel. La resa e'
+    // identica perche' la LUT contiene esattamente i valori di coloreIdx(idx).
+    u32 colLut_[256]{};
+    const u32* colLutPal_ = nullptr; // palette propria (spPal) usata per la LUT
+    i32 colLutBase_ = -1;            // paletteBase usata per la LUT (motore)
+    i32 colLutNPal_ = -1;            // nPalette usato per la LUT (propria)
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

@@ -1,10 +1,11 @@
-# ULTIMO TURNO — @developer-junior (19/11/2026 12:58)
-- **Blocco/passo**: V47 — VJ4 soak lv_01_neon (1/6) + VJ1 prova/review diff src @developer (V9 drawSprite).
-- **File cambiati da me**: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/bacheche/developer-junior/diario.md` (+1 riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`.
-- **Src letto (non modificato)**: M `motore_nuovo/src/render/palette.h` (`dati()`), M `motore_nuovo/src/render/renderer.cpp` (hoist `palBase`/`palRaw`, `palRaw[(palBase+idx)&255]`). **Esito review**: nessun errore (stessa maschera di operator[], idx 0 trasparente, replay IDENTICO).
-- **Comandi ed exit code (19/11 12:58)**:
-  - `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest 27/27, 248.79 s)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv01_soak_1911" lv_01_neon soak` **exit 0** (GATE OK, 30000 frame, replay 2x IDENTICO, ms/frame medio 1.552 max 7.964 frame 12506, nessun crash, caricamento 4.0/3.9 ms, init 11.0/9.4 ms)
-  - `git diff -- motore_nuovo/src/render/palette.h motore_nuovo/src/render/renderer.cpp` **exit 0** (ispezione)
-  - `gate_t1.sh` **non eseguito** (gate non eseguito)
-- **Prossimo**: VJ4 soak lv_02_atomico (2/6). VJ5 ∞ review prossimo diff src @developer.
+# ULTIMO TURNO — @developer-junior (20/11/2026 11:10)
+
+- **Blocco/passo**: V47 VJ4 soak 5/6 su lv_05_spray (+ VJ5: review nuovi hunk src).
+- **File cambiati**: nessuno di prodotto. Solo `UFFICIO/out/developer-junior/REVIEW_V47.md`, questo file, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, una riga in `diario.md`.
+- **Comandi**: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0 (ctest 27/27, 226.78 s; prova_gate ricompilato).
+- **Comandi**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv05_soak_2011" lv_05_spray soak` -> exit 0 (GATE OK).
+- **Misure soak**: 30000 frame, replay 2x IDENTICO, nessun crash, medio 1.486 ms/frame, max 14.066 ms (frame 25351), caricamento 3.7/3.1 ms, init 11.0/8.8 ms, offroad frame 156, 3441 oggetti, 603 cartelloni.
+- **Esito**: PASS (media sotto 20 ms). Max 14.066 ms sopra la soglia V9 di 8 ms: segnalato per V9 lv_05.
+- **VJ5**: nessun errore nei nuovi hunk (`centroNear/centroFar` precalcolati, `calcolaIncrocio` fuori dal ciclo righe, LUT `colLut_`, lazy tx0/tx1); invarianti verificate, replay identico. Semplificazione: `fineRiga = rigaCercaBase + pCol->tx1` elimina `largh`.
+- **Prossimo**: VJ4 soak lv_06_desktop (6/6); VJ5 sul prossimo diff src.
+- `gate_t1.sh`: non eseguito.

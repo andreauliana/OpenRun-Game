@@ -1,7 +1,6 @@
-# RIASSUNTO — @capo (Turno 3, ora 5 di 12, 19/11)
-- Fonti lette: `TAPPE.md`, `ANDREA_REVIEW.md` (**precedenza assoluta**, nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario intoccati; G1/sponsor solo Andrea), `DIREZIONE_ARTISTICA.md`, `CONTROLLO.md`, `AGENTS.md` 4.6, `RICHIESTA_APERTA.md` (MIG1+V47 ∞), `SCAMBIO_RECENTE.md`, checkpoint/handoff.
-- Tappa attiva: **MIG1 [~] + V47 [~]**. Gate T1 storico verde (**CP-006 CHIUSO**). `SCAMBIO_RECENTE` CHK1-3 [APERTE]: controlli automatici verdi (non peer review). Gate non rieseguito dal capo.
-- Handoff: dev V9 lv_04_cromo 23° 19/11 12:52 percorso/smoke exit 0 (2125f/35.4s, medio 1.101 max 3.257 ms, IDENTICO), `gate_t1.sh` exit 0 6/6 → **lv_05_spray 23°**; junior VJ4 soak lv_01_neon 1/6 exit 0 (30000f IDENTICO, medio 1.552 max 7.964 ms) + review diff V9 ok, ctest 27/27 exit 0 → **lv_02 2/6 / VJ5 prossimo diff** (VJ3 4/6); grafico VG3 giro 94 18/11 16:14 3 script exit 0, 0 da convertire.
-- **Checkpoint:** nessun CP chiudibile (no gate+review autore≠revisore in dossier). CHK1-3 auto ≠ peer review. Nessuna chiusura/apertura.
-- **Deleghe 4.6:** @developer V9 lv_05_spray 23° ∞ (`UFFICIO/out/developer/ULTIMO_TURNO.md`, rev. @developer-junior). @developer-junior VJ4 soak lv_02 2/6 e/o VJ5 prossimo diff/VJ3 lv_05-lv_06 (`UFFICIO/out/developer-junior/*`, rev. @developer). @grafico VG3 ∞ (`UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`).
-- **FINITO:** no (∞). **PER_CLAUDE:** no. Domande Andrea: nessuna (DEFAULT; VJ2 non blocca). `RICHIESTA.md`/`SCAMBIO.md` sola lettura. Pi 400 non verificato.
+# RIASSUNTO — @capo (20/11/2026, T1 ora 0/12)
+- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). Gate T1 storico OK (CP-006 CHIUSO). ANDREA_REVIEW prec. ass., nessuna RISPOSTA DI ANDREA nuova, G1 annullato/sponsor solo Andrea, legacy 08/11 intoccata.
+- **Checkpoint:** SCAMBIO_RECENTE CHK 6-8 [APERTE]=controlli automatici verdi, non peer review in dossier. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. Gate non rieseguito dal capo.
+- **Handoff:** dev V9 lv_05_spray 22° 19/11 11:25 + gate_t1 6/6 exit 0 (Officina) / stato prec. lv_04 23°→lv_05 23°: proseguire da `ULTIMO_TURNO developer`. Junior VJ4 soak lv_03 3/6 ok 20/11 10:20 (ctest 27/27) → lv_04 4/6, VJ3 4/6. Grafico VG3 giro 116: bus_rosso convertito, blocco `lato_berlina_verde` senza PNG.
+- **Deleghe:** @developer V9 ∞ (da ULTIMO_TURNO); @developer-junior VJ4 lv_04 4/6, VJ5 ∞, VJ3 lv_05/lv_06; @grafico VG3 ∞ (attendere Andrea su berlina). Autore≠revisore. Dettagli in `UFFICIO/out/capo/STATI_PROPOSTI.md`.
+- **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. No FINITO (∞).
