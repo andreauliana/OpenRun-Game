@@ -1,6 +1,6 @@
-# RIASSUNTO — @capo (20/11/2026, T1 ora 0/12)
-- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). Gate T1 storico OK (CP-006 CHIUSO). ANDREA_REVIEW prec. ass., nessuna RISPOSTA DI ANDREA nuova, G1 annullato/sponsor solo Andrea, legacy 08/11 intoccata.
-- **Checkpoint:** SCAMBIO_RECENTE CHK 6-8 [APERTE]=controlli automatici verdi, non peer review in dossier. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. Gate non rieseguito dal capo.
-- **Handoff:** dev V9 lv_05_spray 22° 19/11 11:25 + gate_t1 6/6 exit 0 (Officina) / stato prec. lv_04 23°→lv_05 23°: proseguire da `ULTIMO_TURNO developer`. Junior VJ4 soak lv_03 3/6 ok 20/11 10:20 (ctest 27/27) → lv_04 4/6, VJ3 4/6. Grafico VG3 giro 116: bus_rosso convertito, blocco `lato_berlina_verde` senza PNG.
-- **Deleghe:** @developer V9 ∞ (da ULTIMO_TURNO); @developer-junior VJ4 lv_04 4/6, VJ5 ∞, VJ3 lv_05/lv_06; @grafico VG3 ∞ (attendere Andrea su berlina). Autore≠revisore. Dettagli in `UFFICIO/out/capo/STATI_PROPOSTI.md`.
+# RIASSUNTO — @capo (20/11/2026, T2 ora 3/12)
+- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). Gate T1 storico OK (CP-006 CHIUSO, non riaprire). ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: nessuna.
+- **Checkpoint:** SCAMBIO_RECENTE checkpoint automatici [APERTE] (controlli verdi, non peer review in dossier). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti (autore≠revisore) registrati → nessuna chiusura.
+- **Handoff:** dev V9 lv_04_cromo 25° 20/11 13:00, `percorso`+`smoke` exit 0, replay IDENTICO, `gate_t1.sh` exit 0 6/6 → lv_05_spray 25°. Junior VJ4 6/6 chiuso; VJ5 13:06 review `renderer.cpp` hwDelta/fattoreDelta, `run_tests.sh` exit 0 27/27, `percorso` lv_04 exit 0. Grafico VG3 giro 116: 43 allineati, blocco `traffico_incrocio/lato_berlina_verde.sglraw` senza PNG (DEFAULT: invariato).
+- **Deleghe:** @developer V9 ∞ lv_05_spray 25°; @developer-junior VJ5 ∞ prossimo diff (VJ3 4/6 lv_05/lv_06 utile); @grafico VG3 ∞ (attendere Andrea su berlina). Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
 - **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. No FINITO (∞).

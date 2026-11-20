@@ -349,16 +349,31 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 pxFar  = next.scale * (Framebuffer::WIDTH / 2.0f);
     const f32 hwNear = pxNear * Road::ROAD_HALF_WORLD * cur.carr.fattore;
     const f32 hwFar  = pxFar  * Road::ROAD_HALF_WORLD * next.carr.fattore;
+    // V9 ∞ (20/11, lv_04_cromo giro 25): le pendenze delle due interpolazioni
+    // lineari per riga — hw = hwFar + (hwNear-hwFar)*t e
+    // fattore = fFar + (fNear-fFar)*t — non dipendono dalla riga y del trapezio.
+    // Calcolarle una volta per trapezio invece che a ogni riga evita una
+    // sottrazione per riga nel loop caldo. Stessi operandi e stesso ordine:
+    // hw e fattore restano gli stessi float, resa e replay IDENTICI.
+    const f32 hwDelta = hwNear - hwFar;
+    const f32 fattoreDelta = cur.carr.fattore - next.carr.fattore;
     const i32 rami = (cur.carr.doppia || next.carr.doppia) ? 2 : 1;
     // V9 ∞ lv_04_cromo giro 24: il centro proiettato di ogni ramo (cNear/cFar)
     // dipende solo da cur/next e da r, non dalla riga y del trapezio. Calcolarlo
     // una volta per trapezio invece che a ogni riga evita 2 moltiplicazioni e
     // 2 addizioni per ramo per riga nel loop caldo. Stessi valori in virgola
     // mobile: lx/rx (troncature a intero) e la resa restano identici.
-    f32 centroNear[2], centroFar[2];
+    f32 centroNear[2], centroFar[2], centroDelta[2];
     for (i32 r = 0; r < rami; ++r) {
         centroNear[r] = cur.screenX + cur.carr.centro[r] * pxNear;
         centroFar[r]  = next.screenX + next.carr.centro[r] * pxFar;
+        // V9 ∞ (20/11, lv_06_desktop giro 25): la differenza cNear-cFar non
+        // dipende dalla riga y. Prima veniva ricalcolata a ogni riga in tre
+        // punti (cxRiga del bivio, cx fuori bivio, ombra del portale), con
+        // una sottrazione per ramo/riga. Calcolata una volta per trapezio,
+        // stessi operandi e stesso ordine -> stessi float, resa e replay
+        // IDENTICI.
+        centroDelta[r] = centroNear[r] - centroFar[r];
     }
 
     // Strada sospesa: parapetto basso grigio/bianco al posto del rumble; ai
@@ -391,11 +406,18 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // di rivalutare roadCorr_->incroci().empty() a ogni riga. Stessi valori.
     const bool calcolaIncrocio = roadCorr_ && !sospeso && !galleria && rami == 1
                                  && !roadCorr_->incroci().empty();
+    // V9 ∞ (20/11, lv_01_neon giro 26): la soglia `giro_ - FASCIA_TERRENO`
+    // della fascia di cambio tema e' invariante per tutto il trapezio. Prima
+    // veniva ricalcolata a ogni riga dentro `misto`; precalcolandola una volta
+    // si risparmia una sottrazione per riga in tappa 2+. Stessi operandi e
+    // stesso ordine -> stessi float, resa e replay IDENTICI.
+    constexpr f32 FASCIA_TERRENO = 9000.0f;
+    const f32 giroMenoFascia = giro_ - FASCIA_TERRENO;
 
     for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
         const f32 t  = (f32)(y - ny) / (f32)dy;
-        const f32 hw = hwFar + (hwNear - hwFar) * t;
+        const f32 hw = hwFar + hwDelta * t; // V9 ∞ giro 25: pendenza precalcolata
         // In galleria niente prato: fuori dalle pareti c'e' la montagna (o il
         // fondo buio visto da dentro), il prato filtrava fra le fette.
         // Incrocio a 90 gradi (Andrea 08/11, citta'): a z costante la strada
@@ -424,9 +446,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // Andrea 11/11 sera: non un taglio netto, i due terreni si incrociano
         // a trama Bayer in una fascia prima della linea (lunga FASCIA_TERRENO).
         // Oltre la linea e' tutto nuovo, cosi' al cambio tappa niente scatti.
-        constexpr f32 FASCIA_TERRENO = 9000.0f;
         const f32 misto = (temaOltreAttivo_ && giro_ > 0.0f)
-                              ? std::clamp((zAvanti - (giro_ - FASCIA_TERRENO)) / FASCIA_TERRENO, 0.0f, 1.0f) : 0.0f;
+                              ? std::clamp((zAvanti - giroMenoFascia) / FASCIA_TERRENO, 0.0f, 1.0f) : 0.0f;
         const bool oltre = misto >= 0.5f;
         const u32 grassNuovoTema = (misto > 0.0f) ? (band ? temaOltre_.erba : temaOltre_.erbaAlt) : 0u;
         u32 grass = grassQui;
@@ -454,7 +475,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
         // restano della misura della strada normale.
-        const f32 fattore = next.carr.fattore + (cur.carr.fattore - next.carr.fattore) * t;
+        const f32 fattore = next.carr.fattore + fattoreDelta * t; // V9 ∞ giro 25: pendenza precalcolata
         const f32 hwBase = (rami == 1 && fattore > 1.0f) ? hw / fattore : hw;
         // Corsie larghe come quelle della strada normale (mezza strada = una
         // corsia): strisce al centro e ogni hwBase verso i bordi. Le corsie
@@ -495,17 +516,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         f32 cxRiga[2] = {0.0f, 0.0f};
         if (bivioAperto)
             for (i32 r = 0; r < 2; ++r) {
-                const f32 cN = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
-                const f32 cF = centroFar[r];
-                const f32 c = cF + (cN - cF) * t;
+                const f32 cF = centroFar[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
+                const f32 c = cF + centroDelta[r] * t; // V9 ∞ lv_06 giro 25: delta precalcolato
                 cxRiga[r] = c;
                 bx0[r] = c - hw;
                 bx1[r] = c + hw;
             }
         for (i32 r = 0; r < rami; ++r) {
-            const f32 cNear = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
-            const f32 cFar  = centroFar[r];
-            const f32 cx = bivioAperto ? cxRiga[r] : cFar + (cNear - cFar) * t;
+            const f32 cFar = centroFar[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
+            const f32 cx = bivioAperto ? cxRiga[r] : cFar + centroDelta[r] * t; // V9 ∞ lv_06 giro 25
             const i32 lx = (i32)(cx - hw);
             const i32 rx = (i32)(cx + hw);
             if (rx < 0 || lx >= Framebuffer::WIDTH) continue; // ramo fuori schermo
@@ -525,11 +544,18 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // dalla carreggiata principale; strisce pedonali sulla
                 // principale (bande parallele alla strada, ancorate al mondo).
                 const f32 pxW = hw / std::max(0.01f, Road::ROAD_HALF_WORLD * fattore); // pixel per unita' mondo
-                if (incStrada && dInc < 45.0f) {
+                // V9 ∞ (20/11, lv_05_spray giro 25): x scorre gia' su tutto
+                // [0,WIDTH) e y e' la riga corrente, quindi i due controlli di
+                // bounds di fb_.put a ogni pixel sono ridondanti. Calcolo la base
+                // della riga una volta e scrivo direttamente; il guard di y resta
+                // fuori dal ciclo (se y non e' visibile fb_.put non scriveva e ora
+                // si salta il blocco). Stessi pixel, stessa resa, replay identico.
+                if (incStrada && dInc < 45.0f && y >= 0 && y < Framebuffer::HEIGHT) {
+                    u32* rigaInc = fb_.data() + (size_t)y * Framebuffer::WIDTH;
                     for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
                         if (x >= lx && x <= rx) continue;
                         const f32 xw = std::fabs(((f32)x - cx) / pxW);
-                        if (std::fmod(xw, 900.0f) < 450.0f) fb_.put(x, y, lane);
+                        if (std::fmod(xw, 900.0f) < 450.0f) rigaInc[x] = lane;
                     }
                 }
                 // Linee di stop della strada perpendicolare (Andrea 08/11): a x
@@ -652,9 +678,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             // per trapezio all'inizio della funzione. Ricalcolarlo qui a ogni
             // riga della fascia d'ombra costava 2 mul + 2 add per riga; riusare
             // i valori precalcolati dava gli stessi float -> stessa resa/replay.
-            const f32 cN = centroNear[0];
             const f32 cF = centroFar[0];
-            const f32 c = cF + (cN - cF) * t;
+            const f32 c = cF + centroDelta[0] * t; // V9 ∞ lv_06 giro 25: delta precalcolato
             const i32 sx0 = std::max(0, (i32)(c - hw * 1.30f)), sx1 = std::min(Framebuffer::WIDTH - 1, (i32)(c + hw * 1.30f));
             u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
             for (i32 x = sx0; x <= sx1; ++x)
@@ -758,14 +783,21 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
             const f32 den = xBordoF - xBordoN;
+            // V9 ∞ (20/11, lv_02_atomico giro 25): sinistra e neonOn dipendono
+            // solo dai bordi della parete e dallo stato dei neon del trapezio,
+            // non dal pixel x. Prima venivano ricalcolati a ogni pixel del muro
+            // della galleria (fino a 320 pixel per riga, piu' righe per fetta);
+            // calcolandoli una volta per parete si risparmiano un confronto e
+            // una selezione per pixel. Stessi bool -> stessi pixel, resa e
+            // replay IDENTICI, frameHash invariato.
+            const bool sinistra = xBordoF > xBordoN;
+            const bool neonOn = sinistra ? neonSxOn : neonDxOn;
             for (i32 x = a0; x <= b0; ++x) {
                 const f32 t = std::abs(den) > 0.5f ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
                 const f32 cieloY = ceilN + (ceilF - ceilN) * t;
                 const f32 terraY = cur.screenY + (next.screenY - cur.screenY) * t;
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
                 const f32 buio = buioN + (buioF - buioN) * t;
-                const bool sinistra = xBordoF > xBordoN;
-                const bool neonOn = sinistra ? neonSxOn : neonDxOn;
                 if (tratto && std::abs(v - 0.16f) < spessN) {
                     fb_.put(x, y, neonOn ? (sinistra ? neonSx : neonDx) : tuboSpento);
                     segnaTubo(x, x, y);

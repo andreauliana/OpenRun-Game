@@ -1,11 +1,11 @@
-# RIASSUNTO — @grafico (20/11/2026 12:41, Turno 2, giro 123)
+# RIASSUNTO — @grafico (20/11/2026 14:08, Turno 3, giro 128)
 - **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `.sglraw`, conversione ridisegni di Andrea.
-- **Esito controlli:** `vg3_date_png_raw.py` exit 1 per un solo flag: `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` (`.png.png` di Andrea 10:42); da convertire 0, contenuto diverso 0.
-- **PNG/raw:** 161 PNG in GRAFICA (134 confrontati, 27 non motore), 80 oggetti senza raw 0, skyline 6/6 allineati, altri gruppi 47 raw/45 allineati, png senza raw 1, png piu' nuovi a pari contenuto 81, gruppi raw noti 8/sconosciuti 0.
+- **Esito controlli (questo turno):** `vg3_date_png_raw.py` exit 1 per un solo flag: `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` (`.png.png` di Andrea 10:42); da convertire 0, contenuto diverso 0.
+- **PNG/raw:** 166 PNG in GRAFICA (134 confrontati, 32 non motore), 80 oggetti senza raw 0, skyline 6/6 allineati, altri gruppi 47 raw/45 allineati, png senza raw 1, png piu' nuovi a pari contenuto 81, gruppi raw noti 8/sconosciuti 0.
 - **Altri controlli:** `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, voci con 'raw' 159); `vg3_png_non_catalogati.py` exit 0 (4 non catalogati: 3 car-custom in giocatore_pose area Andrea + `.png.png`).
 - **Blocco residuo:** `lato_furgone_bianco.png.png` non catalogato; il PNG registrato `lato_furgone_bianco.png` (16/11) e il suo raw sono intatti. Non rinominato ne' convertito: serve decisione Andrea.
 - **Giocatore (area bloccata):** 10 PNG, mancanti 5 pose `_b`, confronto contenuto saltato, nessuna conversione.
 - **File turno:** nessun asset/raw cambiato (nulla da convertire); `diario.md`, `RIASSUNTO.md`. `ULTIMO_TURNO.md` non scrivibile (permesso negato).
-- **Gate:** non eseguito (20/11 12:41).
+- **Gate:** non eseguito (20/11 14:08).
 - **Licenze/Sega:** zero risorse esterne, zero materiale Sega.
 - **Prossimo:** VG3 ∞ — attendere esito Andrea su `lato_furgone_bianco.png.png`; ricontrollare nuovi PNG.
