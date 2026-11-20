@@ -1,8 +1,8 @@
-# RIASSUNTO — @developer-junior (20/11/2026 11:10)
+# RIASSUNTO — @developer-junior (20/11/2026 12:34)
 - **Ruolo**: review/collaudo assegnati, test/diagnosi, fix minimi solo su perimetri esplicitamente autorizzati (no src permanente).
-- **Ultimo**: V47 VJ4 soak lv_05_spray (5/6) PASS; VJ5: rivisti i nuovi hunk src (centroNear/centroFar, calcolaIncrocio, LUT colLut_, lazy tx0/tx1) -> nessun errore.
-- **Prove (20/11 11:10)**: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 226.78 s). `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv05_soak_2011" lv_05_spray soak` exit 0 (GATE OK, 30000 frame, replay 2x IDENTICO, medio 1.486 max 14.066 ms frame 25351, car 3.7/3.1, init 11.0/8.8 ms, offroad 156). `gate_t1.sh` non eseguito.
-- **Rilievo**: max 14.066 ms sopra la soglia V9 (8 ms); il gate limita solo la media (20 ms) -> segnalato per V9 lv_05.
-- **Semplificazione (VJ5)**: `renderer.cpp:~1900` `fineRiga = rigaCercaBase + pCol->tx1` elimina il locale `largh` (algebraicamente identico).
-- **Aperti (miei)**: VJ4 soak lv_06_desktop (6/6) ultimo; poi VJ5 ∞ review prossimo diff src @developer (aperte: chiave LUT senza contenuti palette, init morta `rigaTex` :1799, `screenYRow` solo in `inTubo`).
+- **Ultimo**: VJ5 ∞ review del nuovo hunk `renderer.cpp` (`zebraFondo` zebratura bivio: `lerpColore(road, nero, 0.18f)` calcolato una volta per trapezio `:387` e riusato `:624`, tolto il calcolo per-riga `:616`) — nessun errore, resa/replay invariati (guard `bivioAperto` `:604`, `road`/`bivioAperto` const, `lerpColore` puro). VJ4 chiusa 6/6.
+- **Prove (20/11 12:34)**: `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 232.77 s, prova_gate ricompilato). `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_zebra_2011" lv_02_atomico percorso` exit 0 (GATE PERCORSO OK, 5200 seg, 2476 frame/41.3 s @60 Hz, fuori strada 0, caricamento 5.3 ms, init 13.0 ms). gate_t1.sh non eseguito.
+- **Rilievo minore**: commento `renderer.cpp:407-412` cita ancora "riga 408 (dichiarazione)" (ora `:413`) — documentale, non funzionale; segnalato in REVIEW_V47.
+- **Aperti (miei)**: VJ5 ∞ prosegue (prossimo diff `src/`); VJ4 chiuso 6/6. Aperte storiche: chiave LUT senza contenuti palette, init morta `rigaTex`, `screenYRow` solo in `inTubo`.
+- **Rilievi soak V9 (da turni scorsi)**: picchi max sopra 8 ms su tutti i 6 livelli, peggiore lv_06 95.641 ms (frame 6154).
 - **Vincoli**: gate con data/ora solo se eseguito; RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli.

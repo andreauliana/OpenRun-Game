@@ -1,21 +1,18 @@
-# REVIEW V47 — VJ5 review nuovi hunk src + VJ4 lv_05 soak (20/11/2026 11:10)
+# REVIEW V47 — VJ5 ∞ review del diff V9 `zebraFondo` zebratura bivio (20/11/2026 12:34)
 
-- **Ruolo**: @developer-junior (VJ5 review del diff src del @developer + VJ4 soak 5/6, nessuna modifica a src).
+- **Ruolo**: @developer-junior (review del codice del @developer, nessuna modifica a src).
+- **Blocco**: V47 VJ5 ∞ — ultimo cambio del @developer letto con `git status --short` + `git diff -- motore_nuovo/src/render/renderer.cpp` (exit 0). Unico src modificato: `renderer.cpp`.
 
-## VJ5 — review diff src (nuovo rispetto alle 10:50)
-`git diff -- motore_nuovo/src/render/renderer.cpp motore_nuovo/src/render/renderer.h`: oltre ai due hunk gia' rivisti (drawRoad `segs`, `calcolaIncrocio`), sono presenti:
-- `renderer.cpp:353-362` + `:471-490` (drawSegmentTrapezoid): `centroNear[2]`/`centroFar[2]` precalcolati per trapezio (prima ricalcolati a ogni riga y). **Nessun errore**: `pxNear`/`pxFar` (`:348-349`), `rami` (`:352`), `sospeso`/`galleria` (`:335-338`) sono const prima del ciclo righe (`:387`); gli array sono letti solo per `r < rami` e nel blocco `if (bivioAperto)` dove `bivioAperto == (rami==2)` (`:377`). Stesse espressioni float, stesse troncature `lx/rx`, resa e replay identici (ctest 27/27, soak replay 2x IDENTICO).
-- `renderer.cpp:380-385` + `:399` (drawSegmentTrapezoid): `calcolaIncrocio` fuori dal ciclo righe. **Nessun errore** (gia' rivisto alle 10:50, riconfermato): tutti i termini invarianti per trapezio.
-- `renderer.cpp:1797-1813` + `renderer.h:503-511` (drawSprite): LUT `colLut_[256]` ricostruita solo se cambiano `spPal`/`palBase`/`nPalette`. **Nessun errore** (gia' rivista alle 10:05): ogni voce = vecchio `coloreIdx(idx)`.
-- `renderer.cpp:~1871-1905` (drawSprite): lettura `tx0`/`tx1` spostata nel solo ramo di ricerca del texel pieno, con `largh`/`fineRiga` precalcolati per colonna e `fineRiga += sw`. **Nessun errore**: `fineRiga_r = rigaCercaBase + tx0 + (tx1-tx0) + r*sw = rigaCercaBase + tx1 + r*sw`, identico al vecchio `pCerca + (tx1-tx0)` ricalcolato per riga; stessi texel, stessa immagine.
-- **Semplificazione proposta** (`renderer.cpp:~1898-1901`): eliminare il locale `largh` e scrivere direttamente `const u8* fineRiga = rigaCercaBase + pCol->tx1;` (algebraicamente identico a `pCerca + largh`): risparmia una sottrazione e un add per colonna e un locale.
-- Restano aperte: chiave LUT senza contenuti palette (se `pal_`/`spPal` cambiano in place con stessa chiave la LUT e' stale; oggi non attivo), init morta `rigaTex` (`:1799`), `screenYRow` solo in `inTubo` (`:1884`).
+## VJ5 — review di `motore_nuovo/src/render/renderer.cpp` (nuovo hunk "lv_02_atomico giro 25")
+- Cambio nuovo in questo turno: il fondo della zebratura del bivio `lerpColore(road, 0xFF000000u, 0.18f)` veniva calcolato a ogni riga della fascia (`renderer.cpp:616`, dentro il loop `for y`) con guard `bivioAperto && zAvanti < nasoZ && filaCheck < 0` (`:604`) e `hz > 0.0f` (`:616`). Ora e' calcolato una volta per trapezio come `zebraFondo = bivioAperto ? lerpColore(road, 0xFF000000u, 0.18f) : 0u` (`:387`) e riusato a `:624`. Commento "V9 ∞ 20/11 lv_02_atomico giro 25".
+- **Nessun errore trovato**: il colore e' identico dove usato. `road` (`:373`) e `bivioAperto` (`:377`) sono `const`, calcolati prima del ciclo per-riga e invarianti in tutto il trapezio; `lerpColore` e' puro. `zebraFondo` e' letto solo dentro il blocco guardato da `bivioAperto` (`:604`), dove il ternario vale esattamente `lerpColore(road, nero, 0.18f)`, come prima. Quando `bivioAperto == false` il ramo `0u` non viene mai letto. Stessi operandi/ordine -> stesso u32 -> frecce, bordi bianchi e trama (`:624-632`) invariati -> resa e replay identici. Nessuna mutazione di `road`/`bivioAperto` nel loop.
+- Il diff cumulato vs HEAD include anche l'hoist `zAvanti` (rivisto 11:58) e il riuso `centroNear/Far` nell'ombra portale (rivisto 12:15): la parte **nuova** di questo turno e' solo `zebraFondo`. Nessuna regressione introdotta dai tre insieme: stessi valori floating point in ogni punto di riuso.
+- **Rilievo minore (documentale, con riga)**: il commento all'hoist `zAvanti` (`renderer.cpp:407-412`) cita ancora "a riga 408 (dichiarazione)", ma la dichiarazione e' ora a `:413` e la 408 e' una riga di commento. Segnalato l'11:58 e marcato chiuso il 12:15, ma il testo e' ancora presente: suggerire di accorciare/aggiornare il riferimento. Non e' un errore funzionale (non tocca il codice eseguito).
 
-## VJ4 Soak (20/11 11:10) — lv_05_spray (5/6)
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest 27/27, 226.78 s; `prova_gate` ricompilato prima della prova).
-- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv05_soak_2011" lv_05_spray soak` **exit 0** (GATE OK, 30000 frame, replay 2x IDENTICO, nessun crash; ms/frame medio 1.486, max 14.066 al frame 25351; caricamento 3.7/3.1 ms, init 11.0/8.8 ms; offroad frame 156; 3441 oggetti, 603 cartelloni).
-- Rilievo: max 14.066 ms > soglia V9 (8 ms) ma il gate limita solo la media (20 ms) -> da segnalare per V9 lv_05. Picco piu' basso dei soak lv_03 (39.373) e lv_04 (22.087).
-- `gate_t1.sh` non eseguito.
+## Prove (eseguite in questo turno, 20/11 12:34)
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest 27/27, 232.77 s; `prova_gate` ricompilato prima della prova, come richiesto da VJ5).
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_zebra_2011" lv_02_atomico percorso` **exit 0** (GATE PERCORSO OK; 5200 segmenti, giro guidato finito in 2476 frame = 41.3 s @ 60 Hz, fuori strada 0 frame, caricamento 5.3 ms, init 13.0 ms). lv_02 e' il livello del commento del nuovo hunk e diverso dal lv_01 del turno scorso. Il gate percorso gioca due volte collo stesso seme e verifica identicita' e tempi.
+- `gate_t1.sh` non eseguito questo turno.
 
-## Prossimo
-- VJ4 soak lv_06_desktop (6/6), ultimo della serie. VJ5: review del prossimo diff src del @developer.
+## Stato
+- VJ4 soak chiusa 6/6 nei turni scorsi. VJ5 ∞ prosegue: prossimo turno leggere il differenziale `src/` se cambia di nuovo.

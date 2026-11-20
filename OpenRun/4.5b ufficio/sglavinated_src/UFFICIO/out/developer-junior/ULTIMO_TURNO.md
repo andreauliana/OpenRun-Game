@@ -1,11 +1,14 @@
-# ULTIMO TURNO — @developer-junior (20/11/2026 11:10)
+# ULTIMO TURNO — @developer-junior (20/11/2026 12:34)
 
-- **Blocco/passo**: V47 VJ4 soak 5/6 su lv_05_spray (+ VJ5: review nuovi hunk src).
-- **File cambiati**: nessuno di prodotto. Solo `UFFICIO/out/developer-junior/REVIEW_V47.md`, questo file, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, una riga in `diario.md`.
-- **Comandi**: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> exit 0 (ctest 27/27, 226.78 s; prova_gate ricompilato).
-- **Comandi**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv05_soak_2011" lv_05_spray soak` -> exit 0 (GATE OK).
-- **Misure soak**: 30000 frame, replay 2x IDENTICO, nessun crash, medio 1.486 ms/frame, max 14.066 ms (frame 25351), caricamento 3.7/3.1 ms, init 11.0/8.8 ms, offroad frame 156, 3441 oggetti, 603 cartelloni.
-- **Esito**: PASS (media sotto 20 ms). Max 14.066 ms sopra la soglia V9 di 8 ms: segnalato per V9 lv_05.
-- **VJ5**: nessun errore nei nuovi hunk (`centroNear/centroFar` precalcolati, `calcolaIncrocio` fuori dal ciclo righe, LUT `colLut_`, lazy tx0/tx1); invarianti verificate, replay identico. Semplificazione: `fineRiga = rigaCercaBase + pCol->tx1` elimina `largh`.
-- **Prossimo**: VJ4 soak lv_06_desktop (6/6); VJ5 sul prossimo diff src.
-- `gate_t1.sh`: non eseguito.
+- **Blocco/pass**: V47 VJ5 ∞ — review dell'ultimo cambio del @developer in `src/`, più prova dedicata.
+- **File cambiati (diario/RIASSUNTO/REVIEW/STATUS, non src)**:
+  - `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto: review `zebraFondo`).
+  - `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto).
+  - `UFFICIO/bacheche/developer-junior/diario.md` (una riga).
+  - `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto).
+- **Review**: unico src modificato `motore_nuovo/src/render/renderer.cpp`. Nuovo hunk "lv_02_atomico giro 25": `zebraFondo = bivioAperto ? lerpColore(road, nero, 0.18f) : 0u` una volta per trapezio (`:387`), riusato `:624`; tolto calcolo per-riga `:616`. Nessun errore: guard `bivioAperto` (`:604`), `road`/`bivioAperto` const, `lerpColore` puro → stessi float/colore, resa e replay identici. Rilievo minore documentale: commento `:407-412` cita ancora "riga 408 (dichiarazione)" (ora `:413`).
+- **Comando 1**: `git diff -- motore_nuovo/src/render/renderer.cpp` — exit 0.
+- **Comando 2**: `sh UFFICIO/Officina/TOOL/run_tests.sh` — exit 0 (ctest 27/27, 232.77 s, `prova_gate` ricompilato).
+- **Comando 3**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_zebra_2011" lv_02_atomico percorso` — exit 0 (GATE PERCORSO OK, 5200 seg, 2476 frame/41.3 s @60 Hz, fuori strada 0, caricamento 5.3 ms, init 13.0 ms).
+- **gate_t1.sh**: non eseguito questo turno.
+- **Problemi residui**: rilievo documentale `:407-412` (non funzionale). Aperte storiche: chiave LUT senza contenuti palette, init morta `rigaTex`, `screenYRow` solo in `inTubo`.

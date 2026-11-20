@@ -377,6 +377,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const bool bivioAperto = rami == 2;
     const f32 nasoZ = roadCorr_ ? roadCorr_->bivioNasoZ() : 0.0f;
     const u32 lane   = pal_[1];
+    // V9 ∞ (20/11, lv_02_atomico giro 25): il fondo della zebratura del bivio
+    // non dipende dalla riga y: `road` e' costante per tutto il trapezio e
+    // `bivioAperto` pure. Prima lerpColore(road, nero, 0.18f) veniva richiamato
+    // a ogni riga della fascia di zebratura (solo nei tratti con bivio), con
+    // 3 mix float + overhead di lambda per riga. Calcolandolo una volta per
+    // trapezio si risparmia quel lavoro; stesso colore, stessa immagine,
+    // replay identico.
+    const u32 zebraFondo = bivioAperto ? lerpColore(road, 0xFF000000u, 0.18f) : 0u;
     // V9 lv_02 turno47: se calcolare la distanza dall'incrocio dipende solo
     // da cur/next e dallo stato del livello (invarianti per tutto il trapezio),
     // non dalla riga y. Lo valutiamo una volta fuori dal ciclo per riga invece
@@ -396,7 +404,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // principale prima e dopo. dInc = distanza dal centro dell'incrocio.
         const f32 invZi = (1.0f - t) / next.worldZ + t / cur.worldZ;
         const f32 distI = invZi > 0.0f ? 1.0f / invZi : next.worldZ;
-        const f32 dIncS = calcolaIncrocio ? roadCorr_->incrocioD(playerZ + distI) : 1e9f;
+        // V9 ∞ (20/11, lv_06_desktop giro 24): zAvanti = playerZ + distI e'
+        // invariante in tutto il corpo di riga. Prima veniva ricalcolato qui
+        // (incrocioD), a riga 408 (dichiarazione) e come `playerZ + distance`
+        // per dashPhase e zPista: tre addizioni in piu' per riga nel loop caldo.
+        // Calcolato una volta subito dopo distI e riuso' in tutti i punti,
+        // stessi operandi e stesso ordine -> stessi float, stessa resa.
+        const f32 zAvanti = playerZ + distI;
+        const f32 dIncS = calcolaIncrocio ? roadCorr_->incrocioD(zAvanti) : 1e9f;
         const f32 dInc = std::fabs(dIncS);
         const bool incStrada = dInc < Road::INCROCIO_MEZZA;
         const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
@@ -405,7 +420,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // Oltre il checkpoint (fine della tappa, bivio gia' scelto) terreno e
         // cordoli sono gia' della tappa scelta (Andrea 11/11: il cambio di
         // colori come confine sulla strada, non una dissolvenza generica).
-        const f32 zAvanti = playerZ + distI;
+        // zAvanti e' gia' stato calcolato all'inizio della riga (V9 ∞ giro 24).
         // Andrea 11/11 sera: non un taglio netto, i due terreni si incrociano
         // a trama Bayer in una fascia prima della linea (lunga FASCIA_TERRENO).
         // Oltre la linea e' tutto nuovo, cosi' al cambio tappa niente scatti.
@@ -450,15 +465,16 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // fra segmenti contigui (nessun gradino ai confini).
         i32 rw = (i32)(hwBase * 0.14f);
         if (rw < 1) rw = 1;
-        const f32 distance = distI; // riuso invZi/distI calcolati sopra (V9 lv_05 turno22)
         // Fase ancorata alla pista (playerZ + distanza), come i paletti: le
         // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
-        f32 dashPhase = std::fmod(playerZ + distance, LANE_DASH_CYCLE);
+        // V9 ∞ giro 24: si riusa zAvanti (= playerZ + distI, gia' calcolato a
+        // inizio riga) al posto dell'alias `distance` e della somma ripetuta.
+        f32 dashPhase = std::fmod(zAvanti, LANE_DASH_CYCLE);
         if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
         // Traguardo: tre file di scacchi appena dopo la fine del tracciato.
         i32 filaScacchi = -1;
         if (lineaArrivo_ && giro_ > 0.0f) {
-            f32 zPista = std::fmod(playerZ + distance, giro_);
+            f32 zPista = std::fmod(zAvanti, giro_);
             if (zPista < 0.0f) zPista += giro_;
             if (zPista < LINEA_ARRIVO_PROF) filaScacchi = (i32)(zPista * 3.0f / LINEA_ARRIVO_PROF);
         }
@@ -469,18 +485,27 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             zAvanti < giro_ + Road::CHECK_PROF)
             filaCheck = (i32)((zAvanti - giro_) * 2.0f / Road::CHECK_PROF);
         f32 bx0[2] = {0.0f, 0.0f}, bx1[2] = {0.0f, 0.0f};
+        // V9 ∞ (20/11, lv_03_foglie giro 25): a bivio aperto il centro
+        // proiettato di ogni ramo (c = cF + (cN-cF)*t) veniva calcolato due
+        // volte per riga: qui per bx0/bx1 e di nuovo nel ciclo sottostante per
+        // cx/lx/rx. Stessi operandi e stesso ordine -> lo salvo in cxRiga[] e
+        // lo riuso sotto, eliminando 2 mul + 2 add per ramo/riga nel bivio.
+        // Fuori bivio il ciclo calcola cx come prima. Stessi float, lx/rx e cx
+        // identici, resa e replay IDENTICI.
+        f32 cxRiga[2] = {0.0f, 0.0f};
         if (bivioAperto)
             for (i32 r = 0; r < 2; ++r) {
                 const f32 cN = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
                 const f32 cF = centroFar[r];
                 const f32 c = cF + (cN - cF) * t;
+                cxRiga[r] = c;
                 bx0[r] = c - hw;
                 bx1[r] = c + hw;
             }
         for (i32 r = 0; r < rami; ++r) {
             const f32 cNear = centroNear[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
             const f32 cFar  = centroFar[r];
-            const f32 cx = cFar + (cNear - cFar) * t;
+            const f32 cx = bivioAperto ? cxRiga[r] : cFar + (cNear - cFar) * t;
             const i32 lx = (i32)(cx - hw);
             const i32 rx = (i32)(cx + hw);
             if (rx < 0 || lx >= Framebuffer::WIDTH) continue; // ramo fuori schermo
@@ -600,7 +625,6 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             if (hz > 0.0f) {
                 const i32 x0 = std::max(0, (i32)(mid - hz * pxW));
                 const i32 x1 = std::min(Framebuffer::WIDTH - 1, (i32)(mid + hz * pxW));
-                const u32 zebraFondo = lerpColore(road, 0xFF000000u, 0.18f);
                 const i32 bordoL = std::max(1, rw / 2);
                 for (i32 x = x0; x <= x1; ++x) {
                     const f32 fx = (f32)x;
@@ -623,8 +647,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // quanto il portale, come se la luce venisse da dietro.
         if (temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo() && y < Framebuffer::HEIGHT &&
             zAvanti >= giro_ - 900.0f && zAvanti < giro_ - 250.0f) {
-            const f32 cN = cur.screenX + cur.carr.centro[0] * pxNear;
-            const f32 cF = next.screenX + next.carr.centro[0] * pxFar;
+            // V9 ∞ (20/11, lv_01_neon giro 25): il centro proiettato del ramo 0
+            // (cN/cF) e' lo stesso centroNear[0]/centroFar[0] calcolato una volta
+            // per trapezio all'inizio della funzione. Ricalcolarlo qui a ogni
+            // riga della fascia d'ombra costava 2 mul + 2 add per riga; riusare
+            // i valori precalcolati dava gli stessi float -> stessa resa/replay.
+            const f32 cN = centroNear[0];
+            const f32 cF = centroFar[0];
             const f32 c = cF + (cN - cF) * t;
             const i32 sx0 = std::max(0, (i32)(c - hw * 1.30f)), sx1 = std::min(Framebuffer::WIDTH - 1, (i32)(c + hw * 1.30f));
             u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
