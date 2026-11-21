@@ -5,7 +5,7 @@ Licenza e autore come `../playlist.json` (Andrea Uliana, CC-BY-4.0).
 
 - `Menu.xm` (102 BPM): il brano del **menu**.
 - `MainRace.xm` (168 BPM): il brano della **gara** (prima e seconda tappa).
-- `FinalLevel.xm`: il brano dell'**ultima tappa** della gara a tappe, quella che finisce all'arrivo (Andrea 16/11; voce `"ultima_tappa"` di `../playlist.json`). In corsa singola suona il brano della gara.
+- `Final-Level.xm`: il brano dell'**ultima tappa** della gara a tappe, quella che finisce all'arrivo (Andrea 16/11; voce `"ultima_tappa"` di `../playlist.json`). In corsa singola suona il brano della gara.
 - Il motore li suona con **libxmp-lite** (inclusa in `motore_nuovo/terzeparti/`, si compila col gioco: niente Homebrew).
 - Quale brano va dove: `../playlist.json`, voce `"menu"` (uno), lista `"gara"` e voce `"ultima_tappa"` (facoltativa).
 - Con piu' brani di gara, cambiano a ogni tappa, a giro; ogni nuova gara parte dal brano successivo. Il tasto R (o Start+B sul pad) passa al prossimo. A schermo c'e' solo lo spettro, senza titolo.
