@@ -1,4 +1,4 @@
-# OpenRun 4.6 — regole operative
+# OpenRun 4.7 — regole  
 
 Queste regole si applicano agli agenti OpenCode avviati da `sglavinated_src/`. Le decisioni riservate ad Andrea restano ad Andrea. Gli agenti non leggono né modificano `../../OutRun/`, l'area personale `../`, l'area esterna a questa folder 'sglavinated_src', o i comandi riservati al utente Andrea senza autorizzazione esplicita.
 
@@ -19,16 +19,16 @@ sglavinated_src/
 │       ├── ENGINE COMPILER/         # destinazione dei sorgenti di prodotto
 │       ├── build/                   # output generato, mai modificato a mano
 │       └── Test area/               # test, log e prove
-└── UFFICIO/Checkpoint Revision/             # revisioni aggregate, scrittura del Capo
+└── UFFICIO/Checkpoint Revision/     # revisioni aggregate, scrittura del Capo
 ```
 
 `4.5b ufficio/` e i suoi `comandi/` restano l'area di Claude e revisione 'esterna' AI, fuori dal perimetro operativo degli agenti OpenCode. `../ANDREA/` è privata.
 
-## Migrazione graduale
+## Migrazione
 
-La struttura 4.6 è attiva per ruoli, review, checkpoint e output di build/test. In questa prima fase i sorgenti non vengono spostati: CMake e gli strumenti esistenti usano `motore_nuovo/` e `GRAFICA/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/` (la vecchia `tools/` in radice non esiste più). 
-**Cartelle (Andrea 08/11):** si scrive solo dentro `UFFICIO/` (la tua bacheca `UFFICIO/bacheche/<ruolo>/`, le tue uscite `UFFICIO/out/<ruolo>/`, Officina, Dipartimento Grafico) e in `motore_nuovo/` quando il blocco lo chiede. Vietato creare cartelle nuove o file alla radice di `sglavinated_src/`; niente file .md in `motore_nuovo/test/`.
-**Grafica (Andrea 16/11, legacy):** `GRAFICA/` contiene solo gli originali che il gioco usa (elenco: `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`). Ogni PNG usato ha il suo `.sglraw` in `motore_nuovo/dati/sprite_raw/` e una voce in `CATALOGO_GRAFICO.json`. Vietato rimettere varianti, anteprime o bozze non caricate dal gioco; vietato ricreare le cartelle tolte il 16/11. La musica sta in `motore_nuovo/dati/audio/musica/*.xm` (i progetti tracker sono questi file) e la tocca solo Andrea.
+La struttura 4.7 è attiva per ruoli, review, checkpoint e output di build/test. CMake e gli strumenti esistenti usano `motore_nuovo/` e `GRAFICA/`; gli script di build/test (`gate_t1.sh`, `run_tests.sh`, `check_sdl_init.sh`) stanno in `UFFICIO/Officina/TOOL/`. 
+**Cartelle:** si scrive solo dentro `UFFICIO/` (la tua bacheca `UFFICIO/bacheche/<ruolo>/`, le tue uscite `UFFICIO/out/<ruolo>/`, Officina, Dipartimento Grafico) e in `motore_nuovo/` quando il blocco lo chiede. Vietato creare cartelle nuove o file alla radice di `sglavinated_src/`; niente file .md in `motore_nuovo/test/`.
+**Grafica (legacy):** `GRAFICA/` contiene solo gli originali che il gioco usa (elenco: `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md`). Ogni PNG usato ha il suo `.sglraw` in `motore_nuovo/dati/sprite_raw/` e una voce in `CATALOGO_GRAFICO.json`. Vietato rimettere varianti, anteprime o bozze non caricate dal gioco. La musica sta in `motore_nuovo/dati/audio/musica/*.xm` (divisa in ) e la tocca solo Andrea.
 
 **Chi scrive dove (Andrea 08/11, permessi in `.opencode/agents/`):**
 | Ruolo | Scrive | Legge |
@@ -96,4 +96,4 @@ Il gate configura e compila il sorgente ancora in `motore_nuovo/`; build, log, s
 
 ## Memoria operativa
 
-I materiali v4.5 in `UFFICIO/bacheche/collaudatore/`, `UFFICIO/bacheche/ricercatore/`, `UFFICIO/bacheche/sviluppatore/`, `UFFICIO/bacheche/grafico/`, `UFFICIO/out/collaudatore/`, `UFFICIO/out/sviluppatore/`, `UFFICIO/out/grafico/` e `UFFICIO/out/ricercatore/` sono stati archiviati in `archivio_v4/bacheche/` e `archivio_v4/out/` il 19 ottobre 2026 (ristrutturazione 4.6 Studio). Questi percorsi sono storici e non assegnano permessi attuali. `archivio_v4/` è un archivio congelato: regole, task, log e output della v4 non attivano lavoro o permessi 4.6. Reimportare solo requisiti ancora validi e verificati nel codice/documentazione corrente; non cancellare o modificare i documenti storici. I nuovi ruoli usano i propri percorsi di consegna (`UFFICIO/bacheche/<ruolo>/`, `UFFICIO/out/<ruolo>/`): `capo`, `developer`, `developer-junior`, `grafico`. `RICHIESTA.md` e `SCAMBIO.md` restano documenti gestiti da Andrea e Claude; gli agenti non li modificano.
+I materiali v4.5 in `UFFICIO/bacheche/collaudatore/`, `UFFICIO/bacheche/ricercatore/`, `UFFICIO/bacheche/sviluppatore/`, `UFFICIO/bacheche/grafico/`, `UFFICIO/out/collaudatore/`, `UFFICIO/out/sviluppatore/`, `UFFICIO/out/grafico/` e `UFFICIO/out/ricercatore/` sono stati archiviati in `archivio_v4/bacheche/` e `archivio_v4/out/` il 19 ottobre 2026 ( 4.7). Questi percorsi sono storici e non assegnano permessi attuali. `archivio_v4/` è un archivio congelato. Non cancellare o modificare i documenti storici. I nuovi ruoli usano i propri percorsi di consegna (`UFFICIO/bacheche/<ruolo>/`, `UFFICIO/out/<ruolo>/`): `capo`, `developer`, `developer-junior`, `grafico`. `RICHIESTA.md` e `SCAMBIO.md` restano documenti gestiti da Andrea e Claude; gli agenti non li modificano.

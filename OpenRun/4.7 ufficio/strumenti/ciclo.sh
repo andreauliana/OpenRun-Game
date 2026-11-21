@@ -60,7 +60,7 @@ oc() {
 }
 mkdir -p UFFICIO/archivio_per_claude; [ -f .marker_review ] || touch .marker_review
 [ -f .marker_checkpoint ] || touch .marker_checkpoint
-# Ruoli 4.6 (file in .opencode/agents/). I tag v4.5 di RICHIESTA.md si traducono con ruolo_46().
+# Roles 4.7 (file: .opencode/agents/).
 AGENTI_ATTIVI="${AGENTI_ATTIVI:-developer developer-junior grafico}"
 REVISORE="${REVISORE:-developer-junior}"
 echo "$AGENTI_ATTIVI" > .agenti_attivi   # letto dal pannello
@@ -99,7 +99,7 @@ checkpoint() {
   { echo; echo "### CHECKPOINT $chk | REVIEWER | $(date '+%F %H:%M') | [APERTA]"; echo "$AUTO"; echo; echo "$R"; } >> SCAMBIO.md
   C=""
   if [ "${CHK_CLAUDE_OGNI:-0}" -gt 0 ] && command -v claude >/dev/null 2>&1 && [ $(( chk % CHK_CLAUDE_OGNI )) -eq 1 ]; then
-    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto OpenRun 4.6. Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Ruoli attivi: capo, developer, developer-junior, grafico. Se un agente rende poco: 'CAMBIA_MODELLO: <nome-agente-4.6>' (usa esattamente uno di questi nomi)." --allowedTools "Read,Grep,Glob" 2>&1)"
+    C="$(claude --model "${CLAUDE_CHK_MODEL:-haiku}" -p "Sei il revisore superiore del progetto OpenRun 4.7. Sola lettura. Leggi SCAMBIO.md (ultimo checkpoint), RICHIESTA.md, ANDREA_REVIEW.md, AGENTS.md. Rispondi in italiano, breve: VERDETTO (OK/CORREGGI/FERMA); max 5 punti con file:riga; istruzioni per capo. Ruoli attivi: capo, developer, developer-junior, grafico. Se un agente rende poco: 'CAMBIA_MODELLO: <nome-agente-4.7>' (usa esattamente uno di questi nomi)." --allowedTools "Read,Grep,Glob" 2>&1)"
     { echo; echo "### CHECKPOINT $chk | CLAUDE CLI -> CAPO | $(date '+%F %H:%M') | [APERTA]"; echo "$C"; } >> SCAMBIO.md
   else
     echo "[ciclo] $(date '+%d/%m %H:%M') review Claude spenta (CHK_CLAUDE_OGNI=0, salva i tuoi crediti): solo review interna"
@@ -212,13 +212,13 @@ ok_limite() { rl_n=0; cambi_limite=0; }
 
 agenti_liberi() {
   # agenti con almeno un blocco aperto ([ ] o [~]) in RICHIESTA.md, in ordine
-  # Ruoli 4.6: capo, developer, developer-junior, grafico (come .opencode/agents/).
+  # Ruoli 4.7: capo, developer, developer-junior, grafico (come .opencode/agents/).
   # Tag vecchi ancora accettati per compatibilita':
   #   sviluppatore, builder-developer               -> developer
   #   collaudatore, developer-builder-junior,
   #   builder-developer-junior                      -> developer-junior
   #   designer                                      -> grafico
-  #   ricercatore                                   -> (nessun agente attivo in 4.6)
+  #   ricercatore                                   -> (nessun agente attivo in 4.7)
   # Gestisce anche blocchi con più tag: tutti vengono estratti.
   awk '/^## BLOCCO/ {
     ags = ""
@@ -243,7 +243,7 @@ agenti_liberi() {
   }' RICHIESTA.md | awk '!s[$0]++' \
     | awk -v att=" $AGENTI_ATTIVI " 'index(att, " " $0 " ")' \
     | while read -r ag; do [ -f ".opencode/agents/$ag.md" ] && echo "$ag"; done
-  # Default 4.6: developer, developer-junior e grafico
+  # Default 4.7: developer, developer-junior e grafico
   # (per escludere il grafico: AGENTI_ATTIVI="developer developer-junior").
 }
 
@@ -336,7 +336,7 @@ while [ "$n" -lt "$MAX_CICLI" ]; do
   estratti
   if [ "$n" -gt 1 ] && [ $((n % 3)) -ne 0 ]; then echo "[ciclo] $(date '+%d/%m %H:%M') capo: salto (v4.5: il capo lavora un giro su tre), lavorano gli agenti"; true
   else turno_capo=$turno; OC_TIMEOUT="${CAPO_TIMEOUT:-1500}"; ML attivo && OC_TIMEOUT="${GIRO_TIMEOUT_LOCALE:-2400}"
-  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), DIREZIONE_ARTISTICA.md, CONTROLLO.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in UFFICIO/Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi UFFICIO/out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.6 di AGENTS.md: developer, developer-junior, grafico; percorsi UFFICIO/out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare; se una domanda ha gia' RISPOSTA DI ANDREA, vale quella e mai il DEFAULT. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
+  if oc --agent capo "Turno $turno (ora $ore di $MAX_ORE). Leggi solo: TAPPE.md, ANDREA_REVIEW.md (precedenza assoluta), DIREZIONE_ARTISTICA.md, CONTROLLO.md, AGENTS.md (unica fonte di regole), RICHIESTA_APERTA.md, SCAMBIO_RECENTE.md. Lavora solo sulla tappa attiva e sul suo Gate. Se gate e review di un checkpoint sono registrati, chiudilo in UFFICIO/Checkpoint Revision/ (CP, REGISTRO_REVISIONI, STATO_CORRENTE). Riscrivi UFFICIO/out/capo/STATI_PROPOSTI.md con stati proposti e deleghe (ruoli 4.7 di AGENTS.md: developer, developer-junior, grafico; percorsi UFFICIO/out/<ruolo>/). Domande ad Andrea in ANDREA_REVIEW.md sempre con un DEFAULT, poi prosegui senza aspettare; se una domanda ha gia' RISPOSTA DI ANDREA, vale quella e mai il DEFAULT. Se sei bloccato scrivi PER_CLAUDE.md e fermati. Se tutti i blocchi della tappa sono [x] crea FINITO. RICHIESTA.md e SCAMBIO.md sono di sola lettura. Percorsi relativi, mai cd. Risposta breve."; then fail=0; ok_limite
   elif ML attivo; then echo "[ciclo] $(date '+%d/%m %H:%M') capo in errore in locale: niente pausa per limite (in locale non ci sono crediti), riprova al prossimo giro"
   else fail=$((fail+1)); echo "[ciclo] $(date '+%d/%m %H:%M') errore opencode ($fail)"; [ "$fail" -ge 2 ] && { pausa=$((pausa+1)); [ "$pausa" -gt 24 ] && { echo "[ciclo] $(date '+%d/%m %H:%M') troppi errori: mi fermo"; break; }; pausa_limite; fail=0; }; fi
   OC_TIMEOUT=2400; fi

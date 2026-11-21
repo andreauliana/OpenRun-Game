@@ -1,13 +1,11 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 21/11/2026 08:30 (Turno 1).
-- Blocco/pass: V9 ∞ fluidita' a giro — lv_04_cromo (ventiseiesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp — drawTerraSospesa, ramo spiaggia (rampa/ponte/discesa di lv_04).
-- Modifica: `sogliaBayerSfuma = sfuma*16` calcolata una volta per fetta; confronto per pixel `(BAYER4[y&3][x&3]+0.5f) < sogliaBayerSfuma` al posto di `((BAYER4+0.5f)/16.0f) < sfuma`. Divisione e prodotto per 16 esatti (potenze di 2): stessa resa.
-- Nota ambiente: cartella workspace rinominata 4.5b->4.7 ufficio a meta' turno; sessione spostata; prepara_build.sh ha accantonato la build con cache a vecchi path assoluti e ricreato UFFICIO/Officina/build.
-- Build: cmake -S/-B + --target prova_gate dentro gate_t1.sh -> exit 0.
-- Comando: sh UFFICIO/Officina/TOOL/gate_t1.sh — exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK".
-- gate_t1.sh eseguito in questo turno, 21/11/2026 08:30.
-- Misure lv_04_cromo: smoke medio 0.863 ms, max 3.589 ms (frame 0), replay 2x IDENTICO; percorso 2125 frame / 35.4 s / 0% fuori.
-- Verifica resa: frameHash 0 = 4118572995, identico al riferimento storico turno 58 -> resa e replay IDENTICI, nessuna regressione.
-- Log: UFFICIO/Officina/Test area/gate_t1.log (righe 262-283, lv_04_cromo).
-- Prossimo: V9 ∞ lv_05_spray (ventiseiesimo giro).
+# Ultimo turno developer
+- Data/ora: 21/11/2026 10:05 (Turno 1).
+- Blocco e passo: V9 ∞ fluidita' a giro — lv_05_spray (ventiseiesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp — parete lambda della galleria, precalcolato `neonColore = sinistra ? neonSx : neonDx` una volta per parete (prima ricalcolato in due punti per pixel); -2 selezioni/pixel, stessi pixel/resa/replay.
+- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Comando pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_pre_smoke" lv_05_spray smoke -> exit 0, "GATE OK", medio 0.825 max 2.355 ms, frameHash 0 2783217120, replay IDENTICO.
+- Comando post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_post_smoke" lv_05_spray smoke -> exit 0, "GATE OK", medio 0.794 max 1.510 ms, frameHash identico al pre, replay IDENTICO.
+- Comando percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_post" lv_05_spray percorso -> exit 0, "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
+- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; nessuna riga FALLITO in gate_t1.log. Gate eseguito in questo turno il 21/11/2026 alle 10:05.
+- Esito: resa invariata (frameHash 2783217120 identico pre/post), replay IDENTICO, nessuna regressione; medio ~0.79 ms ben sotto 8 ms (Pi 400 <= 12 ms).
+- Prossimo: V9 ∞ lv_06_desktop (ventiseiesimo giro).

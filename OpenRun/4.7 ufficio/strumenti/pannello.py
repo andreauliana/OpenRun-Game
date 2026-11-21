@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Pannello di progresso (sola lettura). Uso: python3 strumenti/pannello.py [--porta 8088] [--solo-locale]
-Il controller V4 usa la porta 8090; avvio manuale predefinito 8088. Solo libreria standard."""
+"""Pannello di progresso. 
+Uso: python3 strumenti/pannello.py [--porta 8088] [--solo-local]
+Il controller V4.7"""
 import json, os, re, subprocess, time, argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 BASE = os.environ.get("V3_BASE") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 BASE = os.path.abspath(BASE)
 S = os.path.join(BASE, "sglavinated_src")
-AGENTI = ["capo","developer","developer-junior","grafico"]  # ruoli 4.6 Studio
+AGENTI = ["capo","developer","developer-junior","grafico"]  # roles 4.7
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 DATA_LOG = re.compile(r"(?<!\d)(\d{1,2})/\d{1,2}(?:/\d{2,4})?(\s+\d{2}:\d{2})(?!\d)")
 
@@ -151,7 +152,7 @@ def stato():
             "decisioni_aperte": len(re.findall(r"^## (?:D\d+|A\d+|T1-Q\d+)[^\n]*\[APERTA\]", leggi("ANDREA_REVIEW.md"), re.M))}
 
 PAGINA = r"""<!doctype html><html lang=it><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Pannello OpenRun 4.6</title><style>
+<title>Pannello OpenRun 4.7</title><style>
 :root{--bg:#0f1115;--fg:#e6e6e6;--mut:#8a93a2;--ok:#4caf7d;--wait:#e0a93b;--bad:#e5534b;--card:#181b21;--line:#262b33}
 @media(prefers-color-scheme:light){:root{--bg:#f5f6f8;--fg:#1c1f26;--mut:#5b6472;--card:#fff;--line:#e3e6ea}}
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif}
@@ -179,7 +180,7 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.4 ui-monospa
 .feed .t{color:var(--mut);min-width:64px}.feed .a{color:var(--wait);min-width:76px}
 svg{width:100%;height:60px;display:block}.run{animation:pulse2 1.1s infinite}
 </style>
-<h1>OpenRun 4.6 Studio · pannello <span id=ver class="b ok"></span> <span id=ora class=mut></span></h1>
+<h1>OpenRun 4.7 · Panel <span id=ver class="b ok"></span> <span id=ora class=mut></span></h1>
 <div class=g><div class="c w"><div class=hero><div class=big id=big></div><div><div id=titolo style="font-size:20px;font-weight:600">...</div><div id=sotto class=mut></div></div></div>
 <div class=bar><i id=prog style="width:0"></i></div><div id=progt class=mut></div></div>
 <div class=c><h2>Blocchi aperti</h2><div class=tw><table id=bl></table></div></div>
@@ -204,7 +205,7 @@ document.getElementById('ver').textContent=[d.ver.versione,'tappa '+d.ver.tappa,
 document.getElementById('big').className='big '+d.generale;
 const n=d.processi.in_corso.map(x=>x.nome);
 document.getElementById('titolo').textContent=T[d.generale]+(n.length?': '+n.join(', '):'');
-document.title=(d.generale=='lavora'||d.generale=='attivo'?'● ':'○ ')+'OpenRun 4.6 '+d.generale;
+document.title=(d.generale=='lavora'||d.generale=='attivo'?'● ':'○ ')+'OpenRun 4.7 '+d.generale;
 document.getElementById('sotto').textContent='ultimo file scritto '+fa(d.ultima_modifica_sec)+' fa · log aggiornato '+fa(d.log_sec)+' fa · opencode '+d.processi.opencode+' · ciclo '+d.processi.ciclo+' · decisioni aperte '+d.decisioni_aperte;
 const done=d.blocchi.filter(b=>b.stato==='[x]').length,tot=d.blocchi.length||1;
 document.getElementById('prog').style.width=(100*done/tot)+'%';

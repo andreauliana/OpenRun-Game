@@ -808,6 +808,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             // replay IDENTICI, frameHash invariato.
             const bool sinistra = xBordoF > xBordoN;
             const bool neonOn = sinistra ? neonSxOn : neonDxOn;
+            // V9 ∞ (21/11, lv_05_spray giro 26): il colore del neon dipende solo
+            // dal lato della parete (neonSx/neonDx sono costanti del trapezio),
+            // non dal pixel x. Prima la selezione `sinistra ? neonSx : neonDx`
+            // veniva rifatta in due punti dentro il ciclo per pixel (tubo e
+            // alone); calcolandola una volta per parete si risparmiano due
+            // selezioni per pixel nel tubo della galleria. Stesso u32 -> stessi
+            // pixel, resa e replay IDENTICI, frameHash invariato.
+            const u32 neonColore = sinistra ? neonSx : neonDx;
             for (i32 x = a0; x <= b0; ++x) {
                 const f32 t = std::abs(den) > 0.5f ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
                 const f32 cieloY = ceilN + (ceilF - ceilN) * t;
@@ -815,14 +823,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
                 const f32 buio = buioN + (buioF - buioN) * t;
                 if (tratto && std::abs(v - 0.16f) < spessN) {
-                    fb_.put(x, y, neonOn ? (sinistra ? neonSx : neonDx) : tuboSpento);
+                    fb_.put(x, y, neonOn ? neonColore : tuboSpento);
                     segnaTubo(x, x, y);
                     continue;
                 }
                 u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
                 // Alone del neon sul cemento: mezza luce a trama sotto e sopra il tubo.
                 if (tratto && neonOn && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
-                    c = lerpColore(c, sinistra ? neonSx : neonDx, 0.35f);
+                    c = lerpColore(c, neonColore, 0.35f);
                 if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.03f && v < 0.97f) {
                     // Sul muro di destra chi legge ha davanti il fondo alla sua
                     // sinistra: la scritta comincia dal lontano.
