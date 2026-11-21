@@ -1,5 +1,5 @@
 {
-  "nome": "PLAYER",
+  "nome": "ANDYER",
   "classifica": [
     {"nome": "PLAYER", "punti": 1035, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 1030, "data": "0000-00-00"},
@@ -13,6 +13,6 @@
     {"nome": "PLAYER", "punti": 793, "data": "0000-00-00"}
   ],
   "classifica_singola": [
-
+    {"nome": "ANDYER", "punti": 37, "data": "0000-00-00"}
   ]
 }
