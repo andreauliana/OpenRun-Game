@@ -1,6 +1,6 @@
-# RIASSUNTO — @capo (21/11/2026, T1 ora 0/12)
+# RIASSUNTO — @capo (21/11/2026, T1 ora 1/12)
 - **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-006 CHIUSO, non riaprire. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: nessuna.
 - **Checkpoint:** SCAMBIO_RECENTE CHK auto [APERTE] (controlli verdi, non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti (autore≠revisore) registrati → nessuna chiusura. CP-002/003/004 APERTI.
-- **Handoff:** dev V9 lv_04_cromo 27° 21/11 11:08 smoke/percorso exit 0, replay IDENTICO, gate_t1 exit 0 6/6 → lv_05_spray 27°. Junior VJ5 21/11 11:13 review `shiftSchiuma` renderer.cpp, run_tests exit 0 27/27, percorso lv_04 exit 0; VJ3 4/6, VJ4 6/6. Grafico VG3 giro 133 21/11 11:17, 0 da convertire, blocco `lato_furgone_bianco.png.png` (DEFAULT: attendere Andrea).
-- **Deleghe:** @developer V9 ∞ lv_05_spray 27°; @developer-junior VJ5 ∞ prossimo diff (VJ3 4/6 utile); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
+- **Handoff:** dev V9 lv_01_neon 28° 21/11 11:48 smoke/percorso exit 0, replay IDENTICO, gate_t1 exit 0 6/6 (lv_01 medio 0.714 max 6.480 ms) → lv_02_atomico 28°. Junior VJ5 21/11 11:50 review `drawTerraSospesa` onde riga, run_tests exit 0 27/27, percorso lv_01 exit 0; VJ3 4/6, VJ4 6/6. Grafico VG3 giro 136 21/11 11:56, 0 da convertire, blocco `lato_furgone_bianco.png.png` (DEFAULT: attendere Andrea).
+- **Deleghe:** @developer V9 ∞ lv_02_atomico 28°; @developer-junior VJ5 ∞ prossimo diff (VJ3 4/6 utile); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
 - **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. Nessun FINITO (∞).

@@ -36,3 +36,4 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-21 | — | T1(0/12)@capo:allineati STATI/STATO/RIASS/diario;CHK auto non peer;gate no;0 CP. V9→lv03,VJ5 next,VJ3 4/6,VG3 blocco. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |
 | 2026-11-21 | — | T1(0/12)@capo:STATI_PROPOSTI riscritto;no gate+review indie→0 CP chiusi. | APERTO (MIG1[~],V47[~]) | UFFICIO/out/capo/STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-21 | — | T1(0/12)@capo:CHK auto non peer;gate no;0 CP. Dev V9 lv04 27°→lv05,jr VJ5 shiftSchiuma ok,gf VG3 g133 furgone. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |
+| 2026-11-21 | — | T1(1/12)@capo:CHK auto non peer;gate capo no;0 CP. Dev V9 lv01 28°→lv02 gate_t1 6/6,jr VJ5 onde ok,gf VG3 g136. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |

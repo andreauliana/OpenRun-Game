@@ -300,15 +300,29 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
             if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
             else {
                 u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                // V9 ∞ (21/11, lv_04_cromo giro 28): BAYER4[y & 3] e' invariante
+                // per tutta la riga di spiaggia (come per la battigia qui sotto).
+                // Prima l'indirizzo della riga della trama veniva ricalcolato a
+                // ogni pixel della battigia sfumata; precalcolato una volta per
+                // riga: stessi indici Bayer, stessi pixel, resa e replay IDENTICI.
+                const u8* bayerRigaSpiaggia = BAYER4[y & 3];
                 for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
-                    riga[x] = (f32)BAYER4[y & 3][x & 3] + 0.5f < sogliaBayerSfuma ? prato : sabbia;
+                    riga[x] = (f32)bayerRigaSpiaggia[x & 3] + 0.5f < sogliaBayerSfuma ? prato : sabbia;
             }
             continue;
         }
         if (schiuma) { // battigia: schiuma bianca a trama sul mare
             u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+            // V9 ∞ (21/11, lv_03_foglie giro 28): la riga della trama Bayer
+            // (`BAYER4[y & 3]`) e' invariante per tutta la riga di schiuma, e
+            // `tema_.acqua` e' costante per tutto il frame. Prima venivano
+            // riletti a ogni pixel della battigia (fino a 320 pixel per riga,
+            // piu' righe per fetta). Precalcolati una volta per riga: stessi
+            // indici Bayer, stesso colore, resa e replay IDENTICI.
+            const u8* bayerRiga = BAYER4[y & 3];
+            const u32 acquaCol = tema_.acqua;
             for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
-                riga[x] = BAYER4[y & 3][(x + shiftSchiuma) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
+                riga[x] = bayerRiga[(x + shiftSchiuma) & 3] < 8 ? 0xFFF0F4F8u : acquaCol;
             continue;
         }
         fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
@@ -862,12 +876,23 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             // selezioni per pixel nel tubo della galleria. Stesso u32 -> stessi
             // pixel, resa e replay IDENTICI, frameHash invariato.
             const u32 neonColore = sinistra ? neonSx : neonDx;
+            // V9 ∞ (21/11, lv_02_atomico giro 28): il test su den e le differenze
+            // usate per interpolare lungo la parete dipendono solo dal trapezio e
+            // dai bordi della parete, non dal pixel x. Prima venivano ricalcolati
+            // (un abs e quattro sottrazioni) a ogni pixel del muro della galleria.
+            // Calcolati una volta per parete: stessi operandi e stesso ordine ->
+            // stessi float, resa e replay IDENTICI.
+            const bool denValido = std::abs(den) > 0.5f;
+            const f32 ceilDelta = ceilF - ceilN;
+            const f32 terraDelta = next.screenY - cur.screenY;
+            const f32 buioDelta = buioF - buioN;
+            const f32 giornoDelta = giornoF - giornoN;
             for (i32 x = a0; x <= b0; ++x) {
-                const f32 t = std::abs(den) > 0.5f ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
-                const f32 cieloY = ceilN + (ceilF - ceilN) * t;
-                const f32 terraY = cur.screenY + (next.screenY - cur.screenY) * t;
+                const f32 t = denValido ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
+                const f32 cieloY = ceilN + ceilDelta * t;
+                const f32 terraY = cur.screenY + terraDelta * t;
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
-                const f32 buio = buioN + (buioF - buioN) * t;
+                const f32 buio = buioN + buioDelta * t;
                 if (tratto && std::abs(v - 0.16f) < spessN) {
                     fb_.put(x, y, neonOn ? neonColore : tuboSpento);
                     segnaTubo(x, x, y);
@@ -884,7 +909,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.03f) / 0.94f, x, y);
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
-                fb_.put(x, y, luceEsterna(c, giornoN + (giornoF - giornoN) * t, x, y));
+                fb_.put(x, y, luceEsterna(c, giornoN + giornoDelta * t, x, y));
                 segnaTubo(x, x, y);
             }
         };

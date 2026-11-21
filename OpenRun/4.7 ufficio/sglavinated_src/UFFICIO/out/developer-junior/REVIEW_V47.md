@@ -1,19 +1,18 @@
-# REVIEW V47 — VJ5 ∞ review dell'hoist dei riflessi delle onde (21/11/2026 11:50)
+# REVIEW V47 — VJ5 ∞ hoist riga Bayer spiaggia sfumata (21/11/2026 12:38)
 
-- **Ruolo**: @developer-junior (review del codice del @developer, nessuna modifica a src).
-- **Blocco**: V47 VJ5 ∞ — ultimo cambio del @developer in `src/`. `git status --short`: unico M in `src/` e' `motore_nuovo/src/render/renderer.cpp` (gli altri M sono documenti di coordinamento); `git diff -- motore_nuovo/src/render/renderer.cpp` exit 0. Il diff ha cinque hunk gia' noti (`sogliaBayerSfuma`, `shiftSchiuma` 11:13, `hshFila` 10:29, `limiteStrisce` 11:37, `incStrisce` 11:26); il NUOVO in questo turno e' l'ultimo, segnato "V9 ∞ (21/11, lv_01_neon giro 28)". Livello/file diverso dal turno prima (`lv_06_desktop`/`drawSegmentTrapezoid` -> `lv_01_neon`/`drawTerraSospesa`).
+- **Ruolo**: @developer-junior (review codice @developer, nessuna modifica a src).
+- **Blocco**: V47 VJ5 ∞. `git status --short`: unico M src `motore_nuovo/src/render/renderer.cpp` (altri M: coordinamento; D `GRAFICA/scenari/lv_04_cromo/skyline.png` preesistente). `git diff -- motore_nuovo/src/render/renderer.cpp` exit 0: 3 hunk. Nuovo rispetto al turno 12:25: primo hunk `bayerRigaSpiaggia` in `drawTerraSospesa` ramo spiaggia sfumata :303-310, lv_04_cromo giro 28 (livello diverso da lv_03_foglie/schiuma del turno prima). Secondo hunk schiuma :316-325 e terzo parete :876-912 gia' rivisti (12:25, 12:09), invariati.
 
-## VJ5 — review di `renderer.cpp`, hunk "V9 ∞ (21/11, lv_01_neon giro 28)"
-- Cambio nuovo in `drawTerraSospesa` (`renderer.cpp:331-348`): il loop dei riflessi sul mare scriveva `fb_.put(x, y, riflesso)` per pixel; ora il guard di y e' fuori dal ciclo (:337), la base della riga `fb_.data() + (size_t)y*WIDTH` e' calcolata una volta (:338) e si scrive `rigaOnde[x] = riflesso` (:346). Stessa idea degli hoist `incStrisce`/hline segnalati in passi precedenti.
-- **Nessun errore trovato**: il loop `for (x=0; x<WIDTH; ++x)` (:339) garantisce x in [0,319], quindi i controlli x di `put` (`x<0 || x>=WIDTH`, framebuffer.cpp:18) erano sempre falsi; il guard `y>=0 && y<HEIGHT` (:337) e' esattamente il controllo y di `put` (framebuffer.cpp:18); `data()` (framebuffer.h:26) restituisce la stessa `buf_` che `put` scrive, e `(size_t)y*WIDTH+x` induce lo stesso indice (max 223*320+319=71679 < 71680, nessun overflow). La riga e' gia' dipinta da `fb_.hline(0,WIDTH-1,y,acqua)` (:314) subito sopra, come dice il commento. I calcoli `xw`/`cellaF`/`cella`/`hsh`/`dentro` (:340-345) sono puri e senza effetti collaterali: saltarli quando y e' fuori schermo non cambia stato. Resa e replay IDENTICI, coerente con `hshFila` (:330), `sogliaBayerSfuma` (:286) e `shiftSchiuma` (:292).
-- **Semplificazione (con riga)**: `renderer.cpp:331-336` — commento di 6 righe per due righe di codice; accorciabile a 1-2 righe nello stile degli altri commenti V9.
-- **Nota sul guard**: `a0 = max((i32)next.acquaY, orizzonte_)` e `a1 = min((i32)cur.acquaY, HEIGHT-1)` (:269-270); `orizzonte_` e' ~112 (HORIZON_Y, renderer.h:399, + beccheggio a :91), quindi y e' normalmente in [~112,223] e il guard non scatta mai. E' ridondante ma innocuo e conserva la semantica esatta di `put` se in futuro i limiti cambiassero. Non funzionale.
-- **Rilievo documentale persistente**: il commento all'hoist `zAvanti` (`renderer.cpp:460`) cita ancora "a riga 408 (dichiarazione)"; la dichiarazione e' ora a :464 (:408 e' `grassQui`). Segnalato piu' volte, fuori da questo hunk e non tocca codice eseguito.
+## VJ5 — review `renderer.cpp:303-310` (spiaggia sfumata, lv_04_cromo giro 28)
+- Cambio: nel ramo `spiaggia && !schiuma` con `sfuma > 0.0f` hoista `bayerRigaSpiaggia = BAYER4[y & 3]` (:308) e lo riusa a :310 al posto di `BAYER4[y & 3][x & 3]` riletto a ogni pixel.
+- **Nessun errore trovato**: `y` e' la variabile del ciclo esterno `for (i32 y = a0; y <= a1; ++y)` (:298), costante nel ciclo x interno; `BAYER4` e' `constexpr u8[4][4]` (renderer.cpp:20), non mutata. Stessa espressione `(f32)bayerRigaSpiaggia[x & 3] + 0.5f < sogliaBayerSfuma ? prato : sabbia`, stessi operandi/ordine, indicizzazione intera e cast f32 identici -> resa/replay IDENTICI. Coerente con gli hoist Bayer gia' presenti in battigia schiuma (:322) e con lo schema delle righe precalcolate in `drawTerraSospesa`.
+- **Semplificazione (riga)**: `renderer.cpp:303-307` commento 5 righe per 1 riga di hoist; accorciabile. Nome `bayerRigaSpiaggia` distinto da `bayerRiga` del ramo schiuma e' chiaro (rami separati da `continue`), nessun problema.
+- **Nota**: rilievo doc persistente `renderer.cpp:477` cita "riga 408" (fuori hunk).
 
-## Prove (eseguite in questo turno, 21/11 11:50)
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest 27/27, 142.73 s; `prova_gate` ricompilato prima della prova, come richiede VJ5).
-- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv01_neon_onde_riga_2111" lv_01_neon percorso` **exit 0** (GATE PERCORSO OK; 4540 segmenti, giro guidato 1989 frame = 33.2 s @ 60 Hz, fuori strada 0, caricamento 6.8 ms, init 14.8 ms).
-- `gate_t1.sh` non eseguito questo turno.
+## Prove (21/11 12:38)
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 8** (ctest 26/27, 147.65 s; `prova_gate` ricompilato). UNICO FAIL: `gate_decorazioni` — `lv_04_cromo: id 'skyline.futurista' non risolto (file inesistente GRAFICA/scenari/lv_04_cromo/skyline.png)`, coerente con `D GRAFICA/scenari/lv_04_cromo/skyline.png` preesistente; non causato da questo hunk renderer.
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv04_cromo_spiaggia_bayer_2111" lv_04_cromo percorso` **exit 0** (GATE PERCORSO OK, 4840 seg, 2125 frame/35.4 s @60 Hz, fuori strada 0, car 3.7 ms, init 11.0 ms).
+- `gate_t1.sh` non eseguito.
 
 ## Stato
-- VJ4 soak chiusa 6/6. VJ5 ∞ prosegue: prossimo turno rileggere l'ultimo cambio `src/` se cambia di nuovo (livello/file diverso da `lv_01_neon`/`drawTerraSospesa`). ctest 27/27 verde qui; la flakiness replay nei sottmodi smoke segnalata il 21/11 10:20 resta sotto osservazione (qui non riparsa).
+- VJ4 chiusa 6/6. VJ5 ∞ prosegue: prossimo turno rileggere ultimo cambio `src/` se cambia (livello/file diverso da `lv_04_cromo`/`drawTerraSospesa` spiaggia sfumata). Fail gate_decorazioni da skyline lv_04 mancante preesistente. Flakiness smoke/spike storici sopra target Pi 400 12 ms.

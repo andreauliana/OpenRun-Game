@@ -1,11 +1,11 @@
-# RIASSUNTO — @grafico (21/11/2026 11:56, Turno 1, giro 136)
+# RIASSUNTO — @grafico (21/11/2026 12:30, Turno 1, giro 138)
 - **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `.sglraw`, conversione ridisegni di Andrea.
-- **Esito controlli (questo turno):** `vg3_date_png_raw.py` exit 1 per un solo flag: `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` (`.png.png` Andrea 20/11 10:42); da convertire 0, contenuto diverso 0. Nessun cambiamento dal giro 135.
-- **PNG/raw:** 166 PNG in GRAFICA (134 confrontati, 32 non motore), 80 oggetti senza raw 0, skyline 6/6 allineati, altri gruppi 47 raw/45 allineati, png senza raw 1, png piu' nuovi a pari contenuto 81, gruppi raw noti 8/sconosciuti 0.
-- **Altri controlli:** `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, voci 'raw' 159); `vg3_png_non_catalogati.py` exit 0 (4 non catalogati: 3 car-custom giocatore_pose area Andrea + `.png.png`).
-- **Blocco residuo:** `.png.png` e 3 car-custom in giocatore_pose: area Andrea, non toccati; PNG/raw registrati intatti. Serve decisione Andrea.
+- **Stato:** due flag noti, entrambi in area Andrea, nessuno azionabile da qui: `GRAFICA/scenari/lv_04_cromo/skyline.png` MANCANTE (raw presente, gioco OK, sfondo di Andrea non rigenerato, serve ripristino/decisione); `lato_furgone_bianco.png.png` (Andrea 20/11 10:42) senza raw ne' voce catalogo.
+- **Esito controlli (questo turno):** `vg3_date_png_raw.py` exit 1 per i due flag sopra; `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce); `vg3_png_non_catalogati.py` exit 0 (4 non catalogati: 3 car-custom giocatore_pose area Andrea + `.png.png`).
+- **Da convertire 0**, contenuto diverso 0, nessuna conversione eseguita.
+- **PNG/raw:** 165 PNG in GRAFICA (133 confrontati, 32 non motore); 80 oggetti senza raw 0; skyline 5/6 allineati + 1 senza PNG (lv_04_cromo), 0 da rigenerare; altri gruppi 47 raw/45 allineati, png senza raw 1; png piu' nuovi a pari contenuto 81; gruppi raw noti 8/sconosciuti 0.
+- **Blocco residuo:** skyline lv_04_cromo mancante, `.png.png` e 3 car-custom in giocatore_pose: area Andrea, non toccati, in attesa decisione/ripristino Andrea.
 - **Giocatore (area bloccata):** raw pose 15, 10 PNG presenti (pose base 5, stop 5), mancanti 5 pose `_b`, confronto contenuto saltato, nessuna conversione (regola bloccata auto Andrea).
-- **File turno:** nessun asset/raw/catalogo cambiato (nulla da convertire); `diario.md`, `RIASSUNTO.md` e `STATUS_GRAFICO_PER_CAPO.md` riscritti; `ULTIMO_TURNO.md` non scrivibile (permesso negato, mapping AGENTS.md: grafico = STATUS).
-- **Gate:** non eseguito (21/11 11:56).
-- **Licenze/Sega:** zero risorse esterne, zero materiale Sega.
-- **Prossimo:** VG3 ∞ — attendere esito Andrea su `lato_furgone_bianco.png.png`; ricontrollare nuovi PNG.
+- **File turno:** nessun asset/raw/catalogo cambiato; `diario.md`, `RIASSUNTO.md` e `STATUS_GRAFICO_PER_CAPO.md` riscritti; `ULTIMO_TURNO.md` non scrivibile (permesso negato).
+- **Gate:** non eseguito (21/11 12:30). Licenze/Sega: zero risorse esterne, zero materiale Sega.
+- **Prossimo:** VG3 ∞ — segnalare ad Andrea/Capo lo skyline lv_04_cromo mancante; attendere esito su `lato_furgone_bianco.png.png`; ricontrollare nuovi PNG.
