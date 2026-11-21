@@ -1,12 +1,13 @@
 # Ultimo turno developer (max 15 righe)
-- Data/ora: 20/11/2026 14:13 (Turno 3).
-- Blocco/passso: V9 ∞ fluidita' a giro — lv_02_atomico (venticinquesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp (parete lambda della galleria: hoist di `sinistra`/`neonOn` fuori dal ciclo per pixel).
-- Scopo: alleggerire il muro della galleria di lv_02 senza cambiare la resa (valori invarianti per parete ricalcolati a ogni pixel).
+- Data/ora: 21/11/2026 08:18 (Turno 1).
+- Blocco/passso: V9 ∞ fluidita' a giro — lv_03_foglie (ventiseiesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp (drawSegmentTrapezoid, fascia di cambio tema: hoist della soglia Bayer)`.
+- Scopo: alleggerire il blend di cambio tema di lv_03 (18 checkpoint) senza cambiare la resa: la divisione per 16 del confronto Bayer, invariante per riga, passa da per-pixel a per-riga.
+- Metodo: `sogliaBayer = misto * 16.0f` calcolata una volta per riga; confronto `(f32)BAYER4[y&3][x&3] + 0.5f < sogliaBayer`. Divisione per 16 e prodotto per 16 sono esatti (potenze di 2), quindi esito di `<` identico, stessi pixel.
 - Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- Comando smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno62_post_smoke" lv_02_atomico smoke -> exit 0 "GATE OK", medio 0.793 max 3.168 ms (frame 0), replay IDENTICO, frameHash 0 1240481121 = riferimento storico (resa invariata).
-- Comando percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno62_post" lv_02_atomico percorso -> exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
-- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK". Eseguito il 20/11/2026 alle 14:13 in questo turno.
-- Misure lv_02 nel gate: smoke medio 0.794 max 3.125 ms; 2476 frame, 0% fuori. Tutti i livelli replay IDENTICO.
-- Regressioni: nessuna; frameHash invariato, resa e replay identici.
-- Prossimo: V9 ∞ lv_03_foglie (venticinquesimo giro).
+- Comando pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno63_pre_smoke" lv_03_foglie smoke -> exit 0 "GATE OK", medio 0.900 max 3.340 ms (frame 0), replay IDENTICO, frameHash 0 3593059909 (riferimento storico).
+- Comando smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno63_post_smoke" lv_03_foglie smoke -> exit 0 "GATE OK", medio 0.897 max 3.253 ms (frame 0), replay IDENTICO, frameHash identici al pre.
+- Comando percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_turno63_post" lv_03_foglie percorso -> exit 0 "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
+- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK". Eseguito il 21/11/2026 alle 08:18 in questo turno.
+- Regressioni: nessuna; frameHash invariato, resa e replay identici su tutti i 6 livelli.
+- Prossimo: V9 ∞ lv_04_cromo (ventiseiesimo giro).

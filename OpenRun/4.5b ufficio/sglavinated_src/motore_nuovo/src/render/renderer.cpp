@@ -469,8 +469,16 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 fb_.hline(tx0, tx1, y, cordolo ? 0xFF55555Eu : (band ? 0xFF9A9AA4u : 0xFF8E8E98u));
             } else if (misto > 0.0f && misto < 1.0f && y < Framebuffer::HEIGHT) {
                 u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                // V9 ∞ (21/11, lv_03_foglie giro 26): `misto` non dipende da x,
+                // quindi la soglia di confronto della trama Bayer e' invariante
+                // per riga. Prima la divisione `/16.0f` veniva rifatta a ogni
+                // pixel; confronto `(BAYER4 + 0.5)` con `misto*16` calcolato una
+                // volta per riga. Sia la divisione per 16 che il prodotto per 16
+                // sono esatti (potenze di 2), quindi il confronto (`<`) da' lo
+                // stesso esito: stessi pixel, resa e replay IDENTICI.
+                const f32 sogliaBayer = misto * 16.0f;
                 for (i32 x = tx0; x <= tx1; ++x)
-                    riga[x] = ((f32)BAYER4[y & 3][x & 3] + 0.5f) / 16.0f < misto ? grassNuovoTema : grassQui;
+                    riga[x] = (f32)BAYER4[y & 3][x & 3] + 0.5f < sogliaBayer ? grassNuovoTema : grassQui;
             } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
