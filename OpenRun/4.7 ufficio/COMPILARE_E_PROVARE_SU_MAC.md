@@ -10,7 +10,7 @@ brew install cmake sdl2 sdl2_image
 
 ## Ogni volta: entra nella cartella giusta
 ```sh
-cd ~/Documents/GitHub/OpenRun-Game/"OpenRun/4.5b ufficio/sglavinated_src"
+cd ~/Documents/GitHub/OpenRun-Game/"OpenRun/4.7 ufficio/sglavinated_src"
 ```
 Tutti i comandi qui sotto partono da questa cartella (`sglavinated_src`), non da `motore_nuovo`.
 

@@ -116,7 +116,7 @@ if(EMSCRIPTEN)
     target_compile_options(openrun PRIVATE "SHELL:-sUSE_SDL=2")
     # Dati del gioco nel pacchetto openrun.data, allo stesso percorso del desktop
     # (/sglavinated_src/motore_nuovo/dati). Fuori i documenti e il brano non usato.
-    # Il percorso del repo ha uno spazio ("4.5b ufficio"): si passa da un link
+    # Il percorso del repo ha uno spazio ("4.7 ufficio"): si passa da un link
     # nella cartella di build, cosi' il percorso sulla riga di comando e' relativo.
     file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/dati" "${CMAKE_CURRENT_BINARY_DIR}/dati_web" SYMBOLIC)
     set(SGL_DATI_WEB "dati_web@/sglavinated_src/motore_nuovo/dati")
