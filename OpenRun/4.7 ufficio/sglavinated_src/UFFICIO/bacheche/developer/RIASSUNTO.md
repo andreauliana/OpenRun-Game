@@ -1,10 +1,9 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 21/11/2026 10:37 (Turno 1).
-- Blocco: V9 ∞ fluidita' lv_02_atomico (ventisettesimo giro).
-- File codice: motore_nuovo/src/render/renderer.cpp (drawSkyline: colore per texel invariante per frame — `palettePropria`, `nPalette`, `s.paletteBase`, palette motore costanti — ma ramo, modulo `% nPalette` e lettura membro rifatti a ogni pixel (~320*h/frame); precalcolata LUT 256 voci una volta per chiamata, `colLut[idx]` per u8; stessi colori delle due espressioni, resa e replay IDENTICI).
+- Data/ora: 21/11/2026 11:48 (Turno 1).
+- Blocco: V9 ∞ fluidita' lv_01_neon (ventottesimo giro).
+- File codice: motore_nuovo/src/render/renderer.cpp (drawTerraSospesa, riflessi onde: fb_.put(x,y,riflesso) rifaceva due controlli di bounds e il prodotto y*WIDTH a ogni riflesso sparso su tutto il mare; x gia' in [0,WIDTH) e riga gia' dipinta da hline, quindi base riga precalcolata fuori dal ciclo con guard di y e scrittura diretta rigaOnde[x] — stessi pixel, resa e replay IDENTICI, frameHash 0 3594390208).
+- Pre: smoke lv_01_neon exit 0 "GATE OK" medio 0.583 max 2.728 ms (frame 0), replay IDENTICO, frameHash 0 3594390208.
 - Build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 exit 0.
-- Pre-smoke: prova_gate lv_02_atomico smoke exit 0 "GATE OK" medio 0.602 max 0.897 ms (frame 156), replay IDENTICO, frameHash 0 2554766201.
-- Post-smoke: prova_gate lv_02_atomico smoke exit 0 "GATE OK" medio 0.593 max 0.875 ms (frame 156), replay IDENTICO, frameHash identico al pre (2554766201).
-- Percorso: prova_gate lv_02_atomico percorso exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
-- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh eseguito 21/11/2026 10:37 -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (lv_02_atomico smoke medio 0.603 max 1.142 ms; nessuna riga FALLITO).
-- Esito: frameHash invariato, replay IDENTICO, nessuna regressione; medio ~0.59-0.60 ms (< 8 ms, Pi 400 <= 12 ms). Prossimo V9 ∞ lv_03_foglie (ventisettesimo giro).
+- Post: smoke exit 0 "GATE OK" medio 0.593 max 2.911 ms (frame 0), replay IDENTICO, frameHash identici al pre; percorso exit 0 "GATE PERCORSO OK" (1989 frame, 33.2 s, 0% fuori).
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh eseguito 21/11/2026 11:48 -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (lv_01_neon smoke medio 0.714 max 6.480 ms frame 89; nessuna riga FALLITO).
+- Esito: frameHash invariato, replay IDENTICO, nessuna regressione; ms/frame < 8 ms (Pi 400 limite 12 ms). Prossimo V9 ∞ lv_02_atomico (ventottesimo giro).

@@ -1,13 +1,11 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 21/11/2026 10:37, Turno 1.
-- Blocco/pass: V9 ∞ fluidita' a giro — lv_02_atomico (ventisettesimo giro), passo successivo del "Tocca a".
-- File cambiati: motore_nuovo/src/render/renderer.cpp (drawSkyline).
-- Cosa: il colore del texel dipende solo da `idx` (0..255); `palettePropria`, `nPalette`, `s.paletteBase` e `pal_.dati()` sono invarianti per tutto drawSkyline, ma ramo + modulo `% nPalette` + lettura membro venivano rifatti a ogni pixel (~320*h per frame). LUT 256 voci costruita una volta per chiamata, indicizzata con `colLut[idx]`; stessi colori delle espressioni originali (idx==u8, maschera &255 identica), stessi pixel.
-- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- Pre-smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_pre_smoke" lv_02_atomico smoke -> exit 0 "GATE OK", medio 0.602 max 0.897 ms (frame 156), replay 2x IDENTICO, frameHash 0 2554766201.
-- Post-smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_post_smoke" lv_02_atomico smoke -> exit 0 "GATE OK", medio 0.593 max 0.875 ms (frame 156), replay 2x IDENTICO, frameHash identico al pre (2554766201).
-- Percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_post_percorso" lv_02_atomico percorso -> exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori strada).
-- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (lv_02_atomico smoke medio 0.603 max 1.142 ms); nessuna riga FALLITO in "UFFICIO/Officina/Test area/gate_t1.log".
-- Gate eseguito in questo turno il 21/11/2026 alle 10:37.
-- Esito: resa e replay IDENTICI (frameHash invariato), nessuna regressione; ms/frame ben sotto 8 ms (max 1.142), Pi 400 <= 12 ms.
-- Prossimo: V9 ∞ lv_03_foglie (ventisettesimo giro).
+# Ultimo turno developer (21/11/2026 11:48, Turno 1)
+- Blocco/passo: V9 ∞ fluidita' a giro — lv_01_neon (ventottesimo giro).
+- File cambiato: motore_nuovo/src/render/renderer.cpp (drawTerraSospesa, riflessi onde sul mare: fb_.put(x,y,riflesso) rifaceva due controlli di bounds e il prodotto y*WIDTH a ogni riflesso; x gia' in [0,WIDTH) e riga gia' dipinta da hline, quindi base riga precalcolata fuori dal ciclo con guard di y e scrittura diretta rigaOnde[x] — stessi pixel, resa e replay IDENTICI, frameHash 0 3594390208 invariato).
+- Comando 1: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno69_pre_smoke" lv_01_neon smoke -> exit 0 "GATE OK", medio 0.583 max 2.728 ms (frame 0), replay IDENTICO, frameHash 0 3594390208.
+- Comando 2: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
+- Comando 3: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno69_post_smoke" lv_01_neon smoke -> exit 0 "GATE OK", medio 0.593 max 2.911 ms (frame 0), replay IDENTICO, frameHash identici al pre.
+- Comando 4: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno69_post_percorso" lv_01_neon percorso -> exit 0 "GATE PERCORSO OK" (1989 frame, 33.2 s, 0% fuori).
+- Comando 5: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK", nessuna riga FALLITO; lv_01_neon smoke medio 0.714 max 6.480 ms (frame 89).
+- Misura chiave: lv_01_neon smoke medio 0.714 max 6.480 ms (limite 20; Pi 400 <= 12 ms), ben sotto 8 ms.
+- Gate eseguito in questo turno: si', 21/11/2026 11:48 (gate_t1.sh).
+- Esito: nessuna regressione, resa e replay IDENTICI. Prossimo: V9 ∞ lv_02_atomico (ventottesimo giro).

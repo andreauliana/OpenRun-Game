@@ -1,13 +1,12 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (21/11/2026 10:35, Turno 1)
-- **Stato:** V47 VG3 ∞ (giro 130). Tutto allineato: nessun ridisegno nuovo da convertire. Resta 1 PNG residuo senza raw in attesa di decisione Andrea. `ULTIMO_TURNO.md` non riscrivibile (permesso negato: write/edit), come gia' segnato il 18/11 e il 20/11: questo status resta l'unico handoff aggiornato.
+# STATUS_GRAFICO_PER_CAPO — @grafico (21/11/2026 11:42, Turno 1)
+- **Stato:** V47 VG3 ∞ (giro 135). Tutto allineato: nessun ridisegno nuovo da convertire. Restano i noti residui in area Andrea in attesa di decisione. `ULTIMO_TURNO.md` non riscrivibile (permesso negato su write/edit),come gia' segnato il 18/11, 20/11 e stamattina: questo status resta l'unico handoff aggiornato.
 - **Materiali modificati (dati):** nessun asset/raw cambiato in questo turno (nulla da convertire). Testo: una riga in `diario.md`, `RIASSUNTO.md` riscritto, questo status riscritto.
 - **Catalogo/licenze:** `CATALOGO_GRAFICO.json` non modificato; zero risorse esterne, zero materiale Sega, provenienza invariata.
-- **Comandi ed exit code (eseguiti in questo turno, 21/11 10:35):**
+- **Comandi ed exit code (eseguiti in questo turno, 21/11 11:42):**
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1 (solo flag `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` = `.png.png` Andrea 20/11 10:42; 166 PNG, 134 confrontati, 32 non motore; 80 oggetti senza raw 0; skyline 6/6 allineati; altri gruppi 47 raw, 45 allineati, da convertire 0, png senza raw 1; contenuto diverso 0; png piu' nuovi a pari contenuto 81; gruppi raw noti 8, sconosciuti 0; giocatore 10 PNG, mancanti 5 pose `_b`, confronto saltato).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155 raw motore / 155 tracciati, 0 senza voce; voci con 'raw' 159).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (4 non catalogati: 3 `car-custom*` in `giocatore_pose` area Andrea + `lato_furgone_bianco.png.png`).
-  - `ls -la "UFFICIO/out/grafico/"` e `ls -l "GRAFICA/sprite/traffico_incrocio/"` — exit 0 (confermato `.png.png` 20/11 10:42 e PNG registrato 16/11 20:24 intatto).
-- **Controlli/esiti:** skyline 6/6 allineati, 0 da rigenerare; oggetti 80 controllati, 0 senza raw; contenuto diverso da convertire 0; altri gruppi 0 da convertire, 45 allineati.
-- **Lacune/blocchi:** `GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png` (Andrea 20/11 10:42) senza raw ne' voce catalogo: non rinominato ne' convertito, serve decisione Andrea. Pose auto: 5 PNG `_b` mancanti, area bloccata, confronto contenuto saltato (nessuna conversione da qui).
-- **Gate:** non eseguito (21/11 10:35).
+- **Controlli/esiti:** skyline 6/6 allineati, 0 da rigenerare; oggetti 80 controllati, 0 senza raw; contenuto diverso da convertire 0; altri gruppi 0 da convertire, 45 allineati. Nessun cambiamento dal giro 134 (11:32).
+- **Lacune/blocchi:** `GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png` (Andrea 20/11 10:42) senza raw ne' voce catalogo: non rinominato ne' convertito, serve decisione Andrea. Pose auto: 5 PNG `_b` mancanti, area bloccata (regola auto Andrea), confronto contenuto saltato (nessuna conversione da qui).
+- **Gate:** non eseguito (21/11 11:42).
 - **Review richiesta:** nessuna da questo blocco. Prossimo: VG3 ∞ — attendere esito Andrea su `lato_furgone_bianco.png.png`, poi ricontrollare nuovi PNG.

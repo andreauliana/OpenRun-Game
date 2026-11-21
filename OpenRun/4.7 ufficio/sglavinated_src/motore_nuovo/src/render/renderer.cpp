@@ -284,6 +284,12 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
     // esatti (potenze di 2): il confronto `<` da' lo stesso esito, stessi pixel,
     // resa e replay IDENTICI.
     const f32 sogliaBayerSfuma = sfuma * 16.0f;
+    // V9 ∞ (21/11, lv_04_cromo giro 27): lo scorrimento della trama della
+    // schiuma `(i32)(tempoS_*4)` dipende solo dal tempo del frame, non da x
+    // ne' da y, ma veniva ricalcolato a ogni pixel di ogni riga di battigia.
+    // Precalcolato una volta per fetta: stesso i32, stessi indici Bayer,
+    // stessi pixel, resa e replay IDENTICI.
+    const i32 shiftSchiuma = (i32)(tempoS_ * 4.0f);
     const u32 prato = band ? tema_.erba : tema_.erbaAlt;
     const u32 sabbia = band ? tema_.sabbia : lerpColore(tema_.sabbia, 0xFF000000u, 0.1f);
     const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
@@ -302,7 +308,7 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
         if (schiuma) { // battigia: schiuma bianca a trama sul mare
             u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
             for (i32 x = 0; x < Framebuffer::WIDTH; ++x)
-                riga[x] = BAYER4[y & 3][(x + (i32)(tempoS_ * 4.0f)) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
+                riga[x] = BAYER4[y & 3][(x + shiftSchiuma) & 3] < 8 ? 0xFFF0F4F8u : tema_.acqua;
             continue;
         }
         fb_.hline(0, Framebuffer::WIDTH - 1, y, acqua);
@@ -322,14 +328,23 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
         // hshFila: lo XOR col termine di `cella` dà gli stessi bit (XOR
         // associativo), stessi riflessi, resa e replay IDENTICI.
         const u32 hshFila = (u32)(fila * 73856093);
-        for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
-            const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
-            const f32 cellaF = xw / ONDA_PASSO_X;
-            const i32 cella = (i32)std::floor(cellaF);
-            const u32 hsh = hshFila ^ (u32)(cella * 19349663);
-            if ((hsh % 7u) != 0u) continue;
-            const f32 dentro = cellaF - (f32)cella;
-            if (dentro < 0.45f) fb_.put(x, y, riflesso);
+        // V9 ∞ (21/11, lv_01_neon giro 28): x scorre gia' in [0,WIDTH) e la
+        // riga e' gia' stata dipinta da hline qui sopra, quindi fb_.put(x,y,..)
+        // rifarebbe due controlli di bounds e il prodotto y*WIDTH a ogni
+        // riflesso. Calcolo la base della riga una volta fuori dal ciclo e
+        // scrivo direttamente (guard di y fuori dal ciclo). Stessi pixel,
+        // stessa resa e replay IDENTICI.
+        if (y >= 0 && y < Framebuffer::HEIGHT) {
+            u32* rigaOnde = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+            for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+                const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
+                const f32 cellaF = xw / ONDA_PASSO_X;
+                const i32 cella = (i32)std::floor(cellaF);
+                const u32 hsh = hshFila ^ (u32)(cella * 19349663);
+                if ((hsh % 7u) != 0u) continue;
+                const f32 dentro = cellaF - (f32)cella;
+                if (dentro < 0.45f) rigaOnde[x] = riflesso;
+            }
         }
     }
 }
@@ -511,7 +526,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // corsia): strisce al centro e ogni hwBase verso i bordi. Le corsie
         // nuove nascono dai bordi mentre la strada si allarga (2 -> 4 corsie).
         i32 stricePerLato = 0;
-        while ((f32)(stricePerLato + 1) * hwBase < hw - 0.25f * hwBase) ++stricePerLato;
+        // V9 ∞ (21/11, lv_06_desktop giro 27): il limite della ricerca delle
+        // corsie, `hw - 0.25f * hwBase`, non dipende da stricePerLato: hw e
+        // hwBase sono costanti dentro questa riga del trapezio. Prima veniva
+        // ricalcolato (una mul e una sub) a ogni iterazione del while nel loop
+        // piu' caldo (per riga di ogni trapezio); lo calcolo una volta fuori.
+        // Stessi operandi e stesso ordine -> stesso float, stesse corsie, resa
+        // e replay IDENTICI.
+        const f32 limiteStrisce = hw - 0.25f * hwBase;
+        while ((f32)(stricePerLato + 1) * hwBase < limiteStrisce) ++stricePerLato;
         // Rumble: larghezza proporzionale alla larghezza locale, quindi continua
         // fra segmenti contigui (nessun gradino ai confini).
         i32 rw = (i32)(hwBase * 0.14f);
@@ -600,9 +623,18 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     fb_.hline((i32)xs - sw / 2, (i32)xs + sw / 2, y, 0xFFE6E6EAu);
                 }
                 if (incStrisce) {
-                    for (i32 x = std::max(0, lx + rw); x <= std::min(Framebuffer::WIDTH - 1, rx - rw); ++x) {
-                        const f32 xw = ((f32)x - cx) / pxW + 10000.0f;
-                        if (std::fmod(xw, 300.0f) < 170.0f) fb_.put(x, y, 0xFFE6E6EAu);
+                    // V9 ∞ (21/11, lv_05_spray giro 27): x scorre gia' dentro
+                    // [0,WIDTH); il solo controllo che faceva fb_.put era quello
+                    // su y. Precalcolo la base della riga una volta e scrivo
+                    // direttamente, tenendo il guard di y fuori dal ciclo: stessi
+                    // pixel, stessa resa e replay IDENTICI (come per la mezzeria
+                    // dell'incrocio qui sopra, giro 25).
+                    if (y >= 0 && y < Framebuffer::HEIGHT) {
+                        u32* rigaStrisce = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                        for (i32 x = std::max(0, lx + rw); x <= std::min(Framebuffer::WIDTH - 1, rx - rw); ++x) {
+                            const f32 xw = ((f32)x - cx) / pxW + 10000.0f;
+                            if (std::fmod(xw, 300.0f) < 170.0f) rigaStrisce[x] = 0xFFE6E6EAu;
+                        }
                     }
                     fb_.hline(lx, lx + rw - 1, y, rumble);
                     fb_.hline(rx - rw + 1, rx, y, rumble);
