@@ -1,4 +1,4 @@
-# Comandi personali v4.5 (il nome interno `V3` resta per compatibilita')
+# Comandi personali v4.7
 Doppio clic sui launcher `.command`, oppure da Terminale dalla cartella `comandi/`:
 - V3 Avvia.command: avvia ciclo + pannello (no duplicati)
 - V3 Stato.command: cosa sta succedendo adesso
@@ -18,8 +18,8 @@ sh v3.sh pannello     # apre il pannello web
 ```
 
 Da un'altra cartella, usare il percorso completo, ad esempio:
-`sh "/percorso/alla/v4.5/comandi/v3.sh" stato`.
+`sh "/percorso/alla/v4.7/comandi/v3.sh" stato`.
 I wrapper `.command` determinano la propria cartella, inoltrano l'exit code
 del comando e mantengono il messaggio finale quando sono aperti da Terminale.
 Gli script risolvono `sglavinated_src/` e `strumenti/` a partire dalla radice
-v4.5; il pannello usa la porta 8090.
+v4.7.
