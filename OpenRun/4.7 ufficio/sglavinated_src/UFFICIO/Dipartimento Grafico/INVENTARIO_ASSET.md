@@ -67,9 +67,9 @@ Altri file tenuti perche' servono: `ui/font/varianteB/font.png` (-> `font_hud.h`
 
 I progetti tracker sono i `.xm` stessi (FastTracker 2: si aprono con MilkyTracker o OpenMPT),
 in `motore_nuovo/dati/audio/musica/`; chi suona dove sta in `motore_nuovo/dati/audio/playlist.json`:
-- `beatmastaz.xm` = menu
-- `asplajungle4.xm` = gara (prima e seconda tappa, e corsa singola)
-- `SepteJungle2.xm` = ultima tappa della gara a tappe (Andrea 16/11)
+- `Menu.xm` = menu
+- `MainRace.xm` = gara (prima e seconda tappa, e corsa singola)
+- `Final-Level.xm` = ultima tappa della gara a tappe (Andrea 16/11)
 - suoni del motore (non tracker): `motore_nuovo/dati/audio/motore/*.wav`
 
 Nel repo non c'e' mai stato altro formato tracker.

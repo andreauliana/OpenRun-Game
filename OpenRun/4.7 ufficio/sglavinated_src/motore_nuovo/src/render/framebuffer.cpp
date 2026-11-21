@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 #include "render/framebuffer.h"
+#include <cstddef>
 #include <utility>
 
 namespace sgl {
