@@ -498,6 +498,11 @@ private:
     // nella stessa cache line. Stessi valori, stesso ordine, stessa immagine.
     struct ColCamp { i32 tx0, tx1, txMid; bool cerca; };
     ColCamp colCamp_[Framebuffer::WIDTH];
+    // V9 ∞ (21/11, lv_06_desktop giro 26): colonna sorgente dello skyline
+    // (parallasse). `tx` dipende solo da x (skylineScrollX_ e' costante per
+    // tutto drawSkyline), quindi viene calcolato una volta per colonna e
+    // riusato su ogni riga: stessi indici, stessa immagine, replay identico.
+    i32 skylineTx_[Framebuffer::WIDTH];
     // V9 ∞ (20/11, lv_06_desktop giro 24): LUT colore-indice da 256 voci,
     // ricalcolata solo quando cambia la configurazione della palette (puntatore
     // palette propria, offset paletteBase, numero colori). Rimuove dal loop piu'

@@ -1692,6 +1692,18 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
     const i32 y0 = orizzonte_ - h;
     const bool palettePropria = !s.palette.empty();
     const i32 nPalette = (i32)s.palette.size();
+    // V9 ∞ (21/11, lv_06_desktop giro 26): la colonna sorgente della
+    // parallasse (DECO1 2e) dipende solo da x — skylineScrollX_, WIDTH e
+    // s.width sono costanti per tutto drawSkyline — ma il `fmod` veniva
+    // rifatto per ogni pixel di ogni riga. Calcolata una volta per colonna
+    // (320 invece di 320*h volte), stessi operandi e stesso ordine -> stesso
+    // tx, stessi indici di texel, resa e replay IDENTICI.
+    for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
+        const f32 txf = ((f32)x + skylineScrollX_) / (f32)Framebuffer::WIDTH * (f32)s.width;
+        i32 tx = (i32)std::fmod(txf, (f32)s.width);
+        if (tx < 0) tx += (i32)s.width;
+        skylineTx_[x] = tx;
+    }
     for (i32 sy = 0; sy < h; ++sy) {
         const i32 ty = (i32)((f32)sy / (f32)h * (f32)s.height);
         const u8* src = s.pixels.data() + (size_t)ty * (size_t)s.width;
@@ -1699,9 +1711,7 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
         for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
             // Parallasse in curva (DECO1 2e): skyline scorre orizzontalmente
             // rispetto alla strada, con wrap sulla larghezza della fonte.
-            const f32 txf = ((f32)x + skylineScrollX_) / (f32)Framebuffer::WIDTH * (f32)s.width;
-            i32 tx = (i32)std::fmod(txf, (f32)s.width);
-            if (tx < 0) tx += (i32)s.width;
+            const i32 tx = skylineTx_[x]; // V9 ∞ giro 26: precalcolato per colonna
             u8 idx = src[tx];
             if (idx == 0) continue; // trasparente
             u32 col = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
