@@ -1,0 +1,13 @@
+# Ultimo turno developer (max 15 righe)
+- Data/ora: 21/11/2026 08:30 (Turno 1).
+- Blocco/pass: V9 ∞ fluidita' a giro — lv_04_cromo (ventiseiesimo giro).
+- File cambiati: motore_nuovo/src/render/renderer.cpp — drawTerraSospesa, ramo spiaggia (rampa/ponte/discesa di lv_04).
+- Modifica: `sogliaBayerSfuma = sfuma*16` calcolata una volta per fetta; confronto per pixel `(BAYER4[y&3][x&3]+0.5f) < sogliaBayerSfuma` al posto di `((BAYER4+0.5f)/16.0f) < sfuma`. Divisione e prodotto per 16 esatti (potenze di 2): stessa resa.
+- Nota ambiente: cartella workspace rinominata 4.5b->4.7 ufficio a meta' turno; sessione spostata; prepara_build.sh ha accantonato la build con cache a vecchi path assoluti e ricreato UFFICIO/Officina/build.
+- Build: cmake -S/-B + --target prova_gate dentro gate_t1.sh -> exit 0.
+- Comando: sh UFFICIO/Officina/TOOL/gate_t1.sh — exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK".
+- gate_t1.sh eseguito in questo turno, 21/11/2026 08:30.
+- Misure lv_04_cromo: smoke medio 0.863 ms, max 3.589 ms (frame 0), replay 2x IDENTICO; percorso 2125 frame / 35.4 s / 0% fuori.
+- Verifica resa: frameHash 0 = 4118572995, identico al riferimento storico turno 58 -> resa e replay IDENTICI, nessuna regressione.
+- Log: UFFICIO/Officina/Test area/gate_t1.log (righe 262-283, lv_04_cromo).
+- Prossimo: V9 ∞ lv_05_spray (ventiseiesimo giro).
