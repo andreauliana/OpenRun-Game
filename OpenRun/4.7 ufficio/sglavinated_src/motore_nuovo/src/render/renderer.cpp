@@ -428,6 +428,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // stesso ordine -> stessi float, resa e replay IDENTICI.
     constexpr f32 FASCIA_TERRENO = 9000.0f;
     const f32 giroMenoFascia = giro_ - FASCIA_TERRENO;
+    // V9 ∞ (21/11, lv_03_foglie giro 27): le soglie dell'incrocio sono
+    // costanti del tracciato, invarianti per tutta la riga e per tutto il
+    // trapezio. Prima venivano ricombinate a ogni riga (addizioni float
+    // ripetute nel loop caldo anche fuori dai rami incrocio). Calcolate una
+    // volta per trapezio: stessi valori, stessa resa e replay IDENTICI.
+    const f32 incMarcFine = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
+    const f32 inizioStrisce = incMarcFine + 160.0f;
+    const f32 fineStrisce = inizioStrisce + Road::INCROCIO_STRISCE;
 
     for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
@@ -451,9 +459,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 dIncS = calcolaIncrocio ? roadCorr_->incrocioD(zAvanti) : 1e9f;
         const f32 dInc = std::fabs(dIncS);
         const bool incStrada = dInc < Road::INCROCIO_MEZZA;
-        const bool incMarc = !incStrada && dInc < Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
-        const f32 inizioStrisce = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE + 160.0f;
-        const bool incStrisce = dInc >= inizioStrisce && dInc < inizioStrisce + Road::INCROCIO_STRISCE;
+        const bool incMarc = !incStrada && dInc < incMarcFine;
+        const bool incStrisce = dInc >= inizioStrisce && dInc < fineStrisce;
         // Oltre il checkpoint (fine della tappa, bivio gia' scelto) terreno e
         // cordoli sono gia' della tappa scelta (Andrea 11/11: il cambio di
         // colori come confine sulla strada, non una dissolvenza generica).
