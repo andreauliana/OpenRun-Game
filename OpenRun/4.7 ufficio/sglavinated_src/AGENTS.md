@@ -22,7 +22,7 @@ sglavinated_src/
 └── UFFICIO/Checkpoint Revision/     # revisioni aggregate, scrittura del Capo
 ```
 
-`4.5b ufficio/` e i suoi `comandi/` restano l'area di Claude e revisione 'esterna' AI, fuori dal perimetro operativo degli agenti OpenCode. `../ANDREA/` è privata.
+`4.7 ufficio/` e i suoi `comandi/` restano l'area di Claude e revisione 'esterna' AI, fuori dal perimetro operativo degli agenti OpenCode. `../ANDREA/` è privata.
 
 ## Migrazione
 

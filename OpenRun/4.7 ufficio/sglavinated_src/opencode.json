@@ -48,7 +48,7 @@
     },
     "external_directory": {
       "*": "deny",
-      "/Users/andreauliana/Documents/GitHub/OpenRun-Game/OpenRun/4.5b ufficio/ANDREA/**": "ask"
+      "/Users/andreauliana/Documents/GitHub/OpenRun-Game/OpenRun/4.7 ufficio/ANDREA/**": "ask"
     },
     "webfetch": "deny"
   }
