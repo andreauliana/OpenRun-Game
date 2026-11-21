@@ -1,19 +1,13 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (20/11/2026 10:18, Turno 1)
-- **Stato:** V47 VG3 ∞ (giro 116). Ridisegno di Andrea `lato_bus_rosso.png` convertito; resta 1 blocco esterno (raw senza PNG, ora file diverso). `ULTIMO_TURNO.md` non riscrivibile (permesso negato: write/edit), come già segnato qui il 18/11 e il 20/11 09:53: questo status resta l'unico handoff aggiornato.
-- **Materiali modificati (dati):**
-  - `motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_bus_rosso.sglraw` (riscritto, 7436 byte, dal PNG di Andrea 10:12; formato SGLR 64x29)
-  - `UFFICIO/Dipartimento Grafico/TOOLS/vg3_converti_bus_rosso.py` (nuovo tool: importa e riusa `salva_raw` del generatore del catalogo, converte solo questo file; il `--solo-raw` intero non si puo' usare perche' crasha su `lato_berlina_verde.png` mancante)
-  - testo: una riga in `diario.md`, `RIASSUNTO.md` riscritto, questo status riscritto
-- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` non modificato (voce `lato_bus_rosso` già presente con file+raw); zero risorse esterne, zero materiale Sega, provenienza invariata. Il PNG toccato e' di Andrea.
-- **Comandi ed exit code (eseguiti in questo turno, 20/11 10:18):**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1 al primo giro (ALTRI-DIVERSO `lato_bus_rosso` + raw senza PNG `lato_berlina_verde`)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_converti_bus_rosso.py"` — exit 0 (1 raw convertito)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1 al ricontrollo (solo per il raw senza PNG; 0 da convertire, 43 allineati)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155 raw motore / 155 tracciati, 0 senza voce)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (3 `car-custom*` in `giocatore_pose`, area Andrea)
-  - `ls -la` sul raw convertito — exit 0 (file presente, 7436 byte)
-  - `git status --short` — permesso negato (solo diagnostica, non necessario)
-- **Controlli/esiti:** skyline 6/6 allineati, 0 da rigenerare; oggetti 80 controllati, 0 senza raw; contenuto diverso da convertire 0; altri gruppi 0 da convertire, 43 allineati (era 42).
-- **Lacune/blocchi:** `motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_berlina_verde.sglraw` senza PNG sorgente (cartella toccata da Andrea stamattina; voce catalogo `segnaposto`): non ricreato, serve decisione Andrea. Nota: il blocco di ieri su `lato_bus_rosso` e' risolto (Andrea ha rimesso il PNG 10:12, convertito). Pose auto: 5 PNG `_b` mancanti, area bloccata, confronto contenuto saltato.
-- **Gate:** non eseguito (20/11 10:18).
-- **Review richiesta:** nessuna da questo blocco. Prossimo: VG3 ∞ — attendere esito Andrea su `lato_berlina_verde`, poi ricontrollare nuovi PNG.
+# STATUS_GRAFICO_PER_CAPO — @grafico (21/11/2026 10:35, Turno 1)
+- **Stato:** V47 VG3 ∞ (giro 130). Tutto allineato: nessun ridisegno nuovo da convertire. Resta 1 PNG residuo senza raw in attesa di decisione Andrea. `ULTIMO_TURNO.md` non riscrivibile (permesso negato: write/edit), come gia' segnato il 18/11 e il 20/11: questo status resta l'unico handoff aggiornato.
+- **Materiali modificati (dati):** nessun asset/raw cambiato in questo turno (nulla da convertire). Testo: una riga in `diario.md`, `RIASSUNTO.md` riscritto, questo status riscritto.
+- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` non modificato; zero risorse esterne, zero materiale Sega, provenienza invariata.
+- **Comandi ed exit code (eseguiti in questo turno, 21/11 10:35):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1 (solo flag `ALTRI-PNG-SENZA-RAW traffico_incrocio/lato_furgone_bianco.png` = `.png.png` Andrea 20/11 10:42; 166 PNG, 134 confrontati, 32 non motore; 80 oggetti senza raw 0; skyline 6/6 allineati; altri gruppi 47 raw, 45 allineati, da convertire 0, png senza raw 1; contenuto diverso 0; png piu' nuovi a pari contenuto 81; gruppi raw noti 8, sconosciuti 0; giocatore 10 PNG, mancanti 5 pose `_b`, confronto saltato).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155 raw motore / 155 tracciati, 0 senza voce; voci con 'raw' 159).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (4 non catalogati: 3 `car-custom*` in `giocatore_pose` area Andrea + `lato_furgone_bianco.png.png`).
+  - `ls -la "UFFICIO/out/grafico/"` e `ls -l "GRAFICA/sprite/traffico_incrocio/"` — exit 0 (confermato `.png.png` 20/11 10:42 e PNG registrato 16/11 20:24 intatto).
+- **Controlli/esiti:** skyline 6/6 allineati, 0 da rigenerare; oggetti 80 controllati, 0 senza raw; contenuto diverso da convertire 0; altri gruppi 0 da convertire, 45 allineati.
+- **Lacune/blocchi:** `GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png` (Andrea 20/11 10:42) senza raw ne' voce catalogo: non rinominato ne' convertito, serve decisione Andrea. Pose auto: 5 PNG `_b` mancanti, area bloccata, confronto contenuto saltato (nessuna conversione da qui).
+- **Gate:** non eseguito (21/11 10:35).
+- **Review richiesta:** nessuna da questo blocco. Prossimo: VG3 ∞ — attendere esito Andrea su `lato_furgone_bianco.png.png`, poi ricontrollare nuovi PNG.

@@ -316,12 +316,19 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
         const i32 fila = (i32)std::floor((playerZ + zw) / ONDA_PASSO_Z);
         if ((fila & 1) == 0) continue;
         const f32 xPerPx = zw / (Road::DEPTH * (Framebuffer::WIDTH / 2.0f)); // unita' mondo per pixel
+        // V9 ∞ (21/11, lv_01_neon giro 27): il termine `fila` dell'hash delle
+        // onde dipende dalla riga y, non dal pixel x, ma la moltiplicazione
+        // veniva rifatta a ogni pixel del mare. Calcolata una volta per riga in
+        // hshFila: lo XOR col termine di `cella` dà gli stessi bit (XOR
+        // associativo), stessi riflessi, resa e replay IDENTICI.
+        const u32 hshFila = (u32)(fila * 73856093);
         for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
             const f32 xw = ((f32)x - Framebuffer::WIDTH / 2.0f) * xPerPx + lastPlayerX_;
-            const i32 cella = (i32)std::floor(xw / ONDA_PASSO_X);
-            const u32 hsh = (u32)(fila * 73856093) ^ (u32)(cella * 19349663);
+            const f32 cellaF = xw / ONDA_PASSO_X;
+            const i32 cella = (i32)std::floor(cellaF);
+            const u32 hsh = hshFila ^ (u32)(cella * 19349663);
             if ((hsh % 7u) != 0u) continue;
-            const f32 dentro = xw / ONDA_PASSO_X - (f32)cella;
+            const f32 dentro = cellaF - (f32)cella;
             if (dentro < 0.45f) fb_.put(x, y, riflesso);
         }
     }
@@ -1692,6 +1699,23 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
     const i32 y0 = orizzonte_ - h;
     const bool palettePropria = !s.palette.empty();
     const i32 nPalette = (i32)s.palette.size();
+    // V9 ∞ (21/11, lv_02_atomico giro 26): il colore dipende solo dall'indice
+    // di texel `idx` (0..255): `palettePropria`, `nPalette`, `s.paletteBase` e
+    // la palette del motore sono costanti in tutto drawSkyline. Prima il ramo,
+    // il modulo `% nPalette` (quando la palette e' propria) e la lettura del
+    // membro s.paletteBase venivano rifatti a ogni pixel dello skyline (~320*h
+    // pixel per frame). Li calcolo una volta in una LUT di 256 voci — esattamente
+    // gli stessi colori che restituivano le due espressioni, indicizzata per u8
+    // idx — e il loop campiona con una sola lettura in tabella. Stessi colori,
+    // stessa immagine, replay IDENTICO.
+    u32 colLut[256];
+    {
+        const i32 palBase = s.paletteBase;
+        const u32* const palRaw = pal_.dati();
+        for (i32 idx = 0; idx < 256; ++idx)
+            colLut[idx] = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
+                                         : palRaw[(palBase + idx) & 255];
+    }
     // V9 ∞ (21/11, lv_06_desktop giro 26): la colonna sorgente della
     // parallasse (DECO1 2e) dipende solo da x — skylineScrollX_, WIDTH e
     // s.width sono costanti per tutto drawSkyline — ma il `fmod` veniva
@@ -1714,8 +1738,7 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
             const i32 tx = skylineTx_[x]; // V9 ∞ giro 26: precalcolato per colonna
             u8 idx = src[tx];
             if (idx == 0) continue; // trasparente
-            u32 col = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
-                                     : pal_[s.paletteBase + idx];
+            const u32 col = colLut[idx]; // V9 ∞ lv_02 giro 26: lookup diretto (LUT)
             if ((col >> 24) == 0) continue; // trasparente
             dst[x] = visibile >= 1.0f ? col : lerpColore(dst[x], col, visibile); // dissolvenza nel cielo
         }

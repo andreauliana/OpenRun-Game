@@ -1,11 +1,13 @@
-# Ultimo turno developer
-- Data/ora: 21/11/2026 10:05 (Turno 1).
-- Blocco e passo: V9 ∞ fluidita' a giro — lv_05_spray (ventiseiesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp — parete lambda della galleria, precalcolato `neonColore = sinistra ? neonSx : neonDx` una volta per parete (prima ricalcolato in due punti per pixel); -2 selezioni/pixel, stessi pixel/resa/replay.
+# Ultimo turno developer (max 15 righe)
+- Data/ora: 21/11/2026 10:37, Turno 1.
+- Blocco/pass: V9 ∞ fluidita' a giro — lv_02_atomico (ventisettesimo giro), passo successivo del "Tocca a".
+- File cambiati: motore_nuovo/src/render/renderer.cpp (drawSkyline).
+- Cosa: il colore del texel dipende solo da `idx` (0..255); `palettePropria`, `nPalette`, `s.paletteBase` e `pal_.dati()` sono invarianti per tutto drawSkyline, ma ramo + modulo `% nPalette` + lettura membro venivano rifatti a ogni pixel (~320*h per frame). LUT 256 voci costruita una volta per chiamata, indicizzata con `colLut[idx]`; stessi colori delle espressioni originali (idx==u8, maschera &255 identica), stessi pixel.
 - Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- Comando pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_pre_smoke" lv_05_spray smoke -> exit 0, "GATE OK", medio 0.825 max 2.355 ms, frameHash 0 2783217120, replay IDENTICO.
-- Comando post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_post_smoke" lv_05_spray smoke -> exit 0, "GATE OK", medio 0.794 max 1.510 ms, frameHash identico al pre, replay IDENTICO.
-- Comando percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_turno64_post" lv_05_spray percorso -> exit 0, "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori).
-- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0, "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK"; nessuna riga FALLITO in gate_t1.log. Gate eseguito in questo turno il 21/11/2026 alle 10:05.
-- Esito: resa invariata (frameHash 2783217120 identico pre/post), replay IDENTICO, nessuna regressione; medio ~0.79 ms ben sotto 8 ms (Pi 400 <= 12 ms).
-- Prossimo: V9 ∞ lv_06_desktop (ventiseiesimo giro).
+- Pre-smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_pre_smoke" lv_02_atomico smoke -> exit 0 "GATE OK", medio 0.602 max 0.897 ms (frame 156), replay 2x IDENTICO, frameHash 0 2554766201.
+- Post-smoke: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_post_smoke" lv_02_atomico smoke -> exit 0 "GATE OK", medio 0.593 max 0.875 ms (frame 156), replay 2x IDENTICO, frameHash identico al pre (2554766201).
+- Percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_turno66_post_percorso" lv_02_atomico percorso -> exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori strada).
+- Gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (lv_02_atomico smoke medio 0.603 max 1.142 ms); nessuna riga FALLITO in "UFFICIO/Officina/Test area/gate_t1.log".
+- Gate eseguito in questo turno il 21/11/2026 alle 10:37.
+- Esito: resa e replay IDENTICI (frameHash invariato), nessuna regressione; ms/frame ben sotto 8 ms (max 1.142), Pi 400 <= 12 ms.
+- Prossimo: V9 ∞ lv_03_foglie (ventisettesimo giro).

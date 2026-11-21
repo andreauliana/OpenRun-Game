@@ -1,6 +1,6 @@
 # RIASSUNTO — @capo (21/11/2026, T1 ora 0/12)
 - **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-006 CHIUSO, non riaprire. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: nessuna.
-- **Checkpoint:** SCAMBIO_RECENTE checkpoint automatici fino CHK2 20/11 13:54 [APERTE] (controlli verdi, non peer review in dossier). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti (autore≠revisore) registrati → nessuna chiusura.
-- **Handoff:** dev V9 lv_02_atomico 25° 20/11 14:13, smoke/percorso exit 0, replay IDENTICO, `gate_t1.sh` exit 0 6/6 → lv_03_foglie 25°. Junior VJ4 6/6 chiuso; VJ5 14:04 review `renderer.cpp` giroMenoFascia, `run_tests.sh` exit 0 27/27, percorso lv_01 exit 0. Grafico VG3 giro 116: 43 allineati, blocco `lato_berlina_verde.sglraw` senza PNG (DEFAULT: attendere Andrea).
+- **Checkpoint:** SCAMBIO_RECENTE CHK auto fino CHK2 20/11 13:54 [APERTE] (controlli verdi, non peer review in dossier). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti (autore≠revisore) registrati → nessuna chiusura.
+- **Handoff:** dev V9 lv_02_atomico 25° 20/11 14:13 smoke/percorso exit 0, replay IDENTICO, `gate_t1.sh` exit 0 6/6 → lv_03_foglie 25°. Junior VJ4 6/6 chiuso; VJ5 20/11 14:04 review `renderer.cpp` giroMenoFascia, `run_tests.sh` exit 0 27/27, percorso lv_01 exit 0. Grafico VG3 giro 116: 43 allineati, blocco `lato_berlina_verde.sglraw` senza PNG (DEFAULT: attendere Andrea).
 - **Deleghe:** @developer V9 ∞ lv_03_foglie 25°; @developer-junior VJ5 ∞ prossimo diff (VJ3 4/6 lv_05/lv_06 utile); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
-- **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. No FINITO (∞).
+- **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. Nessun FINITO (∞).
