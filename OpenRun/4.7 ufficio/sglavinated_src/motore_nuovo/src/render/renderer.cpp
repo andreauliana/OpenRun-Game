@@ -295,6 +295,11 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
     const u32 acqua = mare ? (band ? tema_.acqua : tema_.acquaAlt) : prato;
     const u32 riflesso = lerpColore(tema_.acqua, 0xFFFFFFFFu, 0.35f);
     const f32 ya = next.acquaY, yb = cur.acquaY;
+    // V9 ∞ (22/11, lv_01_neon giro 29): il denominatore della proiezione
+    // orizzontale dei riflessi sull'acqua (Road::DEPTH * WIDTH/2) e' costante
+    // per tutta la fetta; prima veniva moltiplicato a ogni riga di onde.
+    // constexpr: stesso valore, stessa resa e replay IDENTICI.
+    constexpr f32 kDepthMezzaLarg = Road::DEPTH * (Framebuffer::WIDTH / 2.0f);
     for (i32 y = a0; y <= a1; ++y) {
         if (spiaggia && !schiuma) {
             if (sfuma <= 0.0f) fb_.hline(0, Framebuffer::WIDTH - 1, y, sabbia);
@@ -335,7 +340,7 @@ void Renderer::drawTerraSospesa(const Road::ProjectedSeg& cur, const Road::Proje
         const f32 zw = 1.0f / invZ;
         const i32 fila = (i32)std::floor((playerZ + zw) / ONDA_PASSO_Z);
         if ((fila & 1) == 0) continue;
-        const f32 xPerPx = zw / (Road::DEPTH * (Framebuffer::WIDTH / 2.0f)); // unita' mondo per pixel
+        const f32 xPerPx = zw / kDepthMezzaLarg; // unita' mondo per pixel
         // V9 ∞ (21/11, lv_01_neon giro 27): il termine `fila` dell'hash delle
         // onde dipende dalla riga y, non dal pixel x, ma la moltiplicazione
         // veniva rifatta a ogni pixel del mare. Calcolata una volta per riga in
@@ -465,6 +470,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const f32 incMarcFine = Road::INCROCIO_MEZZA + Road::INCROCIO_MARCIAPIEDE;
     const f32 inizioStrisce = incMarcFine + 160.0f;
     const f32 fineStrisce = inizioStrisce + Road::INCROCIO_STRISCE;
+    // V9 ∞ (22/11, lv_03_foglie giro 29): il clip del terreno dentro la galleria
+    // dipende solo da dentroGalleria_, next.worldZ e clipGalleriaZ_/clipGx0_/clipGx1_
+    // (stato e trapezio), non dalla riga y. Prima veniva rivalutato a ogni riga
+    // nel ramo terra; precalcolato una volta per trapezio. Stessi valori, stessa resa.
+    const bool clipTerraGalleria = dentroGalleria_ && next.worldZ >= clipGalleriaZ_;
+    const i32 terraClipX0 = clipTerraGalleria ? std::max(0, clipGx0_) : 0;
+    const i32 terraClipX1 = clipTerraGalleria ? std::min(Framebuffer::WIDTH - 1, clipGx1_) : Framebuffer::WIDTH - 1;
 
     for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
@@ -507,11 +519,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         if (y >= orizzonte_ && !sospeso && !galleria) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
-            i32 tx0 = 0, tx1 = Framebuffer::WIDTH - 1;
-            if (dentroGalleria_ && next.worldZ >= clipGalleriaZ_) {
-                tx0 = std::max(tx0, clipGx0_);
-                tx1 = std::min(tx1, clipGx1_);
-            }
+            const i32 tx0 = terraClipX0;
+            const i32 tx1 = terraClipX1;
             if (tx1 < tx0) {}
             else if (incStrada) fb_.hline(tx0, tx1, y, road);
             else if (incMarc) {
@@ -527,9 +536,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // volta per riga. Sia la divisione per 16 che il prodotto per 16
                 // sono esatti (potenze di 2), quindi il confronto (`<`) da' lo
                 // stesso esito: stessi pixel, resa e replay IDENTICI.
+                // V9 ∞ (22/11, lv_05_spray giro 28): la riga della trama Bayer
+                // `BAYER4[y & 3]` e' invariante per tutta la riga di transizione
+                // prato, come gia' fatto per battigia/spiaggia; prima l'indice di
+                // riga veniva ricalcolato a ogni pixel. Precalcolato una volta per
+                // riga: stessi indici Bayer, resa e replay IDENTICI.
                 const f32 sogliaBayer = misto * 16.0f;
+                const u8* bayerRigaMisto = BAYER4[y & 3];
                 for (i32 x = tx0; x <= tx1; ++x)
-                    riga[x] = (f32)BAYER4[y & 3][x & 3] + 0.5f < sogliaBayer ? grassNuovoTema : grassQui;
+                    riga[x] = (f32)bayerRigaMisto[x & 3] + 0.5f < sogliaBayer ? grassNuovoTema : grassQui;
             } else fb_.hline(tx0, tx1, y, grass);
         }
         // Strada allargata (fattore > 1, una sola carreggiata): rumble e strisce
@@ -701,10 +716,15 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const i32 kerb = std::max(1, rw / 2);
                 const u32 kerbCol = band ? 0xFFF4F4F4u : 0xFFD02828u;
                 const u32 cem1 = 0xFFA8A8B0u, cem2 = 0xFF8A8A94u;
+                // V9 ∞ (22/11, lv_06_desktop giro 28): BAYER4[y & 3] e' invariante
+                // per riga; prima veniva indicizzato a ogni pixel del cemento
+                // dell'isola. Precalcolo la riga una volta: stessi indici Bayer,
+                // resa e replay IDENTICI.
+                const u8* bayerRigaIsola = BAYER4[y & 3];
                 for (i32 x = std::max(0, L); x <= std::min(Framebuffer::WIDTH - 1, R); ++x) {
                     u32 col;
                     if (x - L < kerb || R - x < kerb) col = kerbCol;
-                    else col = BAYER4[y & 3][x & 3] < 6 ? cem2 : cem1;
+                    else col = bayerRigaIsola[x & 3] < 6 ? cem2 : cem1;
                     fb_.put(x, y, col);
                 }
             }
@@ -814,9 +834,16 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const f32 giornoN = giorno(cur.worldZ), giornoF = giorno(next.worldZ);
         const f32 buioN = std::clamp(cur.worldZ / 36000.0f - pozza + 0.12f + entrata - 0.6f * giornoN, 0.0f, 0.85f);
         const f32 buioF = std::clamp(next.worldZ / 36000.0f - pozza + 0.12f + entrata - 0.6f * giornoF, 0.0f, 0.85f);
-        auto luceEsterna = [&](u32 c, f32 g, i32 x, i32 y) {
-            return (f32)BAYER4[y & 3][x & 3] < g * 12.0f ? lerpColore(c, tema_.cielo, 0.30f) : c;
-        };
+        // V9 ∞ (22/11, lv_02_atomico giro 30): le differenze buio/giorno fra
+        // bordo vicino e lontano non dipendono da parete, riga o pixel: solo
+        // dal trapezio. Prima buioDelta/giornoDelta venivano ricalcolate in
+        // ogni chiamata parete (2-3 volte per riga y) e in soffittoRiga in
+        // forma inline; hoistate una volta per trapezio. Stessi operandi e
+        // stesso ordine -> stessi float, resa e replay IDENTICI.
+        const f32 buioDelta = buioF - buioN;
+        const f32 giornoDelta = giornoF - giornoN;
+        // V9 ∞ (22/11, lv_02_atomico giro 29): BAYER4[y & 3] e' invariante
+        // per riga; bayerRiga precalcolata passata a parete/soffittoRiga.
         const f32 baseU = (f32)(cur.index % 256) * 8.0f;
         // Neon (Andrea 08/11 sera): un tubo orizzontale per lato in alto sulla
         // parete, a tratti (3 segmenti accesi, 1 spento) cosi' scorre veloce;
@@ -827,6 +854,10 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 neonSx = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.25f);
         const u32 neonDx = 0xFF60F0FFu;
         const f32 spessN = std::max(0.022f, 1.2f / std::max(1.0f, cur.screenY - ceilN));
+        // V9 ∞ (22/11, lv_01_neon giro 30): spessore alone neon = spessN*3.5f
+        // e' invariante per tutto il trapezio; prima ricalcolato a ogni pixel
+        // del muro. Stesso valore, resa e replay IDENTICI.
+        const f32 aloneSpess = spessN * 3.5f;
         // Graffiti (Andrea: "OPEN RUN" stile graffito sui muri enormi): una
         // pezzo ogni 96 segmenti, lato alternato.
         // Andrea 08/11 notte: "OPEN RUN" non sulla fronte ufficiale ma dentro,
@@ -856,6 +887,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const i32 mx = (i32)(gu * (f32)mg.w), my = (i32)(gv * (f32)mg.h);
             return coloreGraffito(mg, mx, my, px, py, riempi, contorno);
         };
+        // V9 ∞ (22/11, lv_05_spray giro 30): bayerRiga dipende solo da y
+        // (riga schermo), non dal pixel x ne' dalla singola chiamata parete/soffitto.
+        // Prima ricalcolato dentro parete e dentro soffittoRiga; hoistato una volta
+        // per riga e catturato per riferimento dalle lambda. Stesso puntatore, resa
+        // e replay IDENTICI.
+        const u8* bayerRiga = nullptr;
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
             const f32 den = xBordoF - xBordoN;
@@ -876,53 +913,87 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             // selezioni per pixel nel tubo della galleria. Stesso u32 -> stessi
             // pixel, resa e replay IDENTICI, frameHash invariato.
             const u32 neonColore = sinistra ? neonSx : neonDx;
-            // V9 ∞ (21/11, lv_02_atomico giro 28): il test su den e le differenze
-            // usate per interpolare lungo la parete dipendono solo dal trapezio e
-            // dai bordi della parete, non dal pixel x. Prima venivano ricalcolati
-            // (un abs e quattro sottrazioni) a ogni pixel del muro della galleria.
-            // Calcolati una volta per parete: stessi operandi e stesso ordine ->
-            // stessi float, resa e replay IDENTICI.
+            // V9 ∞ (22/11, lv_03_foglie giro 30): colore tubo e flag "neon acceso
+            // in questo tratto" dipendono solo da tratto/neonOn/neonColore/tuboSpento
+            // (trapezio/parete), non dal pixel x. Prima il ternario del tubo era
+            // valutato nel ramo tubo e `tratto && neonOn` veniva ricomposto nell'alone;
+            // hoistati una volta per parete: stessi valori, resa e replay IDENTICI.
+            const u32 tuboColore = neonOn ? neonColore : tuboSpento;
+            const bool trattoNeonOn = tratto && neonOn;
+            // V9 ∞ (21/11, lv_02_atomico giro 28; giro 30: buioDelta/giornoDelta
+            // saliti a livello trapezio): il test su den e le differenze usate
+            // per interpolare lungo la parete dipendono solo dal trapezio/bordi,
+            // non dal pixel x. Calcolati una volta per parete/trapezio: stessi
+            // operandi e stesso ordine -> stessi float, resa e replay IDENTICI.
             const bool denValido = std::abs(den) > 0.5f;
             const f32 ceilDelta = ceilF - ceilN;
             const f32 terraDelta = next.screenY - cur.screenY;
-            const f32 buioDelta = buioF - buioN;
-            const f32 giornoDelta = giornoF - giornoN;
+            // V9 ∞ (22/11, lv_05_spray giro 29): il test "questo graffito sta su
+            // questa parete?" dipende da grafQui/grafLato (trapezio) e sinistra
+            // (parete), non dal pixel x. Prima veniva rivalutato a ogni pixel del
+            // muro; hoistato una volta per parete: stesso bool, resa e replay IDENTICI.
+            const bool grafLatoOk = grafQui && (sinistra ? grafLato < 0 : grafLato > 0);
             for (i32 x = a0; x <= b0; ++x) {
                 const f32 t = denValido ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
                 const f32 cieloY = ceilN + ceilDelta * t;
                 const f32 terraY = cur.screenY + terraDelta * t;
                 const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
                 const f32 buio = buioN + buioDelta * t;
-                if (tratto && std::abs(v - 0.16f) < spessN) {
-                    fb_.put(x, y, neonOn ? neonColore : tuboSpento);
+                // V9 ∞ (22/11, lv_04_cromo giro 30): |v-0.16f| serve sia per il tubo
+                // sia per l'alone (quando tratto e' attivo). Prima ricalcolato nel
+                // ramo alone dopo texGalleria; calcolato una volta per pixel nel
+                // tratto attivo. Stesso valore, resa e replay IDENTICI.
+                const f32 dvNeon = tratto ? std::abs(v - 0.16f) : 0.0f;
+                if (tratto && dvNeon < spessN) {
+                    fb_.put(x, y, tuboColore);
                     segnaTubo(x, x, y);
                     continue;
                 }
                 u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
+                // V9 ∞ (22/11, lv_01_neon giro 31): bayerVal hoistato una volta per pixel
+                // (prima letto in alone e in luceEsterna); luce esterna inline. Stessi
+                // valori, resa e replay IDENTICI.
+                const u8 bayerVal = bayerRiga[x & 3];
                 // Alone del neon sul cemento: mezza luce a trama sotto e sopra il tubo.
-                if (tratto && neonOn && std::abs(v - 0.16f) < spessN * 3.5f && BAYER4[y & 3][x & 3] < 8)
+                if (trattoNeonOn && dvNeon < aloneSpess && bayerVal < 8)
                     c = lerpColore(c, neonColore, 0.35f);
-                if (grafQui && (sinistra ? grafLato < 0 : grafLato > 0) && v > 0.03f && v < 0.97f) {
+                if (grafLatoOk && v > 0.03f && v < 0.97f) {
                     // Sul muro di destra chi legge ha davanti il fondo alla sua
                     // sinistra: la scritta comincia dal lontano.
                     const f32 gu = ((f32)gPos + t) / (f32)GRAF_LUNGO;
                     const u32 g = graffito(sinistra ? gu : 1.0f - gu, (v - 0.03f) / 0.94f, x, y);
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
-                fb_.put(x, y, luceEsterna(c, giornoN + giornoDelta * t, x, y));
+                const f32 gLuce = giornoN + giornoDelta * t;
+                if ((f32)bayerVal < gLuce * 12.0f) c = lerpColore(c, tema_.cielo, 0.30f);
+                fb_.put(x, y, c);
                 segnaTubo(x, x, y);
             }
         };
         auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
             const i32 a0 = std::max(0, (i32)xl), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xr);
             const f32 larg = std::max(1.0f, xr - xl);
-            const f32 buio = std::min(0.9f, buioN + (buioF - buioN) * t + 0.18f);
-            const f32 g = giornoN + (giornoF - giornoN) * t;
-            for (i32 x = a0; x <= b0; ++x)
-                fb_.put(x, y, luceEsterna(texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, (i32)(baseU + 8.0f * t), buio), g, x, y));
+            const f32 buio = std::min(0.9f, buioN + buioDelta * t + 0.18f);
+            const f32 g = giornoN + giornoDelta * t;
+            // V9 ∞ (22/11, lv_06_desktop giro 29): la coordinata V della texture
+            // soffitto dipende solo da baseU e t (parametri della chiamata), non
+            // dal pixel x. Prima veniva ricalcolata a ogni pixel; hoistata una
+            // volta per riga: stesso valore, resa e replay IDENTICI.
+            const i32 texV = (i32)(baseU + 8.0f * t);
+            // V9 ∞ (22/11, lv_06_desktop giro 30): soglia luce esterna = g*12.0f
+            // dipende solo da g (costante per questa riga soffitto), non dal pixel x.
+            // Prima ricalcolata dentro luceEsterna a ogni pixel; hoistata una volta
+            // per riga: stesso valore, resa e replay IDENTICI.
+            const f32 sogliaLuceG = g * 12.0f;
+            for (i32 x = a0; x <= b0; ++x) {
+                u32 c = texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, texV, buio);
+                if ((f32)bayerRiga[x & 3] < sogliaLuceG) c = lerpColore(c, tema_.cielo, 0.30f);
+                fb_.put(x, y, c);
+            }
             segnaTubo(a0, b0, y);
         };
         for (i32 y = y0; y <= y1; ++y) {
+            bayerRiga = BAYER4[y & 3];
             if ((f32)y < ceilF) {
                 // Sopra il soffitto lontano: soffitto al centro, cima delle pareti ai lati.
                 const f32 t = ceilF > ceilN ? ((f32)y - ceilN) / (ceilF - ceilN) : 1.0f;
@@ -1608,6 +1679,10 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
         const f32 wu = ((f32)x - cx) / std::max(0.01f, pxUnita);           // unita' mondo
         for (i32 y = top; y <= terra && y < Framebuffer::HEIGHT; ++y) {
             if (inBocca && (f32)y >= bocca) continue;           // bocca aperta
+            // V9 ∞ (22/11, lv_04_cromo giro 29): BAYER4[y & 3] e' invariante per
+            // tutta la riga della collina/fronte galleria; prima indicizzato 4 volte
+            // per pixel. Hoistato una volta per riga: stessi indici, resa e replay IDENTICI.
+            const u8* bayerRiga = BAYER4[y & 3];
             const f32 wv = (p.screenY - (f32)y) / std::max(0.01f, pxY);  // quota sopra la strada
             if (inFronte && (f32)y >= fronteTop) {
                 u32 c = cemento;
@@ -1626,7 +1701,7 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     if (fv < std::max(20.0f, 1.0f / pxY) || fu < std::max(20.0f, 1.0f / pxUnita)) c = giunto;
                     else if (pilastro) c = (f32)x < cx ? cornice : cementoScuro;
                     // Sporco: dal basso sale una fascia piu' scura a trama.
-                    if (c != giunto && wv < 700.0f && (f32)BAYER4[y & 3][x & 3] > wv / 700.0f * 16.0f)
+                    if (c != giunto && wv < 700.0f && (f32)bayerRiga[x & 3] > wv / 700.0f * 16.0f)
                         c = lerpColore(c, 0xFF000000u, 0.25f);
                 }
                 fb_.put(x, y, c);
@@ -1634,12 +1709,12 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
             }
             const f32 prof = (f32)(y - top);
             u32 c;
-            if (prof < std::max(1.0f, 180.0f * pxY)) c = y == top ? erbaChiara : (BAYER4[y & 3][x & 3] < 10 ? tema_.erba : erbaScura);
+            if (prof < std::max(1.0f, 180.0f * pxY)) c = y == top ? erbaChiara : (bayerRiga[x & 3] < 10 ? tema_.erba : erbaScura);
             else {
                 // Strati: fasce di roccia alternate (trama), piu' scure in basso.
                 const i32 strato = (i32)(wv / 520.0f);
                 c = (strato & 1) ? rocciaA : rocciaB;
-                if (BAYER4[y & 3][x & 3] < 4) c = (strato & 1) ? rocciaB : rocciaA;
+                if (bayerRiga[x & 3] < 4) c = (strato & 1) ? rocciaB : rocciaA;
                 // Massi: macchie chiare in posizioni fisse nel mondo.
                 const i32 mu = (i32)std::floor(wu / 900.0f), mv = (i32)std::floor(wv / 700.0f);
                 const u32 hsh = (u32)(mu * 73856093) ^ (u32)(mv * 19349663);
@@ -1648,7 +1723,7 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     const f32 r2 = (fu - 0.5f) * (fu - 0.5f) + (fv - 0.5f) * (fv - 0.5f) * 1.8f;
                     if (r2 < 0.09f) c = fv > 0.55f ? masso : rocciaB;
                 }
-                if (wv < 600.0f && BAYER4[y & 3][x & 3] < 8) c = lerpColore(c, 0xFF000000u, 0.2f);
+                if (wv < 600.0f && bayerRiga[x & 3] < 8) c = lerpColore(c, 0xFF000000u, 0.2f);
             }
             fb_.put(x, y, c);
         }

@@ -1,11 +1,11 @@
-# RIASSUNTO — @grafico (21/11/2026 12:30, Turno 1, giro 138)
-- **Blocco:** V47 VG3 ∞ — confronto date/contenuto PNG `.sglraw`, conversione ridisegni di Andrea.
-- **Stato:** due flag noti, entrambi in area Andrea, nessuno azionabile da qui: `GRAFICA/scenari/lv_04_cromo/skyline.png` MANCANTE (raw presente, gioco OK, sfondo di Andrea non rigenerato, serve ripristino/decisione); `lato_furgone_bianco.png.png` (Andrea 20/11 10:42) senza raw ne' voce catalogo.
-- **Esito controlli (questo turno):** `vg3_date_png_raw.py` exit 1 per i due flag sopra; `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce); `vg3_png_non_catalogati.py` exit 0 (4 non catalogati: 3 car-custom giocatore_pose area Andrea + `.png.png`).
-- **Da convertire 0**, contenuto diverso 0, nessuna conversione eseguita.
-- **PNG/raw:** 165 PNG in GRAFICA (133 confrontati, 32 non motore); 80 oggetti senza raw 0; skyline 5/6 allineati + 1 senza PNG (lv_04_cromo), 0 da rigenerare; altri gruppi 47 raw/45 allineati, png senza raw 1; png piu' nuovi a pari contenuto 81; gruppi raw noti 8/sconosciuti 0.
-- **Blocco residuo:** skyline lv_04_cromo mancante, `.png.png` e 3 car-custom in giocatore_pose: area Andrea, non toccati, in attesa decisione/ripristino Andrea.
-- **Giocatore (area bloccata):** raw pose 15, 10 PNG presenti (pose base 5, stop 5), mancanti 5 pose `_b`, confronto contenuto saltato, nessuna conversione (regola bloccata auto Andrea).
-- **File turno:** nessun asset/raw/catalogo cambiato; `diario.md`, `RIASSUNTO.md` e `STATUS_GRAFICO_PER_CAPO.md` riscritti; `ULTIMO_TURNO.md` non scrivibile (permesso negato).
-- **Gate:** non eseguito (21/11 12:30). Licenze/Sega: zero risorse esterne, zero materiale Sega.
-- **Prossimo:** VG3 ∞ — segnalare ad Andrea/Capo lo skyline lv_04_cromo mancante; attendere esito su `lato_furgone_bianco.png.png`; ricontrollare nuovi PNG.
+# RIASSUNTO — @grafico (22/11/2026 11:58, Turno 2, giro 152)
+- **Blocco:** V47 VG3 ∞ — confronto date PNG `.sglraw` in `GRAFICA/scenari/`, conversione ridisegni di Andrea.
+- **Stato:** area mia tutta allineata, nessuna conversione (contenuto diverso 0, 80 oggetti senza raw 0, skyline 0 da rigenerare, altri 0 da convertire; 165 PNG, 133 confrontati, 32 non motore).
+- **Flag in area Andrea (non toccati):** `GRAFICA/scenari/lv_04_cromo/skyline.png` MANCANTE (`[manca-disegno]`: `skyline_trama.png` identico al raw, manca solo il disegno di Andrea) e `lato_furgone_bianco.png.png` (ridisegno 32.3% diverso dal raw, nome corretto allineato: rinominare/convertire decide Andrea).
+- **Produzione del turno (file diverso dal turno prima, che fu `vg3_date_png_raw.py`):** `TOOLS/vg3_raw_senza_catalogo.py` — `analizza()` restituisce anche `voci_con_raw` (voci con raw: 153, non 159 riferimenti: due voci hanno `raw_elenco` da 4) e nuova funzione pura `noti_risolti(presenti)` (segnala un raw noto-mancante ricomparso su disco → aggiornare `NOTI_RAW_MANCANTI`); nota in testa, docstring, due prove nuove in `--autotest`; exit invariato.
+- **Esiti (questo turno):** `vg3_raw_senza_catalogo.py --autotest` exit 0 (8 prove OK: voci_con_raw, noti_risolti inclusi); `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, 4 refs noti area auto bloccata, 0 risolti, 153 voci/159 riferimenti, 0 sospetti/159); `vg3_date_png_raw.py` exit 1 (solo i due flag Andrea).
+- **Giocatore (area bloccata):** 15 raw, 10 PNG, 5 pose `_b` mancanti, confronto contenuto saltato, nessuna conversione.
+- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` invariato; zero risorse esterne, zero materiale Sega.
+- **File turno:** `TOOLS/vg3_raw_senza_catalogo.py` modificato; `TOOLS/aggiorna_ultimo_turno.py` aggiornato; `diario.md` (una riga), `RIASSUNTO.md` e `ULTIMO_TURNO.md` riscritti.
+- **Gate:** non eseguito (22/11 11:58).
+- **Prossimo:** VG3 ∞ — ricontrollare PNG/raw su un file diverso; restano i due flag e i 4 raw mancanti, tutti decisione Andrea.

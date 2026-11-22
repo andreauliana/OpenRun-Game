@@ -1,12 +1,11 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 21/11/2026 12:32, Turno 1.
-- Blocco/passo: V9 ∞ fluidita' a giro — lv_04_cromo (ventottesimo giro).
-- File cambiati: motore_nuovo/src/render/renderer.cpp — drawTerraSospesa, ramo spiaggia/sabbia sfumata: hoist di `bayerRigaSpiaggia = BAYER4[y&3]` fuori dal ciclo per-pixel (invariante per riga, come gia' per la battigia); stessi indici Bayer, resa e replay IDENTICI, frameHash 0 4118572995 invariato.
-- Comando pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno72_pre_smoke" lv_04_cromo smoke -> exit 0 "GATE OK", medio 0.694 max 2.906 ms (frame 0), replay IDENTICO, frameHash 0 4118572995.
-- Comando pre: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno72_pre_percorso" lv_04_cromo percorso -> exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
-- Comando build: cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4 -> exit 0.
-- Comando post: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno72_post_smoke" lv_04_cromo smoke -> exit 0 "GATE OK", medio 0.657 max 2.887 ms (frame 0), replay IDENTICO, frameHash identici al pre.
-- Comando percorso: ./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv04_turno72_post_percorso" lv_04_cromo percorso -> exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
-- Comando gate: sh UFFICIO/Officina/TOOL/gate_t1.sh -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK" (lv_04_cromo smoke medio 0.665 max 3.049 ms frame 0; nessuna riga FALLITO nel log); eseguito in questo turno alle 12:32.
-- Esito: nessuna regressione, frameHash invariato, replay IDENTICO; ms/frame ben sotto 8 ms (limite Pi 400 12 ms).
-- Prossimo: V9 ∞ lv_05_spray (ventottesimo giro).
+# ULTIMO_TURNO developer
+- Data/ora: 22/11/2026 12:04 (Turno 2)
+- Blocco/passo: V9 ∞ fluidita' — lv_01_neon (trentunesimo giro).
+- File cambiati: `motore_nuovo/src/render/renderer.cpp` (galleria parete: hoist `bayerVal` per pixel, luce esterna inline, rimossa lambda `luceEsterna`; resa/replay identici, frameHash 0 3594390208).
+- Comandi ed exit code:
+  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno87_post_smoke" lv_01_neon smoke` -> exit 0 (GATE OK, medio 0.639 max 2.926 ms frame 0, replay IDENTICO)
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno87_post_percorso" lv_01_neon percorso` -> exit 0 (GATE PERCORSO OK, 1989 frame, 33.2 s, 0% fuori)
+  - `sh UFFICIO/Officina/TOOL/gate_t1.sh` -> exit 0 (GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK)
+- Gate: eseguito in questo turno (22/11/2026 12:04); nessuna riga FALLITO.
+- Note: ms/frame < 8 ms; nessuna modifica a costanti di gameplay. Prossimo: V9 ∞ lv_02_atomico (trentunesimo giro).

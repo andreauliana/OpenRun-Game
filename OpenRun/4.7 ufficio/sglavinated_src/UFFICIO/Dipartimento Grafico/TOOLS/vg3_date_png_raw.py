@@ -27,6 +27,25 @@
 # Un PNG che PIL non riesce ad aprire (salvato a meta', troncato) non fa crashare il
 # controllo: si segnala PNG-ILLEGGIBILE, conta come errore (exit 1), e gli altri esiti
 # restano visibili.
+# Ogni DIVERSO nel ciclo dei raw porta un motivo (classifica_raw): 'contenuto' e' un
+# ridisegno di Andrea da convertire, 'dimensione' un raw di un altro disegno, 'corrotto'
+# un raw troncato/ senza header SGLR da rigenerare. Senza il motivo tutte e tre le
+# cause sembravano lo stesso "da convertire" e l'azione giusta non si distingueva.
+# Un raw con header SGLR e dimensioni uguali al PNG ma buffer pixel troncato (o con
+# byte in piu') e' 'corrotto', non 'dimensione': prima la lunghezza diversa finiva
+# sotto 'dimensione' e sembrava un disegno di un'altra misura, quando e' lo stesso
+# disegno danneggiato da rigenerare.
+# Un PNG con doppia estensione in un gruppo del motore (es. x.png.png) si segnala con
+# ALTRI-PNG-DOPPIA-ESTENSIONE e il nome vero: lo stem lo faceva passare per x.png, che
+# ha il suo raw, e il residuo restava illeggibile. Non si rinomina e non si converte
+# da qui: la decisione e' di Andrea.
+# Se lo skyline di un livello manca (PNG sparito, raw ancora presente) si aggiunge
+# SKYLINE-RESIDUO: dice se il raw e' ancora identico a skyline_trama.png, cioe' se lo
+# sfondo in gioco e' quello giusto e manca solo il disegno di Andrea da ripristinare.
+# La riga SKYLINE-MANCA porta ora uno stato (classifica_skyline): 'manca-disegno'
+# (sfondo giusto, manca solo il PNG di Andrea) e' distinto da 'manca-sfondo' (raw di
+# un altro disegno): prima entrambi dicevano solo SKYLINE-MANCA e non si distingueva
+# la decisione di Andrea da un guasto da rigenerare.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -111,6 +130,29 @@ def raw_atteso(png):
         return None
 
 
+def classifica_raw(atteso, grezzo):
+    """Perche' un raw non e' identico al PNG atteso. Funzione pura.
+
+    Ritorna 'uguale' | 'corrotto' | 'dimensione' | 'contenuto':
+    - corrotto:   raw senza header SGLR valido, o con l'header delle dimensioni
+                  uguale al PNG ma il buffer pixel troncato/piu' lungo, da rigenerare;
+    - dimensione: testata delle dimensioni diversa dal PNG (raw di un altro disegno);
+    - contenuto:  stesse dimensioni e lunghezza ma pixel diversi (ridisegno di Andrea).
+    Serve a non scambiare un raw danneggiato per un disegno nuovo, e viceversa.
+    """
+    if grezzo == atteso:
+        return "uguale"
+    if not grezzo.startswith(b"SGLR") or len(grezzo) < 12:
+        return "corrotto"
+    if len(atteso) >= 12 and grezzo[4:12] != atteso[4:12]:
+        return "dimensione"
+    if len(grezzo) != len(atteso):
+        # Header e dimensioni coincidono: se il buffer pixel non e' della lunghezza
+        # giusta il raw e' troncato/con byte extra, non un disegno piu' grande.
+        return "corrotto"
+    return "contenuto"
+
+
 def modulo_trama():
     """Modulo trama_scenari.py (stesse regole dello skyline), o None se non c'e'."""
     try:
@@ -152,6 +194,57 @@ def raw_skyline_atteso(png, livello, modulo):
     return b"SGLR" + struct.pack("<II", img.width, img.height) + img.convert("RGBA").tobytes()
 
 
+def residuo_skyline(livello, raw):
+    """Se lo skyline originale e' sparito, dice cosa resta: l'intermedio con la trama.
+
+    trama_scenari.py non tocca il PNG di Andrea: scrive skyline_trama.png accanto e
+    converte quello. Se il PNG originale manca ma l'intermedio c'e', il raw si puo'
+    ancora rifare identico (lo sfondo in gioco non cambia) e l'unica cosa persa e' il
+    disegno da ridisegnare/ripristinare. Solo diagnosi: non rigenera lo sfondo di Andrea.
+    """
+    intermedio = SCENARI / livello / "skyline_trama.png"
+    if not intermedio.exists():
+        print(f"SKYLINE-RESIDUO {livello}: nessun skyline_trama.png, il raw non e' rifacibile da qui")
+        return
+    atteso = raw_atteso(intermedio)
+    if atteso is None:
+        print(f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} non apribile da PIL")
+    elif raw.exists() and raw.read_bytes() == atteso:
+        print(
+            f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} identico al raw"
+            f" {data(raw)}: lo sfondo in gioco e' quello, manca solo il PNG di Andrea"
+        )
+    else:
+        print(
+            f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} diverso dal raw"
+            f" {data(raw)}: da decidere con Andrea"
+        )
+
+
+def raw_e_trama(livello, raw):
+    """Il raw dello skyline e' ancora skyline_trama.png (sfondo ricostruibile)."""
+    intermedio = SCENARI / livello / "skyline_trama.png"
+    if not intermedio.exists() or not raw.exists():
+        return False
+    atteso = raw_atteso(intermedio)
+    return atteso is not None and raw.read_bytes() == atteso
+
+
+def classifica_skyline(png_esiste, raw_esiste, raw_uguale_trama):
+    """Stato di uno skyline nella diagnosi VG3 (funzione pura).
+
+    Prima i casi con PNG o raw mancante stampavano tutti 'SKYLINE-MANCA' e non si
+    capiva se mancava solo il disegno di Andrea (lo sfondo in gioco e' giusto) o
+    anche lo sfondo (raw di un altro disegno, da decidere con Andrea).
+    Ritorna: 'allineato' | 'da-rigenerare' | 'manca-disegno' | 'manca-sfondo' | 'raw-manca'.
+    """
+    if not raw_esiste:
+        return "raw-manca"
+    if png_esiste:
+        return "allineato" if raw_uguale_trama else "da-rigenerare"
+    return "manca-disegno" if raw_uguale_trama else "manca-sfondo"
+
+
 def png_oggetti():
     """Inverso di png_sorgente(): ogni PNG di oggetto con il raw che gli spetta."""
     for png in sorted(SCENARI.glob("comuni/oggetti/*.png")):
@@ -187,6 +280,37 @@ def png_altri_orfani():
         stile = png.stem[len("cartellone_"):]
         raw = RAW_ROOT / "sponsor" / f"{png.parent.name}_{stile}.sglraw"
         yield png, "sponsor", raw
+
+
+def base_doppia_estensione(png):
+    """'lato_furgone_bianco.png.png' -> 'lato_furgone_bianco'; None se il nome e' normale.
+
+    Serve a non confondere il residuo con l'asset vero: stampando lo stem, un
+    'x.png.png' senza raw appariva come 'x.png' e sembrava il file con raw regolare.
+    """
+    if png.name.endswith(".png.png"):
+        return png.name[: -len(".png.png")]
+    return None
+
+
+def stato_doppia_estensione(png, raw_base):
+    """Cosa e' il file a doppia estensione rispetto al raw del nome corretto.
+
+    Ritorna (stato, dettaglio): 'doppione' se i byte coincidono col raw (risalvataggio
+    inutile), 'ridisegno' se il contenuto e' diverso (allora il file e' un disegno nuovo
+    di Andrea salvato col nome sbagliato), 'illeggibile' o 'senza-raw' negli altri casi.
+    Serve a distinguere i due casi prima di chiedere ad Andrea di rinominare: senza
+    questo confronto il residuo sembrava sempre "da decidere".
+    """
+    atteso = raw_atteso(png)
+    if atteso is None:
+        return "illeggibile", "non apribile da PIL"
+    if not raw_base.exists():
+        return "senza-raw", f"raw {raw_base.stem}.sglraw manca"
+    grezzo = raw_base.read_bytes()
+    if grezzo == atteso:
+        return "doppione", f"identico al raw {data(raw_base)}"
+    return "ridisegno", dettaglio_diff(atteso, grezzo, raw_base)
 
 
 def png_coperti():
@@ -426,7 +550,10 @@ def main():
             righe.append(f"PNG-ILLEGGIBILE {livello}/{nome}: png {data(png)} non apribile da PIL")
         elif raw.read_bytes() != atteso:
             diversi += 1
-            righe.append(f"DIVERSO    {livello}/{nome}: png {data(png)} raw {data(raw)}")
+            motivo = classifica_raw(atteso, raw.read_bytes())
+            righe.append(
+                f"DIVERSO    {livello}/{nome}: png {data(png)} raw {data(raw)} [{motivo}]"
+            )
         elif png.stat().st_mtime > raw.stat().st_mtime:
             png_piu_nuovo += 1
             noise.append(
@@ -453,7 +580,9 @@ def main():
         raw = RAW / livello / "skyline.sglraw"
         if not png.exists() or not raw.exists():
             skyline_senza += 1
-            print(f"SKYLINE-MANCA {livello}: png {png.exists()} raw {raw.exists()}")
+            stato = classifica_skyline(png.exists(), raw.exists(), raw_e_trama(livello, raw))
+            print(f"SKYLINE-MANCA {livello}: png {png.exists()} raw {raw.exists()} [{stato}]")
+            residuo_skyline(livello, raw)
             continue
         atteso = raw_skyline_atteso(png, livello, mod_trama)
         if atteso is None:
@@ -511,7 +640,46 @@ def main():
                 print(f"ALTRI-RESIDUO {gruppo}/{png.stem}: png {data(png)} (nessun raw, non usato)")
                 continue
             altri_orfani += 1
-            print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.stem}: png {data(png)}")
+            doppia = base_doppia_estensione(png)
+            if doppia is not None:
+                raw_base = raw.parent / f"{doppia}.sglraw"
+                print(
+                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: png {data(png)}"
+                    " (doppia estensione: il catalogo non lo vede)"
+                )
+                print(
+                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: nome atteso {doppia}.png;"
+                    f" raw {doppia}.sglraw "
+                    + (f"esiste ({data(raw_base)})" if raw_base.exists() else "manca")
+                    + ": rinominare o convertire decide Andrea"
+                )
+                stato, dettaglio = stato_doppia_estensione(png, raw_base)
+                print(
+                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: {stato} ({dettaglio})"
+                    + (
+                        ": doppione inutile, nessun ridisegno da convertire"
+                        if stato == "doppione"
+                        else ": e' un disegno diverso dal raw, va col nome corretto e convertito"
+                        if stato == "ridisegno"
+                        else ""
+                    )
+                )
+                nome_ok = png.parent / f"{doppia}.png"
+                if nome_ok.exists():
+                    atteso_ok = raw_atteso(nome_ok)
+                    allineato = (
+                        atteso_ok is not None
+                        and raw_base.exists()
+                        and raw_base.read_bytes() == atteso_ok
+                    )
+                    print(
+                        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: il nome corretto"
+                        f" {doppia}.png esiste ({data(nome_ok)}), "
+                        + ("allineato al raw" if allineato else "diverso dal raw")
+                        + ": il .png.png non e' l'asset che il motore legge"
+                    )
+            else:
+                print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.name}: png {data(png)}")
     print(f"altri gruppi: raw esaminati {altri_tot} (allineati {altri_ok})")
     print(f"altri gruppi: da convertire {altri_diversi}, png piu' nuovi a pari contenuto {altri_nuovo}")
     print(f"altri gruppi: raw senza png {altri_senza}, png senza raw {altri_orfani}")
@@ -562,7 +730,25 @@ if __name__ == "__main__":
             dati = buono.read_bytes()
             rotto.write_bytes(dati[: len(dati) // 2])
             ok = (raw_atteso(buono) or b"")[:4] == b"SGLR" and raw_atteso(rotto) is None
+            atteso_buono = raw_atteso(buono) or b""
         print("autotest raw_atteso: " + ("OK" if ok else "FALLITO"))
+        # classifica_raw: distingue ridisegno (contenuto), raw di altro disegno
+        # (dimensione) e raw troncato (corrotto); senza il motivo sembravano uguali.
+        cls = (
+            classifica_raw(atteso_buono, atteso_buono),
+            classifica_raw(atteso_buono, atteso_buono[:8]),
+            classifica_raw(atteso_buono, b"SGLR" + struct.pack("<II", 3, 3) + atteso_buono[12:]),
+            classifica_raw(atteso_buono, b"SGLR" + struct.pack("<II", 2, 2) + bytes(16)),
+        )
+        ok_cls = cls == ("uguale", "corrotto", "dimensione", "contenuto")
+        ok = ok and ok_cls
+        print("autotest classifica_raw: " + ("OK" if ok_cls else "FALLITO"))
+        # Stesso header e dimensioni ma buffer pixel troncato: e' 'corrotto' e non
+        # 'dimensione' (prima sembrava un disegno di un'altra misura).
+        troncato = atteso_buono[:14]
+        ok_troncato = classifica_raw(atteso_buono, troncato) == "corrotto"
+        ok = ok and ok_troncato
+        print("autotest classifica_raw-troncato: " + ("OK" if ok_troncato else "FALLITO"))
         # 7 file PNG (3 pose base + 4 stop) ma solo 5 coppie pronte: il conteggio
         # dei file non va scambiato con quello delle coppie confrontabili.
         conta = conta_pose(["dritta", "sx1", "sx2"], ["sx1", "sx2", "sx3", "sx4"])
@@ -572,6 +758,42 @@ if __name__ == "__main__":
         )
         ok = ok and ok_conta
         print("autotest conta_pose: " + ("OK" if ok_conta else "FALLITO"))
+        ok_doppia = (
+            base_doppia_estensione(Path("x/lato_furgone_bianco.png.png"))
+            == "lato_furgone_bianco"
+            and base_doppia_estensione(Path("x/lato_furgone_bianco.png")) is None
+        )
+        ok = ok and ok_doppia
+        print("autotest base_doppia_estensione: " + ("OK" if ok_doppia else "FALLITO"))
+        # Doppia estensione: lo stesso disegno del raw e' un doppione, uno diverso e'
+        # un ridisegno da rinominare; senza il confronto i due casi si confondevano.
+        with tempfile.TemporaryDirectory() as td:
+            uguale = Path(td) / "uguale.png.png"
+            diverso = Path(td) / "diverso.png.png"
+            raw_base = Path(td) / "uguale.sglraw"
+            Image.new("RGBA", (3, 3), (11, 22, 33, 255)).save(uguale)
+            raw_base.write_bytes(raw_atteso(uguale) or b"")
+            Image.new("RGBA", (3, 3), (200, 100, 50, 255)).save(diverso)
+            stato_uguale = stato_doppia_estensione(uguale, raw_base)[0]
+            stato_diverso = stato_doppia_estensione(diverso, raw_base)[0]
+        ok_stato = stato_uguale == "doppione" and stato_diverso == "ridisegno"
+        ok = ok and ok_stato
+        print("autotest stato_doppia_estensione: " + ("OK" if ok_stato else "FALLITO"))
+        # classifica_skyline: 'manca solo il disegno' (sfondo giusto) e 'manca anche
+        # lo sfondo' stampavano entrambi SKYLINE-MANCA; vanno distinti, come pure
+        # raw mancante e i due casi con PNG presente.
+        cls_sky = (
+            classifica_skyline(False, True, True),
+            classifica_skyline(False, True, False),
+            classifica_skyline(True, True, True),
+            classifica_skyline(True, True, False),
+            classifica_skyline(False, False, False),
+        )
+        ok_sky_cls = cls_sky == (
+            "manca-disegno", "manca-sfondo", "allineato", "da-rigenerare", "raw-manca"
+        )
+        ok = ok and ok_sky_cls
+        print("autotest classifica_skyline: " + ("OK" if ok_sky_cls else "FALLITO"))
         # Skyline: il PNG grezzo non si confronta col raw (la trama lo ricompone),
         # quindi la prova negativa e' che la ricomposizione segua il disegno: due PNG
         # diversi devono dare raw SGLR diversi. Se trama_scenari.py non si importa il
