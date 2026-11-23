@@ -169,12 +169,20 @@ def autotest():
         and not percorso_raw_valido("GRAFICA/sponsor/x.sglraw")
         and not percorso_raw_valido("motore_nuovo/dati/sprite_raw/../fuori.sglraw")
         and not percorso_raw_valido("motore_nuovo/dati/sprite_raw/x.png")
+        and not percorso_raw_valido("")
+        and not percorso_raw_valido("/motore_nuovo/dati/sprite_raw/x.sglraw")
     )
     validi, sospetti = classifica_percorsi({
         "motore_nuovo/dati/sprite_raw/a.sglraw": ["a"],
         "GRAFICA/vecchio.sglraw": ["b"],
     })
-    ok_percorsi = ok_percorsi and validi == ["motore_nuovo/dati/sprite_raw/a.sglraw"] and sospetti == ["GRAFICA/vecchio.sglraw"]
+    v_vuoti, s_vuoti = classifica_percorsi({})
+    ok_percorsi = (
+        ok_percorsi
+        and validi == ["motore_nuovo/dati/sprite_raw/a.sglraw"]
+        and sospetti == ["GRAFICA/vecchio.sglraw"]
+        and v_vuoti == [] and s_vuoti == []
+    )
     prove.append(("classifica_percorsi", ok_percorsi))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")

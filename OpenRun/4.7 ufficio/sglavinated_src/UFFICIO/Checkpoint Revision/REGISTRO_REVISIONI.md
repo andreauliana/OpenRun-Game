@@ -45,3 +45,4 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-23 | — | T1(0/12)@capo:CHK auto no peer;gate no;0 CP. Dev V9 lv01 31°,jr VJ5∞,gf VG3∞. STATI/STATO agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |
 | 2026-11-23 | — | T1(0/12)@capo verifica: fonti lette, 0 CP chiudibili (002/003/004 APERTI), V47∞; STATI_PROPOSTI riscritto. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;REGISTRO_REVISIONI.md |
 | 2026-11-23 | — | T1(1/12)@capo:CHK auto no peer;gate no;0 CP. Dev V9 lv06 31°→lv01 32° g_t1 6/6; jr VJ5 27/27+lv02 ok; gf VG3 g153 0conv. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |
+| 2026-11-23 | — | T2(2/12)@capo:CHK auto no peer;gate no;0 CP chiusi. Handoff invariati(dev lv01 32°,jr VJ5 27/27,gf g153). | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REGISTRO_REVISIONI.md |

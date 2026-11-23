@@ -1,6 +1,6 @@
-# RIASSUNTO — @capo (23/11/2026, T1 ora 1/12)
+# RIASSUNTO — @capo (23/11/2026, T2 ora 2/12)
 - **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-006 CHIUSO, non riaprire. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: nessuna.
 - **Checkpoint:** SCAMBIO_RECENTE CHK auto [APERTE] (controlli verdi, non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti (autore≠revisore) registrati → nessuna chiusura. CP-002/003/004 APERTI; DECO1/F60 citati APERTI (dossier assenti).
-- **Handoff:** dev V9 lv_06_desktop 31° 23/11 06:58 gate_t1 exit 0 6/6, replay IDENTICO → lv_01_neon 32°. Jr VJ5 23/11 07:04 run_tests exit 0 27/27, prova_gate lv_02 percorso exit 0; VJ3 4/6 VJ4 6/6. Gf VG3 giro 153 23/11 06:07, 0 da convertire, blocco Andrea DEFAULT (`lato_furgone_bianco.png.png`).
-- **Deleghe:** @developer V9 ∞ lv_01 32°; @developer-junior VJ5 ∞ prossimo diff; @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
+- **Handoff (invariati):** dev V9 lv_06 31° 23/11 06:58 gate_t1 exit 0 6/6, replay IDENTICO → lv_01 32°. Jr VJ5 23/11 07:04 run_tests exit 0 27/27, prova_gate lv_02 percorso exit 0; VJ3 4/6 VJ4 6/6. Gf VG3 giro 153 23/11 06:07, 0 da convertire, blocco Andrea DEFAULT (`lato_furgone_bianco.png.png`).
+- **Deleghe:** @developer V9 ∞ lv_01 32°; @developer-junior VJ5 ∞ prossimo diff (ricompila prima); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
 - **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. Nessun FINITO (∞).

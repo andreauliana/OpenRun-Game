@@ -1,9 +1,10 @@
-# ULTIMO TURNO — @developer-junior (23/11/2026 07:04)
-- **Blocco/passi**: V47 · VJ5 ∞ (review del codice @developer) · VJ4 chiuso 6/6.
-- **File cambiati (solo mie uscite)**: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto), riga in `UFFICIO/Officina/STATUS_OFFICINA.md`. Nessun file di prodotto modificato.
-- **Oggetto review**: `motore_nuovo/src/render/renderer.cpp` — scrittura diretta framebuffer al posto di `fb_.put` in `parete` (`riga` :911, usi :967/:987) e `soffittoRiga` (`rigaSoff` :1003, uso :1020); nuovi vs 06:47, commenti "V9 ∞ 23/11 lv_06_desktop giro 31".
-- **Esito review**: nessun errore. `put` = guard bounds + `buf_[y*WIDTH+x]=color`; scrittura diretta identica via `data()`. Coordinate sempre in bounds (y0>=0, y1<=HEIGHT-1 :797-798; a0>=0, b0<=WIDTH-1 :905/:1004) -> guard sempre false, stessi pixel/valori, `segnaTubo` invariato, resa/replay IDENTICI, schema gia' usato altrove nel file e in `hline`. Semplificazione: nessuna; commenti :906-910/:1004-1006/:1028-1031 verbosi; rilievo doc persistente :495 "riga 408".
-- **Comando 1**: `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 0** (ctest 27/27, 159.95 s, prova_gate ricompilato, gate_decorazioni passa).
-- **Comando 2**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_direttawrite_2311_t1" lv_02_atomico percorso` — **exit 0** (GATE PERCORSO OK, 2476 frame/41.3 s @60 Hz, fuori strada 0; lv_02 con galleria esercita il codice cambiato, diverso da lv_05_spray del turno prima).
-- **gate_t1.sh**: non eseguito in questo turno.
-- **Prossimo**: VJ5 ∞ — rileggere l'ultimo cambio `src/` (hunk/file diverso da parete/soffitto direct-write).
+# ULTIMO TURNO — @developer-junior (23/11/2026 08:26)
+- **Blocco/pass**: V47 VJ4 (terzo passo, 3/6, davanti a VJ5 ∞) — soak `lv_03_foglie`.
+- **File cambiati (solo documenti di ruolo)**: `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto). Nessuna modifica a src/test/dati di prodotto; REVIEW_V47 non toccato (VJ4 non chiede review), STATUS_OFFICINA non toccato (nessun altro .md).
+- **Comando 1**: `git status --short` — **exit 0** (M src renderer.cpp + road.cpp, non toccati: solo prova).
+- **Comando 2**: `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 0** (ctest **27/27**, 174.85 s, prova_gate ricompilato, gate_decorazioni passa).
+- **Comando 3**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv03_foglie_soak_2311_t1" lv_03_foglie soak` — **exit 0** (`GATE OK`).
+- **Misure**: 30000 frame x2, replay **IDENTICO**, nessun crash; ms/frame medio **0.845**, max **79.872** (frame 16637, limite 20); accelerazione reattiva, offroad frame 156, X[-1070.7,2100.0], zFinale 737468.6, car 6.5/4.4 ms, init 14.7/10.9 ms.
+- **Problemi residui**: spike 79.872 ms/frame isolato (1 frame su 30000, non ripetuto nel replay; media 0.845): sopra limite 20 e target Pi 400 12 ms, come 61.573 (lv_01) e 90.682 (lv_02); da tenere d'occhio. Non e' un fail.
+- **`gate_t1.sh`**: non eseguito in questo turno.
+- **Prossimo**: VJ4 soak `lv_04_cromo` (4/6, livello diverso), poi VJ5 ∞.

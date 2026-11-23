@@ -753,6 +753,12 @@ if __name__ == "__main__":
         ok_troncato = classifica_raw(atteso_buono, troncato) == "corrotto"
         ok = ok and ok_troncato
         print("autotest classifica_raw-troncato: " + ("OK" if ok_troncato else "FALLITO"))
+        # Buffer pixel piu' lungo del dovuto: stesso esito 'corrotto' (raw danneggiato,
+        # non un disegno di misura diversa).
+        lungo = atteso_buono + b"\x00" * 4
+        ok_lungo = classifica_raw(atteso_buono, lungo) == "corrotto"
+        ok = ok and ok_lungo
+        print("autotest classifica_raw-lungo: " + ("OK" if ok_lungo else "FALLITO"))
         # 7 file PNG (3 pose base + 4 stop) ma solo 5 coppie pronte: il conteggio
         # dei file non va scambiato con quello delle coppie confrontabili.
         conta = conta_pose(["dritta", "sx1", "sx2"], ["sx1", "sx2", "sx3", "sx4"])
@@ -771,16 +777,27 @@ if __name__ == "__main__":
         print("autotest base_doppia_estensione: " + ("OK" if ok_doppia else "FALLITO"))
         # Doppia estensione: lo stesso disegno del raw e' un doppione, uno diverso e'
         # un ridisegno da rinominare; senza il confronto i due casi si confondevano.
+        # Copre anche raw mancante e PNG illeggibile: non vanno scambiati per doppione.
         with tempfile.TemporaryDirectory() as td:
             uguale = Path(td) / "uguale.png.png"
             diverso = Path(td) / "diverso.png.png"
+            rotto = Path(td) / "rotto.png.png"
             raw_base = Path(td) / "uguale.sglraw"
+            raw_manca = Path(td) / "manca.sglraw"
             Image.new("RGBA", (3, 3), (11, 22, 33, 255)).save(uguale)
             raw_base.write_bytes(raw_atteso(uguale) or b"")
             Image.new("RGBA", (3, 3), (200, 100, 50, 255)).save(diverso)
+            rotto.write_bytes(b"non-png")
             stato_uguale = stato_doppia_estensione(uguale, raw_base)[0]
             stato_diverso = stato_doppia_estensione(diverso, raw_base)[0]
-        ok_stato = stato_uguale == "doppione" and stato_diverso == "ridisegno"
+            stato_senza_raw = stato_doppia_estensione(uguale, raw_manca)[0]
+            stato_illeggibile = stato_doppia_estensione(rotto, raw_base)[0]
+        ok_stato = (
+            stato_uguale == "doppione"
+            and stato_diverso == "ridisegno"
+            and stato_senza_raw == "senza-raw"
+            and stato_illeggibile == "illeggibile"
+        )
         ok = ok and ok_stato
         print("autotest stato_doppia_estensione: " + ("OK" if ok_stato else "FALLITO"))
         # classifica_skyline: 'manca solo il disegno' (sfondo giusto) e 'manca anche

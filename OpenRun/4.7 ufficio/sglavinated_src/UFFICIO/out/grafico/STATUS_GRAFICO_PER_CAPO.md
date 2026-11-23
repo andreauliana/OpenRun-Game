@@ -1,13 +1,12 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (23/11/2026 06:07, Turno 1)
-- **Stato:** V47 VG3 ∞ (giro 153). Confronto date/contenuto PNG di `GRAFICA/` coi `.sglraw`: area mia tutta allineata, contenuto diverso da convertire 0, nessuna conversione. Skyline 6/6 allineate (il precedente flag SKYLINE-MANCA `lv_04_cromo` non compare piu' in `vg3_date_png_raw.py`). Resta un solo flag noto in area Andrea, non azionabile: `GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png` (doppia estensione, ridisegno 32.3% diverso dal raw; nome corretto `lato_furgone_bianco.png` allineato).
-- **Materiali modificati (dati/asset):** nessun asset, raw, PNG o catalogo cambiato.
-- **Materiali modificati (codice mio, file diverso dal turno prima):** `UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py` — aggiunta funzione pura `conteggio_per_sorgente(pngs)` e stampa riepilogo "da decidere per area" quando ci sono PNG nuovi; aggiunta prova `conteggio_per_sorgente` in `--autotest`. Exit code invariato.
+# STATUS_GRAFICO_PER_CAPO — @grafico (23/11/2026 08:32, Turno 2)
+- **Stato:** V47 VG3 ∞ (giro 162). Confronto date/contenuto PNG di `GRAFICA/` coi `.sglraw`: area mia tutta allineata, contenuto diverso da convertire 0. Skyline 6/6 allineati. Unico flag noto in area Andrea, non azionabile: `GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png` (doppia estensione, ridisegno 32.3% diverso dal raw; nome corretto `lato_furgone_bianco.png` allineato).
+- **Materiali modificati (dati/asset):** nessuno.
+- **Materiali modificati (tool/codice):** nessuno.
 - **Catalogo/licenze:** `CATALOGO_GRAFICO.json` non modificato; zero risorse esterne, zero materiale Sega, provenienza invariata.
-- **Comandi ed exit code (eseguiti in questo turno, 23/11 06:07):**
+- **Comandi ed exit code (eseguiti in questo turno, 23/11 08:32):**
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1, solo flag furgone `.png.png` in area Andrea: 166 PNG (134 confrontati, 32 non motore), 80 oggetti senza raw 0, skyline 0 da rigenerare/6 allineati, altri 0 da convertire, contenuto diverso 0, 81 risalvataggi a pari contenuto, giocatore 15 raw/10 PNG/5 pose `_b` mancanti (confronto saltato).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155 raw/155 tracciati, 0 senza voce; 4 riferimenti 'raw' senza file, tutti area auto Andrea bloccata; 0 risolti, 153 voci/159 riferimenti, 0 sospetti).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py" --autotest` — exit 0 (5 prove OK: classifica, noti_mancanti, sorgente, area_bloccata, conteggio_per_sorgente).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (4 noti non-asset, 0 da decidere).
-- **Lacune/blocchi:** (1) `.png.png` furgone incrocio: rinominare/convertire decide Andrea; (2) 3 `car-custom*` in `giocatore_pose`, area Andrea; (3) 4 raw `sx1/sx3` mancanti, area auto Andrea; (4) 5 pose `_b` mancanti, area bloccata (regola auto Andrea), confronto contenuto saltato.
-- **Gate:** non eseguito (23/11 06:07).
-- **Review richiesta:** nessuna. Prossimo: VG3 ∞ — ricontrollare nuovi PNG/raw su un file diverso, tenere i flag visibili ad Andrea.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (4 noti non-asset, 0 catalogati, 0 da decidere).
+- **Lacune/blocchi:** (1) `.png.png` furgone incrocio: rinominare/convertire decide Andrea; (2) 3 `car-custom*` in `giocatore_pose`, area Andrea; (3) 4 raw `sx1/sx3` mancanti, area auto Andrea; (4) 5 pose `_b` mancanti, area bloccata.
+- **Gate:** non eseguito (23/11 08:32).
+- **Review richiesta:** nessuna. Prossimo: VG3 ∞ — ricontrollare nuovi PNG/raw; convertire solo se un PNG è più nuovo, senza toccare area Andrea.

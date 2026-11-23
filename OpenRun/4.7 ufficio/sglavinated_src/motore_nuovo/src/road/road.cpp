@@ -487,10 +487,19 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
 
     constexpr i32 SAMPLES_PER_SEGMENT = 4;
     out.reserve((size_t)DRAW_DIST * SAMPLES_PER_SEGMENT);
-    for (i32 i = 0; i < DRAW_DIST; ++i) {
-        i32 idx = (startIdx + i) % (i32)segs_.size();
+    // V9 ∞ (23/11, lv_05_spray giro 32): l'indice del segmento avanza di uno per
+    // iterazione invece di rifare `(startIdx + i) % segs_.size()` (divisione
+    // intera) a ogni segmento, centinaia al frame. startIdx e' gia' in [0,nSeg)
+    // (clampato in indiceSegmento) e l'incremento sta nell'incremento del for,
+    // quindi scatta anche quando un sample fa `continue`. Stesso idx e stesso
+    // prev di prima -> stessi float di x/dx/curve e screenX/screenY, resa e
+    // replay IDENTICI. Anche l'indice del segmento precedente (l'anello) si
+    // calcola senza modulo: per idx in [0,nSeg) e' identico a (idx+nSeg-1)%nSeg.
+    const i32 nSeg = (i32)segs_.size();
+    i32 idx = startIdx;
+    for (i32 i = 0; i < DRAW_DIST; ++i, idx = (idx + 1 >= nSeg) ? 0 : idx + 1) {
         const RoadSegment& seg = segs_[idx];
-        const RoadSegment& prev = segs_[(idx + (i32)segs_.size() - 1) % (i32)segs_.size()];
+        const RoadSegment& prev = segs_[idx == 0 ? nSeg - 1 : idx - 1];
 
         const f32 tStart = (i == 0) ? segT : 0.0f;
         // V9 ∞ (23/11, lv_01_neon giro 32): (1-tStart) dipende solo dal
@@ -503,15 +512,24 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
         const f32 unoMenoTStart = 1.0f - tStart;
         const f32 passo = (f32)seg.length * unoMenoTStart / (f32)SAMPLES_PER_SEGMENT;
         const f32 mezzoPasso = 0.5f * unoMenoTStart / (f32)SAMPLES_PER_SEGMENT;
+        // V9 ∞ (23/11, lv_03_foglie giro 32): (seg.curve - prev.curve) e
+        // (seg.p2y - seg.p1y) dipendono solo dal segmento (prev/seg costanti nel
+        // ciclo di campioni), non dal sample; prima venivano ricalcolati in `k`
+        // e in `curY` a ogni campione (4 volte per segmento, centinaia di
+        // segmenti al frame). Stessi operandi e stesso ordine -> stessi float
+        // di k/x/dx/curY, screenX/screenY e l'intera resa restano bit-identici,
+        // replay IDENTICO.
+        const f32 curveDelta = seg.curve - prev.curve;
+        const f32 quotaDelta = seg.p2y - seg.p1y;
         for (i32 sample = 1; sample <= SAMPLES_PER_SEGMENT; ++sample) {
             const f32 t = tStart + unoMenoTStart *
                 ((f32)sample / (f32)SAMPLES_PER_SEGMENT);
             const f32 tMezzo = t - mezzoPasso;
-            const f32 k = (prev.curve + (seg.curve - prev.curve) * tMezzo) * CURVE_SCALE;
+            const f32 k = (prev.curve + curveDelta * tMezzo) * CURVE_SCALE;
             x += dx * passo + 0.5f * k * passo * passo;
             dx += k * passo;
             curZ += passo;
-            const f32 curY = seg.p1y + (seg.p2y - seg.p1y) * t;
+            const f32 curY = seg.p1y + quotaDelta * t;
 
             const f32 z = curZ; // distanza relativa alla telecamera
             if (z < Z_NEAR) continue;

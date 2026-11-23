@@ -853,6 +853,13 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // V9 ∞ (22/11, lv_02_atomico giro 29): BAYER4[y & 3] e' invariante
         // per riga; bayerRiga precalcolata passata a parete/soffittoRiga.
         const f32 baseU = (f32)(cur.index % 256) * 8.0f;
+        // V9 ∞ (23/11, lv_02_atomico giro 32): il colore del cielo usato per la
+        // luce esterna sulla parete e sul soffitto e' un campo di tema_, costante
+        // per tutto il trapezio. Prima letto da tema_.cielo a ogni pixel dei due
+        // loop caldi della galleria (finche' la condizione Bayer scatta); letto
+        // una volta qui e catturato dalle lambda. Stesso u32, stessi operandi e
+        // stesso ordine -> resa e replay IDENTICI, frameHash invariato.
+        const u32 cieloChiaro = tema_.cielo;
         // Neon (Andrea 08/11 sera): un tubo orizzontale per lato in alto sulla
         // parete, a tratti (3 segmenti accesi, 1 spento) cosi' scorre veloce;
         // a sinistra il colore della tappa, a destra un ciano freddo.
@@ -983,7 +990,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     if (g) c = lerpColore(g, 0xFF000000u, std::min(0.7f, buio * 0.8f));
                 }
                 const f32 gLuce = giornoN + giornoDelta * t;
-                if ((f32)bayerVal < gLuce * 12.0f) c = lerpColore(c, tema_.cielo, 0.30f);
+                if ((f32)bayerVal < gLuce * 12.0f) c = lerpColore(c, cieloChiaro, 0.30f);
                 riga[x] = c; // V9 ∞ lv_06 giro 31: scrittura diretta (bounds gia' noti)
             }
             // V9 ∞ (23/11, lv_05_spray giro 31): segnaTubo(x,x,y) veniva chiamato
@@ -1016,7 +1023,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             const f32 sogliaLuceG = g * 12.0f;
             for (i32 x = a0; x <= b0; ++x) {
                 u32 c = texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, texV, buio);
-                if ((f32)bayerRiga[x & 3] < sogliaLuceG) c = lerpColore(c, tema_.cielo, 0.30f);
+                if ((f32)bayerRiga[x & 3] < sogliaLuceG) c = lerpColore(c, cieloChiaro, 0.30f);
                 rigaSoff[x] = c; // V9 ∞ lv_06 giro 31: scrittura diretta (bounds gia' noti)
             }
             segnaTubo(a0, b0, y);
@@ -2119,12 +2126,24 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     // gli indici restano identici riga per riga, quindi l'immagine non cambia.
     // nCol <= WIDTH (sxIni/sxFin sono ritagliati allo schermo, al piu' WIDTH).
     const i32 nCol = sxFin - sxIni;
+    // V9 ∞ (23/11, lv_04_cromo giro 32): `specchia` e' costante per tutto lo
+    // sprite, non dipende dalla colonna.
+    const bool specchia = s.specchia;
+    // V9 ∞ (23/11, lv_04_cromo giro 32): tx1 della colonna c e' esattamente lo
+    // stesso valore di tx0 della colonna c+1, ((sxIni+c+1)*sw)/w. Prima la
+    // divisione a 64 bit veniva rifatta due volte per colonna (2*nCol divisioni,
+    // e qui si disegnano fino a 450 cartelloni); calcolandola una volta per
+    // colonna (nCol+1 divisioni) e riutilizzando il valore come tx0 della
+    // colonna dopo si dimezzano le divisioni. txNext viene preso prima delle
+    // correzioni `tx1<=tx0` e dello specchio, quindi tutti i tx0/tx1 restano gli
+    // stessi: stessi texel campionati, resa e replay IDENTICI.
+    i32 txNext = (i32)((i64)sxIni * sw / w);
     for (i32 c = 0; c < nCol; ++c) {
-        const i32 sx = sxIni + c;
-        i32 tx0 = (i32)((i64)sx * sw / w);
-        i32 tx1 = (i32)((i64)(sx + 1) * sw / w);
+        i32 tx0 = txNext;
+        i32 tx1 = (i32)((i64)(sxIni + c + 1) * sw / w);
+        txNext = tx1;
         if (tx1 <= tx0) tx1 = tx0 + 1;
-        if (s.specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
+        if (specchia) { const i32 t0 = sw - tx1; tx1 = sw - tx0; tx0 = t0; }
         // V9 ∞ lv_03_foglie (giro 23): tutti i valori per-colonna in un solo
         // record contiguo (tx0/tx1 mirrorati, texel centrale, flag area>1).
         // Stessi valori di prima, solo raggruppati per migliorare la localita'

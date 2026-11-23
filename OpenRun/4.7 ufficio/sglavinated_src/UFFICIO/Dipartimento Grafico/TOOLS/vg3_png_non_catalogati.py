@@ -240,6 +240,9 @@ def autotest():
     ]) == {"scenario-oggetti": 2, "scenario-skyline": 1, "sprite": 1}
     ok = ok and ok_conteggio
     print("autotest conteggio_per_sorgente: " + ("OK" if ok_conteggio else "FALLITO"))
+    ok_vuoti = classifica([]) == ([], []) and conteggio_per_sorgente([]) == {}
+    ok = ok and ok_vuoti
+    print("autotest casi_vuoti: " + ("OK" if ok_vuoti else "FALLITO"))
     return 0 if ok else 1
 
 
