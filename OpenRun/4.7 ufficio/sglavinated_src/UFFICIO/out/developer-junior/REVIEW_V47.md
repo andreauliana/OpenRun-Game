@@ -1,16 +1,21 @@
-# REVIEW V47 — VJ4 soak `lv_02_atomico` (23/11/2026 08:11)
+# REVIEW V47 — VJ5 review codice @developer in `src/` (23/11/2026 11:13)
 
-- **Ruolo**: @developer-junior (prova dedicata col gate esistente, nessuna modifica a src).
-- **Blocco**: V47 VJ4 (soak su tutti e 6 i livelli, uno per turno). Secondo della lista: `lv_02_atomico` (diverso da `lv_01_neon` del turno prima). Ricompilazione prima della prova con `run_tests.sh`.
+- **Ruolo**: @developer-junior (review in sola lettura, nessuna modifica a `src`).
+- **Blocco**: V47 VJ5 ∞ — leggi l'ultimo cambio del @developer in `src/`, riporta un possibile errore o una semplificazione con file e riga. Nuovo edit in `src/` rispetto alle 10:57: `road.cpp` mtime 11:08:53 (dopo il turno prima), `renderer.cpp` invariato (10:52:25). Hunk non ancora esaminato: `Road::project()` in `road.cpp` (hoist delle costanti di segmento fuori dal ciclo di campioni, commento "V9 ∞ 23/11 lv_01_neon giro 34"): funzione/livello diversi dal turno prima (10:57 `drawSprites` su lv_06_desktop).
+- **Verifica**: `git status --short`/`git diff` exit 0 (M `road.cpp` + `renderer.cpp`, entrambi non toccati). `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest **27/27**, 165.43 s, `prova_gate` ricompilato; `gate_decorazioni` e bivio #19-21 passano). `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_project_hoist_lv01_neon_percorso_2311_1113" lv_01_neon percorso` **exit 0** (GATE PERCORSO OK, 4540 seg, 1989 frame/33.2 s @60 Hz, fuori strada 0 (0.0%), caricamento 5.6 ms, init 14.0 ms; livello del commento, con ponte/acqua/riva e diverse costanti hoistate). `gate_t1.sh` non eseguito in questo turno.
 
-## VJ4 — soak `lv_02_atomico` (2/6)
-- **Comando**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv02_atomico_soak_2311_t1" lv_02_atomico soak` — **exit 0** (`GATE OK`).
-- **Replay 2x**: **IDENTICO** (30000 frame x2, nessuna divergenza). Nessun crash.
-- **ms/frame**: medio **1.051**, max **90.682** (frame 22150), limite 20. Media ben sotto soglia; il max e' uno spike isolato (un solo frame su 30000, non ripetuto nel replay identico), non un peggioramento medio. Confronto Pi 400 (<= 12 ms): da tenere d'occhio lo spike, non la media. Stesso fenomeno gia' visto su `lv_01_neon` (61.573 ms, frame 10343, 07:51).
-- **Altro**: accelerazione reattiva (speed@1=8.43, speed@60=154.11), offroad raggiunto (frame 156), X[min,max]=[-1560.2,2100.0], zFinale=408676.4. CARICAMENTO livello 6.5/5.1 ms, init 15.8/12.1 ms (due run).
+## Esame del cambio (correttezza)
+- `road.cpp:548-560` — nuove costanti locali di segmento: `acquaSeg`, `sospesoSeg`, `galleriaSeg`, `quotaAcquaSeg`, `rivaSeg`, `luciSeg`, `versoLuciSeg`, `portaleSeg`, calcolate una volta prima del ciclo `for (sample...)` (:561); le assegnazioni a `ps` (:584-591) le usano al posto delle letture `seg.*`. Corretto:
+  - `seg` e' `const RoadSegment&` = `segs_[idx]`, legata una sola volta a :525; `idx` cambia solo nell'incremento del `for i` (:524), quindi `seg` e' costante dentro il ciclo di campioni: ogni lettura `seg.X` dava lo stesso identico valore in tutti e 4 i sample -> l'hoist e' equivalence-preserving.
+  - **Tipi preservati** (road_segment.h / road.h): `acqua` bool -> `acquaSeg` bool (ps.acqua bool), `sospeso` bool -> bool, `galleria` bool -> `u8` via `?1:0` (ps.galleria u8, stessa conversione dell'originale), `quotaAcqua` f32 -> f32, `riva` i16 -> i16, `luci` i16 -> i16, `versoLuci` i8 -> i8, `portale` u8 -> u8. Nessun cambio di tipo, nessuna conversione nuova.
+  - `ps.acquaY = orizzonte - s * (quotaAcquaSeg - camY) * 112.0f` (:587) usa gli stessi operandi e lo stesso ordine di prima (`seg.quotaAcqua`): float bit-identico. Gli altri campi sono assegnazioni dirette dello stesso valore.
+  - Nessun side effect: letture di campi POD da un reference const. Le costanti vengono calcolate anche per i segmenti in cui tutti e 4 i sample fanno `continue` a :572 (`z < Z_NEAR`), ma sono letture pure -> solo lavoro leggermente sprecato, nessun effetto sulla resa.
+  - ctest 27/27 e gate percorso su lv_01_neon (livello del commento, 1989 frame, 0% fuori strada) verdi: nessuna regressione di determinismo.
+
+## Rilievo — nota non bloccante
+- **File/riga**: `motore_nuovo/src/road/road.cpp:555` (`galleriaSeg`) e `:553-560` (hoist rispetto al `continue` di :572).
+- `const u8 galleriaSeg = seg.galleria ? 1 : 0;`: poiche' `RoadSegment::galleria` e' gia' `bool`, la conversione implicita `const u8 galleriaSeg = seg.galleria;` darebbe 0/1 in modo identico e il `?1:0` e' ridondante (e' l'unico punto in cui il ternario resta dopo l'hoist). Puretta stilistica, nessuna differenza di valore o di codice generato.
+- Le 8 costanti sono lette una volta per segmento anche quando tutti i sample sono scartati da `z < Z_NEAR` (:572): spostarle dentro il ramo visible-richiederebbe un flag, non vale la pena per 8 letture di campi POD su pochi segmenti vicini alla telecamera. Nessuna modifica richiesta.
 
 ## Stato
-- VJ4: 2/6 fatti (`lv_01_neon`, `lv_02_atomico`). Prossimo turno: `lv_03_foglie` soak (livello diverso dal turno prima).
-- `git status --short` — **exit 0** (M src renderer.cpp + road.cpp, non toccati: solo prova).
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 0** (ctest **27/27**, 205.30 s, prova_gate ricompilato).
-- `gate_t1.sh` non eseguito in questo turno. Nessun fail aperto noto.
+- Nessun errore nell'hunk esaminato: hoist delle costanti di segmento equivalence-preserving (seg costante nel ciclo, tipi preservati, acquaY bit-identico, nessun side effect), confermato da ctest 27/27 e gate percorso su lv_01_neon (1989 frame, 0% fuori strada). Uniche note la ridondanza del `?1:0` su `galleriaSeg` e le letture su segmenti interamente scartati, entrambe non bloccanti. VJ4 chiuso (6/6); VJ5 ∞ in corso; prossimo passo ∞ su livello/file diverso da `project`/lv_01_neon.

@@ -1,13 +1,12 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 23/11/2026 08:25 (Turno 2).
-- Blocco e passo: V9 ∞ fluidita' a giro — lv_05_spray (trentaduesimo giro).
-- Azione: alleggerita `Road::project` senza cambiare la resa (giа sotto 8 ms: medio 0.751, max 6.881).
-- File cambiati: `motore_nuovo/src/road/road.cpp` (indice segmento e `prev` da due modulo/divisioni intere per segmento a indicizzazione incrementale in testa al for + `prev = idx==0?nSeg-1:idx-1`; scatta anche sui `continue`). Nessun altro file di produzione toccato.
-- Comando build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0.
-- Comando baseline: `./UFFICIO/Officina/build/prova_gate "...v9_lv05_giro32_baseline_smoke" lv_05_spray smoke` -> exit 0 "GATE OK", medio 0.751 max 6.881 ms (frame 195), frameHash 0 4250821778.
-- Comando baseline: `./UFFICIO/Officina/build/prova_gate "...v9_lv05_giro32_baseline_percorso" lv_05_spray percorso` -> exit 0 "GATE PERCORSO OK" (2920 frame).
-- Comando post: `./UFFICIO/Officina/build/prova_gate "...v9_lv05_giro32_post_smoke" lv_05_spray smoke` -> exit 0 "GATE OK", medio 0.722 max 3.534 ms (frame 172), 10/10 frameHash identici, replay IDENTICO, frameHash 0 4250821778.
-- Comando post: `./UFFICIO/Officina/build/prova_gate "...v9_lv05_giro32_post_percorso" lv_05_spray percorso` -> exit 0 "GATE PERCORSO OK" (2920 frame, 0% fuori).
-- Gate: `sh UFFICIO/Officina/TOOL/gate_t1.sh` (eseguito 23/11/2026 08:25, timeout 900000) -> exit 0 "GATE T1: TUTTO OK", 6/6 "GATE PERCORSO OK", nessuna riga FALLITO.
-- Esito: resa e replay IDENTICI (frameHash 0 4250821778 invariante), nessuna regressione; ms/frame ben sotto il limite.
-- Prossimo: V9 ∞ lv_06_desktop (trentaduesimo giro).
+# ULTIMO TURNO — developer
+- Data/ora: 23/11/2026 11:05 (Turno 3)
+- Blocco/passo: V47 ∞ V9 fluidita' lv_01_neon (trentaquattresimo giro)
+- File cambiati: `motore_nuovo/src/road/road.cpp`
+- Modifica: Road::project hoista per-segmento acqua/sospeso/galleria/quotaAcqua/riva/luci/versoLuci/portale fuori dal loop 4 sample (tipi i16/i8/u8 corretti); stessi ProjectedSeg, resa/replay IDENTICI, frameHash 0 3594390208 invariato (10/10).
+- Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` — exit 0
+- Baseline percorso: `prova_gate .../v9_lv01_giro34_pre_percorso lv_01_neon percorso` — exit 0, GATE PERCORSO OK (1989 frame, 33.2 s, 0% fuori)
+- Baseline smoke: `prova_gate .../v9_lv01_giro34_pre_smoke lv_01_neon smoke` — exit 0, GATE OK, medio 1.101 max 28.857 ms (frame 163), replay IDENTICO, frameHash 0 3594390208
+- Post smoke: `prova_gate .../v9_lv01_giro34_post_smoke lv_01_neon smoke` — exit 0, GATE OK, medio 0.802 max 5.782 ms (frame 236), replay IDENTICO, frameHash 0 3594390208 (10/10)
+- Post percorso: `prova_gate .../v9_lv01_giro34_post_percorso lv_01_neon percorso` — exit 0, GATE PERCORSO OK (1989 frame, 33.2 s, 0% fuori)
+- Gate: `sh UFFICIO/Officina/TOOL/gate_t1.sh` — exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK (1989/2476/2392/2125/2920/2125), smoke lv_01 medio 1.305 max 78.833 ms frame 10 (spike startup), nessuna riga FALLITO. Log: `UFFICIO/Officina/Test area/gate_t1.log`
+- Prossimo: V9 ∞ lv_02_atomico (trentaquattresimo giro).

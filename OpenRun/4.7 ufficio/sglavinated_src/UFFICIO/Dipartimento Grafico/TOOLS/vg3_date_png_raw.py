@@ -39,6 +39,9 @@
 # ALTRI-PNG-DOPPIA-ESTENSIONE e il nome vero: lo stem lo faceva passare per x.png, che
 # ha il suo raw, e il residuo restava illeggibile. Non si rinomina e non si converte
 # da qui: la decisione e' di Andrea.
+# Il confronto del PNG col nome corretto e il suo raw sta in confronto_nome_ok(): la
+# riga 'allineato al raw' di main() e lo stato sintetico leggono la stessa funzione,
+# cosi' non possono contraddirsi se una delle due diagnosi viene modificata.
 # Se lo skyline di un livello manca (PNG sparito, raw ancora presente) si aggiunge
 # SKYLINE-RESIDUO: dice se il raw e' ancora identico a skyline_trama.png, cioe' se lo
 # sfondo in gioco e' quello giusto e manca solo il disegno di Andrea da ripristinare.
@@ -311,6 +314,47 @@ def stato_doppia_estensione(png, raw_base):
     if grezzo == atteso:
         return "doppione", f"identico al raw {data(raw_base)}"
     return "ridisegno", dettaglio_diff(atteso, grezzo, raw_base)
+
+
+def confronto_nome_ok(nome_ok, raw_base):
+    """Stato del PNG col nome corretto rispetto al suo raw (funzione pura).
+
+    Ritorna 'allineato' | 'nome-corretto-manca' | 'illeggibile' | 'raw-manca' |
+    'raw-da-rigenerare'. La coppia nome-corretto/raw prima veniva confrontata due
+    volte: con un booleano inline in main() (la riga 'allineato al raw') e con i
+    controlli dentro stato_risoluzione_doppia() (lo stato sintetico). Se una delle
+    due cambiava, le due righe potevano contraddirsi. Tenendola qui le due diagnosi
+    leggono la stessa verita'. Non scrive nulla: PNG e raw restano di Andrea.
+    """
+    if not nome_ok.exists():
+        return "nome-corretto-manca"
+    atteso = raw_atteso(nome_ok)
+    if atteso is None:
+        return "illeggibile"
+    if not raw_base.exists():
+        return "raw-manca"
+    return "allineato" if raw_base.read_bytes() == atteso else "raw-da-rigenerare"
+
+
+def stato_risoluzione_doppia(png, raw_base, nome_ok):
+    """Stato sintetico del residuo .png.png, separato dall'azione (funzione pura).
+
+    'risolto' solo quando il nome corretto esiste, il suo raw e' allineato e il
+    .png.png e' un doppione (lo stesso disegno): l'asset letto dal motore e' gia'
+    quello giusto. 'ridisegno-da-decidere' quando il .png.png e' un disegno diverso
+    (il caso del furgone del 20/11): va rinominato/convertito con Andrea. Negli
+    altri casi si riportano i motivi gia' noti, cosi' un nome mancante non sembra
+    un ridisegno. Non scrive nulla: PNG e raw restano di Andrea.
+    """
+    confronto = confronto_nome_ok(nome_ok, raw_base)
+    if confronto != "allineato":
+        return confronto
+    stato, _ = stato_doppia_estensione(png, raw_base)
+    if stato == "doppione":
+        return "risolto"
+    if stato == "ridisegno":
+        return "ridisegno-da-decidere"
+    return stato
 
 
 def png_coperti():
@@ -667,18 +711,22 @@ def main():
                 )
                 nome_ok = png.parent / f"{doppia}.png"
                 if nome_ok.exists():
-                    atteso_ok = raw_atteso(nome_ok)
-                    allineato = (
-                        atteso_ok is not None
-                        and raw_base.exists()
-                        and raw_base.read_bytes() == atteso_ok
-                    )
+                    allineato = confronto_nome_ok(nome_ok, raw_base) == "allineato"
                     print(
                         f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: il nome corretto"
                         f" {doppia}.png esiste ({data(nome_ok)}), "
                         + ("allineato al raw" if allineato else "diverso dal raw")
                         + ": il .png.png non e' l'asset che il motore legge"
                     )
+                sintesi = stato_risoluzione_doppia(png, raw_base, nome_ok)
+                print(
+                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: stato {sintesi}"
+                    + (
+                        " (asset corretto gia' allineato, nessuna conversione VG3)"
+                        if sintesi == "risolto"
+                        else " (decide Andrea: rinominare/convertire)"
+                    )
+                )
             else:
                 print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.name}: png {data(png)}")
     print(f"altri gruppi: raw esaminati {altri_tot} (allineati {altri_ok})")
@@ -800,6 +848,58 @@ if __name__ == "__main__":
         )
         ok = ok and ok_stato
         print("autotest stato_doppia_estensione: " + ("OK" if ok_stato else "FALLITO"))
+        # stato_risoluzione_doppia: il doppione innocuo e' 'risolto', un disegno
+        # diverso e' da decidere con Andrea; nome mancante e raw stonato restano
+        # distinti e non vengono scambiati per un ridisegno.
+        with tempfile.TemporaryDirectory() as td:
+            cartella = Path(td)
+            doppio = cartella / "lato.png.png"
+            corretto = cartella / "lato.png"
+            raw_ok = cartella / "lato.sglraw"
+            Image.new("RGBA", (3, 3), (40, 80, 120, 255)).save(corretto)
+            raw_ok.write_bytes(raw_atteso(corretto) or b"")
+            Image.new("RGBA", (3, 3), (40, 80, 120, 255)).save(doppio)
+            doppione = stato_risoluzione_doppia(doppio, raw_ok, corretto)
+            Image.new("RGBA", (3, 3), (200, 30, 60, 255)).save(doppio)
+            ridisegno = stato_risoluzione_doppia(doppio, raw_ok, corretto)
+            senza_nome = stato_risoluzione_doppia(doppio, raw_ok, cartella / "assente.png")
+            raw_ok.write_bytes(b"SGLR" + struct.pack("<II", 9, 9) + bytes(36))
+            raw_stonato = stato_risoluzione_doppia(doppio, raw_ok, corretto)
+        ok_risoluzione = (
+            doppione == "risolto"
+            and ridisegno == "ridisegno-da-decidere"
+            and senza_nome == "nome-corretto-manca"
+            and raw_stonato == "raw-da-rigenerare"
+        )
+        ok = ok and ok_risoluzione
+        print("autotest stato_risoluzione_doppia: " + ("OK" if ok_risoluzione else "FALLITO"))
+        # confronto_nome_ok: unica fonte per la riga 'allineato al raw' di main() e
+        # per lo stato sintetico. Copre i cinque casi senza toccare GRAFICA: nome
+        # mancante, PNG illeggibile, raw mancante, raw da rigenerare e allineato.
+        with tempfile.TemporaryDirectory() as td:
+            cartella = Path(td)
+            corretto = cartella / "lato.png"
+            raw_ok = cartella / "lato.sglraw"
+            raw_assente = cartella / "assente.sglraw"
+            Image.new("RGBA", (3, 3), (60, 90, 130, 255)).save(corretto)
+            raw_ok.write_bytes(raw_atteso(corretto) or b"")
+            caso_allineato = confronto_nome_ok(corretto, raw_ok)
+            caso_senza_nome = confronto_nome_ok(cartella / "assente.png", raw_ok)
+            caso_senza_raw = confronto_nome_ok(corretto, raw_assente)
+            rotto = cartella / "rotto.png"
+            rotto.write_bytes(b"non-png")
+            caso_illeggibile = confronto_nome_ok(rotto, raw_ok)
+            raw_ok.write_bytes(b"SGLR" + struct.pack("<II", 3, 3) + bytes(36))
+            caso_stonato = confronto_nome_ok(corretto, raw_ok)
+        ok_confronto = (
+            caso_allineato == "allineato"
+            and caso_senza_nome == "nome-corretto-manca"
+            and caso_senza_raw == "raw-manca"
+            and caso_illeggibile == "illeggibile"
+            and caso_stonato == "raw-da-rigenerare"
+        )
+        ok = ok and ok_confronto
+        print("autotest confronto_nome_ok: " + ("OK" if ok_confronto else "FALLITO"))
         # classifica_skyline: 'manca solo il disegno' (sfondo giusto) e 'manca anche
         # lo sfondo' stampavano entrambi SKYLINE-MANCA; vanno distinti, come pure
         # raw mancante e i due casi con PNG presente.

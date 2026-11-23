@@ -1,10 +1,13 @@
-# ULTIMO TURNO — @developer-junior (23/11/2026 08:26)
-- **Blocco/pass**: V47 VJ4 (terzo passo, 3/6, davanti a VJ5 ∞) — soak `lv_03_foglie`.
-- **File cambiati (solo documenti di ruolo)**: `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto). Nessuna modifica a src/test/dati di prodotto; REVIEW_V47 non toccato (VJ4 non chiede review), STATUS_OFFICINA non toccato (nessun altro .md).
-- **Comando 1**: `git status --short` — **exit 0** (M src renderer.cpp + road.cpp, non toccati: solo prova).
-- **Comando 2**: `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 0** (ctest **27/27**, 174.85 s, prova_gate ricompilato, gate_decorazioni passa).
-- **Comando 3**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_lv03_foglie_soak_2311_t1" lv_03_foglie soak` — **exit 0** (`GATE OK`).
-- **Misure**: 30000 frame x2, replay **IDENTICO**, nessun crash; ms/frame medio **0.845**, max **79.872** (frame 16637, limite 20); accelerazione reattiva, offroad frame 156, X[-1070.7,2100.0], zFinale 737468.6, car 6.5/4.4 ms, init 14.7/10.9 ms.
-- **Problemi residui**: spike 79.872 ms/frame isolato (1 frame su 30000, non ripetuto nel replay; media 0.845): sopra limite 20 e target Pi 400 12 ms, come 61.573 (lv_01) e 90.682 (lv_02); da tenere d'occhio. Non e' un fail.
-- **`gate_t1.sh`**: non eseguito in questo turno.
-- **Prossimo**: VJ4 soak `lv_04_cromo` (4/6, livello diverso), poi VJ5 ∞.
+# Ultimo turno — developer-junior (23/11/2026 11:13, Turno 3)
+- Blocco: V47 → VJ5 ∞ review codice @developer in `src/`; passo: hunk nuovo `Road::project()` (hoist costanti di segmento fuori dal ciclo campioni, lv_01_neon, giro 34).
+- Nota: nuovo edit in `src/` rispetto alle 10:57 — `road.cpp` mtime 11:08:53, `renderer.cpp` invariato (10:52:25); ho esaminato l'hunk non ancora rivisto del diff attuale, funzione/livello diversi dal turno prima (10:57 `drawSprites`/lv_06_desktop).
+- File cambiati (solo bacheca, nessun `src`): `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto). Nessun altro .md; STATUS_OFFICINA non toccato.
+- Cosa (review): `road.cpp:548-560` calcola una volta per segmento `acquaSeg/sospesoSeg/galleriaSeg/quotaAcquaSeg/rivaSeg/luciSeg/versoLuciSeg/portaleSeg`, usati a :584-591 al posto di `seg.*`. Corretto: `seg` e' const ref legata a :525 e `idx` cambia solo a :524 -> costante nel ciclo campioni, stessi valori; tipi preservati (bool/u8/f32/i16/i8, road_segment.h); `acquaY` :587 con stessi operandi/ordine -> float bit-identico; solo letture POD, nessun side effect; resa/replay IDENTICI.
+- Nota (non bloccante, `road.cpp:555`): `galleriaSeg = seg.galleria ? 1:0` ha il ternario ridondante perche' `galleria` e' gia' bool; in piu' le 8 costanti son lette anche se tutti i sample fan `continue` a :572 (letture pure, innocue). Nessuna modifica richiesta.
+- Comando 1: `git status --short` → exit 0 (M `road.cpp` + `renderer.cpp` del developer, non toccati).
+- Comando 2: `git diff -- motore_nuovo/src/render/renderer.cpp` → exit 0; `git diff -- motore_nuovo/src/road/road.cpp` → exit 0.
+- Comando 3: `ls -lT motore_nuovo/src/render/renderer.cpp motore_nuovo/src/road/road.cpp` → exit 0 (renderer.cpp 10:52:25, road.cpp 11:08:53).
+- Comando 4: `sh UFFICIO/Officina/TOOL/run_tests.sh` → exit 0 (ctest **27/27**, 165.43 s, `prova_gate` ricompilato, gate_decorazioni e bivio #19-21 passano).
+- Comando 5: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_project_hoist_lv01_neon_percorso_2311_1113" lv_01_neon percorso` → exit 0 (GATE PERCORSO OK, 4540 seg, 1989 frame/33.2 s @60 Hz, fuori strada 0 (0.0%), caricamento 5.6 ms, init 14.0 ms).
+- `gate_t1.sh`: non eseguito in questo turno.
+- Esito: nessun errore di correttezza nell'hunk, replay identico e ctest verde; uniche note il `?1:0` ridondante e letture su segmenti scartati, non bloccanti. VJ4 chiuso 6/6; VJ5 ∞ in corso.

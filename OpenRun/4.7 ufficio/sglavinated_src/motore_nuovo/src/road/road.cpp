@@ -262,9 +262,16 @@ void Road::advance(f32 dt) {
 
 i32 Road::indiceSegmento(f32 z) const {
     if (segs_.empty() || totalLen_ <= 0) return -1;
-    // Wrap di z sul tracciato circolare (stessa logica di advance).
-    z = std::fmod(z, (f32)totalLen_);
-    if (z < 0.0f) z += (f32)totalLen_;
+    // V9 ∞ (23/11, lv_01_neon giro 33): il wrap con fmod serve solo quando z
+    // e' fuori da [0, totalLen). Nell'uso di ogni frame (project ->
+    // carreggiate -> larghezzaAt, ~1200 chiamate, piu' beccheggioPx) z e' gia'
+    // in range e fmod(z, totalLen) restituisce z esattamente: si salta il
+    // passo. Stesso z, stesso indice -> resa e replay IDENTICI.
+    const f32 len = (f32)totalLen_;
+    if (z < 0.0f || z >= len) {
+        z = std::fmod(z, len);
+        if (z < 0.0f) z += len;
+    }
     const i32 i = (i32)(z / (f32)SEG_LEN);
     return std::clamp(i, 0, (i32)segs_.size() - 1);
 }
@@ -417,10 +424,22 @@ f32 Road::trafficoAt(f32 z) const {
 Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
     Carreggiate c;
     if (totalLen_ <= 0) return c;
-    const f32 inizio = bivioInizioZ(), blocco = bivioBloccoZ();
+    // V9 ∞ (23/11, lv_04_cromo giro 33): inizio/blocco del bivio servono solo
+    // quando il bivio e' attivo. Prima venivano calcolati (bivioBloccoZ()
+    // richiama a sua volta bivioInizioZ()) a ogni chiamata, ma carreggiate e'
+    // richiamata ~1200 volte/frame da project e nella maggior parte del
+    // tracciato `bivio_` e' falso: li' quei valori non venivano usati. Li
+    // calcolo dopo l'early-out `!bivio_`, quindi in caso di bivio inattivo si
+    // risparmiano due operazioni in virgola mobile. Negli altri casi stessi
+    // operandi e stesso ordine -> stessi float, resa e replay IDENTICI.
     // Fuori dal bivio: una carreggiata, larga quanto il segmento (piu' corsie).
     // Oltre la fine della tappa (zAbs >= giro) il ramo scelto resta largo 1.
-    if (!bivio_ || zAbs <= inizio) {
+    if (!bivio_) {
+        c.fattore = zAbs < (f32)totalLen_ ? larghezzaAt(zAbs) : 1.0f;
+        return c;
+    }
+    const f32 inizio = bivioInizioZ(), blocco = bivioBloccoZ();
+    if (zAbs <= inizio) {
         c.fattore = zAbs < (f32)totalLen_ ? larghezzaAt(zAbs) : 1.0f;
         return c;
     }
@@ -450,8 +469,13 @@ Road::Carreggiate Road::carreggiate(f32 zAbs, i32 lato) const {
 }
 
 void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32 latoBivio) const {
+    // V9 ∞ (23/11, lv_06_desktop giro 32): il reserve qui era inutile perche'
+    // poco sotto si riserva DRAW_DIST*SAMPLES_PER_SEGMENT (4 volte piu' grande).
+    // Con projs_ riutilizzato frame su frame il primo reserve non faceva che un
+    // controllo di capacita' aggiuntivo a ogni frame (e un'allocazione sprecata
+    // al primo frame). Rimosso: il reserve definitivo e' quello sotto, prima del
+    // push_back. Capacita' diversa -> stessi elementi, resa e replay IDENTICI.
     out.clear();
-    out.reserve(DRAW_DIST);
     if (segs_.empty() || totalLen_ <= 0) return; // strada vuota: niente da proiettare
 
     // Proiezione pseudo-3D classica. Riferimento: "JavaScript Racer" di Jake Gordon
@@ -521,6 +545,19 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
         // replay IDENTICO.
         const f32 curveDelta = seg.curve - prev.curve;
         const f32 quotaDelta = seg.p2y - seg.p1y;
+        // V9 ∞ (23/11, lv_01_neon giro 34): acqua/sospeso/galleria/riva/luci/
+        // versoLuci/portale/quotaAcqua sono costanti del segmento, non del sample;
+        // prima venivano rilette da `seg` 4 volte per segmento (centinaia di
+        // segmenti al frame). Stessi valori -> stessi campi di ProjectedSeg, resa e
+        // replay IDENTICI.
+        const bool acquaSeg = seg.acqua;
+        const bool sospesoSeg = seg.sospeso;
+        const u8 galleriaSeg = seg.galleria ? 1 : 0;
+        const f32 quotaAcquaSeg = seg.quotaAcqua;
+        const i16 rivaSeg = seg.riva;
+        const i16 luciSeg = seg.luci;
+        const i8 versoLuciSeg = seg.versoLuci;
+        const u8 portaleSeg = seg.portale;
         for (i32 sample = 1; sample <= SAMPLES_PER_SEGMENT; ++sample) {
             const f32 t = tStart + unoMenoTStart *
                 ((f32)sample / (f32)SAMPLES_PER_SEGMENT);
@@ -544,14 +581,14 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
             ps.screenX = 160.0f + s * (x - playerX) * 160.0f;
             ps.screenY = orizzonte - s * (curY - camY) * 112.0f;
             ps.carr = carreggiate(z0 + z, latoBivio);
-            ps.acqua = seg.acqua;
-            ps.sospeso = seg.sospeso;
-            ps.galleria = seg.galleria ? 1 : 0;
-            ps.acquaY = orizzonte - s * (seg.quotaAcqua - camY) * 112.0f;
-            ps.riva = seg.riva;
-            ps.luci = seg.luci;
-            ps.versoLuci = seg.versoLuci;
-            ps.portale = seg.portale;
+            ps.acqua = acquaSeg;
+            ps.sospeso = sospesoSeg;
+            ps.galleria = galleriaSeg;
+            ps.acquaY = orizzonte - s * (quotaAcquaSeg - camY) * 112.0f;
+            ps.riva = rivaSeg;
+            ps.luci = luciSeg;
+            ps.versoLuci = versoLuciSeg;
+            ps.portale = portaleSeg;
             out.push_back(ps);
         }
     }

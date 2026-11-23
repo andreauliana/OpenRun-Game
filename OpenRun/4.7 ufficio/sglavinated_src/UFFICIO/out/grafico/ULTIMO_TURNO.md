@@ -1,13 +1,12 @@
-# ULTIMO TURNO — @grafico (23/11/2026 07:42, giro 159)
-- **Blocco/passo:** V47 VG3 ∞ — confronto PNG `GRAFICA/scenari/` vs `.sglraw`; area mia allineata, nessuna conversione.
+# ULTIMO TURNO — @grafico (23/11/2026 11:03, giro 170)
+- **Blocco/passo:** V47 VG3 ∞ — confronto date/contenuto PNG di `GRAFICA/scenari/` coi `.sglraw`; produzione su `vg3_raw_senza_catalogo.py` (file diverso dal turno prima, `vg3_png_non_catalogati.py`); nessun ritocco ai disegni.
+- **Stato:** area mia allineata — 0 da convertire, 6/6 skyline, 80 oggetti senza raw 0, altri 47 raw/45 allineati/0 da convertire, 166 PNG/134 confrontati/32 non motore, 153 voci/159 riferimenti. Unico flag Andrea: `lato_furgone_bianco.png.png` (ridisegno 32.3% diverso dal raw, nome corretto allineato), rinominare/convertire decide Andrea.
 - **File cambiati:**
-  - `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py` (autotest `classifica_percorsi` esteso: stringa vuota, path assoluto, dict vuoto)
-  - `UFFICIO/bacheche/grafico/diario.md` (riga)
-  - `UFFICIO/bacheche/grafico/RIASSUNTO.md` (riscritto)
-  - `UFFICIO/out/grafico/ULTIMO_TURNO.md` (riscritto)
-- **Comandi ed exit code:**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` → exit 1 (solo flag Andrea noto `traffico_incrocio/lato_furgone_bianco.png.png`; 0 da convertire, 6/6 skyline, 166 PNG/134 confrontati/32 non motore)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` → exit 0 (155/155, 0 senza voce, 4 refs noti area auto bloccata, 0 risolti, 0 sospetti)
+  - `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py` (conteggio voci-con-raw estratto in funzione pura `conta_voci_con_raw(elementi)`: voce con solo `raw_elenco` conta, `raw` vuoto/non-stringa e `raw_elenco` vuoto ignorati; usata in `analizza()`, nota in testa, autotest 3 casi; output invariato)
+  - `UFFICIO/bacheche/grafico/diario.md` (1 riga), `UFFICIO/bacheche/grafico/RIASSUNTO.md` (riscritto), `UFFICIO/out/grafico/ULTIMO_TURNO.md` (riscritto via questo script)
+- **Comandi ed exit code (eseguiti in questo turno, 23/11 11:03):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` → exit 1 (solo flag Andrea; area mia allineata)
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` → exit 0 (155/155, 0 senza voce, 4 refs noti, 0 risolti, 0 duplicati/ripetuti/scritture diverse/sospetti)
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` → exit 0 (4 noti, 0 catalogati, 0 da decidere)
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` → exit 0 (8 prove OK)
-- **Gate:** non eseguito (23/11 07:42). Zero risorse esterne, zero Sega.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` → exit 0 (12 prove OK, `conta_voci_con_raw` inclusa)
+- **Gate:** non eseguito (23/11 11:03). Nessuna conversione; catalogo/licenze invariati; zero risorse esterne, zero Sega.

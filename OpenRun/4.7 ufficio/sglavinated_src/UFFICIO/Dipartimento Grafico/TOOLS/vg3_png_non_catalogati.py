@@ -18,6 +18,20 @@ resti invisibile solo perche' il motivo non viene piu' stampato.
 Aggiunta 22/11: un PNG nuovo nell'area auto del giocatore (giocatore_pose/ o
 giocatore/) si etichetta 'giocatore-area-bloccata' e non 'sprite': e' roba di
 Andrea (regola bloccata 06/11), non un asset che VG3 puo' convertire/catalogare.
+
+Aggiunta 23/11: la regola 'spariti vs catalogati' (prima inline in main) e' ora
+la funzione pura noti_spariti(), provata in autotest: un noto finito nel catalogo
+non va stampato due volte come NOTO-CATALOGATO e NOTO-SPARITO.
+
+Aggiunta 23/11 (turno 2): il raccolto dei percorsi citati dal catalogo (campi
+'file' e 'raw', con 'file' che puo' essere stringa o lista) e' ora la funzione
+pura file_usati(), provata in autotest: e' il passo che decide quali PNG sono
+"fuori catalogo" e prima era inline in main().
+
+Aggiunta 23/11 (turno 3): lo scarto dei PNG gia' catalogati, che produce l'elenco
+'fuori catalogo', e' ora la funzione pura fuori_catalogo(), provata in autotest:
+prima era inline in main() e non si poteva provare che un PNG nuovo resta fuori
+mentre uno catalogato viene escluso e l'ordine resta stabile.
 """
 import glob
 import json
@@ -86,6 +100,18 @@ def noti_catalogati(usati):
     return [f for f in sorted(NOTI_NON_ASSET) if f in visti]
 
 
+def noti_spariti(noti, catalogati):
+    """Noti fuori catalogo spariti dal disco e NON finiti nel catalogo (puro).
+
+    Un noto che e' andato in CATALOGO_GRAFICO.json non appare piu' tra i PNG fuori
+    catalogo, ma puo' essere ancora su disco: stampare insieme NOTO-CATALOGATO e
+    NOTO-SPARITO era fuorviante. Estrarre la regola che era inline in main() la
+    rende provabile e documenta l'interazione tra i due elenchi.
+    """
+    cat = set(catalogati)
+    return [f for f in noti_mancanti(noti) if f not in cat]
+
+
 # Area auto del giocatore: solo Andrea la disegna (regola bloccata 06/11), VG3 non
 # converte ne' cataloga nulla li'. Le pose note sono gia' in NOTI_NON_ASSET, ma un
 # file NUOVO in queste cartelle arrivava a sorgente() etichettato come 'sprite'
@@ -135,11 +161,15 @@ def conteggio_per_sorgente(pngs):
     return conteggi
 
 
-def main() -> int:
-    if not CATALOGO.exists():
-        print(f"FALLITO: catalogo non trovato in {CATALOGO}")
-        return 4
-    cat = json.load(open(CATALOGO, encoding="utf-8"))
+def file_usati(cat):
+    """Insieme dei percorsi citati dal catalogo (campi 'file' e 'raw' di ogni voce).
+
+    main() deve sapere quali PNG sono gia' catalogati per decidere quali restano
+    "fuori catalogo". Il campo 'file' puo' essere una stringa o una lista e il
+    campo 'raw' e' un riferimento aggiuntivo: raccoglierli qui, come funzione pura,
+    permette di provare entrambi i casi senza leggere il catalogo dal disco.
+    Un 'file' vuoto o assente e un 'raw' vuoto non citano nulla.
+    """
     usati = set()
     for e in cat["elementi"]:
         files = e.get("file") or []
@@ -147,21 +177,40 @@ def main() -> int:
         usati.update(files)
         if e.get("raw"):
             usati.add(e["raw"])
+    return usati
 
-    fuori = []
+
+def fuori_catalogo(trovati, usati):
+    """PNG relativi a GRAFICA/ non presenti tra i percorsi citati dal catalogo.
+
+    main() raccoglie i PNG con glob e poi scarta quelli gia' catalogati: tenere
+    lo scarto in una funzione pura, che lavora sulla lista di percorsi relativi
+    gia' ricavata, permette di provare che un PNG nuovo resta fuori, uno
+    catalogato viene escluso e l'ordine (e l'eventuale duplicato) e' stabile,
+    senza leggere il disco. 'usati' e' l'insieme restituito da file_usati().
+    """
+    return sorted(rel for rel in trovati if rel not in usati)
+
+
+def main() -> int:
+    if not CATALOGO.exists():
+        print(f"FALLITO: catalogo non trovato in {CATALOGO}")
+        return 4
+    cat = json.load(open(CATALOGO, encoding="utf-8"))
+    usati = file_usati(cat)
+
+    trovati = []
     for pat in PATTERN:
         for g in glob.glob(os.path.join(glob.escape(str(LIBRERIA)), pat), recursive=True):
-            rel = os.path.relpath(g, str(LIBRERIA))
-            if rel not in usati:
-                fuori.append(rel)
-    fuori.sort()
+            trovati.append(os.path.relpath(g, str(LIBRERIA)))
+    fuori = fuori_catalogo(trovati, usati)
     noti, da_decidere = classifica(fuori)
     for f in noti:
         print(f"  noto non-asset: {f} ({NOTI_NON_ASSET[f]})")
     catalogati = noti_catalogati(usati)
     for f in catalogati:
         print(f"  NOTO-CATALOGATO: {f} ({NOTI_NON_ASSET[f]})")
-    spariti = [f for f in noti_mancanti(noti) if f not in set(catalogati)]
+    spariti = noti_spariti(noti, catalogati)
     for f in spariti:
         print(f"  NOTO-SPARITO: {f} ({NOTI_NON_ASSET[f]})")
     print(
@@ -211,6 +260,18 @@ def autotest():
     )
     ok = ok and ok_catalogati
     print("autotest noti_catalogati: " + ("OK" if ok_catalogati else "FALLITO"))
+    # noti_spariti: un noto finito nel catalogo non e' sparito (non va stampato
+    # due volte come NOTO-CATALOGATO e NOTO-SPARITO); uno assente da entrambi si.
+    furgone = "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png"
+    tutti = sorted(NOTI_NON_ASSET)
+    senza_furgone = [f for f in tutti if f != furgone]
+    ok_spariti = (
+        noti_spariti(tutti, []) == []
+        and noti_spariti(senza_furgone, []) == [furgone]
+        and noti_spariti(senza_furgone, [furgone]) == []
+    )
+    ok = ok and ok_spariti
+    print("autotest noti_spariti: " + ("OK" if ok_spariti else "FALLITO"))
     ok_sorgente = (
         sorgente("GRAFICA/scenari/lv_03_foglie/oggetti/nuovo.png") == "scenario-oggetti"
         and sorgente("GRAFICA/scenari/lv_04_cromo/skyline.png") == "scenario-skyline"
@@ -243,6 +304,29 @@ def autotest():
     ok_vuoti = classifica([]) == ([], []) and conteggio_per_sorgente([]) == {}
     ok = ok and ok_vuoti
     print("autotest casi_vuoti: " + ("OK" if ok_vuoti else "FALLITO"))
+    # file_usati: 'file' stringa e lista, piu' 'raw'; vuoti/assenti non citano nulla.
+    ok_usati = file_usati({"elementi": [
+        {"file": "GRAFICA/a.png", "raw": "raw/a.sglraw"},
+        {"file": ["GRAFICA/b.png", "GRAFICA/c.png"]},
+        {"file": [], "raw": ""},
+        {},
+    ]}) == {
+        "GRAFICA/a.png", "raw/a.sglraw", "GRAFICA/b.png", "GRAFICA/c.png",
+    }
+    ok = ok and ok_usati
+    print("autotest file_usati: " + ("OK" if ok_usati else "FALLITO"))
+    ok_usati_vuoti = file_usati({"elementi": []}) == set()
+    ok = ok and ok_usati_vuoti
+    print("autotest file_usati_vuoti: " + ("OK" if ok_usati_vuoti else "FALLITO"))
+    # fuori_catalogo: un PNG nuovo resta fuori, uno catalogato e' escluso,
+    # l'ordine resta stabile e un doppio passaggio resta visibile (non si dedupa).
+    ok_fuori = fuori_catalogo(
+        ["GRAFICA/z.png", "GRAFICA/a.png", "GRAFICA/catalogato.png", "GRAFICA/a.png"],
+        {"GRAFICA/catalogato.png"},
+    ) == ["GRAFICA/a.png", "GRAFICA/a.png", "GRAFICA/z.png"]
+    ok_fuori = ok_fuori and fuori_catalogo([], {"GRAFICA/a.png"}) == []
+    ok = ok and ok_fuori
+    print("autotest fuori_catalogo: " + ("OK" if ok_fuori else "FALLITO"))
     return 0 if ok else 1
 
 

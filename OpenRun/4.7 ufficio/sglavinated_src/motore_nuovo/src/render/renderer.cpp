@@ -1643,8 +1643,20 @@ void Renderer::preparaTexGalleria() const {
 
 u32 Renderer::texGalleria(i32 u, i32 v, f32 buio) const {
     if (!texGalleriaOk_ || texGalleriaTema_ != tema_.rumbleAlt) preparaTexGalleria();
-    const i32 tx = ((u % texGalleriaW_) + texGalleriaW_) % texGalleriaW_;
-    const i32 ty = ((v % texGalleriaH_) + texGalleriaH_) % texGalleriaH_;
+    // V9 ∞ (23/11, lv_05_spray giro 33): il wrap `((u % W) + W) % W` faceva
+    // DUE divisioni intere per coordinata, quattro per texel, e qui parete e
+    // soffitto della galleria campionano decine di migliaia di texel al frame.
+    // Per ogni intero vale esattamente `r = u % W; r < 0 ? r + W : r`: per
+    // r in [0,W) la somma W non cambia il resto, per r < 0 la somma cade in
+    // (0,W) e il secondo resto la restituisce identica. Con il ramo rapido
+    // quando l'indice e' gia' nel range si scende a una divisione per
+    // coordinata (spesso zero): stessi tx/ty, stesso indice in LUT, resa e
+    // replay IDENTICI, frameHash invariato.
+    const i32 wTex = texGalleriaW_, hTex = texGalleriaH_;
+    i32 tx = (u >= 0 && u < wTex) ? u : u % wTex;
+    if (tx < 0) tx += wTex;
+    i32 ty = (v >= 0 && v < hTex) ? v : v % hTex;
+    if (ty < 0) ty += hTex;
     // Buio a trama: due livelli vicini mescolati con la Bayer (niente sfumature piene).
     const f32 q = std::clamp(buio, 0.0f, 0.95f) * 6.0f;
     const i32 base = (i32)q;
@@ -1717,6 +1729,13 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
         const bool inFronte = (f32)x >= cx - fronteW && (f32)x <= cx + fronteW;
         const bool inBocca = (f32)x >= bx0 && (f32)x <= bx1;
         const f32 wu = ((f32)x - cx) / std::max(0.01f, pxUnita);           // unita' mondo
+        // V9 ∞ (23/11, lv_02_atomico giro 33): dx0/dx1 (distanza dai bordi
+        // della bocca) e pilastro dipendono solo da x, non da y. Prima venivano
+        // ricalcolati a ogni riga del fronte di cemento (decine di y per x);
+        // hoistati una volta per colonna x. Stessi operandi e stesso ordine ->
+        // stessi float/bool, resa e replay IDENTICI.
+        const f32 dx0 = std::abs((f32)x - bx0), dx1 = std::abs((f32)x - bx1);
+        const bool pilastro = std::abs((f32)x - (cx - fronteW)) < pil || std::abs((f32)x - (cx + fronteW)) < pil;
         for (i32 y = top; y <= terra && y < Framebuffer::HEIGHT; ++y) {
             if (inBocca && (f32)y >= bocca) continue;           // bocca aperta
             // V9 ∞ (22/11, lv_04_cromo giro 29): BAYER4[y & 3] e' invariante per
@@ -1726,11 +1745,9 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
             const f32 wv = (p.screenY - (f32)y) / std::max(0.01f, pxY);  // quota sopra la strada
             if (inFronte && (f32)y >= fronteTop) {
                 u32 c = cemento;
-                const f32 dx0 = std::abs((f32)x - bx0), dx1 = std::abs((f32)x - bx1);
                 const bool sopraBocca = (f32)y < bocca;
                 const bool bordoBocca = (inBocca && sopraBocca && bocca - (f32)y < rim) ||
                                         (!inBocca && (dx0 < rim || dx1 < rim));
-                const bool pilastro = std::abs((f32)x - (cx - fronteW)) < pil || std::abs((f32)x - (cx + fronteW)) < pil;
                 if (bordoBocca) {
                     c = cornice;
                     if (inBocca && bocca - (f32)y < std::max(1.0f, rim * 0.35f)) c = neon; // neon sotto l'architrave
@@ -1986,19 +2003,24 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
     // a ogni confronto e nel ciclo di disegno. spriteOrd_ riusato (zero alloc).
     if (spriteOrd_.size() < sprites.size()) spriteOrd_.resize(sprites.size());
     const size_t nSprite = sprites.size();
+    // V9 ∞ (23/11, lv_06_desktop giro 33): filtra in spriteOrd_ gli sprite
+    // dietro la telecamera (zRel < Z_NEAR), che verrebbero scartati subito dopo:
+    // escluderli prima riduce gli elementi da ordinare. Stesso insieme disegnato,
+    // stessa resa e replay IDENTICI.
+    i32 nVis = 0;
     for (i32 i = 0; i < (i32)nSprite; ++i) {
         f32 z = sprites[i].worldZ - playerZ;
         if (totalLen > 0.0f) {
             z = std::fmod(z, totalLen);
             if (z < 0.0f) z += totalLen;
         }
-        spriteOrd_[i] = {z, i};
+        if (z >= Road::Z_NEAR) spriteOrd_[nVis++] = {z, i};
     }
-    std::sort(spriteOrd_.begin(), spriteOrd_.begin() + nSprite,
+    std::sort(spriteOrd_.begin(), spriteOrd_.begin() + nVis,
               [](const auto& a, const auto& b) { return a.first > b.first; });
     // projs_ e' ordinato per worldZ crescente (distanza relativa alla telecamera).
     i32 nSegnalini = 0;
-    for (size_t k = 0; k < nSprite; ++k) {
+    for (i32 k = 0; k < nVis; ++k) {
         const auto& o = spriteOrd_[k];
         const auto& s = sprites[o.second];
         const f32 zRel = o.first;
@@ -2155,11 +2177,20 @@ void Renderer::drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32
     // V9 ∞ lv_05_spray (giro 24): base della riga di tubo_ calcolata una volta
     // per riga schermo (screenYRow e' costante nel ciclo colonna sottostante).
     const u8* tuboRiga = clipTubo ? (tubo_.data() + (size_t)screenYRow * Framebuffer::WIDTH) : nullptr;
+    // V9 ∞ (23/11, lv_03_foglie giro 33): ty1 della riga sy e' esattamente lo stesso
+    // valore di ty0 della riga sy+1, ((sy+1)*sh)/h. Prima la divisione a 64 bit
+    // veniva rifatta due volte per riga (2*(syFin-syIni) divisioni, e qui si
+    // disegnano fino a centinaia di righe per sprite); calcolandola una volta per
+    // riga (syFin-syIni+1 divisioni) e riutilizzandola come ty0 della riga dopo si
+    // dimezzano le divisioni. tyNext viene preso prima della correzione `ty1<=ty0`,
+    // quindi tutti i ty0/ty1 restano identici: stessi texel, resa e replay IDENTICI.
+    i32 tyNext = (i32)((i64)syIni * sh / h);
     for (i32 sy = syIni; sy < syFin; ++sy, ++screenYRow, riga += Framebuffer::WIDTH,
              tuboRiga = clipTubo ? tuboRiga + Framebuffer::WIDTH : nullptr) {
         // Righe sorgente coperte da questo pixel schermo: [ty0, ty1).
-        const i32 ty0 = (i32)((i64)sy * sh / h);
+        const i32 ty0 = tyNext;
         i32 ty1 = (i32)((i64)(sy + 1) * sh / h);
+        tyNext = ty1;
         if (ty1 <= ty0) ty1 = ty0 + 1;
         const i32 ty = (ty0 + ty1) / 2;
         rigaTex = px + (size_t)ty * sw; // V9 ∞ lv_04_cromo: una riga sorgente per riga schermo
