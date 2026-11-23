@@ -842,6 +842,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // stesso ordine -> stessi float, resa e replay IDENTICI.
         const f32 buioDelta = buioF - buioN;
         const f32 giornoDelta = giornoF - giornoN;
+        // V9 ∞ (23/11, lv_02_atomico giro 31): ceilDelta/terraDelta dipendono
+        // solo dal trapezio (ceilF-ceilN e next.screenY-cur.screenY), non dalla
+        // parete ne' dal pixel. Prima ricalcolate dentro parete (2-3 volte per
+        // riga y, sinistra e destra); hoistate una volta per trapezio accanto a
+        // buioDelta/giornoDelta. Stessi operandi e stesso ordine -> stessi float,
+        // resa e replay IDENTICI.
+        const f32 ceilDelta = ceilF - ceilN;
+        const f32 terraDelta = next.screenY - cur.screenY;
         // V9 ∞ (22/11, lv_02_atomico giro 29): BAYER4[y & 3] e' invariante
         // per riga; bayerRiga precalcolata passata a parete/soffittoRiga.
         const f32 baseU = (f32)(cur.index % 256) * 8.0f;
@@ -895,6 +903,17 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u8* bayerRiga = nullptr;
         auto parete = [&](f32 xa, f32 xb, f32 xBordoN, f32 xBordoF, i32 y) {
             const i32 a0 = std::max(0, (i32)xa), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xb);
+            // V9 ∞ (23/11, lv_06_desktop giro 31): a0/b0 sono gia' clampati a
+            // [0,WIDTH) e y arriva dal loop galleria clampato a [0,HEIGHT);
+            // i due controlli di bounds di fb_.put a ogni pixel sono ridondanti.
+            // Precalcolo la base della riga e scrivo direttamente (come per
+            // hline/incrocio piu' sopra): stessi pixel, resa e replay IDENTICI.
+            u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+            // V9 ∞ (23/11, lv_04_cromo giro 31): (f32)y serve per la coordinata V
+            // del muro a ogni pixel, ma y e' costante per questa chiamata parete.
+            // Prima il cast veniva rifatto a ogni pixel del muro; hoistato una
+            // volta per parete: stesso float, resa e replay IDENTICI.
+            const f32 yf = (f32)y;
             const f32 den = xBordoF - xBordoN;
             // V9 ∞ (20/11, lv_02_atomico giro 25): sinistra e neonOn dipendono
             // solo dai bordi della parete e dallo stato dei neon del trapezio,
@@ -926,8 +945,8 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             // non dal pixel x. Calcolati una volta per parete/trapezio: stessi
             // operandi e stesso ordine -> stessi float, resa e replay IDENTICI.
             const bool denValido = std::abs(den) > 0.5f;
-            const f32 ceilDelta = ceilF - ceilN;
-            const f32 terraDelta = next.screenY - cur.screenY;
+            // V9 ∞ (23/11, lv_02_atomico giro 31): ceilDelta/terraDelta saliti
+            // a livello trapezio (vedi sopra); qui si usano gia' hoistati.
             // V9 ∞ (22/11, lv_05_spray giro 29): il test "questo graffito sta su
             // questa parete?" dipende da grafQui/grafLato (trapezio) e sinistra
             // (parete), non dal pixel x. Prima veniva rivalutato a ogni pixel del
@@ -937,7 +956,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const f32 t = denValido ? std::clamp(((f32)x - xBordoN) / den, 0.0f, 1.0f) : 0.0f;
                 const f32 cieloY = ceilN + ceilDelta * t;
                 const f32 terraY = cur.screenY + terraDelta * t;
-                const f32 v = terraY > cieloY ? ((f32)y - cieloY) / (terraY - cieloY) : 0.0f;
+                const f32 v = terraY > cieloY ? (yf - cieloY) / (terraY - cieloY) : 0.0f;
                 const f32 buio = buioN + buioDelta * t;
                 // V9 ∞ (22/11, lv_04_cromo giro 30): |v-0.16f| serve sia per il tubo
                 // sia per l'alone (quando tratto e' attivo). Prima ricalcolato nel
@@ -945,8 +964,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // tratto attivo. Stesso valore, resa e replay IDENTICI.
                 const f32 dvNeon = tratto ? std::abs(v - 0.16f) : 0.0f;
                 if (tratto && dvNeon < spessN) {
-                    fb_.put(x, y, tuboColore);
-                    segnaTubo(x, x, y);
+                    riga[x] = tuboColore; // V9 ∞ lv_06 giro 31: scrittura diretta (bounds gia' noti)
                     continue;
                 }
                 u32 c = texGalleria((i32)(baseU + 8.0f * t), (i32)(v * 48.0f), buio);
@@ -966,12 +984,23 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 }
                 const f32 gLuce = giornoN + giornoDelta * t;
                 if ((f32)bayerVal < gLuce * 12.0f) c = lerpColore(c, tema_.cielo, 0.30f);
-                fb_.put(x, y, c);
-                segnaTubo(x, x, y);
+                riga[x] = c; // V9 ∞ lv_06 giro 31: scrittura diretta (bounds gia' noti)
             }
+            // V9 ∞ (23/11, lv_05_spray giro 31): segnaTubo(x,x,y) veniva chiamato
+            // una volta per pixel (sia nel ramo tubo "continue" sia a fondo loop):
+            // ogni x in [a0,b0] restava marcato esattamente una volta. Equivalente
+            // a una sola chiamata sull'intero intervallo dopo il loop (se a0>b0 e'
+            // no-op in entrambi i casi): stessa tubo_, stessi pixel di clip, resa e
+            // replay IDENTICI, frameHash invariato. Risparmia una chiamata con
+            // bounds-check e write per pixel nel tubo della galleria.
+            segnaTubo(a0, b0, y);
         };
         auto soffittoRiga = [&](f32 xl, f32 xr, f32 t, i32 y) {
             const i32 a0 = std::max(0, (i32)xl), b0 = std::min(Framebuffer::WIDTH - 1, (i32)xr);
+            // V9 ∞ (23/11, lv_06_desktop giro 31): come in parete, a0/b0 e y sono
+            // gia' in bounds; scrittura diretta invece di fb_.put per pixel:
+            // stessi pixel, resa e replay IDENTICI.
+            u32* rigaSoff = fb_.data() + (size_t)y * Framebuffer::WIDTH;
             const f32 larg = std::max(1.0f, xr - xl);
             const f32 buio = std::min(0.9f, buioN + buioDelta * t + 0.18f);
             const f32 g = giornoN + giornoDelta * t;
@@ -988,7 +1017,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             for (i32 x = a0; x <= b0; ++x) {
                 u32 c = texGalleria((i32)(((f32)x - xl) / larg * 48.0f) + 100, texV, buio);
                 if ((f32)bayerRiga[x & 3] < sogliaLuceG) c = lerpColore(c, tema_.cielo, 0.30f);
-                fb_.put(x, y, c);
+                rigaSoff[x] = c; // V9 ∞ lv_06 giro 31: scrittura diretta (bounds gia' noti)
             }
             segnaTubo(a0, b0, y);
         };
@@ -996,7 +1025,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
             bayerRiga = BAYER4[y & 3];
             if ((f32)y < ceilF) {
                 // Sopra il soffitto lontano: soffitto al centro, cima delle pareti ai lati.
-                const f32 t = ceilF > ceilN ? ((f32)y - ceilN) / (ceilF - ceilN) : 1.0f;
+                // V9 ∞ (23/11, lv_03_foglie giro 31): (ceilF - ceilN) e' lo stesso
+                // ceilDelta hoistato una volta per trapezio (vedi sopra); prima
+                // ricalcolato a ogni riga del soffitto. Stessi operandi e stesso
+                // ordine -> stesso float, resa e replay IDENTICI.
+                const f32 t = ceilF > ceilN ? ((f32)y - ceilN) / ceilDelta : 1.0f;
                 const f32 xl = xLn + (xLf - xLn) * t, xr = xRn + (xRf - xRn) * t;
                 soffittoRiga(xl, xr, t, y);
                 parete(xLn, xl, xLn, xLf, y);

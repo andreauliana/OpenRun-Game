@@ -74,6 +74,18 @@ def noti_mancanti(presenti):
     return [f for f in sorted(NOTI_NON_ASSET) if f not in visti]
 
 
+def noti_catalogati(usati):
+    """Noti non-asset ora presenti nel catalogo (non piu' fuori catalogo).
+
+    Un noto che finisce in CATALOGO_GRAFICO.json non appare piu' tra i PNG fuori
+    catalogo: senza questo controllo veniva segnalato come NOTO-SPARITO, che e'
+    fuorviante (il file puo' essere ancora su disco). Diagnosi informativa:
+    il noto va tolto da NOTI_NON_ASSET o rivalutato.
+    """
+    visti = set(usati)
+    return [f for f in sorted(NOTI_NON_ASSET) if f in visti]
+
+
 # Area auto del giocatore: solo Andrea la disegna (regola bloccata 06/11), VG3 non
 # converte ne' cataloga nulla li'. Le pose note sono gia' in NOTI_NON_ASSET, ma un
 # file NUOVO in queste cartelle arrivava a sorgente() etichettato come 'sprite'
@@ -114,6 +126,15 @@ def sorgente(png):
     return "altro"
 
 
+def conteggio_per_sorgente(pngs):
+    """Conta i PNG per area (sorgente): utile quando arrivano piu' ridisegni nuovi."""
+    conteggi = {}
+    for p in pngs:
+        s = sorgente(p)
+        conteggi[s] = conteggi.get(s, 0) + 1
+    return conteggi
+
+
 def main() -> int:
     if not CATALOGO.exists():
         print(f"FALLITO: catalogo non trovato in {CATALOGO}")
@@ -137,15 +158,22 @@ def main() -> int:
     noti, da_decidere = classifica(fuori)
     for f in noti:
         print(f"  noto non-asset: {f} ({NOTI_NON_ASSET[f]})")
-    spariti = noti_mancanti(noti)
+    catalogati = noti_catalogati(usati)
+    for f in catalogati:
+        print(f"  NOTO-CATALOGATO: {f} ({NOTI_NON_ASSET[f]})")
+    spariti = [f for f in noti_mancanti(noti) if f not in set(catalogati)]
     for f in spariti:
         print(f"  NOTO-SPARITO: {f} ({NOTI_NON_ASSET[f]})")
     print(
         f"png non catalogati: {len(da_decidere)} (noti non-asset {len(noti)},"
-        f" noti spariti {len(spariti)})"
+        f" noti catalogati {len(catalogati)}, noti spariti {len(spariti)})"
     )
+    per_area = conteggio_per_sorgente(da_decidere)
     for f in da_decidere:
         print(f"  {sorgente(f)}: {f}")
+    if per_area:
+        dettaglio = ", ".join(f"{k} {v}" for k, v in sorted(per_area.items()))
+        print(f"  da decidere per area: {dettaglio}")
     return 0
 
 
@@ -176,6 +204,13 @@ def autotest():
     )
     ok = ok and ok_spariti
     print("autotest noti_mancanti: " + ("OK" if ok_spariti else "FALLITO"))
+    ok_catalogati = (
+        noti_catalogati({"GRAFICA/sprite/giocatore_pose/car-custom.png"})
+        == ["GRAFICA/sprite/giocatore_pose/car-custom.png"]
+        and noti_catalogati({"GRAFICA/sprite/traffico/altro.png"}) == []
+    )
+    ok = ok and ok_catalogati
+    print("autotest noti_catalogati: " + ("OK" if ok_catalogati else "FALLITO"))
     ok_sorgente = (
         sorgente("GRAFICA/scenari/lv_03_foglie/oggetti/nuovo.png") == "scenario-oggetti"
         and sorgente("GRAFICA/scenari/lv_04_cromo/skyline.png") == "scenario-skyline"
@@ -197,6 +232,14 @@ def autotest():
     )
     ok = ok and ok_bloccata
     print("autotest area_bloccata: " + ("OK" if ok_bloccata else "FALLITO"))
+    ok_conteggio = conteggio_per_sorgente([
+        "GRAFICA/scenari/lv_01_neon/oggetti/a.png",
+        "GRAFICA/scenari/lv_02_atomico/oggetti/b.png",
+        "GRAFICA/scenari/lv_04_cromo/skyline.png",
+        "GRAFICA/sprite/traffico/c.png",
+    ]) == {"scenario-oggetti": 2, "scenario-skyline": 1, "sprite": 1}
+    ok = ok and ok_conteggio
+    print("autotest conteggio_per_sorgente: " + ("OK" if ok_conteggio else "FALLITO"))
     return 0 if ok else 1
 
 

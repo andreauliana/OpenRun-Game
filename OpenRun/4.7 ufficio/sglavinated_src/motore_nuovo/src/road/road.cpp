@@ -493,11 +493,20 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
         const RoadSegment& prev = segs_[(idx + (i32)segs_.size() - 1) % (i32)segs_.size()];
 
         const f32 tStart = (i == 0) ? segT : 0.0f;
-        const f32 passo = (f32)seg.length * (1.0f - tStart) / (f32)SAMPLES_PER_SEGMENT;
+        // V9 ∞ (23/11, lv_01_neon giro 32): (1-tStart) dipende solo dal
+        // segmento, non dal sample; prima veniva ricalcolato in `passo`, in `t`
+        // e in `tMezzo` a ogni campione (4 volte per segmento, centinaia di
+        // segmenti al frame). Stessi operandi e stesso ordine -> stessi float:
+        // x/dx/curve, screenX e l'intera resa restano bit-identici, replay
+        // IDENTICO. Stessa cosa per il mezzo-passo di tMezzo, costante nel
+        // segmento.
+        const f32 unoMenoTStart = 1.0f - tStart;
+        const f32 passo = (f32)seg.length * unoMenoTStart / (f32)SAMPLES_PER_SEGMENT;
+        const f32 mezzoPasso = 0.5f * unoMenoTStart / (f32)SAMPLES_PER_SEGMENT;
         for (i32 sample = 1; sample <= SAMPLES_PER_SEGMENT; ++sample) {
-            const f32 t = tStart + (1.0f - tStart) *
+            const f32 t = tStart + unoMenoTStart *
                 ((f32)sample / (f32)SAMPLES_PER_SEGMENT);
-            const f32 tMezzo = t - 0.5f * (1.0f - tStart) / (f32)SAMPLES_PER_SEGMENT;
+            const f32 tMezzo = t - mezzoPasso;
             const f32 k = (prev.curve + (seg.curve - prev.curve) * tMezzo) * CURVE_SCALE;
             x += dx * passo + 0.5f * k * passo * passo;
             dx += k * passo;

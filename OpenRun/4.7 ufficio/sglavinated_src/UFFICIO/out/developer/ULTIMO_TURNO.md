@@ -1,11 +1,12 @@
 # ULTIMO_TURNO developer
-- Data/ora: 22/11/2026 12:04 (Turno 2)
-- Blocco/passo: V9 ∞ fluidita' — lv_01_neon (trentunesimo giro).
-- File cambiati: `motore_nuovo/src/render/renderer.cpp` (galleria parete: hoist `bayerVal` per pixel, luce esterna inline, rimossa lambda `luceEsterna`; resa/replay identici, frameHash 0 3594390208).
+- Data/ora: 23/11/2026 07:16 (Turno 1)
+- Blocco/passo: V9 ∞ fluidita' — lv_01_neon (trentaduesimo giro).
+- File cambiati: `motore_nuovo/src/road/road.cpp` (Road::project: nel ciclo di proiezione `(1.0f - tStart)` e' costante per segmento ma veniva ricalcolato a ogni campione in `passo`, `t` e `tMezzo` — 4 sample x centinaia di segmenti al frame. Hoistato in `unoMenoTStart` e il mezzo-passo di `tMezzo` in `mezzoPasso`. Stessi operandi e stesso ordine -> stessi float di x/dx/curve e screenX, resa e replay IDENTICI, frameHash 0 3594390208 invariante. Primo V9 in road.cpp invece che renderer.cpp, per rotazione; tocca la proiezione di tutti i livelli ma e' bit-identica).
+- Voce vocabolario: nessuna azione nuova (passo V9 ∞ di fluidita', non gameplay).
 - Comandi ed exit code:
   - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno87_post_smoke" lv_01_neon smoke` -> exit 0 (GATE OK, medio 0.639 max 2.926 ms frame 0, replay IDENTICO)
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno87_post_percorso" lv_01_neon percorso` -> exit 0 (GATE PERCORSO OK, 1989 frame, 33.2 s, 0% fuori)
+  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno97_post_smoke" lv_01_neon smoke` -> exit 0 (GATE OK, medio 0.660 max 3.080 ms frame 0, replay IDENTICO, frameHash 0 3594390208)
+  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv01_turno97_post_percorso" lv_01_neon percorso` -> exit 0 (GATE PERCORSO OK, 1989 frame, 33.2 s, 0% fuori)
   - `sh UFFICIO/Officina/TOOL/gate_t1.sh` -> exit 0 (GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK)
-- Gate: eseguito in questo turno (22/11/2026 12:04); nessuna riga FALLITO.
-- Note: ms/frame < 8 ms; nessuna modifica a costanti di gameplay. Prossimo: V9 ∞ lv_02_atomico (trentunesimo giro).
+- Gate: eseguito in questo turno (23/11/2026 07:16); nessuna riga FALLITO nel log; conteggi giro identici ai riferimenti su tutti e 6 i livelli (lv_01 1989, lv_02 2476, lv_03 2392, lv_04 2125, lv_05 2920, lv_06 2125); smoke lv_01 medio 0.791 max 3.195 ms frame 0.
+- Note: frameHash invariato, replay IDENTICO, nessuna regressione; performance ben sotto 8 ms/frame; nessuna modifica a costanti di gameplay ne' a codice auto bloccato. Prossimo: V9 ∞ lv_02_atomico (trentaduesimo giro).

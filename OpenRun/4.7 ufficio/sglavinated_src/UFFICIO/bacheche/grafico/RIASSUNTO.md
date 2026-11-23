@@ -1,11 +1,8 @@
-# RIASSUNTO — @grafico (22/11/2026 11:58, Turno 2, giro 152)
-- **Blocco:** V47 VG3 ∞ — confronto date PNG `.sglraw` in `GRAFICA/scenari/`, conversione ridisegni di Andrea.
-- **Stato:** area mia tutta allineata, nessuna conversione (contenuto diverso 0, 80 oggetti senza raw 0, skyline 0 da rigenerare, altri 0 da convertire; 165 PNG, 133 confrontati, 32 non motore).
-- **Flag in area Andrea (non toccati):** `GRAFICA/scenari/lv_04_cromo/skyline.png` MANCANTE (`[manca-disegno]`: `skyline_trama.png` identico al raw, manca solo il disegno di Andrea) e `lato_furgone_bianco.png.png` (ridisegno 32.3% diverso dal raw, nome corretto allineato: rinominare/convertire decide Andrea).
-- **Produzione del turno (file diverso dal turno prima, che fu `vg3_date_png_raw.py`):** `TOOLS/vg3_raw_senza_catalogo.py` — `analizza()` restituisce anche `voci_con_raw` (voci con raw: 153, non 159 riferimenti: due voci hanno `raw_elenco` da 4) e nuova funzione pura `noti_risolti(presenti)` (segnala un raw noto-mancante ricomparso su disco → aggiornare `NOTI_RAW_MANCANTI`); nota in testa, docstring, due prove nuove in `--autotest`; exit invariato.
-- **Esiti (questo turno):** `vg3_raw_senza_catalogo.py --autotest` exit 0 (8 prove OK: voci_con_raw, noti_risolti inclusi); `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, 4 refs noti area auto bloccata, 0 risolti, 153 voci/159 riferimenti, 0 sospetti/159); `vg3_date_png_raw.py` exit 1 (solo i due flag Andrea).
-- **Giocatore (area bloccata):** 15 raw, 10 PNG, 5 pose `_b` mancanti, confronto contenuto saltato, nessuna conversione.
-- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` invariato; zero risorse esterne, zero materiale Sega.
-- **File turno:** `TOOLS/vg3_raw_senza_catalogo.py` modificato; `TOOLS/aggiorna_ultimo_turno.py` aggiornato; `diario.md` (una riga), `RIASSUNTO.md` e `ULTIMO_TURNO.md` riscritti.
-- **Gate:** non eseguito (22/11 11:58).
-- **Prossimo:** VG3 ∞ — ricontrollare PNG/raw su un file diverso; restano i due flag e i 4 raw mancanti, tutti decisione Andrea.
+# RIASSUNTO — @grafico (23/11/2026 07:10, Turno 1, giro 157)
+- **Blocco:** V47 VG3 ∞ — confronta PNG `GRAFICA/scenari/` vs raw; area mia allineata.
+- **Stato:** `vg3_date_png_raw.py` exit 1 solo per flag Andrea noto `traffico_incrocio/lato_furgone_bianco.png.png` (doppia estensione, raw corretto allineato, rinomina/converti decide Andrea; riepilogo indica "di cui doppia estensione 1"). 0 da convertire, 6/6 skyline allineati, 166 PNG/134 confrontati/32 non motore.
+- **Verifiche:** `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, 4 refs noti area auto bloccata, 0 risolti). `vg3_png_non_catalogati.py` exit 0 (4 noti, 0 catalogati, 0 da decidere).
+- **Produzione:** `UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py` — aggiunto contatore `altri_doppia` nel riepilogo orfani; `--autotest` exit 0 (9 prove OK).
+- **Catalogo/licenze:** invariati; zero risorse esterne, zero materiale Sega.
+- **File turno:** `diario.md` (riga), `RIASSUNTO.md`, `ULTIMO_TURNO.md` riscritti.
+- **Gate:** non eseguito (23/11 07:10).

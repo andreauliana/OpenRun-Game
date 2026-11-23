@@ -1,16 +1,9 @@
-# ULTIMO TURNO — @developer-junior (22/11/2026 11:52)
-
-- **Blocco/passo**: V47 VJ5 ∞ — review ultimo cambio src M `motore_nuovo/src/render/renderer.cpp` (diff V9 galleria); nuovo rilievo su `luceEsterna`/`soffittoRiga` (diverso da imbocco bayerRiga 11:40).
-- **File cambiati**:
-  - `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto)
-  - `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto)
-  - `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto)
-  - `UFFICIO/bacheche/developer-junior/diario.md` (1 riga append)
-  - `UFFICIO/Officina/STATUS_OFFICINA.md` (riga developer-junior riscritta)
-- **Comandi ed exit code**:
-  - `git status` — exit 0 (ispezione; src M renderer.cpp presente)
-  - `git diff --unified=3 -- motore_nuovo/src` — exit 0 (review)
-  - `grep -n "luceEsterna" motore_nuovo/src/render/renderer.cpp` — exit 0 (conferma 1 uso reale: def :848, uso :967)
-  - `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 8** (ctest 26/27, 151.11 s; FAIL unico preesistente `gate_decorazioni` lv_04_cromo `skyline.futurista` mancante)
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_luceesterna_sogliag_2211_t2" lv_02_atomico percorso` — **exit 0** (GATE PERCORSO OK, 2476 frame/41.3 s @60 Hz, fuori strada 0)
-- **Esito review**: nessun errore comportamentale; semplificazione: `luceEsterna` :848-850 usata solo da parete :967, soffittoRiga :985-988 inlinea logica identica con `sogliaLuceG` -> duplicazione. Rilievo doc persistente :477 "riga 408". gate_t1.sh non eseguito.
+# ULTIMO TURNO — @developer-junior (23/11/2026 07:04)
+- **Blocco/passi**: V47 · VJ5 ∞ (review del codice @developer) · VJ4 chiuso 6/6.
+- **File cambiati (solo mie uscite)**: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto), riga in `UFFICIO/Officina/STATUS_OFFICINA.md`. Nessun file di prodotto modificato.
+- **Oggetto review**: `motore_nuovo/src/render/renderer.cpp` — scrittura diretta framebuffer al posto di `fb_.put` in `parete` (`riga` :911, usi :967/:987) e `soffittoRiga` (`rigaSoff` :1003, uso :1020); nuovi vs 06:47, commenti "V9 ∞ 23/11 lv_06_desktop giro 31".
+- **Esito review**: nessun errore. `put` = guard bounds + `buf_[y*WIDTH+x]=color`; scrittura diretta identica via `data()`. Coordinate sempre in bounds (y0>=0, y1<=HEIGHT-1 :797-798; a0>=0, b0<=WIDTH-1 :905/:1004) -> guard sempre false, stessi pixel/valori, `segnaTubo` invariato, resa/replay IDENTICI, schema gia' usato altrove nel file e in `hline`. Semplificazione: nessuna; commenti :906-910/:1004-1006/:1028-1031 verbosi; rilievo doc persistente :495 "riga 408".
+- **Comando 1**: `sh UFFICIO/Officina/TOOL/run_tests.sh` — **exit 0** (ctest 27/27, 159.95 s, prova_gate ricompilato, gate_decorazioni passa).
+- **Comando 2**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_lv02_atomico_direttawrite_2311_t1" lv_02_atomico percorso` — **exit 0** (GATE PERCORSO OK, 2476 frame/41.3 s @60 Hz, fuori strada 0; lv_02 con galleria esercita il codice cambiato, diverso da lv_05_spray del turno prima).
+- **gate_t1.sh**: non eseguito in questo turno.
+- **Prossimo**: VJ5 ∞ — rileggere l'ultimo cambio `src/` (hunk/file diverso da parete/soffitto direct-write).

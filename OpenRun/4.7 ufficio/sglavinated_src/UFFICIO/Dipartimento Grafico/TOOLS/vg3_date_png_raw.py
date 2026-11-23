@@ -632,7 +632,7 @@ def main():
                 )
             else:
                 altri_ok += 1
-    altri_orfani = altri_residui = 0
+    altri_orfani = altri_residui = altri_doppia = 0
     for png, gruppo, raw in png_altri_orfani():
         if not raw.exists():
             if png.relative_to(ASSETS).as_posix() in RESIDUI_NON_MOTORE:
@@ -642,6 +642,7 @@ def main():
             altri_orfani += 1
             doppia = base_doppia_estensione(png)
             if doppia is not None:
+                altri_doppia += 1
                 raw_base = raw.parent / f"{doppia}.sglraw"
                 print(
                     f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: png {data(png)}"
@@ -682,7 +683,10 @@ def main():
                 print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.name}: png {data(png)}")
     print(f"altri gruppi: raw esaminati {altri_tot} (allineati {altri_ok})")
     print(f"altri gruppi: da convertire {altri_diversi}, png piu' nuovi a pari contenuto {altri_nuovo}")
-    print(f"altri gruppi: raw senza png {altri_senza}, png senza raw {altri_orfani}")
+    print(
+        f"altri gruppi: raw senza png {altri_senza}, png senza raw {altri_orfani}"
+        f" (di cui doppia estensione {altri_doppia})"
+    )
     print(f"altri gruppi: residui noti non usati dal motore {altri_residui}")
     if verbose:
         for riga in noise:
@@ -794,6 +798,14 @@ if __name__ == "__main__":
         )
         ok = ok and ok_sky_cls
         print("autotest classifica_skyline: " + ("OK" if ok_sky_cls else "FALLITO"))
+        # raw_e_trama: caso reale (lv_04_cromo ha skyline_trama allineato al raw) e
+        # caso negativo (livello inesistente / raw mancante).
+        ok_raw_trama = (
+            raw_e_trama("lv_04_cromo", RAW / "lv_04_cromo" / "skyline.sglraw") is True
+            and raw_e_trama("lv_inesistente", RAW / "lv_01_neon" / "skyline.sglraw") is False
+        )
+        ok = ok and ok_raw_trama
+        print("autotest raw_e_trama: " + ("OK" if ok_raw_trama else "FALLITO"))
         # Skyline: il PNG grezzo non si confronta col raw (la trama lo ricompone),
         # quindi la prova negativa e' che la ricomposizione segua il disegno: due PNG
         # diversi devono dare raw SGLR diversi. Se trama_scenari.py non si importa il
