@@ -42,6 +42,9 @@
 # Il confronto del PNG col nome corretto e il suo raw sta in confronto_nome_ok(): la
 # riga 'allineato al raw' di main() e lo stato sintetico leggono la stessa funzione,
 # cosi' non possono contraddirsi se una delle due diagnosi viene modificata.
+# I tre percorsi del residuo a doppia estensione (base, nome corretto, raw del nome
+# corretto) si costruiscono in percorsi_doppia(): prima la base veniva ricalcolata a
+# ogni riga del blocco e stem diversi avrebbero fatto parlare di file diversi.
 # Se lo skyline di un livello manca (PNG sparito, raw ancora presente) si aggiunge
 # SKYLINE-RESIDUO: dice se il raw e' ancora identico a skyline_trama.png, cioe' se lo
 # sfondo in gioco e' quello giusto e manca solo il disegno di Andrea da ripristinare.
@@ -49,6 +52,20 @@
 # (sfondo giusto, manca solo il PNG di Andrea) e' distinto da 'manca-sfondo' (raw di
 # un altro disegno): prima entrambi dicevano solo SKYLINE-MANCA e non si distingueva
 # la decisione di Andrea da un guasto da rigenerare.
+# La sintesi degli skyline (controllati/allineati/da rigenerare/senza) sta in
+# righe_skyline(): il totale era ricalcolato a mano in main(), cosi' un contatore
+# aggiunto al ciclo poteva restare fuori dal conteggio.
+# Lo stesso per la sintesi dei gruppi 1:1 in righe_altri(): otto contatori e quattro
+# righe, prima sparse come print in main() con la doppia estensione concatenata a mano.
+# Le code delle due righe del residuo .png.png (dettaglio per stato, esito 'risolto' o
+# 'decide Andrea') stanno in suffisso_dettaglio_doppia() e suffisso_stato_doppia():
+# prima erano due ternari annidati nei print di main(), non provabili a parte.
+# Le cinque righe di chiusura (raw esaminati, allineati, da convertire, png piu' nuovi,
+# senza png sorgente) stanno in righe_finali(): prima erano print sparsi in fondo a
+# main(), cosi' un contatore nuovo poteva restare fuori dal totale.
+# Il blocco dei PNG risalvati a pari contenuto (dettaglio riga per riga con --verbose,
+# solo conteggio senza) sta in righe_rumore(): prima l'if/elif era in main(), cosi' le
+# due diagnosi dello stesso rumore potevano dividersi e mostrare numeri diversi.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -296,6 +313,21 @@ def base_doppia_estensione(png):
     return None
 
 
+def percorsi_doppia(png, raw):
+    """(base, PNG col nome corretto, raw del nome corretto) di un residuo .png.png.
+
+    Ritorna (None, None, None) se il nome non e' a doppia estensione. Funzione pura:
+    i tre percorsi venivano costruiti uno per riga dentro il blocco di diagnosi di
+    main() e la base ricalcolata; se uno degli stem fosse cambiato, le righe della
+    stessa diagnosi avrebbero potuto riferirsi a file diversi. Il raw sta accanto
+    al file grezzo (cartella del gruppo), il nome corretto accanto al PNG.
+    """
+    base = base_doppia_estensione(png)
+    if base is None:
+        return None, None, None
+    return base, png.parent / f"{base}.png", raw.parent / f"{base}.sglraw"
+
+
 def stato_doppia_estensione(png, raw_base):
     """Cosa e' il file a doppia estensione rispetto al raw del nome corretto.
 
@@ -355,6 +387,32 @@ def stato_risoluzione_doppia(png, raw_base, nome_ok):
     if stato == "ridisegno":
         return "ridisegno-da-decidere"
     return stato
+
+
+def suffisso_dettaglio_doppia(stato):
+    """Coda della riga con lo stato del .png.png, in un punto solo (funzione pura).
+
+    La coda dipendeva da un ternario annidato dentro il print di main(): un caso
+    nuovo di stato_doppia_estensione restava senza spiegazione e sembrava un
+    errore. Qui i tre esiti noti hanno la loro frase e gli altri restano vuoti.
+    """
+    if stato == "doppione":
+        return ": doppione inutile, nessun ridisegno da convertire"
+    if stato == "ridisegno":
+        return ": e' un disegno diverso dal raw, va col nome corretto e convertito"
+    return ""
+
+
+def suffisso_stato_doppia(sintesi):
+    """Coda della riga 'stato <sintesi>' del residuo .png.png (funzione pura).
+
+    Solo 'risolto' dice che non c'e' nulla da fare; ogni altro stato resta una
+    decisione di Andrea (rinominare o convertire). Prima il testo stava in un
+    ternario dentro main(), cosi' non si poteva provare senza toccare GRAFICA.
+    """
+    if sintesi == "risolto":
+        return " (asset corretto gia' allineato, nessuna conversione VG3)"
+    return " (decide Andrea: rinominare/convertire)"
 
 
 def png_coperti():
@@ -572,6 +630,89 @@ def controllo_copertura():
     return fuori
 
 
+def codice_esito(
+    diversi, skyline_png_nuovo, skyline_senza, orfani,
+    altri_diversi, altri_senza, altri_orfani, fuori_copertura, gruppi_ignoti,
+):
+    """Codice di uscita VG3: 0 solo se non c'e' nulla da convertire o da decidere.
+
+    Funzione pura: raccoglie in un punto solo la regola che main() usava inline.
+    Cosi' un contatore aggiunto o tolto non richiede di riscrivere la condizione
+    a mano nel return, e l'autotest fissa i casi che fanno passare/fallire il gate.
+    """
+    problemi = (
+        diversi + skyline_png_nuovo + skyline_senza + orfani
+        + altri_diversi + altri_senza + altri_orfani + fuori_copertura + gruppi_ignoti
+    )
+    return 0 if problemi == 0 else 1
+
+
+def righe_skyline(ok, da_rigenerare, senza):
+    """Le quattro righe di sintesi skyline di main(), in un punto solo (funzione pura).
+
+    Il totale 'skyline controllati' era la somma ricalcolata a mano dentro main():
+    un contatore aggiunto al ciclo poteva non entrare nel totale. Qui la somma e la
+    formattazione stanno insieme, e l'autotest fissa formato e totale.
+    """
+    return [
+        f"skyline controllati: {ok + da_rigenerare + senza}",
+        f"skyline allineati: {ok}",
+        f"skyline da rigenerare: {da_rigenerare}",
+        f"skyline senza png o raw: {senza}",
+    ]
+
+
+def righe_altri(esaminati, allineati, diversi, nuovo, senza, orfani, doppia, residui):
+    """Le quattro righe di sintesi dei gruppi 1:1, in un punto solo (funzione pura).
+
+    Prima erano quattro print con otto contatori sparsi in main(): la riga dei PNG
+    senza raw si portava dietro il conteggio della doppia estensione come stringa
+    concatenata, cosi' cambiare un contatore voleva dire ricomporre la frase a mano.
+    """
+    return [
+        f"altri gruppi: raw esaminati {esaminati} (allineati {allineati})",
+        f"altri gruppi: da convertire {diversi}, png piu' nuovi a pari contenuto {nuovo}",
+        f"altri gruppi: raw senza png {senza}, png senza raw {orfani}"
+        f" (di cui doppia estensione {doppia})",
+        f"altri gruppi: residui noti non usati dal motore {residui}",
+    ]
+
+
+def righe_finali(totale, trame, allineati, diversi, png_piu_nuovo, senza_png):
+    """Le cinque righe di chiusura di main(), in un punto solo (funzione pura).
+
+    Prima erano cinque print sparsi in fondo a main(): il totale 'raw esaminati'
+    e la parentesi dei skyline a trama esclusi venivano riscritti a mano a ogni
+    modifica dei contatori. Qui formattazione e conteggi stanno insieme e
+    l'autotest fissa il formato esatto e il caso tutto zero.
+    """
+    return [
+        f"raw esaminati: {totale} (skyline a trama esclusi dal confronto a byte: {trame})",
+        f"allineati: {allineati}",
+        f"contenuto diverso da convertire: {diversi}",
+        f"png piu' nuovi ma contenuto uguale: {png_piu_nuovo}",
+        f"raw senza png sorgente: {senza_png}",
+    ]
+
+
+def righe_rumore(noise, verbose):
+    """Le righe dei PNG risalvati a pari contenuto, in un punto solo (funzione pura).
+
+    Prima l'if/elif stava in main(): con --verbose si stampava una riga per file,
+    senza si stampava solo il conteggio. Le due diagosi dello stesso rumore potevano
+    dividersi e raccontare numeri diversi. Qui la regola e' una sola e l'autotest
+    fissa i tre casi (dettaglio, conteggio, vuoto). Non tocca GRAFICA ne' i raw.
+    """
+    if verbose:
+        return list(noise)
+    if noise:
+        return [
+            f"png piu' nuovi a pari contenuto: {len(noise)}"
+            " (risalvataggi senza modifiche; dettaglio con --verbose)"
+        ]
+    return []
+
+
 def main():
     verbose = "--verbose" in sys.argv
     totale = diversi = senza_png = png_piu_nuovo = allineati = trame = 0
@@ -647,10 +788,8 @@ def main():
             )
         else:
             skyline_ok += 1
-    print(f"skyline controllati: {skyline_ok + skyline_png_nuovo + skyline_senza}")
-    print(f"skyline allineati: {skyline_ok}")
-    print(f"skyline da rigenerare: {skyline_png_nuovo}")
-    print(f"skyline senza png o raw: {skyline_senza}")
+    for riga in righe_skyline(skyline_ok, skyline_png_nuovo, skyline_senza):
+        print(riga)
     # Gruppi 1:1 fuori da scenari/ (Andrea puo' ridisegnarli: si converte, non si ritocca).
     altri_tot = altri_ok = altri_diversi = altri_nuovo = altri_senza = 0
     for gruppo in [g for _, g in ALTRI] + ["sponsor"]:
@@ -684,10 +823,9 @@ def main():
                 print(f"ALTRI-RESIDUO {gruppo}/{png.stem}: png {data(png)} (nessun raw, non usato)")
                 continue
             altri_orfani += 1
-            doppia = base_doppia_estensione(png)
+            doppia, nome_ok, raw_base = percorsi_doppia(png, raw)
             if doppia is not None:
                 altri_doppia += 1
-                raw_base = raw.parent / f"{doppia}.sglraw"
                 print(
                     f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: png {data(png)}"
                     " (doppia estensione: il catalogo non lo vede)"
@@ -701,15 +839,8 @@ def main():
                 stato, dettaglio = stato_doppia_estensione(png, raw_base)
                 print(
                     f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: {stato} ({dettaglio})"
-                    + (
-                        ": doppione inutile, nessun ridisegno da convertire"
-                        if stato == "doppione"
-                        else ": e' un disegno diverso dal raw, va col nome corretto e convertito"
-                        if stato == "ridisegno"
-                        else ""
-                    )
+                    + suffisso_dettaglio_doppia(stato)
                 )
-                nome_ok = png.parent / f"{doppia}.png"
                 if nome_ok.exists():
                     allineato = confronto_nome_ok(nome_ok, raw_base) == "allineato"
                     print(
@@ -721,49 +852,25 @@ def main():
                 sintesi = stato_risoluzione_doppia(png, raw_base, nome_ok)
                 print(
                     f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: stato {sintesi}"
-                    + (
-                        " (asset corretto gia' allineato, nessuna conversione VG3)"
-                        if sintesi == "risolto"
-                        else " (decide Andrea: rinominare/convertire)"
-                    )
+                    + suffisso_stato_doppia(sintesi)
                 )
             else:
                 print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.name}: png {data(png)}")
-    print(f"altri gruppi: raw esaminati {altri_tot} (allineati {altri_ok})")
-    print(f"altri gruppi: da convertire {altri_diversi}, png piu' nuovi a pari contenuto {altri_nuovo}")
-    print(
-        f"altri gruppi: raw senza png {altri_senza}, png senza raw {altri_orfani}"
-        f" (di cui doppia estensione {altri_doppia})"
-    )
-    print(f"altri gruppi: residui noti non usati dal motore {altri_residui}")
-    if verbose:
-        for riga in noise:
-            print(riga)
-    elif noise:
-        print(
-            f"png piu' nuovi a pari contenuto: {len(noise)}"
-            " (risalvataggi senza modifiche; dettaglio con --verbose)"
-        )
-    print(f"raw esaminati: {totale} (skyline a trama esclusi dal confronto a byte: {trame})")
-    print(f"allineati: {allineati}")
-    print(f"contenuto diverso da convertire: {diversi}")
-    print(f"png piu' nuovi ma contenuto uguale: {png_piu_nuovo}")
-    print(f"raw senza png sorgente: {senza_png}")
+    for riga in righe_altri(
+        altri_tot, altri_ok, altri_diversi, altri_nuovo,
+        altri_senza, altri_orfani, altri_doppia, altri_residui,
+    ):
+        print(riga)
+    for riga in righe_rumore(noise, verbose):
+        print(riga)
+    for riga in righe_finali(totale, trame, allineati, diversi, png_piu_nuovo, senza_png):
+        print(riga)
     fuori_copertura = controllo_copertura()
     gruppi_ignoti = controllo_gruppi_raw()
     controllo_pose_giocatore()
-    return (
-        0
-        if diversi == 0
-        and skyline_png_nuovo == 0
-        and skyline_senza == 0
-        and orfani == 0
-        and altri_diversi == 0
-        and altri_senza == 0
-        and altri_orfani == 0
-        and fuori_copertura == 0
-        and gruppi_ignoti == 0
-        else 1
+    return codice_esito(
+        diversi, skyline_png_nuovo, skyline_senza, orfani,
+        altri_diversi, altri_senza, altri_orfani, fuori_copertura, gruppi_ignoti,
     )
 
 
@@ -823,6 +930,21 @@ if __name__ == "__main__":
         )
         ok = ok and ok_doppia
         print("autotest base_doppia_estensione: " + ("OK" if ok_doppia else "FALLITO"))
+        # percorsi_doppia: un unico posto per base, nome corretto e raw del nome
+        # corretto; il raw sta accanto al file grezzo, non accanto al PNG. Nome normale
+        # deve dare tutti None, cosi' il blocco di diagnosi non viene aperto.
+        png_doppio = Path("sprite/traffico_incrocio/lato_furgone_bianco.png.png")
+        raw_gruppo = Path("motore_nuovo/dati/sprite_raw/traffico_incrocio/x.sglraw")
+        base_p, nome_p, raw_p = percorsi_doppia(png_doppio, raw_gruppo)
+        base_n, nome_n, raw_n = percorsi_doppia(Path("sprite/traffico/a.png"), raw_gruppo)
+        ok_percorsi = (
+            base_p == "lato_furgone_bianco"
+            and nome_p == Path("sprite/traffico_incrocio/lato_furgone_bianco.png")
+            and raw_p == Path("motore_nuovo/dati/sprite_raw/traffico_incrocio/lato_furgone_bianco.sglraw")
+            and base_n is None and nome_n is None and raw_n is None
+        )
+        ok = ok and ok_percorsi
+        print("autotest percorsi_doppia: " + ("OK" if ok_percorsi else "FALLITO"))
         # Doppia estensione: lo stesso disegno del raw e' un doppione, uno diverso e'
         # un ridisegno da rinominare; senza il confronto i due casi si confondevano.
         # Copre anche raw mancante e PNG illeggibile: non vanno scambiati per doppione.
@@ -923,6 +1045,94 @@ if __name__ == "__main__":
         )
         ok = ok and ok_raw_trama
         print("autotest raw_e_trama: " + ("OK" if ok_raw_trama else "FALLITO"))
+        # codice_esito: 0 solo quando tutti i contatori di problema sono zero;
+        # basta un solo orfano/residuo/diverso per fare exit 1.
+        ok_esito = (
+            codice_esito(0, 0, 0, 0, 0, 0, 0, 0, 0) == 0
+            and codice_esito(1, 0, 0, 0, 0, 0, 0, 0, 0) == 1
+            and codice_esito(0, 0, 0, 0, 0, 0, 1, 0, 0) == 1
+            and codice_esito(0, 0, 0, 0, 0, 0, 0, 0, 1) == 1
+        )
+        ok = ok and ok_esito
+        print("autotest codice_esito: " + ("OK" if ok_esito else "FALLITO"))
+        # righe_skyline: formato esatto delle quattro righe e totale = somma dei
+        # tre contatori (prima la somma era ricalcolata a mano in main()).
+        righe_sky = righe_skyline(6, 0, 0)
+        righe_sky_vuote = righe_skyline(0, 0, 0)
+        ok_righe_sky = (
+            righe_sky == [
+                "skyline controllati: 6",
+                "skyline allineati: 6",
+                "skyline da rigenerare: 0",
+                "skyline senza png o raw: 0",
+            ]
+            and righe_sky_vuote[0] == "skyline controllati: 0"
+            and righe_skyline(4, 1, 1)[0] == "skyline controllati: 6"
+        )
+        ok = ok and ok_righe_sky
+        print("autotest righe_skyline: " + ("OK" if ok_righe_sky else "FALLITO"))
+        # righe_altri: formato esatto delle quattro righe dei gruppi 1:1, con la
+        # doppia estensione dentro la riga dei PNG senza raw (prima era concatenata
+        # a mano) e i contatori tutti a zero.
+        righe_alt = righe_altri(47, 45, 0, 2, 0, 1, 1, 0)
+        righe_alt_vuote = righe_altri(0, 0, 0, 0, 0, 0, 0, 0)
+        ok_righe_alt = (
+            righe_alt == [
+                "altri gruppi: raw esaminati 47 (allineati 45)",
+                "altri gruppi: da convertire 0, png piu' nuovi a pari contenuto 2",
+                "altri gruppi: raw senza png 0, png senza raw 1 (di cui doppia estensione 1)",
+                "altri gruppi: residui noti non usati dal motore 0",
+            ]
+            and righe_alt_vuote[2]
+            == "altri gruppi: raw senza png 0, png senza raw 0 (di cui doppia estensione 0)"
+            and len(righe_alt_vuote) == 4
+        )
+        ok = ok and ok_righe_alt
+        print("autotest righe_altri: " + ("OK" if ok_righe_alt else "FALLITO"))
+        # righe_finali: formato esatto delle cinque righe di chiusura e dei contatori,
+        # prima cinque print sparsi in fondo a main(). Il caso zero fissa che nessuna
+        # riga sparisca quando non c'e' nulla da convertire.
+        righe_fin = righe_finali(86, 6, 1, 0, 79, 0)
+        righe_fin_vuote = righe_finali(0, 0, 0, 0, 0, 0)
+        ok_fin = (
+            righe_fin == [
+                "raw esaminati: 86 (skyline a trama esclusi dal confronto a byte: 6)",
+                "allineati: 1",
+                "contenuto diverso da convertire: 0",
+                "png piu' nuovi ma contenuto uguale: 79",
+                "raw senza png sorgente: 0",
+            ]
+            and righe_fin_vuote[0]
+            == "raw esaminati: 0 (skyline a trama esclusi dal confronto a byte: 0)"
+            and len(righe_fin_vuote) == 5
+        )
+        ok = ok and ok_fin
+        print("autotest righe_finali: " + ("OK" if ok_fin else "FALLITO"))
+        # suffisso_dettaglio_doppia: le code delle tre diagnosi del .png.png, prima
+        # in un ternario annidato dentro main(); gli stati senza spiegazione restano
+        # vuoti (non vanno scambiati per un ridisegno).
+        ok_det = (
+            suffisso_dettaglio_doppia("doppione")
+            == ": doppione inutile, nessun ridisegno da convertire"
+            and suffisso_dettaglio_doppia("ridisegno")
+            == ": e' un disegno diverso dal raw, va col nome corretto e convertito"
+            and suffisso_dettaglio_doppia("illeggibile") == ""
+            and suffisso_dettaglio_doppia("senza-raw") == ""
+        )
+        ok = ok and ok_det
+        print("autotest suffisso_dettaglio_doppia: " + ("OK" if ok_det else "FALLITO"))
+        # suffisso_stato_doppia: solo 'risolto' chiude il caso, ogni altro stato
+        # resta da decidere con Andrea.
+        ok_stato_txt = (
+            suffisso_stato_doppia("risolto")
+            == " (asset corretto gia' allineato, nessuna conversione VG3)"
+            and suffisso_stato_doppia("ridisegno-da-decidere")
+            == " (decide Andrea: rinominare/convertire)"
+            and suffisso_stato_doppia("nome-corretto-manca")
+            == " (decide Andrea: rinominare/convertire)"
+        )
+        ok = ok and ok_stato_txt
+        print("autotest suffisso_stato_doppia: " + ("OK" if ok_stato_txt else "FALLITO"))
         # Skyline: il PNG grezzo non si confronta col raw (la trama lo ricompone),
         # quindi la prova negativa e' che la ricomposizione segua il disegno: due PNG
         # diversi devono dare raw SGLR diversi. Se trama_scenari.py non si importa il
@@ -941,6 +1151,21 @@ if __name__ == "__main__":
             ok_sky = ra[:4] == b"SGLR" and rb[:4] == b"SGLR" and ra != rb
             ok = ok and ok_sky
             print("autotest raw_skyline_atteso: " + ("OK" if ok_sky else "FALLITO"))
+        # righe_rumore: i due modi di mostrare i risalvataggi (dettaglio con
+        # --verbose, conteggio senza) leggono la stessa lista; caso vuoto = nessuna
+        # riga in entrambi i modi. Prima il blocco if/elif stava in main().
+        rum = ["A (contenuto uguale)", "B (contenuto uguale)"]
+        ok_rumore = (
+            righe_rumore(rum, True) == rum
+            and righe_rumore(rum, False) == [
+                "png piu' nuovi a pari contenuto: 2"
+                " (risalvataggi senza modifiche; dettaglio con --verbose)"
+            ]
+            and righe_rumore([], False) == []
+            and righe_rumore([], True) == []
+        )
+        ok = ok and ok_rumore
+        print("autotest righe_rumore: " + ("OK" if ok_rumore else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()

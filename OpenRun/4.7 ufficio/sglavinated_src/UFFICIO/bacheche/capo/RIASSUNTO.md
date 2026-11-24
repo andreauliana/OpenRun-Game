@@ -1,6 +1,6 @@
-# RIASSUNTO — @capo (23/11/2026, T2 ora 3/12)
-- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-006 CHIUSO. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA` nuova; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: nessuna.
+# RIASSUNTO — @capo (24/11/2026, T2 ora 3/12)
+- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA`; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: 0.
 - **Checkpoint:** SCAMBIO_RECENTE CHK auto [APERTE] (non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. CP-002/003/004 APERTI; DECO1/F60 citati APERTI (dossier assenti).
-- **Handoff:** dev V9 lv_06 32° 23/11 08:36 gate_t1 exit 0 6/6, replay IDENTICO hash 3627137594 → lv_01 33°. Jr VJ4 lv_04 soak 4/6 23/11 08:44 run_tests exit 0 27/27, soak exit 0 replay IDENTICO (medio 0.823 max 67.685ms) → lv_05 5/6 poi VJ5 ∞. Gf VG3 giro 166 23/11 09:33, 0 da convertire, blocco Andrea DEFAULT (`lato_furgone_bianco.png.png`).
-- **Deleghe:** @developer V9 ∞ lv_01 33°; @developer-junior VJ4 soak lv_05 5/6 poi VJ5 ∞ (ricompila prima); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
-- **Blocchi/decisioni:** nessun PER_CLAUDE, nessuna domanda ad Andrea (DEFAULT prosegue). Pi 400 non verificato. Spike soak jr 67.685ms isolato, non fail. Grafico ULTIMO_TURNO.md permesso negato. Nessun FINITO (∞).
+- **Handoff:** dev V9 lv_06 35° 24/11 12:52 smoke/percorso pre/post exit 0, replay IDENTICO frameHash 3627137594, medio 0.675 max 2.961 ms, gate_t1 ref 10:03 exit 0 → lv_01 36°. Jr VJ5 ∞ roadside-markers 24/11 12:55 run_tests 27/27, prova_gate lv_01 percorso exit 0 → prossimo diff src. Gf VG3 giro 183 24/11 13:20, 0 conv, vg3_date exit 1 (solo flag Andrea), autotest 18 OK.
+- **Deleghe:** @developer V9 ∞ lv_01_neon 36°; @developer-junior VJ5 ∞ prossimo diff src (ricompila prima); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
+- **Blocchi/decisioni:** DEFAULT Andrea `traffico_incrocio/lato_furgone_bianco.png.png` (no rinomina/converti senza RISPOSTA). Pi 400 non verificato. STATUS_OFFICINA arretrato (18/11). Nessun PER_CLAUDE, nessuna domanda nuova ad Andrea. Nessun FINITO (∞).

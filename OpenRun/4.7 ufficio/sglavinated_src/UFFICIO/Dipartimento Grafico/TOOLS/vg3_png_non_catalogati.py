@@ -32,6 +32,37 @@ Aggiunta 23/11 (turno 3): lo scarto dei PNG gia' catalogati, che produce l'elenc
 'fuori catalogo', e' ora la funzione pura fuori_catalogo(), provata in autotest:
 prima era inline in main() e non si poteva provare che un PNG nuovo resta fuori
 mentre uno catalogato viene escluso e l'ordine resta stabile.
+
+Aggiunta 24/11: la riga di riepilogo finale (prima costruita inline in main con
+un f-string spezzato) e' ora la funzione pura riga_sintesi(), provata in autotest:
+e' l'unica riga che riporta i quattro conteggi, quindi deve restare un solo
+posto in cui il formato puo' cambiare.
+
+Aggiunta 24/11 (turno 2): la formattazione del riepilogo per area (prima inline in
+main) e' ora la funzione pura dettaglio_per_area(), provata in autotest: l'ordine
+alfabetico delle chiavi deve restare stabile anche con piu' aree.
+
+Aggiunta 24/11 (turno 3): la riga di un residuo noto (prima tre f-string identiche
+inline in main per noto / NOTO-CATALOGATO / NOTO-SPARITO) e' ora la funzione pura
+riga_noto(), provata in autotest: un solo posto in cui il formato puo' cambiare,
+cosi' i tre casi restano allineati.
+
+Aggiunta 24/11 (turno 4): le righe di stampa dei PNG 'da decidere' (una per PNG
+col nome dell'area, piu' il riepilogo per area) erano un ciclo print inline in
+main: ora sono la funzione pura righe_da_decidere(), provata in autotest, cosi'
+l'ordine dei PNG e la presenza del riepilogo solo quando c'e' almeno un'area
+restano verificabili senza leggere il disco.
+
+Aggiunta 24/11 (turno 5): le tre righe dei residui noti (prima tre cicli print
+inline in main, uno per stato) sono ora la funzione pura righe_noti(), provata in
+autotest: l'ordine noto / NOTO-CATALOGATO / NOTO-SPARITO e il tag di ciascuno
+restano verificabili senza leggere il catalogo.
+
+Aggiunta 24/11 (turno 6): il raccolto dei PNG con glob e la conversione in
+percorsi relativi a GRAFICA/ (prima un doppio ciclo inline in main) e' ora la
+funzione png_trovati(), con glob e relpath iniettabili: l'autotest verifica
+l'ordine e il formato relativo senza leggere il disco. E' l'ultimo blocco di
+raccolta dati che restava inline in main().
 """
 import glob
 import json
@@ -161,6 +192,16 @@ def conteggio_per_sorgente(pngs):
     return conteggi
 
 
+def dettaglio_per_area(per_area):
+    """Formatta il riepilogo 'da decidere per area' (pura, ordine alfabetico).
+
+    main() costruiva la stringa inline: estrarla rende provabile il formato e
+    garantisce che le chiavi siano sempre ordinate, cosi' l'output non dipende
+    dall'ordine di inserimento del dizionario.
+    """
+    return ", ".join(f"{k} {v}" for k, v in sorted(per_area.items()))
+
+
 def file_usati(cat):
     """Insieme dei percorsi citati dal catalogo (campi 'file' e 'raw' di ogni voce).
 
@@ -192,6 +233,79 @@ def fuori_catalogo(trovati, usati):
     return sorted(rel for rel in trovati if rel not in usati)
 
 
+def png_trovati(lib, pattern, globber=glob.glob, relativizza=os.path.relpath):
+    """Percorsi relativi a GRAFICA/ di tutti i PNG trovati dai pattern (puro).
+
+    main() aveva un doppio ciclo inline: per ogni pattern, glob ricorsivo e
+    os.path.relpath di ogni risultato. Tenerlo qui, con glob e relpath passabili
+    come parametri (default quelli reali), permette all'autotest di verificare
+    ordine e formato relativo senza toccare il disco, e lascia un solo punto in
+    cui cambia la raccolta dei PNG da esaminare. L'ordine e' quello di pattern e
+    poi di glob: non viene riordinato, come prima.
+    """
+    trovati = []
+    for pat in pattern:
+        for g in globber(os.path.join(glob.escape(str(lib)), pat), recursive=True):
+            trovati.append(relativizza(g, str(lib)))
+    return trovati
+
+
+def riga_sintesi(quanti, noti, catalogati, spariti):
+    """Riga di riepilogo finale: un solo posto in cui si formatta (pura).
+
+    main() stampa quattro conteggi in un f-string spezzato: tenerlo qui lo rende
+    provabile senza leggere il disco e evita che la riga si rompa se un conteggio
+    viene passato nell'ordine sbagliato (i nomi dei parametri sono il contratto).
+    """
+    return (
+        f"png non catalogati: {quanti} (noti non-asset {noti},"
+        f" noti catalogati {catalogati}, noti spariti {spariti})"
+    )
+
+
+def righe_da_decidere(pngs):
+    """Righe di stampa dei PNG 'da decidere' (pura): una per PNG + riepilogo aree.
+
+    main() stampava un ciclo 'per area: file' e poi la riga di riepilogo: tenere
+    qui la costruzione delle righe rende provabili, senza disco, l'ordine dei PNG
+    (quello ricevuto, non riordinato) e il fatto che il riepilogo compaia solo se
+    c'e' almeno un'area, cosi' i due formati non divergono.
+    """
+    righe = [f"  {sorgente(f)}: {f}" for f in pngs]
+    per_area = conteggio_per_sorgente(pngs)
+    if per_area:
+        righe.append(f"  da decidere per area: {dettaglio_per_area(per_area)}")
+    return righe
+
+
+def riga_noto(tag, percorso, motivo):
+    """Riga di un residuo noto, uguale per noto / NOTO-CATALOGATO / NOTO-SPARITO.
+
+    main() stampava i tre casi con tre f-string identiche: tenerle in un solo
+    posto rende provabile il formato (tag, percorso, motivo) e impedisce che una
+    riga diverghi dalle altre quando si aggiunge un conteggio.
+    """
+    return f"  {tag}: {percorso} ({motivo})"
+
+
+def righe_noti(noti, catalogati, spariti):
+    """Righe dei residui noti nei tre stati (pura), nell'ordine di stampa.
+
+    main() aveva tre cicli print identici (uno per noto / NOTO-CATALOGATO /
+    NOTO-SPARITO): tenerli in una sola funzione rende provabile, senza disco,
+    l'ordine dei tre gruppi e il tag che spetta a ciascuno, cosi' una riga non
+    puo' cambiare formato rispetto alle altre.
+    """
+    righe = []
+    for f in noti:
+        righe.append(riga_noto("noto non-asset", f, NOTI_NON_ASSET[f]))
+    for f in catalogati:
+        righe.append(riga_noto("NOTO-CATALOGATO", f, NOTI_NON_ASSET[f]))
+    for f in spariti:
+        righe.append(riga_noto("NOTO-SPARITO", f, NOTI_NON_ASSET[f]))
+    return righe
+
+
 def main() -> int:
     if not CATALOGO.exists():
         print(f"FALLITO: catalogo non trovato in {CATALOGO}")
@@ -199,30 +313,16 @@ def main() -> int:
     cat = json.load(open(CATALOGO, encoding="utf-8"))
     usati = file_usati(cat)
 
-    trovati = []
-    for pat in PATTERN:
-        for g in glob.glob(os.path.join(glob.escape(str(LIBRERIA)), pat), recursive=True):
-            trovati.append(os.path.relpath(g, str(LIBRERIA)))
+    trovati = png_trovati(LIBRERIA, PATTERN)
     fuori = fuori_catalogo(trovati, usati)
     noti, da_decidere = classifica(fuori)
-    for f in noti:
-        print(f"  noto non-asset: {f} ({NOTI_NON_ASSET[f]})")
     catalogati = noti_catalogati(usati)
-    for f in catalogati:
-        print(f"  NOTO-CATALOGATO: {f} ({NOTI_NON_ASSET[f]})")
     spariti = noti_spariti(noti, catalogati)
-    for f in spariti:
-        print(f"  NOTO-SPARITO: {f} ({NOTI_NON_ASSET[f]})")
-    print(
-        f"png non catalogati: {len(da_decidere)} (noti non-asset {len(noti)},"
-        f" noti catalogati {len(catalogati)}, noti spariti {len(spariti)})"
-    )
-    per_area = conteggio_per_sorgente(da_decidere)
-    for f in da_decidere:
-        print(f"  {sorgente(f)}: {f}")
-    if per_area:
-        dettaglio = ", ".join(f"{k} {v}" for k, v in sorted(per_area.items()))
-        print(f"  da decidere per area: {dettaglio}")
+    for riga in righe_noti(noti, catalogati, spariti):
+        print(riga)
+    print(riga_sintesi(len(da_decidere), len(noti), len(catalogati), len(spariti)))
+    for riga in righe_da_decidere(da_decidere):
+        print(riga)
     return 0
 
 
@@ -327,6 +427,94 @@ def autotest():
     ok_fuori = ok_fuori and fuori_catalogo([], {"GRAFICA/a.png"}) == []
     ok = ok and ok_fuori
     print("autotest fuori_catalogo: " + ("OK" if ok_fuori else "FALLITO"))
+    # riga_sintesi: formato esatto della riga finale (i quattro conteggi, nell'ordine
+    # in cui main() li passa); un conteggio spostato cambierebbe il testo stampato.
+    ok_riga = (
+        riga_sintesi(0, 4, 0, 0)
+        == "png non catalogati: 0 (noti non-asset 4, noti catalogati 0, noti spariti 0)"
+        and riga_sintesi(3, 1, 2, 5)
+        == "png non catalogati: 3 (noti non-asset 1, noti catalogati 2, noti spariti 5)"
+    )
+    ok = ok and ok_riga
+    print("autotest riga_sintesi: " + ("OK" if ok_riga else "FALLITO"))
+    # dettaglio_per_area: formato stabile, chiavi ordinate alfabeticamente.
+    ok_dettaglio = (
+        dettaglio_per_area({"sprite": 2, "scenario-oggetti": 1}) == "scenario-oggetti 1, sprite 2"
+        and dettaglio_per_area({"sponsor": 1}) == "sponsor 1"
+        and dettaglio_per_area({}) == ""
+    )
+    ok = ok and ok_dettaglio
+    print("autotest dettaglio_per_area: " + ("OK" if ok_dettaglio else "FALLITO"))
+    # riga_noto: stesso formato per i tre tag, motivo tra parentesi, due spazi iniziali.
+    ok_noto = (
+        riga_noto("noto non-asset", "GRAFICA/a.png", "motivo")
+        == "  noto non-asset: GRAFICA/a.png (motivo)"
+        and riga_noto("NOTO-CATALOGATO", "GRAFICA/b.png", "m2")
+        == "  NOTO-CATALOGATO: GRAFICA/b.png (m2)"
+        and riga_noto("NOTO-SPARITO", "GRAFICA/c.png", "m3")
+        == "  NOTO-SPARITO: GRAFICA/c.png (m3)"
+    )
+    ok = ok and ok_noto
+    print("autotest riga_noto: " + ("OK" if ok_noto else "FALLITO"))
+    # righe_noti: ordine noto / NOTO-CATALOGATO / NOTO-SPARITO, tag corretto e
+    # formato identico a riga_noto; elenco vuoto = nessuna riga.
+    a = "GRAFICA/sprite/giocatore_pose/car-custom.png"
+    b = "GRAFICA/sprite/giocatore_pose/car-custom-dx.png"
+    c = "GRAFICA/sprite/giocatore_pose/car-custom-sx.png"
+    motivo = NOTI_NON_ASSET[a]
+    ok_noti_righe = righe_noti([], [], []) == []
+    ok_noti_righe = ok_noti_righe and righe_noti([a], [b], [c]) == [
+        f"  noto non-asset: {a} ({motivo})",
+        f"  NOTO-CATALOGATO: {b} ({motivo})",
+        f"  NOTO-SPARITO: {c} ({motivo})",
+    ]
+    ok_noti_righe = ok_noti_righe and righe_noti([c, a], [], []) == [
+        f"  noto non-asset: {c} ({motivo})",
+        f"  noto non-asset: {a} ({motivo})",
+    ]
+    ok = ok and ok_noti_righe
+    print("autotest righe_noti: " + ("OK" if ok_noti_righe else "FALLITO"))
+    # righe_da_decidere: una riga per PNG nell'ordine ricevuto, riepilogo per area
+    # solo se c'e' almeno un'area (elenco vuoto = nessuna riga).
+    ok_righe = righe_da_decidere([]) == []
+    ok_righe = ok_righe and righe_da_decidere([
+        "GRAFICA/scenari/lv_01_neon/oggetti/a.png",
+        "GRAFICA/sprite/traffico/c.png",
+    ]) == [
+        "  scenario-oggetti: GRAFICA/scenari/lv_01_neon/oggetti/a.png",
+        "  sprite: GRAFICA/sprite/traffico/c.png",
+        "  da decidere per area: scenario-oggetti 1, sprite 1",
+    ]
+    ok_righe = ok_righe and righe_da_decidere([
+        "GRAFICA/sprite/giocatore_pose/nuova.png",
+    ]) == [
+        "  giocatore-area-bloccata: GRAFICA/sprite/giocatore_pose/nuova.png",
+        "  da decidere per area: giocatore-area-bloccata 1",
+    ]
+    ok = ok and ok_righe
+    print("autotest righe_da_decidere: " + ("OK" if ok_righe else "FALLITO"))
+    # png_trovati: glob e relpath iniettati, nessun accesso al disco. L'ordine
+    # segue pattern poi glob (non riordinato) e i percorsi sono relativi a lib.
+    radice_finta = "/radice"
+    glob_finto = lambda pat, recursive: {
+        "/radice/GRAFICA/a/*.png": [
+            "/radice/GRAFICA/a/z.png", "/radice/GRAFICA/a/a.png",
+        ],
+        "/radice/GRAFICA/b/*.png": ["/radice/GRAFICA/b/m.png"],
+    }.get(pat, [])
+    ok_trovati = png_trovati(
+        radice_finta,
+        ["GRAFICA/a/*.png", "GRAFICA/b/*.png", "GRAFICA/c/*.png"],
+        globber=glob_finto,
+        relativizza=lambda g, lib: os.path.relpath(g, lib),
+    ) == [
+        "GRAFICA/a/z.png", "GRAFICA/a/a.png", "GRAFICA/b/m.png",
+    ]
+    ok_trovati = ok_trovati and png_trovati(
+        radice_finta, [], globber=glob_finto
+    ) == []
+    ok = ok and ok_trovati
+    print("autotest png_trovati: " + ("OK" if ok_trovati else "FALLITO"))
     return 0 if ok else 1
 
 

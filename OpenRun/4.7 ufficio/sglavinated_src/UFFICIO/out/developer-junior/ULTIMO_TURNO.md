@@ -1,13 +1,13 @@
-# Ultimo turno — developer-junior (23/11/2026 11:13, Turno 3)
-- Blocco: V47 → VJ5 ∞ review codice @developer in `src/`; passo: hunk nuovo `Road::project()` (hoist costanti di segmento fuori dal ciclo campioni, lv_01_neon, giro 34).
-- Nota: nuovo edit in `src/` rispetto alle 10:57 — `road.cpp` mtime 11:08:53, `renderer.cpp` invariato (10:52:25); ho esaminato l'hunk non ancora rivisto del diff attuale, funzione/livello diversi dal turno prima (10:57 `drawSprites`/lv_06_desktop).
-- File cambiati (solo bacheca, nessun `src`): `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (una riga), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto). Nessun altro .md; STATUS_OFFICINA non toccato.
-- Cosa (review): `road.cpp:548-560` calcola una volta per segmento `acquaSeg/sospesoSeg/galleriaSeg/quotaAcquaSeg/rivaSeg/luciSeg/versoLuciSeg/portaleSeg`, usati a :584-591 al posto di `seg.*`. Corretto: `seg` e' const ref legata a :525 e `idx` cambia solo a :524 -> costante nel ciclo campioni, stessi valori; tipi preservati (bool/u8/f32/i16/i8, road_segment.h); `acquaY` :587 con stessi operandi/ordine -> float bit-identico; solo letture POD, nessun side effect; resa/replay IDENTICI.
-- Nota (non bloccante, `road.cpp:555`): `galleriaSeg = seg.galleria ? 1:0` ha il ternario ridondante perche' `galleria` e' gia' bool; in piu' le 8 costanti son lette anche se tutti i sample fan `continue` a :572 (letture pure, innocue). Nessuna modifica richiesta.
-- Comando 1: `git status --short` → exit 0 (M `road.cpp` + `renderer.cpp` del developer, non toccati).
-- Comando 2: `git diff -- motore_nuovo/src/render/renderer.cpp` → exit 0; `git diff -- motore_nuovo/src/road/road.cpp` → exit 0.
-- Comando 3: `ls -lT motore_nuovo/src/render/renderer.cpp motore_nuovo/src/road/road.cpp` → exit 0 (renderer.cpp 10:52:25, road.cpp 11:08:53).
-- Comando 4: `sh UFFICIO/Officina/TOOL/run_tests.sh` → exit 0 (ctest **27/27**, 165.43 s, `prova_gate` ricompilato, gate_decorazioni e bivio #19-21 passano).
-- Comando 5: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_project_hoist_lv01_neon_percorso_2311_1113" lv_01_neon percorso` → exit 0 (GATE PERCORSO OK, 4540 seg, 1989 frame/33.2 s @60 Hz, fuori strada 0 (0.0%), caricamento 5.6 ms, init 14.0 ms).
-- `gate_t1.sh`: non eseguito in questo turno.
-- Esito: nessun errore di correttezza nell'hunk, replay identico e ctest verde; uniche note il `?1:0` ridondante e letture su segmenti scartati, non bloccanti. VJ4 chiuso 6/6; VJ5 ∞ in corso.
+# ULTIMO TURNO — @developer-junior (24/11/2026 15:09)
+
+- **Blocco e passo**: V47 VJ5 ∞ — review hunk NUOVO in `motore_nuovo/src/render/renderer.cpp` (mtime 15:07:09, dopo 14:52:29): `Renderer::drawSegmentTrapezoid()` :404 `terraLaterale = !sospeso && !galleria` hoistato, usato :562, commento "lv_01_neon giro 37".
+- **File cambiati (solo bacheca/uscite del ruolo)**: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (una riga). `src/` NON modificato.
+- **Comando**: `git status` → exit 0.
+- **Comando**: `ls -lT motore_nuovo/src/render/renderer.cpp motore_nuovo/src/road/road.cpp` → exit 0.
+- **Comando**: `git diff motore_nuovo/src/render/renderer.cpp` → exit 0.
+- **Comando**: grep costanti (`zAvanti|distI|DRAW_DISTANCE|SEG_LEN|LINEA_ARRIVO_PROF`), `DRAW_DIST`, `playerZ`, `giro_`, `terraLaterale` + letture renderer.cpp :524-547 e road.cpp :520-609 → exit 0.
+- **Comando**: `sh UFFICIO/Officina/TOOL/run_tests.sh` → exit 0 (ctest 27/27, 132.35 s, prova_gate ricompilato).
+- **Comando**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_zpista_traguardo_lv03_foglie_percorso_2411_1509" lv_03_foglie percorso` → exit 0 (GATE PERCORSO OK, 4041 oggetti, 5240 seg, rettilineo 61%, curva max 0.85/0.85, 2392 frame/39.9 s @60 Hz, fuori strada 0 (0.0%), caricamento 3.6 ms, init 11.0 ms).
+- **Comando**: `ls -la "UFFICIO/Officina/Test area/vj5_zpista_traguardo_lv03_foglie_percorso_2411_1509"` → exit 0 (cartella vuota: modo percorso non scrive screenshot/log).
+- **Esito**: nessun errore; `sospeso`/`galleria` const e invarianti, :562 piano identico al vecchio predicato -> resa/replay IDENTICI. Rilievo non bloccante: :481 ricalcola la condizione gia' in `terraLaterale` :404 (riuso bit-identico), commento :401-403 non lo dice; nessuna azione richiesta.
+- **gate_t1.sh**: non eseguito in questo turno.

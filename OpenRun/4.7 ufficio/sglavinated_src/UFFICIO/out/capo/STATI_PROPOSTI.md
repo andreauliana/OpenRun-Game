@@ -1,30 +1,23 @@
-# STATI PROPOSTI (capo) — 2026-11-23 Turno 3 (ora 4 di 12)
+# STATI PROPOSTI — @capo (Turno 2, ora 3 di 12, 2026-11-24)
 
-Tappa attiva: **MIG1 [~] / V47 [~] continuo (passi ∞)**. Gate Tappa 1 (TAPPE.md): base legacy 08/11 intoccabile — ANDREA_REVIEW precedenza assoluta. Nessuna `RISPOSTA DI ANDREA` nuova; decisioni aperte: 0. SCAMBIO_RECENTE: CHK auto [APERTE], non peer review. Capo non riesegue gate. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. FINITO: no (esistono passi ∞).
+## Contesto letto
+- TAPPE, ANDREA_REVIEW (precedenza assoluta; nessuna RISPOSTA DI ANDREA; G1 ANNULLATO/sponsor solo Andrea; legacy 08/11+vocabolario intoccati; decisioni aperte 0), DIREZIONE_ARTISTICA, CONTROLLO, AGENTS 4.7, RICHIESTA_APERTA, SCAMBIO_RECENTE, STATO_CORRENTE, REGISTRO_REVISIONI (coda), handoff grafico/dev/jr, STATUS_OFFICINA (arretrato).
 
-## Stati proposti
-- MIG1: [~] — passi numerati esauriti; lavoro su V47 ∞.
-- V47: [~] — continuo, un passo ∞ per turno per ruolo.
+## Tappa attiva / gate
+- **MIG1 [~] + V47 [~] continuo** (passi ∞). Gate: ctest verde, gate_t1 exit 0, replay IDENTICO, Pi 400 <=12 ms/frame. CP-006 CHIUSO (no riaprire). Nessun CP con **gate+review indipendenti** registrati in dossier → nessuna chiusura. SCAMBIO_RECENTE CHK auto [APERTE]=controlli automatici, non peer review. Gate non rieseguito dal capo.
 
-## Checkpoint
-- CP-005/006/007: CHIUSI (non riaprire).
-- CP-002/003/004: APERTI — review indipendente/prova mancante; nessuna chiusura.
-- DECO1/F60: citati APERTI in STATO_CORRENTE ma dossier assenti in cartella — lasciare APERTI, non inventare dossier.
+## Stati proposti e deleghe
 
-## Handoff letti (evidenze dichiarate, non rieseguite dal capo)
-- Developer `UFFICIO/out/developer/ULTIMO_TURNO.md` 23/11 10:06: V9 lv_05_spray 33°; build exit 0; smoke/percorso exit 0, replay IDENTICO (frameHash 4250821778), medio 0.603 max 3.022 ms, percorso 2920f 0% fuori; gate_t1 exit 0 6/6 "TUTTO OK". Prossimo lv_06_desktop 33°.
-- Developer-junior `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` 23/11 10:38: VJ5 ∞ review `Renderer::drawImboccoGalleria()` (lv_02, renderer.cpp:1732-1738); hoist dx0/dx1/pilastro corretto, resa/replay identici; rilievo non bloccante (guardare `if(inFronte)`, precalcolo cx±fronteW). `run_tests.sh` exit 0 ctest 27/27 (135.38s); prova_gate lv_02_atomico percorso exit 0, replay/GATE OK. VJ4 chiuso 6/6.
-- Grafico `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` 23/11 10:01: VG3 giro 167, 0 conversioni; vg3_date_png_raw.py exit 1 solo flag furgone `.png.png` area Andrea; vg3_raw_senza_catalogo.py exit 0/--autotest exit 0 (11 OK); vg3_png_non_catalogati.py exit 0. Nessun asset/catalogo modificato.
+| Task | Responsabile | Revisore indipendente | Criteri completamento | Esito verifiche (handoff/log citati) | Stato proposto |
+|---|---|---|---|---|---|
+| V9 ∞ lv_01_neon 36° | @developer (`UFFICIO/out/developer/ULTIMO_TURNO.md`) | @developer-junior | gate_t1 exit 0; percorso/smoke replay IDENTICO; ms/frame riportati; se >8 ms Mac alleggerire senza cambiare resa/replay | Handoff dev 24/11 12:52: lv_06_desktop 35° ok, smoke/percorso pre/post exit 0, replay IDENTICO frameHash 3627137594, medio 0.675 max 2.961 ms; gate_t1 ref 24/11 10:03 exit 0 (capo non riesegue) | IN CORSO |
+| VJ5 ∞ review prossimo diff src (≠ roadside-markers) | @developer-junior (`UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `REVIEW_V47.md`) | @developer se fix / @capo verifica handoff | `run_tests.sh` exit 0 prima prova; review file/riga in `REVIEW_V47.md`; nessuna modifica src | Handoff jr 24/11 12:55: roadside-markers ok, run_tests 27/27 exit 0, prova_gate lv_01 percorso exit 0, no src (capo non riesegue) | IN CORSO |
+| VG3 ∞ PNG vs `.sglraw` scenari | @grafico (`UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md`, `GRAFICA/scenari/`) | @capo verifica catalogo/licenza/provenienza | Solo script catalogo; PNG più nuovo→converti; no ritocco area Andrea; aggiornare STATUS; no risorse esterne non verificate | Handoff gf 24/11 13:20 giro 183: 0 conversioni; vg3_date exit 1 (solo flag Andrea noto), vg3_raw_senza_catalogo exit 0, vg3_png_non_catalogati exit 0, autotest 18 OK (capo non riesegue) | IN CORSO |
+| Coordinamento CP/registro | @capo (`UFFICIO/Checkpoint Revision/`, `UFFICIO/out/capo/`) | — | REGISTRO append-only; STATO/STATI/RIASS/diario allineati; chiusura CP solo con gate+review indie in dossier | Nessun CP chiudibile; CP-002/003/004 APERTI; DECO1/F60 citati APERTI (dossier assenti) | APERTO |
 
-## Deleghe (AGENTS 4.7, percorsi UFFICIO/out/<ruolo>/)
-| Task | Responsabile | Revisore indipendente | Criteri completamento |
-|---|---|---|---|
-| V9 ∞ lv_06_desktop 33°: gate `percorso`/smoke, ms/frame; se >8ms Mac alleggerire senza cambiare resa/replay | @developer | @developer-junior (VJ5 review diff src) | replay IDENTICO, exit 0, misure in `UFFICIO/out/developer/ULTIMO_TURNO.md` |
-| VJ5 ∞: review prossimo cambio @developer in `src/` (file/riga/livello diverso); ricompila prima | @developer-junior | @developer (peer su prove/test) | `run_tests.sh` prima di prove, esito/exit in `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` e `REVIEW_V47.md`; no modifica src |
-| VG3 ∞: confronta PNG vs `.sglraw` in `GRAFICA/`; converti solo se PNG più nuovo con script catalogo | @grafico | @capo verifica handoff/catalogo (non peer review tecnica) | nessun ritocco, 0 conversioni inutili; stato in `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` |
-
-## Blocchi / decisioni
-- Nessuna domanda nuova per Andrea. Se serve: ANDREA_REVIEW.md con DEFAULT, poi proseguire; `RISPOSTA DI ANDREA` prevale sul DEFAULT.
-- Pi 400 non verificato (blocco H sospeso, macOS).
-- Grafico: `.png.png` furgone incrocio e 3 `car-custom*`/4 raw sx mancanti/5 pose `_b` = area Andrea, DEFAULT non toccare.
-- CP-002/003/004/DECO1/F60: restano APERTI; nessuna review indipendente registrata in dossier.
+## Blocchi / decisioni necessarie
+- DEFAULT Andrea (non richiedere, nessuna RISPOSTA DI ANDREA): `traffico_incrocio/lato_furgone_bianco.png.png` doppia est. — **NON** rinominare/convertire senza RISPOSTA.
+- Pi 400 non verificato (blocco H sospeso; gate richiede <=12 ms/frame su Pi 400).
+- Peer review indie non registrate in dossier per step V47 recenti → nessuna chiusura CP.
+- STATUS_OFFICINA arretrato (18/11); usati handoff dev/jr.
+- Nessun PER_CLAUDE. Nessun FINITO (∞). Nessuna domanda nuova ad Andrea.

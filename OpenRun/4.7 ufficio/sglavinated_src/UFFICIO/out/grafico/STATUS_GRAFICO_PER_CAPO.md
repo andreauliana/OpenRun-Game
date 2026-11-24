@@ -1,14 +1,13 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (23/11/2026 10:01, Turno 2)
-- **Blocco/passo:** V47 VG3 ∞ (giro 167) — confronto date/contenuto PNG di `GRAFICA/scenari/` coi `.sglraw`; passo tool su un file diverso dal turno prima.
-- **Stato:** area mia tutta allineata, 0 conversioni. Skyline 6/6 allineati; 166 PNG (134 confrontati, 32 non motore), 80 oggetti senza raw 0, altri 47 raw/45 allineati/0 da convertire. Unico flag noto in area Andrea, non azionabile: `traffico_incrocio/lato_furgone_bianco.png.png` (doppia estensione, ridisegno 32.3% diverso dal raw; nome corretto allineato).
-- **Materiali modificati (dati/asset):** nessuno; nessuna conversione, `GRAFICA/` non toccata.
-- **Materiali modificati (tool/codice):** `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py` — nuove funzioni pure `normalizza_raw()` (forma canonica del percorso) e `classifica_scritture()` (stesso file citato con scritture diverse); `analizza()` confronta i percorsi canonici per `senza_voce` e restituisce `scritture`; `main()` stampa righe e conteggio. Due autotest nuovi.
-- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` non modificato; zero risorse esterne, zero materiale Sega, provenienza invariata.
-- **Comandi ed exit code (eseguiti in questo turno, 23/11 10:01):**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1, solo flag furgone `.png.png` in area Andrea.
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155/155, 0 senza voce; 4 refs noti area auto Andrea, 0 risolti; 153 voci/159 riferimenti, 0 duplicati fra voci, 0 ripetuti in una voce, 0 scritture diverse, 0 sospetti).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` — exit 0 (11 prove OK).
+# STATUS_GRAFICO_PER_CAPO — @grafico (24/11/2026 13:20, Turno 1, giro 183)
+- **Blocco/passo:** V47 VG3 ∞ — confronto date/contenuto PNG di `GRAFICA/scenari/` coi `.sglraw`; produzione su `vg3_date_png_raw.py`.
+- **Stato:** area mia allineata, 0 conversioni. Skyline 6/6; 166 PNG (134 confrontati, 32 non motore), 80 oggetti senza raw 0, altri 47 raw/45 allineati/0 da convertire. 153 voci/159 riferimenti, 0 duplicati/ripetuti/scritture diverse/sospetti. Unico flag noto area Andrea (non azionabile): `traffico_incrocio/lato_furgone_bianco.png.png` (doppia estensione, 32.3% diverso dal raw; nome corretto allineato).
+- **Materiali modificati:** nessun PNG/raw/catalogo. Codice: `UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py` — estratte `suffisso_dettaglio_doppia(stato)` e `suffisso_stato_doppia(sintesi)` pure (code delle righe del residuo `.png.png`, prima ternari annidati nei print di main), usate in main, autotest dedicato (3+3 casi); output invariato.
+- **Catalogo/licenze:** `CATALOGO_GRAFICO.json` invariato; zero risorse esterne, zero materiale Sega.
+- **Comandi ed exit code (24/11 13:20):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 1 (solo flag Andrea noto).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155/155, 0 senza voce, 4 refs noti area auto bloccata, 0 risolti).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (4 noti, 0 catalogati, 0 da decidere).
-- **Lacune/blocchi:** (1) `.png.png` furgone incrocio: rinominare/convertire decide Andrea; (2) 3 `car-custom*` in `giocatore_pose`, area Andrea; (3) 4 raw `sx1/sx3` mancanti, area auto Andrea; (4) 5 pose `_b` mancanti, area bloccata.
-- **Gate:** non eseguito (23/11 10:01).
-- **Review richiesta:** nessuna. Prossimo: VG3 ∞ — ricontrollare nuovi PNG/raw; convertire solo se un PNG e' piu' nuovo, mai toccare area Andrea.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py" --autotest` — exit 0 (18 prove OK).
+- **Lacune/blocchi:** furgone `.png.png` e 3 `car-custom*` / 4 raw sx1/sx3 / 5 pose `_b` mancanti: area Andrea, non azionabili.
+- **Gate:** non eseguito (24/11 13:20).
+- **Prossimo:** VG3 ∞ — ricontrollare PNG/raw nuovi; convertire solo se PNG piu' nuovo, mai area Andrea; prossimo tool `vg3_raw_senza_catalogo.py`.

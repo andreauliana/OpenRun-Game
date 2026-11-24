@@ -285,8 +285,15 @@ f32 Road::quotaAt(f32 z) const {
     const i32 i = indiceSegmento(z);
     if (i < 0) return 0.0f;
     const RoadSegment& s = segs_[i];
-    f32 t = std::fmod(z, (f32)totalLen_);
-    if (t < 0.0f) t += (f32)totalLen_;
+    // V9 ∞ (24/11, lv_01_neon giro 36): fast-path come indiceSegmento (giro 33):
+    // z e' gia' in [0,totalLen) nelle chiamate di frame (beccheggio/quota), evita
+    // fmod+guard; stesso t, resa e replay IDENTICI.
+    const f32 len = (f32)totalLen_;
+    f32 t = z;
+    if (t < 0.0f || t >= len) {
+        t = std::fmod(t, len);
+        if (t < 0.0f) t += len;
+    }
     t = std::clamp(t / (f32)SEG_LEN - (f32)i, 0.0f, 1.0f);
     return s.p1y + (s.p2y - s.p1y) * t;
 }
@@ -487,8 +494,14 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
     // restano limitate e la strada non sale nel cielo (bug: prima dy += hill veniva
     // integrato due volte).
     // Wrap di playerZ sul tracciato circolare.
-    f32 z0 = std::fmod(playerZ, (f32)totalLen_);
-    if (z0 < 0.0f) z0 += (f32)totalLen_;
+    // V9 ∞ (24/11, lv_01_neon giro 36): fast-path come indiceSegmento; playerZ
+    // e' gia' in [0,totalLen) nella maggior parte dei frame. Stesso z0.
+    const f32 lenT = (f32)totalLen_;
+    f32 z0 = playerZ;
+    if (z0 < 0.0f || z0 >= lenT) {
+        z0 = std::fmod(z0, lenT);
+        if (z0 < 0.0f) z0 += lenT;
+    }
 
     // Segmento sotto la telecamera e posizione dentro il segmento.
     const i32 startIdx = indiceSegmento(z0);
@@ -596,8 +609,13 @@ void Road::project(f32 playerX, f32 playerZ, std::vector<ProjectedSeg>& out, i32
 
 f32 Road::incrocioD(f32 z) const {
     if (incrociZ_.empty() || segs_.empty() || totalLen_ <= 0) return 1e9f;
-    f32 zz = std::fmod(z, (f32)totalLen_);
-    if (zz < 0.0f) zz += (f32)totalLen_;
+    // V9 ∞ (24/11, lv_01_neon giro 36): fast-path wrap come indiceSegmento; stesso zz.
+    const f32 len = (f32)totalLen_;
+    f32 zz = z;
+    if (zz < 0.0f || zz >= len) {
+        zz = std::fmod(zz, len);
+        if (zz < 0.0f) zz += len;
+    }
     const i32 i = std::min((i32)segs_.size() - 1, (i32)(zz / (f32)SEG_LEN));
     const i16 q = segs_[(size_t)i].incrocio;
     return q >= 0 ? zz - incrociZ_[(size_t)q] : 1e9f;

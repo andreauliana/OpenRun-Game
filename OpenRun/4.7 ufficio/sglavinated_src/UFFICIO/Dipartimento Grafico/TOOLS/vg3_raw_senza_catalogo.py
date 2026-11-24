@@ -35,6 +35,26 @@
 # (prima inline in analizza()) e' estratto in conta_voci_con_raw(), funzione pura
 # con autotest dedicato: il caso di una voce con solo raw_elenco, raw vuoto o
 # non-stringa e' coperto in isolamento. Logica e output invariati.
+# Aggiunta 24/11: la raccolta dei riferimenti raw del catalogo (prima inline in
+# analizza()) e' estratta in raccogli_riferimenti(), funzione pura con autotest;
+# raw vuoto/non-stringa in 'raw' o 'raw_elenco' ignorati. Output invariato.
+# Aggiunta 24/11 (turno 2, 11:13): le righe di sintesi finale (prima f-string
+# sparse in main()) sono estratte in righe_riepilogo(), funzione pura con
+# autotest su ordine e formato; main() si limita a stamparle. Output invariato.
+# Aggiunta 24/11 (turno 1, 12:06): le righe di stampa dei riferimenti mancanti
+# (prima due cicli print in main()) sono estratte in righe_inesistenti(),
+# funzione pura con autotest su formato e ordine noti/nuovi. Output invariato.
+# Aggiunta 24/11 (turno 1, 13:03): la riga dei noti raw-mancanti ricomparsi
+# (prima f-string nel ciclo di main()) e' estratta in righe_risolti(), funzione
+# pura con autotest su formato e lista vuota. Output invariato.
+# Aggiunta 24/11 (turno 2, 13:53): le tre righe dei rilievi su raw citati piu'
+# volte / con piu' scritture (prima tre cicli print in main()) sono estratte in
+# righe_classificazione(), funzione pura con autotest su formato, ordine delle
+# chiavi e caso vuoto. Output invariato.
+# Aggiunta 24/11 (turno 2, 14:43): le due righe di stampa rimaste inline in main()
+# (raw su disco senza voce e riferimenti 'raw' con percorso sospetto) sono
+# estratte in righe_senza_voce() e righe_sospetti(), funzioni pure con autotest
+# su formato; main() si limita a stamparle. Output invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -122,6 +142,25 @@ def conta_voci_con_raw(elementi):
     )
 
 
+def raccogli_riferimenti(elementi):
+    """Riferimenti raw del catalogo: path raw -> lista di id (funzione pura).
+
+    Ogni riferimento produce una entry: una voce con 'raw' e 'raw_elenco' sullo
+    stesso file dara' il suo id piu' volte (il chiamante distingue duplicato fra
+    voci e ripetizione in voce). I valori non-stringa/vuoti di 'raw' sono ignorati.
+    """
+    riferimenti = {}
+    for e in elementi:
+        rid = e.get("id", "?")
+        r = e.get("raw")
+        if isinstance(r, str) and r:
+            riferimenti.setdefault(r, []).append(rid)
+        for r2 in e.get("raw_elenco") or []:
+            if isinstance(r2, str) and r2:
+                riferimenti.setdefault(r2, []).append(rid)
+    return riferimenti
+
+
 def analizza(raws, elementi, esiste):
     """Copertura inversa raw -> catalogo. Funzione pura (esiste e' un callable).
 
@@ -135,14 +174,7 @@ def analizza(raws, elementi, esiste):
     senza_voce confronta i percorsi canonici, cosi' un riferimento scritto in
     modo equivalente non risulta un falso orfano.
     """
-    riferimenti = {}  # path raw -> lista di id di catalogo che lo citano
-    for e in elementi:
-        rid = e.get("id", "?")
-        r = e.get("raw")
-        if isinstance(r, str):
-            riferimenti.setdefault(r, []).append(rid)
-        for r2 in e.get("raw_elenco") or []:
-            riferimenti.setdefault(r2, []).append(rid)
+    riferimenti = raccogli_riferimenti(elementi)
 
     canonici = {normalizza_raw(k) for k in riferimenti}
     senza_voce = sorted(r for r in raws if normalizza_raw(r) not in canonici)
@@ -216,6 +248,91 @@ def classifica_percorsi(riferimenti):
     return validi, sospetti
 
 
+def righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti):
+    """Righe di sintesi finale del report (funzione pura).
+
+    Erano f-string sparse in main(): qui si provano in isolamento ordine e
+    formato, e main() si limita a stamparle. Nessun accesso al disco.
+    """
+    return [
+        f"raw del motore: {len(raws)}; tracciati nel catalogo: {len(raws) - len(res['senza_voce'])}; senza voce: {len(res['senza_voce'])}",
+        f"voci di catalogo con raw: {res['voci_con_raw']}; riferimenti raw distinti: {len(res['riferimenti'])}",
+        f"riferimenti 'raw' senza file su disco: {len(res['raw_inesistenti'])} (noti {len(noti)}, da decidere {len(nuovi)})",
+        f"noti raw-mancanti ora presenti su disco: {len(risolti)}",
+        f"raw citati da piu' voci: {len(res['duplicati'])}",
+        f"raw ripetuti dentro una sola voce: {len(res['ripetuti_in_voce'])}",
+        f"raw citati con piu' scritture dello stesso file: {len(res['scritture'])}",
+        f"riferimenti 'raw' con percorso sospetto: {len(sospetti)} (ben formati {len(validi)})",
+    ]
+
+
+def righe_inesistenti(noti, nuovi, riferimenti, motivi):
+    """Righe di stampa dei riferimenti 'raw' senza file su disco (funzione pura).
+
+    Erano due cicli print in main(): qui si provano in isolamento formato e
+    ordine. Prima i noti (con il motivo atteso fra parentesi), poi i nuovi.
+    motivi: path noto -> motivo (il chiamante passa NOTI_RAW_MANCANTI).
+    """
+    righe = [
+        f"RAW MANCANTE NOTO {r} {riferimenti[r]} ({motivi[r]})" for r in noti
+    ]
+    righe += [
+        f"RAW IN CATALOGO MA NON SU DISCO {r} {riferimenti[r]}" for r in nuovi
+    ]
+    return righe
+
+
+def righe_risolti(risolti, motivi):
+    """Righe dei noti raw-mancanti ricomparsi su disco (funzione pura).
+
+    Era una f-string nel ciclo di main(): qui si provano in isolamento formato e
+    ordine. motivi: path noto -> motivo (il chiamante passa NOTI_RAW_MANCANTI).
+    """
+    return [
+        f"RAW NOTO ORA PRESENTE {r} (aggiornare NOTI_RAW_MANCANTI: {motivi[r]})"
+        for r in risolti
+    ]
+
+
+def righe_classificazione(duplicati, ripetuti_in_voce, scritture):
+    """Righe dei rilievi su raw citati piu' volte / con piu' scritture (pura).
+
+    Erano tre cicli print in main(): qui si provano in isolamento formato e
+    ordine (prima i duplicati fra voci, poi i ripetuti in una sola voce, poi le
+    scritture diverse dello stesso file), ogni gruppo con le chiavi ordinate.
+    Nessun accesso al disco.
+    """
+    righe = []
+    for r, ids in sorted(duplicati.items()):
+        righe.append(f"RAW CITATO DA PIU' VOCI {r} {ids}")
+    for r, ids in sorted(ripetuti_in_voce.items()):
+        righe.append(f"RAW RIPETUTO IN UNA VOCE {r} {ids}")
+    for canonico, elenco in sorted(scritture.items()):
+        righe.append(f"RAW STESSO FILE SCRITTURE DIVERSE {canonico} {elenco}")
+    return righe
+
+
+def righe_senza_voce(senza_voce):
+    """Righe dei raw su disco senza voce di catalogo (funzione pura).
+
+    Era un ciclo print in main(): qui si prova in isolamento il formato.
+    Nessun accesso al disco.
+    """
+    return [f"RAW NON CATALOGATO {r}" for r in senza_voce]
+
+
+def righe_sospetti(sospetti, riferimenti):
+    """Righe dei riferimenti 'raw' con percorso sospetto (funzione pura).
+
+    Era un ciclo print in main(): qui si provano in isolamento formato e
+    ordine. riferimenti: path raw -> lista di id (il chiamante passa
+    res['riferimenti']). Nessun accesso al disco.
+    """
+    return [
+        f"RAW PERCORSO SOSPETTO {r} {riferimenti[r]}" for r in sospetti
+    ]
+
+
 def autotest():
     """Prove della funzione pura con dati sintetici, nessun file reale letto."""
     elementi = [
@@ -283,6 +400,22 @@ def autotest():
         and conta_voci_con_raw([]) == 0
     )
     prove.append(("conta_voci_con_raw", ok_conta))
+    ok_racc = (
+        raccogli_riferimenti([
+            {"id": "a", "raw": "raw/a.sglraw"},
+            {"id": "b", "raw_elenco": ["raw/b.sglraw", "raw/c.sglraw"]},
+            {"id": "c", "raw": "raw/a.sglraw"},
+            {"id": "d", "raw": "", "raw_elenco": [None, "raw/d.sglraw"]},
+        ])
+        == {
+            "raw/a.sglraw": ["a", "c"],
+            "raw/b.sglraw": ["b"],
+            "raw/c.sglraw": ["b"],
+            "raw/d.sglraw": ["d"],
+        }
+        and raccogli_riferimenti([]) == {}
+    )
+    prove.append(("raccogli_riferimenti", ok_racc))
     noti, nuovi = classifica_inesistenti([
         "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
         "motore_nuovo/dati/sprite_raw/giocatore/pose/nuovo_raw.sglraw",
@@ -292,6 +425,19 @@ def autotest():
         and nuovi == ["motore_nuovo/dati/sprite_raw/giocatore/pose/nuovo_raw.sglraw"]
     )
     prove.append(("classifica_inesistenti", ok_class))
+    ok_inesistenti = (
+        righe_inesistenti(
+            ["raw/x.sglraw"], ["raw/y.sglraw"],
+            {"raw/x.sglraw": ["v1"], "raw/y.sglraw": ["v2"]},
+            {"raw/x.sglraw": "area bloccata"},
+        )
+        == [
+            "RAW MANCANTE NOTO raw/x.sglraw ['v1'] (area bloccata)",
+            "RAW IN CATALOGO MA NON SU DISCO raw/y.sglraw ['v2']",
+        ]
+        and righe_inesistenti([], [], {}, {}) == []
+    )
+    prove.append(("righe_inesistenti", ok_inesistenti))
     ok_risolti = (
         noti_risolti(["motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw"])
         == ["motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw"]
@@ -318,6 +464,86 @@ def autotest():
         and v_vuoti == [] and s_vuoti == []
     )
     prove.append(("classifica_percorsi", ok_percorsi))
+    res_finto = {
+        "senza_voce": ["raw/orfano.sglraw"],
+        "voci_con_raw": 3,
+        "riferimenti": {"raw/a.sglraw": ["a"], "raw/b.sglraw": ["b"]},
+        "raw_inesistenti": ["raw/manca1.sglraw", "raw/manca2.sglraw"],
+        "duplicati": {"raw/a.sglraw": ["a", "c"]},
+        "ripetuti_in_voce": {"raw/b.sglraw": ["b"]},
+        "scritture": {"raw/a.sglraw": ["./raw/a.sglraw", "raw/a.sglraw"]},
+    }
+    righe = righe_riepilogo(
+        res_finto, ["raw/a.sglraw", "raw/b.sglraw", "raw/orfano.sglraw"],
+        ["raw/manca1.sglraw"], ["raw/manca2.sglraw"],
+        ["GRAFICA/vecchio.sglraw"], ["raw/a.sglraw"], ["raw/noto.sglraw"],
+    )
+    vuote = righe_riepilogo(
+        {"senza_voce": [], "voci_con_raw": 0, "riferimenti": {},
+         "raw_inesistenti": [], "duplicati": {}, "ripetuti_in_voce": {},
+         "scritture": {}},
+        [], [], [], [], [], [],
+    )
+    ok_righe = righe == [
+        "raw del motore: 3; tracciati nel catalogo: 2; senza voce: 1",
+        "voci di catalogo con raw: 3; riferimenti raw distinti: 2",
+        "riferimenti 'raw' senza file su disco: 2 (noti 1, da decidere 1)",
+        "noti raw-mancanti ora presenti su disco: 1",
+        "raw citati da piu' voci: 1",
+        "raw ripetuti dentro una sola voce: 1",
+        "raw citati con piu' scritture dello stesso file: 1",
+        "riferimenti 'raw' con percorso sospetto: 1 (ben formati 1)",
+    ] and len(vuote) == 8 and vuote[0] == "raw del motore: 0; tracciati nel catalogo: 0; senza voce: 0"
+    prove.append(("righe_riepilogo", ok_righe))
+    ok_risolti_righe = (
+        righe_risolti(
+            ["raw/x.sglraw"],
+            {"raw/x.sglraw": "area bloccata"},
+        )
+        == ["RAW NOTO ORA PRESENTE raw/x.sglraw (aggiornare NOTI_RAW_MANCANTI: area bloccata)"]
+        and righe_risolti([], {}) == []
+    )
+    prove.append(("righe_risolti", ok_risolti_righe))
+    ok_class_righe = (
+        righe_classificazione(
+            {"raw/b.sglraw": ["b1", "b2"], "raw/a.sglraw": ["a1", "a2"]},
+            {"raw/c.sglraw": ["c1"]},
+            {"raw/d.sglraw": ["./raw/d.sglraw", "raw/d.sglraw"]},
+        )
+        == [
+            "RAW CITATO DA PIU' VOCI raw/a.sglraw ['a1', 'a2']",
+            "RAW CITATO DA PIU' VOCI raw/b.sglraw ['b1', 'b2']",
+            "RAW RIPETUTO IN UNA VOCE raw/c.sglraw ['c1']",
+            "RAW STESSO FILE SCRITTURE DIVERSE raw/d.sglraw "
+            "['./raw/d.sglraw', 'raw/d.sglraw']",
+        ]
+        and righe_classificazione({}, {}, {}) == []
+    )
+    prove.append(("righe_classificazione", ok_class_righe))
+    ok_senza_voce = (
+        righe_senza_voce(["raw/a.sglraw", "raw/b.sglraw"])
+        == [
+            "RAW NON CATALOGATO raw/a.sglraw",
+            "RAW NON CATALOGATO raw/b.sglraw",
+        ]
+        and righe_senza_voce([]) == []
+    )
+    prove.append(("righe_senza_voce", ok_senza_voce))
+    ok_sospetti = (
+        righe_sospetti(
+            ["GRAFICA/vecchio.sglraw", "raw/../x.sglraw"],
+            {
+                "GRAFICA/vecchio.sglraw": ["b"],
+                "raw/../x.sglraw": ["a", "c"],
+            },
+        )
+        == [
+            "RAW PERCORSO SOSPETTO GRAFICA/vecchio.sglraw ['b']",
+            "RAW PERCORSO SOSPETTO raw/../x.sglraw ['a', 'c']",
+        ]
+        and righe_sospetti([], {}) == []
+    )
+    prove.append(("righe_sospetti", ok_sospetti))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
     return 0 if all(ok for _, ok in prove) else 1
@@ -330,35 +556,24 @@ def main():
     )
     res = analizza(raws, cat["elementi"], lambda r: (RADICE / r).is_file())
 
-    for r in res["senza_voce"]:
-        print("RAW NON CATALOGATO", r)
+    for riga in righe_senza_voce(res["senza_voce"]):
+        print(riga)
     noti, nuovi = classifica_inesistenti(res["raw_inesistenti"])
-    for r in noti:
-        print("RAW MANCANTE NOTO", r, res["riferimenti"][r], f"({NOTI_RAW_MANCANTI[r]})")
-    for r in nuovi:
-        print("RAW IN CATALOGO MA NON SU DISCO", r, res["riferimenti"][r])
-    for r, ids in sorted(res["duplicati"].items()):
-        print("RAW CITATO DA PIU' VOCI", r, ids)
-    for r, ids in sorted(res["ripetuti_in_voce"].items()):
-        print("RAW RIPETUTO IN UNA VOCE", r, ids)
-    for canonico, scritture in sorted(res["scritture"].items()):
-        print("RAW STESSO FILE SCRITTURE DIVERSE", canonico, scritture)
+    for riga in righe_inesistenti(noti, nuovi, res["riferimenti"], NOTI_RAW_MANCANTI):
+        print(riga)
+    for riga in righe_classificazione(
+        res["duplicati"], res["ripetuti_in_voce"], res["scritture"]
+    ):
+        print(riga)
     validi, sospetti = classifica_percorsi(res["riferimenti"])
-    for r in sospetti:
-        print("RAW PERCORSO SOSPETTO", r, res["riferimenti"][r])
+    for riga in righe_sospetti(sospetti, res["riferimenti"]):
+        print(riga)
     risolti = noti_risolti(raws)
-    for r in risolti:
-        print("RAW NOTO ORA PRESENTE", r, f"(aggiornare NOTI_RAW_MANCANTI: {NOTI_RAW_MANCANTI[r]})")
+    for riga in righe_risolti(risolti, NOTI_RAW_MANCANTI):
+        print(riga)
 
-    tracciati = res["riferimenti"]
-    print(f"raw del motore: {len(raws)}; tracciati nel catalogo: {len(raws) - len(res['senza_voce'])}; senza voce: {len(res['senza_voce'])}")
-    print(f"voci di catalogo con raw: {res['voci_con_raw']}; riferimenti raw distinti: {len(tracciati)}")
-    print(f"riferimenti 'raw' senza file su disco: {len(res['raw_inesistenti'])} (noti {len(noti)}, da decidere {len(nuovi)})")
-    print(f"noti raw-mancanti ora presenti su disco: {len(risolti)}")
-    print(f"raw citati da piu' voci: {len(res['duplicati'])}")
-    print(f"raw ripetuti dentro una sola voce: {len(res['ripetuti_in_voce'])}")
-    print(f"raw citati con piu' scritture dello stesso file: {len(res['scritture'])}")
-    print(f"riferimenti 'raw' con percorso sospetto: {len(sospetti)} (ben formati {len(validi)})")
+    for riga in righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti):
+        print(riga)
     return 1 if res["senza_voce"] else 0
 
 

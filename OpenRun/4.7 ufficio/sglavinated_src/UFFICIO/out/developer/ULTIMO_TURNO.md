@@ -1,12 +1,14 @@
-# ULTIMO TURNO — developer
-- Data/ora: 23/11/2026 11:05 (Turno 3)
-- Blocco/passo: V47 ∞ V9 fluidita' lv_01_neon (trentaquattresimo giro)
-- File cambiati: `motore_nuovo/src/road/road.cpp`
-- Modifica: Road::project hoista per-segmento acqua/sospeso/galleria/quotaAcqua/riva/luci/versoLuci/portale fuori dal loop 4 sample (tipi i16/i8/u8 corretti); stessi ProjectedSeg, resa/replay IDENTICI, frameHash 0 3594390208 invariato (10/10).
-- Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` — exit 0
-- Baseline percorso: `prova_gate .../v9_lv01_giro34_pre_percorso lv_01_neon percorso` — exit 0, GATE PERCORSO OK (1989 frame, 33.2 s, 0% fuori)
-- Baseline smoke: `prova_gate .../v9_lv01_giro34_pre_smoke lv_01_neon smoke` — exit 0, GATE OK, medio 1.101 max 28.857 ms (frame 163), replay IDENTICO, frameHash 0 3594390208
-- Post smoke: `prova_gate .../v9_lv01_giro34_post_smoke lv_01_neon smoke` — exit 0, GATE OK, medio 0.802 max 5.782 ms (frame 236), replay IDENTICO, frameHash 0 3594390208 (10/10)
-- Post percorso: `prova_gate .../v9_lv01_giro34_post_percorso lv_01_neon percorso` — exit 0, GATE PERCORSO OK (1989 frame, 33.2 s, 0% fuori)
-- Gate: `sh UFFICIO/Officina/TOOL/gate_t1.sh` — exit 0, GATE T1: TUTTO OK, 6/6 GATE PERCORSO OK (1989/2476/2392/2125/2920/2125), smoke lv_01 medio 1.305 max 78.833 ms frame 10 (spike startup), nessuna riga FALLITO. Log: `UFFICIO/Officina/Test area/gate_t1.log`
-- Prossimo: V9 ∞ lv_02_atomico (trentaquattresimo giro).
+# ULTIMO_TURNO developer
+- Data/ora: 24/11/2026 15:21 (Turno 2)
+- Blocco/passo: V9 ∞ fluidita' — lv_03_foglie (trentasettesimo giro)
+- File cambiati: `motore_nuovo/src/render/renderer.cpp`
+- Modifica: drawSegmentTrapezoid, hoist `pxW` (incrocio) fuori dal loop sui rami; dipende da hw/fattore per riga, non da r; stesso valore.
+- Comandi ed exit code:
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro37_pre_percorso" lv_03_foglie percorso` exit 0 ("GATE PERCORSO OK", 2392 frame, 39.9 s, 0% fuori)
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro37_pre_smoke" lv_03_foglie smoke` exit 0 ("GATE OK", medio 0.637 max 2.816 ms frame 0, replay IDENTICO, frameHash 0 3593059909)
+  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro37_post_smoke" lv_03_foglie smoke` exit 0 ("GATE OK", medio 0.640 max 2.740 ms frame 0, replay IDENTICO, frameHash 0 3593059909, 9/9)
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro37_post_percorso" lv_03_foglie percorso` exit 0 ("GATE PERCORSO OK", 2392 frame, 39.9 s, 0% fuori)
+- Gate: gate_t1.sh non eseguito in questo turno (riferimento 24/11/2026 10:03 exit 0).
+- Esito: frame < 8 ms, replay identico, nessuna regressione.
+- Prossimo: V9 ∞ lv_04_cromo (trentasettesimo giro).

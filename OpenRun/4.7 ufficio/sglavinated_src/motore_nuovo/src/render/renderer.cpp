@@ -173,12 +173,25 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
     terraOrdine_.clear();
     if (oggettiTerra_ && giro_ > 0.0f) {
         const f32 zMax = projs_.back().worldZ;
+        const f32 zVicino = projs_.front().worldZ;
+        // V9 ∞ (24/11, lv_03_foglie giro 34): std::fmod veniva chiamato per TUTTI
+        // gli oggetti a terra del livello (4041 in lv_03) a ogni frame, anche
+        // quando la profondita' relativa e' gia' in [0, giro_): li' fmod
+        // restituisce l'argomento esattamente. Fast-path (stesso schema del giro
+        // 34 lv_02 in drawSprites); zVicino hoistato fuori dal ciclo. Stesso zr,
+        // stessi oggetti in terraOrdine_, resa e replay IDENTICI.
         for (const SpriteInstance& o : *oggettiTerra_) {
             // Il motoscafo naviga avanti e indietro lungo il suo tratto di mare.
             const f32 corsa = o.anima == 2 ? 5000.0f * std::sin(tempoS_ * 0.22f + o.fase) : 0.0f;
-            f32 zr = std::fmod(o.worldZ + corsa - playerZ, giro_);
-            if (zr < 0.0f) zr += giro_;
-            if (zr > projs_.front().worldZ && zr < zMax) terraOrdine_.push_back({zr, &o});
+            const f32 zRelMondo = o.worldZ + corsa - playerZ;
+            f32 zr;
+            if (zRelMondo >= 0.0f && zRelMondo < giro_) {
+                zr = zRelMondo; // gia' in range: stesso valore di fmod
+            } else {
+                zr = std::fmod(zRelMondo, giro_);
+                if (zr < 0.0f) zr += giro_;
+            }
+            if (zr > zVicino && zr < zMax) terraOrdine_.push_back({zr, &o});
         }
         std::sort(terraOrdine_.begin(), terraOrdine_.end(),
                   [](const auto& a, const auto& b) { return a.first > b.first; });
@@ -385,6 +398,10 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const bool ponte = sospeso && cur.acqua && next.acqua;
     // PERC1 D4: galleria - pareti scure del tema ai lati, soffitto sopra la strada.
     const bool galleria = cur.galleria && next.galleria;
+    // V9 ∞ (24/11, lv_01_neon giro 37): condizione terreno laterale invariante
+    // per tutto il trapezio; hoistata fuori dal loop per riga, stesso valore,
+    // resa e replay IDENTICI.
+    const bool terraLaterale = !sospeso && !galleria;
     const i32 dy = cy - ny;
     // Fetta piu' sottile di un pixel: niente strada, ma in galleria le pareti
     // si disegnano lo stesso (Andrea 11/11: in curva, lontano, le fette sono
@@ -430,16 +447,24 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // dipinto piu' in basso, sopra).
     // Galleria (PERC1 D4): pareti scure del tema ai lati, soffitto sopra la strada.
     // Claude 08/11: a bande come la strada, cosi' in galleria si sente la velocita'.
-    const u32 pareteScura = lerpColore(lerpColore(0xFF4A4A54u, tema_.rumbleAlt, 0.14f), 0xFF000000u,
-                                       std::clamp(cur.worldZ / 36000.0f, 0.0f, 0.75f) + (band ? 0.15f : 0.25f));
-    const u32 soffitto = lerpColore(tema_.rumbleAlt, 0xFF000000u, band ? 0.58f : 0.66f);
+    // V9 ∞ (24/11, lv_04_cromo giro 36): colore parete calcolato solo quando
+    // serve (galleria a ramo singolo), evita 2 lerpColore per trapezio fuori
+    // galleria; stesso valore quando usato, resa e replay IDENTICI.
+    const u32 pareteScura = (galleria && !cur.carr.doppia && !next.carr.doppia)
+                                ? lerpColore(lerpColore(0xFF4A4A54u, tema_.rumbleAlt, 0.14f), 0xFF000000u,
+                                             std::clamp(cur.worldZ / 36000.0f, 0.0f, 0.75f) + (band ? 0.15f : 0.25f))
+                                : 0u;
     const u32 grassQui  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
     const u32 rumbleQui = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
     // Bivio: estremi dei due rami per riga (cordoli interni nascosti dove un
     // ramo e' sopra l'altro: prima si incrociavano a X in mezzo alla strada).
     const bool bivioAperto = rami == 2;
-    const f32 nasoZ = roadCorr_ ? roadCorr_->bivioNasoZ() : 0.0f;
+    // V9 ∞ (24/11, lv_05_spray giro 36): nasoZ serve solo nei rami bivio
+    // (isola/spartitraffico e zebratura), entrambi guardati da bivioAperto.
+    // Prima veniva letto a ogni trapezio; calcolato solo a bivio aperto, stesso
+    // valore nei rami che lo usano, resa e replay IDENTICI.
+    const f32 nasoZ = bivioAperto ? (roadCorr_ ? roadCorr_->bivioNasoZ() : 0.0f) : 0.0f;
     const u32 lane   = pal_[1];
     // V9 ∞ (20/11, lv_02_atomico giro 25): il fondo della zebratura del bivio
     // non dipende dalla riga y: `road` e' costante per tutto il trapezio e
@@ -462,6 +487,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     // stesso ordine -> stessi float, resa e replay IDENTICI.
     constexpr f32 FASCIA_TERRENO = 9000.0f;
     const f32 giroMenoFascia = giro_ - FASCIA_TERRENO;
+    // V9 ∞ (24/11, lv_02_atomico giro 36): la condizione di attivazione del
+    // mix di tema e' invariante per tutto il trapezio (temaOltreAttivo_ e giro_
+    // non cambiano durante drawRoad). Hoistata fuori dal loop per riga: stesso
+    // ramo, stessi float, resa e replay IDENTICI.
+    const bool calcolaMisto = temaOltreAttivo_ && giro_ > 0.0f;
     // V9 ∞ (21/11, lv_03_foglie giro 27): le soglie dell'incrocio sono
     // costanti del tracciato, invarianti per tutta la riga e per tutto il
     // trapezio. Prima venivano ricombinate a ogni riga (addizioni float
@@ -477,6 +507,19 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const bool clipTerraGalleria = dentroGalleria_ && next.worldZ >= clipGalleriaZ_;
     const i32 terraClipX0 = clipTerraGalleria ? std::max(0, clipGx0_) : 0;
     const i32 terraClipX1 = clipTerraGalleria ? std::min(Framebuffer::WIDTH - 1, clipGx1_) : Framebuffer::WIDTH - 1;
+    // V9 ∞ (24/11, lv_03_foglie giro 36): il colore erba del tema oltre,
+    // per la banda corrente, non dipende dalla riga y. Hoistato fuori dal
+    // loop per riga: stesso valore, resa e replay IDENTICI.
+    const u32 grassNuovoBand = band ? temaOltre_.erba : temaOltre_.erbaAlt;
+    // V9 ∞ (24/11, lv_06_desktop giro 36): l'attivazione della linea di
+    // check dipende solo da stato renderer/strada, invarianti per tutto il
+    // trapezio. Prima bivioAttivo() veniva richiamato a ogni riga; hoistata
+    // fuori dal loop per riga: stesso valore, resa e replay IDENTICI.
+    const bool checkLineaAttiva = temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo();
+    // V9 ∞ (24/11, lv_02_atomico giro 37): l'attivazione del traguardo
+    // dipende solo da lineaArrivo_ e giro_, invarianti per tutto il trapezio.
+    // Hoistata fuori dal loop per riga: stesso valore, resa e replay IDENTICI.
+    const bool traguardoAttivo = lineaArrivo_ && giro_ > 0.0f;
 
     for (i32 y = ny; y <= cy && dy > 0; ++y) {
         // t = 0 sul bordo lontano (y = ny), 1 sul bordo vicino (y = cy).
@@ -509,14 +552,14 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // Andrea 11/11 sera: non un taglio netto, i due terreni si incrociano
         // a trama Bayer in una fascia prima della linea (lunga FASCIA_TERRENO).
         // Oltre la linea e' tutto nuovo, cosi' al cambio tappa niente scatti.
-        const f32 misto = (temaOltreAttivo_ && giro_ > 0.0f)
+        const f32 misto = calcolaMisto
                               ? std::clamp((zAvanti - giroMenoFascia) / FASCIA_TERRENO, 0.0f, 1.0f) : 0.0f;
         const bool oltre = misto >= 0.5f;
-        const u32 grassNuovoTema = (misto > 0.0f) ? (band ? temaOltre_.erba : temaOltre_.erbaAlt) : 0u;
+        const u32 grassNuovoTema = (misto > 0.0f) ? grassNuovoBand : 0u;
         u32 grass = grassQui;
         if (misto >= 1.0f) grass = grassNuovoTema;
         const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
-        if (y >= orizzonte_ && !sospeso && !galleria) {
+        if (y >= orizzonte_ && terraLaterale) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
             const i32 tx0 = terraClipX0;
@@ -572,19 +615,23 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // strisce scorrono con la velocita' invece di restare ferme sullo schermo.
         // V9 ∞ giro 24: si riusa zAvanti (= playerZ + distI, gia' calcolato a
         // inizio riga) al posto dell'alias `distance` e della somma ripetuta.
+        // V9 ∞ (24/11, lv_04_cromo giro 35): zAvanti = playerZ + distI >= 0,
+        // LANE_DASH_CYCLE > 0 -> std::fmod restituisce >= 0, guard negativo morto.
         f32 dashPhase = std::fmod(zAvanti, LANE_DASH_CYCLE);
-        if (dashPhase < 0.0f) dashPhase += LANE_DASH_CYCLE;
         // Traguardo: tre file di scacchi appena dopo la fine del tracciato.
         i32 filaScacchi = -1;
-        if (lineaArrivo_ && giro_ > 0.0f) {
-            f32 zPista = std::fmod(zAvanti, giro_);
-            if (zPista < 0.0f) zPista += giro_;
+        if (traguardoAttivo) {
+            // V9 ∞ (24/11, lv_03_foglie giro 35): zAvanti = playerZ + distI,
+            // playerZ in [0, giro_) e distI <= DRAW_DISTANCE*SEG_LEN << giro_,
+            // quindi zAvanti < 2*giro_: fmod e' un confronto + al piu' una sottrazione.
+            // zAvanti e giro_ >= 0 -> risultato >= 0. Stesso valore, resa/replay IDENTICI.
+            f32 zPista = zAvanti < giro_ ? zAvanti : zAvanti - giro_;
             if (zPista < LINEA_ARRIVO_PROF) filaScacchi = (i32)(zPista * 3.0f / LINEA_ARRIVO_PROF);
         }
         // Linea di check (Andrea 11/11, "Race Checkpoints"): due file di
         // caselle bianche e del colore della tappa scelta, oltre la fine.
         i32 filaCheck = -1;
-        if (temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo() && zAvanti >= giro_ &&
+        if (checkLineaAttiva && zAvanti >= giro_ &&
             zAvanti < giro_ + Road::CHECK_PROF)
             filaCheck = (i32)((zAvanti - giro_) * 2.0f / Road::CHECK_PROF);
         f32 bx0[2] = {0.0f, 0.0f}, bx1[2] = {0.0f, 0.0f};
@@ -604,6 +651,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 bx0[r] = c - hw;
                 bx1[r] = c + hw;
             }
+        // V9 ∞ (24/11, lv_03_foglie giro 37): pxW dipende da hw/fattore (per riga),
+        // non da r: nel bivio veniva ricalcolato per ramo. Hoistato fuori dal loop
+        // sui rami, stesso valore, resa e replay IDENTICI.
+        const f32 pxW = (incStrada || incMarc || incStrisce)
+                            ? hw / std::max(0.01f, Road::ROAD_HALF_WORLD * fattore)
+                            : 0.0f;
         for (i32 r = 0; r < rami; ++r) {
             const f32 cFar = centroFar[r]; // V9 ∞ lv_04_cromo giro 24: precalcolato
             const f32 cx = bivioAperto ? cxRiga[r] : cFar + centroDelta[r] * t; // V9 ∞ lv_06 giro 25
@@ -625,7 +678,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // Mezzeria tratteggiata della strada perpendicolare, fuori
                 // dalla carreggiata principale; strisce pedonali sulla
                 // principale (bande parallele alla strada, ancorate al mondo).
-                const f32 pxW = hw / std::max(0.01f, Road::ROAD_HALF_WORLD * fattore); // pixel per unita' mondo
+                // V9 ∞ (24/11, lv_03_foglie giro 37): pxW hoistato prima del loop rami.
                 // V9 ∞ (20/11, lv_05_spray giro 25): x scorre gia' su tutto
                 // [0,WIDTH) e y e' la riga corrente, quindi i due controlli di
                 // bounds di fb_.put a ogni pixel sono ridondanti. Calcolo la base
@@ -634,10 +687,17 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // si salta il blocco). Stessi pixel, stessa resa, replay identico.
                 if (incStrada && dInc < 45.0f && y >= 0 && y < Framebuffer::HEIGHT) {
                     u32* rigaInc = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                    // V9 ∞ (24/11, lv_05_spray giro 34): xw e' sempre >= 0 (fabs) e
+                    // pxW > 0. Per xw in [0,900) std::fmod(xw,900) restituisce xw
+                    // esattamente (trunc(xw/900)=0 -> xw - 0*900 = xw). Il ramo rapido
+                    // evita una divisione float per pixel nella mezzeria dell'incrocio
+                    // (lv_05 ha incroci in citta'); per xw >= 900 si usa comunque fmod.
+                    // Stesso resto, stessi pixel, resa e replay IDENTICI.
                     for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
                         if (x >= lx && x <= rx) continue;
                         const f32 xw = std::fabs(((f32)x - cx) / pxW);
-                        if (std::fmod(xw, 900.0f) < 450.0f) rigaInc[x] = lane;
+                        const f32 resto = xw < 900.0f ? xw : std::fmod(xw, 900.0f);
+                        if (resto < 450.0f) rigaInc[x] = lane;
                     }
                 }
                 // Linee di stop della strada perpendicolare (Andrea 08/11): a x
@@ -662,7 +722,11 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                         u32* rigaStrisce = fb_.data() + (size_t)y * Framebuffer::WIDTH;
                         for (i32 x = std::max(0, lx + rw); x <= std::min(Framebuffer::WIDTH - 1, rx - rw); ++x) {
                             const f32 xw = ((f32)x - cx) / pxW + 10000.0f;
-                            if (std::fmod(xw, 300.0f) < 170.0f) rigaStrisce[x] = 0xFFE6E6EAu;
+                            // V9 ∞ (24/11, lv_02_atomico giro 35): xw >= 0 nella stragrande
+                            // maggioranza dei casi (offset +10000); per xw in [0,300) fmod
+                            // restituisce xw esattamente, altrimenti si usa fmod.
+                            const f32 restoStrisce = (xw >= 0.0f && xw < 300.0f) ? xw : std::fmod(xw, 300.0f);
+                            if (restoStrisce < 170.0f) rigaStrisce[x] = 0xFFE6E6EAu;
                         }
                     }
                     fb_.hline(lx, lx + rw - 1, y, rumble);
@@ -756,8 +820,10 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                     if (x - x0 < bordoL || x1 - x < bordoL) col = 0xFFF4F4F4u;
                     else {
                         const f32 xw = std::fabs(fx - mid) / pxW;
-                        f32 v = std::fmod(zAvanti + xw * 1.2f, 800.0f);
-                        if (v < 0.0f) v += 800.0f;
+                        // V9 ∞ (24/11, lv_05_spray giro 35): zAvanti >= 0 e xw = fabs >= 0,
+                        // quindi (zAvanti + xw*1.2f) >= 0 e fmod con divisore 800 > 0
+                        // restituisce sempre [0,800): guard negativo morto, stesso valore.
+                        const f32 v = std::fmod(zAvanti + xw * 1.2f, 800.0f);
                         if (v < 220.0f) col = 0xFFE4E4E8u;
                     }
                     fb_.put(x, y, col);
@@ -1797,9 +1863,16 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
 
 void Renderer::drawRoadsideMarkers(f32 playerZ) {
     for (const Road::ProjectedSeg& p : projs_) {
-        f32 phase = std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING);
-        if (phase < 0.0f) phase += ROADSIDE_MARKER_SPACING;
-        if (phase >= 50.0f || p.screenY < orizzonte_ ||
+        // V9 ∞ (24/11, lv_04_cromo giro 34): i controlli invarianti sul segmento
+        // (fuori schermo, bivio, ponte, galleria) non dipendono da `phase` e
+        // scartano la maggior parte dei ~1200 segmenti proiettati. Prima il
+        // `std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING)` veniva calcolato
+        // per TUTTI i segmenti, anche per quelli scartati subito dopo: spostare
+        // il fmod dopo questi early-out risparmia una divisione float per
+        // segmento. Tutti i predicati sono puri e indipendenti (AND di continue),
+        // quindi l'ordine non cambia quali segmenti sopravvivono: stessi paletti
+        // disegnati, resa e replay IDENTICI.
+        if (p.screenY < orizzonte_ ||
             p.screenY >= (f32)Framebuffer::HEIGHT)
             continue;
         // Al bivio i paletti apparirebbero su un solo ramo: niente paletti finche'
@@ -1809,6 +1882,11 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         if (p.sospeso) continue;
         // PERC1 D4: dentro la galleria niente paletti.
         if (p.galleria) continue;
+        // V9 ∞ (24/11, lv_06_desktop giro 35): playerZ + p.worldZ >= 0 e
+        // ROADSIDE_MARKER_SPACING > 0 -> std::fmod restituisce >= 0, guard
+        // negativo morto (stesso schema lv_04/lv_05 giro 35).
+        f32 phase = std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING);
+        if (phase >= 50.0f) continue;
         // Incroci (Andrea 08/11): niente paletti sulla strada perpendicolare.
         if (roadCorr_ && std::fabs(roadCorr_->incrocioD(playerZ + p.worldZ)) < Road::INCROCIO_ZONA) continue;
 
@@ -1918,9 +1996,17 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
     // rifatto per ogni pixel di ogni riga. Calcolata una volta per colonna
     // (320 invece di 320*h volte), stessi operandi e stesso ordine -> stesso
     // tx, stessi indici di texel, resa e replay IDENTICI.
+    // V9 ∞ (24/11, lv_06_desktop giro 34): la colonna sorgente della
+    // parallasse era calcolata con `std::fmod(txf, width)` per ognuna delle
+    // 320 colonne, ogni frame. Quando txf e' gia' in [0, width) il fmod
+    // restituisce txf esattamente (trunc(txf/width)=0 -> txf - 0 = txf):
+    // il ramo rapido evita una divisione float per colonna e lascia il
+    // cast/il wrap negativo identici per i valori fuori range. Stesso tx,
+    // stessi indici di texel, resa e replay IDENTICI.
+    const f32 larghezzaSkyline = (f32)s.width;
     for (i32 x = 0; x < Framebuffer::WIDTH; ++x) {
-        const f32 txf = ((f32)x + skylineScrollX_) / (f32)Framebuffer::WIDTH * (f32)s.width;
-        i32 tx = (i32)std::fmod(txf, (f32)s.width);
+        const f32 txf = ((f32)x + skylineScrollX_) / (f32)Framebuffer::WIDTH * larghezzaSkyline;
+        i32 tx = (txf >= 0.0f && txf < larghezzaSkyline) ? (i32)txf : (i32)std::fmod(txf, larghezzaSkyline);
         if (tx < 0) tx += (i32)s.width;
         skylineTx_[x] = tx;
     }
@@ -2007,10 +2093,16 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
     // dietro la telecamera (zRel < Z_NEAR), che verrebbero scartati subito dopo:
     // escluderli prima riduce gli elementi da ordinare. Stesso insieme disegnato,
     // stessa resa e replay IDENTICI.
+    // V9 ∞ (24/11, lv_02_atomico giro 34): il wrap con fmod serve solo quando
+    // z e' fuori da [0, totalLen). Nel caso normale (sprite davanti alla
+    // telecamera) z e' gia' in range e std::fmod(z, totalLen) restituisce z
+    // esattamente (fmod e' esatto); saltando il passo si risparmiano una
+    // chiamata a fmod per sprite, su tutti gli sprite del livello (lv_02 ne ha
+    // 3586) a ogni frame. Stesso z, stessa resa e replay IDENTICI.
     i32 nVis = 0;
     for (i32 i = 0; i < (i32)nSprite; ++i) {
         f32 z = sprites[i].worldZ - playerZ;
-        if (totalLen > 0.0f) {
+        if (totalLen > 0.0f && (z < 0.0f || z >= totalLen)) {
             z = std::fmod(z, totalLen);
             if (z < 0.0f) z += totalLen;
         }
@@ -2024,9 +2116,11 @@ void Renderer::drawSprites(std::vector<SpriteInstance>& sprites, f32 playerZ, f3
         const auto& o = spriteOrd_[k];
         const auto& s = sprites[o.second];
         const f32 zRel = o.first;
-        // Dietro la telecamera, o cosi' vicino da coprire lo schermo intero
-        // (succede passando accanto a un cartello): non si disegna.
-        if (zRel < Road::Z_NEAR) continue;
+        // V9 ∞ (24/11, lv_02_atomico giro 34): qui c'era il controllo
+        // `zRel < Road::Z_NEAR`; dal filtro in spriteOrd_ (giro 33 lv_06) tutti
+        // gli elementi ordinati hanno z >= Z_NEAR, quindi il test non poteva
+        // scattare e si toglie un confronto per sprite disegnato. Stessi sprite,
+        // resa e replay IDENTICI.
         // Stessa proiezione della strada: s = depth/z, sx = W/2 + s*(worldX - camX)*W/2.
         f32 scl = Road::DEPTH / zRel;
         const f32 proj = scl * (f32)Framebuffer::WIDTH * 0.5f;
