@@ -56,3 +56,8 @@ OpenRun/*.zip
 # Build web (web/build_web.sh): si rigenera, non va nel repo
 OpenRun/4.7 ufficio/sglavinated_src/build_web/
 OpenRun/4.7 ufficio/sglavinated_src/motore_nuovo/web/sito/
+
+# Misure sul Pi 400 (pi/misura_pi400.sh): in git solo i riepilogo.txt
+OpenRun/4.7 ufficio/misure_pi400/**/*.csv
+OpenRun/4.7 ufficio/misure_pi400/**/*.log
+OpenRun/4.7 ufficio/misure_pi400/**/misura.txt

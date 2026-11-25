@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <string>
@@ -40,6 +41,9 @@ struct Opzioni {
     std::string livello;    // --livello: solo quella pista, in tondo (vuoto = gara a tappe)
     bool subito = false;    // --subito: salta splash e menu, si parte gia' in gara
     int crt = -1;           // --crt / --no-crt: forza il filtro CRT (-1 = config.json)
+    bool misura = false;    // --misura: tempi per frame nel log ogni 5 s e riassunto all'uscita (Pi 400)
+    int misuraSecondi = 0;  // --misura-secondi N: esce da solo dopo N s (implica --misura)
+    bool pilotaAuto = false;// --pilota-auto: gas e sterzo verso il centro da soli (misure senza mani)
 };
 
 Opzioni leggiOpzioni(int argc, char** argv) {
@@ -53,9 +57,101 @@ Opzioni leggiOpzioni(int argc, char** argv) {
         else if (std::strcmp(argv[i], "--subito") == 0) o.subito = true;
         else if (std::strcmp(argv[i], "--crt") == 0) o.crt = 1;
         else if (std::strcmp(argv[i], "--no-crt") == 0) o.crt = 0;
+        else if (std::strcmp(argv[i], "--misura") == 0) o.misura = true;
+        else if (std::strcmp(argv[i], "--misura-secondi") == 0 && i + 1 < argc) {
+            o.misura = true;
+            o.misuraSecondi = std::max(1, std::atoi(argv[++i]));
+        }
+        else if (std::strcmp(argv[i], "--pilota-auto") == 0) o.pilotaAuto = true;
     }
     return o;
 }
+
+// --misura (Pi 400): cronometri del ciclo del runner. Non tocca il gioco:
+// misura quanto costano tick (update+render), copia nella texture (con CRT) e
+// presentazione a schermo, e quanti giri del ciclo arrivano in ritardo.
+// Stampa una riga ogni 5 s e un riassunto all'uscita.
+struct MisuraRunner {
+    bool attiva = false;
+    f64 budgetMs = 16.667;        // 1/frequenza logica
+    u64 freq = 1;
+    // finestra corrente (5 s) e totale
+    struct Somme {
+        u64 giri = 0, tick = 0, lenti = 0, copie = 0;
+        f64 tickMs = 0, tickMax = 0, copiaMs = 0, presentaMs = 0, presentaMax = 0, giroMax = 0;
+    } fin, tot;
+    std::vector<f32> giriMs; // tutti i giri, per il p99 finale
+    u64 inizio = 0, inizioFin = 0, prevGiro = 0;
+
+    static f64 ms(u64 a, u64 b, u64 f) { return (f64)(b - a) * 1000.0 / (f64)f; }
+    void avvia(u64 ora, u64 frequenza, i32 hz) {
+        freq = frequenza;
+        budgetMs = 1000.0 / (f64)hz;
+        inizio = inizioFin = prevGiro = ora;
+        giriMs.reserve(60 * 600);
+    }
+    void tick(f64 m) {
+        for (Somme* s : { &fin, &tot }) { ++s->tick; s->tickMs += m; s->tickMax = std::max(s->tickMax, m); }
+    }
+    void giro(u64 ora, bool copiato, f64 copia, f64 presenta) {
+        const f64 g = ms(prevGiro, ora, freq);
+        prevGiro = ora;
+        giriMs.push_back((f32)g);
+        // "lento": il giro ha superato 1.5 volte il passo logico (un fotogramma saltato)
+        const bool lento = g > budgetMs * 1.5;
+        for (Somme* s : { &fin, &tot }) {
+            ++s->giri; s->presentaMs += presenta;
+            if (copiato) { ++s->copie; s->copiaMs += copia; }
+            s->presentaMax = std::max(s->presentaMax, presenta);
+            s->giroMax = std::max(s->giroMax, g);
+            if (lento) ++s->lenti;
+        }
+    }
+    void stampaFinestra(u64 ora, u64 attese) {
+        const f64 sec = ms(inizioFin, ora, freq) / 1000.0;
+        if (sec < 5.0) return;
+        const Somme& s = fin;
+        SDL_Log("misura: %.0f fps video, %.1f tick/s | tick %.2f ms (max %.2f) | copia %.2f ms | "
+                "presenta %.2f ms (max %.2f) | giro max %.1f ms | lenti %llu | audio attese %llu",
+                (f64)s.giri / sec, (f64)s.tick / sec,
+                s.tick ? s.tickMs / (f64)s.tick : 0.0, s.tickMax,
+                s.copie ? s.copiaMs / (f64)s.copie : 0.0,
+                s.giri ? s.presentaMs / (f64)s.giri : 0.0, s.presentaMax, s.giroMax,
+                (unsigned long long)s.lenti, (unsigned long long)attese);
+        fin = Somme{};
+        inizioFin = ora;
+    }
+    void riassunto(u64 ora, u64 attese) {
+        const f64 sec = ms(inizio, ora, freq) / 1000.0;
+        const Somme& s = tot;
+        f64 p99 = 0;
+        if (!giriMs.empty()) {
+            std::vector<f32> c = giriMs;
+            const size_t k = (size_t)((f64)(c.size() - 1) * 0.99);
+            std::nth_element(c.begin(), c.begin() + (std::ptrdiff_t)k, c.end());
+            p99 = c[k];
+        }
+        std::printf("\n=== MISURA RUNNER (%.0f s) ===\n"
+                    "fps video medi      : %.1f\n"
+                    "tick logici al s    : %.1f (atteso %.0f)\n"
+                    "tick update+render  : media %.2f ms, max %.2f ms (budget %.2f)\n"
+                    "copia texture (+CRT): media %.2f ms\n"
+                    "presentazione       : media %.2f ms, max %.2f ms\n"
+                    "giro del ciclo      : p99 %.1f ms, max %.1f ms\n"
+                    "giri lenti (>1.5 tick): %llu su %llu (%.1f%%)\n"
+                    "audio attese        : %llu\n",
+                    sec, sec > 0 ? (f64)s.giri / sec : 0.0, sec > 0 ? (f64)s.tick / sec : 0.0,
+                    1000.0 / budgetMs,
+                    s.tick ? s.tickMs / (f64)s.tick : 0.0, s.tickMax, budgetMs,
+                    s.copie ? s.copiaMs / (f64)s.copie : 0.0,
+                    s.giri ? s.presentaMs / (f64)s.giri : 0.0, s.presentaMax,
+                    p99, s.giroMax,
+                    (unsigned long long)s.lenti, (unsigned long long)s.giri,
+                    s.giri ? 100.0 * (f64)s.lenti / (f64)s.giri : 0.0,
+                    (unsigned long long)attese);
+        std::fflush(stdout);
+    }
+};
 
 bool impostaRadice(const std::filesystem::path& root) {
     std::error_code ec;
@@ -327,6 +423,12 @@ int main(int argc, char** argv) {
     SDL_GetRendererInfo(sdlRen, &renInfo);
     const bool vsync = (renInfo.flags & SDL_RENDERER_PRESENTVSYNC) != 0;
     SDL_Log("renderer: %s, vsync %s", renInfo.name, vsync ? "si" : "no");
+    if (opz.misura) {
+        SDL_DisplayMode modo{};
+        if (SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(win), &modo) == 0)
+            SDL_Log("misura: schermo %dx%d a %d Hz, video driver %s",
+                    modo.w, modo.h, modo.refresh_rate, SDL_GetCurrentVideoDriver());
+    }
 
     // Risoluzione logica fissa 320x224 con scala intera: proporzioni giuste a ogni
     // dimensione di finestra o schermo (bande nere ai lati se servono).
@@ -418,6 +520,9 @@ int main(int argc, char** argv) {
     u64 heldPrev = 0;
     bool rPrev = false;
     u64 frames = 0;
+    MisuraRunner misura;
+    misura.attiva = opz.misura;
+    if (misura.attiva) misura.avvia(prev, freq, game.frequenzaHz());
     bool running = true;
     bool aggiornaTexture = false;
     while (running) {
@@ -473,6 +578,14 @@ int main(int argc, char** argv) {
             const Uint8* kb = SDL_GetKeyboardState(nullptr);
             sgl::Pad pad;
             pad.held = leggiPadHeld(kb, ctrl, pad.axisLX, pad.axisLY);
+            if (opz.pilotaAuto) {
+                // Solo per le misure: gas sempre, sterzo verso il centro quando l'auto si allarga
+                // (stessa regola di prova_gate e misura_pi). Da usare con --subito: i menu restano a mano.
+                pad.held |= Pad::A;
+                const f32 x = game.state().playerX;
+                if (x > 120.0f) pad.held |= Pad::Left;
+                else if (x < -120.0f) pad.held |= Pad::Right;
+            }
             pad.pressed = pad.held & ~heldPrev;
             pad.released = heldPrev & ~pad.held;
             heldPrev = pad.held;
@@ -494,6 +607,7 @@ int main(int argc, char** argv) {
                 SDL_Log("radio: prossimo brano di gara");
             }
 
+            const u64 tickInizio = misura.attiva ? SDL_GetPerformanceCounter() : 0;
             game.update();
 #ifdef __EMSCRIPTEN__
             if (game.uscitaRichiesta()) { webEsci(); running = false; } // ESCI: la pagina decide dove andare
@@ -504,6 +618,7 @@ int main(int argc, char** argv) {
             // Render a ogni tick, come prima: il framebuffer (e quindi frameHash)
             // dipende solo dai tick, non da quante volte lo schermo si aggiorna.
             game.render();
+            if (misura.attiva) misura.tick(MisuraRunner::ms(tickInizio, SDL_GetPerformanceCounter(), freq));
             aggiornato = true;
 
             // Audio del tick in coda: sempre, cosi' la musica non salta mai avanti.
@@ -513,7 +628,7 @@ int main(int argc, char** argv) {
             }
 
             ++frames;
-            if (frames % 60 == 0) {
+            if (frames % 60 == 0 && !misura.attiva) {
                 SDL_Log("frame %llu  hash=%08x  speed=%.1f x=%.0f offroad=%d  audio attese=%llu",
                         (unsigned long long)frames, game.frameHash(),
                         game.state().playerSpeed, game.state().playerX,
@@ -521,6 +636,8 @@ int main(int argc, char** argv) {
             }
         }
 
+        const u64 copiaInizio = misura.attiva ? SDL_GetPerformanceCounter() : 0;
+        const bool copiato = aggiornato || aggiornaTexture;
         if (aggiornato || aggiornaTexture) {
             aggiornaTexture = false;
             // Copia il framebuffer software nella texture SDL (con il filtro
@@ -541,6 +658,7 @@ int main(int argc, char** argv) {
             }
         }
 
+        const u64 presentaInizio = misura.attiva ? SDL_GetPerformanceCounter() : 0;
         SDL_SetRenderDrawColor(sdlRen, 0, 0, 0, 255);
         SDL_RenderClear(sdlRen);
         SDL_RenderCopy(sdlRen, tex, nullptr, nullptr);
@@ -549,6 +667,15 @@ int main(int argc, char** argv) {
             if (crt.maschera) SDL_RenderCopy(sdlRen, crt.maschera, nullptr, nullptr);
         }
         SDL_RenderPresent(sdlRen); // con vsync attende il refresh dello schermo
+        if (misura.attiva) {
+            const u64 ora = SDL_GetPerformanceCounter();
+            misura.giro(ora, copiato, MisuraRunner::ms(copiaInizio, presentaInizio, freq),
+                        MisuraRunner::ms(presentaInizio, ora, freq));
+            misura.stampaFinestra(ora, attese);
+            if (opz.misuraSecondi > 0 &&
+                MisuraRunner::ms(misura.inizio, ora, freq) >= opz.misuraSecondi * 1000.0)
+                running = false;
+        }
 #ifdef __EMSCRIPTEN__
         webAttendiFotogramma(); // il browser disegna e gestisce tastiera/pad
         continue;
@@ -566,6 +693,7 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (misura.attiva) misura.riassunto(SDL_GetPerformanceCounter(), attese);
     if (audioDev) SDL_CloseAudioDevice(audioDev);
     ctrl.chiudi();
     crt.chiudi();
