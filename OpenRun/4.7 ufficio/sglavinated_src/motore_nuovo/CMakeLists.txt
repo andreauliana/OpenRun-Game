@@ -198,6 +198,15 @@ if(BUILD_LIBRETRO)
 endif()
 
 # ---------------------------------------------------------------------------
+# Target: misura_pi — misura dei tempi per frame (update/render/CRT) sulle 6
+# piste e sulla gara a tappe, guida automatica, niente SDL. Pensato per il
+# Pi 400 (pi/misura_pi400.sh). Solo misura: nessun test ctest collegato.
+# ---------------------------------------------------------------------------
+add_executable(misura_pi test/misura_pi.cpp src/runner/sponsor_loader.cpp)
+target_include_directories(misura_pi PRIVATE src)
+target_link_libraries(misura_pi PRIVATE sglavinated_core)
+
+# ---------------------------------------------------------------------------
 # Target: prova_gate — test automatico del gate Tappa 1 (blocco P1e/H).
 # Guida da solo 10 s e salva 3 screenshot (partenza/curva/fuori-strada) in
 # UFFICIO/Officina/Test area/ con velocita' e posizione nel log.
