@@ -13,7 +13,21 @@ void Player::input(const Pad& pad, f32 dt) {
     f32 obiettivo = 0.0f;
     if (pad.held & Pad::Left)  obiettivo -= 1.0f;
     if (pad.held & Pad::Right) obiettivo += 1.0f;
-    const f32 rampa = (obiettivo == 0.0f ? STEER_RITORNO_PER_S : STEER_RAMPA_PER_S) * dt;
+    // Sterzo analogico (Andrea 25/11, "volante che torna al centro"): con uno
+    // stick o un volante USB oltre la zona morta il volante segue la sua
+    // posizione in proporzione, con le stesse rampe del digitale, e torna al
+    // centro quando lo stick torna dritto. Prima lo stick sterzava solo a
+    // fondo oltre meta' corsa. Tastiera e croce (asse a 0) non cambiano.
+    const f32 asse = std::clamp(pad.axisLX, -1.0f, 1.0f);
+    if (std::abs(asse) > ANALOGICO_ZONA_MORTA) {
+        const f32 k = std::min(1.0f, (std::abs(asse) - ANALOGICO_ZONA_MORTA) /
+                                         (ANALOGICO_PIENO - ANALOGICO_ZONA_MORTA));
+        obiettivo = asse < 0.0f ? -k : k;
+    }
+    // Verso il centro (rilascio, o stick che si raddrizza) al passo del
+    // ritorno; verso fuori al passo della pressione.
+    const bool versoCentro = std::abs(obiettivo) < std::abs(steer_) && obiettivo * steer_ >= 0.0f;
+    const f32 rampa = (versoCentro ? STEER_RITORNO_PER_S : STEER_RAMPA_PER_S) * dt;
     if (steer_ < obiettivo) steer_ = std::min(obiettivo, steer_ + rampa);
     else if (steer_ > obiettivo) steer_ = std::max(obiettivo, steer_ - rampa);
     accel_ = 0.0f;

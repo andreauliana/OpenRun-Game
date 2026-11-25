@@ -211,3 +211,10 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
 - **Paletti**: si abbattono all'altezza dell'auto (`PALO_AUTO_Z = 900` davanti alla
   telecamera) e quello in piedi sparisce: prima il volo partiva gia' dietro lo
   schermo e non si vedeva.
+
+## Aggiunto il 25/11 (volante che torna al centro, blocco nuovo)
+- **Sterzo analogico** (player.h `ANALOGICO_*`): con uno stick o un volante USB
+  il volante segue la posizione in proporzione (zona morta 15%, pieno al 90%
+  della corsa) e torna al centro quando lo stick si raddrizza, al passo del
+  ritorno (`STEER_RITORNO_PER_S`). Prima lo stick sterzava solo a fondo oltre
+  meta' corsa. Tastiera e croce restano identiche (stesse rampe 0.06 / 0.12 s).

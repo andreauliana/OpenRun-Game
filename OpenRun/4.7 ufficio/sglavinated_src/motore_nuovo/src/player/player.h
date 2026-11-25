@@ -111,6 +111,10 @@ private:
     // 0.06 s per sterzare e 0.12 s per tornare, proposta 2 del documento):
     // a colpetti la curva si tiene meglio, mollarlo del tutto la lascia.
     static constexpr f32 STEER_RITORNO_PER_S = 8.0f; // pieno -> 0 in 0.12 s (meta' della pressione)
+    // Sterzo analogico (Andrea 25/11): zona morta del 15% attorno al centro,
+    // sterzo pieno al 90% della corsa dello stick o del volante USB.
+    static constexpr f32 ANALOGICO_ZONA_MORTA = 0.15f;
+    static constexpr f32 ANALOGICO_PIENO = 0.90f;
     // Risposta non lineare (stessa nota): un colpetto sposta poco, lo sterzo
     // pieno e' deciso. Spostamento = sterzo x (MORBIDO + (1 - MORBIDO) x |sterzo|).
     static constexpr f32 STEER_MORBIDO = 0.35f;
