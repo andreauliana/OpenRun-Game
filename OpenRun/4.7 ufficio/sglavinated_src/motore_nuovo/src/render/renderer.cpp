@@ -224,14 +224,36 @@ void Renderer::drawRoad(const Road& road, f32 playerX, f32 playerZ, i32 latoBivi
         }
         // Oggetti a terra in questa fetta: sopra il loro terreno, sotto la
         // strada piu' vicina (disegnata dopo).
-        while (prossimoTerra < terraOrdine_.size() && terraOrdine_[prossimoTerra].first >= vicino.worldZ) {
+        // V9 ∞ (25/11, lv_04_cromo giro 38): a, b e le loro combinazioni
+        // dipendono solo da lontano/vicino (la fetta corrente), non dall'oggetto
+        // a terra: prima venivano ricalcolati (2 divisioni + un confronto + una
+        // sottrazione) per ogni oggetto dentro il while (2696 oggetti in lv_04).
+        // Calcolati una volta per fetta; stessi operandi e stesso ordine in `t`,
+        // resa e replay IDENTICI.
+        const f32 a = 1.0f / lontano.worldZ, b = 1.0f / vicino.worldZ;
+        const bool bGtA = b > a;
+        const f32 bMinusA = b - a;
+        // V9 ∞ (25/11, lv_01_neon giro 38): i termini dell'interpolazione
+        // verticale/orizzontale dell'oggetto a terra dipendono solo dalla fetta
+        // lontano/vicino, non dall'oggetto. Prima `lontano.acquaY`,
+        // (vicino.acquaY - lontano.acquaY), `lontano.screenX` e
+        // (vicino.screenX - lontano.screenX) venivano ricalcolati (4 letture di
+        // membro + 2 sottrazioni) per ogni oggetto nel while. Calcolati una
+        // volta per fetta, con gli stessi operandi e lo stesso ordine in
+        // `base`/`cx`: stessi float, resa e replay IDENTICI (completa il giro 38
+        // lv_04, che aveva hoistato solo a/b/bGtA/bMinusA).
+        const f32 acquaYFar = lontano.acquaY;
+        const f32 acquaYDelta = vicino.acquaY - lontano.acquaY;
+        const f32 screenXFar = lontano.screenX;
+        const f32 screenXDelta = vicino.screenX - lontano.screenX;
+        const f32 zVicino = vicino.worldZ;
+        while (prossimoTerra < terraOrdine_.size() && terraOrdine_[prossimoTerra].first >= zVicino) {
             const f32 zr = terraOrdine_[prossimoTerra].first;
             const SpriteInstance& o = *terraOrdine_[prossimoTerra].second;
             ++prossimoTerra;
-            const f32 a = 1.0f / lontano.worldZ, b = 1.0f / vicino.worldZ;
-            const f32 t = b > a ? std::clamp((1.0f / zr - a) / (b - a), 0.0f, 1.0f) : 1.0f;
-            const f32 base = lontano.acquaY + (vicino.acquaY - lontano.acquaY) * t;
-            const f32 cx = lontano.screenX + (vicino.screenX - lontano.screenX) * t;
+            const f32 t = bGtA ? std::clamp((1.0f / zr - a) / bMinusA, 0.0f, 1.0f) : 1.0f;
+            const f32 base = acquaYFar + acquaYDelta * t;
+            const f32 cx = screenXFar + screenXDelta * t;
             const f32 scl = Road::DEPTH / zr;
             if (base < (f32)orizzonte_ - 1.0f) continue;
             drawOggettoTerra(o, cx, base, scl);
@@ -457,6 +479,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
     const u32 grassQui  = band ? tema_.erba : tema_.erbaAlt;
     const u32 road   = band ? pal_[2] : pal_[3];
     const u32 rumbleQui = sospeso ? (band ? pal_[5] : 0xFF9A9AA6) : (band ? pal_[5] : tema_.rumbleAlt);
+    // V9 ∞ (25/11, lv_01_neon giro 38): il cordolo della tappa oltre il
+    // checkpoint (`band ? pal_[5] : temaOltre_.rumbleAlt`) dipende solo da band
+    // e dallo stato del renderer, invarianti per tutto il trapezio. Prima veniva
+    // selezionato a ogni riga nella fascia di cambio tema; calcolato una volta
+    // qui: stesso u32 per riga, resa e replay IDENTICI.
+    const u32 rumbleOltre = band ? pal_[5] : temaOltre_.rumbleAlt;
     // Bivio: estremi dei due rami per riga (cordoli interni nascosti dove un
     // ramo e' sopra l'altro: prima si incrociavano a X in mezzo alla strada).
     const bool bivioAperto = rami == 2;
@@ -558,7 +586,7 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 grassNuovoTema = (misto > 0.0f) ? grassNuovoBand : 0u;
         u32 grass = grassQui;
         if (misto >= 1.0f) grass = grassNuovoTema;
-        const u32 rumble = (oltre && !sospeso) ? (band ? pal_[5] : temaOltre_.rumbleAlt) : rumbleQui;
+        const u32 rumble = (oltre && !sospeso) ? rumbleOltre : rumbleQui; // V9 ∞ giro 38: selezione hoistata
         if (y >= orizzonte_ && terraLaterale) {
             // Dentro la galleria il terreno oltre l'uscita si vede solo nella
             // bocca (Andrea 11/11: faceva una riga chiara sulle pareti).
@@ -617,7 +645,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // inizio riga) al posto dell'alias `distance` e della somma ripetuta.
         // V9 ∞ (24/11, lv_04_cromo giro 35): zAvanti = playerZ + distI >= 0,
         // LANE_DASH_CYCLE > 0 -> std::fmod restituisce >= 0, guard negativo morto.
-        f32 dashPhase = std::fmod(zAvanti, LANE_DASH_CYCLE);
+        // V9 ∞ (25/11, lv_06_desktop giro 37): per zAvanti in [0,LANE_DASH_CYCLE)
+        // std::fmod(zAvanti,2000) restituisce zAvanti esattamente (trunc=0 ->
+        // zAvanti - 0*2000). Fast-path evita una divisione float per riga nelle
+        // fette vicine all'inizio del giro; per zAvanti >= 2000 si usa fmod.
+        // Stesso resto, stessi pixel, resa e replay IDENTICI.
+        f32 dashPhase = zAvanti < LANE_DASH_CYCLE ? zAvanti : std::fmod(zAvanti, LANE_DASH_CYCLE);
         // Traguardo: tre file di scacchi appena dopo la fine del tracciato.
         i32 filaScacchi = -1;
         if (traguardoAttivo) {
@@ -785,11 +818,20 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 // dell'isola. Precalcolo la riga una volta: stessi indici Bayer,
                 // resa e replay IDENTICI.
                 const u8* bayerRigaIsola = BAYER4[y & 3];
-                for (i32 x = std::max(0, L); x <= std::min(Framebuffer::WIDTH - 1, R); ++x) {
-                    u32 col;
-                    if (x - L < kerb || R - x < kerb) col = kerbCol;
-                    else col = bayerRigaIsola[x & 3] < 6 ? cem2 : cem1;
-                    fb_.put(x, y, col);
+                // V9 ∞ (25/11, lv_05_spray giro 38): x e' gia' clampato a
+                // [0,WIDTH) e y e' la riga corrente; fb_.put rifarebbe due
+                // controlli di bounds per pixel dell'isola. Con il guard su y
+                // fuori dal ciclo si scrive direttamente nella riga: stessi
+                // pixel (fb_.put non scriveva fuori y), resa e replay IDENTICI
+                // (stesso schema dell'incrocio piu' sopra).
+                if (y >= 0 && y < Framebuffer::HEIGHT) {
+                    u32* rigaIsola = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                    for (i32 x = std::max(0, L); x <= std::min(Framebuffer::WIDTH - 1, R); ++x) {
+                        u32 col;
+                        if (x - L < kerb || R - x < kerb) col = kerbCol;
+                        else col = bayerRigaIsola[x & 3] < 6 ? cem2 : cem1;
+                        rigaIsola[x] = col;
+                    }
                 }
             }
         }
@@ -812,28 +854,41 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
                 const i32 x0 = std::max(0, (i32)(mid - hz * pxW));
                 const i32 x1 = std::min(Framebuffer::WIDTH - 1, (i32)(mid + hz * pxW));
                 const i32 bordoL = std::max(1, rw / 2);
-                for (i32 x = x0; x <= x1; ++x) {
-                    const f32 fx = (f32)x;
-                    // Anche il varco sottile prima della cuspide e' zebrato
-                    // (prima restava un cuneo d'erba davanti al cuscino).
-                    u32 col = zebraFondo;
-                    if (x - x0 < bordoL || x1 - x < bordoL) col = 0xFFF4F4F4u;
-                    else {
-                        const f32 xw = std::fabs(fx - mid) / pxW;
-                        // V9 ∞ (24/11, lv_05_spray giro 35): zAvanti >= 0 e xw = fabs >= 0,
-                        // quindi (zAvanti + xw*1.2f) >= 0 e fmod con divisore 800 > 0
-                        // restituisce sempre [0,800): guard negativo morto, stesso valore.
-                        const f32 v = std::fmod(zAvanti + xw * 1.2f, 800.0f);
-                        if (v < 220.0f) col = 0xFFE4E4E8u;
+                // V9 ∞ (25/11, lv_05_spray giro 38): x0/x1 sono gia' clampati a
+                // [0,WIDTH); il guard su y sta fuori dal ciclo e si scrive
+                // direttamente nella riga invece di fb_.put per pixel della
+                // zebratura del bivio. Stessi pixel, resa e replay IDENTICI
+                // (come per l'incrocio piu' sopra).
+                if (y >= 0 && y < Framebuffer::HEIGHT) {
+                    u32* rigaZeb = fb_.data() + (size_t)y * Framebuffer::WIDTH;
+                    for (i32 x = x0; x <= x1; ++x) {
+                        const f32 fx = (f32)x;
+                        // Anche il varco sottile prima della cuspide e' zebrato
+                        // (prima restava un cuneo d'erba davanti al cuscino).
+                        u32 col = zebraFondo;
+                        if (x - x0 < bordoL || x1 - x < bordoL) col = 0xFFF4F4F4u;
+                        else {
+                            const f32 xw = std::fabs(fx - mid) / pxW;
+                            // V9 ∞ (24/11, lv_05_spray giro 35): zAvanti >= 0 e xw = fabs >= 0,
+                            // quindi (zAvanti + xw*1.2f) >= 0 e fmod con divisore 800 > 0
+                            // restituisce sempre [0,800): guard negativo morto, stesso valore.
+                            const f32 v = std::fmod(zAvanti + xw * 1.2f, 800.0f);
+                            if (v < 220.0f) col = 0xFFE4E4E8u;
+                        }
+                        rigaZeb[x] = col;
                     }
-                    fb_.put(x, y, col);
                 }
             }
         }
         // Ombra del portale CHECKPOINT sul terreno (Andrea 11/11: profondita'
         // percepita): banda a scacchiera scura poco prima della linea, larga
         // quanto il portale, come se la luce venisse da dietro.
-        if (temaOltreAttivo_ && roadCorr_ && roadCorr_->bivioAttivo() && y < Framebuffer::HEIGHT &&
+        // V9 ∞ (25/11, lv_04_cromo giro 37): l'attivazione del checkpoint era
+        // rivalutata qui a ogni riga (temaOltreAttivo_ && roadCorr_ &&
+        // roadCorr_->bivioAttivo()), identica a `checkLineaAttiva` gia' hoistata
+        // all'ingresso del trapezio. Riutilizzala: evita una call a bivioAttivo()
+        // per riga; stessa condizione, resa e replay IDENTICI.
+        if (checkLineaAttiva && y < Framebuffer::HEIGHT &&
             zAvanti >= giro_ - 900.0f && zAvanti < giro_ - 250.0f) {
             // V9 ∞ (20/11, lv_01_neon giro 25): il centro proiettato del ramo 0
             // (cN/cF) e' lo stesso centroNear[0]/centroFar[0] calcolato una volta
@@ -945,6 +1000,12 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         // abusivo: un pezzo lungo ogni tre graffiti, in mezzo tag corte.
         constexpr i32 GRAF_OGNI = 96, GRAF_INIZIO = 8;
         const i32 grafN = cur.index / GRAF_OGNI;
+        // V9 ∞ (25/11, lv_05_spray giro 37): lo skew del corsivo dipende solo
+        // da grafN (costante per trapezio), non dal pixel: prima il ternario
+        // `grafN & 1 ? 0.10f : -0.08f` veniva rivalutato a ogni pixel dello
+        // graffito. Hoistato una volta per trapezio: stesso float, stesse
+        // coordinate, resa e replay IDENTICI.
+        const f32 grafSkew = (grafN & 1) ? 0.10f : -0.08f;
         static const char* kGraf[3] = {"OPEN RUN", "RUN", "OR88"};
         const i32 grafK = grafN % 3;
         const char* testo = kGraf[grafK];
@@ -961,12 +1022,26 @@ void Renderer::drawSegmentTrapezoid(const Road::ProjectedSeg& cur,
         const u32 rosa = 0xFFFF2FB4u, ciano = 0xFF40F0FFu;
         const u32 riempi = variante == 0 ? rosa : variante == 1 ? ciano : lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.2f);
         const u32 contorno = variante == 0 ? ciano : rosa;
+        // V9 ∞ (25/11, lv_02_atomico giro 38): i tre toni derivati dipendono
+        // solo da riempi/contorno, invarianti per tutto il trapezio. Prima
+        // coloreGraffito li ricalcolava con 3 lerpColore a ogni pixel del
+        // graffito; calcolati una volta qui e passati alla funzione: stessi
+        // u32, stessi operandi e stesso ordine -> resa e replay IDENTICI.
+        const u32 contornoScuro = lerpColore(contorno, 0xFF100828u, 0.45f);
+        const u32 luceGraff = lerpColore(riempi, 0xFFFFFFFFu, 0.28f);
+        const u32 scuroGraff = lerpColore(riempi, 0xFF200030u, 0.45f);
         const MascheraGraffito& mg = mascheraGraffito(testo);
+        // V9 ∞ (25/11, lv_05_spray giro 37): mg.w/mg.h sono campi della
+        // maschera costante per trapezio; i cast a float venivano rifatti a
+        // ogni pixel del graffito. Hoistati una volta: stessi float, stesse
+        // coordinate mx/my, resa e replay IDENTICI (come grafSkew qui sopra).
+        const f32 mgW = (f32)mg.w, mgH = (f32)mg.h;
         auto graffito = [&](f32 gu, f32 gv, i32 px, i32 py) -> u32 {
             gu += (0.5f - gv) * 0.09f;                       // corsivo rabbioso
-            gv += (gu - 0.5f) * (grafN & 1 ? 0.10f : -0.08f); // storto, non a bolla
-            const i32 mx = (i32)(gu * (f32)mg.w), my = (i32)(gv * (f32)mg.h);
-            return coloreGraffito(mg, mx, my, px, py, riempi, contorno);
+            gv += (gu - 0.5f) * grafSkew;                    // V9 ∞ giro 37: skew precalcolato (stesso valore)
+            const i32 mx = (i32)(gu * mgW), my = (i32)(gv * mgH); // V9 ∞ giro 37: cast precalcolati
+            return coloreGraffito(mg, mx, my, px, py, riempi, contorno,
+                                  contornoScuro, luceGraff, scuroGraff); // V9 ∞ giro 38: toni precalcolati
         };
         // V9 ∞ (22/11, lv_05_spray giro 30): bayerRiga dipende solo da y
         // (riga schermo), non dal pixel x ne' dalla singola chiamata parete/soffitto.
@@ -1195,11 +1270,18 @@ void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 s
         const bool su = ((i32)(t * 7.0f + o.fase * 3.0f) & 1) != 0;
         const i32 X = (i32)gx, Y = (i32)gy;
         if (Y < 0) return;
+        // V9 ∞ (25/11, lv_03_foglie giro 38b): `a / 2` e `a >= 6` dipendono
+        // solo da `a` (costante del gabbiano), non da k: prima venivano
+        // rivalutati a ogni passo del loop delle ali. Hoistati una volta fuori,
+        // stessi operandi e stesso ordine in `h`/nel ramo -> stessi pixel,
+        // resa e replay IDENTICI.
+        const i32 metaA = a / 2;
+        const bool aliSopra = a >= 6;
         for (i32 k = 0; k <= a; ++k) {
-            const i32 h = su ? -(k * 2) / 3 : (k < a / 2 ? -k / 2 : -(a - k) / 2);
+            const i32 h = su ? -(k * 2) / 3 : (k < metaA ? -k / 2 : -(a - k) / 2);
             fb_.put(X - k, Y + h, 0xFFF2F2EEu);
             fb_.put(X + k, Y + h, 0xFFF2F2EEu);
-            if (a >= 6) { fb_.put(X - k, Y + h + 1, 0xFF7C7C8Cu); fb_.put(X + k, Y + h + 1, 0xFF7C7C8Cu); }
+            if (aliSopra) { fb_.put(X - k, Y + h + 1, 0xFF7C7C8Cu); fb_.put(X + k, Y + h + 1, 0xFF7C7C8Cu); }
         }
         fb_.put(X, Y, 0xFF1C1C28u);
         return;
@@ -1237,8 +1319,13 @@ void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 s
         const f32 giro = std::sin(t * 1.8f + o.fase);
         const i32 len = (i32)(std::abs(giro) * 60.0f * sc);
         const i32 dir = giro > 0.0f ? 1 : -1;
+        // V9 ∞ (25/11, lv_03_foglie giro 38b): `(i32)(t*20.0f)` dipende solo
+        // da `t` (= tempoS_, costante del frame), non da k: prima veniva
+        // ricalcolato (mul + cast) a ogni passo del fascio. Hoistato una volta
+        // fuori dal loop: stesso i32, stessi k scritti, resa e replay IDENTICI.
+        const i32 t20 = (i32)(t * 20.0f);
         for (i32 k = 0; k < len; ++k)
-            if (((k + (i32)(t * 20.0f)) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
+            if (((k + t20) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
         drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, std::abs(giro) > 0.3f);
     }
 }
@@ -1526,11 +1613,24 @@ void Renderer::drawCuspideBivio(const Road::ProjectedSeg& p, f32 coperto) {
     const i32 sopra = std::max(1, ch / 3);
     fb_.fillRect(cx - cw + sopra / 2, terra - bh - ch - sopra, cx + cw - sopra / 2, terra - bh - ch - 1, 0xFFB89A30u);
     const i32 passo = std::max(2, cw / 3);
-    for (i32 yy = terra - bh - ch; yy < terra - bh; ++yy)
-        for (i32 x = cx - cw; x <= cx + cw; ++x) {
-            const i32 d = (x - cx + cw) + (terra - yy);
-            fb_.put(x, yy, ((d / passo) & 1) ? 0xFF141414u : 0xFFFFC820u);
+    // V9 ∞ (25/11, lv_05_spray giro 38b): `(terra - yy)` era costante dentro
+    // il ciclo delle colonne, ma veniva ricalcolato a ogni pixel del cuscino;
+    // in piu' fb_.put rifaceva quattro controlli di bounds per pixel anche se
+    // l'intervallo e' noto. Hoistato `terra - yy` per riga e clampato una volta
+    // l'intervallo x/y: stessi indici d, stessi pixel scritti, resa e replay
+    // IDENTICI (scrittura diretta nella riga, come per hline/incrocio).
+    const i32 yLo = std::max(0, terra - bh - ch);
+    const i32 yHi = std::min(Framebuffer::HEIGHT - 1, terra - bh - 1);
+    const i32 xLo = std::max(0, cx - cw);
+    const i32 xHi = std::min(Framebuffer::WIDTH - 1, cx + cw);
+    for (i32 yy = yLo; yy <= yHi; ++yy) {
+        const i32 dyCuscino = terra - yy;
+        u32* rigaCuscino = fb_.data() + (size_t)yy * Framebuffer::WIDTH;
+        for (i32 x = xLo; x <= xHi; ++x) {
+            const i32 d = (x - cx + cw) + dyCuscino;
+            rigaCuscino[x] = ((d / passo) & 1) ? 0xFF141414u : 0xFFFFC820u;
         }
+    }
     // Due pali sopra il cuscino e pannello verde con le due frecce.
     const i32 palo = std::max(1, (i32)(pxUnita * 50.0f));
     const i32 cimaPalo = terra - (i32)(1500.0f * pxY);
@@ -1656,18 +1756,18 @@ const Renderer::MascheraGraffito& Renderer::mascheraGraffito(const char* testo) 
     return graffiti_.back();
 }
 
-u32 Renderer::coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py, u32 riempi, u32 contorno) const {
+u32 Renderer::coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py,
+                             u32 riempi, u32 contorno, u32 contornoScuro, u32 luce, u32 scuro) const {
     if (mx < 0 || my < 0 || mx >= m.w || my >= m.h) return 0u;
     const size_t i = (size_t)(my * m.w + mx);
     const i32 o = m.ombra[i];
     const i32 b = BAYER4[py & 3][px & 3];
     switch (m.px[i]) {
     case 1: return 0xFF0C0814u;
-    case 2: return b < o / 2 ? lerpColore(contorno, 0xFF100828u, 0.45f) : contorno;
+    case 2: return b < o / 2 ? contornoScuro : contorno;
     case 3: {
         // Tre toni: luce, pieno, ombra; fra uno e l'altro la trama Bayer.
-        const u32 luce = lerpColore(riempi, 0xFFFFFFFFu, 0.28f);
-        const u32 scuro = lerpColore(riempi, 0xFF200030u, 0.45f);
+        // V9 ∞ giro 38: luce/scuro passati dal chiamante (invarianti per trapezio).
         const i32 t = o * 2;               // 0..32
         if (t < 16) return b < t ? riempi : luce;
         return b < t - 16 ? scuro : riempi;
@@ -1786,6 +1886,15 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
     const u32 neon = lerpColore(tema_.rumbleAlt, 0xFFFFFFFFu, 0.3f);
     const f32 rim = std::max(1.0f, 160.0f * pxUnita);
     const f32 pil = std::max(1.0f, 260.0f * pxUnita);
+    // V9 ∞ (25/11, lv_02_atomico giro38b): tre soglie del fronte di cemento
+    // dipendono solo da pxY/pxUnita/rim, costanti per tutta la chiamata
+    // (calcolati una volta sopra). Prima venivano ricalcolate a ogni pixel
+    // della fronte (due divisioni e due max per pixel, piu' un max nel ramo
+    // del neon): hoistate qui. Stessi operandi e stesso ordine -> stessi
+    // float, resa e replay IDENTICI, frameHash invariato.
+    const f32 sogliaFV = std::max(20.0f, 1.0f / pxY);
+    const f32 sogliaFU = std::max(20.0f, 1.0f / pxUnita);
+    const f32 rimNeon = std::max(1.0f, rim * 0.35f);
     const i32 xa = std::max(0, (i32)(cx - collinaW)), xb = std::min(Framebuffer::WIDTH - 1, (i32)(cx + collinaW));
     for (i32 x = xa; x <= xb; ++x) {
         const f32 d = ((f32)x - cx) / collinaW;
@@ -1816,12 +1925,12 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                                         (!inBocca && (dx0 < rim || dx1 < rim));
                 if (bordoBocca) {
                     c = cornice;
-                    if (inBocca && bocca - (f32)y < std::max(1.0f, rim * 0.35f)) c = neon; // neon sotto l'architrave
+                    if (inBocca && bocca - (f32)y < rimNeon) c = neon; // neon sotto l'architrave (soglia hoistata giro38b)
                 } else {
                     const i32 corso = (i32)std::floor(wv / 300.0f);
                     const f32 fv = wv - (f32)corso * 300.0f;
                     const f32 fu = std::fmod(wu + (corso & 1) * 300.0f + 60000.0f, 600.0f);
-                    if (fv < std::max(20.0f, 1.0f / pxY) || fu < std::max(20.0f, 1.0f / pxUnita)) c = giunto;
+                    if (fv < sogliaFV || fu < sogliaFU) c = giunto; // soglie hoistate giro38b
                     else if (pilastro) c = (f32)x < cx ? cornice : cementoScuro;
                     // Sporco: dal basso sale una fascia piu' scura a trama.
                     if (c != giunto && wv < 700.0f && (f32)bayerRiga[x & 3] > wv / 700.0f * 16.0f)
@@ -1882,13 +1991,19 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         if (p.sospeso) continue;
         // PERC1 D4: dentro la galleria niente paletti.
         if (p.galleria) continue;
-        // V9 ∞ (24/11, lv_06_desktop giro 35): playerZ + p.worldZ >= 0 e
+        // V9 ∞ (25/11, lv_04_cromo giro38b): `playerZ + p.worldZ` e' invariante
+        // per tutto il segmento, ma veniva ricalcolato (fmod, incrocioD e, per
+        // ogni lato, una volta per paletto abbattuto) dentro il corpo del loop.
+        // Calcolato una volta qui, stessi operandi e stesso ordine in ogni uso:
+        // stesso float, stessi paletti disegnati, resa e replay IDENTICI.
+        const f32 zAss = playerZ + p.worldZ;
+        // V9 ∞ (24/11, lv_06_desktop giro 35): zAss >= 0 e
         // ROADSIDE_MARKER_SPACING > 0 -> std::fmod restituisce >= 0, guard
         // negativo morto (stesso schema lv_04/lv_05 giro 35).
-        f32 phase = std::fmod(playerZ + p.worldZ, ROADSIDE_MARKER_SPACING);
+        f32 phase = std::fmod(zAss, ROADSIDE_MARKER_SPACING);
         if (phase >= 50.0f) continue;
         // Incroci (Andrea 08/11): niente paletti sulla strada perpendicolare.
-        if (roadCorr_ && std::fabs(roadCorr_->incrocioD(playerZ + p.worldZ)) < Road::INCROCIO_ZONA) continue;
+        if (roadCorr_ && std::fabs(roadCorr_->incrocioD(zAss)) < Road::INCROCIO_ZONA) continue;
 
         const f32 pxUnita = p.scale * (Framebuffer::WIDTH / 2.0f);
         const f32 halfRoad = pxUnita * Road::ROAD_HALF_WORLD * p.carr.fattore;
@@ -1897,15 +2012,20 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
         const i32 height = std::clamp((i32)(p.scale * 300.0f * (Framebuffer::HEIGHT / 2.0f)), 2, 28);
         const i32 width = std::clamp((i32)(p.scale * 35.0f * (Framebuffer::WIDTH / 2.0f)), 1, 4);
         const i32 bottom = (i32)p.screenY;
+        // V9 ∞ (25/11, lv_04_cromo giro38b): `halfRoad + width * 2.0f` non
+        // dipende dal lato: prima veniva ricalcolato due volte (una per lato).
+        // Calcolato una volta per segmento, stessi operandi e stesso ordine ->
+        // stesso float e stessa x, resa e replay IDENTICI.
+        const f32 palettoOffset = halfRoad + width * 2.0f;
         // Dentro la galleria, i paletti oltre l'uscita si vedono solo nella
         // bocca (Andrea 11/11: prima facevano una riga bianca sulle pareti).
         const bool oltreBocca = dentroGalleria_ && p.worldZ >= clipGalleriaZ_;
         for (i32 side : {-1, 1}) {
             bool abbattuto = false; // Andrea 18/11: il paletto abbattuto vola via, qui non c'e' piu'
             for (i32 k = 0; k < nPaliAbbattuti_ && !abbattuto; ++k)
-                abbattuto = paliAbbattutiLato_[k] == side && std::fabs(playerZ + p.worldZ - paliAbbattutiZ_[k]) < 100.0f;
+                abbattuto = paliAbbattutiLato_[k] == side && std::fabs(zAss - paliAbbattutiZ_[k]) < 100.0f;
             if (abbattuto) continue;
-            const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * (halfRoad + width * 2.0f));
+            const i32 x = (i32)(p.screenX + (side < 0 ? sinistra : destra) + side * palettoOffset);
             if (oltreBocca && (!clipGalleria_ || x - width / 2 < clipGx0_ || x + width / 2 > clipGx1_ ||
                                bottom - height < clipGy0_)) continue;
             const u32 color = side < 0 ? pal_[1] : pal_[14];
@@ -1982,14 +2102,24 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
     // gli stessi colori che restituivano le due espressioni, indicizzata per u8
     // idx — e il loop campiona con una sola lettura in tabella. Stessi colori,
     // stessa immagine, replay IDENTICO.
-    u32 colLut[256];
-    {
-        const i32 palBase = s.paletteBase;
+    // V9 ∞ (25/11, lv_06_desktop giro 38): la LUT non cambia finche' lo skyline
+    // e' lo stesso (puntatore palette, paletteBase e nPalette invarianti dentro
+    // la tappa). Prima veniva ricostruita a ogni frame, con 256 iterazioni e un
+    // modulo per i colori quando la palette e' propria; ora si ricalcola solo al
+    // cambio di configurazione, come gia' in drawSprite. Stessi valori di colore
+    // (spPal e' esattamente s.palette.data()), stessa immagine, replay IDENTICO.
+    const i32 palBase = s.paletteBase;
+    const u32* const spPal = palettePropria ? s.palette.data() : nullptr;
+    if (skylineLutPal_ != spPal || skylineLutBase_ != palBase || skylineLutNPal_ != nPalette) {
+        skylineLutPal_ = spPal;
+        skylineLutBase_ = palBase;
+        skylineLutNPal_ = nPalette;
         const u32* const palRaw = pal_.dati();
         for (i32 idx = 0; idx < 256; ++idx)
-            colLut[idx] = palettePropria ? s.palette[(size_t)idx % (size_t)nPalette]
-                                         : palRaw[(palBase + idx) & 255];
+            skylineLut_[idx] = spPal ? spPal[(size_t)idx % (size_t)nPalette]
+                                     : palRaw[(palBase + idx) & 255];
     }
+    const u32* const colLut = skylineLut_;
     // V9 ∞ (21/11, lv_06_desktop giro 26): la colonna sorgente della
     // parallasse (DECO1 2e) dipende solo da x — skylineScrollX_, WIDTH e
     // s.width sono costanti per tutto drawSkyline — ma il `fmod` veniva
@@ -2010,6 +2140,12 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
         if (tx < 0) tx += (i32)s.width;
         skylineTx_[x] = tx;
     }
+    // V9 ∞ (25/11, lv_03_foglie giro 38): `visibile >= 1.0f` e' costante in
+    // tutto drawSkyline (parametro), ma veniva rivalutato a ogni pixel opaco
+    // dello skyline (~320*h per frame; lv_03 ha il cielo piu' fitto). Calcolato
+    // una volta qui: stesso ramo, stessa lerpColore con gli stessi operandi e
+    // lo stesso ordine -> stessi pixel, resa e replay IDENTICI.
+    const bool skylinePieno = visibile >= 1.0f;
     for (i32 sy = 0; sy < h; ++sy) {
         const i32 ty = (i32)((f32)sy / (f32)h * (f32)s.height);
         const u8* src = s.pixels.data() + (size_t)ty * (size_t)s.width;
@@ -2022,7 +2158,7 @@ void Renderer::drawSkyline(const Sprite& s, f32 visibile) {
             if (idx == 0) continue; // trasparente
             const u32 col = colLut[idx]; // V9 ∞ lv_02 giro 26: lookup diretto (LUT)
             if ((col >> 24) == 0) continue; // trasparente
-            dst[x] = visibile >= 1.0f ? col : lerpColore(dst[x], col, visibile); // dissolvenza nel cielo
+            dst[x] = skylinePieno ? col : lerpColore(dst[x], col, visibile); // dissolvenza nel cielo
         }
     }
 }
@@ -2738,9 +2874,16 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
     const f32 t = fx.tempoS;
     const i32 frame = (i32)(t * 60.0f);
     auto cerchio = [&](i32 px, i32 py, i32 r, u32 col, bool rado) {
+        // V9 ∞ (25/11, lv_06_desktop giro 38b): `r*r` dipende solo da r
+        // (parametro della chiamata), non da dx/dy: prima la moltiplicazione
+        // veniva rifatta a ogni pixel del cerchio (fino a (2r+1)^2 pixel per
+        // sbuffo di fumo/polvere). Hoistata una volta per chiamata: stesso
+        // intero, stesso confronto, stessi pixel scritti, resa e replay
+        // IDENTICI.
+        const i32 r2 = r * r;
         for (i32 dy = -r; dy <= r; ++dy)
             for (i32 dx = -r; dx <= r; ++dx)
-                if (dx * dx + dy * dy <= r * r && (!rado || ((px + dx + py + dy) & 1) == 0))
+                if (dx * dx + dy * dy <= r2 && (!rado || ((px + dx + py + dy) & 1) == 0))
                     fb_.put(px + dx, py + dy, col);
     };
     if (sotto) {

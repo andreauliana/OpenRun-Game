@@ -1,6 +1,6 @@
-# RIASSUNTO — @capo (24/11/2026, T2 ora 3/12)
-- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA`; legacy 08/11/vocabolario/sponsor intoccati; decisioni aperte: 0.
-- **Checkpoint:** SCAMBIO_RECENTE CHK auto [APERTE] (non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. CP-002/003/004 APERTI; DECO1/F60 citati APERTI (dossier assenti).
-- **Handoff:** dev V9 lv_06 35° 24/11 12:52 smoke/percorso pre/post exit 0, replay IDENTICO frameHash 3627137594, medio 0.675 max 2.961 ms, gate_t1 ref 10:03 exit 0 → lv_01 36°. Jr VJ5 ∞ roadside-markers 24/11 12:55 run_tests 27/27, prova_gate lv_01 percorso exit 0 → prossimo diff src. Gf VG3 giro 183 24/11 13:20, 0 conv, vg3_date exit 1 (solo flag Andrea), autotest 18 OK.
-- **Deleghe:** @developer V9 ∞ lv_01_neon 36°; @developer-junior VJ5 ∞ prossimo diff src (ricompila prima); @grafico VG3 ∞. Autore≠revisore. Dettagli: `UFFICIO/out/capo/STATI_PROPOSTI.md`.
-- **Blocchi/decisioni:** DEFAULT Andrea `traffico_incrocio/lato_furgone_bianco.png.png` (no rinomina/converti senza RISPOSTA). Pi 400 non verificato. STATUS_OFFICINA arretrato (18/11). Nessun PER_CLAUDE, nessuna domanda nuova ad Andrea. Nessun FINITO (∞).
+# RIASSUNTO — @capo (25/11/2026, T3 ora 5/12)
+- **Tappa:** TAPPE.md T1 base legacy; attivo MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA`; legacy 08/11/vocabolario/sponsor intoccati.
+- **Checkpoint:** CHK auto SCAMBIO_RECENTE [APERTE] (non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. CP-002/003/004 APERTI; DECO1/F60 citati (dossier assenti).
+- **Handoff:** dev V9 lv_05_spray giro38b 25/11 12:36 exit 0, replay IDENTICO 4250821778, 0.590/2.960ms <8ms, lv_02 invar. → lv_06_desktop giro38b. Jr VJ4 soak lv_04_cromo 25/11 12:45 exit 0 30000f IDENTICO 0.660/2.757ms <20, run_tests 27/27 → VJ4 lv_05/lv_06 + VJ5 ∞. Gf VG3 g183 24/11 13:20, 0 conv, flag Andrea.
+- **Deleghe:** @developer V9 ∞ lv_06_desktop giro38b (rev @developer-junior); @developer-junior VJ4 soak lv_05 poi lv_06 + VJ5 ∞ review prossimo diff (rev @developer/@capo); @grafico VG3 ∞ (rev @capo catalogo/licenza/provenienza).
+- **Blocchi:** DEFAULT Andrea `traffico_incrocio/lato_furgone_bianco.png.png` (no rinomina/converti). Pi 400 non verificato. VJ4 lv_01 39.042ms>20 output ma GATE OK (monitorare). Nessun PER_CLAUDE, nessuna domanda nuova. Nessun FINITO (∞).

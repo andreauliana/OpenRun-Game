@@ -449,7 +449,12 @@ private:
     struct MascheraGraffito { const char* testo = nullptr; i32 w = 0, h = 0; std::vector<u8> px, ombra; };
     // Colore del graffito nel punto (mx, my) della maschera, 0 = muro. ombra
     // 0..16: sfumatura a trama Bayer fra tre toni (Andrea 08/11 sera).
-    u32 coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py, u32 riempi, u32 contorno) const;
+    // V9 ∞ (25/11, lv_02_atomico giro 38): i tre toni derivati (contorno
+    // scuro, luce e ombra del riempimento) dipendono solo da riempi/contorno,
+    // invarianti per tutto il trapezio. Calcolati una volta dal chiamante e
+    // passati qui invece di rifare 3 lerpColore a ogni pixel del graffito.
+    u32 coloreGraffito(const MascheraGraffito& m, i32 mx, i32 my, i32 px, i32 py,
+                       u32 riempi, u32 contorno, u32 contornoScuro, u32 luce, u32 scuro) const;
     std::vector<MascheraGraffito> graffiti_;
     const MascheraGraffito& mascheraGraffito(const char* testo);
     // Imbocco della galleria visto da fuori: collina del tema con la fronte di
@@ -513,6 +518,15 @@ private:
     const u32* colLutPal_ = nullptr; // palette propria (spPal) usata per la LUT
     i32 colLutBase_ = -1;            // paletteBase usata per la LUT (motore)
     i32 colLutNPal_ = -1;            // nPalette usato per la LUT (propria)
+    // V9 ∞ (25/11, lv_06_desktop giro 38): LUT colore-indice da 256 voci anche
+    // per lo skyline, ricalcolata solo quando cambia la configurazione della
+    // palette. Prima veniva ricostruita a ogni frame (256 iterazioni, con modulo
+    // se la palette e' propria); lo skyline e' costante dentro la tappa, quindi
+    // la si riutilizza. Stessi valori di colore, resa e replay IDENTICI.
+    u32 skylineLut_[256]{};
+    const u32* skylineLutPal_ = nullptr;
+    i32 skylineLutBase_ = -1;
+    i32 skylineLutNPal_ = -1;
     void drawSprite(const SpriteInstance& s, f32 screenX, f32 screenY, f32 scale);
     void drawSkyline(const Sprite& s, f32 visibile = 1.0f); // visibile < 1: sfuma nel cielo
     // Crossfade dello skyline durante la transizione di tema: t = 0 disegna solo

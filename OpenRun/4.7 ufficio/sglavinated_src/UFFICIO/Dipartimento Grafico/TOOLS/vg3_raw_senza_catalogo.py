@@ -55,6 +55,21 @@
 # (raw su disco senza voce e riferimenti 'raw' con percorso sospetto) sono
 # estratte in righe_senza_voce() e righe_sospetti(), funzioni pure con autotest
 # su formato; main() si limita a stamparle. Output invariato.
+# Aggiunta 25/11: la composizione completa del report (ordine sezioni + calcolo
+# noti/nuovi/validi/sospetti/risolti) e' estratta in righe_report(), funzione
+# pura con autotest; main() stampa solo le righe. Output invariato.
+# Aggiunta 25/11 (turno 09:14): il confronto canonico che trova i raw su disco
+# senza voce (prima inline in analizza()) e' estratto in raw_senza_voce(),
+# funzione pura con autotest; analizza() la chiama. Output invariato.
+# Aggiunta 25/11 (turno 10:37): il confronto che trova i riferimenti del catalogo
+# senza file su disco (prima inline in analizza()) e' estratto in
+# riferimenti_inesistenti(), funzione pura con autotest; analizza() la chiama.
+# Output invariato.
+# Aggiunta 25/11 (turno 11:37): le classificazioni intermedie del report (noti/
+# nuovi, validi/sospetti, risolti) sono estratte in classifica_report(), funzione
+# pura con autotest; righe_report() la usa. Output invariato.
+# Aggiunta 25/11 (turno 12:31): la policy di exit code e' estratta in
+# codice_uscita(), funzione pura con autotest; main() la usa. Output invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -161,6 +176,26 @@ def raccogli_riferimenti(elementi):
     return riferimenti
 
 
+def raw_senza_voce(raws, riferimenti):
+    """Raw su disco senza voce di catalogo, confronto su forma canonica (pura).
+
+    Un riferimento scritto in modo equivalente ('./a/x.sglraw', 'a//x.sglraw')
+    non deve produrre un falso orfano: il confronto usa normalizza_raw().
+    Ritorna la lista ordinata dei path raw non tracciati.
+    """
+    canonici = {normalizza_raw(k) for k in riferimenti}
+    return sorted(r for r in raws if normalizza_raw(r) not in canonici)
+
+
+def riferimenti_inesistenti(riferimenti, esiste):
+    """Riferimenti raw del catalogo senza file su disco (funzione pura).
+
+    esiste e' un callable path_relativo -> bool: la funzione non tocca il disco.
+    Ritorna la lista ordinata dei path mancanti.
+    """
+    return sorted(r for r in riferimenti if not esiste(r))
+
+
 def analizza(raws, elementi, esiste):
     """Copertura inversa raw -> catalogo. Funzione pura (esiste e' un callable).
 
@@ -176,9 +211,8 @@ def analizza(raws, elementi, esiste):
     """
     riferimenti = raccogli_riferimenti(elementi)
 
-    canonici = {normalizza_raw(k) for k in riferimenti}
-    senza_voce = sorted(r for r in raws if normalizza_raw(r) not in canonici)
-    raw_inesistenti = sorted(r for r in riferimenti if not esiste(r))
+    senza_voce = raw_senza_voce(raws, riferimenti)
+    raw_inesistenti = riferimenti_inesistenti(riferimenti, esiste)
     duplicati, ripetuti_in_voce = classifica_duplicati(riferimenti)
     voci_con_raw = conta_voci_con_raw(elementi)
     return {
@@ -333,6 +367,55 @@ def righe_sospetti(sospetti, riferimenti):
     ]
 
 
+def classifica_report(res, raws):
+    """Classificazioni intermedie del report (funzione pura).
+
+    Raggruppa i calcoli derivati usati da righe_report(): noti/nuovi fra gli
+    inesistenti, validi/sospetti fra i riferimenti, e noti risolti su disco.
+    Nessun accesso al disco; raws e' la lista dei path raw presenti.
+    """
+    noti, nuovi = classifica_inesistenti(res["raw_inesistenti"])
+    validi, sospetti = classifica_percorsi(res["riferimenti"])
+    return {
+        "noti": noti,
+        "nuovi": nuovi,
+        "validi": validi,
+        "sospetti": sospetti,
+        "risolti": noti_risolti(raws),
+    }
+
+
+def righe_report(res, raws):
+    """Righe complete del report, nello stesso ordine di main() (funzione pura).
+
+    Compone le sezioni gia' testate (senza_voce, inesistenti, classificazione,
+    sospetti, risolti, riepilogo) usando classifica_report() per i derivati.
+    Nessun accesso al disco; main() si limita a stamparle e a decidere l'exit.
+    """
+    c = classifica_report(res, raws)
+    noti, nuovi = c["noti"], c["nuovi"]
+    validi, sospetti, risolti = c["validi"], c["sospetti"], c["risolti"]
+    righe = []
+    righe.extend(righe_senza_voce(res["senza_voce"]))
+    righe.extend(righe_inesistenti(noti, nuovi, res["riferimenti"], NOTI_RAW_MANCANTI))
+    righe.extend(righe_classificazione(
+        res["duplicati"], res["ripetuti_in_voce"], res["scritture"]
+    ))
+    righe.extend(righe_sospetti(sospetti, res["riferimenti"]))
+    righe.extend(righe_risolti(risolti, NOTI_RAW_MANCANTI))
+    righe.extend(righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti))
+    return righe
+
+
+def codice_uscita(res):
+    """Exit code del report: 1 se ci sono raw su disco senza voce, 0 altrimenti.
+
+    Le altre segnalazioni (riferimenti mancanti, duplicati, sospetti, scritture)
+    sono informative e non cambiano l'exit, come da policy del tool.
+    """
+    return 1 if res["senza_voce"] else 0
+
+
 def autotest():
     """Prove della funzione pura con dati sintetici, nessun file reale letto."""
     elementi = [
@@ -376,6 +459,27 @@ def autotest():
         and normalizza_raw(None) is None
     )
     prove.append(("normalizza_raw", ok_norm))
+    ok_senza_voce_pura = (
+        raw_senza_voce(
+            ["raw/a.sglraw", "raw/b.sglraw", "raw/orfano.sglraw"],
+            {"./raw/a.sglraw": ["v1"], "raw/b.sglraw": ["v2"]},
+        )
+        == ["raw/orfano.sglraw"]
+        and raw_senza_voce([], {"raw/a.sglraw": ["v1"]}) == []
+        and raw_senza_voce(["raw/a.sglraw"], {}) == ["raw/a.sglraw"]
+    )
+    prove.append(("raw_senza_voce", ok_senza_voce_pura))
+    ok_inesistenti_pura = (
+        riferimenti_inesistenti(
+            {"raw/a.sglraw": ["v1"], "raw/manca.sglraw": ["v2"], "raw/b.sglraw": ["v3"]},
+            lambda r: r in {"raw/a.sglraw", "raw/b.sglraw"},
+        )
+        == ["raw/manca.sglraw"]
+        and riferimenti_inesistenti({}, lambda r: True) == []
+        and riferimenti_inesistenti({"raw/a.sglraw": ["v1"]}, lambda r: False)
+        == ["raw/a.sglraw"]
+    )
+    prove.append(("riferimenti_inesistenti", ok_inesistenti_pura))
     ok_scritture = (
         classifica_scritture({
             "raw/a.sglraw": ["v1"],
@@ -544,6 +648,62 @@ def autotest():
         and righe_sospetti([], {}) == []
     )
     prove.append(("righe_sospetti", ok_sospetti))
+    res_report = {
+        "senza_voce": ["raw/orfano.sglraw"],
+        "voci_con_raw": 2,
+        "riferimenti": {
+            "raw/a.sglraw": ["a"],
+            "GRAFICA/vecchio.sglraw": ["b"],
+            "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw": ["c"],
+            "raw/manca_nuovo.sglraw": ["m1"],
+        },
+        "raw_inesistenti": [
+            "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
+            "raw/manca_nuovo.sglraw",
+        ],
+        "duplicati": {"raw/a.sglraw": ["a", "d"]},
+        "ripetuti_in_voce": {},
+        "scritture": {},
+    }
+    raws_report = [
+        "raw/a.sglraw",
+        "raw/orfano.sglraw",
+        "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
+    ]
+    cr = classifica_report(res_report, raws_report)
+    ok_cr = (
+        cr["noti"] == ["motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw"]
+        and cr["nuovi"] == ["raw/manca_nuovo.sglraw"]
+        and cr["validi"] == [
+            "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
+        ]
+        and cr["sospetti"] == [
+            "GRAFICA/vecchio.sglraw",
+            "raw/a.sglraw",
+            "raw/manca_nuovo.sglraw",
+        ]
+        and cr["risolti"] == ["motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw"]
+    )
+    prove.append(("classifica_report", ok_cr))
+    rr = righe_report(res_report, raws_report)
+    noti_r, nuovi_r = classifica_inesistenti(res_report["raw_inesistenti"])
+    validi_r, sosp_r = classifica_percorsi(res_report["riferimenti"])
+    risolti_r = noti_risolti(raws_report)
+    atteso_report = []
+    atteso_report.extend(righe_senza_voce(res_report["senza_voce"]))
+    atteso_report.extend(righe_inesistenti(noti_r, nuovi_r, res_report["riferimenti"], NOTI_RAW_MANCANTI))
+    atteso_report.extend(righe_classificazione(res_report["duplicati"], res_report["ripetuti_in_voce"], res_report["scritture"]))
+    atteso_report.extend(righe_sospetti(sosp_r, res_report["riferimenti"]))
+    atteso_report.extend(righe_risolti(risolti_r, NOTI_RAW_MANCANTI))
+    atteso_report.extend(righe_riepilogo(res_report, raws_report, noti_r, nuovi_r, sosp_r, validi_r, risolti_r))
+    prove.append(("righe_report", rr == atteso_report))
+    ok_exit = (
+        codice_uscita({"senza_voce": ["raw/orfano.sglraw"]}) == 1
+        and codice_uscita({"senza_voce": []}) == 0
+        and codice_uscita(res_finto) == 1
+        and codice_uscita(res_report) == 1
+    )
+    prove.append(("codice_uscita", ok_exit))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
     return 0 if all(ok for _, ok in prove) else 1
@@ -555,26 +715,9 @@ def main():
         p.relative_to(RADICE).as_posix() for p in RAW_ROOT.rglob("*.sglraw")
     )
     res = analizza(raws, cat["elementi"], lambda r: (RADICE / r).is_file())
-
-    for riga in righe_senza_voce(res["senza_voce"]):
+    for riga in righe_report(res, raws):
         print(riga)
-    noti, nuovi = classifica_inesistenti(res["raw_inesistenti"])
-    for riga in righe_inesistenti(noti, nuovi, res["riferimenti"], NOTI_RAW_MANCANTI):
-        print(riga)
-    for riga in righe_classificazione(
-        res["duplicati"], res["ripetuti_in_voce"], res["scritture"]
-    ):
-        print(riga)
-    validi, sospetti = classifica_percorsi(res["riferimenti"])
-    for riga in righe_sospetti(sospetti, res["riferimenti"]):
-        print(riga)
-    risolti = noti_risolti(raws)
-    for riga in righe_risolti(risolti, NOTI_RAW_MANCANTI):
-        print(riga)
-
-    for riga in righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti):
-        print(riga)
-    return 1 if res["senza_voce"] else 0
+    return codice_uscita(res)
 
 
 if __name__ == "__main__":

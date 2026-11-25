@@ -63,6 +63,28 @@ percorsi relativi a GRAFICA/ (prima un doppio ciclo inline in main) e' ora la
 funzione png_trovati(), con glob e relpath iniettabili: l'autotest verifica
 l'ordine e il formato relativo senza leggere il disco. E' l'ultimo blocco di
 raccolta dati che restava inline in main().
+
+Aggiunta 25/11: la composizione completa del report (noti, riga di sintesi,
+righe da decidere) e' ora la funzione pura righe_report(), provata in autotest:
+main() stampa solo le righe restituite, cosi' l'ordine delle tre sezioni resta
+fissato in un punto solo.
+
+Aggiunta 25/11 (turno 2): la classificazione completa in 4 gruppi (noti,
+da_decidere, catalogati, spariti) e' ora la funzione pura analizza_png(),
+provata in autotest: main() la usa al posto delle quattro chiamate inline.
+
+Aggiunta 25/11 (turno 3): l'ordine/tag dei residui noti e' separato dalla
+formattazione in voci_noti() pura con autotest; righe_noti() la usa per
+costruire le righe, cosi' si prova lo stato senza dipendere dal testo.
+
+Aggiunta 25/11 (turno 4): i percorsi citati da una singola voce di catalogo
+sono estratti in file_usati_voce() pura con autotest; file_usati() la usa,
+cosi' il caso stringa/lista/raw/vuoti si prova per voce senza catalogo intero.
+
+Aggiunta 25/11 (turno 5): lo stato dei residui noti rispetto al catalogo
+(catalogati, spariti) e' estratto in esito_noti() pura con autotest;
+analizza_png() la usa, cosi' la precedenza catalogato-vince-su-sparito resta
+provata in un punto solo.
 """
 import glob
 import json
@@ -143,6 +165,31 @@ def noti_spariti(noti, catalogati):
     return [f for f in noti_mancanti(noti) if f not in cat]
 
 
+def esito_noti(noti, usati):
+    """Stato dei residui noti rispetto al catalogo: (catalogati, spariti) (puro).
+
+    Unifica i due controlli che analizza_png faceva in sequenza: prima i noti
+    finiti nel catalogo, poi quelli spariti dal disco ma non catalogati. Tenerli
+    insieme rende provabile la regola di precedenza (catalogato vince su sparito).
+    """
+    catalogati = noti_catalogati(usati)
+    spariti = noti_spariti(noti, catalogati)
+    return catalogati, spariti
+
+
+def analizza_png(fuori, usati):
+    """Classifica i PNG fuori catalogo nei 4 gruppi del report (pura).
+
+    Raccoglie la logica che main() faceva inline: noti/da_decidere dalla
+    classificazione, catalogati dall'elenco usati, spariti dai noti non piu'
+    sul disco e non finiti in catalogo. Un solo punto rende provabile l'intero
+    stato senza leggere disco o catalogo.
+    """
+    noti, da_decidere = classifica(fuori)
+    catalogati, spariti = esito_noti(noti, usati)
+    return noti, da_decidere, catalogati, spariti
+
+
 # Area auto del giocatore: solo Andrea la disegna (regola bloccata 06/11), VG3 non
 # converte ne' cataloga nulla li'. Le pose note sono gia' in NOTI_NON_ASSET, ma un
 # file NUOVO in queste cartelle arrivava a sorgente() etichettato come 'sprite'
@@ -202,6 +249,21 @@ def dettaglio_per_area(per_area):
     return ", ".join(f"{k} {v}" for k, v in sorted(per_area.items()))
 
 
+def file_usati_voce(e):
+    """Percorsi citati da una singola voce di catalogo (campi 'file' e 'raw').
+
+    'file' puo' essere stringa o lista; vuoti/assenti non citano nulla. Pura,
+    cosi' l'autotest prova i casi per voce senza costruire un catalogo intero.
+    """
+    files = e.get("file") or []
+    files = [files] if isinstance(files, str) else list(files)
+    citati = [f for f in files if f]
+    raw = e.get("raw")
+    if raw:
+        citati.append(raw)
+    return citati
+
+
 def file_usati(cat):
     """Insieme dei percorsi citati dal catalogo (campi 'file' e 'raw' di ogni voce).
 
@@ -213,11 +275,7 @@ def file_usati(cat):
     """
     usati = set()
     for e in cat["elementi"]:
-        files = e.get("file") or []
-        files = [files] if isinstance(files, str) else files
-        usati.update(files)
-        if e.get("raw"):
-            usati.add(e["raw"])
+        usati.update(file_usati_voce(e))
     return usati
 
 
@@ -278,6 +336,19 @@ def righe_da_decidere(pngs):
     return righe
 
 
+def righe_report(noti, da_decidere, catalogati, spariti):
+    """Report completo in ordine: noti, sintesi, da decidere (puro).
+
+    main() stampava tre blocchi in sequenza: tenerli qui rende provabile che
+    l'ordine sia noti -> riga_sintesi -> righe_da_decidere e che un solo
+    punto controlli la composizione.
+    """
+    righe = righe_noti(noti, catalogati, spariti)
+    righe.append(riga_sintesi(len(da_decidere), len(noti), len(catalogati), len(spariti)))
+    righe.extend(righe_da_decidere(da_decidere))
+    return righe
+
+
 def riga_noto(tag, percorso, motivo):
     """Riga di un residuo noto, uguale per noto / NOTO-CATALOGATO / NOTO-SPARITO.
 
@@ -288,6 +359,18 @@ def riga_noto(tag, percorso, motivo):
     return f"  {tag}: {percorso} ({motivo})"
 
 
+def voci_noti(noti, catalogati, spariti):
+    """Terne (tag, percorso) dei residui noti, nell'ordine di stampa (pura).
+
+    Separa l'ordine/tag dalla formattazione: righe_noti() aggiunge il motivo e
+    il formato, qui si prova solo che lo stato giusto finisca nel gruppo giusto.
+    """
+    voci = [("noto non-asset", f) for f in noti]
+    voci.extend(("NOTO-CATALOGATO", f) for f in catalogati)
+    voci.extend(("NOTO-SPARITO", f) for f in spariti)
+    return voci
+
+
 def righe_noti(noti, catalogati, spariti):
     """Righe dei residui noti nei tre stati (pura), nell'ordine di stampa.
 
@@ -296,14 +379,7 @@ def righe_noti(noti, catalogati, spariti):
     l'ordine dei tre gruppi e il tag che spetta a ciascuno, cosi' una riga non
     puo' cambiare formato rispetto alle altre.
     """
-    righe = []
-    for f in noti:
-        righe.append(riga_noto("noto non-asset", f, NOTI_NON_ASSET[f]))
-    for f in catalogati:
-        righe.append(riga_noto("NOTO-CATALOGATO", f, NOTI_NON_ASSET[f]))
-    for f in spariti:
-        righe.append(riga_noto("NOTO-SPARITO", f, NOTI_NON_ASSET[f]))
-    return righe
+    return [riga_noto(tag, f, NOTI_NON_ASSET[f]) for tag, f in voci_noti(noti, catalogati, spariti)]
 
 
 def main() -> int:
@@ -315,13 +391,8 @@ def main() -> int:
 
     trovati = png_trovati(LIBRERIA, PATTERN)
     fuori = fuori_catalogo(trovati, usati)
-    noti, da_decidere = classifica(fuori)
-    catalogati = noti_catalogati(usati)
-    spariti = noti_spariti(noti, catalogati)
-    for riga in righe_noti(noti, catalogati, spariti):
-        print(riga)
-    print(riga_sintesi(len(da_decidere), len(noti), len(catalogati), len(spariti)))
-    for riga in righe_da_decidere(da_decidere):
+    noti, da_decidere, catalogati, spariti = analizza_png(fuori, usati)
+    for riga in righe_report(noti, da_decidere, catalogati, spariti):
         print(riga)
     return 0
 
@@ -372,6 +443,16 @@ def autotest():
     )
     ok = ok and ok_spariti
     print("autotest noti_spariti: " + ("OK" if ok_spariti else "FALLITO"))
+    # esito_noti: unifica catalogati+spariti con la stessa regola di precedenza;
+    # il furgone catalogato non deve finire tra gli spariti.
+    ok_esito = (
+        esito_noti(tutti, []) == ([], [])
+        and esito_noti(senza_furgone, []) == ([], [furgone])
+        and esito_noti(senza_furgone, [furgone]) == ([furgone], [])
+        and esito_noti(tutti, [furgone]) == ([furgone], [])
+    )
+    ok = ok and ok_esito
+    print("autotest esito_noti: " + ("OK" if ok_esito else "FALLITO"))
     ok_sorgente = (
         sorgente("GRAFICA/scenari/lv_03_foglie/oggetti/nuovo.png") == "scenario-oggetti"
         and sorgente("GRAFICA/scenari/lv_04_cromo/skyline.png") == "scenario-skyline"
@@ -404,6 +485,19 @@ def autotest():
     ok_vuoti = classifica([]) == ([], []) and conteggio_per_sorgente([]) == {}
     ok = ok and ok_vuoti
     print("autotest casi_vuoti: " + ("OK" if ok_vuoti else "FALLITO"))
+    # file_usati_voce: una voce alla volta, 'file' stringa/lista, raw, vuoti ignorati.
+    ok_voce = (
+        file_usati_voce({"file": "GRAFICA/a.png", "raw": "raw/a.sglraw"})
+        == ["GRAFICA/a.png", "raw/a.sglraw"]
+        and file_usati_voce({"file": ["GRAFICA/b.png", "GRAFICA/c.png"]})
+        == ["GRAFICA/b.png", "GRAFICA/c.png"]
+        and file_usati_voce({"file": [], "raw": ""}) == []
+        and file_usati_voce({}) == []
+        and file_usati_voce({"file": ["", "GRAFICA/d.png"], "raw": ""})
+        == ["GRAFICA/d.png"]
+    )
+    ok = ok and ok_voce
+    print("autotest file_usati_voce: " + ("OK" if ok_voce else "FALLITO"))
     # file_usati: 'file' stringa e lista, piu' 'raw'; vuoti/assenti non citano nulla.
     ok_usati = file_usati({"elementi": [
         {"file": "GRAFICA/a.png", "raw": "raw/a.sglraw"},
@@ -474,6 +568,16 @@ def autotest():
     ]
     ok = ok and ok_noti_righe
     print("autotest righe_noti: " + ("OK" if ok_noti_righe else "FALLITO"))
+    # voci_noti: solo ordine e tag, senza motivo/formato (dati puri per righe_noti).
+    ok_voci = voci_noti([], [], []) == []
+    ok_voci = ok_voci and voci_noti([a], [b], [c]) == [
+        ("noto non-asset", a), ("NOTO-CATALOGATO", b), ("NOTO-SPARITO", c),
+    ]
+    ok_voci = ok_voci and voci_noti([c, a], [], []) == [
+        ("noto non-asset", c), ("noto non-asset", a),
+    ]
+    ok = ok and ok_voci
+    print("autotest voci_noti: " + ("OK" if ok_voci else "FALLITO"))
     # righe_da_decidere: una riga per PNG nell'ordine ricevuto, riepilogo per area
     # solo se c'e' almeno un'area (elenco vuoto = nessuna riga).
     ok_righe = righe_da_decidere([]) == []
@@ -515,6 +619,43 @@ def autotest():
     ) == []
     ok = ok and ok_trovati
     print("autotest png_trovati: " + ("OK" if ok_trovati else "FALLITO"))
+    # analizza_png: raccoglie i 4 gruppi del report in un solo punto puro.
+    # Caso misto: b e' noto fuori catalogo, un nuovo sprite resta da_decidere;
+    # gli altri 3 noti non sono in fuori ne' in usati -> spariti.
+    furgone = "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png"
+    altri_noti = sorted(f for f in NOTI_NON_ASSET if f != b)
+    ok_analizza = analizza_png(
+        [b, "GRAFICA/sprite/traffico/nuovo.png"],
+        set(),
+    ) == ([b], ["GRAFICA/sprite/traffico/nuovo.png"], [], altri_noti)
+    # Caso catalogato: furgone nel catalogo -> compare in catalogati, non in spariti;
+    # a,b,c presenti in fuori, nessun nuovo.
+    ok_analizza = ok_analizza and analizza_png(
+        [a, b, c],
+        {furgone},
+    ) == ([a, b, c], [], [furgone], [])
+    # Caso sparito: furgone assente da fuori e da catalogo -> sparito.
+    ok_analizza = ok_analizza and analizza_png(
+        [a, b, c],
+        set(),
+    ) == ([a, b, c], [], [], [furgone])
+    ok_analizza = ok_analizza and analizza_png([], set()) == ([], [], [], sorted(NOTI_NON_ASSET))
+    ok = ok and ok_analizza
+    print("autotest analizza_png: " + ("OK" if ok_analizza else "FALLITO"))
+    # righe_report: composizione completa noti -> sintesi -> da_decidere, ordine fisso.
+    ok_report = righe_report([], [], [], []) == [
+        "png non catalogati: 0 (noti non-asset 0, noti catalogati 0, noti spariti 0)",
+    ]
+    ok_report = ok_report and righe_report([a], ["GRAFICA/sprite/traffico/x.png"], [b], [c]) == [
+        f"  noto non-asset: {a} ({motivo})",
+        f"  NOTO-CATALOGATO: {b} ({motivo})",
+        f"  NOTO-SPARITO: {c} ({motivo})",
+        "png non catalogati: 1 (noti non-asset 1, noti catalogati 1, noti spariti 1)",
+        "  sprite: GRAFICA/sprite/traffico/x.png",
+        "  da decidere per area: sprite 1",
+    ]
+    ok = ok and ok_report
+    print("autotest righe_report: " + ("OK" if ok_report else "FALLITO"))
     return 0 if ok else 1
 
 

@@ -57,3 +57,9 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-24 | — | T1(1/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv06 35°→lv01 36°;jr VJ5 roadside 27/27;gf g182 0conv. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-24 | — | T2(2/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv01 36°,jr VJ5∞,gf g183 0conv. Agg STATI/STATO. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-24 | — | T2(3/12)@capo:fonti lette;V47∞;CHK no peer;gate no;0 CP chiudibili;handoff invariati;agg STATI/STATO/RIASS/diario. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T1(0/12)@capo:V47∞;CHK auto no peer;gate no;0 CP. Dev lv03 37°→lv04;jr VJ5 terraLat 27/27;gf g183. Agg STATI/STATO. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T1(0/12)@capo check:fonti rilette;V47∞;CHK no peer;gate no;0 CP chiusi;handoff invariati;STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T1(1/12)@capo:V47∞;CHK auto no peer;gate no;0 CP chiusi. Handoff invariati dev lv03→lv04,jr VJ5∞,gf g183. STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T2(3/12)@capo:V47∞;CHK auto no peer;gate no;0 CP chiusi. Handoff invariati;STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T3(4/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv02 g38b→lv03;jr VJ4 soak lv01 30k IDENTICO 39ms>20 ma OK→lv02+VJ5;gf g183. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-25 | — | T3(5/12)@capo:V47∞;CHK auto no peer;gate no;0 CP. Dev lv05 g38b→lv06;jr VJ4 lv04 ok→lv05/06+VJ5;gf g183. STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |

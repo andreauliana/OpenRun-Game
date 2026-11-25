@@ -173,6 +173,24 @@ def classifica_raw(atteso, grezzo):
     return "contenuto"
 
 
+def esito_confronto(atteso, grezzo, png_piu_nuovo):
+    """Esito del confronto PNG/raw per un asset 1:1 (funzione pura).
+
+    Ritorna (stato, motivo): stato in {'illeggibile','diverso','png-nuovo','allineato'}.
+    'illeggibile' se atteso e' None (PIL non apre il PNG). 'diverso' usa classifica_raw
+    per il motivo ('corrotto'|'dimensione'|'contenuto'). 'png-nuovo' = data PNG piu' recente
+    ma contenuto identico (rumore, non conversione). 'allineato' = identico e non piu' nuovo.
+    Non tocca il filesystem: main() passa byte e booleano gia' calcolati.
+    """
+    if atteso is None:
+        return "illeggibile", None
+    if grezzo != atteso:
+        return "diverso", classifica_raw(atteso, grezzo)
+    if png_piu_nuovo:
+        return "png-nuovo", None
+    return "allineato", None
+
+
 def modulo_trama():
     """Modulo trama_scenari.py (stesse regole dello skyline), o None se non c'e'."""
     try:
@@ -212,6 +230,21 @@ def raw_skyline_atteso(png, livello, modulo):
     if opz["tecnica"] != "nessuna":
         img = modulo.trama(img, opz["tecnica"], float(opz["forza"]), int(opz["zone"]))
     return b"SGLR" + struct.pack("<II", img.width, img.height) + img.convert("RGBA").tobytes()
+
+
+def esito_skyline(atteso, grezzo, png_piu_nuovo):
+    """Esito del confronto skyline: trama composta vs raw (funzione pura).
+
+    atteso None = la trama non si puo' ricomporre (modulo mancante o PNG
+    illeggibile): si ripiega sulla sola data come prima, senza dire 'allineato'
+    a torto. Con atteso valido il confronto e' a byte sul raw composto.
+    Ritorna: 'no-trama-nuovo' | 'no-trama-ok' | 'diverso' | 'allineato'.
+    """
+    if atteso is None:
+        return "no-trama-nuovo" if png_piu_nuovo else "no-trama-ok"
+    if grezzo != atteso:
+        return "diverso"
+    return "allineato"
 
 
 def residuo_skyline(livello, raw):
@@ -626,8 +659,22 @@ def controllo_copertura():
             continue
         fuori += 1
         print(f"PNG-FUORI-COPERTURA {rel}: png {data(png)} (nessun raw e nessuna categoria nota)")
-    print(f"png in GRAFICA: {totale} (confrontati con un raw {totale - noti - fuori}, non motore noti {noti})")
+    print(riga_copertura(totale, noti, fuori))
     return fuori
+
+
+def riga_copertura(totale, noti, fuori):
+    """Riga di sintesi copertura PNG in GRAFICA/, in un punto solo (funzione pura).
+
+    Prima la formattazione stava dentro controllo_copertura(): il conteggio dei
+    confrontati era ricalcolato come totale-noti-fuori nel print. Qui la formula
+    e l'autotest fissano il formato, cosi' un refactor non cambia la riga.
+    """
+    confrontati = totale - noti - fuori
+    return (
+        f"png in GRAFICA: {totale} (confrontati con un raw {confrontati},"
+        f" non motore noti {noti})"
+    )
 
 
 def codice_esito(
@@ -659,6 +706,18 @@ def righe_skyline(ok, da_rigenerare, senza):
         f"skyline allineati: {ok}",
         f"skyline da rigenerare: {da_rigenerare}",
         f"skyline senza png o raw: {senza}",
+    ]
+
+
+def righe_oggetti(png_visti, orfani):
+    """Le due righe di sintesi oggetti di main(), in un punto solo (funzione pura).
+
+    Prima erano due print sparsi in main() subito dopo il giro inverso: tenerle
+    insieme fissa formato e ordine e l'autotest le verifica senza toccare GRAFICA.
+    """
+    return [
+        f"png di oggetti controllati: {png_visti}",
+        f"png di oggetti senza raw: {orfani}",
     ]
 
 
@@ -730,16 +789,17 @@ def main():
             righe.append(f"MANCA-PNG  {livello}/{nome}.sglraw ({data(raw)})")
             continue
         atteso = raw_atteso(png)
-        if atteso is None:
+        grezzo = raw.read_bytes()
+        stato, motivo = esito_confronto(atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime)
+        if stato == "illeggibile":
             diversi += 1
             righe.append(f"PNG-ILLEGGIBILE {livello}/{nome}: png {data(png)} non apribile da PIL")
-        elif raw.read_bytes() != atteso:
+        elif stato == "diverso":
             diversi += 1
-            motivo = classifica_raw(atteso, raw.read_bytes())
             righe.append(
                 f"DIVERSO    {livello}/{nome}: png {data(png)} raw {data(raw)} [{motivo}]"
             )
-        elif png.stat().st_mtime > raw.stat().st_mtime:
+        elif stato == "png-nuovo":
             png_piu_nuovo += 1
             noise.append(
                 f"PNG-NUOVO  {livello}/{nome}: png {data(png)} raw {data(raw)} (contenuto uguale)"
@@ -756,8 +816,8 @@ def main():
         if not raw.exists():
             orfani += 1
             print(f"PNG-SENZA-RAW {livello}/{nome}: png {data(png)}")
-    print(f"png di oggetti controllati: {png_visti}")
-    print(f"png di oggetti senza raw: {orfani}")
+    for riga in righe_oggetti(png_visti, orfani):
+        print(riga)
     skyline_png_nuovo = skyline_ok = skyline_senza = 0
     mod_trama = modulo_trama()
     for livello, rel in SKYLINE.items():
@@ -770,17 +830,17 @@ def main():
             residuo_skyline(livello, raw)
             continue
         atteso = raw_skyline_atteso(png, livello, mod_trama)
-        if atteso is None:
-            # Senza regola di trama resta solo la data (comportamento di prima).
-            if png.stat().st_mtime > raw.stat().st_mtime:
-                skyline_png_nuovo += 1
-                print(
-                    f"SKYLINE-PNG-NUOVO {livello}: png {data(png)} raw {data(raw)}"
-                    " (rilanciare trama_scenari.py)"
-                )
-            else:
-                skyline_ok += 1
-        elif raw.read_bytes() != atteso:
+        grezzo = raw.read_bytes()
+        stato_sky = esito_skyline(
+            atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime
+        )
+        if stato_sky == "no-trama-nuovo":
+            skyline_png_nuovo += 1
+            print(
+                f"SKYLINE-PNG-NUOVO {livello}: png {data(png)} raw {data(raw)}"
+                " (rilanciare trama_scenari.py)"
+            )
+        elif stato_sky == "diverso":
             skyline_png_nuovo += 1
             print(
                 f"SKYLINE-DIVERSO {livello}: png {data(png)} raw {data(raw)}"
@@ -801,13 +861,15 @@ def main():
                 print(f"ALTRI-MANCA-PNG {gruppo}/{raw.stem}: raw {data(raw)}")
                 continue
             atteso = raw_atteso(png)
-            if atteso is None:
+            grezzo = raw.read_bytes()
+            stato, motivo = esito_confronto(atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime)
+            if stato == "illeggibile":
                 altri_diversi += 1
                 print(f"ALTRI-ILLEGGIBILE {gruppo}/{raw.stem}: png {data(png)} non apribile da PIL")
-            elif raw.read_bytes() != atteso:
+            elif stato == "diverso":
                 altri_diversi += 1
                 print(f"ALTRI-DIVERSO   {gruppo}/{raw.stem}: png {data(png)} raw {data(raw)}")
-            elif png.stat().st_mtime > raw.stat().st_mtime:
+            elif stato == "png-nuovo":
                 altri_nuovo += 1
                 noise.append(
                     f"ALTRI-PNG-NUOVO {gruppo}/{raw.stem}: png {data(png)} raw {data(raw)}"
@@ -914,6 +976,27 @@ if __name__ == "__main__":
         ok_lungo = classifica_raw(atteso_buono, lungo) == "corrotto"
         ok = ok and ok_lungo
         print("autotest classifica_raw-lungo: " + ("OK" if ok_lungo else "FALLITO"))
+        # esito_confronto: classifica il confronto 1:1 senza toccare filesystem.
+        # Copre i 4 stati e verifica che il motivo venga da classifica_raw.
+        ok_esito_c = (
+            esito_confronto(None, b"", False) == ("illeggibile", None)
+            and esito_confronto(atteso_buono, atteso_buono, False) == ("allineato", None)
+            and esito_confronto(atteso_buono, atteso_buono, True) == ("png-nuovo", None)
+            and esito_confronto(atteso_buono, b"bad", False)[0] == "diverso"
+            and esito_confronto(atteso_buono, b"bad", False)[1] == "corrotto"
+        )
+        ok = ok and ok_esito_c
+        print("autotest esito_confronto: " + ("OK" if ok_esito_c else "FALLITO"))
+        # esito_skyline: senza trama ricomponibile si ripiega sulla sola data;
+        # con trama confronta i byte. Non dice 'allineato' a torto se atteso e' None.
+        ok_sky_e = (
+            esito_skyline(None, b"", True) == "no-trama-nuovo"
+            and esito_skyline(None, b"", False) == "no-trama-ok"
+            and esito_skyline(atteso_buono, atteso_buono, True) == "allineato"
+            and esito_skyline(atteso_buono, b"diverso", False) == "diverso"
+        )
+        ok = ok and ok_sky_e
+        print("autotest esito_skyline: " + ("OK" if ok_sky_e else "FALLITO"))
         # 7 file PNG (3 pose base + 4 stop) ma solo 5 coppie pronte: il conteggio
         # dei file non va scambiato con quello delle coppie confrontabili.
         conta = conta_pose(["dritta", "sx1", "sx2"], ["sx1", "sx2", "sx3", "sx4"])
@@ -1071,6 +1154,21 @@ if __name__ == "__main__":
         )
         ok = ok and ok_righe_sky
         print("autotest righe_skyline: " + ("OK" if ok_righe_sky else "FALLITO"))
+        # righe_oggetti: formato esatto delle due righe di sintesi oggetti.
+        righe_ogg = righe_oggetti(80, 0)
+        righe_ogg_vuote = righe_oggetti(0, 0)
+        ok_righe_ogg = (
+            righe_ogg == [
+                "png di oggetti controllati: 80",
+                "png di oggetti senza raw: 0",
+            ]
+            and righe_ogg_vuote == [
+                "png di oggetti controllati: 0",
+                "png di oggetti senza raw: 0",
+            ]
+        )
+        ok = ok and ok_righe_ogg
+        print("autotest righe_oggetti: " + ("OK" if ok_righe_ogg else "FALLITO"))
         # righe_altri: formato esatto delle quattro righe dei gruppi 1:1, con la
         # doppia estensione dentro la riga dei PNG senza raw (prima era concatenata
         # a mano) e i contatori tutti a zero.
@@ -1166,6 +1264,18 @@ if __name__ == "__main__":
         )
         ok = ok and ok_rumore
         print("autotest righe_rumore: " + ("OK" if ok_rumore else "FALLITO"))
+        # riga_copertura: formato esatto e formula confrontati = totale-noti-fuori;
+        # prima la riga era formattata inline in controllo_copertura().
+        ok_cop = (
+            riga_copertura(166, 32, 0)
+            == "png in GRAFICA: 166 (confrontati con un raw 134, non motore noti 32)"
+            and riga_copertura(0, 0, 0)
+            == "png in GRAFICA: 0 (confrontati con un raw 0, non motore noti 0)"
+            and riga_copertura(10, 3, 2)
+            == "png in GRAFICA: 10 (confrontati con un raw 5, non motore noti 3)"
+        )
+        ok = ok and ok_cop
+        print("autotest riga_copertura: " + ("OK" if ok_cop else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()

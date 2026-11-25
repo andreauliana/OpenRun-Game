@@ -1,9 +1,9 @@
-# RIASSUNTO — @developer-junior (24/11 15:09)
+# RIASSUNTO — @developer-junior (25/11 12:45)
 - **Ruolo**: review/collaudo, test/diagnosi, fix minimi solo su perimetri autorizzati (no src permanente).
-- **Ultimo**: Turno 2 VJ5 ∞ (15:09): review hunk NUOVO in M `motore_nuovo/src/render/renderer.cpp` (mtime 24 Nov 15:07:09, dopo 14:52:29; `road.cpp` invariato 13:15:02): `Renderer::drawSegmentTrapezoid()` :404 `terraLaterale = !sospeso && !galleria` hoistato e usato :562 al posto dell'espressione inline, commento "V9 ∞ 24/11 lv_01_neon giro 37" (hunk/livello diversi da nasoZ/lv_05_spray/giro 36 del 14:54).
-- **Verifica**: `sospeso` :397 e `galleria` :400 const bool da `cur`/`next` (const ref, invarianti per tutto il trapezio, ciclo righe :524); `terraLaterale` loop-invariante, :562 stessi operandi/short-circuit/pixel -> resa/replay IDENTICI, nessun errore.
-- **Rilievo NUOVO non bloccante**: :481 `calcolaIncrocio = roadCorr_ && !sospeso && !galleria && rami == 1` ricalcola la stessa condizione gia' in `terraLaterale` :404 -> riuso bit-identico; commento :401-403 non lo dice. Nessuna azione.
-- **Prove (15:09, eseguite)**: `git status`/`ls -lT`/`git diff`/grep/letture exit 0; `sh UFFICIO/Officina/TOOL/run_tests.sh` **exit 0** (ctest **27/27**, 132.35 s, prova_gate ricompilato); `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_zpista_traguardo_lv03_foglie_percorso_2411_1509" lv_03_foglie percorso` **exit 0** (GATE PERCORSO OK, 4041 oggetti, 5240 seg, rettilineo 61%, curva max 0.85/0.85, 2392 frame/39.9 s, fuori strada 0 (0.0%), caricamento 3.6 ms, init 11.0 ms). gate_t1.sh non eseguito.
-- **VJ4**: chiuso 6/6.
-- **Aperti (miei)**: VJ5 ∞ in corso (prossimo: hunk/livello diverso da terraLaterale/lv_01_neon, es. `checkLineaAttiva` :510 lv_06_desktop giro 36 o `traguardoAttivo` :515 lv_02_atomico giro 37, verificarne il riesame).
-- **Vincoli**: gate con data/ora solo se eseguito; RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli; REGOLA BLOCCATA auto intoccata; solo riga di diario + REVIEW_V47/RIASSUNTO/ULTIMO_TURNO (nessun altro .md).
+- **Ultimo**: VJ4 soak lv_04_cromo (25/11 12:45): `run_tests.sh` exit 0 (ctest 27/27, 132.96 s); `prova_gate ... vj4_soak_lv04_2511_1245 lv_04_cromo soak` exit 0 (GATE OK, 30000 frame, replay IDENTICO, ms/frame medio 0.660 max 2.757 frame 0, limite 20, no crash).
+- **VJ4 stato**: lv_01_neon OK (11:47), lv_02_atomico OK (12:06), lv_03_foglie OK (12:23), lv_04_cromo OK (12:45); restano lv_05-lv_06 (uno/turno).
+- **VJ5**: review 12:45 su diff renderer.cpp/renderer.h mtime 12:41:39 (hoist V9 ∞ giro 38/38b) — nessun errore bloccante; nit: skylineLut_ cache non invalida su mutazione in-place palette (come colLut), non accade oggi.
+- **VJ3**: lv_01_neon exit 0 (diff 0.03%), lv_02_atomico exit 0 (diff 0.21%); restano lv_03-lv_06.
+- **Aperti (miei)**: VJ4 soak lv_05-lv_06; VJ3 lv_03-lv_06; VJ5 ∞ su prossimi cambi src/.
+- **Gate**: gate_t1.sh non eseguito. Riportare gate solo se eseguito con data/ora.
+- **Vincoli**: RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli; REGOLA BLOCCATA auto intoccata; solo diario+REVIEW_V47/RIASSUNTO/ULTIMO_TURNO.
