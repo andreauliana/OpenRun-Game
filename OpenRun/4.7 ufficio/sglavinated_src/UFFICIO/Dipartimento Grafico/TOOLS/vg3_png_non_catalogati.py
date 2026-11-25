@@ -99,10 +99,6 @@ NOTI_NON_ASSET = {
     "GRAFICA/sprite/giocatore_pose/car-custom-sx.png": (
         "auto del giocatore, area bloccata di Andrea, non letta dal motore"
     ),
-    "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png": (
-        "ridisegno di Andrea con doppia estensione; vero asset lato_furgone_bianco.png"
-        " allineato al raw, rinominare/convertire decide Andrea (vedi vg3_date_png_raw.py)"
-    ),
 }
 
 
@@ -330,7 +326,7 @@ def autotest():
     """I noti restano tali; un PNG nuovo nella stessa cartella NON deve essere coperto."""
     noti, da_decidere = classifica([
         "GRAFICA/sprite/giocatore_pose/car-custom.png",
-        "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png",
+        "GRAFICA/sprite/giocatore_pose/car-custom-sx.png",
         "GRAFICA/sprite/traffico/nuovo_ridisegno.png",
     ])
     ok = (
@@ -343,13 +339,11 @@ def autotest():
             "GRAFICA/sprite/giocatore_pose/car-custom.png",
             "GRAFICA/sprite/giocatore_pose/car-custom-dx.png",
             "GRAFICA/sprite/giocatore_pose/car-custom-sx.png",
-            "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png",
         ]) == []
         and noti_mancanti([
             "GRAFICA/sprite/giocatore_pose/car-custom.png",
             "GRAFICA/sprite/giocatore_pose/car-custom-dx.png",
-            "GRAFICA/sprite/giocatore_pose/car-custom-sx.png",
-        ]) == ["GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png"]
+        ]) == ["GRAFICA/sprite/giocatore_pose/car-custom-sx.png"]
     )
     ok = ok and ok_spariti
     print("autotest noti_mancanti: " + ("OK" if ok_spariti else "FALLITO"))
@@ -362,13 +356,13 @@ def autotest():
     print("autotest noti_catalogati: " + ("OK" if ok_catalogati else "FALLITO"))
     # noti_spariti: un noto finito nel catalogo non e' sparito (non va stampato
     # due volte come NOTO-CATALOGATO e NOTO-SPARITO); uno assente da entrambi si.
-    furgone = "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png"
+    esempio = "GRAFICA/sprite/giocatore_pose/car-custom-sx.png"
     tutti = sorted(NOTI_NON_ASSET)
-    senza_furgone = [f for f in tutti if f != furgone]
+    senza_esempio = [f for f in tutti if f != esempio]
     ok_spariti = (
         noti_spariti(tutti, []) == []
-        and noti_spariti(senza_furgone, []) == [furgone]
-        and noti_spariti(senza_furgone, [furgone]) == []
+        and noti_spariti(senza_esempio, []) == [esempio]
+        and noti_spariti(senza_esempio, [esempio]) == []
     )
     ok = ok and ok_spariti
     print("autotest noti_spariti: " + ("OK" if ok_spariti else "FALLITO"))
