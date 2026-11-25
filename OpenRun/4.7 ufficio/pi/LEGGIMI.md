@@ -1,21 +1,25 @@
-# Edizione "Really Open" sul Raspberry Pi (RetroPie)
+# OpenRun sul Raspberry Pi 400 (RetroPie, menu Ports)
+
+Aggiunge solo il file `~/RetroPie/roms/ports/OpenRun.sh`: emulatori, SDL2 di RetroPie e configurazioni restano come sono
+(lo script installa solo i pacchetti che mancano, senza aggiornare quelli presenti).
 
 | Passo | Comando |
 |---|---|
-| 1. Copia la cartella del progetto sul Pi (dal Mac) | `scp -r "$HOME/Desktop/Outrun Sglavinated Edition v4 (OpenWay)" pi@retropie.local:~/` |
-| 2. Sul Pi, apri il terminale (F4 dal menu, oppure `ssh pi@retropie.local`) | |
-| 3. Compila e installa | `sh "$HOME/Outrun Sglavinated Edition v4 (OpenWay)/pi/compila_e_installa.sh"` |
-| 4. Gioca | riavvia EmulationStation, menu **Ports** → "Sglavinated Really Open" |
+| 1. Sul Pi apri il terminale (F4 da EmulationStation, oppure `ssh pi@retropie.local` dal Mac) | |
+| 2. Scarica il gioco (una volta) | `git clone https://github.com/andreauliana/OpenRun-Game ~/OpenRun-Game` |
+| 3. Compila e aggiungi a Ports (qualche minuto) | `sh ~/OpenRun-Game/OpenRun/"4.7 ufficio"/pi/compila_e_installa.sh` |
+| 4. Torna al menu | `emulationstation` (se eri uscito con F4), oppure Start > Quit > Restart EmulationStation |
+| 5. Gioca | menu **Ports** > "OpenRun" |
 
-- Dopo un aggiornamento: ripeti i passi 1 e 3.
-- Uscita dal gioco: ESC sulla tastiera.
-- Utente e indirizzo predefiniti di RetroPie: `pi@retropie.local` (cambiali se li hai modificati).
+- Aggiornare: `cd ~/OpenRun-Game && git pull`, poi ripeti il passo 3.
+- Uscita dal gioco: Select + Start sul pad, oppure ESC sulla tastiera.
+- Togliere il gioco: `rm ~/RetroPie/roms/ports/OpenRun.sh` (e se vuoi `rm -rf ~/OpenRun-Game`).
 
 ## Seconda strada: core libretro dentro RetroArch
 
-Build separata (cartella `build_libretro`, niente SDL). Stessi passi 1, 2 e 4; al passo 3 usa:
+Build separata (cartella `build_libretro`, niente SDL). Stessi passi 1, 2, 4 e 5; al passo 3 usa:
 
-`sh "$HOME/Outrun Sglavinated Edition v4 (OpenWay)/pi/compila_core_retroarch.sh"`
+`sh ~/OpenRun-Game/OpenRun/"4.7 ufficio"/pi/compila_core_retroarch.sh`
 
 - Nel menu **Ports** compare "Sglavinated RetroArch".
 - Pad: croce o stick per sterzare, tasto in basso (B) o grilletto destro per accelerare, grilletto sinistro per frenare, Start + tasto destro (A) per il brano successivo.
