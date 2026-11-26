@@ -1,8 +1,7 @@
-# RIASSUNTO — @capo (26/11/2026, T2 ora 3/12)
-- **Tappa:** TAPPE.md T1 base legacy; attivo MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI, CP-002/003/004 APERTI. ANDREA_REVIEW prec. ass., §7 nessuna RISPOSTA; legacy 08/11/vocabolario/sponsor intoccati.
-- **D20 (REGOLA BLOCCATA §2):** jr VJ5 26/11 10:32 conferma 5 hunk in `drawPlayerCar` (`renderer.cpp:2798-2816,:2875-2889,:2890-2905,:2910-2922,:2932-2952`) bloccanti, serve autorizzazione Andrea o revert. Dev 26/11 10:25 lv_02 giro40: nessuna mod codice, percorso exit 0, smoke exit 0 medio 0.630 max 2.993ms, replay IDENTICO 2961894142. DEFAULT: risolvere D20 prima di altri cambi in quell'area; jr verifica indipendente.
-- **VJ3:** lv_05_spray 50/60Hz FAIL 2.40% deterministico; altri 5 OK. Da indagare, non chiudere VJ3.
-- **Checkpoint:** CHK auto SCAMBIO_RECENTE [APERTE] non peer. Gate non rieseguito dal capo. 0 CP chiudibili.
-- **Handoff:** dev `UFFICIO/out/developer/ULTIMO_TURNO.md` 26/11 10:25; jr `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` 26/11 10:32 + `REVIEW_V47.md`; gf `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` 26/11 09:27 g212 0 conv, exit 0.
-- **Deleghe:** @developer risolve D20 poi V9 lv_03 (rev @developer-junior); @developer-junior verifica D20/VJ3 lv_05, VJ5∞ (rev @developer/@capo); @grafico VG3 ∞ (rev @capo catalogo/licenza/provenienza); @capo registro/CP.
-- **Blocchi/DEFAULT:** furgone `.png.png` non toccare. Pi 400 non verificato. Nessun FINITO (∞).
+# RIASSUNTO — @capo (26/11/2026, T5 ora 9/12)
+- **Tappa:** MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI; CP-002/003/004 APERTI. ANDREA_REVIEW §7 nessuna RISPOSTA; legacy 08/11/vocabolario/sponsor/auto intoccati.
+- **D20 (REGOLA BLOCCATA §2):** 5 hunk `drawPlayerCar` (`renderer.cpp:2798-2816,:2875-2889,:2890-2905,:2910-2922,:2932-2952`) bloccanti; serve autorizzazione Andrea o revert. Jr 16:52: diff src pulito, D20 invariato.
+- **Handoff:** dev 26/11 16:36 V9 lv04 g40 no mod, percorso exit 0, smoke 0.621/2.762ms replay ID1415607011→lv05; jr 26/11 16:52 VJ5/VJ1 run_tests 27/27 exit 0, lv05 smoke exit 0, VJ3 lv05 FAIL 2.40%; gf 26/11 09:27 g212 0 conv exit 0.
+- **Checkpoint:** CHK auto non peer; gate non rieseguito dal capo (rif 25/11 13:04 exit 0); 0 CP chiudibili.
+- **Deleghe:** @developer D20 poi V9 lv05 + indaga VJ3 (rev @jr); @jr verifica D20/VJ3 lv05+VJ5∞ (rev @dev/@capo); @grafico VG3∞ (rev @capo cat/lic/prov); @capo registro/CP.
+- **Blocchi/DEFAULT:** VJ3 lv05 FAIL aperto; furgone `.png.png` non toccare; Pi 400 non verificato; nessun FINITO (∞).

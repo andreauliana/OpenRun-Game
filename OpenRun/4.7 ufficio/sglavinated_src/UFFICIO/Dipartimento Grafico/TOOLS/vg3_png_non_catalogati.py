@@ -106,6 +106,11 @@ Aggiunta 26/11 (turno 4): la sequenza file_usati(cat) -> report_da_png(trovati,
 usati), prima inline in main, e' ora la funzione pura report_da_dati(cat, trovati),
 provata in autotest: fissa in un punto solo il passaggio dal catalogo letto alle
 righe del report, cosi' main() non calcola piu' 'usati' a mano. L'output non cambia.
+
+Aggiunta 26/11 (turno 5): l'ultima logica rimasta inline in main() (controllo
+'CATALOGO esiste?', messaggio di errore e scelta del codice 4/0) e' ora la funzione
+pura esito_main(esiste, cat, trovati, percorso), provata in autotest: il messaggio
+di catalogo mancante e la policy d'uscita stanno in un punto solo. L'output non cambia.
 """
 import glob
 import json
@@ -439,15 +444,29 @@ def report_da_dati(cat, trovati):
     return report_da_png(trovati, usati)
 
 
+def esito_main(esiste, cat, trovati, percorso):
+    """Righe da stampare e codice d'uscita finali di main() (puri).
+
+    main() ha il controllo 'CATALOGO esiste?' col messaggio di errore e il
+    ritorno 4 inline, poi il percorso normale che stampa il report e torna 0.
+    Tenerlo qui rende provabile senza disco sia il ramo 'catalogo mancante'
+    (una riga e codice 4) sia quello normale (righe del report e codice 0),
+    cosi' il formato del messaggio e la policy dei codici stanno in un punto
+    solo. 'cat' e 'trovati' sono ignorati quando 'esiste' e' False.
+    """
+    if not esiste:
+        return [f"FALLITO: catalogo non trovato in {percorso}"], 4
+    return report_da_dati(cat, trovati), 0
+
+
 def main() -> int:
-    if not CATALOGO.exists():
-        print(f"FALLITO: catalogo non trovato in {CATALOGO}")
-        return 4
-    cat = carica_catalogo(CATALOGO)
-    trovati = png_trovati(LIBRERIA, PATTERN)
-    for riga in report_da_dati(cat, trovati):
+    esiste = CATALOGO.exists()
+    cat = carica_catalogo(CATALOGO) if esiste else None
+    trovati = png_trovati(LIBRERIA, PATTERN) if esiste else []
+    righe, codice = esito_main(esiste, cat, trovati, CATALOGO)
+    for riga in righe:
         print(riga)
-    return 0
+    return codice
 
 
 def autotest():
@@ -742,6 +761,18 @@ def autotest():
     )
     ok = ok and ok_dati
     print("autotest report_da_dati: " + ("OK" if ok_dati else "FALLITO"))
+    # esito_main: ramo catalogo mancante (una riga + codice 4, cat/trovati
+    # ignorati) e ramo normale (righe del report + codice 0), senza disco.
+    mancante = [f"FALLITO: catalogo non trovato in {CATALOGO}"]
+    ok_main = esito_main(False, None, [], CATALOGO) == (mancante, 4)
+    ok_main = ok_main and esito_main(
+        False, {"elementi": [{"file": x}]}, [x], CATALOGO,
+    ) == (mancante, 4)
+    ok_main = ok_main and esito_main(
+        True, {"elementi": []}, [x], CATALOGO,
+    ) == (report_da_dati({"elementi": []}, [x]), 0)
+    ok = ok and ok_main
+    print("autotest esito_main: " + ("OK" if ok_main else "FALLITO"))
     return 0 if ok else 1
 
 

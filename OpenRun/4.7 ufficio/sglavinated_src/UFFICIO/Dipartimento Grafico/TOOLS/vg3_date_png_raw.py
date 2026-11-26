@@ -79,6 +79,9 @@
 # Lo stesso vale per i due print del PNG senza raw (PNG-SENZA-RAW per gli oggetti di
 # scenari/ e ALTRI-PNG-SENZA-RAW per i gruppi 1:1), ora in riga_png_senza_raw():
 # prima i due formati erano sparsi in main() e non provabili a parte.
+# Anche la riga SKYLINE-MANCA (skyline senza PNG o senza raw) sta in
+# riga_skyline_manca(): prima il formato era inline in main(), cosi' un cambio della
+# sintesi non aggiornava la riga e non si poteva provare senza toccare GRAFICA.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -309,6 +312,17 @@ def classifica_skyline(png_esiste, raw_esiste, raw_uguale_trama):
     if png_esiste:
         return "allineato" if raw_uguale_trama else "da-rigenerare"
     return "manca-disegno" if raw_uguale_trama else "manca-sfondo"
+
+
+def riga_skyline_manca(livello, png_esiste, raw_esiste, stato):
+    """Riga di diagnosi per uno skyline senza PNG o senza raw (funzione pura).
+
+    Prima il formato stava inline in main(): se cambiava la sintesi (classifica_skyline)
+    o l'ordine dei campi, la riga poteva restare vecchia e non si poteva provare senza
+    toccare GRAFICA. Qui formato e argomenti sono fissati e l'autotest li verifica.
+    Non scrive nulla: PNG e raw restano di Andrea.
+    """
+    return f"SKYLINE-MANCA {livello}: png {png_esiste} raw {raw_esiste} [{stato}]"
 
 
 def png_oggetti():
@@ -939,7 +953,7 @@ def main():
         if not png.exists() or not raw.exists():
             skyline_senza += 1
             stato = classifica_skyline(png.exists(), raw.exists(), raw_e_trama(livello, raw))
-            print(f"SKYLINE-MANCA {livello}: png {png.exists()} raw {raw.exists()} [{stato}]")
+            print(riga_skyline_manca(livello, png.exists(), raw.exists(), stato))
             residuo_skyline(livello, raw)
             continue
         atteso = raw_skyline_atteso(png, livello, mod_trama)
@@ -1224,6 +1238,19 @@ if __name__ == "__main__":
         )
         ok = ok and ok_sky_cls
         print("autotest classifica_skyline: " + ("OK" if ok_sky_cls else "FALLITO"))
+        # riga_skyline_manca: formato esatto della riga per skyline spariti, prima
+        # inline in main(); i tre casi restano distinti (manca solo il disegno,
+        # manca il raw, mancano entrambi) e non si scambiano per uno allineato.
+        ok_riga_manca = (
+            riga_skyline_manca("lv_01_neon", False, True, "manca-disegno")
+            == "SKYLINE-MANCA lv_01_neon: png False raw True [manca-disegno]"
+            and riga_skyline_manca("lv_02_atomico", True, False, "raw-manca")
+            == "SKYLINE-MANCA lv_02_atomico: png True raw False [raw-manca]"
+            and riga_skyline_manca("lv_03_foglie", False, False, "raw-manca")
+            == "SKYLINE-MANCA lv_03_foglie: png False raw False [raw-manca]"
+        )
+        ok = ok and ok_riga_manca
+        print("autotest riga_skyline_manca: " + ("OK" if ok_riga_manca else "FALLITO"))
         # raw_e_trama: caso reale (lv_04_cromo ha skyline_trama allineato al raw) e
         # caso negativo (livello inesistente / raw mancante).
         ok_raw_trama = (

@@ -1,12 +1,9 @@
-# ULTIMO_TURNO developer (max 15 righe)
-- Data/ora: 26/11/2026 10:38 — Turno 2.
-- Blocco/passo: V47 V9 ∞ fluidita' — lv_03_foglie (giro40), misura pre percorso/smoke.
-- File cambiati (produzione): nessuno (max 2.992 ms < 8 ms, nessun alleggerimento necessario).
-- File aggiornati (report): `UFFICIO/bacheche/developer/diario.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/out/developer/ULTIMO_TURNO.md`.
-- Comandi ed exit code:
-  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` — exit 0.
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_percorso" lv_03_foglie percorso` — exit 0, "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_smoke" lv_03_foglie smoke` — exit 0, "GATE OK" medio 0.700 max 2.992 ms frame 0, replay IDENTICO, frameHash 0 3593059909 (9/9).
-- Gate non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
-- Esito: lv_03_foglie sotto soglia 8 ms; replay/hash invariati.
-- Prossimo: V9 ∞ lv_04_cromo (giro40).
+# ULTIMO_TURNO — developer
+- Data/ora: 26/11/2026 16:58 (Turno 5)
+- Blocco/passo: V47 V9 ∞ fluidita' lv_05_spray (giro40)
+- File cambiati: nessuno (soglia 8 ms gia' rispettata)
+- Comando: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_giro40_t5_pre_percorso" lv_05_spray percorso` — exit 0, "GATE PERCORSO OK" (2920 frame, 48.7 s, 0% fuori)
+- Comando: `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv05_giro40_t5_pre_smoke" lv_05_spray smoke` — exit 0, "GATE OK" medio 0.583 max 2.830 ms frame 0, replay IDENTICO, frameHash 0 4250821778 (9/9)
+- gate_t1.sh: non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK")
+- Esito: lv_05_spray sotto soglia 8 ms; nessun alleggerimento necessario; replay/hash invariati.
+- Prossimo V9 ∞: lv_06_desktop (giro40).

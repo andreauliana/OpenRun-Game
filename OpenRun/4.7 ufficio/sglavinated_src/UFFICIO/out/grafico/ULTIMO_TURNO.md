@@ -1,15 +1,16 @@
-# ULTIMO_TURNO — @grafico (26/11/2026 10:31, Turno 2, giro 217)
-- **Blocco/passo:** V47 VG3 ∞ — controlli PNG/raw + produzione su `vg3_raw_senza_catalogo.py` (diverso dal turno prima: `vg3_date_png_raw.py`).
-- **File cambiati:** `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py`, `UFFICIO/Dipartimento Grafico/TOOLS/aggiorna_ultimo_turno.py`, `UFFICIO/bacheche/grafico/diario.md`, `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
-- **Comandi ed exit code:**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0 (0 da convertire, 6/6 skyline, 165 PNG/133 confrontati, 1 png piu' nuovo a pari contenuto).
+# ULTIMO_TURNO — @grafico (26/11/2026 17:17, Turno 5, giro 219)
+- **Blocco/passo:** V47 VG3 ∞ — controllo date PNG/raw + produzione su `vg3_date_png_raw.py` (diverso dal turno prima: `vg3_png_non_catalogati.py`).
+- **File cambiati:** `UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py` (funzione pura `riga_skyline_manca`, nota in testa, autotest), `UFFICIO/Dipartimento Grafico/TOOLS/aggiorna_ultimo_turno.py`, `UFFICIO/bacheche/grafico/diario.md` (1 riga), `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md`.
+- **Comandi ed exit code (26/11 17:17):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0 (0 da convertire, 6/6 skyline, 165 PNG/133 confrontati, 1 png piu' nuovo a pari contenuto; output identico al baseline).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py" --autotest` — exit 0 (30 prove OK, +1 `riga_skyline_manca`).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155/155, 0 senza voce, 4 refs noti bloccati).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` — exit 0 (30 prove OK).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (3 noti non-asset, 0 da decidere).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` — exit 0 (30 prove OK, +1 `raw_su_disco`; primo tentativo exit 1 per aspettativa errata, test corretto).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py" --autotest` — exit 0 (29 prove OK).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py" --autotest` — exit 0 (24 prove OK).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py" --autotest` — exit 0 (26 prove OK).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/aggiorna_ultimo_turno.py"` — exit 0 (ULTIMO_TURNO.md riscritto).
-- **Produzione:** funzione pura `raw_su_disco(radice, raw_root, rglob=None)` (scansione `.sglraw` + delega a `path_raw_relativi`; rglob iniettabile, nessun disco in autotest); main() la usa al posto della scansione inline; nota in testa, autotest dedicato; output identico al baseline.
+- **Produzione:** funzione pura `riga_skyline_manca(livello, png_esiste, raw_esiste, stato)` — formattazione della riga SKYLINE-MANCA tolta da main(), campi e formato fissati, nessuna scrittura su GRAFICA; main() la usa, nota in testa, autotest con 3 casi.
 - **Conversioni/catalogo:** nessuna; catalogo/licenze invariati; zero risorse esterne, zero Sega.
-- **Gate:** non eseguito (26/11 10:31).
+- **Gate:** non eseguito in questo turno (26/11 17:17).
 - **Aree bloccate:** auto giocatore Andrea (5 pose `_b` con raw e senza PNG) non toccata.
+- **Prossimo:** VG3 ∞, prossimo tool da toccare `vg3_raw_senza_catalogo.py`.
