@@ -79,6 +79,18 @@
 # l'esistenza di un raw su disco (lambda con RADICE / r, passata come 'esiste'
 # ad analizza()) e' estratto in esiste_raw(), funzione pura con autotest su
 # percorso presente/assente; main() la usa. Output invariato.
+# Aggiunta 26/11 (turno 09:27): il caricamento del catalogo (json.loads(read_text)
+# inline in main()) e' estratto in carica_catalogo(path, leggi=None), con lettura
+# iniettabile e autotest dedicato (nessun file reale aperto); main() la usa.
+# Output invariato.
+# Aggiunta 26/11 (turno 09:50): l'orchestrazione di main() (analizza ->
+# righe_report -> codice_uscita) e' estratta in report_da_dati(), funzione pura
+# con autotest su dati sintetici e 'esiste' iniettabile; main() legge il disco e
+# stampa solo le righe ricevute. Output invariato.
+# Aggiunta 26/11 (turno 10:31): la scansione dei .sglraw su disco (prima
+# path_raw_relativi(RADICE, RAW_ROOT.rglob("*.sglraw")) inline in main()) e'
+# estratta in raw_su_disco(radice, raw_root, rglob=None), con rglob iniettabile e
+# autotest dedicato senza toccare il disco; main() la usa. Output invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -435,6 +447,20 @@ def path_raw_relativi(radice, paths):
     return sorted(p.relative_to(radice).as_posix() for p in paths)
 
 
+def raw_su_disco(radice, raw_root, rglob=None):
+    """Scansiona i .sglraw su disco e li restituisce relativi/ordinati (pura).
+
+    main() faceva inline path_raw_relativi(RADICE, RAW_ROOT.rglob("*.sglraw")):
+    la scansione sta ora in un solo punto, provabile in autotest con un rglob
+    iniettabile che restituisce Path finti. rglob e' un callable pattern -> Path;
+    quando non e' passato si usa raw_root.rglob. Nessun disco toccato dal
+    chiamante che inietta rglob; la trasformazione resta in path_raw_relativi().
+    """
+    if rglob is None:
+        rglob = lambda pattern: raw_root.rglob(pattern)
+    return path_raw_relativi(radice, rglob("*.sglraw"))
+
+
 def esiste_raw(radice):
     """Callable path_relativo -> bool per verificare un raw su disco (funzione pura).
 
@@ -444,6 +470,31 @@ def esiste_raw(radice):
     chiamante invoca sui riferimenti del catalogo.
     """
     return lambda r: (radice / r).is_file()
+
+
+def carica_catalogo(path, leggi=None):
+    """Carica CATALOGO_GRAFICO.json come dict, con lettura iniettabile (pura).
+
+    main() faceva json.loads(CATALOGO.read_text(encoding="utf-8")): il parsing
+    sta ora in un solo punto, provabile in autotest senza toccare il disco.
+    leggi e' un callable path -> testo (default Path.read_text, che chiude da
+    solo); l'esistenza del file resta di competenza di main().
+    """
+    if leggi is None:
+        leggi = lambda p: Path(p).read_text(encoding="utf-8")
+    return json.loads(leggi(path))
+
+
+def report_da_dati(elementi, raws, esiste):
+    """Componi analizza -> righe_report -> codice_uscita (funzione pura).
+
+    main() faceva questa sequenza inline: analizzare i raw con le voci del
+    catalogo, produrre le righe del report e decidere l'exit. Qui la sequenza
+    sta in un solo punto, provabile in autotest con dati sintetici e 'esiste'
+    iniettabile; nessun accesso al disco. Ritorna (righe, codice).
+    """
+    res = analizza(raws, elementi, esiste)
+    return righe_report(res, raws), codice_uscita(res)
 
 
 def autotest():
@@ -742,6 +793,18 @@ def autotest():
         and path_raw_relativi(Path("/r"), []) == []
     )
     prove.append(("path_raw_relativi", ok_relativi))
+    # raw_su_disco: scansione con rglob iniettabile, nessun file reale letto.
+    ok_disco = (
+        raw_su_disco(
+            Path("/r"), Path("/r/raw"),
+            rglob=lambda p: [Path("/r/raw/b.sglraw"), Path("/r/raw/a.sglraw")],
+        )
+        == ["raw/a.sglraw", "raw/b.sglraw"]
+        and raw_su_disco(Path("/r"), Path("/r/raw"), rglob=lambda p: [Path("/r/raw/x/y.sglraw")])
+        == ["raw/x/y.sglraw"]
+        and raw_su_disco(Path("/r"), Path("/r/raw"), rglob=lambda p: []) == []
+    )
+    prove.append(("raw_su_disco", ok_disco))
     # esiste_raw restituisce un callable che risolve il path rispetto alla
     # radice data; si prova con una radice finta, senza toccare il disco.
     class _RadiceFinta:
@@ -765,18 +828,45 @@ def autotest():
         and esiste_raw(_RadiceFinta(set()))("raw/a.sglraw") is False
     )
     prove.append(("esiste_raw", ok_esiste))
+    # carica_catalogo: parsing con lettura iniettabile, nessun file reale aperto.
+    ok_carica = (
+        carica_catalogo("finto.json", leggi=lambda p: '{"elementi": [{"id": "x"}]}')
+        == {"elementi": [{"id": "x"}]}
+        and carica_catalogo("finto.json", leggi=lambda p: '{"elementi": []}')
+        == {"elementi": []}
+    )
+    prove.append(("carica_catalogo", ok_carica))
+    # report_da_dati: orchestrazione provata in isolamento, senza disco.
+    el_orfano = [{"id": "a", "raw": "raw/a.sglraw"}]
+    raws_orfano = ["raw/a.sglraw", "raw/orfano.sglraw"]
+    esiste_a = lambda r: r in {"raw/a.sglraw"}
+    righe_con, codice_con = report_da_dati(el_orfano, raws_orfano, esiste_a)
+    atteso_con = righe_report(
+        analizza(raws_orfano, el_orfano, esiste_a), raws_orfano
+    )
+    righe_ok, codice_ok = report_da_dati(
+        [{"id": "a", "raw": "raw/a.sglraw"}], ["raw/a.sglraw"], lambda r: True
+    )
+    ok_orchestra = (
+        righe_con == atteso_con
+        and codice_con == 1
+        and any(r.startswith("RAW NON CATALOGATO raw/orfano.sglraw") for r in righe_con)
+        and codice_ok == 0
+        and not any(r.startswith("RAW NON CATALOGATO") for r in righe_ok)
+    )
+    prove.append(("report_da_dati", ok_orchestra))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
     return 0 if all(ok for _, ok in prove) else 1
 
 
 def main():
-    cat = json.loads(CATALOGO.read_text(encoding="utf-8"))
-    raws = path_raw_relativi(RADICE, RAW_ROOT.rglob("*.sglraw"))
-    res = analizza(raws, cat["elementi"], esiste_raw(RADICE))
-    for riga in righe_report(res, raws):
+    cat = carica_catalogo(CATALOGO)
+    raws = raw_su_disco(RADICE, RAW_ROOT)
+    righe, codice = report_da_dati(cat["elementi"], raws, esiste_raw(RADICE))
+    for riga in righe:
         print(riga)
-    return codice_uscita(res)
+    return codice
 
 
 if __name__ == "__main__":

@@ -1,20 +1,34 @@
-# REVIEW V47 — VJ5 ∞ (hunk nuovo 26/11 09:05:44, drawLuceGalleria) (26/11/2026, turno 09:07)
+# REVIEW V47 — VJ5 ∞ (26/11/2026, turno 10:27-10:32)
 
 - **Ruolo**: @developer-junior (review/collaudo; nessuna modifica a `src/`).
 
-## VJ5 ∞ — hunk nuovo in `renderer.cpp` (mtime 26/11 09:05:44)
-- Unico file M in `src/` = `renderer.cpp`; `renderer.h` invariato 25/11 11:03:33. Nuovo rispetto al turno delle 08:53:41 (rivisto alle 09:00): `Renderer::drawLuceGalleria()` :1837-1870 — plafoniere del tunnel, commento "V9 lv_02_atomico giro39". Gli altri hunk del diff (`drawOggettoTerra` absGiro :1319-1333, `drawImboccoGalleria` :1934/:1957/:1978, `drawRoadsideMarkers` colPy :2051-2058, `drawDetrito` hw2/hh2/topLy :2070-2085, tre `drawPlayerCar` :2646/+2730) sono gia' rivisti (08:01/08:55/09:00/07:58); lo spostamento di righe +10 e' esattamente quello del nuovo hunk -> nessun hunk precedente ritoccato.
-- Vecchio: doppio loop `y` in [0,h), `x` in [0,w) con `if (py<0||py>=H) continue` / `if (px<0||px>=W) continue`, indice `s->pixels[ty*s->width + x*s->width/w]`, `fb_.put`.
-- Nuovo: clamp dei limiti a [0,W-1]x[0,H-1] (`xA/xB/yA/yB` + early return se fuori), `riga = fb_.data()+py*WIDTH`, `src = s->pixels.data()+ty*s->width`, `riga[px] = col`, `palS/palSN` hoistati.
-- **Correttezza tecnica: nessun errore, bit-identico.** Verificato `framebuffer.cpp:17-20` (`put` = bounds-check + `buf[y*WIDTH+x]`, fuori range = skip, nessuna write) e `framebuffer.h:25-29` (`data()` = lo stesso `buf_`, row-major, stride WIDTH). Il clamp riproduce esattamente l'insieme di pixel scritti da `put`: quelli fuori [0,W-1]x[0,H-1] venivano scartati, ora non vengono iterati. `x = px-x0` in [0,w-1] e `ty` in [0,h-1] (y=py-y0) -> `src[x*s->width/w]` e' lo stesso indice di prima e resta in bounds. `usaPalettaSprite/palS/palSN` replicano `!palette.empty()/data()/size()`; l'operatore ternario non valuta il ramo non scelto -> niente `% 0` con paletta vuota. Stessi operandi/ordine in `ty`, `idx`, `c`, `lerpColore` -> stessi pixel, resa/replay IDENTICI. Casi limite: `w<=0` (xB<xA, loop vuoto, come il vecchio `for x<w`), sprite vuoto (early return `drawLampada`, ramo non toccato), coordinate fuori schermo (early return = zero write).
-- **Non tocca l'area bloccata**: `drawLuceGalleria` e' illuminazione della galleria, non `drawPlayerCar` -> nessun nuovo rilievo procedurale da REGOLA BLOCCATA.
-- Nit non bloccanti: clamp e `palS/palSN` calcolati anche se il loop non itera; commento :1854-1855 dice "come drawPlayerCar" ma e' solo lo schema direct-write; guadagno reale solo dal `put` inline.
-- **RILIEVO BLOCCANTE procedurale (invariato)**: i tre hunk `drawPlayerCar` elencati sopra toccano area intoccabile (REGOLA BLOCCATA Andrea 06/11, `ANDREA_REVIEW.md` §2) -> serve autorizzazione esplicita o revert; il nuovo hunk `drawLuceGalleria` e' fuori area.
+## Stato del diff in questo turno
+- `git status --short`: unico file M in `motore_nuovo/src/` = `render/renderer.cpp`; `renderer.h` invariato (25/11 11:03:33).
+- `ls -lT`: `renderer.cpp` mtime 26 Nov **10:11:16** — lo stesso gia' recensito alle 10:13. `git diff --stat` = **91 inserzioni / 28 cancellazioni**, identico al turno prima -> **nessun cambio nuovo in `src/`**.
+- Di conseguenza questo turno e' un approfondimento VJ5 ∞ con **angolo diverso** (aritmetica dell'indice e casi di loop vuoto), come gia' fatto il 09:32 per lo stesso hunk.
 
-## VJ3 — 50/60 Hz (resta aperto per @developer)
-- 6/6 livelli misurati: 5 dentro il limite 2.00%, solo **lv_05_spray 2.40% FALLITO** (60 Hz 48.67 s / 50 Hz 47.50 s, ripetuto identico -> deterministico, exit 22).
+## VJ5 ∞ — nuovo angolo di analisi sui 3 hunk `drawEffettiAuto` (gia' visti 10:13)
+Hunk H segni gomme :3037-3050; hunk I zolle d'erba :3052-3072; hunk J polvere atterraggio :3074-3091.
 
-## Prove eseguite in questo turno (26/11, ore 09:07)
-- `sh UFFICIO/Officina/TOOL/run_tests.sh` -> **exit 0** (ctest 100% 27/27, 137.08 s; prova_gate ricompilato su renderer.cpp 09:05:44).
-- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_luce_galleria_lv02_atomico_2611_0910" lv_02_atomico percorso` -> **exit 0** (GATE PERCORSO OK: 3586 oggetti, 5200 seg, rettilineo 59%, curva max 0.85/0.85, 2476 frame/41.3 s @60 Hz, fuori strada 0 (0.0%), caricamento 5.5 ms, init 14.1 ms; lv_02_atomico del commento e del tunnel, diverso da lv_01_neon del turno prima).
-- gate_t1.sh: non eseguito in questo turno.
+- **Hunk H — loop vuoto equivalente**: `y0g=max(0,cy+1)`, `y1g=min(cy+4,H-1)`. Se `cy>=H-1` allora `y0g>=H>y1g`; se `cy<-4` allora `y1g<0<=y0g`: in entrambi i casi il ciclo `for(y=y0g;y<=y1g)` non itera. Il vecchio `fb_.put` scartava ogni y fuori da `[0,H-1]`, quindi in entrambi i casi scriveva zero pixel -> **identico**. Quando il ciclo non e' vuoto, `[y0g,y1g]` e' esattamente `[cy+1,cy+4] ∩ [0,H-1]`, cioe' lo stesso insieme di y che `put` accettava.
+- **Indice provatamente in bounds**: nell'hunk H `gx` supera il guard `(u32)gx<WIDTH` (quindi `0<=gx<=W-1`) e `y` e' clampato in `[0,H-1]`; dunque `(size_t)y*WIDTH+gx` sta in `[0, H*WIDTH-1] = [0,71679]`. Cast a `size_t` esatto per `y>=0`; 71679 e' molto sotto 2^32 (Pi 400) e 2^64 (Mac) -> **nessun overflow**. Stesso argomento per hunk I (`py`, `py+1`, `px`, `px+1`) e hunk J (`py`, `px`).
+- **Hunk I — `px+1`/`py+1` in i32**: `px` ha superato il guard, quindi `px<=W-1` e `px+1<=W` resta representabile in `i32`; il guard `(u32)(px+1)<WIDTH` rigetta correttamente il caso `px=W-1` (x=W), esattamente come lo skip di `put`. Idem per `py+1`.
+- **Parita' e colori**: `(y+frame)&1`, `n%3`, `n%4` e i valori colore sono gli stessi operandi/ordine del codice precedente -> stessi pixel. **Resa e replay IDENTICI. Nessun errore tecnico.**
+
+## RILIEVO BLOCCANTE (procedurale, invariato)
+- 5 hunk sono **dentro `Renderer::drawPlayerCar`**, dichiarato intoccabile da **REGOLA BLOCCATA (Andrea 06/11)** e `ANDREA_REVIEW.md` §2. Serve autorizzazione esplicita di Andrea o revert dei soli hunk `drawPlayerCar`.
+- **File/righe**: `renderer.cpp:2798-2816`, `:2875-2889`, `:2890-2905`, `:2910-2922`, `:2932-2952`.
+- **Area grigia**: `drawEffettiAuto` (:2966; chiamata da `drawPlayerCar` :2842 e dal percorso ombra :2627) disegna gli effetti dell'auto del giocatore; i 3 hunk qui analizzati si sommano a cerchio/spruzzi del 10:00. Non e' nell'elenco letterale della regola e la modifica e' bit-identica -> segnalata, non giudicata bloccante; da chiarire con Andrea. L'hunk `drawDetrito` resta fuori area.
+
+## Possibile ottimizzazione (nuova, non bloccante, fuori perimetro — per @developer)
+- Hunk H :3042-3048: invece di testare `((y+frame)&1)==0` a ogni y, partire da `y0g+(((y0g+frame)&1)?1:0)` e avanzare di 2. Stessi pixel, un test in meno per riga. Come il gia' segnalato helper `rigaScrivibile(y)` in `framebuffer.h`, va proposto, non applicato dal junior.
+
+## Rilievi invariati (non risolti)
+- **VJ3**: 6/6 misurati, 5 entro 2.00%; solo **lv_05_spray 2.40% FALLITO** (deterministico, exit 22) -> aperto per @developer.
+- **VJ4**: chiuso 6/6 (soak OK).
+
+## Prove eseguite in questo turno (26/11/2026, turno 10:27-10:32)
+- `sh UFFICIO/Officina/TOOL/run_tests.sh` -> **exit 0** (ctest 27/27, 137.94 s; `prova_gate` ricompilato su renderer.cpp 10:11:16).
+- `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_sgommata_lv03_foglie_2611_1032" lv_03_foglie curve` -> **exit 0** (GATE CURVE CONTINUE OK; campioni=1199, salto pendenza max=0.02; livello e modo diversi dal turno prima. Nota: esercita l'hunk H sgommata; l'hunk I resta non esercitato perche' la guida da curve resta in strada -> equivalenza dimostrata per analisi del codice).
+- `date` -> comando negato dallo strumento; orario riportato dalla richiesta del turno (10:27) e dal mtime della cartella output (10:30).
+- `gate_t1.sh`: **non eseguito** in questo turno.

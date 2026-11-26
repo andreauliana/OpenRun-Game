@@ -1,8 +1,9 @@
-# RIASSUNTO — @developer-junior (26/11 09:12, turno 09:07)
+# RIASSUNTO — @developer-junior (26/11 10:32, turno 2)
 - **Ruolo**: review/collaudo, test/diagnosi, fix minimi solo su perimetri autorizzati (no src permanente).
-- **Ultimo (turno 09:07)**: VJ5 ∞ review hunk NUOVO `renderer.cpp` mtime 09:05:44: `drawLuceGalleria` :1837-1870 clamp + scrittura diretta in riga (plafoniere del tunnel, lv_02_atomico giro39) -> bit-identico (`data()`=`buf_` row-major, clamp riproduce `put`, ternario evita `%0`), nessun errore, fuori area bloccata. `run_tests.sh` exit 0 (ctest 27/27, 137.08 s); `prova_gate ... lv_02_atomico percorso` exit 0 (GATE OK, 2476 frame/41.3 s, replay identico).
-- **RILIEVO BLOCCANTE (invariato)**: 3 hunk `drawPlayerCar` (area intoccabile Andrea 06/11) -> serve autorizzazione o revert.
-- **VJ3 (6/6)**: 5 livelli OK; **lv_05_spray 2.40% FALLITO** (deterministico, exit 22) -> aperto per @developer.
-- **VJ4 CHIUSO 6/6**: soak sui sei livelli OK.
-- **Gate**: gate_t1.sh non eseguito. Riportare gate solo se eseguito con data/ora.
+- **Ultimo (10:27-10:32) VJ5 ∞**: NESSUN cambio nuovo in `src/` — `renderer.cpp` mtime 10:11:16, diff 91+/28-, uguale a quello rivisto 10:13. Approfondimento con angolo diverso (aritmetica indice + loop vuoto) sui 3 hunk `drawEffettiAuto` :3037-3050/:3061-3072/:3084-3091: hunk H loop vuoto per `cy>=H-1` o `cy<-4` = zero write di `put`; non vuoto = `[cy+1,cy+4]∩[0,H-1]`; `(size_t)y*W+gx` in `[0,H*W-1]=[0,71679]`, no overflow 32/64 bit; `px+1`/`py+1` in i32, guard `(u32)<W` replica lo skip di put. Nessun errore, resa/replay IDENTICI.
+- **Nuova ottimizzazione non bloccante** (fuori perimetro, per @developer): hunk H parta da `y0g+((y0g+frame)&1?1:0)` e passo 2 invece di testare la parita' a ogni y; si somma all'helper `rigaScrivibile(y)` gia' segnalato.
+- **RILIEVO BLOCCANTE (invariato, 5 hunk in drawPlayerCar)**: :2798-2816, :2875-2889, :2890-2905, :2910-2922, :2932-2952 = area intoccabile (REGOLA BLOCCATA Andrea 06/11, ANDREA_REVIEW §2); serve autorizzazione o revert. `drawEffettiAuto` area grigia, segnalata non bloccante (bit-identica). `drawDetrito` fuori area.
+- **Prove (26/11 10:32)**: `run_tests.sh` exit 0 (ctest 27/27, 137.94 s, prova_gate ricompilato su 10:11:16); `prova_gate ... vj5_sgommata_lv03_foglie_2611_1032 lv_03_foglie curve` exit 0 (GATE CURVE CONTINUE OK, campioni=1199, salto pendenza max=0.02; livello/modo diversi dal turno prima; hunk I fuoristrada non esercitato). `gate_t1.sh` non eseguito.
+- **VJ3 (5/6)**: lv_05_spray 2.40% FALLITO (deterministico, exit 22) -> aperto per @developer. **VJ4 CHIUSO 6/6** (soak OK).
+- **Prossimo passo ∞**: VJ5 appena arriva un cambio nuovo in `src/` (livello/file diverso: lv_01/lv_02/lv_03/lv_04/lv_05/lv_06 o framebuffer.cpp/road.cpp); altrimenti approfondimento con angolo diverso su un livello/modo non usato di recente.
 - **Vincoli**: RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli; REGOLA BLOCCATA auto intoccata; solo diario+REVIEW_V47/RIASSUNTO/ULTIMO_TURNO; STATUS_OFFICINA non toccato.

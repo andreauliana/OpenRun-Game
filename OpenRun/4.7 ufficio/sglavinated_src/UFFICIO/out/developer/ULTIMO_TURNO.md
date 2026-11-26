@@ -1,13 +1,12 @@
-# ULTIMO TURNO — developer (riscritto, max 15 righe)
-- Data/ora: 26/11/2026 09:03
-- Blocco/passo: V47 V9 ∞ fluidita' lv_02_atomico (giro39) — pre misura, micro-ottimizzazione drawLuceGalleria, post misura + regressione.
-- File cambiati: `motore_nuovo/src/render/renderer.cpp` (drawLuceGalleria: clamp x/y al framebuffer, riga diretta `fb_.data()+py*WIDTH`, scrittura `riga[px]` al posto di `fb_.put`; hoist `usaPalettaSprite/palS/palSN/src`; stessi pixel/ordine, replay IDENTICO).
+# ULTIMO_TURNO developer (max 15 righe)
+- Data/ora: 26/11/2026 10:38 — Turno 2.
+- Blocco/passo: V47 V9 ∞ fluidita' — lv_03_foglie (giro40), misura pre percorso/smoke.
+- File cambiati (produzione): nessuno (max 2.992 ms < 8 ms, nessun alleggerimento necessario).
+- File aggiornati (report): `UFFICIO/bacheche/developer/diario.md`, `UFFICIO/bacheche/developer/RIASSUNTO.md`, `UFFICIO/out/developer/ULTIMO_TURNO.md`.
 - Comandi ed exit code:
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_percorso" lv_02_atomico percorso` -> exit 0, "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_smoke" lv_02_atomico smoke` -> exit 0, "GATE OK" medio 0.661 max 3.358 ms frame 0, replay IDENTICO, frameHash 0 2961894142.
-  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0.
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_smoke" lv_02_atomico smoke` -> exit 0, "GATE OK" medio 0.725 max 3.551 ms frame 0, replay IDENTICO, frameHash 0 2961894142 (9/9).
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_percorso" lv_02_atomico percorso` -> exit 0, "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
-  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_smoke_lv01" lv_01_neon smoke` -> exit 0, "GATE OK", replay IDENTICO, frameHash 0 3594390208 invariante.
-- Gate: gate_t1.sh non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
-- Esito: lv_02_atomico sotto soglia 8 ms; replay/hash invariati. Prossimo V9 ∞: lv_03_foglie (giro39).
+  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` — exit 0.
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_percorso" lv_03_foglie percorso` — exit 0, "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_smoke" lv_03_foglie smoke` — exit 0, "GATE OK" medio 0.700 max 2.992 ms frame 0, replay IDENTICO, frameHash 0 3593059909 (9/9).
+- Gate non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
+- Esito: lv_03_foglie sotto soglia 8 ms; replay/hash invariati.
+- Prossimo: V9 ∞ lv_04_cromo (giro40).

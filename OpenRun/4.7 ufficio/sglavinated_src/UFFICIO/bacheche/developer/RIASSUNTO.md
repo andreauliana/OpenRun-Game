@@ -1,12 +1,9 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 26/11/2026 09:03 (Turno 1, V9 ∞ lv_02_atomico giro39).
-- Blocco: V47 V9 ∞ fluidita' lv_02_atomico.
-- Gate non eseguito in questo turno (gate_t1.sh; riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
-- Pre: percorso "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_percorso" exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori); smoke ".../v9_lv02_giro39_pre_smoke" exit 0 "GATE OK" medio 0.661 max 3.358 ms frame 0, replay IDENTICO, frameHash 0 2961894142.
-- Modifica: `motore_nuovo/src/render/renderer.cpp` drawLuceGalleria - clamp loop al framebuffer e scrittura diretta `riga[px]` al posto di `fb_.put`, hoist palette sprite; stessi pixel, replay IDENTICO.
-- Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0.
-- Post: smoke ".../v9_lv02_giro39_post_smoke" exit 0 "GATE OK" medio 0.725 max 3.551 ms frame 0, replay IDENTICO, frameHash 0 2961894142 (9/9).
-- Post percorso ".../v9_lv02_giro39_post_percorso" exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
-- Regressione: lv_01_neon smoke ".../v9_lv02_giro39_post_smoke_lv01" exit 0 "GATE OK" frameHash 0 3594390208 invariante, replay IDENTICO.
-- Esito: lv_02_atomico sotto soglia 8 ms; replay/hash invariati.
-- Prossimo V9 ∞: lv_03_foglie (giro39).
+- Data/ora: 26/11/2026 10:38 (Turno 2, V9 ∞ lv_03_foglie giro40).
+- Blocco: V47 V9 ∞ fluidita' lv_03_foglie.
+- Gate non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
+- Pre percorso "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_percorso" exit 0 "GATE PERCORSO OK" (2392 frame, 39.9 s, 0% fuori).
+- Pre smoke "UFFICIO/Officina/Test area/v9_lv03_giro40_pre_smoke" exit 0 "GATE OK" medio 0.700 max 2.992 ms frame 0, replay IDENTICO, frameHash 0 3593059909 (9/9).
+- Nessuna modifica codice/dati: max 2.992 ms < 8 ms.
+- Esito: lv_03_foglie sotto soglia 8 ms; replay/hash invariati.
+- Prossimo V9 ∞: lv_04_cromo (giro40).

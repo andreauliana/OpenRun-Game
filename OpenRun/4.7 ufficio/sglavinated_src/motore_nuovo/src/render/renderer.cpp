@@ -2075,13 +2075,19 @@ void Renderer::drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore) {
     // della bounding box ((w+h+3)^2 pixel per detrito). Hoistati una volta;
     // stessi operandi e stesso ordine, stesso risultato, resa e replay IDENTICI.
     const f32 hw2 = w * 0.5f, hh2 = h * 0.5f, topLy = -hh2 + 2.0f;
-    for (i32 py = y - r; py <= y + r; ++py)
-        for (i32 px = x - r; px <= x + r; ++px) {
+    // V9 ∞ (26/11, lv_03_foglie giro39): clamp al framebuffer e scrittura
+    // diretta riga[px] al posto di fb_.put; stessi pixel, resa/replay IDENTICI.
+    const i32 py0 = std::max(0, y - r), py1 = std::min(Framebuffer::HEIGHT - 1, y + r);
+    const i32 px0c = std::max(0, x - r), px1c = std::min(Framebuffer::WIDTH - 1, x + r);
+    for (i32 py = py0; py <= py1; ++py) {
+        u32* riga = fb_.data() + (size_t)py * Framebuffer::WIDTH;
+        for (i32 px = px0c; px <= px1c; ++px) {
             const f32 dx = (f32)(px - x), dy = (f32)(py - y);
             const f32 lx = co * dx + si * dy, ly = -si * dx + co * dy;
             if (std::abs(lx) > hw2 || std::abs(ly) > hh2) continue;
-            fb_.put(px, py, ly < topLy ? pal_[5] : colore);
+            riga[px] = ly < topLy ? pal_[5] : colore;
         }
+    }
 }
 
 void Renderer::drawDetriti(const DetritoRender* v, i32 n) {
@@ -2792,14 +2798,19 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const f32 c = std::cos(rollAngle);
             const f32 s = std::sin(rollAngle);
             const i32 extent = (rw + rh) / 2 + 1;
-            for (i32 y = centerY - extent; y <= centerY + extent; ++y) {
+            const i32 yMin = std::max(0, centerY - extent);
+            const i32 yMax = std::min(Framebuffer::HEIGHT - 1, centerY + extent);
+            u32* data = fb_.data();
+            for (i32 y = yMin; y <= yMax; ++y) {
+                u32* riga = data + y * Framebuffer::WIDTH;
                 for (i32 x = centerX - extent; x <= centerX + extent; ++x) {
                     const f32 dx = (f32)(x - centerX);
                     const f32 dy = (f32)(y - centerY);
                     const f32 localX = c * dx + s * dy;
                     const f32 localY = -s * dx + c * dy;
-                    if (std::abs(localX) <= rw / 2.0f && std::abs(localY) <= rh / 2.0f)
-                        fb_.put(x, y, color);
+                    if (std::abs(localX) <= rw / 2.0f && std::abs(localY) <= rh / 2.0f) {
+                        if ((u32)x < (u32)Framebuffer::WIDTH) riga[x] = color;
+                    }
                 }
             }
         };
@@ -2864,14 +2875,25 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
                             if (k >= 0.5f && ((px + xx + py + yy) & 1) != 0) continue;
                             const u32 col = fs.palette[(u32)fs.pixels[yy * fs.width + xx] % fs.palette.size()];
                             if ((col >> 24) == 0) continue;
-                            fb_.put(px - hx + xx, py - hy + yy, col);
+                            const i32 bx = px - hx + xx;
+                            const i32 by = py - hy + yy;
+                            if ((u32)bx < (u32)Framebuffer::WIDTH && (u32)by < (u32)Framebuffer::HEIGHT)
+                                fb_.data()[by * Framebuffer::WIDTH + bx] = col;
                         }
                 } else {
                     const u32 col = k < 0.4f ? 0xFFE8E8E8u : 0xFFB8B8C0u;
-                    for (i32 dy = -r; dy <= r; ++dy)
-                        for (i32 dx = -r; dx <= r; ++dx)
-                            if (dx * dx + dy * dy <= r * r && (k < 0.5f || ((px + dx + py + dy) & 1) == 0))
-                                fb_.put(px + dx, py + dy, col);
+                    for (i32 dy = -r; dy <= r; ++dy) {
+                        const i32 by = py + dy;
+                        if ((u32)by >= (u32)Framebuffer::HEIGHT) continue;
+                        u32* riga = fb_.data() + by * Framebuffer::WIDTH;
+                        for (i32 dx = -r; dx <= r; ++dx) {
+                            if (dx * dx + dy * dy > r * r) continue;
+                            const i32 bx = px + dx;
+                            if ((u32)bx >= (u32)Framebuffer::WIDTH) continue;
+                            if (k >= 0.5f && ((bx + by) & 1) != 0) continue;
+                            riga[bx] = col;
+                        }
+                    }
                 }
             }
         }
@@ -2888,8 +2910,13 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const i32 px = cx + lato * (17 + (i32)(vx * t));
             const i32 py = cy - h / 2 + (n % 3) * 3 + (i32)(vy * t + 220.0f * t * t);
             const u32 col = (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u;
-            fb_.put(px, py, col);
-            if (t < 0.2f) fb_.put(px - lato, py, 0xFFFF8020u); // scia
+            if ((u32)px < (u32)Framebuffer::WIDTH && (u32)py < (u32)Framebuffer::HEIGHT)
+                fb_.data()[py * Framebuffer::WIDTH + px] = col;
+            if (t < 0.2f) {
+                const i32 sx = px - lato;
+                if ((u32)sx < (u32)Framebuffer::WIDTH && (u32)py < (u32)Framebuffer::HEIGHT)
+                    fb_.data()[py * Framebuffer::WIDTH + sx] = 0xFFFF8020u; // scia
+            }
         }
     }
     if (danni->fumo) {
@@ -2905,10 +2932,21 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const i32 px = cx + ((n & 1) ? 3 : -3) + (i32)(k * 4.0f);
             const i32 py = cy - h - 2 - (i32)(k * 20.0f);
             const u32 col = k < 0.4f ? 0xFFE0E0E8u : 0xFF404048u; // chiaro sul nero, scuro sull'asfalto
-            for (i32 dy = -r; dy <= r; ++dy)
-                for (i32 dx = -r; dx <= r; ++dx)
-                    if (dx * dx + dy * dy <= r * r && (k < 0.6f || ((px + dx + py + dy) & 1) == 0))
-                        fb_.put(px + dx, py + dy, col);
+            const i32 r2d = r * r;
+            const i32 yMinD = std::max(0, py - r);
+            const i32 yMaxD = std::min(Framebuffer::HEIGHT - 1, py + r);
+            const i32 xMinD = std::max(0, px - r);
+            const i32 xMaxD = std::min(Framebuffer::WIDTH - 1, px + r);
+            u32* dataD = fb_.data();
+            for (i32 yy = yMinD; yy <= yMaxD; ++yy) {
+                u32* rigaD = dataD + yy * Framebuffer::WIDTH;
+                const i32 dy = yy - py;
+                for (i32 xx = xMinD; xx <= xMaxD; ++xx) {
+                    const i32 dx = xx - px;
+                    if (dx * dx + dy * dy <= r2d && (k < 0.6f || ((xx + yy) & 1) == 0))
+                        rigaD[xx] = col;
+                }
+            }
         }
     }
 }
@@ -2934,12 +2972,24 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
         // veniva rifatta a ogni pixel del cerchio (fino a (2r+1)^2 pixel per
         // sbuffo di fumo/polvere). Hoistata una volta per chiamata: stesso
         // intero, stesso confronto, stessi pixel scritti, resa e replay
-        // IDENTICI.
+        // IDENTICI. V9 ∞ (26/11, lv_06_desktop giro 40): clamp ai bounds del
+        // framebuffer e scrittura diretta riga[xx] al posto di fb_.put (due
+        // bounds-check per pixel); stessi pixel, resa e replay IDENTICI.
         const i32 r2 = r * r;
-        for (i32 dy = -r; dy <= r; ++dy)
-            for (i32 dx = -r; dx <= r; ++dx)
-                if (dx * dx + dy * dy <= r2 && (!rado || ((px + dx + py + dy) & 1) == 0))
-                    fb_.put(px + dx, py + dy, col);
+        const i32 yMinC = std::max(0, py - r);
+        const i32 yMaxC = std::min(Framebuffer::HEIGHT - 1, py + r);
+        const i32 xMinC = std::max(0, px - r);
+        const i32 xMaxC = std::min(Framebuffer::WIDTH - 1, px + r);
+        u32* dataC = fb_.data();
+        for (i32 yy = yMinC; yy <= yMaxC; ++yy) {
+            u32* rigaC = dataC + yy * Framebuffer::WIDTH;
+            const i32 dy = yy - py;
+            for (i32 xx = xMinC; xx <= xMaxC; ++xx) {
+                const i32 dx = xx - px;
+                if (dx * dx + dy * dy <= r2 && (!rado || ((xx + yy) & 1) == 0))
+                    rigaC[xx] = col;
+            }
+        }
     };
     if (sotto) {
         // Andrea 08/11 sera: niente getti sotto l'auto alla punta (sembrava
@@ -2963,7 +3013,7 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
                 if (y < 120 || y >= Framebuffer::HEIGHT) continue;
                 if (x > cx - w / 2 - 4 && x < cx + w / 2 + 4 && y > cy - h - 4) continue;
                 if (p > 0.6f && ((x + y) & 1)) continue;
-                fb_.put(x, y, 0xFFE8F8FFu);
+                if ((u32)x < (u32)Framebuffer::WIDTH) fb_.data()[y * Framebuffer::WIDTH + x] = 0xFFE8F8FFu;
             }
         }
     }
@@ -2987,10 +3037,16 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
             }
         }
         // Segni delle gomme: due file di pixel scuri sotto le ruote.
+        // V9 ∞ (26/11, lv_01_neon giro40): scrittura diretta con bounds check,
+        // al posto di fb_.put; stessi pixel, resa e replay IDENTICI.
         for (i32 lato = -1; lato <= 1; lato += 2) {
             const i32 gx = cx + lato * (w * 2 / 5);
-            for (i32 y = cy + 1; y <= std::min(cy + 4, Framebuffer::HEIGHT - 1); ++y)
-                if (((y + frame) & 1) == 0) fb_.put(gx, y, 0xFF202028u);
+            if ((u32)gx < (u32)Framebuffer::WIDTH) {
+                const i32 y0g = std::max(0, cy + 1);
+                const i32 y1g = std::min(cy + 4, Framebuffer::HEIGHT - 1);
+                for (i32 y = y0g; y <= y1g; ++y)
+                    if (((y + frame) & 1) == 0) fb_.data()[(size_t)y * Framebuffer::WIDTH + gx] = 0xFF202028u;
+            }
         }
     }
     // Fuori strada: zolle d'erba e terra che schizzano dalle ruote posteriori.
@@ -3005,8 +3061,14 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
             const i32 px = cx + lato * (w * 2 / 5) + (i32)(vx * k * 0.6f);
             const i32 py = cy - 1 + (i32)((vy * k + 110.0f * k * k) * 0.6f);
             const u32 col = (n % 3 == 0) ? 0xFF6B4A2Au : erba;
-            fb_.put(px, py, col);
-            if (n % 4 == 0) { fb_.put(px + 1, py, col); fb_.put(px, py + 1, col); }
+            if ((u32)px < (u32)Framebuffer::WIDTH && (u32)py < (u32)Framebuffer::HEIGHT)
+                fb_.data()[(size_t)py * Framebuffer::WIDTH + px] = col;
+            if (n % 4 == 0) {
+                if ((u32)(px + 1) < (u32)Framebuffer::WIDTH && (u32)py < (u32)Framebuffer::HEIGHT)
+                    fb_.data()[(size_t)py * Framebuffer::WIDTH + px + 1] = col;
+                if ((u32)px < (u32)Framebuffer::WIDTH && (u32)(py + 1) < (u32)Framebuffer::HEIGHT)
+                    fb_.data()[(size_t)(py + 1) * Framebuffer::WIDTH + px] = col;
+            }
         }
     }
     // Atterraggio di un salto: polvere che scappa ai lati lungo la strada,
@@ -3024,7 +3086,8 @@ void Renderer::drawEffettiAuto(const EffettiAuto& fx, i32 cx, i32 cy, i32 w, i32
                 const i32 lato = (n & 1) ? 1 : -1;
                 const i32 px = cx + lato * (2 + (i32)(casoFx(n) * (f32)(w / 2)) + (i32)(k * 30.0f * casoFx(n + 9u)));
                 const i32 py = AUTO_GIOCATORE_TERRA_Y - (i32)(k * 10.0f * casoFx(n + 20u));
-                fb_.put(px, py, (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u);
+                if ((u32)px < (u32)Framebuffer::WIDTH && (u32)py < (u32)Framebuffer::HEIGHT)
+                    fb_.data()[(size_t)py * Framebuffer::WIDTH + px] = (n % 3 == 0) ? 0xFFFFFFFFu : 0xFFFFD040u;
             }
     }
 }

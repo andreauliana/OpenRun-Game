@@ -73,6 +73,12 @@
 # Lo stesso vale per gli oggetti di scenari/ in esito_oggetti(): le quattro
 # diramazioni (PNG-ILLEGGIBILE, DIVERSO, PNG-NUOVO, allineato) erano altrettanti
 # rami inline in main(), con contatori e righe separati da quelli dei gruppi 1:1.
+# I due print del raw senza PNG sorgente (MANCA-PNG per gli oggetti di scenari/ e
+# ALTRI-MANCA-PNG per i gruppi 1:1) stanno in riga_senza_png(): prima i due formati
+# erano sparsi in main() e non si potevano provare senza toccare GRAFICA.
+# Lo stesso vale per i due print del PNG senza raw (PNG-SENZA-RAW per gli oggetti di
+# scenari/ e ALTRI-PNG-SENZA-RAW per i gruppi 1:1), ora in riga_png_senza_raw():
+# prima i due formati erano sparsi in main() e non provabili a parte.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -850,6 +856,40 @@ def esito_oggetti(stato, motivo, livello, nome, data_png, data_raw):
     return 0, 0, 1, None, None
 
 
+def riga_senza_png(tipo, chiave, quando):
+    """Riga di diagnosi per un raw del motore a cui manca il PNG sorgente.
+
+    Funzione pura: due formati diversi per lo stesso evento (un disegno di Andrea
+    mancante), 'oggetto' per scenari/ e 'altro' per i gruppi 1:1. Prima i due print
+    erano inline in main(), cosi' cambiare un formato non aggiornava l'altro e non
+    si poteva provare a parte. Non tocca il filesystem: main() passa chiave e data
+    gia' calcolate.
+    """
+    if tipo == "oggetto":
+        return f"MANCA-PNG  {chiave}.sglraw ({quando})"
+    if tipo == "altro":
+        return f"ALTRI-MANCA-PNG {chiave}: raw {quando}"
+    raise ValueError(f"tipo di raw senza PNG non noto: {tipo}")
+
+
+def riga_png_senza_raw(tipo, chiave, quando):
+    """Riga di diagnosi per un PNG nuovo senza raw nel motore (funzione pura).
+
+    Speculare a riga_senza_png(): stesso evento letto al contrario (qui e' il PNG
+    di Andrea a non avere un raw, non il raw a non avere il PNG). Due formati per
+    lo stesso evento, 'oggetto' per scenari/ e 'altro' per i gruppi 1:1. Prima i
+    due print erano inline in main() (il giro inverso degli oggetti e il residuo
+    dei gruppi 1:1), cosi' cambiare un formato non aggiornava l'altro e non si
+    poteva provare senza toccare GRAFICA. Non tocca il filesystem: main() passa
+    chiave e data gia' calcolate.
+    """
+    if tipo == "oggetto":
+        return f"PNG-SENZA-RAW {chiave}: png {quando}"
+    if tipo == "altro":
+        return f"ALTRI-PNG-SENZA-RAW {chiave}: png {quando}"
+    raise ValueError(f"tipo di PNG senza raw non noto: {tipo}")
+
+
 def main():
     verbose = "--verbose" in sys.argv
     totale = diversi = senza_png = png_piu_nuovo = allineati = trame = 0
@@ -864,7 +904,7 @@ def main():
         png = png_sorgente(nome, livello)
         if png is None:
             senza_png += 1
-            righe.append(f"MANCA-PNG  {livello}/{nome}.sglraw ({data(raw)})")
+            righe.append(riga_senza_png("oggetto", f"{livello}/{nome}", data(raw)))
             continue
         atteso = raw_atteso(png)
         grezzo = raw.read_bytes()
@@ -888,7 +928,7 @@ def main():
         raw = RAW / livello / f"{nome}.sglraw"
         if not raw.exists():
             orfani += 1
-            print(f"PNG-SENZA-RAW {livello}/{nome}: png {data(png)}")
+            print(riga_png_senza_raw("oggetto", f"{livello}/{nome}", data(png)))
     for riga in righe_oggetti(png_visti, orfani):
         print(riga)
     skyline_png_nuovo = skyline_ok = skyline_senza = 0
@@ -924,7 +964,7 @@ def main():
             png = png_altri(raw, gruppo)
             if png is None:
                 altri_senza += 1
-                print(f"ALTRI-MANCA-PNG {gruppo}/{raw.stem}: raw {data(raw)}")
+                print(riga_senza_png("altro", f"{gruppo}/{raw.stem}", data(raw)))
                 continue
             atteso = raw_atteso(png)
             grezzo = raw.read_bytes()
@@ -981,7 +1021,7 @@ def main():
                     + suffisso_stato_doppia(sintesi)
                 )
             else:
-                print(f"ALTRI-PNG-SENZA-RAW {gruppo}/{png.name}: png {data(png)}")
+                print(riga_png_senza_raw("altro", f"{gruppo}/{png.name}", data(png)))
     for riga in righe_altri(
         altri_tot, altri_ok, altri_diversi, altri_nuovo,
         altri_senza, altri_orfani, altri_doppia, altri_residui,
@@ -1385,6 +1425,35 @@ if __name__ == "__main__":
         )
         ok = ok and ok_ogg_esito
         print("autotest esito_oggetti: " + ("OK" if ok_ogg_esito else "FALLITO"))
+        # riga_senza_png: i due formati del raw senza PNG sorgente restano distinti
+        # (oggetti di scenari/ vs gruppi 1:1); prima erano due print inline in main()
+        # e un formato poteva cambiare senza che l'altro venisse aggiornato.
+        ok_senza_png = (
+            riga_senza_png("oggetto", "lv_01_neon/palma", "D1")
+            == "MANCA-PNG  lv_01_neon/palma.sglraw (D1)"
+            and riga_senza_png("altro", "rivali/auto", "D2")
+            == "ALTRI-MANCA-PNG rivali/auto: raw D2"
+        )
+        ok = ok and ok_senza_png
+        print("autotest riga_senza_png: " + ("OK" if ok_senza_png else "FALLITO"))
+        # riga_png_senza_raw: speculare di riga_senza_png, i due formati del PNG
+        # senza raw restano distinti (oggetti di scenari/ vs gruppi 1:1); prima i
+        # due print erano inline in main() e non provabili a parte. Tipo sconosciuto
+        # va in errore, non stampato come un caso noto.
+        ok_png_senza_raw = (
+            riga_png_senza_raw("oggetto", "lv_01_neon/palma", "D1")
+            == "PNG-SENZA-RAW lv_01_neon/palma: png D1"
+            and riga_png_senza_raw("altro", "rivali/auto.png", "D2")
+            == "ALTRI-PNG-SENZA-RAW rivali/auto.png: png D2"
+        )
+        try:
+            riga_png_senza_raw("sconosciuto", "x", "D3")
+            tipo_errato = False
+        except ValueError:
+            tipo_errato = True
+        ok_png_senza_raw = ok_png_senza_raw and tipo_errato
+        ok = ok and ok_png_senza_raw
+        print("autotest riga_png_senza_raw: " + ("OK" if ok_png_senza_raw else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()

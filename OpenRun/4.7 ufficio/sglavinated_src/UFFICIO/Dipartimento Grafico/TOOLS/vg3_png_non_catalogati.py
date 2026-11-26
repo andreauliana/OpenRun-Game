@@ -101,6 +101,11 @@ Aggiunta 26/11 (turno 3): il caricamento del catalogo (prima json.load(open(...)
 inline in main, con il file lasciato al garbage collector) e' ora la funzione
 carica_catalogo() con lettura iniettabile, provata in autotest: read_text chiude
 subito il file e il parsing sta in un punto solo. L'output non cambia.
+
+Aggiunta 26/11 (turno 4): la sequenza file_usati(cat) -> report_da_png(trovati,
+usati), prima inline in main, e' ora la funzione pura report_da_dati(cat, trovati),
+provata in autotest: fissa in un punto solo il passaggio dal catalogo letto alle
+righe del report, cosi' main() non calcola piu' 'usati' a mano. L'output non cambia.
 """
 import glob
 import json
@@ -422,15 +427,25 @@ def report_da_png(trovati, usati):
     return righe_report(noti, da_decidere, catalogati, spariti)
 
 
+def report_da_dati(cat, trovati):
+    """Dal catalogo caricato e dai PNG trovati alle righe del report (pura).
+
+    main() faceva in sequenza file_usati(cat) e report_da_png(trovati, usati):
+    tenerli in un solo punto fissa l'ordine delle due fasi e rende provabile che
+    il report dipenda solo dal catalogo letto e dall'elenco dei PNG trovati,
+    senza leggere il disco. L'output non cambia.
+    """
+    usati = file_usati(cat)
+    return report_da_png(trovati, usati)
+
+
 def main() -> int:
     if not CATALOGO.exists():
         print(f"FALLITO: catalogo non trovato in {CATALOGO}")
         return 4
     cat = carica_catalogo(CATALOGO)
-    usati = file_usati(cat)
-
     trovati = png_trovati(LIBRERIA, PATTERN)
-    for riga in report_da_png(trovati, usati):
+    for riga in report_da_dati(cat, trovati):
         print(riga)
     return 0
 
@@ -714,6 +729,19 @@ def autotest():
     )
     ok = ok and ok_carica
     print("autotest carica_catalogo: " + ("OK" if ok_carica else "FALLITO"))
+    # report_da_dati: catalogo + PNG trovati -> righe, senza disco. Un catalogo
+    # vuoto lascia il PNG tra i 'da decidere'; un PNG citato dal catalogo (campo
+    # 'file') non finisce tra i da_decidere. Deve essere la composizione esatta
+    # di file_usati() e report_da_png().
+    ok_dati = (
+        report_da_dati({"elementi": []}, [x])
+        == report_da_png([x], set())
+        and report_da_dati({"elementi": [{"file": x}]}, [x])
+        == report_da_png([x], {x})
+        and report_da_dati({"elementi": []}, []) == righe_report([], [], [], sorted(NOTI_NON_ASSET))
+    )
+    ok = ok and ok_dati
+    print("autotest report_da_dati: " + ("OK" if ok_dati else "FALLITO"))
     return 0 if ok else 1
 
 
