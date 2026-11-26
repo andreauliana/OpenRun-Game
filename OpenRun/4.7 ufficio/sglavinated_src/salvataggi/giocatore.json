@@ -3,13 +3,16 @@
   "classifica": [
     {"nome": "ANDREA", "punti": 1034, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 879, "data": "0000-00-00"},
+    {"nome": "ANDREA", "punti": 820, "data": "0000-00-00"},
     {"nome": "ANDREA", "punti": 813, "data": "0000-00-00"},
     {"nome": "ANDREA", "punti": 746, "data": "0000-00-00"},
     {"nome": "PLAYER", "punti": 743, "data": "0000-00-00"},
-    {"nome": "ANDREA", "punti": 737, "data": "0000-00-00"}
+    {"nome": "ANDREA", "punti": 737, "data": "0000-00-00"},
+    {"nome": "ANDREA", "punti": 733, "data": "0000-00-00"}
   ],
   "classifica_singola": [
     {"nome": "PLAYER", "punti": 348, "data": "0000-00-00"},
-    {"nome": "PLAYER", "punti": 347, "data": "0000-00-00"}
+    {"nome": "PLAYER", "punti": 347, "data": "0000-00-00"},
+    {"nome": "ANDREA", "punti": 346, "data": "0000-00-00"}
   ]
 }
