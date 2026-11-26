@@ -91,6 +91,10 @@
 # path_raw_relativi(RADICE, RAW_ROOT.rglob("*.sglraw")) inline in main()) e'
 # estratta in raw_su_disco(radice, raw_root, rglob=None), con rglob iniettabile e
 # autotest dedicato senza toccare il disco; main() la usa. Output invariato.
+# Aggiunta 26/11 (turno 17:45): classifica_inesistenti() riceve 'motivi' (default
+# NOTI_RAW_MANCANTI) invece di leggere il globale, come fanno gia' le funzioni
+# che stampano le righe; autotest dedicato con elenco di noti diverso. Output
+# invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -259,10 +263,18 @@ NOTI_RAW_MANCANTI = {
 }
 
 
-def classifica_inesistenti(inesistenti):
-    """Divide i riferimenti 'raw' senza file in noti (attesi) e nuovi da decidere."""
-    noti = [r for r in inesistenti if r in NOTI_RAW_MANCANTI]
-    nuovi = [r for r in inesistenti if r not in NOTI_RAW_MANCANTI]
+def classifica_inesistenti(inesistenti, motivi=None):
+    """Divide i riferimenti 'raw' senza file in noti (attesi) e nuovi da decidere.
+
+    motivi e' il dizionario dei noti: di default NOTI_RAW_MANCANTI, ma puo'
+    essere passato dal chiamante. Cosi' la funzione e' pura e provabile con un
+    elenco diverso senza toccare il globale (come righe_inesistenti/risolti).
+    L'ordine e i risultati col default restano invariati.
+    """
+    if motivi is None:
+        motivi = NOTI_RAW_MANCANTI
+    noti = [r for r in inesistenti if r in motivi]
+    nuovi = [r for r in inesistenti if r not in motivi]
     return noti, nuovi
 
 
@@ -605,9 +617,17 @@ def autotest():
         "motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw",
         "motore_nuovo/dati/sprite_raw/giocatore/pose/nuovo_raw.sglraw",
     ])
+    noti_custom, nuovi_custom = classifica_inesistenti(
+        ["raw/n1.sglraw", "raw/n2.sglraw"],
+        {"raw/n1.sglraw": "motivo finto"},
+    )
     ok_class = (
         noti == ["motore_nuovo/dati/sprite_raw/giocatore/pose/auto_sx1.sglraw"]
         and nuovi == ["motore_nuovo/dati/sprite_raw/giocatore/pose/nuovo_raw.sglraw"]
+        and noti_custom == ["raw/n1.sglraw"]
+        and nuovi_custom == ["raw/n2.sglraw"]
+        and classifica_inesistenti(["raw/x.sglraw"], {}) == ([], ["raw/x.sglraw"])
+        and classifica_inesistenti([]) == ([], [])
     )
     prove.append(("classifica_inesistenti", ok_class))
     ok_inesistenti = (

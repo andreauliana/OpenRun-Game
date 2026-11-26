@@ -71,3 +71,4 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-26 | — | T2(3/12)@capo:V47∞;0 CP. Dev lv02 no-mod exit0;jr VJ5 5 hunk drawPlayerCar blocc 27/27;gf g212;VJ3 lv05 FAIL. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-26 | — | T5(9/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv04 g40→lv05;jr VJ5/VJ1 27/27 D20 invariato;gf g212;VJ3 lv05 FAIL. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-26 | — | T1(0/12)@capo:V47∞;CHK no peer;gate no;0 CP chiudibili. D20 5 hunk;VJ3 lv05 FAIL 2.40%;handoff dev16:36/jr16:52/gf09:27. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-26 | — | T1(0/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv02 g40 exit0 spike61ms;jr 27/27 VJ1 lv01 ok pali lv06 ex27 D20 inv;gf g212. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |

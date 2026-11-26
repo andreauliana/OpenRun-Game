@@ -111,6 +111,11 @@ Aggiunta 26/11 (turno 5): l'ultima logica rimasta inline in main() (controllo
 'CATALOGO esiste?', messaggio di errore e scelta del codice 4/0) e' ora la funzione
 pura esito_main(esiste, cat, trovati, percorso), provata in autotest: il messaggio
 di catalogo mancante e la policy d'uscita stanno in un punto solo. L'output non cambia.
+
+Aggiunta 26/11 (turno 6): classifica() riceve l'elenco dei noti iniettabile
+(default NOTI_NON_ASSET) invece di leggere sempre il globale, come le funzioni di
+stampa rese pure nei turni prima; nota in testa e autotest dedicato (noti custom,
+vuoto, default). La chiamata in analizza_png() usa il default: l'output non cambia.
 """
 import glob
 import json
@@ -150,10 +155,18 @@ NOTI_NON_ASSET = {
 }
 
 
-def classifica(fuori):
-    """Divide i PNG fuori catalogo in noti (con motivo) e nuovi da decidere."""
-    noti = [f for f in fuori if f in NOTI_NON_ASSET]
-    da_decidere = [f for f in fuori if f not in NOTI_NON_ASSET]
+def classifica(fuori, noti_noti=None):
+    """Divide i PNG fuori catalogo in noti (con motivo) e nuovi da decidere.
+
+    L'elenco dei residui noti e' iniettabile (default NOTI_NON_ASSET), come per
+    le funzioni di stampa rese pure nei turni prima: cosi' l'autotest prova i
+    casi 'noti custom' e 'nessun noto' senza leggere il globale. La chiamata in
+    analizza_png() lascia il default, quindi l'output di main() non cambia.
+    """
+    if noti_noti is None:
+        noti_noti = NOTI_NON_ASSET
+    noti = [f for f in fuori if f in noti_noti]
+    da_decidere = [f for f in fuori if f not in noti_noti]
     return noti, da_decidere
 
 
@@ -481,6 +494,28 @@ def autotest():
         and da_decidere == ["GRAFICA/sprite/traffico/nuovo_ridisegno.png"]
     )
     print("autotest classifica: " + ("OK" if ok else "FALLITO"))
+    # classifica con elenco di noti iniettabile: un noto custom viene riconosciuto,
+    # un PNG fuori dall'elenco resta da decidere; con elenco vuoto tutti sono da
+    # decidere; il default (None) resta NOTI_NON_ASSET e non cambia l'output.
+    noti_custom = {
+        "GRAFICA/sprite/giocatore_pose/car-custom.png": "motivo custom",
+    }
+    ok_iniet = (
+        classifica(
+            ["GRAFICA/sprite/giocatore_pose/car-custom.png", "GRAFICA/sprite/traffico/nuovo.png"],
+            noti_noti=noti_custom,
+        ) == (
+            ["GRAFICA/sprite/giocatore_pose/car-custom.png"],
+            ["GRAFICA/sprite/traffico/nuovo.png"],
+        )
+        and classifica(
+            ["GRAFICA/sprite/giocatore_pose/car-custom.png"], noti_noti={}
+        ) == ([], ["GRAFICA/sprite/giocatore_pose/car-custom.png"])
+        and classifica(["GRAFICA/sprite/giocatore_pose/car-custom.png"])
+        == (["GRAFICA/sprite/giocatore_pose/car-custom.png"], [])
+    )
+    ok = ok and ok_iniet
+    print("autotest classifica_iniettabile: " + ("OK" if ok_iniet else "FALLITO"))
     ok_spariti = (
         noti_mancanti([
             "GRAFICA/sprite/giocatore_pose/car-custom.png",
