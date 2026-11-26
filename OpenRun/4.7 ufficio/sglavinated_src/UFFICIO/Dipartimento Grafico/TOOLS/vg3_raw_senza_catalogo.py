@@ -95,6 +95,18 @@
 # NOTI_RAW_MANCANTI) invece di leggere il globale, come fanno gia' le funzioni
 # che stampano le righe; autotest dedicato con elenco di noti diverso. Output
 # invariato.
+# Aggiunta 26/11 (turno 18:24): l'elenco dei noti raw-mancanti e' iniettabile
+# anche in noti_risolti(), classifica_report() e righe_report() (default
+# NOTI_RAW_MANCANTI), come gia' in classifica_inesistenti/righe_*: la politica
+# dei noti e' cosi' provabile in isolamento. Output invariato.
+# Aggiunta 26/11 (turno 18:42): la serializzazione delle righe del report in
+# main() (ciclo print) e' estratta in testo_report(), funzione pura con autotest
+# su ordine, separatori e lista vuota; main() stampa il testo se non vuoto.
+# Output invariato.
+# Aggiunta 26/11 (turno 19:16): la sequenza di letture disco di main()
+# (carica_catalogo -> raw_su_disco -> esiste_raw -> report_da_dati) e' estratta
+# in report_da_disco(), con carica/scansiona/esiste iniettabili e autotest
+# dedicato senza file reali; main() passa solo i path noti. Output invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -278,15 +290,18 @@ def classifica_inesistenti(inesistenti, motivi=None):
     return noti, nuovi
 
 
-def noti_risolti(presenti):
+def noti_risolti(presenti, motivi=None):
     """Noti raw-mancanti ricomparsi su disco (funzione pura).
 
-    Se un raw dell'elenco NOTI_RAW_MANCANTI torna a esistere, l'eccezione non
-    e' piu' necessaria: segnalarlo evita che l'elenco resti stantio e nasconda
-    un cambiamento reale. Diagnosi informativa, non cambia l'exit.
+    Se un raw dell'elenco dei noti torna a esistere, l'eccezione non e' piu'
+    necessaria: segnalarlo evita che l'elenco resti stantio e nasconda un
+    cambiamento reale. motivi e' l'elenco noti (default NOTI_RAW_MANCANTI),
+    iniettabile come in classifica_inesistenti(). Diagnosi informativa.
     """
+    if motivi is None:
+        motivi = NOTI_RAW_MANCANTI
     visti = set(presenti)
-    return sorted(r for r in NOTI_RAW_MANCANTI if r in visti)
+    return sorted(r for r in motivi if r in visti)
 
 
 RAW_PREFIX = RAW_ROOT.relative_to(RADICE).as_posix() + "/"
@@ -400,42 +415,48 @@ def righe_sospetti(sospetti, riferimenti):
     ]
 
 
-def classifica_report(res, raws):
+def classifica_report(res, raws, motivi=None):
     """Classificazioni intermedie del report (funzione pura).
 
     Raggruppa i calcoli derivati usati da righe_report(): noti/nuovi fra gli
     inesistenti, validi/sospetti fra i riferimenti, e noti risolti su disco.
-    Nessun accesso al disco; raws e' la lista dei path raw presenti.
+    motivi e' l'elenco noti (default NOTI_RAW_MANCANTI), passato alle due
+    funzioni che lo usano. Nessun disco; raws e' la lista dei raw presenti.
     """
-    noti, nuovi = classifica_inesistenti(res["raw_inesistenti"])
+    if motivi is None:
+        motivi = NOTI_RAW_MANCANTI
+    noti, nuovi = classifica_inesistenti(res["raw_inesistenti"], motivi)
     validi, sospetti = classifica_percorsi(res["riferimenti"])
     return {
         "noti": noti,
         "nuovi": nuovi,
         "validi": validi,
         "sospetti": sospetti,
-        "risolti": noti_risolti(raws),
+        "risolti": noti_risolti(raws, motivi),
     }
 
 
-def righe_report(res, raws):
+def righe_report(res, raws, motivi=None):
     """Righe complete del report, nello stesso ordine di main() (funzione pura).
 
     Compone le sezioni gia' testate (senza_voce, inesistenti, classificazione,
     sospetti, risolti, riepilogo) usando classifica_report() per i derivati.
-    Nessun accesso al disco; main() si limita a stamparle e a decidere l'exit.
+    motivi e' l'elenco noti (default NOTI_RAW_MANCANTI), passato a tutte le
+    sezioni che lo leggono. Nessun disco; main() stampa e decide l'exit.
     """
-    c = classifica_report(res, raws)
+    if motivi is None:
+        motivi = NOTI_RAW_MANCANTI
+    c = classifica_report(res, raws, motivi)
     noti, nuovi = c["noti"], c["nuovi"]
     validi, sospetti, risolti = c["validi"], c["sospetti"], c["risolti"]
     righe = []
     righe.extend(righe_senza_voce(res["senza_voce"]))
-    righe.extend(righe_inesistenti(noti, nuovi, res["riferimenti"], NOTI_RAW_MANCANTI))
+    righe.extend(righe_inesistenti(noti, nuovi, res["riferimenti"], motivi))
     righe.extend(righe_classificazione(
         res["duplicati"], res["ripetuti_in_voce"], res["scritture"]
     ))
     righe.extend(righe_sospetti(sospetti, res["riferimenti"]))
-    righe.extend(righe_risolti(risolti, NOTI_RAW_MANCANTI))
+    righe.extend(righe_risolti(risolti, motivi))
     righe.extend(righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti))
     return righe
 
@@ -507,6 +528,39 @@ def report_da_dati(elementi, raws, esiste):
     """
     res = analizza(raws, elementi, esiste)
     return righe_report(res, raws), codice_uscita(res)
+
+
+def testo_report(righe):
+    """Serializza le righe del report in un testo (funzione pura).
+
+    Era il ciclo 'for riga in righe: print(riga)' in main(): qui si prova in
+    isolamento che ordine e separatori (una riga per elemento, nessuna riga
+    vuota in coda) restino invariati. main() stampa il testo solo se non vuoto,
+    come faceva il ciclo (che non stampava nulla per una lista vuota).
+    """
+    return "\n".join(righe)
+
+
+def report_da_disco(catalogo, radice, raw_root, carica=None, scansiona=None, esiste=None):
+    """Sequenza disco -> report, con letture iniettabili (pura se le riceve).
+
+    Erano le tre righe inline in main(): caricare il catalogo, scandire i raw
+    su disco, costruire il callable di esistenza e passare tutto a
+    report_da_dati(). carica(path) -> dict con 'elementi',
+    scansiona(radice, raw_root) -> path raw relativi, esiste(r) -> bool.
+    Di default si usano carica_catalogo/raw_su_disco/esiste_raw(radice).
+    Ritorna (righe, codice) come report_da_dati(); il chiamante che inietta
+    le tre dipendenze non tocca il disco.
+    """
+    if carica is None:
+        carica = carica_catalogo
+    if scansiona is None:
+        scansiona = raw_su_disco
+    if esiste is None:
+        esiste = esiste_raw(radice)
+    dati = carica(catalogo)
+    raws = scansiona(radice, raw_root)
+    return report_da_dati(dati["elementi"], raws, esiste)
 
 
 def autotest():
@@ -875,17 +929,87 @@ def autotest():
         and not any(r.startswith("RAW NON CATALOGATO") for r in righe_ok)
     )
     prove.append(("report_da_dati", ok_orchestra))
+    # testo_report: serializzazione provata in isolamento, senza disco.
+    ok_testo = (
+        testo_report(["riga 1", "riga 2"]) == "riga 1\nriga 2"
+        and testo_report(["unica"]) == "unica"
+        and testo_report([]) == ""
+    )
+    prove.append(("testo_report", ok_testo))
+    # report_da_disco: sequenza di letture provata con dipendenze finte, senza
+    # aprire il catalogo reale ne' scansionare la cartella dei raw.
+    el_disco = [{"id": "a", "raw": "raw/a.sglraw"}]
+    raws_disco = ["raw/a.sglraw", "raw/orfano.sglraw"]
+    esiste_disco = lambda r: r in {"raw/a.sglraw"}
+    chiamate = []
+
+    def carica_finta(path):
+        chiamate.append(("carica", path))
+        return {"elementi": el_disco}
+
+    def scansiona_finta(radice, raw_root):
+        chiamate.append(("scansiona", radice, raw_root))
+        return raws_disco
+
+    righe_disco, codice_disco = report_da_disco(
+        Path("/finto/catalogo.json"), Path("/finto"), Path("/finto/raw"),
+        carica=carica_finta, scansiona=scansiona_finta, esiste=esiste_disco,
+    )
+    atteso_disco = report_da_dati(el_disco, raws_disco, esiste_disco)
+    righe_disco_ok, codice_disco_ok = report_da_disco(
+        Path("/finto/catalogo.json"), Path("/finto"), Path("/finto/raw"),
+        carica=lambda p: {"elementi": el_disco},
+        scansiona=lambda r, rr: ["raw/a.sglraw"],
+        esiste=lambda r: True,
+    )
+    ok_report_disco = (
+        (righe_disco, codice_disco) == atteso_disco
+        and codice_disco == 1
+        and any(r.startswith("RAW NON CATALOGATO raw/orfano.sglraw") for r in righe_disco)
+        and codice_disco_ok == 0
+        and not any(r.startswith("RAW NON CATALOGATO") for r in righe_disco_ok)
+        and chiamate == [
+            ("carica", Path("/finto/catalogo.json")),
+            ("scansiona", Path("/finto"), Path("/finto/raw")),
+        ]
+    )
+    prove.append(("report_da_disco", ok_report_disco))
+    # Elenco noti iniettabile lungo tutta la catena: un elenco finto cambia
+    # noti/nuovi/risolti e le righe, senza toccare NOTI_RAW_MANCANTI.
+    motivi_finti = {"raw/n1.sglraw": "motivo finto"}
+    res_iniettabile = {
+        "senza_voce": [],
+        "voci_con_raw": 2,
+        "riferimenti": {"raw/n1.sglraw": ["v1"], "raw/n2.sglraw": ["v2"]},
+        "raw_inesistenti": ["raw/n1.sglraw", "raw/n2.sglraw"],
+        "duplicati": {},
+        "ripetuti_in_voce": {},
+        "scritture": {},
+    }
+    c_in = classifica_report(res_iniettabile, ["raw/n1.sglraw"], motivi_finti)
+    righe_in = righe_report(res_iniettabile, ["raw/n1.sglraw"], motivi_finti)
+    ok_iniettabile = (
+        noti_risolti(["raw/n1.sglraw", "raw/x.sglraw"], motivi_finti)
+        == ["raw/n1.sglraw"]
+        and c_in["noti"] == ["raw/n1.sglraw"]
+        and c_in["nuovi"] == ["raw/n2.sglraw"]
+        and c_in["risolti"] == ["raw/n1.sglraw"]
+        and "RAW MANCANTE NOTO raw/n1.sglraw ['v1'] (motivo finto)" in righe_in
+        and "RAW IN CATALOGO MA NON SU DISCO raw/n2.sglraw ['v2']" in righe_in
+        and "RAW NOTO ORA PRESENTE raw/n1.sglraw (aggiornare NOTI_RAW_MANCANTI: motivo finto)" in righe_in
+        and noti_risolti(["raw/n1.sglraw"]) == []
+    )
+    prove.append(("motivi_iniettabile", ok_iniettabile))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
     return 0 if all(ok for _, ok in prove) else 1
 
 
 def main():
-    cat = carica_catalogo(CATALOGO)
-    raws = raw_su_disco(RADICE, RAW_ROOT)
-    righe, codice = report_da_dati(cat["elementi"], raws, esiste_raw(RADICE))
-    for riga in righe:
-        print(riga)
+    righe, codice = report_da_disco(CATALOGO, RADICE, RAW_ROOT)
+    testo = testo_report(righe)
+    if testo:
+        print(testo)
     return codice
 
 

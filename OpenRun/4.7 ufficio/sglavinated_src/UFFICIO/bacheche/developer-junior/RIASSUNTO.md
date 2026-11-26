@@ -1,10 +1,10 @@
-# RIASSUNTO — @developer-junior (26/11 17:59, turno 2)
+# RIASSUNTO — @developer-junior (26/11 19:15, turno 1)
+
 - **Ruolo**: review/collaudo, test/diagnosi, fix minimi solo su perimetri autorizzati (no src permanente).
-- **Ultimo (17:59-18:15) VJ5 ∞**: nessun cambio nuovo in `src/` (HEAD `c146cb5`, 11 hunk renderer.cpp gia' review). Angolo = diagnosi/fix driver gate `pali` (prova_gate.cpp:2604-2613, perimetro test).
-- **Tentativo pali (revertito)**: driver adattivo (push 880, rientro speed<150, fascia 880-1200 dritto) -> REGRESSIONE lv_01 (x 864-888, hit 0: vicino a PALO_X=860, ratio 3% non rilevato; vecchio driver: drift naturale a x=1532, 10 hit) e lv_06 ancora exit 27 (vel 72-92<150, spPrima>150 mai vera). Driver ripristinato identico.
-- **Rilievo confermato**: gate `pali` lv_01-tuned; su lv_06 condizione speed>150 al bordo non raggiunta. Non regressione gioco (src invariato). Per @capo/@developer: dichiarare lv_01-only o driver con build-up speed + slancio, provato su lv_01.
-- **RILIEVO BLOCCANTE (invariato)**: 5 hunk in `drawPlayerCar` (REGOLA BLOCCATA Andrea 06/11) -> autorizzazione o revert. Area grigia `drawEffettiAuto` non bloccante.
-- **Prove (26/11 18:15)**: `ctest --test-dir UFFICIO/Officina/build --output-on-failure` exit 0 (27/27, 163.99 s). `prova_gate .../vj5_pali_lv01_revert_2611_1812 lv_01_neon pali` exit 0 (OK, hit 10). `prova_gate .../vj5_pali_lv06_fix_2611_1803 lv_06_desktop pali` exit 27. `gate_t1.sh` non eseguito.
-- **VJ3**: lv_05_spray 2.40% FALLITO (deterministico, exit 22) -> aperto per @developer. **VJ4**: chiuso 6/6.
-- **Prossimo passo ∞**: VJ5 su prossimo cambio in `src/`; oppure angolo diverso (es. verifica_sportellata/frequenza su livelli non recenti) o follow-up gate pali se @developer lo assegna.
+- **Ultimo VJ5 (19:15)**: src invariato (HEAD `c146cb5`). Review drawRotatedRect in `drawPlayerCar`.
+- **Finding**: `renderer.cpp:2806` x-loop senza clamp xMin/xMax (solo guard 2812), incoerente con V9 drawDetrito/drawCerchio/fumo; semplificazione no resa/replay ma REGOLA BLOCCATA drawPlayerCar (solo rilievo).
+- **Prove (26/11 19:15)**: `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0; `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 140.17s). gate_t1.sh non eseguito.
+- **VJ3**: 6/6 misurati — lv_01/02/03/04/06 OK; lv_05_spray 2.40%>2.00% FALLITO deterministico (exit 22) aperto per @developer.
+- **VJ4**: chiuso 6/6. **VJ5**: rilievo bloccante drawPlayerCar invariato (REGOLA BLOCCATA 06/11).
+- **Prossimo passo ∞**: VJ5 review prossimo cambio `src/` o VJ1 se nuovo passo V del @developer; VJ3 lv_05 resta a @developer.
 - **Vincoli**: RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli; REGOLA BLOCCATA; solo file consentiti.

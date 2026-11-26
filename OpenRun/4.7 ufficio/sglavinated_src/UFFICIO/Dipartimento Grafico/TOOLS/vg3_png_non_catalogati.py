@@ -116,6 +116,11 @@ Aggiunta 26/11 (turno 6): classifica() riceve l'elenco dei noti iniettabile
 (default NOTI_NON_ASSET) invece di leggere sempre il globale, come le funzioni di
 stampa rese pure nei turni prima; nota in testa e autotest dedicato (noti custom,
 vuoto, default). La chiamata in analizza_png() usa il default: l'output non cambia.
+
+Aggiunta 26/11 (turno 7): l'ultima logica rimasta inline in main() (il ciclo
+'for riga in righe: print(riga)') e' ora la funzione pura testo_report(), provata
+in autotest: Una riga per elemento, nessuna riga vuota in coda e stampa solo se
+il testo non e' vuoto. L'output non cambia.
 """
 import glob
 import json
@@ -472,13 +477,25 @@ def esito_main(esiste, cat, trovati, percorso):
     return report_da_dati(cat, trovati), 0
 
 
+def testo_report(righe):
+    """Serializza le righe del report in un testo (funzione pura).
+
+    Era il ciclo 'for riga in righe: print(riga)' in main(): qui si prova in
+    isolamento che ordine e separatori (una riga per elemento, nessuna riga
+    vuota in coda) restino invariati. main() stampa il testo solo se non vuoto,
+    come faceva il ciclo (che non stampava nulla per una lista vuota).
+    """
+    return "\n".join(righe)
+
+
 def main() -> int:
     esiste = CATALOGO.exists()
     cat = carica_catalogo(CATALOGO) if esiste else None
     trovati = png_trovati(LIBRERIA, PATTERN) if esiste else []
     righe, codice = esito_main(esiste, cat, trovati, CATALOGO)
-    for riga in righe:
-        print(riga)
+    testo = testo_report(righe)
+    if testo:
+        print(testo)
     return codice
 
 
@@ -808,6 +825,14 @@ def autotest():
     ) == (report_da_dati({"elementi": []}, [x]), 0)
     ok = ok and ok_main
     print("autotest esito_main: " + ("OK" if ok_main else "FALLITO"))
+    # testo_report: serializzazione provata in isolamento, senza disco.
+    ok_testo = (
+        testo_report(["riga 1", "riga 2"]) == "riga 1\nriga 2"
+        and testo_report(["unica"]) == "unica"
+        and testo_report([]) == ""
+    )
+    ok = ok and ok_testo
+    print("autotest testo_report: " + ("OK" if ok_testo else "FALLITO"))
     return 0 if ok else 1
 
 

@@ -1,15 +1,15 @@
-# STATUS_GRAFICO_PER_CAPO — @grafico (26/11/2026 09:27, Turno 1, giro 212)
-- **Blocco/passo:** V47 VG3 ∞ — confronto date/contenuto PNG di `GRAFICA/scenari/` coi `.sglraw`; produzione su `vg3_raw_senza_catalogo.py` (diverso dal turno prima: `vg3_png_non_catalogati.py`).
-- **Stato:** area mia allineata, 0 conversioni. Skyline 6/6; 165 PNG (133 confrontati, 32 non motore), 80 oggetti senza raw 0, altri 47 raw/46 allineati/0 da convertire, doppia estensione 0. 155 raw/155 tracciati, 0 senza voce; 153 voci/159 riferimenti, 4 refs noti area auto bloccata, 0 duplicati/ripetuti/scritture diverse/sospetti. 3 PNG non catalogati noti non-asset, 0 da decidere. 5 pose `_b` con raw e senza PNG: area Andrea, non azionabile.
-- **Materiali modificati:** nessun PNG/raw/catalogo. Codice: `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py` — il caricamento inline del catalogo (`json.loads(CATALOGO.read_text(...))` in `main()`) estratto in `carica_catalogo(path, leggi=None)` pura con lettura iniettabile (default `Path.read_text`), usata in `main()`, nota in testa, autotest dedicato (2 casi); output invariato.
+# STATUS_GRAFICO_PER_CAPO — @grafico (26/11/2026 19:16, Turno 1, giro 228)
+- **Blocco/passo:** V47 VG3 ∞ — confronto date/contenuto PNG di `GRAFICA/scenari/` coi `.sglraw`; produzione su `vg3_raw_senza_catalogo.py` (diverso dal turno prima: `vg3_date_png_raw.py`).
+- **Stato:** area mia allineata, 0 conversioni. Skyline 6/6; 165 PNG (133 confrontati, 32 non motore), 80 oggetti senza raw 0, altri 47 raw/46 allineati, 1 png piu' nuovo a pari contenuto, doppia estensione 0. 155 raw/155 tracciati, 0 senza voce; 153 voci/159 riferimenti, 4 refs noti area auto bloccata, 0 risolti, 0 duplicati/ripetuti/scritture diverse/sospetti. 3 PNG non catalogati noti non-asset, 0 da decidere. 5 pose `_b` con raw e senza PNG: area Andrea, non azionabile.
+- **Materiali modificati:** nessun PNG/raw/catalogo. Codice: `UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py` — la sequenza di letture disco in `main()` (carica_catalogo -> raw_su_disco -> esiste_raw -> report_da_dati) estratta in `report_da_disco(catalogo, radice, raw_root, carica=None, scansiona=None, esiste=None)`, pura con dipendenze iniettabili, usata in `main()`, nota in testa, autotest dedicato (dati finti, chiamate registrate); output invariato.
 - **Catalogo/licenze:** `CATALOGO_GRAFICO.json` invariato; zero risorse esterne, zero materiale Sega.
-- **Comandi ed exit code (26/11 09:27):**
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155/155, 0 senza voce, 4 refs noti bloccati); output identico al baseline.
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` — exit 0 (28 prove OK, prima 27).
+- **Comandi ed exit code (26/11 19:16):**
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py"` — exit 0 (155/155, 0 senza voce, 4 noti bloccati); output identico al baseline.
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_raw_senza_catalogo.py" --autotest` — exit 0 (32 prove OK, prima 31).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"` — exit 0 (0 da convertire, 6/6 skyline, 165 PNG/133 confrontati, doppia estensione 0).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py" --autotest` — exit 0 (27 prove OK).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py" --autotest` — exit 0 (33 prove OK).
   - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py"` — exit 0 (3 noti non-asset, 0 da decidere).
-  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py" --autotest` — exit 0 (24 prove OK).
+  - `python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_png_non_catalogati.py" --autotest` — exit 0 (28 prove OK).
 - **Lacune/blocchi:** auto del giocatore (5 pose `_b`, 3 `car-custom*`, 4 raw sx1/sx3) e cartelloni sponsor: area Andrea, non azionabile da qui.
-- **Gate:** non eseguito (26/11 09:27). **Review richiesta:** nessuna (il blocco non chiede una REVIEW_).
-- **Prossimo:** VG3 ∞ — ricontrollare PNG/raw nuovi; convertire solo se PNG piu' nuovo, mai area Andrea; prossimo tool `vg3_date_png_raw.py`.
+- **Gate:** non eseguito (26/11 19:16). **Review richiesta:** nessuna (il blocco non chiede una REVIEW_).
+- **Prossimo:** VG3 ∞ — ricontrollare PNG/raw nuovi; convertire solo se PNG piu' nuovo, mai area Andrea; prossimo tool `vg3_png_non_catalogati.py`.

@@ -2601,13 +2601,18 @@ bool verificaPali(const std::string& outDir, const std::string& livello) {
         Pad pad;
         pad.held = (u64)Pad::A;       // accelera
         const auto& stBefore = game.state();
-        // Sterza a destra ma controllato per restare sulla strada e avvicinarsi ai paletti
-        if (stBefore.playerOffroad) {
-            pad.held |= (u64)Pad::Left; // cerca di rientrare
+        // Sterza a destra per colpire i paletti. Se velocita' bassa, prima
+        // riprendi velocita' in strada (lv_06 resta bloccato in erba a ~80);
+        // oltre soglia lascia derivare oltre la fascia paletti come il driver originale.
+        const f32 sp = stBefore.playerSpeed;
+        if (stBefore.playerOffroad && sp < 180.0f) {
+            pad.held |= (u64)Pad::Left; // rientra per riprendere velocita'
+        } else if (sp < 180.0f) {
+            // in strada ma lento: accelera dritto, non spingere verso il bordo
         } else if (stBefore.playerX < 400.0f) {
             pad.held |= (u64)Pad::Right;
         } else if (stBefore.playerX > 700.0f) {
-            pad.held &= ~(u64)Pad::Right;
+            // niente sterzo: lascia derivare oltre i paletti
         } else {
             pad.held |= (u64)Pad::Right;
         }

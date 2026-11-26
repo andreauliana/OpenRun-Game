@@ -43,6 +43,9 @@
 # 'manca') sta in riga_doppia_nome_atteso(): prima formato e data erano inline in
 # main(), cosi' un cambio delle altre righe della stessa diagnosi poteva lasciarla
 # vecchia e non si poteva provare senza toccare GRAFICA.
+# Anche la riga 'il nome corretto ... esiste (data), allineato/diverso dal raw' sta in
+# riga_doppia_nome_corretto(): il ternario era inline in main(), cosi' un cambio delle
+# altre righe della diagnosi poteva lasciarla vecchia e non si poteva provare a parte.
 # Il confronto del PNG col nome corretto e il suo raw sta in confronto_nome_ok(): la
 # riga 'allineato al raw' di main() e lo stato sintetico leggono la stessa funzione,
 # cosi' non possono contraddirsi se una delle due diagnosi viene modificata.
@@ -86,6 +89,10 @@
 # Anche la riga SKYLINE-MANCA (skyline senza PNG o senza raw) sta in
 # riga_skyline_manca(): prima il formato era inline in main(), cosi' un cambio della
 # sintesi non aggiornava la riga e non si poteva provare senza toccare GRAFICA.
+# La riga ALTRI-RESIDUO del PNG noto non usato dal motore sta in
+# riga_altri_residuo(): prima era un print inline in main(), cosi' un cambio
+# dell'etichetta in un'altra riga dei gruppi 1:1 poteva lasciarla vecchia e non
+# si poteva provare a parte senza toccare GRAFICA.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -492,6 +499,22 @@ def riga_doppia_nome_atteso(gruppo, nome, doppia, raw_esiste, quando_raw):
         f" raw {doppia}.sglraw "
         + (f"esiste ({quando_raw})" if raw_esiste else "manca")
         + ": rinominare o convertire decide Andrea"
+    )
+
+
+def riga_doppia_nome_corretto(gruppo, nome_png, doppia, quando_nome, allineato):
+    """Riga del nome corretto di un residuo .png.png (funzione pura).
+
+    Prima il formato e il ternario 'allineato al raw' / 'diverso dal raw' stavano
+    inline in main(): un cambio delle altre righe della stessa diagnosi poteva
+    lasciarla vecchia e non si poteva provare senza toccare GRAFICA. Non scrive
+    nulla: main() passa la data gia' letta e lo stato gia' calcolato.
+    """
+    return (
+        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{nome_png}: il nome corretto"
+        f" {doppia}.png esiste ({quando_nome}), "
+        + ("allineato al raw" if allineato else "diverso dal raw")
+        + ": il .png.png non e' l'asset che il motore legge"
     )
 
 
@@ -924,6 +947,19 @@ def riga_png_senza_raw(tipo, chiave, quando):
     raise ValueError(f"tipo di PNG senza raw non noto: {tipo}")
 
 
+def riga_altri_residuo(gruppo, nome, quando):
+    """Riga di diagnosi per un PNG noto non letto dal motore (funzione pura).
+
+    Prima il formato era un print inline in main(): cambiando l'etichetta di
+    un'altra riga dei gruppi 1:1 questa poteva restare vecchia e non si poteva
+    provare a parte. Non scrive nulla: il PNG resta di Andrea.
+    """
+    return (
+        f"ALTRI-RESIDUO {gruppo}/{nome}: png {quando}"
+        " (nessun raw, non usato)"
+    )
+
+
 def main():
     verbose = "--verbose" in sys.argv
     totale = diversi = senza_png = png_piu_nuovo = allineati = trame = 0
@@ -1020,7 +1056,7 @@ def main():
         if not raw.exists():
             if png.relative_to(ASSETS).as_posix() in RESIDUI_NON_MOTORE:
                 altri_residui += 1
-                print(f"ALTRI-RESIDUO {gruppo}/{png.stem}: png {data(png)} (nessun raw, non usato)")
+                print(riga_altri_residuo(gruppo, png.stem, data(png)))
                 continue
             altri_orfani += 1
             doppia, nome_ok, raw_base = percorsi_doppia(png, raw)
@@ -1044,10 +1080,9 @@ def main():
                 if nome_ok.exists():
                     allineato = confronto_nome_ok(nome_ok, raw_base) == "allineato"
                     print(
-                        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: il nome corretto"
-                        f" {doppia}.png esiste ({data(nome_ok)}), "
-                        + ("allineato al raw" if allineato else "diverso dal raw")
-                        + ": il .png.png non e' l'asset che il motore legge"
+                        riga_doppia_nome_corretto(
+                            gruppo, png.name, doppia, data(nome_ok), allineato
+                        )
                     )
                 sintesi = stato_risoluzione_doppia(png, raw_base, nome_ok)
                 print(
@@ -1517,6 +1552,35 @@ if __name__ == "__main__":
         )
         ok = ok and ok_nome_atteso
         print("autotest riga_doppia_nome_atteso: " + ("OK" if ok_nome_atteso else "FALLITO"))
+        # riga_doppia_nome_corretto: i due rami allineato/diverso del nome corretto,
+        # prima un ternario inline in main(), restano provabili senza toccare GRAFICA.
+        ok_nome_corretto = (
+            riga_doppia_nome_corretto(
+                "traffico_incrocio", "lato.png.png", "lato", "26/11 18:10", True
+            )
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: il nome corretto"
+            " lato.png esiste (26/11 18:10), allineato al raw:"
+            " il .png.png non e' l'asset che il motore legge"
+            and riga_doppia_nome_corretto(
+                "traffico_incrocio", "lato.png.png", "lato", "26/11 18:10", False
+            )
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: il nome corretto"
+            " lato.png esiste (26/11 18:10), diverso dal raw:"
+            " il .png.png non e' l'asset che il motore legge"
+        )
+        ok = ok and ok_nome_corretto
+        print("autotest riga_doppia_nome_corretto: " + ("OK" if ok_nome_corretto else "FALLITO"))
+        # riga_altri_residuo: formato esatto del PNG noto non usato dal motore,
+        # prima inline in main() e non provabile senza toccare GRAFICA. Il nome
+        # resta tale (nessuna normalizzazione) e la data e' quella passata.
+        ok_residuo = (
+            riga_altri_residuo("rivali", "auto_giocatore_sbandata", "26/11 18:00")
+            == "ALTRI-RESIDUO rivali/auto_giocatore_sbandata: png 26/11 18:00 (nessun raw, non usato)"
+            and riga_altri_residuo("traffico", "x.png", "D2")
+            == "ALTRI-RESIDUO traffico/x.png: png D2 (nessun raw, non usato)"
+        )
+        ok = ok and ok_residuo
+        print("autotest riga_altri_residuo: " + ("OK" if ok_residuo else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()
