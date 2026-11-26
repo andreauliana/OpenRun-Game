@@ -39,6 +39,10 @@
 # ALTRI-PNG-DOPPIA-ESTENSIONE e il nome vero: lo stem lo faceva passare per x.png, che
 # ha il suo raw, e il residuo restava illeggibile. Non si rinomina e non si converte
 # da qui: la decisione e' di Andrea.
+# La riga del nome atteso e del raw del nome corretto (col ramo 'esiste (data)' /
+# 'manca') sta in riga_doppia_nome_atteso(): prima formato e data erano inline in
+# main(), cosi' un cambio delle altre righe della stessa diagnosi poteva lasciarla
+# vecchia e non si poteva provare senza toccare GRAFICA.
 # Il confronto del PNG col nome corretto e il suo raw sta in confronto_nome_ok(): la
 # riga 'allineato al raw' di main() e lo stato sintetico leggono la stessa funzione,
 # cosi' non possono contraddirsi se una delle due diagnosi viene modificata.
@@ -473,6 +477,22 @@ def suffisso_stato_doppia(sintesi):
     if sintesi == "risolto":
         return " (asset corretto gia' allineato, nessuna conversione VG3)"
     return " (decide Andrea: rinominare/convertire)"
+
+
+def riga_doppia_nome_atteso(gruppo, nome, doppia, raw_esiste, quando_raw):
+    """Riga del nome corretto e del suo raw per un residuo .png.png (funzione pura).
+
+    Il formato e il ramo 'esiste (data)' / 'manca' stavano inline in main(): se
+    l'etichetta o la data cambiavano in un'altra riga della stessa diagnosi, questa
+    poteva restare vecchia e non si poteva provare a parte. Non scrive nulla: PNG
+    e raw restano di Andrea. quando_raw e' ignorato quando raw_esiste e' False.
+    """
+    return (
+        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{nome}: nome atteso {doppia}.png;"
+        f" raw {doppia}.sglraw "
+        + (f"esiste ({quando_raw})" if raw_esiste else "manca")
+        + ": rinominare o convertire decide Andrea"
+    )
 
 
 def png_coperti():
@@ -1011,10 +1031,10 @@ def main():
                     " (doppia estensione: il catalogo non lo vede)"
                 )
                 print(
-                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: nome atteso {doppia}.png;"
-                    f" raw {doppia}.sglraw "
-                    + (f"esiste ({data(raw_base)})" if raw_base.exists() else "manca")
-                    + ": rinominare o convertire decide Andrea"
+                    riga_doppia_nome_atteso(
+                        gruppo, png.name, doppia, raw_base.exists(),
+                        data(raw_base) if raw_base.exists() else None,
+                    )
                 )
                 stato, dettaglio = stato_doppia_estensione(png, raw_base)
                 print(
@@ -1481,6 +1501,22 @@ if __name__ == "__main__":
         ok_png_senza_raw = ok_png_senza_raw and tipo_errato
         ok = ok and ok_png_senza_raw
         print("autotest riga_png_senza_raw: " + ("OK" if ok_png_senza_raw else "FALLITO"))
+        # riga_doppia_nome_atteso: il ramo 'esiste (data)' / 'manca' del raw del nome
+        # corretto, prima inline in main(), resta provabile senza toccare GRAFICA.
+        ok_nome_atteso = (
+            riga_doppia_nome_atteso(
+                "traffico_incrocio", "lato.png.png", "lato", True, "26/11 18:00"
+            )
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: nome atteso lato.png;"
+            " raw lato.sglraw esiste (26/11 18:00): rinominare o convertire decide Andrea"
+            and riga_doppia_nome_atteso(
+                "traffico_incrocio", "lato.png.png", "lato", False, None
+            )
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: nome atteso lato.png;"
+            " raw lato.sglraw manca: rinominare o convertire decide Andrea"
+        )
+        ok = ok and ok_nome_atteso
+        print("autotest riga_doppia_nome_atteso: " + ("OK" if ok_nome_atteso else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()
