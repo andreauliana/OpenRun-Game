@@ -63,3 +63,6 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-25 | — | T2(3/12)@capo:V47∞;CHK auto no peer;gate no;0 CP chiusi. Handoff invariati;STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-25 | — | T3(4/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv02 g38b→lv03;jr VJ4 soak lv01 30k IDENTICO 39ms>20 ma OK→lv02+VJ5;gf g183. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-25 | — | T3(5/12)@capo:V47∞;CHK auto no peer;gate no;0 CP. Dev lv05 g38b→lv06;jr VJ4 lv04 ok→lv05/06+VJ5;gf g183. STATI/STATO/RIASS/diario agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-26 | — | T1(0/12)@capo:fonti lette;V47∞;CHK auto no peer;gate no;0 CP chiudibili. Handoff invariati;STATI/STATO agg. | APERTO (MIG1 [~], V47 [~]) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-26 | — | T1(0/12)@capo:dev V9 lv02 g38c tocca drawPlayerCar(REGOLA BLOCCATA)→BLOCCATO; jr VJ4 6/6 ok VJ5 segnala; gf g183. 0 CP. | BLOCCATO (V9 hunk 2-3 drawPlayerCar) | STATI_PROPOSTI.md;STATO_CORRENTE.md;REVIEW_V47.md |
+| 2026-11-26 | — | T1(1/12)@capo:dev g39 lv05 ok ma D20 drawPlayerCar aperto;jr VJ3 lv05 50/60Hz FAIL 2.40% det. altri5 OK;gf g207 0conv;0 CP. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |

@@ -1,6 +1,7 @@
-# RIASSUNTO — @capo (25/11/2026, T3 ora 5/12)
-- **Tappa:** TAPPE.md T1 base legacy; attivo MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI. ANDREA_REVIEW prec. ass., nessuna `RISPOSTA DI ANDREA`; legacy 08/11/vocabolario/sponsor intoccati.
-- **Checkpoint:** CHK auto SCAMBIO_RECENTE [APERTE] (non peer review). Gate non rieseguito dal capo. Nessun CP con gate+review indipendenti registrati → nessuna chiusura. CP-002/003/004 APERTI; DECO1/F60 citati (dossier assenti).
-- **Handoff:** dev V9 lv_05_spray giro38b 25/11 12:36 exit 0, replay IDENTICO 4250821778, 0.590/2.960ms <8ms, lv_02 invar. → lv_06_desktop giro38b. Jr VJ4 soak lv_04_cromo 25/11 12:45 exit 0 30000f IDENTICO 0.660/2.757ms <20, run_tests 27/27 → VJ4 lv_05/lv_06 + VJ5 ∞. Gf VG3 g183 24/11 13:20, 0 conv, flag Andrea.
-- **Deleghe:** @developer V9 ∞ lv_06_desktop giro38b (rev @developer-junior); @developer-junior VJ4 soak lv_05 poi lv_06 + VJ5 ∞ review prossimo diff (rev @developer/@capo); @grafico VG3 ∞ (rev @capo catalogo/licenza/provenienza).
-- **Blocchi:** DEFAULT Andrea `traffico_incrocio/lato_furgone_bianco.png.png` (no rinomina/converti). Pi 400 non verificato. VJ4 lv_01 39.042ms>20 output ma GATE OK (monitorare). Nessun PER_CLAUDE, nessuna domanda nuova. Nessun FINITO (∞).
+# RIASSUNTO — @capo (26/11/2026, T1 ora 1/12)
+- **Tappa:** TAPPE.md T1 base legacy; attivo MIG1 [~] + V47 [~] continuo (∞). CP-001/005/006/007 CHIUSI, CP-002/003/004 APERTI. ANDREA_REVIEW prec. ass., §7 nessuna decisione aperta; legacy 08/11/vocabolario/sponsor intoccati.
+- **Blocchi:** D20 procedurale — drawPlayerCar hunk :2628-2642/:2715-2727 ancora bloccati (REGOLA BLOCCATA §2), jr segnala "autorizzazione o revert"; capo non può scrivere ANDREA_REVIEW. DEFAULT: revert hunk bloccati, tenere drawDetrito, jr verifica. VJ3 lv_05_spray 50/60Hz FAIL 2.40% deterministico (altri 5 OK).
+- **Checkpoint:** CHK auto SCAMBIO_RECENTE [APERTE] non peer. Gate non rieseguito dal capo. 0 CP chiudibili.
+- **Handoff:** dev `UFFICIO/out/developer/ULTIMO_TURNO.md` 26/11 giro39 lv_05 exit 0 replay IDENTICO 4250821778 (0.679/9.828ms rumore) ma D20 aperto; jr `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` 26/11 08:29 VJ3 lv_05 FAIL 2.40%, VJ5 D20 bloccante, run_tests 27/27; gf `UFFICIO/out/grafico/STATUS_GRAFICO_PER_CAPO.md` 26/11 08:22 g207 0 conv.
+- **Deleghe:** @developer revert D20 poi V9 lv_06+indaga VJ3 lv_05 (rev @developer-junior); @developer-junior verifica D20/VJ3 lv_05, VJ5∞ (rev @developer/@capo); @grafico VG3 ∞ (rev @capo catalogo/licenza/provenienza).
+- **Blocchi/DEFAULT:** D20 non in ANDREA_REVIEW §7 (permesso capo negato). Furgone `.png.png` non toccare. Pi 400 non verificato. Nessun FINITO (∞).

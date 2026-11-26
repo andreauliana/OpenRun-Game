@@ -70,6 +70,15 @@
 # pura con autotest; righe_report() la usa. Output invariato.
 # Aggiunta 25/11 (turno 12:31): la policy di exit code e' estratta in
 # codice_uscita(), funzione pura con autotest; main() la usa. Output invariato.
+# Aggiunta 26/11 (turno 07:47): la trasformazione dei Path dei raw su disco in
+# path relativi posix ordinati (prima generatore inline in main()) e' estratta
+# in path_raw_relativi(), funzione pura con autotest; main() la usa. Il disco e'
+# acceso dal chiamante (rglob), la funzione trasforma solo i Path ricevuti.
+# Output invariato.
+# Aggiunta 26/11 (turno 08:36): il callable inline in main() che verifica
+# l'esistenza di un raw su disco (lambda con RADICE / r, passata come 'esiste'
+# ad analizza()) e' estratto in esiste_raw(), funzione pura con autotest su
+# percorso presente/assente; main() la usa. Output invariato.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -416,6 +425,27 @@ def codice_uscita(res):
     return 1 if res["senza_voce"] else 0
 
 
+def path_raw_relativi(radice, paths):
+    """Path raw assoluti -> path relativi posix ordinati (funzione pura).
+
+    Era il generatore inline in main(): qui si prova in isolamento la forma
+    (relative_to + as_posix + ordinamento). Il disco e' acceso dal chiamante
+    con rglob(); questa funzione trasforma solo i Path che riceve.
+    """
+    return sorted(p.relative_to(radice).as_posix() for p in paths)
+
+
+def esiste_raw(radice):
+    """Callable path_relativo -> bool per verificare un raw su disco (funzione pura).
+
+    Era la lambda inline in main() passata come 'esiste' ad analizza(): qui si
+    prova in isolamento che il callable risolva il path rispetto alla radice
+    data. La funzione non accede al disco: restituisce solo il callable, che il
+    chiamante invoca sui riferimenti del catalogo.
+    """
+    return lambda r: (radice / r).is_file()
+
+
 def autotest():
     """Prove della funzione pura con dati sintetici, nessun file reale letto."""
     elementi = [
@@ -704,6 +734,37 @@ def autotest():
         and codice_uscita(res_report) == 1
     )
     prove.append(("codice_uscita", ok_exit))
+    ok_relativi = (
+        path_raw_relativi(Path("/r"), [Path("/r/b.sglraw"), Path("/r/a.sglraw")])
+        == ["a.sglraw", "b.sglraw"]
+        and path_raw_relativi(Path("/r"), [Path("/r/x/y.sglraw")])
+        == ["x/y.sglraw"]
+        and path_raw_relativi(Path("/r"), []) == []
+    )
+    prove.append(("path_raw_relativi", ok_relativi))
+    # esiste_raw restituisce un callable che risolve il path rispetto alla
+    # radice data; si prova con una radice finta, senza toccare il disco.
+    class _RadiceFinta:
+        def __init__(self, presenti):
+            self.presenti = presenti
+
+        def __truediv__(self, nome):
+            return _FileFinto(nome in self.presenti)
+
+    class _FileFinto:
+        def __init__(self, presente):
+            self.presente = presente
+
+        def is_file(self):
+            return self.presente
+
+    esiste = esiste_raw(_RadiceFinta({"raw/a.sglraw"}))
+    ok_esiste = (
+        esiste("raw/a.sglraw") is True
+        and esiste("raw/b.sglraw") is False
+        and esiste_raw(_RadiceFinta(set()))("raw/a.sglraw") is False
+    )
+    prove.append(("esiste_raw", ok_esiste))
     for nome, ok in prove:
         print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
     return 0 if all(ok for _, ok in prove) else 1
@@ -711,10 +772,8 @@ def autotest():
 
 def main():
     cat = json.loads(CATALOGO.read_text(encoding="utf-8"))
-    raws = sorted(
-        p.relative_to(RADICE).as_posix() for p in RAW_ROOT.rglob("*.sglraw")
-    )
-    res = analizza(raws, cat["elementi"], lambda r: (RADICE / r).is_file())
+    raws = path_raw_relativi(RADICE, RAW_ROOT.rglob("*.sglraw"))
+    res = analizza(raws, cat["elementi"], esiste_raw(RADICE))
     for riga in righe_report(res, raws):
         print(riga)
     return codice_uscita(res)

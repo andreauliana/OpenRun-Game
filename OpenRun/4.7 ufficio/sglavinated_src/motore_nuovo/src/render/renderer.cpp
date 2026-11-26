@@ -1317,7 +1317,11 @@ void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 s
         const f32 sc = pxMondo * SPRITE_WORLD_PX * o.scale;
         const i32 lx = (i32)sx, ly = (i32)(sy - (f32)o.sprite->height * sc + 11.0f * sc);
         const f32 giro = std::sin(t * 1.8f + o.fase);
-        const i32 len = (i32)(std::abs(giro) * 60.0f * sc);
+        // V9 ∞ (26/11, lv_03_foglie giro 38c): std::abs(giro) veniva calcolato
+        // due volte (len e drawLampada); dipende solo da giro (costante del frame).
+        // Hoistato in absGiro: stesso float, stessi rami/pixel, replay IDENTICO.
+        const f32 absGiro = std::abs(giro);
+        const i32 len = (i32)(absGiro * 60.0f * sc);
         const i32 dir = giro > 0.0f ? 1 : -1;
         // V9 ∞ (25/11, lv_03_foglie giro 38b): `(i32)(t*20.0f)` dipende solo
         // da `t` (= tempoS_, costante del frame), non da k: prima veniva
@@ -1326,7 +1330,7 @@ void Renderer::drawOggettoTerra(const SpriteInstance& o, f32 cx, f32 base, f32 s
         const i32 t20 = (i32)(t * 20.0f);
         for (i32 k = 0; k < len; ++k)
             if (((k + t20) % 3) != 0) fb_.put(lx + dir * k, ly + (k * 1) / 12 - 0, 0xFFFFE89Au);
-        drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, std::abs(giro) > 0.3f);
+        drawLampada(lx, ly, std::max(1, (i32)(4.0f * sc)), 0xFFFFD84Au, absGiro > 0.3f);
     }
 }
 
@@ -1839,16 +1843,29 @@ void Renderer::drawLuceGalleria(i32 cx, i32 cy, i32 w, bool accesa) {
     }
     const i32 h = std::max(1, w * s->height / s->width);
     const i32 x0 = cx - w / 2;
-    for (i32 y = 0; y < h; ++y) {
-        const i32 py = cy + y;
-        if (py < 0 || py >= Framebuffer::HEIGHT) continue;
+    const i32 y0 = cy;
+    const i32 x1 = x0 + w - 1;
+    const i32 y1 = y0 + h - 1;
+    if (x1 < 0 || x0 >= Framebuffer::WIDTH || y1 < 0 || y0 >= Framebuffer::HEIGHT) return;
+    const i32 xA = std::max(0, x0);
+    const i32 xB = std::min(Framebuffer::WIDTH - 1, x1);
+    const i32 yA = std::max(0, y0);
+    const i32 yB = std::min(Framebuffer::HEIGHT - 1, y1);
+    // V9 lv_02_atomico giro39: clamp al framebuffer e scrittura diretta in riga
+    // (come drawPlayerCar), niente fb_.put/bounds per pixel. Stessi pixel.
+    const bool usaPalettaSprite = !s->palette.empty();
+    const u32* palS = usaPalettaSprite ? s->palette.data() : nullptr;
+    const size_t palSN = s->palette.size();
+    for (i32 py = yA; py <= yB; ++py) {
+        const i32 y = py - y0;
         const i32 ty = y * s->height / h;
-        for (i32 x = 0; x < w; ++x) {
-            const i32 px = x0 + x;
-            if (px < 0 || px >= Framebuffer::WIDTH) continue;
-            const u8 idx = s->pixels[(size_t)(ty * s->width + x * s->width / w)];
-            const u32 c = !s->palette.empty() ? s->palette[idx % s->palette.size()] : (idx ? pal_[s->paletteBase + idx] : 0u);
-            if ((c >> 24) != 0) fb_.put(px, py, accesa ? c : lerpColore(c, 0xFF101018u, 0.6f)); // rotta: vetro spento
+        u32* riga = fb_.data() + (size_t)py * Framebuffer::WIDTH;
+        const u8* src = s->pixels.data() + (size_t)ty * s->width;
+        for (i32 px = xA; px <= xB; ++px) {
+            const i32 x = px - x0;
+            const u8 idx = src[x * s->width / w];
+            const u32 c = usaPalettaSprite ? palS[idx % palSN] : (idx ? pal_[s->paletteBase + idx] : 0u);
+            if ((c >> 24) != 0) riga[px] = accesa ? c : lerpColore(c, 0xFF101018u, 0.6f); // rotta: vetro spento
         }
     }
 }
@@ -1917,6 +1934,10 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
             // tutta la riga della collina/fronte galleria; prima indicizzato 4 volte
             // per pixel. Hoistato una volta per riga: stessi indici, resa e replay IDENTICI.
             const u8* bayerRiga = BAYER4[y & 3];
+            // V9 ∞ (26/11, lv_05_spray giro39): x in [xa,xb] clampato a schermo e
+            // y in [top,terra) gia' in bounds: scrittura diretta nella riga invece di
+            // fb_.put (due bounds-check per pixel). Stessi pixel, resa/replay IDENTICI.
+            u32* riga = fb_.data() + (size_t)y * Framebuffer::WIDTH;
             const f32 wv = (p.screenY - (f32)y) / std::max(0.01f, pxY);  // quota sopra la strada
             if (inFronte && (f32)y >= fronteTop) {
                 u32 c = cemento;
@@ -1936,7 +1957,7 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                     if (c != giunto && wv < 700.0f && (f32)bayerRiga[x & 3] > wv / 700.0f * 16.0f)
                         c = lerpColore(c, 0xFF000000u, 0.25f);
                 }
-                fb_.put(x, y, c);
+                riga[x] = c;
                 continue;
             }
             const f32 prof = (f32)(y - top);
@@ -1957,7 +1978,7 @@ void Renderer::drawImboccoGalleria(const Road::ProjectedSeg& p, f32 coperto) {
                 }
                 if (wv < 600.0f && bayerRiga[x & 3] < 8) c = lerpColore(c, 0xFF000000u, 0.2f);
             }
-            fb_.put(x, y, c);
+            riga[x] = c;
         }
     }
     // Oltre l'imbocco si vede solo cio' che sta dentro la bocca.
@@ -2030,9 +2051,14 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
                                bottom - height < clipGy0_)) continue;
             const u32 color = side < 0 ? pal_[1] : pal_[14];
             if (oltreBocca) { // pixel per pixel: niente sopra le pareti
-                for (i32 py = bottom - height; py <= bottom; ++py)
+                // V9 ∞ (26/11, lv_06_desktop giro39): il colore del paletto dipende
+                // solo da py (punta = pal_[5], corpo = color), non da px; hoistato
+                // per riga. Stessi pixel, resa e replay IDENTICI.
+                for (i32 py = bottom - height; py <= bottom; ++py) {
+                    const u32 colPy = (py == bottom - height) ? pal_[5] : color;
                     for (i32 px = x - width / 2; px <= x + width / 2; ++px)
-                        if (!inTubo(px, py)) fb_.put(px, py, py == bottom - height ? pal_[5] : color);
+                        if (!inTubo(px, py)) fb_.put(px, py, colPy);
+                }
                 continue;
             }
             fb_.fillRect(x - width / 2, bottom - height, x + width / 2, bottom, color);
@@ -2044,12 +2070,17 @@ void Renderer::drawRoadsideMarkers(f32 playerZ) {
 void Renderer::drawDetrito(i32 x, i32 y, i32 w, i32 h, f32 angolo, u32 colore) {
     const f32 co = std::cos(angolo), si = std::sin(angolo);
     const i32 r = (w + h) / 2 + 1;
+    // V9 ∞ (26/11, lv_01_neon giro38b): w*0.5f, h*0.5f e -h*0.5f+2.0f dipendono
+    // solo da w/h del detrito, non dal pixel: prima ricalcolati a ogni pixel
+    // della bounding box ((w+h+3)^2 pixel per detrito). Hoistati una volta;
+    // stessi operandi e stesso ordine, stesso risultato, resa e replay IDENTICI.
+    const f32 hw2 = w * 0.5f, hh2 = h * 0.5f, topLy = -hh2 + 2.0f;
     for (i32 py = y - r; py <= y + r; ++py)
         for (i32 px = x - r; px <= x + r; ++px) {
             const f32 dx = (f32)(px - x), dy = (f32)(py - y);
             const f32 lx = co * dx + si * dy, ly = -si * dx + co * dy;
-            if (std::abs(lx) > w * 0.5f || std::abs(ly) > h * 0.5f) continue;
-            fb_.put(px, py, ly < -h * 0.5f + 2.0f ? pal_[5] : colore);
+            if (std::abs(lx) > hw2 || std::abs(ly) > hh2) continue;
+            fb_.put(px, py, ly < topLy ? pal_[5] : colore);
         }
 }
 
@@ -2615,19 +2646,28 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             const f32 cxs = pcx + co * lx - si * ly;
             const f32 cys = pcy + si * lx + co * ly;
             const i32 r = (i32)(0.5f * std::sqrt(cw * cw + ch * ch)) + 1;
-            for (i32 y = (i32)cys - r; y <= (i32)cys + r; ++y)
-                for (i32 x = (i32)cxs - r; x <= (i32)cxs + r; ++x) {
+            const f32 cw2 = cw * 0.5f, ch2 = ch * 0.5f;
+            // V9 ∞ (26/11, lv_01_neon giro39): loop clampato al framebuffer e
+            // scrittura diretta: alpha gia' verificata e bounds gia' noti, fb_.put
+            // rifarebbe entrambi i controlli per pixel. Stessi pixel, resa e replay IDENTICI.
+            const i32 yA = std::max(0, (i32)cys - r), yB = std::min(Framebuffer::HEIGHT - 1, (i32)cys + r);
+            const i32 xA = std::max(0, (i32)cxs - r), xB = std::min(Framebuffer::WIDTH - 1, (i32)cxs + r);
+            u32* buf = fb_.data();
+            for (i32 y = yA; y <= yB; ++y) {
+                u32* riga = buf + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = xA; x <= xB; ++x) {
                     const f32 dx = (f32)x - cxs, dy = (f32)y - cys;
-                    const f32 ul = co * dx + si * dy + cw * 0.5f;
-                    const f32 vl = -si * dx + co * dy + ch * 0.5f;
+                    const f32 ul = co * dx + si * dy + cw2;
+                    const f32 vl = -si * dx + co * dy + ch2;
                     if (ul < 0.0f || vl < 0.0f || ul >= cw || vl >= ch) continue;
                     i32 u = (i32)(ul / (f32)scala), v = (i32)(vl / (f32)scala);
                     if (u < 0 || v < 0 || u >= cp.width || v >= cp.height) continue;
                     if (specchiaC) u = cp.width - 1 - u;
                     const u32 col = cp.palette[(u32)cp.pixels[(i32)v * cp.width + u] % cp.palette.size()];
                     if ((col >> 24) == 0) continue;
-                    fb_.put(x, y, col);
+                    riga[x] = col;
                 }
+            }
         };
         // Ruote del componente SOTTO la carrozzeria: il passo 1-2-3 avanza
         // con la distanza percorsa (a ferme non cambia), la destra e' la
@@ -2690,27 +2730,42 @@ void Renderer::drawPlayerCar(f32 speed, f32 offsetX, bool offroad, f32 rollAngle
             return col;
         };
         if (std::abs(rollAngle) < 0.01f) {
-            for (i32 y = 0; y < h; ++y)
-                for (i32 x = 0; x < w; ++x) {
+            // V9 ∞ (26/11, lv_01_neon giro39): clamp al framebuffer e scrittura
+            // diretta, come disegnaComponente; alpha gia' verificata. Stessi pixel.
+            const i32 yA = std::max(0, -y0), yB = std::min(h - 1, Framebuffer::HEIGHT - 1 - y0);
+            const i32 xA = std::max(0, -x0), xB = std::min(w - 1, Framebuffer::WIDTH - 1 - x0);
+            u32* buf = fb_.data();
+            for (i32 y = yA; y <= yB; ++y) {
+                u32* riga = buf + (size_t)(y0 + y) * Framebuffer::WIDTH;
+                for (i32 x = xA; x <= xB; ++x) {
                     u32 col = texel((i32)(x / scala), (i32)(y / scala));
                     if ((col >> 24) == 0) continue;
-                    fb_.put(x0 + x, y0 + y, col);
+                    riga[x0 + x] = col;
                 }
+            }
         } else {
             // Rotazione con campionamento inverso: per ogni pixel dello schermo
             // nel quadrato che contiene l'auto ruotata si cerca il texel.
             // (co, si, pcx, pcy sono calcolati sopra per i componenti.)
             const i32 r = (i32)(0.5f * std::sqrt((f32)(w * w + h * h))) + 1;
-            for (i32 y = (i32)pcy - r; y <= (i32)pcy + r; ++y)
-                for (i32 x = (i32)pcx - r; x <= (i32)pcx + r; ++x) {
+            const f32 hw = (f32)w * 0.5f, hh = (f32)h * 0.5f;
+            // V9 ∞ (26/11, lv_01_neon giro39): clamp al framebuffer e scrittura
+            // diretta; alpha gia' verificata. Stessi pixel, resa e replay IDENTICI.
+            const i32 yA = std::max(0, (i32)pcy - r), yB = std::min(Framebuffer::HEIGHT - 1, (i32)pcy + r);
+            const i32 xA = std::max(0, (i32)pcx - r), xB = std::min(Framebuffer::WIDTH - 1, (i32)pcx + r);
+            u32* buf = fb_.data();
+            for (i32 y = yA; y <= yB; ++y) {
+                u32* riga = buf + (size_t)y * Framebuffer::WIDTH;
+                for (i32 x = xA; x <= xB; ++x) {
                     const f32 dx = (f32)x - pcx, dy = (f32)y - pcy;
-                    const f32 lx = co * dx + si * dy + w * 0.5f;
-                    const f32 ly = -si * dx + co * dy + h * 0.5f;
+                    const f32 lx = co * dx + si * dy + hw;
+                    const f32 ly = -si * dx + co * dy + hh;
                     if (lx < 0.0f || ly < 0.0f || lx >= (f32)w || ly >= (f32)h) continue;
                     u32 col = texel((i32)(lx / scala), (i32)(ly / scala));
                     if ((col >> 24) == 0) continue;
-                    fb_.put(x, y, col);
+                    riga[x] = col;
                 }
+            }
         }
         // Luci stop del componente (AUTO1 A2): quando la posa non ha la
         // variante con i fanali accesi, il fanale del @grafico sui punti

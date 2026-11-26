@@ -1,12 +1,10 @@
-# ULTIMO TURNO — @developer-junior (25/11/2026 12:45)
-
-- **Blocco/passo**: V47 VJ4 soak lv_04_cromo (uno/turno) + VJ5 ∞ review renderer.cpp/renderer.h (mtime 12:41:39).
-- **File cambiati**: `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/Officina/STATUS_OFFICINA.md` (riga junior). Nessun file in `src/`.
-- **Comandi ed exit code**:
-  - `sh UFFICIO/Officina/TOOL/run_tests.sh` → **exit 0** (ctest 27/27, 132.96 s).
-  - `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj4_soak_lv04_2511_1245" lv_04_cromo soak` → **exit 0**.
-- **Esito soak lv_04_cromo**: GATE OK, 30000 frame, replay 2x IDENTICO, ms/frame medio 0.660 max 2.757 (frame 0), limite 20; accelerazione reattiva, offroad frame 156, nessun crash.
-- **VJ5 review**: diff M renderer.cpp/renderer.h (hoist V9 ∞ giro 38/38b: terra/interpolazione, rumbleOltre, dashPhase, direct-write isola/zebra/cuspide, checkLineaAttiva reuse, grafSkew/mgW/mgH/toni+firma coloreGraffito, gabbiano/faro, imbocco soglie, roadside zAss/palettoOffset, skyline LUT cache, skylinePieno). Nessun errore bloccante; nit non bloccante: `skylineLut_` non invalida su mutazione in-place palette con stesso spPal/base/nPal (renderer.cpp:2113-2131, renderer.h:521-529), stesso assunto di colLut, oggi non accade.
-- **Stato VJ4**: lv_01 OK, lv_02 OK, lv_03 OK, lv_04 OK; restano lv_05_spray, lv_06_desktop.
-- **gate_t1.sh**: non eseguito.
-- **Problemi residui**: VJ4 lv_05-lv_06; VJ3 lv_03-lv_06.
+# ULTIMO TURNO — @developer-junior (26/11/2026, turno 09:07)
+- **Blocco/passo**: V47 VJ5 ∞ (review ultimo cambio @developer) + gate percorso su lv_02_atomico.
+- **File cambiati**: `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `RIASSUNTO.md` (riscritto), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (questo), `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto). Nessuna modifica a `src/`, test o dati.
+- **Comando 1**: `sh UFFICIO/Officina/TOOL/run_tests.sh` -> **exit 0** (ctest 27/27, 137.08 s, prova_gate ricompilato su renderer.cpp 09:05:44).
+- **Comando 2**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_luce_galleria_lv02_atomico_2611_0910" lv_02_atomico percorso` -> **exit 0** (GATE PERCORSO OK, 3586 oggetti, 5200 seg, rettilineo 59%, curva max 0.85/0.85, 2476 frame/41.3 s @60 Hz, fuori strada 0 (0.0%), car 5.5 ms, init 14.1 ms).
+- **VJ5 ∞**: hunk NUOVO in `renderer.cpp` mtime 09:05:44 (dopo l'08:53:41 rivisto alle 09:00; renderer.h invariato 25/11 11:03:33; unico M in src): `drawLuceGalleria` :1837-1870 — clamp al framebuffer + scrittura diretta `riga[px]=col` invece di `fb_.put` per le plafoniere del tunnel (commento "V9 lv_02_atomico giro39"); gli altri hunk del diff (drawOggettoTerra, drawImboccoGalleria, drawRoadsideMarkers, drawDetrito, 3 drawPlayerCar) erano gia' rivisti.
+- **Esito review**: nessun errore, bit-identico — `fb_.put` = bounds-check + `buf[y*WIDTH+x]` (framebuffer.cpp:17-20), `data()` = lo stesso `buf_` row-major stride WIDTH (framebuffer.h:25-29); il clamp riproduce esattamente i pixel scritti da `put`; `x=px-x0` in [0,w-1] e `ty` in [0,h-1] -> stesso indice `s->pixels`, in bounds; ternario evita `%0` con paletta vuota; stessi operandi/ordine in ty/idx/c/lerp -> resa/replay IDENTICI. Non tocca `drawPlayerCar`.
+- **RILIEVO BLOCCANTE (invariato)**: i 3 hunk `drawPlayerCar` toccano area intoccabile (REGOLA BLOCCATA Andrea 06/11, ANDREA_REVIEW §2) -> serve autorizzazione o revert.
+- **Aperto per @developer**: VJ3 lv_05_spray 2.40% > 2.00% (deterministico).
+- **Gate**: gate_t1.sh non eseguito in questo turno.

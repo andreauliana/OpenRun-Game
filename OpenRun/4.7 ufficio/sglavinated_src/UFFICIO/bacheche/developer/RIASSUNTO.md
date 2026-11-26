@@ -1,12 +1,12 @@
 # RIASSUNTO developer (max 12 righe)
-- Data/ora: 25/11/2026 13:04 (Turno 3).
-- Blocco: V9 ∞ fluidita' lv_06_desktop (giro38b, secondo passo).
-- Gate eseguito questo turno: 25/11/2026 13:04 `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 "GATE T1: TUTTO OK" 6/6 "GATE PERCORSO OK" (baseline pre-modifica).
-- Baseline pre: smoke ".../v9_lv06_giro38b_pre_smoke" exit 0 "GATE OK" medio 0.628 max 2.747 ms frame 0, replay IDENTICO, frameHash 0 3627137594.
-- Modifica: `renderer.cpp` (drawEffettiAuto, lambda cerchio: `r*r` hoistato in `r2` una volta per chiamata, prima rivalutato a ogni pixel; stessi indici, stessi pixel, resa/replay IDENTICI).
+- Data/ora: 26/11/2026 09:03 (Turno 1, V9 ∞ lv_02_atomico giro39).
+- Blocco: V47 V9 ∞ fluidita' lv_02_atomico.
+- Gate non eseguito in questo turno (gate_t1.sh; riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
+- Pre: percorso "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_percorso" exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori); smoke ".../v9_lv02_giro39_pre_smoke" exit 0 "GATE OK" medio 0.661 max 3.358 ms frame 0, replay IDENTICO, frameHash 0 2961894142.
+- Modifica: `motore_nuovo/src/render/renderer.cpp` drawLuceGalleria - clamp loop al framebuffer e scrittura diretta `riga[px]` al posto di `fb_.put`, hoist palette sprite; stessi pixel, replay IDENTICO.
 - Build: `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0.
-- Post: smoke ".../v9_lv06_giro38b_post_smoke" exit 0 "GATE OK" medio 0.625 max 2.745 ms frame 0, replay IDENTICO, frameHash 0 3627137594 (9/9 identici al baseline); percorso ".../v9_lv06_giro38b_post_percorso" exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
-- Regressione: lv_01_neon smoke ".../v9_lv06_giro38b_post_smoke_lv01" exit 0 "GATE OK" frameHash 0 3594390208 invariante, replay IDENTICO (drawEffettiAuto condivisa).
-- Esito: frame piu' lento 2.745 ms < 8 ms soglia Mac; 9 frameHash invarianti su lv_06, lv_01 invariante, replay identico, nessuna regressione.
-- Prossimo V9 ∞: lv_01_neon (giro38b).
-- Nota: comando `date "+%d/%m/%Y %H:%M"` negato (permesso); orari dal turno 13:04.
+- Post: smoke ".../v9_lv02_giro39_post_smoke" exit 0 "GATE OK" medio 0.725 max 3.551 ms frame 0, replay IDENTICO, frameHash 0 2961894142 (9/9).
+- Post percorso ".../v9_lv02_giro39_post_percorso" exit 0 "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
+- Regressione: lv_01_neon smoke ".../v9_lv02_giro39_post_smoke_lv01" exit 0 "GATE OK" frameHash 0 3594390208 invariante, replay IDENTICO.
+- Esito: lv_02_atomico sotto soglia 8 ms; replay/hash invariati.
+- Prossimo V9 ∞: lv_03_foglie (giro39).

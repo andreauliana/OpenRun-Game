@@ -1,15 +1,13 @@
-# Ultimo turno developer (max 15 righe)
-- Data/ora: 25/11/2026 13:04, Turno 3.
-- Blocco/passo: V9 ∞ fluidita' a giro — lv_06_desktop (giro38b, secondo passo).
-- File cambiati: `motore_nuovo/src/render/renderer.cpp` (drawEffettiAuto, lambda cerchio).
-- Modifica: `r*r` veniva ricalcolato a ogni pixel del cerchio (fino a (2r+1)^2 pixel per sbuffo di fumo/polvere); dipende solo da r, parametro della chiamata; hoistato una volta in `r2`. Stesso intero, stesso confronto `dx*dx+dy*dy<=r2`, stessi pixel scritti, resa e replay IDENTICI.
-- Comandi ed exit code (eseguiti in questo turno):
-  - gate `sh UFFICIO/Officina/TOOL/gate_t1.sh` exit 0 "GATE T1: TUTTO OK" 6/6 "GATE PERCORSO OK" (25/11/2026 13:04, baseline pre-modifica).
-  - pre smoke `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv06_giro38b_pre_smoke" lv_06_desktop smoke` exit 0 "GATE OK" medio 0.628 max 2.747 ms frame 0, replay IDENTICO, frameHash 0 3627137594 (9/9).
-  - build `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` exit 0.
-  - post smoke `... v9_lv06_giro38b_post_smoke ... smoke` exit 0 "GATE OK" medio 0.625 max 2.745 ms frame 0, replay IDENTICO, frameHash 0 3627137594 (9/9 identici al baseline).
-  - post percorso `... v9_lv06_giro38b_post_percorso ... percorso` exit 0 "GATE PERCORSO OK" (2125 frame, 35.4 s, 0% fuori).
-  - regressione lv_01_neon `... v9_lv06_giro38b_post_smoke_lv01 ... smoke` exit 0 "GATE OK" frameHash 0 3594390208 invariante, replay IDENTICO (drawEffettiAuto condivisa).
-- Gate: gate_t1.sh eseguito in questo turno (25/11/2026 13:04, exit 0, 6/6); le prove post-modifica sono le voci prova_gate qui sopra.
-- Esito: frame piu' lento 2.745 ms < 8 ms soglia Mac, 9 frameHash invarianti su lv_06, lv_01 invariante, replay identico, nessuna regressione.
-- Prossimo V9 ∞: lv_01_neon (giro38b). (Nota: `date "+%d/%m/%Y %H:%M"` negato; orari dal turno 13:04.)
+# ULTIMO TURNO — developer (riscritto, max 15 righe)
+- Data/ora: 26/11/2026 09:03
+- Blocco/passo: V47 V9 ∞ fluidita' lv_02_atomico (giro39) — pre misura, micro-ottimizzazione drawLuceGalleria, post misura + regressione.
+- File cambiati: `motore_nuovo/src/render/renderer.cpp` (drawLuceGalleria: clamp x/y al framebuffer, riga diretta `fb_.data()+py*WIDTH`, scrittura `riga[px]` al posto di `fb_.put`; hoist `usaPalettaSprite/palS/palSN/src`; stessi pixel/ordine, replay IDENTICO).
+- Comandi ed exit code:
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_percorso" lv_02_atomico percorso` -> exit 0, "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_pre_smoke" lv_02_atomico smoke` -> exit 0, "GATE OK" medio 0.661 max 3.358 ms frame 0, replay IDENTICO, frameHash 0 2961894142.
+  - `cmake --build "UFFICIO/Officina/build" --target prova_gate --parallel 4` -> exit 0.
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_smoke" lv_02_atomico smoke` -> exit 0, "GATE OK" medio 0.725 max 3.551 ms frame 0, replay IDENTICO, frameHash 0 2961894142 (9/9).
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_percorso" lv_02_atomico percorso` -> exit 0, "GATE PERCORSO OK" (2476 frame, 41.3 s, 0% fuori).
+  - `UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/v9_lv02_giro39_post_smoke_lv01" lv_01_neon smoke` -> exit 0, "GATE OK", replay IDENTICO, frameHash 0 3594390208 invariante.
+- Gate: gate_t1.sh non eseguito in questo turno (riferimento 25/11/2026 13:04 exit 0 "GATE T1: TUTTO OK").
+- Esito: lv_02_atomico sotto soglia 8 ms; replay/hash invariati. Prossimo V9 ∞: lv_03_foglie (giro39).

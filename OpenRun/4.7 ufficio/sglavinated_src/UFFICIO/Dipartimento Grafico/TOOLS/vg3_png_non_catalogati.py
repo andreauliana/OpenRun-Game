@@ -85,6 +85,22 @@ Aggiunta 25/11 (turno 5): lo stato dei residui noti rispetto al catalogo
 (catalogati, spariti) e' estratto in esito_noti() pura con autotest;
 analizza_png() la usa, cosi' la precedenza catalogato-vince-su-sparito resta
 provata in un punto solo.
+
+Aggiunta 26/11: le prove esito_noti/analizza_png dell'autotest usavano ancora il
+vecchio 'furgone' (definito piu' sotto e ormai fuori da NOTI_NON_ASSET): il test
+si fermava con NameError. Ora usano le tre pose custom effettivamente note, con
+un solo esempio coerente di 'sparito'/'catalogato' come nelle prove vicine.
+
+Aggiunta 26/11 (turno 2): la sequenza che porta dai PNG trovati alle righe del
+report (fuori_catalogo -> analizza_png -> righe_report, prima inline in main) e'
+ora la funzione pura report_da_png(), provata in autotest: fissa in un punto
+solo l'ordine delle tre fasi e prova che il report dipenda solo dai PNG trovati
+e dai percorsi citati dal catalogo.
+
+Aggiunta 26/11 (turno 3): il caricamento del catalogo (prima json.load(open(...))
+inline in main, con il file lasciato al garbage collector) e' ora la funzione
+carica_catalogo() con lettura iniettabile, provata in autotest: read_text chiude
+subito il file e il parsing sta in un punto solo. L'output non cambia.
 """
 import glob
 import json
@@ -304,6 +320,20 @@ def png_trovati(lib, pattern, globber=glob.glob, relativizza=os.path.relpath):
     return trovati
 
 
+def carica_catalogo(path, leggi=None):
+    """Carica CATALOGO_GRAFICO.json come dict, con lettura iniettabile (pura).
+
+    main() faceva json.load(open(path, encoding=...)): il file restava affidato
+    al garbage collector invece di essere chiuso subito. Qui la lettura e' un
+    callable (default Path.read_text, che chiude da solo) e il parsing sta in un
+    solo punto, provabile in autotest senza toccare il disco. L'esistenza del
+    file resta di competenza di main(), cosi' il messaggio di errore non cambia.
+    """
+    if leggi is None:
+        leggi = lambda p: pathlib.Path(p).read_text(encoding="utf-8")
+    return json.loads(leggi(path))
+
+
 def riga_sintesi(quanti, noti, catalogati, spariti):
     """Riga di riepilogo finale: un solo posto in cui si formatta (pura).
 
@@ -378,17 +408,29 @@ def righe_noti(noti, catalogati, spariti):
     return [riga_noto(tag, f, NOTI_NON_ASSET[f]) for tag, f in voci_noti(noti, catalogati, spariti)]
 
 
+def report_da_png(trovati, usati):
+    """Dai PNG trovati alle righe del report (puro), senza leggere il disco.
+
+    main() faceva in sequenza fuori_catalogo(), analizza_png() e righe_report():
+    tenerli in un solo punto fissa l'ordine delle tre fasi e rende provabile che
+    il report dipenda solo dall'elenco dei PNG e dai percorsi citati dal catalogo.
+    'trovati' sono i percorsi relativi restituiti da png_trovati(), 'usati'
+    l'insieme restituito da file_usati().
+    """
+    fuori = fuori_catalogo(trovati, usati)
+    noti, da_decidere, catalogati, spariti = analizza_png(fuori, usati)
+    return righe_report(noti, da_decidere, catalogati, spariti)
+
+
 def main() -> int:
     if not CATALOGO.exists():
         print(f"FALLITO: catalogo non trovato in {CATALOGO}")
         return 4
-    cat = json.load(open(CATALOGO, encoding="utf-8"))
+    cat = carica_catalogo(CATALOGO)
     usati = file_usati(cat)
 
     trovati = png_trovati(LIBRERIA, PATTERN)
-    fuori = fuori_catalogo(trovati, usati)
-    noti, da_decidere, catalogati, spariti = analizza_png(fuori, usati)
-    for riga in righe_report(noti, da_decidere, catalogati, spariti):
+    for riga in report_da_png(trovati, usati):
         print(riga)
     return 0
 
@@ -438,12 +480,13 @@ def autotest():
     ok = ok and ok_spariti
     print("autotest noti_spariti: " + ("OK" if ok_spariti else "FALLITO"))
     # esito_noti: unifica catalogati+spariti con la stessa regola di precedenza;
-    # il furgone catalogato non deve finire tra gli spariti.
+    # un noto finito nel catalogo non deve finire tra gli spariti. Usa lo stesso
+    # esempio delle prove qui sopra: il vecchio furgone non e' piu' un noto.
     ok_esito = (
         esito_noti(tutti, []) == ([], [])
-        and esito_noti(senza_furgone, []) == ([], [furgone])
-        and esito_noti(senza_furgone, [furgone]) == ([furgone], [])
-        and esito_noti(tutti, [furgone]) == ([furgone], [])
+        and esito_noti(senza_esempio, []) == ([], [esempio])
+        and esito_noti(senza_esempio, [esempio]) == ([esempio], [])
+        and esito_noti(tutti, [esempio]) == ([esempio], [])
     )
     ok = ok and ok_esito
     print("autotest esito_noti: " + ("OK" if ok_esito else "FALLITO"))
@@ -615,24 +658,23 @@ def autotest():
     print("autotest png_trovati: " + ("OK" if ok_trovati else "FALLITO"))
     # analizza_png: raccoglie i 4 gruppi del report in un solo punto puro.
     # Caso misto: b e' noto fuori catalogo, un nuovo sprite resta da_decidere;
-    # gli altri 3 noti non sono in fuori ne' in usati -> spariti.
-    furgone = "GRAFICA/sprite/traffico_incrocio/lato_furgone_bianco.png.png"
+    # gli altri due noti non sono in fuori ne' in usati -> spariti.
     altri_noti = sorted(f for f in NOTI_NON_ASSET if f != b)
     ok_analizza = analizza_png(
         [b, "GRAFICA/sprite/traffico/nuovo.png"],
         set(),
     ) == ([b], ["GRAFICA/sprite/traffico/nuovo.png"], [], altri_noti)
-    # Caso catalogato: furgone nel catalogo -> compare in catalogati, non in spariti;
+    # Caso catalogato: b nel catalogo -> compare in catalogati, non in spariti;
     # a,b,c presenti in fuori, nessun nuovo.
     ok_analizza = ok_analizza and analizza_png(
         [a, b, c],
-        {furgone},
-    ) == ([a, b, c], [], [furgone], [])
-    # Caso sparito: furgone assente da fuori e da catalogo -> sparito.
+        {b},
+    ) == ([a, b, c], [], [b], [])
+    # Caso sparito: a assente da fuori e da catalogo -> sparito.
     ok_analizza = ok_analizza and analizza_png(
-        [a, b, c],
+        [b, c],
         set(),
-    ) == ([a, b, c], [], [], [furgone])
+    ) == ([b, c], [], [], [a])
     ok_analizza = ok_analizza and analizza_png([], set()) == ([], [], [], sorted(NOTI_NON_ASSET))
     ok = ok and ok_analizza
     print("autotest analizza_png: " + ("OK" if ok_analizza else "FALLITO"))
@@ -650,6 +692,28 @@ def autotest():
     ]
     ok = ok and ok_report
     print("autotest righe_report: " + ("OK" if ok_report else "FALLITO"))
+    # report_da_png: la sequenza completa e' la composizione delle tre fasi; un
+    # PNG nuovo resta 'da decidere', un noto catalogato non finisce tra gli
+    # spariti e i noti assenti da tutto finiscono tra gli spariti.
+    x = "GRAFICA/sprite/traffico/x.png"
+    ok_pipeline = report_da_png([], set()) == righe_report([], [], [], sorted(NOTI_NON_ASSET))
+    ok_pipeline = ok_pipeline and report_da_png([x], set()) == righe_report(
+        [], [x], [], sorted(NOTI_NON_ASSET),
+    )
+    ok_pipeline = ok_pipeline and report_da_png([b, x], {b}) == righe_report(
+        [], [x], [b], [f for f in sorted(NOTI_NON_ASSET) if f != b],
+    )
+    ok = ok and ok_pipeline
+    print("autotest report_da_png: " + ("OK" if ok_pipeline else "FALLITO"))
+    # carica_catalogo: parsing con lettura iniettabile, nessun file reale aperto.
+    ok_carica = (
+        carica_catalogo("finto.json", leggi=lambda p: '{"elementi": [{"id": "x"}]}')
+        == {"elementi": [{"id": "x"}]}
+        and carica_catalogo("finto.json", leggi=lambda p: '{"elementi": []}')
+        == {"elementi": []}
+    )
+    ok = ok and ok_carica
+    print("autotest carica_catalogo: " + ("OK" if ok_carica else "FALLITO"))
     return 0 if ok else 1
 
 

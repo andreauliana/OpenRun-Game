@@ -66,6 +66,13 @@
 # Il blocco dei PNG risalvati a pari contenuto (dettaglio riga per riga con --verbose,
 # solo conteggio senza) sta in righe_rumore(): prima l'if/elif era in main(), cosi' le
 # due diagnosi dello stesso rumore potevano dividersi e mostrare numeri diversi.
+# Le quattro diramazioni del confronto sui gruppi 1:1 (ALTRI-ILLEGGIBILE,
+# ALTRI-DIVERSO, ALTRI-PNG-NUOVO, allineato) stanno in esito_altri(): prima i
+# contatori e i print erano sparsi in main(), cosi' un nuovo stato poteva restare
+# senza contatore e senza riga.
+# Lo stesso vale per gli oggetti di scenari/ in esito_oggetti(): le quattro
+# diramazioni (PNG-ILLEGGIBILE, DIVERSO, PNG-NUOVO, allineato) erano altrettanti
+# rami inline in main(), con contatori e righe separati da quelli dei gruppi 1:1.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -772,6 +779,77 @@ def righe_rumore(noise, verbose):
     return []
 
 
+def classifica_skyline_confronto(stato, livello, data_png, data_raw):
+    """Stato del confronto skyline -> (nuovo, ok, riga), in un punto solo (funzione pura).
+
+    Prima l'if/elif/else stava in main(): i due stati che contano come 'da
+    rigenerare' ('no-trama-nuovo' e 'diverso') ripetevano l'aumento del contatore
+    e la frase con le date, cosi' un nuovo stato poteva restare fuori dal conto.
+    Qui conteggio e formattazione stanno insieme e l'autotest fissa i tre casi.
+    Non tocca il filesystem: main() passa le date gia' calcolate.
+    """
+    if stato in ("no-trama-nuovo", "diverso"):
+        etichetta = "SKYLINE-PNG-NUOVO" if stato == "no-trama-nuovo" else "SKYLINE-DIVERSO"
+        return 1, 0, (
+            f"{etichetta} {livello}: png {data_png} raw {data_raw}"
+            " (rilanciare trama_scenari.py)"
+        )
+    return 0, 1, None
+
+
+def esito_altri(stato, gruppo, nome, data_png, data_raw):
+    """Esito del confronto 1:1 dei gruppi fuori scenari/ (funzione pura).
+
+    Ritorna (diversi, nuovo, allineati, riga, rumore): i tre contatori e al
+    massimo una riga di diagnosi o una voce del rumore. Prima le quattro
+    diramazioni con i print e gli incrementi stavano in main(), cosi' uno stato
+    nuovo poteva restare fuori dal conteggio. Non tocca il filesystem: main()
+    passa lo stato gia' calcolato da esito_confronto() e le date gia' lette.
+    """
+    if stato == "illeggibile":
+        return (
+            1, 0, 0,
+            f"ALTRI-ILLEGGIBILE {gruppo}/{nome}: png {data_png} non apribile da PIL",
+            None,
+        )
+    if stato == "diverso":
+        return 1, 0, 0, f"ALTRI-DIVERSO   {gruppo}/{nome}: png {data_png} raw {data_raw}", None
+    if stato == "png-nuovo":
+        return 0, 1, 0, None, (
+            f"ALTRI-PNG-NUOVO {gruppo}/{nome}: png {data_png} raw {data_raw}"
+            " (contenuto uguale)"
+        )
+    return 0, 0, 1, None, None
+
+
+def esito_oggetti(stato, motivo, livello, nome, data_png, data_raw):
+    """Esito del confronto 1:1 degli oggetti di scenari/ (funzione pura).
+
+    Ritorna (diversi, nuovo, allineati, riga, rumore): i tre contatori e al
+    massimo una riga di diagnosi o una voce del rumore. Prima le quattro
+    diramazioni con print e incrementi stavano in main(), cosi' uno stato nuovo
+    poteva restare fuori dal conteggio o senza riga. Non tocca il filesystem:
+    main() passa lo stato gia' calcolato da esito_confronto() e le date lette.
+    """
+    if stato == "illeggibile":
+        return (
+            1, 0, 0,
+            f"PNG-ILLEGGIBILE {livello}/{nome}: png {data_png} non apribile da PIL",
+            None,
+        )
+    if stato == "diverso":
+        return (
+            1, 0, 0,
+            f"DIVERSO    {livello}/{nome}: png {data_png} raw {data_raw} [{motivo}]",
+            None,
+        )
+    if stato == "png-nuovo":
+        return 0, 1, 0, None, (
+            f"PNG-NUOVO  {livello}/{nome}: png {data_png} raw {data_raw} (contenuto uguale)"
+        )
+    return 0, 0, 1, None, None
+
+
 def main():
     verbose = "--verbose" in sys.argv
     totale = diversi = senza_png = png_piu_nuovo = allineati = trame = 0
@@ -791,21 +869,16 @@ def main():
         atteso = raw_atteso(png)
         grezzo = raw.read_bytes()
         stato, motivo = esito_confronto(atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime)
-        if stato == "illeggibile":
-            diversi += 1
-            righe.append(f"PNG-ILLEGGIBILE {livello}/{nome}: png {data(png)} non apribile da PIL")
-        elif stato == "diverso":
-            diversi += 1
-            righe.append(
-                f"DIVERSO    {livello}/{nome}: png {data(png)} raw {data(raw)} [{motivo}]"
-            )
-        elif stato == "png-nuovo":
-            png_piu_nuovo += 1
-            noise.append(
-                f"PNG-NUOVO  {livello}/{nome}: png {data(png)} raw {data(raw)} (contenuto uguale)"
-            )
-        else:
-            allineati += 1
+        div, nuovo, ok, riga, rumore = esito_oggetti(
+            stato, motivo, livello, nome, data(png), data(raw)
+        )
+        diversi += div
+        png_piu_nuovo += nuovo
+        allineati += ok
+        if riga is not None:
+            righe.append(riga)
+        if rumore is not None:
+            noise.append(rumore)
     for riga in righe:
         print(riga)
     # Giro inverso: un PNG nuovo di Andrea senza raw non compare nel ciclo sopra.
@@ -834,20 +907,13 @@ def main():
         stato_sky = esito_skyline(
             atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime
         )
-        if stato_sky == "no-trama-nuovo":
-            skyline_png_nuovo += 1
-            print(
-                f"SKYLINE-PNG-NUOVO {livello}: png {data(png)} raw {data(raw)}"
-                " (rilanciare trama_scenari.py)"
-            )
-        elif stato_sky == "diverso":
-            skyline_png_nuovo += 1
-            print(
-                f"SKYLINE-DIVERSO {livello}: png {data(png)} raw {data(raw)}"
-                " (rilanciare trama_scenari.py)"
-            )
-        else:
-            skyline_ok += 1
+        nuovo, ok, riga = classifica_skyline_confronto(
+            stato_sky, livello, data(png), data(raw)
+        )
+        skyline_png_nuovo += nuovo
+        skyline_ok += ok
+        if riga is not None:
+            print(riga)
     for riga in righe_skyline(skyline_ok, skyline_png_nuovo, skyline_senza):
         print(riga)
     # Gruppi 1:1 fuori da scenari/ (Andrea puo' ridisegnarli: si converte, non si ritocca).
@@ -862,21 +928,19 @@ def main():
                 continue
             atteso = raw_atteso(png)
             grezzo = raw.read_bytes()
-            stato, motivo = esito_confronto(atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime)
-            if stato == "illeggibile":
-                altri_diversi += 1
-                print(f"ALTRI-ILLEGGIBILE {gruppo}/{raw.stem}: png {data(png)} non apribile da PIL")
-            elif stato == "diverso":
-                altri_diversi += 1
-                print(f"ALTRI-DIVERSO   {gruppo}/{raw.stem}: png {data(png)} raw {data(raw)}")
-            elif stato == "png-nuovo":
-                altri_nuovo += 1
-                noise.append(
-                    f"ALTRI-PNG-NUOVO {gruppo}/{raw.stem}: png {data(png)} raw {data(raw)}"
-                    " (contenuto uguale)"
-                )
-            else:
-                altri_ok += 1
+            stato, _motivo = esito_confronto(
+                atteso, grezzo, png.stat().st_mtime > raw.stat().st_mtime
+            )
+            div, nuovo, ok, riga, rumore = esito_altri(
+                stato, gruppo, raw.stem, data(png), data(raw)
+            )
+            altri_diversi += div
+            altri_nuovo += nuovo
+            altri_ok += ok
+            if riga is not None:
+                print(riga)
+            if rumore is not None:
+                noise.append(rumore)
     altri_orfani = altri_residui = altri_doppia = 0
     for png, gruppo, raw in png_altri_orfani():
         if not raw.exists():
@@ -1276,6 +1340,51 @@ if __name__ == "__main__":
         )
         ok = ok and ok_cop
         print("autotest riga_copertura: " + ("OK" if ok_cop else "FALLITO"))
+        # classifica_skyline_confronto: i due stati 'da rigenerare' contano nuovo
+        # con la frase giusta, gli altri due contano ok senza riga; prima l'if/elif
+        # ripeteva contatore e formattazione e un nuovo stato poteva sfuggire.
+        ok_cls_sky = (
+            classifica_skyline_confronto("no-trama-nuovo", "lv_01", "D1", "D2")
+            == (1, 0, "SKYLINE-PNG-NUOVO lv_01: png D1 raw D2 (rilanciare trama_scenari.py)")
+            and classifica_skyline_confronto("diverso", "lv_02", "D3", "D4")
+            == (1, 0, "SKYLINE-DIVERSO lv_02: png D3 raw D4 (rilanciare trama_scenari.py)")
+            and classifica_skyline_confronto("allineato", "lv_03", "D5", "D6") == (0, 1, None)
+            and classifica_skyline_confronto("no-trama-ok", "lv_04", "D7", "D8") == (0, 1, None)
+        )
+        ok = ok and ok_cls_sky
+        print("autotest classifica_skyline_confronto: " + ("OK" if ok_cls_sky else "FALLITO"))
+        # esito_altri: i quattro stati del confronto 1:1 contano e stampano (o
+        # mettono in noise) una sola riga ciascuno; prima le diramazioni e i print
+        # erano in main() e un nuovo stato poteva restare senza contatore.
+        ok_alt_esito = (
+            esito_altri("illeggibile", "rivali", "r", "D1", "D2")
+            == (1, 0, 0, "ALTRI-ILLEGGIBILE rivali/r: png D1 non apribile da PIL", None)
+            and esito_altri("diverso", "ui", "logo", "D3", "D4")
+            == (1, 0, 0, "ALTRI-DIVERSO   ui/logo: png D3 raw D4", None)
+            and esito_altri("png-nuovo", "rivali", "r", "D5", "D6")
+            == (0, 1, 0, None,
+                "ALTRI-PNG-NUOVO rivali/r: png D5 raw D6 (contenuto uguale)")
+            and esito_altri("allineato", "rivali", "r", "D7", "D8") == (0, 0, 1, None, None)
+        )
+        ok = ok and ok_alt_esito
+        print("autotest esito_altri: " + ("OK" if ok_alt_esito else "FALLITO"))
+        # esito_oggetti: i quattro stati del confronto degli oggetti di scenari/
+        # contano e producono una sola riga (o voce di rumore) ciascuno; prima le
+        # diramazioni con i print erano in main() e un nuovo stato poteva restare
+        # senza contatore. Il motivo 'contenuto' arriva da classifica_raw.
+        ok_ogg_esito = (
+            esito_oggetti("illeggibile", None, "comuni", "obj", "D1", "D2")
+            == (1, 0, 0, "PNG-ILLEGGIBILE comuni/obj: png D1 non apribile da PIL", None)
+            and esito_oggetti("diverso", "contenuto", "lv_01_neon", "palma", "D3", "D4")
+            == (1, 0, 0, "DIVERSO    lv_01_neon/palma: png D3 raw D4 [contenuto]", None)
+            and esito_oggetti("png-nuovo", None, "lv_02_atomico", "robot", "D5", "D6")
+            == (0, 1, 0, None,
+                "PNG-NUOVO  lv_02_atomico/robot: png D5 raw D6 (contenuto uguale)")
+            and esito_oggetti("allineato", None, "lv_03_foglie", "foglia", "D7", "D8")
+            == (0, 0, 1, None, None)
+        )
+        ok = ok and ok_ogg_esito
+        print("autotest esito_oggetti: " + ("OK" if ok_ogg_esito else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()
