@@ -65,20 +65,21 @@ Nuovo blocco: `## BLOCCO <NOME> — @ruolo ...`, righe `| Compito |`, `| Vincoli
 **Paletti a bordo strada: chiusi.** Oggi non ci sono al bivio, sul ponte, in galleria e agli incroci, e vanno bene cosi'. Non si ritoccano piu'. La prova `pali` e' tarata su lv_01: su lv_06 esce 27 per la soglia, non per un errore del gioco; non usarla sugli altri livelli.
 
 ### @developer
-- **W1 Sterzo analogico nel core libretro (subito).** `src/libretro/sglavinated_libretro.cpp` righe 115-116 accendono Sinistra/Destra digitali quando lo stick supera 0.5: su RetroPie lo sterzo torna "tutto o niente". Quando lo stick è usato non accendere i digitali, così vale lo sterzo proporzionale di `Player::input` (PR #126). Croce digitale identica a oggi. **Fine:** `cmake -DBUILD_LIBRETRO=ON` compila; `ctest -j1` 27/27; una riga in `ULTIMO_TURNO.md`.
+- **W1 Pad SNES e PS1 su RetroPie (subito).** Andrea 27/11: priorita' ai pad comuni (cloni SNES USB, PlayStation 1/2 via adattatore), non a volanti e stick analogici (lo stick resta com'e', nessun lavoro). Stessi tasti nel runner (`src/runner/main.cpp`, usato da Ports) e nel core (`src/libretro/sglavinated_libretro.cpp`): croce = sterzo e menu; gas = B del SNES / Croce PS1 (+ R2); freno = A del SNES / Cerchio PS1 (+ L2, + Giu'); Start = pausa; Select+Start = esci. Oggi nel runner i grilletti L2/R2 dei pad riconosciuti da SDL non sono mappati: aggiungili. Scrivi la tabella dei tasti in `pi/LEGGIMI.md`. **Fine:** runner e core con la stessa mappa; `ctest -j1` 27/27; una riga in `ULTIMO_TURNO.md`.
 - **W2 Pi 400 sotto i 12 ms.** Usa `misura_pi` (PR #127: `misura_pi <out> <secondi> [livello|gara]`) invece del gate `percorso`. Prendi il livello con p99 più alto e alleggerisci **una** funzione pesante per turno (render della strada, oggetti, CRT), mai l'auto del giocatore. Quando Andrea porta `misure_pi400/<data>/riepilogo.txt` dal Pi, si lavora su quei numeri. Resa e replay IDENTICI. **Fine:** p99 <= 12 ms su tutti i livelli alla misura di Andrea sul Pi; finché non c'è, p99 sul Mac senza peggiorare.
+- **W4 Caricamento leggero.** Misura avvio, menu e caricamento di ogni livello (PNG/raw, musica .xm, tracciati) con i log CARICAMENTO del gate. Se un caricamento supera 1 s sul Mac (sul Pi conta 4-5 volte di piu'), togli letture doppie o conversioni ripetute. Dati e resa identici.
 - **W3 60 fps costanti.** In `soak` su tutti i 6 livelli nessun frame sopra 16,7 ms (un frame perso a 60 Hz). Se succede: livello, frame, funzione, correzione.
 
 ### @developer-junior
 - **WJ1 Misura di riferimento (subito).** `misura_pi` sui 6 livelli + `gara` sul Mac. Una riga per livello in `REVIEW_V48.md`: media, p95, p99, max ms/frame (update/render/CRT). Nessun codice toccato.
-- **WJ2 Review di W1, W2, W3** (al posto di VJ5): dopo ogni passo del @developer, ricompila (`run_tests.sh`), prova dedicata e una riga in `REVIEW_V48.md`. Per W1: stick a 0.30 = sterzo parziale, ritorno al centro come nel runner.
+- **WJ2 Review di W1, W2, W3** (al posto di VJ5): dopo ogni passo del @developer, ricompila (`run_tests.sh`), prova dedicata e una riga in `REVIEW_V48.md`. Per W1: confronta tasto per tasto la mappa del runner con quella del core.
 - **WJ3 RetroPie senza Pi.** Compila il core (`-DBUILD_LIBRETRO=ON`) e controlla che `pi/compila_e_installa.sh` e `pi/LEGGIMI.md` usino percorsi e target che esistono davvero. Solo elenco in `REVIEW_V48.md`, non modificare gli script `pi/`.
 
 ### @grafico
 - **WG1 Un solo controllo.** Unisci `vg3_date_png_raw.py`, `vg3_png_non_catalogati.py` e `vg3_raw_senza_catalogo.py` in **un** script con gli stessi controlli ed exit code; cancella i tre vecchi e i `_tmp_*.py`. **Fine:** un solo script vg3 in `Dipartimento Grafico/TOOLS/`, exit 0 sul main.
 - **WG2 Poi fermo.** Converti solo quando Andrea cambia un PNG. Se non c'è nulla: una riga nel diario e ti fermi. Gli script non si riscrivono più.
 
-| Chi tocca adesso | @developer W1 poi W2/W3 · @developer-junior WJ1 poi WJ2, WJ3 · @grafico WG1 poi WG2 |
+| Chi tocca adesso | @developer W1 poi W2/W3/W4 · @developer-junior WJ1 poi WJ2, WJ3 · @grafico WG1 poi WG2 |
 |---|---|
 | Stato | [~] | (Claude 27/11, deciso con Andrea) |
 
