@@ -71,7 +71,7 @@ Nuovo blocco: `## BLOCCO <NOME> — @ruolo ...`, righe `| Compito |`, `| Vincoli
 - **WJ3 RetroPie senza Pi.** Compila il core (`-DBUILD_LIBRETRO=ON`) e controlla che `pi/compila_e_installa.sh` e `pi/LEGGIMI.md` usino percorsi e target che esistono davvero. Solo elenco in `REVIEW_V48.md`, non modificare gli script `pi/`.
 
 ### @grafico
-- **WG1 Un solo controllo.** Unisci `vg3_date_png_raw.py`, `vg3_png_non_catalogati.py` e `vg3_raw_senza_catalogo.py` in **un** script con gli stessi controlli ed exit code; cancella i tre vecchi e `_tmp_riga_autotest_png.py`. **Fine:** un solo script vg3 in `Dipartimento Grafico/TOOLS/`, exit 0 sul main.
+- **WG1 Un solo controllo.** Unisci `vg3_date_png_raw.py`, `vg3_png_non_catalogati.py` e `vg3_raw_senza_catalogo.py` in **un** script con gli stessi controlli ed exit code; cancella i tre vecchi e i `_tmp_*.py`. **Fine:** un solo script vg3 in `Dipartimento Grafico/TOOLS/`, exit 0 sul main.
 - **WG2 Poi fermo.** Converti solo quando Andrea cambia un PNG. Se non c'è nulla: una riga nel diario e ti fermi. Gli script non si riscrivono più.
 
 | Chi tocca adesso | @developer W1 poi W2/W3 · @developer-junior WJ1 poi WJ2, WJ3 · @grafico WG1 poi WG2 |
