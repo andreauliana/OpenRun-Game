@@ -218,3 +218,20 @@ sembra richiederlo, l'agente si ferma e lo scrive in PER_CLAUDE.md. Solo Andrea
   della corsa) e torna al centro quando lo stick si raddrizza, al passo del
   ritorno (`STEER_RITORNO_PER_S`). Prima lo stick sterzava solo a fondo oltre
   meta' corsa. Tastiera e croce restano identiche (stesse rampe 0.06 / 0.12 s).
+
+## Riferimento di guida (studio del 18/11, Andrea 27/11: resta come metro)
+Riassunto dello studio "Esperienza di guida di riferimento" fatto in sola lettura sul gioco arcade
+del 1991. **E' un metro per la fisicita' della guida, non un modello da copiare**: niente codice,
+dati o grafica di altri giochi nel repo, solo comportamenti riscritti a modo nostro. Chi tocca guida,
+rivali, urti o tempi controlla prima che il risultato resti coerente con questi punti:
+- **Pareggio in curva**: per ogni curva c'e' una velocita' a cui lo sterzo pieno tiene la linea;
+  piu' veloce scivoli fuori, piu' lento tagli dentro. Gia' nel gioco (sezione 18/11).
+- **Volante**: pressione rapida, ritorno al centro piu' lento; tocchi brevi correggono poco, sterzo
+  pieno deciso. Gia' nel gioco (0.06 / 0.12 s, `STEER_MORBIDO`).
+- **Presa**: sopra circa il 40% della punta la presa laterale non cala, nemmeno alla punta.
+- **Fuori strada a due zone** con tetti di velocita' (circa 72% e 30% della punta). Gia' nel gioco.
+- **Stridio** solo come avviso vicino al limite, non come freno.
+- **Urti col traffico** (non ancora applicato, solo se Andrea lo chiede): l'auto rallenta e sbanda,
+  e la sbandata si chiude col controsterzo. **Oggetti a bordo strada** per velocita': piano ci si
+  ferma, a media velocita' si scivola o si fa incidente, forte e' incidente grosso.
+- Non applicati e da non fare senza Andrea: cambio manuale, esiti degli urti a soglie di velocita'.

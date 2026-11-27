@@ -58,7 +58,11 @@ Nuovo blocco: `## BLOCCO <NOME> — @ruolo ...`, righe `| Compito |`, `| Vincoli
 
 **Andrea 27/11:** si tiene tutto il lavoro degli agenti fino a stamattina (ctest 27/27). Adesso conta che il gioco giri bene sul **Raspberry Pi 400 e su RetroPie**, a **60 fps costanti**, e che l'esperienza di gioco migliori. Basta ritocchi invisibili sul Mac. Un passo per turno, dentro ANDREA_REVIEW (legacy e auto del giocatore non si toccano: `drawPlayerCar` resta bloccata, D20).
 
-**60 Hz (Andrea 27/11):** il gioco si fa e si misura a **60 Hz**. 50 Hz resta solo un'opzione di `config.json`, non un obiettivo. La differenza di tempo 50/60 Hz su lv_05_spray (VJ3, 2,40%) **non blocca**: non ritoccare la guida per inseguirla.
+**60 Hz (Andrea 27/11):** il gioco si fa, si prova e si misura **solo a 60 Hz** (Mac, HDMI, Raspberry Pi 400, RetroPie). Niente piu' lavoro o prove a 50 Hz: non lanciare `frequenza` o `frequenza_confronto`, VJ3 e' chiuso, la differenza 2,40% su lv_05_spray non conta. Il codice dell'opzione 50 Hz resta com'e' (non si toglie e non si ritocca).
+
+**Riferimento di guida:** chi tocca guida, rivali, urti o tempi controlla la sezione "Riferimento di guida" in fondo a `REGOLE_AUTO_GIOCATORE.md`. Si ottimizza la velocita' del codice, non la sensazione di guida.
+
+**Paletti a bordo strada: chiusi.** Oggi non ci sono al bivio, sul ponte, in galleria e agli incroci, e vanno bene cosi'. Non si ritoccano piu'. La prova `pali` e' tarata su lv_01: su lv_06 esce 27 per la soglia, non per un errore del gioco; non usarla sugli altri livelli.
 
 ### @developer
 - **W1 Sterzo analogico nel core libretro (subito).** `src/libretro/sglavinated_libretro.cpp` righe 115-116 accendono Sinistra/Destra digitali quando lo stick supera 0.5: su RetroPie lo sterzo torna "tutto o niente". Quando lo stick è usato non accendere i digitali, così vale lo sterzo proporzionale di `Player::input` (PR #126). Croce digitale identica a oggi. **Fine:** `cmake -DBUILD_LIBRETRO=ON` compila; `ctest -j1` 27/27; una riga in `ULTIMO_TURNO.md`.

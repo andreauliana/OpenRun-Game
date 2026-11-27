@@ -10,7 +10,7 @@ Unico documento di Andrea che gli agenti leggono. **Precedenza assoluta**.Lo sto
 4. `RICHIESTA_APERTA.md` — il vostro blocco (dal 10/11: V47, seconda lista con passi sempre disponibili ∞).
 5. La vostra bacheca (`RIASSUNTO.md`, `DIARIO_RECENTE.md`).
 
-Solo se il blocco lo chiede: `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti), `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md` (quali PNG e raw usa il gioco, dal 16/11), `CATALOGO_GRAFICO.json`.
+Se il tuo lavoro tocca guida, rivali, urti, tempi o fluidita': `REGOLE_AUTO_GIOCATORE.md` (numeri di guida e urti; in fondo il **riferimento di guida** dello studio del 18/11: metro della fisicita', non da copiare). Solo se il blocco lo chiede: `motore_nuovo/dati/tracciati/INDICE_TRACCIATI.md` (tracciati), `UFFICIO/Dipartimento Grafico/INVENTARIO_ASSET.md` (quali PNG e raw usa il gioco, dal 16/11), `CATALOGO_GRAFICO.json`.
 
 ## 2. Base legacy 08/11 — fatto, approvato, NON si tocca
 
