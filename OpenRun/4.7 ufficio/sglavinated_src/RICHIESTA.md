@@ -72,7 +72,7 @@ Nuovo blocco: `## BLOCCO <NOME> — @ruolo ...`, righe `| Compito |`, `| Vincoli
 
 ### @developer-junior
 - **WJ1 Misura di riferimento (subito).** `misura_pi` sui 6 livelli + `gara` sul Mac. Una riga per livello in `REVIEW_V48.md`: media, p95, p99, max ms/frame (update/render/CRT). Nessun codice toccato.
-- **WJ2 Review di W1, W2, W3** (al posto di VJ5): dopo ogni passo del @developer, ricompila (`run_tests.sh`), prova dedicata e una riga in `REVIEW_V48.md`. Per W1: confronta tasto per tasto la mappa del runner con quella del core.
+- **WJ2 Review di W1-W4** (al posto di VJ5): dopo ogni passo del @developer, ricompila (`run_tests.sh`), prova dedicata e una riga in `REVIEW_V48.md`. Per W1: confronta tasto per tasto la mappa del runner con quella del core.
 - **WJ3 RetroPie senza Pi.** Compila il core (`-DBUILD_LIBRETRO=ON`) e controlla che `pi/compila_e_installa.sh` e `pi/LEGGIMI.md` usino percorsi e target che esistono davvero. Solo elenco in `REVIEW_V48.md`, non modificare gli script `pi/`.
 
 ### @grafico

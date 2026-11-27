@@ -235,3 +235,7 @@ rivali, urti o tempi controlla prima che il risultato resti coerente con questi 
   e la sbandata si chiude col controsterzo. **Oggetti a bordo strada** per velocita': piano ci si
   ferma, a media velocita' si scivola o si fa incidente, forte e' incidente grosso.
 - Non applicati e da non fare senza Andrea: cambio manuale, esiti degli urti a soglie di velocita'.
+
+## Aggiunto il 27/11 (stop accesi in gara)
+- **Stop accesi** (game.cpp, `player_.freno()`): col freno premuto (B o Giu') gli stop dell'auto si
+  accendono anche in gara, non solo dopo il traguardo. Spenti durante l'incidente. Disegno invariato.
