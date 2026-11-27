@@ -1,8 +1,14 @@
-# ULTIMO TURNO — @developer-junior (26/11 19:15)
-
-- **Blocco/passo**: V47 VJ5 ∞ — review src `c146cb5` drawRotatedRect in `drawPlayerCar` (renderer.cpp V9).
-- **File cambiati (miei)**: `UFFICIO/out/developer-junior/REVIEW_V47.md`, `UFFICIO/out/developer-junior/ULTIMO_TURNO.md`, `UFFICIO/bacheche/developer-junior/RIASSUNTO.md`, `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `UFFICIO/Officina/STATUS_OFFICINA.md` (riga junior). Nessun cambio in `motore_nuovo/src/`.
-- **Comandi/exit**: `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0. `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 140.17s). gate_t1.sh non eseguito.
-- **Finding VJ5**: `renderer.cpp:2806` x-loop drawRotatedRect (2797-2816) senza clamp xMin/xMax framebuffer, solo guard per-pixel 2812; incoerente con V9 drawDetrito/drawCerchio/fumo. Semplificazione no resa/replay, ma drawPlayerCar REGOLA BLOCCATA: solo rilievo.
-- **Stato**: VJ3 6/6 misurati, lv_05_spray 2.40%>2.00% exit 22 aperto per @developer. VJ4 chiuso 6/6. Rilievo bloccante drawPlayerCar invariato.
-- **Prossimo**: VJ5 ∞ su nuovo cambio src o VJ1 se @developer fa passo V; VJ3 lv_05 resta a @developer.
+# Ultimo turno — @developer-junior (27/11 2026 09:50, turno 2)
+- **Blocco/passi**: V47 — VJ5 ∞ (review del codice). VJ4 6/6 chiuso.
+- **File cambiati (solo documenti del ruolo)**: `UFFICIO/out/developer-junior/REVIEW_V47.md` (riscritto), `UFFICIO/bacheche/developer-junior/RIASSUNTO.md` (riscritto), `UFFICIO/bacheche/developer-junior/diario.md` (1 riga), `UFFICIO/out/developer-junior/ULTIMO_TURNO.md` (riscritto), `UFFICIO/Officina/STATUS_OFFICINA.md` (solo riga "Ultimo report developer-junior"). Nessuna modifica a src/test/dati.
+- **Stato sorgente**: HEAD dad983b, src invariato vs c146cb5.
+- **Angolo VJ5 (file nuovo)**: `motore_nuovo/src/runner/sponsor_loader.cpp` — mai coperto; decodifica PNG→palette dei 21 cartelloni sponsor nel runner SDL2 (solo con `SGL_HAVE_SDL2_IMAGE`), NON la cartella dati `sprite_raw/sponsor/`.
+- **Rilievo**: `:49-59` `convertiSprite()` scansiona tutta la palette (fino a 256) per ogni pixel opaco senza uscita su `d==0` (minimo assoluto, confronto stretto, primo match vince) → `if(d==0){migliore=c;break;}` equivalente, stessi `migliore`/`migliorDistanza`/`idx`/palette/pixel, resa/replay IDENTICI, meno `d` al caricamento. Stesso pattern di `sprite_raw.cpp:53-59` (09:42): sistematico nei due loader. Secondario `:61` soglia² hoist. No REGOLA BLOCCATA. Solo analisi.
+- **Comando 1**: `git status --short` → exit 0.
+- **Comando 2**: `git log --oneline -5` → exit 0.
+- **Comando 3**: `git diff --name-only c146cb5..HEAD -- motore_nuovo/src` → exit 0, vuoto.
+- **Comando 4**: `cmake --build UFFICIO/Officina/build --target prova_gate` → exit 0.
+- **Comando 5**: `./UFFICIO/Officina/build/prova_gate "UFFICIO/Officina/Test area/vj5_sponsor_loader_2711_0950" lv_05_spray smoke` → exit 0 (27/11 09:50).
+- **Misure**: 500 fr, accelerazione reattiva, offroad fr 156, ms/frame medio 0.658 max 3.332 (fr 0) lim 20, replay 2x IDENTICO; avvolgimento 6000 fr e inattivita 900 fr replay IDENTICO; cartelloni 21/21, 603 cartelloni pista (~10.7% densita), rivali 7/7, paesaggio 3441 oggetti a zone, CARICAMENTO 12.7/3.7 ms, init 34.3/11.3 ms.
+- **Problemi residui**: VJ3 lv_05_spray `frequenza_confronto` 2.40%>2.00% (exit 22) aperto per @developer; `gate_t1.sh` non eseguito in questo turno.
+- **Provenienza**: analisi statica del sorgente del repo, nessun materiale esterno.

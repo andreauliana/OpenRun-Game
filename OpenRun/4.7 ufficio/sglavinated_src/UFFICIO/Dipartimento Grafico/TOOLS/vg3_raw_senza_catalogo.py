@@ -107,6 +107,45 @@
 # (carica_catalogo -> raw_su_disco -> esiste_raw -> report_da_dati) e' estratta
 # in report_da_disco(), con carica/scansiona/esiste iniettabili e autotest
 # dedicato senza file reali; main() passa solo i path noti. Output invariato.
+# Aggiunta 26/11 (turno 19:53): il corpo di main() (report_da_disco ->
+# testo_report -> stampa condizionale) e' estratto in esegui(), con reporta e
+# stampa iniettabili e autotest dedicato senza disco; main() passa solo i path
+# noti. Output invariato.
+# Aggiunta 27/11 (turno VG3 giro 234): la formattazione delle singole righe
+# di riferimento mancante (prima inline in righe_inesistenti()) e' estratta in
+# riga_inesistente_noto() e riga_inesistente_nuovo(), funzioni pure con
+# autotest dedicato; righe_inesistenti() le usa. Output invariato.
+# Aggiunta 27/11 (turno VG3 giro 237): la formattazione della singola riga del
+# noto ricomparso (prima f-string inline in righe_risolti()) e' estratta in
+# riga_risolto(), funzione pura con autotest dedicato; righe_risolti() la usa.
+# Output invariato.
+# Aggiunta 27/11 (turno VG3 giro 240): le tre formattazioni di singola riga in
+# righe_classificazione() (duplicato fra voci, ripetuto in una voce, scritture
+# diverse dello stesso file) sono estratte in riga_duplicato(),
+# riga_ripetuto_in_voce() e riga_scritture(), funzioni pure con autotest
+# dedicato; righe_classificazione() le usa. Output invariato.
+# Aggiunta 27/11 (turno 6): le due formattazioni di singola riga rimaste in
+# righe_senza_voce() e righe_sospetti() sono estratte in riga_senza_voce() e
+# riga_sospetto(), funzioni pure con autotest dedicato; le funzioni che
+# compongono le righe le usano. Output invariato.
+# Aggiunta 27/11 (turno 6, giro 246): le otto formattazioni di singola riga di
+# sintesi rimaste inline in righe_riepilogo() sono estratte in
+# riga_raw_del_motore(), riga_voci_con_raw(), riga_riferimenti_senza_file(),
+# riga_noti_presenti(), riga_duplicati_fra_voci(), riga_ripetuti_in_voce(),
+# riga_scritture_diverse() e riga_percorsi_sospetti(), funzioni pure con
+# autotest dedicato; righe_riepilogo() le usa. Output invariato.
+# Aggiunta 27/11 (turno 08:34, giro 252): la policy di exit dell'autotest
+# (prima espressione inline '0 if all(ok for _, ok in prove) else 1' in autotest())
+# e' estratta in esito_autotest(), funzione pura con autotest dedicato su
+# prove piene, con un fallimento e vuote. Output e exit invariati.
+# Aggiunta 27/11 (turno 09:07, giro 255): la riporta finale delle prove di
+# autotest (ciclo print + return esito_autotest in coda a autotest()) e' estratta
+# in riporta_prove(prove, stampa=None), funzione pura con stampa iniettabile e
+# autotest dedicato su ordine delle righe, esito e lista vuota. Output invariato.
+# Aggiunta 27/11 (turno 09:37, giro 258): le due chiusure reporta dell'autotest
+# di esegui() (reporta_finto/reporta_vuoto, risultato costante) sono estratte in
+# reporta_fisso(righe, codice), funzione pura con autotest dedicato su risultato
+# costante al variare degli argomenti. Output e exit invariati.
 # Non scrive nulla: solo diagnosi. Exit 0 se ogni raw su disco e' tracciato, 1
 # altrimenti; le segnalazioni nuove sono informative e non cambiano l'exit code.
 # Lanciare da sglavinated_src/:
@@ -330,22 +369,73 @@ def classifica_percorsi(riferimenti):
     return validi, sospetti
 
 
+def riga_raw_del_motore(n_raws, n_senza_voce):
+    """Riga di sintesi: raw del motore, tracciati e orfani (funzione pura)."""
+    return f"raw del motore: {n_raws}; tracciati nel catalogo: {n_raws - n_senza_voce}; senza voce: {n_senza_voce}"
+
+
+def riga_voci_con_raw(n_voci, n_riferimenti):
+    """Riga di sintesi: voci con raw e riferimenti distinti (funzione pura)."""
+    return f"voci di catalogo con raw: {n_voci}; riferimenti raw distinti: {n_riferimenti}"
+
+
+def riga_riferimenti_senza_file(n_inesistenti, n_noti, n_nuovi):
+    """Riga di sintesi: riferimenti raw senza file su disco (funzione pura)."""
+    return f"riferimenti 'raw' senza file su disco: {n_inesistenti} (noti {n_noti}, da decidere {n_nuovi})"
+
+
+def riga_noti_presenti(n_risolti):
+    """Riga di sintesi: noti raw-mancanti ricomparsi su disco (funzione pura)."""
+    return f"noti raw-mancanti ora presenti su disco: {n_risolti}"
+
+
+def riga_duplicati_fra_voci(n_duplicati):
+    """Riga di sintesi: raw citati da piu' voci (funzione pura)."""
+    return f"raw citati da piu' voci: {n_duplicati}"
+
+
+def riga_ripetuti_in_voce(n_ripetuti):
+    """Riga di sintesi: raw ripetuti dentro una sola voce (funzione pura)."""
+    return f"raw ripetuti dentro una sola voce: {n_ripetuti}"
+
+
+def riga_scritture_diverse(n_scritture):
+    """Riga di sintesi: raw con piu' scritture dello stesso file (funzione pura)."""
+    return f"raw citati con piu' scritture dello stesso file: {n_scritture}"
+
+
+def riga_percorsi_sospetti(n_sospetti, n_validi):
+    """Riga di sintesi: riferimenti raw con percorso sospetto (funzione pura)."""
+    return f"riferimenti 'raw' con percorso sospetto: {n_sospetti} (ben formati {n_validi})"
+
+
 def righe_riepilogo(res, raws, noti, nuovi, sospetti, validi, risolti):
     """Righe di sintesi finale del report (funzione pura).
 
     Erano f-string sparse in main(): qui si provano in isolamento ordine e
-    formato, e main() si limita a stamparle. Nessun accesso al disco.
+    formato, e main() si limita a stamparle. Nessun accesso al disco. La
+    formattazione della singola riga sta nelle funzioni riga_* qui sopra.
     """
     return [
-        f"raw del motore: {len(raws)}; tracciati nel catalogo: {len(raws) - len(res['senza_voce'])}; senza voce: {len(res['senza_voce'])}",
-        f"voci di catalogo con raw: {res['voci_con_raw']}; riferimenti raw distinti: {len(res['riferimenti'])}",
-        f"riferimenti 'raw' senza file su disco: {len(res['raw_inesistenti'])} (noti {len(noti)}, da decidere {len(nuovi)})",
-        f"noti raw-mancanti ora presenti su disco: {len(risolti)}",
-        f"raw citati da piu' voci: {len(res['duplicati'])}",
-        f"raw ripetuti dentro una sola voce: {len(res['ripetuti_in_voce'])}",
-        f"raw citati con piu' scritture dello stesso file: {len(res['scritture'])}",
-        f"riferimenti 'raw' con percorso sospetto: {len(sospetti)} (ben formati {len(validi)})",
+        riga_raw_del_motore(len(raws), len(res["senza_voce"])),
+        riga_voci_con_raw(res["voci_con_raw"], len(res["riferimenti"])),
+        riga_riferimenti_senza_file(len(res["raw_inesistenti"]), len(noti), len(nuovi)),
+        riga_noti_presenti(len(risolti)),
+        riga_duplicati_fra_voci(len(res["duplicati"])),
+        riga_ripetuti_in_voce(len(res["ripetuti_in_voce"])),
+        riga_scritture_diverse(len(res["scritture"])),
+        riga_percorsi_sospetti(len(sospetti), len(validi)),
     ]
+
+
+def riga_inesistente_noto(r, ids, motivo):
+    """Riga di un riferimento 'raw' mancante ma noto (funzione pura)."""
+    return f"RAW MANCANTE NOTO {r} {ids} ({motivo})"
+
+
+def riga_inesistente_nuovo(r, ids):
+    """Riga di un riferimento 'raw' mancante da decidere (funzione pura)."""
+    return f"RAW IN CATALOGO MA NON SU DISCO {r} {ids}"
 
 
 def righe_inesistenti(noti, nuovi, riferimenti, motivi):
@@ -355,13 +445,14 @@ def righe_inesistenti(noti, nuovi, riferimenti, motivi):
     ordine. Prima i noti (con il motivo atteso fra parentesi), poi i nuovi.
     motivi: path noto -> motivo (il chiamante passa NOTI_RAW_MANCANTI).
     """
-    righe = [
-        f"RAW MANCANTE NOTO {r} {riferimenti[r]} ({motivi[r]})" for r in noti
-    ]
-    righe += [
-        f"RAW IN CATALOGO MA NON SU DISCO {r} {riferimenti[r]}" for r in nuovi
-    ]
+    righe = [riga_inesistente_noto(r, riferimenti[r], motivi[r]) for r in noti]
+    righe += [riga_inesistente_nuovo(r, riferimenti[r]) for r in nuovi]
     return righe
+
+
+def riga_risolto(r, motivo):
+    """Riga di un noto raw-mancante ricomparso su disco (funzione pura)."""
+    return f"RAW NOTO ORA PRESENTE {r} (aggiornare NOTI_RAW_MANCANTI: {motivo})"
 
 
 def righe_risolti(risolti, motivi):
@@ -369,11 +460,24 @@ def righe_risolti(risolti, motivi):
 
     Era una f-string nel ciclo di main(): qui si provano in isolamento formato e
     ordine. motivi: path noto -> motivo (il chiamante passa NOTI_RAW_MANCANTI).
+    La formattazione della singola riga sta in riga_risolto().
     """
-    return [
-        f"RAW NOTO ORA PRESENTE {r} (aggiornare NOTI_RAW_MANCANTI: {motivi[r]})"
-        for r in risolti
-    ]
+    return [riga_risolto(r, motivi[r]) for r in risolti]
+
+
+def riga_duplicato(r, ids):
+    """Riga di un raw citato da piu' voci di catalogo (funzione pura)."""
+    return f"RAW CITATO DA PIU' VOCI {r} {ids}"
+
+
+def riga_ripetuto_in_voce(r, ids):
+    """Riga di un raw citato due volte dentro una sola voce (funzione pura)."""
+    return f"RAW RIPETUTO IN UNA VOCE {r} {ids}"
+
+
+def riga_scritture(canonico, elenco):
+    """Riga di uno stesso file raw citato con piu' scritture (funzione pura)."""
+    return f"RAW STESSO FILE SCRITTURE DIVERSE {canonico} {elenco}"
 
 
 def righe_classificazione(duplicati, ripetuti_in_voce, scritture):
@@ -382,25 +486,37 @@ def righe_classificazione(duplicati, ripetuti_in_voce, scritture):
     Erano tre cicli print in main(): qui si provano in isolamento formato e
     ordine (prima i duplicati fra voci, poi i ripetuti in una sola voce, poi le
     scritture diverse dello stesso file), ogni gruppo con le chiavi ordinate.
-    Nessun accesso al disco.
+    La formattazione della singola riga sta in riga_duplicato(),
+    riga_ripetuto_in_voce() e riga_scritture(). Nessun accesso al disco.
     """
     righe = []
     for r, ids in sorted(duplicati.items()):
-        righe.append(f"RAW CITATO DA PIU' VOCI {r} {ids}")
+        righe.append(riga_duplicato(r, ids))
     for r, ids in sorted(ripetuti_in_voce.items()):
-        righe.append(f"RAW RIPETUTO IN UNA VOCE {r} {ids}")
+        righe.append(riga_ripetuto_in_voce(r, ids))
     for canonico, elenco in sorted(scritture.items()):
-        righe.append(f"RAW STESSO FILE SCRITTURE DIVERSE {canonico} {elenco}")
+        righe.append(riga_scritture(canonico, elenco))
     return righe
+
+
+def riga_senza_voce(r):
+    """Riga di un raw su disco senza voce di catalogo (funzione pura)."""
+    return f"RAW NON CATALOGATO {r}"
 
 
 def righe_senza_voce(senza_voce):
     """Righe dei raw su disco senza voce di catalogo (funzione pura).
 
     Era un ciclo print in main(): qui si prova in isolamento il formato.
+    La formattazione della singola riga sta in riga_senza_voce().
     Nessun accesso al disco.
     """
-    return [f"RAW NON CATALOGATO {r}" for r in senza_voce]
+    return [riga_senza_voce(r) for r in senza_voce]
+
+
+def riga_sospetto(r, ids):
+    """Riga di un riferimento 'raw' con percorso sospetto (funzione pura)."""
+    return f"RAW PERCORSO SOSPETTO {r} {ids}"
 
 
 def righe_sospetti(sospetti, riferimenti):
@@ -408,11 +524,10 @@ def righe_sospetti(sospetti, riferimenti):
 
     Era un ciclo print in main(): qui si provano in isolamento formato e
     ordine. riferimenti: path raw -> lista di id (il chiamante passa
-    res['riferimenti']). Nessun accesso al disco.
+    res['riferimenti']). La formattazione della singola riga sta in
+    riga_sospetto(). Nessun accesso al disco.
     """
-    return [
-        f"RAW PERCORSO SOSPETTO {r} {riferimenti[r]}" for r in sospetti
-    ]
+    return [riga_sospetto(r, riferimenti[r]) for r in sospetti]
 
 
 def classifica_report(res, raws, motivi=None):
@@ -563,6 +678,74 @@ def report_da_disco(catalogo, radice, raw_root, carica=None, scansiona=None, esi
     return report_da_dati(dati["elementi"], raws, esiste)
 
 
+def esegui(catalogo, radice, raw_root, reporta=None, stampa=None):
+    """Sequenza finale di main(): report -> testo -> stampa condizionale (pura
+    se reporta e stampa sono iniettati).
+
+    Erano le tre righe del corpo di main(): produrre righe/codice con
+    report_da_disco, serializzare con testo_report e stampare solo se il testo
+    non e' vuoto (un report vuoto non stampava nulla). reporta(catalogo,
+    radice, raw_root) -> (righe, codice); stampa e' un callable che riceve il
+    testo. Di default si usano report_da_disco e print, quindi l'output e'
+    identico. Ritorna il codice di uscita.
+    """
+    if reporta is None:
+        reporta = report_da_disco
+    if stampa is None:
+        stampa = print
+    righe, codice = reporta(catalogo, radice, raw_root)
+    testo = testo_report(righe)
+    if testo:
+        stampa(testo)
+    return codice
+
+
+def reporta_fisso(righe, codice):
+    """Callable reporta che restituisce sempre (righe, codice) (funzione pura).
+
+    Nell'autotest di esegui() le due chiusure reporta_finto/reporta_vuoto
+    restituivano un risultato costante: qui la costruzione sta in un solo punto,
+    provabile in isolamento senza disco. Il callable riceve e ignora
+    catalogo/radice/raw_root, come facevano le chiusure originali.
+    """
+    return lambda catalogo, radice, raw_root: (righe, codice)
+
+
+def riga_autotest(nome, ok):
+    """Riga di esito di una prova di autotest (funzione pura).
+
+    Era la f-string inline nel ciclo di stampa in autotest(): qui si prova in
+    isolamento il formato ('OK' / 'FALLITO'), identico a prima. Nessun disco.
+    """
+    return f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}"
+
+
+def esito_autotest(prove):
+    """Codice di uscita dell'autotest: 0 se ogni prova e' OK, 1 altrimenti (pura).
+
+    Era l'espressione inline in coda a autotest(): qui si prova in isolamento
+    la policy (lista piena, un fallimento, lista vuota -> 0 come all([])).
+    Nessun disco.
+    """
+    return 0 if all(ok for _, ok in prove) else 1
+
+
+def riporta_prove(prove, stampa=None):
+    """Stampa l'esito di ogni prova e restituisce il codice (pura se stampa data).
+
+    Erano il ciclo 'for nome, ok in prove: print(riga_autotest(nome, ok))' e il
+    'return esito_autotest(prove)' in coda a autotest(): qui si prova in isolamento
+    che ogni prova produca una riga nell'ordine dato e che il codice segua la
+    policy di esito_autotest(). stampa e' un callable che riceve la riga (default
+    print, che non viene toccato dal chiamante che inietta). Nessun disco.
+    """
+    if stampa is None:
+        stampa = print
+    for nome, ok in prove:
+        stampa(riga_autotest(nome, ok))
+    return esito_autotest(prove)
+
+
 def autotest():
     """Prove della funzione pura con dati sintetici, nessun file reale letto."""
     elementi = [
@@ -684,6 +867,20 @@ def autotest():
         and classifica_inesistenti([]) == ([], [])
     )
     prove.append(("classifica_inesistenti", ok_class))
+    ok_riga_inesistente = (
+        riga_inesistente_noto("raw/x.sglraw", ["v1"], "area bloccata")
+        == "RAW MANCANTE NOTO raw/x.sglraw ['v1'] (area bloccata)"
+        and riga_inesistente_nuovo("raw/y.sglraw", ["v2"])
+        == "RAW IN CATALOGO MA NON SU DISCO raw/y.sglraw ['v2']"
+    )
+    prove.append(("riga_inesistente", ok_riga_inesistente))
+    ok_riga_risolto = (
+        riga_risolto("raw/x.sglraw", "area bloccata")
+        == "RAW NOTO ORA PRESENTE raw/x.sglraw (aggiornare NOTI_RAW_MANCANTI: area bloccata)"
+        and riga_risolto("raw/y.sglraw", "")
+        == "RAW NOTO ORA PRESENTE raw/y.sglraw (aggiornare NOTI_RAW_MANCANTI: )"
+    )
+    prove.append(("riga_risolto", ok_riga_risolto))
     ok_inesistenti = (
         righe_inesistenti(
             ["raw/x.sglraw"], ["raw/y.sglraw"],
@@ -754,6 +951,22 @@ def autotest():
         "riferimenti 'raw' con percorso sospetto: 1 (ben formati 1)",
     ] and len(vuote) == 8 and vuote[0] == "raw del motore: 0; tracciati nel catalogo: 0; senza voce: 0"
     prove.append(("righe_riepilogo", ok_righe))
+    ok_riga_riepilogo = (
+        riga_raw_del_motore(3, 1)
+        == "raw del motore: 3; tracciati nel catalogo: 2; senza voce: 1"
+        and riga_voci_con_raw(3, 2)
+        == "voci di catalogo con raw: 3; riferimenti raw distinti: 2"
+        and riga_riferimenti_senza_file(2, 1, 1)
+        == "riferimenti 'raw' senza file su disco: 2 (noti 1, da decidere 1)"
+        and riga_noti_presenti(1) == "noti raw-mancanti ora presenti su disco: 1"
+        and riga_duplicati_fra_voci(1) == "raw citati da piu' voci: 1"
+        and riga_ripetuti_in_voce(1) == "raw ripetuti dentro una sola voce: 1"
+        and riga_scritture_diverse(1)
+        == "raw citati con piu' scritture dello stesso file: 1"
+        and riga_percorsi_sospetti(1, 1)
+        == "riferimenti 'raw' con percorso sospetto: 1 (ben formati 1)"
+    )
+    prove.append(("riga_riepilogo", ok_riga_riepilogo))
     ok_risolti_righe = (
         righe_risolti(
             ["raw/x.sglraw"],
@@ -779,6 +992,16 @@ def autotest():
         and righe_classificazione({}, {}, {}) == []
     )
     prove.append(("righe_classificazione", ok_class_righe))
+    ok_riga_class = (
+        riga_duplicato("raw/a.sglraw", ["v1", "v2"])
+        == "RAW CITATO DA PIU' VOCI raw/a.sglraw ['v1', 'v2']"
+        and riga_ripetuto_in_voce("raw/b.sglraw", ["v3"])
+        == "RAW RIPETUTO IN UNA VOCE raw/b.sglraw ['v3']"
+        and riga_scritture("raw/c.sglraw", ["./raw/c.sglraw", "raw/c.sglraw"])
+        == "RAW STESSO FILE SCRITTURE DIVERSE raw/c.sglraw "
+        "['./raw/c.sglraw', 'raw/c.sglraw']"
+    )
+    prove.append(("riga_classificazione", ok_riga_class))
     ok_senza_voce = (
         righe_senza_voce(["raw/a.sglraw", "raw/b.sglraw"])
         == [
@@ -788,6 +1011,18 @@ def autotest():
         and righe_senza_voce([]) == []
     )
     prove.append(("righe_senza_voce", ok_senza_voce))
+    ok_riga_senza_voce = (
+        riga_senza_voce("raw/x.sglraw") == "RAW NON CATALOGATO raw/x.sglraw"
+        and riga_senza_voce("") == "RAW NON CATALOGATO "
+    )
+    prove.append(("riga_senza_voce", ok_riga_senza_voce))
+    ok_riga_sospetto = (
+        riga_sospetto("GRAFICA/vecchio.sglraw", ["b"])
+        == "RAW PERCORSO SOSPETTO GRAFICA/vecchio.sglraw ['b']"
+        and riga_sospetto("raw/../x.sglraw", ["a", "c"])
+        == "RAW PERCORSO SOSPETTO raw/../x.sglraw ['a', 'c']"
+    )
+    prove.append(("riga_sospetto", ok_riga_sospetto))
     ok_sospetti = (
         righe_sospetti(
             ["GRAFICA/vecchio.sglraw", "raw/../x.sglraw"],
@@ -1000,17 +1235,66 @@ def autotest():
         and noti_risolti(["raw/n1.sglraw"]) == []
     )
     prove.append(("motivi_iniettabile", ok_iniettabile))
-    for nome, ok in prove:
-        print(f"AUTOTEST {nome}: {'OK' if ok else 'FALLITO'}")
-    return 0 if all(ok for _, ok in prove) else 1
+    # esegui: sequenza finale provata con reporta/stampa iniettati, senza disco.
+    stampati = []
+    codice_esegui = esegui(
+        Path("/finto/catalogo.json"), Path("/finto"), Path("/finto/raw"),
+        reporta=reporta_fisso(["RAW NON CATALOGATO raw/x.sglraw"], 1),
+        stampa=lambda t: stampati.append(t),
+    )
+    stampati_vuoti = []
+    codice_vuoto = esegui(
+        Path("/finto/catalogo.json"), Path("/finto"), Path("/finto/raw"),
+        reporta=reporta_fisso([], 0), stampa=lambda t: stampati_vuoti.append(t),
+    )
+    ok_esegui = (
+        codice_esegui == 1
+        and stampati == ["RAW NON CATALOGATO raw/x.sglraw"]
+        and codice_vuoto == 0
+        and stampati_vuoti == []
+    )
+    prove.append(("esegui", ok_esegui))
+    # reporta_fisso: callable a risultato costante, provato in isolamento senza
+    # disco; gli argomenti (catalogo/radice/raw_root) vengono ricevuti e ignorati.
+    rf = reporta_fisso(["r1", "r2"], 1)
+    prove.append((
+        "reporta_fisso",
+        rf(Path("/a"), Path("/b"), Path("/c")) == (["r1", "r2"], 1)
+        and rf(Path("/x"), Path("/y"), Path("/z")) == (["r1", "r2"], 1)
+        and reporta_fisso([], 0)(Path("/a"), Path("/b"), Path("/c")) == ([], 0),
+    ))
+    prove.append((
+        "riga_autotest",
+        riga_autotest("x", True) == "AUTOTEST x: OK"
+        and riga_autotest("x", False) == "AUTOTEST x: FALLITO",
+    ))
+    prove.append((
+        "esito_autotest",
+        esito_autotest([("a", True), ("b", True)]) == 0
+        and esito_autotest([("a", True), ("b", False)]) == 1
+        and esito_autotest([("a", False), ("b", True)]) == 1
+        and esito_autotest([]) == 0,
+    ))
+    raccolti = []
+    codice_riporta = riporta_prove(
+        [("a", True), ("b", False)], stampa=lambda r: raccolti.append(r)
+    )
+    vuoti_riporta = []
+    codice_riporta_vuoto = riporta_prove(
+        [], stampa=lambda r: vuoti_riporta.append(r)
+    )
+    prove.append((
+        "riporta_prove",
+        codice_riporta == 1
+        and raccolti == ["AUTOTEST a: OK", "AUTOTEST b: FALLITO"]
+        and codice_riporta_vuoto == 0
+        and vuoti_riporta == [],
+    ))
+    return riporta_prove(prove)
 
 
 def main():
-    righe, codice = report_da_disco(CATALOGO, RADICE, RAW_ROOT)
-    testo = testo_report(righe)
-    if testo:
-        print(testo)
-    return codice
+    return esegui(CATALOGO, RADICE, RAW_ROOT)
 
 
 if __name__ == "__main__":

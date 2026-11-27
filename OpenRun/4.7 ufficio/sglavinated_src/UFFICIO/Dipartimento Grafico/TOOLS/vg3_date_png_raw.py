@@ -46,6 +46,10 @@
 # Anche la riga 'il nome corretto ... esiste (data), allineato/diverso dal raw' sta in
 # riga_doppia_nome_corretto(): il ternario era inline in main(), cosi' un cambio delle
 # altre righe della diagnosi poteva lasciarla vecchia e non si poteva provare a parte.
+# La riga di apertura del blocco doppia estensione ('png ... il catalogo non lo vede')
+# sta in riga_doppia_intro(): prima era un print inline in main(), cosi' un cambio
+# delle altre righe della stessa diagnosi poteva lasciarla vecchia e non si poteva
+# provare senza toccare GRAFICA.
 # Il confronto del PNG col nome corretto e il suo raw sta in confronto_nome_ok(): la
 # riga 'allineato al raw' di main() e lo stato sintetico leggono la stessa funzione,
 # cosi' non possono contraddirsi se una delle due diagnosi viene modificata.
@@ -55,6 +59,10 @@
 # Se lo skyline di un livello manca (PNG sparito, raw ancora presente) si aggiunge
 # SKYLINE-RESIDUO: dice se il raw e' ancora identico a skyline_trama.png, cioe' se lo
 # sfondo in gioco e' quello giusto e manca solo il disegno di Andrea da ripristinare.
+# Le due righe del confronto con l'intermedio (identico/diverso dal raw) stanno in
+# riga_skyline_residuo_confronto(): prima erano f-string inline in residuo_skyline(),
+# cosi' un cambio di un ramo poteva lasciare l'altro vecchio e non si potevano
+# provare senza toccare GRAFICA.
 # La riga SKYLINE-MANCA porta ora uno stato (classifica_skyline): 'manca-disegno'
 # (sfondo giusto, manca solo il PNG di Andrea) e' distinto da 'manca-sfondo' (raw di
 # un altro disegno): prima entrambi dicevano solo SKYLINE-MANCA e non si distingueva
@@ -67,6 +75,13 @@
 # Le code delle due righe del residuo .png.png (dettaglio per stato, esito 'risolto' o
 # 'decide Andrea') stanno in suffisso_dettaglio_doppia() e suffisso_stato_doppia():
 # prima erano due ternari annidati nei print di main(), non provabili a parte.
+# La riga intera del dettaglio '{stato} ({dettaglio})' sta in riga_doppia_stato():
+# prima era un print inline in main() con la coda concatenata a mano, cosi' un cambio
+# delle altre righe della diagnosi poteva lasciarla vecchia e non si poteva provare
+# senza toccare GRAFICA.
+# Anche la riga di chiusura 'stato <sintesi>' sta in riga_doppia_sintesi(): prima il
+# formato e la coda suffisso_stato_doppia() erano concatenati inline in main(), cosi'
+# la diagnosi finale poteva restare vecchia e non si poteva provare a parte.
 # Le cinque righe di chiusura (raw esaminati, allineati, da convertire, png piu' nuovi,
 # senza png sorgente) stanno in righe_finali(): prima erano print sparsi in fondo a
 # main(), cosi' un contatore nuovo poteva restare fuori dal totale.
@@ -93,6 +108,34 @@
 # riga_altri_residuo(): prima era un print inline in main(), cosi' un cambio
 # dell'etichetta in un'altra riga dei gruppi 1:1 poteva lasciarla vecchia e non
 # si poteva provare a parte senza toccare GRAFICA.
+# Le due righe del controllo dei gruppi di raw (RAW-GRUPPO-IGNOTO e la sintesi
+# 'gruppi di raw noti ... sconosciuti') stanno in riga_raw_gruppo_ignoto() e
+# riga_gruppi_raw_noti(): prima erano f-string inline in controllo_gruppi_raw(),
+# cosi' un cambio delle etichette poteva restare vecchio e non si potevano provare
+# senza toccare i raw del motore.
+# La riga di sintesi delle pose del giocatore ('giocatore: raw pose ...') sta in
+# riga_pose_giocatore(): prima era una lunga f-string inline in
+# controllo_pose_giocatore(), cosi' un contatore o un campo aggiunto poteva restare
+# fuori dal testo e la riga non si poteva provare senza toccare l'area bloccata di
+# Andrea. La funzione non legge i file: riceve i contatori gia' calcolati.
+# Anche la riga degli stop con PNG ma senza la posa ('stop con PNG ma senza la
+# posa ...') sta in riga_stop_senza_posa(): prima era un'f-string inline in
+# controllo_pose_giocatore(), cosi' un cambio delle altre righe dell'area bloccata
+# poteva lasciarla vecchia e non si poteva provare senza toccare i PNG di Andrea.
+# Anche le due righe del disallineamento ('pose presenti con png diverso dal raw' e
+# 'il raw non e' piu' il png'), con la riga di allineamento dell'else, stanno in
+# righe_pose_disallineate(): prima erano print inline in controllo_pose_giocatore(),
+# cosi' un cambio di una poteva lasciare l'altra vecchia e non si potevano provare
+# senza toccare i PNG di Andrea.
+# Anche il nome della posa ricavato dallo stem di un raw sta in pose_da_raw(): prima
+# il ramo speciale dello stop 'dritta' (auto_stop_dritta, senza numero) e il taglio
+# del prefisso erano inline in controllo_pose_giocatore(), cosi' la regola non si
+# poteva provare senza toccare i file bloccati dell'auto di Andrea.
+# Anche le ultime quattro righe di diagnosi di controllo_pose_giocatore() (avviso
+# area bloccata, avviso riquadro non riproducibile, avviso pose illegibili e la
+# riga di uno stop non apribile) stavano come print/f-string inline: cambiandone
+# una le altre potevano restare vecchie e nessuna si poteva provare senza toccare
+# i PNG di Andrea. Ora sono funzioni pure, provabili a parte.
 # Lanciare da sglavinated_src/:
 #   python3 "UFFICIO/Dipartimento Grafico/TOOLS/vg3_date_png_raw.py"
 # Le righe "png piu' nuovo ma contenuto uguale" (i risalvataggi del 16/11 20:24)
@@ -274,6 +317,25 @@ def esito_skyline(atteso, grezzo, png_piu_nuovo):
     return "allineato"
 
 
+def riga_skyline_residuo_confronto(livello, quando_intermedio, quando_raw, identico):
+    """Riga SKYLINE-RESIDUO con l'intermedio di trama presente (funzione pura).
+
+    Prima i due rami (identico al raw / diverso dal raw) erano f-string scritte
+    inline in residuo_skyline(): cambiando l'etichetta di uno l'altro poteva restare
+    vecchio e non si potevano provare senza toccare GRAFICA. Qui il testo dipende
+    solo dagli argomenti. Non scrive nulla: PNG e raw restano di Andrea.
+    """
+    if identico:
+        return (
+            f"SKYLINE-RESIDUO {livello}: skyline_trama.png {quando_intermedio} identico al raw"
+            f" {quando_raw}: lo sfondo in gioco e' quello, manca solo il PNG di Andrea"
+        )
+    return (
+        f"SKYLINE-RESIDUO {livello}: skyline_trama.png {quando_intermedio} diverso dal raw"
+        f" {quando_raw}: da decidere con Andrea"
+    )
+
+
 def residuo_skyline(livello, raw):
     """Se lo skyline originale e' sparito, dice cosa resta: l'intermedio con la trama.
 
@@ -291,13 +353,15 @@ def residuo_skyline(livello, raw):
         print(f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} non apribile da PIL")
     elif raw.exists() and raw.read_bytes() == atteso:
         print(
-            f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} identico al raw"
-            f" {data(raw)}: lo sfondo in gioco e' quello, manca solo il PNG di Andrea"
+            riga_skyline_residuo_confronto(
+                livello, data(intermedio), data(raw), True
+            )
         )
     else:
         print(
-            f"SKYLINE-RESIDUO {livello}: skyline_trama.png {data(intermedio)} diverso dal raw"
-            f" {data(raw)}: da decidere con Andrea"
+            riga_skyline_residuo_confronto(
+                livello, data(intermedio), data(raw), False
+            )
         )
 
 
@@ -486,6 +550,35 @@ def suffisso_stato_doppia(sintesi):
     return " (decide Andrea: rinominare/convertire)"
 
 
+def riga_doppia_stato(gruppo, nome, stato, dettaglio):
+    """Riga '{stato} ({dettaglio})' del residuo .png.png (funzione pura).
+
+    Prima il formato e la coda (suffisso_dettaglio_doppia) stavano in un print
+    inline in main(): un cambio delle altre righe della diagnosi poteva lasciarla
+    vecchia e non si poteva provare senza toccare GRAFICA. Qui formato, dettaglio
+    e coda dipendono solo dagli argomenti passati. Non scrive nulla: PNG e raw
+    restano di Andrea.
+    """
+    return (
+        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{nome}: {stato} ({dettaglio})"
+        + suffisso_dettaglio_doppia(stato)
+    )
+
+
+def riga_doppia_sintesi(gruppo, nome, sintesi):
+    """Riga di chiusura 'stato <sintesi>' del residuo .png.png (funzione pura).
+
+    Prima il formato e la coda (suffisso_stato_doppia) erano concatenati a mano
+    in main(): un cambio delle altre righe della diagnosi poteva lasciarla vecchia
+    e non si poteva provare senza toccare GRAFICA. Qui formato e coda dipendono
+    solo dagli argomenti passati. Non scrive nulla: PNG e raw restano di Andrea.
+    """
+    return (
+        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{nome}: stato {sintesi}"
+        + suffisso_stato_doppia(sintesi)
+    )
+
+
 def riga_doppia_nome_atteso(gruppo, nome, doppia, raw_esiste, quando_raw):
     """Riga del nome corretto e del suo raw per un residuo .png.png (funzione pura).
 
@@ -546,13 +639,33 @@ def png_non_motore(rel):
 GRUPPI_RAW = {"giocatore", "scenari", "sponsor"} | {g for _, g in ALTRI}
 
 
+def riga_raw_gruppo_ignoto(nome):
+    """Riga per una cartella di raw senza regola di conversione (funzione pura).
+
+    Prima la f-string era inline in controllo_gruppi_raw(): un cambio
+    dell'etichetta in un'altra riga della diagnosi poteva lasciarla vecchia e
+    non si poteva provare senza toccare i raw del motore.
+    """
+    return f"RAW-GRUPPO-IGNOTO {nome}: nessuna regola di conversione"
+
+
+def riga_gruppi_raw_noti(noti, ignoti):
+    """Riga di sintesi dei gruppi di raw noti/sconosciuti (funzione pura).
+
+    Come riga_raw_gruppo_ignoto(): prima era un print inline in
+    controllo_gruppi_raw(), con il conteggio calcolato a mano. Qui formato e
+    numeri dipendono solo dagli argomenti e l'autotest li fissa.
+    """
+    return f"gruppi di raw noti: {noti}, sconosciuti: {ignoti}"
+
+
 def controllo_gruppi_raw():
     ignoti = 0
     for cartella in sorted(p for p in RAW_ROOT.iterdir() if p.is_dir()):
         if cartella.name not in GRUPPI_RAW:
             ignoti += 1
-            print(f"RAW-GRUPPO-IGNOTO {cartella.name}: nessuna regola di conversione")
-    print(f"gruppi di raw noti: {len(GRUPPI_RAW)}, sconosciuti: {ignoti}")
+            print(riga_raw_gruppo_ignoto(cartella.name))
+    print(riga_gruppi_raw_noti(len(GRUPPI_RAW), ignoti))
     return ignoti
 
 
@@ -604,6 +717,111 @@ def conta_pose(pose_png, stop_png):
     }
 
 
+def riga_pose_giocatore(esaminati, conta, mancanti):
+    """Riga di sintesi delle pose dell'auto di Andrea (funzione pura).
+
+    Prima l'f-string era lunga e inline in controllo_pose_giocatore(): se un
+    contatore o un campo cambiava, la riga poteva restare vecchia e non si poteva
+    provare senza toccare i file bloccati del giocatore. Qui formato e campi
+    dipendono solo dagli argomenti (conta e' il dizionario di conta_pose). Non
+    legge i file: PNG e raw restano di Andrea.
+    """
+    return (
+        f"giocatore: raw pose {esaminati}, PNG presenti {conta['png']} "
+        f"(pose base {conta['base']}, stop {conta['stop']}), "
+        f"coppie pronte {conta['coppie']}, "
+        f"mancanti {len(mancanti)}: {', '.join(mancanti) if mancanti else '-'}"
+    )
+
+
+def riga_stop_senza_posa(orfani):
+    """Riga degli stop con PNG ma senza la posa base (funzione pura).
+
+    Prima l'f-string era inline in controllo_pose_giocatore(): cambiando
+    l'etichetta di un'altra riga dell'area bloccata questa poteva restare
+    vecchia e non si poteva provare senza toccare i PNG di Andrea. Qui il
+    testo dipende solo dalla lista degli stop orfani passata; non legge file.
+    """
+    return (
+        f"giocatore: stop con PNG ma senza la posa (raw cancellato a una conversione)"
+        f" {len(orfani)}: {', '.join(orfani)}"
+    )
+
+
+def righe_pose_disallineate(disallineati, confrontati):
+    """Righe finali del confronto delle pose dell'auto di Andrea (funzione pura).
+
+    Con disallineati pieni restituisce le due righe del ridisegno non convertito
+    (conteggio e nome, poi l'avvertimento); vuoto restituisce la sola riga
+    'confrontati e allineati'. Prima i due print e l'else stavano inline in
+    controllo_pose_giocatore(): cambiando una riga l'altra poteva restare vecchia
+    e non si potevano provare senza toccare i PNG di Andrea. Qui il testo dipende
+    solo dagli argomenti; non legge file.
+    """
+    if disallineati:
+        return [
+            f"giocatore: pose presenti con png diverso dal raw {len(disallineati)}: "
+            f"{', '.join(disallineati)}",
+            "giocatore: il raw non e' piu' il png (ridisegno non convertito). Conversione"
+            " bloccata da qui (auto di Andrea): da segnalare ad Andrea, non rigenerare il"
+            " disegno e non lanciare converti_pose_auto.py al posto suo.",
+        ]
+    return [f"giocatore: raw pose confrontati e allineati {confrontati}"]
+
+
+def pose_da_raw(stem):
+    """Nome della posa da uno stem di raw SGLR (funzione pura).
+
+    Prima il calcolo era inline in controllo_pose_giocatore(): lo stop della posa
+    'dritta' ha il nome speciale auto_stop_dritta (senza numero), gli altri stop
+    e le pose base si ottengono togliendo il prefisso. Tenendolo qui la regola e'
+    provabile senza toccare i PNG/raw bloccati dell'auto di Andrea.
+    """
+    if stem.startswith("auto_stop_"):
+        return "dritta" if stem == "auto_stop_dritta" else stem[len("auto_stop_"):]
+    return stem[len("auto_"):]
+
+
+def avviso_area_bloccata():
+    """Avviso per i raw dell'auto di Andrea senza PNG sorgente (funzione pura).
+
+    Prima era un print inline in controllo_pose_giocatore(), quindi non provabile
+    senza toccare i file bloccati. Il testo e' fissato qui e l'autotest lo verifica.
+    """
+    return (
+        "giocatore: area bloccata (auto di Andrea), nessuna conversione da qui."
+        " Rilanciare converti_pose_auto.py senza questi PNG cancella il raw:"
+        " da riavere da git f2f3581 o da ridisegnare."
+    )
+
+
+def avviso_riquadro_non_riproducibile():
+    """Avviso quando mancano pose e il riquadro di ritaglio non e' riproducibile (pura).
+
+    Prima era un print inline in controllo_pose_giocatore(), nella stessa decisione
+    (mancanti/orfani) dell'avviso area bloccata: cambiandone uno l'altro poteva
+    restare vecchio. Non legge file: PNG e raw restano di Andrea.
+    """
+    return (
+        "giocatore: riquadro di ritaglio non riproducibile (dipende da tutte le pose):"
+        " confronto contenuto png/raw saltato finche' i PNG mancanti non tornano."
+    )
+
+
+def avviso_pose_illeggibili():
+    """Avviso quando le pose PNG non si aprono con PIL (funzione pura)."""
+    return "giocatore: pose PNG illeggibili, confronto contenuto saltato"
+
+
+def riga_pose_non_apribile(stem):
+    """Riga per uno stop con PNG non apribile da PIL (funzione pura).
+
+    Prima era un f-string inline in controllo_pose_giocatore(); il nome dello stop
+    arriva gia' calcolato dal chiamante, la funzione non tocca i file di Andrea.
+    """
+    return f"giocatore: {stem}.png non apribile da PIL"
+
+
 def controllo_pose_giocatore():
     """Sola diagnosi dell'area bloccata: pose dell'auto di Andrea.
 
@@ -629,39 +847,23 @@ def controllo_pose_giocatore():
     orfani = []    # raw di uno stop il cui PNG c'e' ma la posa no: la conversione lo cancella
     for raw in sorted((RAW_ROOT / "giocatore/pose").glob("*.sglraw")):
         esaminati += 1
+        p = pose_da_raw(raw.stem)
         if raw.stem.startswith("auto_stop_"):
-            p = "dritta" if raw.stem == "auto_stop_dritta" else raw.stem[len("auto_stop_"):]
             if p not in stop_png:
                 mancanti.append(raw.stem)
             elif p not in pose_png:
                 orfani.append(raw.stem)
         else:
-            p = raw.stem[len("auto_"):]
             if p not in pose_png:
                 mancanti.append(raw.stem)
     conta = conta_pose(pose_png, stop_png)
-    print(
-        f"giocatore: raw pose {esaminati}, PNG presenti {conta['png']} "
-        f"(pose base {conta['base']}, stop {conta['stop']}), "
-        f"coppie pronte {conta['coppie']}, "
-        f"mancanti {len(mancanti)}: {', '.join(mancanti) if mancanti else '-'}"
-    )
+    print(riga_pose_giocatore(esaminati, conta, mancanti))
     if mancanti:
-        print(
-            "giocatore: area bloccata (auto di Andrea), nessuna conversione da qui."
-            " Rilanciare converti_pose_auto.py senza questi PNG cancella il raw:"
-            " da riavere da git f2f3581 o da ridisegnare."
-        )
+        print(avviso_area_bloccata())
     if orfani:
-        print(
-            f"giocatore: stop con PNG ma senza la posa (raw cancellato a una conversione)"
-            f" {len(orfani)}: {', '.join(orfani)}"
-        )
+        print(riga_stop_senza_posa(orfani))
     if mancanti or orfani:
-        print(
-            "giocatore: riquadro di ritaglio non riproducibile (dipende da tutte le pose):"
-            " confronto contenuto png/raw saltato finche' i PNG mancanti non tornano."
-        )
+        print(avviso_riquadro_non_riproducibile())
         return len(mancanti)
     immagini = {}
     try:
@@ -669,7 +871,7 @@ def controllo_pose_giocatore():
             with Image.open(cartella_png / f"auto_{p}.png") as im:
                 immagini[p] = im.convert("RGBA")
     except (OSError, ValueError):
-        print("giocatore: pose PNG illeggibili, confronto contenuto saltato")
+        print(avviso_pose_illeggibili())
         return 0
     box = None
     for im in immagini.values():
@@ -689,7 +891,7 @@ def controllo_pose_giocatore():
                     srgba = sim.convert("RGBA")
                     attesi[stop.stem] = byte_raw(srgba.crop(box) if box else srgba)
             except (OSError, ValueError):
-                print(f"giocatore: {stop.stem}.png non apribile da PIL")
+                print(riga_pose_non_apribile(stop.stem))
     disallineati = []
     confrontati = 0
     for raw in sorted((RAW_ROOT / "giocatore/pose").glob("*.sglraw")):
@@ -700,18 +902,8 @@ def controllo_pose_giocatore():
         grezzo = raw.read_bytes()
         if grezzo != attesi[nome]:
             disallineati.append(f"{nome} ({dettaglio_diff(attesi[nome], grezzo, raw)})")
-    if disallineati:
-        print(
-            f"giocatore: pose presenti con png diverso dal raw {len(disallineati)}: "
-            f"{', '.join(disallineati)}"
-        )
-        print(
-            "giocatore: il raw non e' piu' il png (ridisegno non convertito). Conversione"
-            " bloccata da qui (auto di Andrea): da segnalare ad Andrea, non rigenerare il"
-            " disegno e non lanciare converti_pose_auto.py al posto suo."
-        )
-    else:
-        print(f"giocatore: raw pose confrontati e allineati {confrontati}")
+    for riga in righe_pose_disallineate(disallineati, confrontati):
+        print(riga)
     return len(mancanti)
 
 
@@ -728,7 +920,7 @@ def controllo_copertura():
             noti += 1
             continue
         fuori += 1
-        print(f"PNG-FUORI-COPERTURA {rel}: png {data(png)} (nessun raw e nessuna categoria nota)")
+        print(riga_png_fuori_copertura(rel, data(png)))
     print(riga_copertura(totale, noti, fuori))
     return fuori
 
@@ -745,6 +937,17 @@ def riga_copertura(totale, noti, fuori):
         f"png in GRAFICA: {totale} (confrontati con un raw {confrontati},"
         f" non motore noti {noti})"
     )
+
+
+def riga_png_fuori_copertura(rel, quando):
+    """Riga per un PNG in GRAFICA/ fuori da confronto e fuori dai non-motore noti (pura).
+
+    Prima la f-string era inline in controllo_copertura(): formato e data stavano
+    dentro il ciclo e non si potevano verificare senza toccare GRAFICA. Qui la
+    formattazione e' in un punto solo e l'autotest la fissa. Non tocca il filesystem:
+    main/controllo_copertura() passa il percorso relativo e la data gia' letti.
+    """
+    return f"PNG-FUORI-COPERTURA {rel}: png {quando} (nessun raw e nessuna categoria nota)"
 
 
 def codice_esito(
@@ -960,6 +1163,19 @@ def riga_altri_residuo(gruppo, nome, quando):
     )
 
 
+def riga_doppia_intro(gruppo, nome, quando):
+    """Riga di apertura della diagnosi del residuo a doppia estensione (pura).
+
+    Prima era un print inline in main(): cambiando l'etichetta di un'altra riga
+    dello stesso blocco questa poteva restare vecchia e non si poteva provare a
+    parte. Non scrive nulla: il PNG resta di Andrea.
+    """
+    return (
+        f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{nome}: png {quando}"
+        " (doppia estensione: il catalogo non lo vede)"
+    )
+
+
 def main():
     verbose = "--verbose" in sys.argv
     totale = diversi = senza_png = png_piu_nuovo = allineati = trame = 0
@@ -1062,10 +1278,7 @@ def main():
             doppia, nome_ok, raw_base = percorsi_doppia(png, raw)
             if doppia is not None:
                 altri_doppia += 1
-                print(
-                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: png {data(png)}"
-                    " (doppia estensione: il catalogo non lo vede)"
-                )
+                print(riga_doppia_intro(gruppo, png.name, data(png)))
                 print(
                     riga_doppia_nome_atteso(
                         gruppo, png.name, doppia, raw_base.exists(),
@@ -1073,10 +1286,7 @@ def main():
                     )
                 )
                 stato, dettaglio = stato_doppia_estensione(png, raw_base)
-                print(
-                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: {stato} ({dettaglio})"
-                    + suffisso_dettaglio_doppia(stato)
-                )
+                print(riga_doppia_stato(gruppo, png.name, stato, dettaglio))
                 if nome_ok.exists():
                     allineato = confronto_nome_ok(nome_ok, raw_base) == "allineato"
                     print(
@@ -1085,10 +1295,7 @@ def main():
                         )
                     )
                 sintesi = stato_risoluzione_doppia(png, raw_base, nome_ok)
-                print(
-                    f"ALTRI-PNG-DOPPIA-ESTENSIONE {gruppo}/{png.name}: stato {sintesi}"
-                    + suffisso_stato_doppia(sintesi)
-                )
+                print(riga_doppia_sintesi(gruppo, png.name, sintesi))
             else:
                 print(riga_png_senza_raw("altro", f"{gruppo}/{png.name}", data(png)))
     for riga in righe_altri(
@@ -1179,6 +1386,62 @@ if __name__ == "__main__":
         )
         ok = ok and ok_conta
         print("autotest conta_pose: " + ("OK" if ok_conta else "FALLITO"))
+        # riga_pose_giocatore: il testo di sintesi dell'area bloccata, prima una
+        # lunga f-string inline in controllo_pose_giocatore(), resta provabile
+        # senza toccare i PNG/raw dell'auto di Andrea. Copre mancanti pieni e vuoti.
+        conta_riga = conta_pose(["dritta", "sx1", "sx2"], ["sx1", "sx2", "sx3", "sx4"])
+        ok_riga_pose = (
+            riga_pose_giocatore(15, conta_riga, ["auto_dx2_b", "auto_sx4_b"])
+            == "giocatore: raw pose 15, PNG presenti 7 (pose base 3, stop 4), "
+            "coppie pronte 5, mancanti 2: auto_dx2_b, auto_sx4_b"
+            and riga_pose_giocatore(15, conta_riga, [])
+            == "giocatore: raw pose 15, PNG presenti 7 (pose base 3, stop 4), "
+            "coppie pronte 5, mancanti 0: -"
+        )
+        ok = ok and ok_riga_pose
+        print("autotest riga_pose_giocatore: " + ("OK" if ok_riga_pose else "FALLITO"))
+        # riga_stop_senza_posa: la riga degli stop orfani, prima f-string inline in
+        # controllo_pose_giocatore(), resta provabile senza toccare i PNG di Andrea.
+        # Copre lista piena e vuota, con la coda ' 0: ' del caso vuoto.
+        ok_riga_stop = (
+            riga_stop_senza_posa(["auto_stop_dx2", "auto_stop_sx4"])
+            == "giocatore: stop con PNG ma senza la posa (raw cancellato a una conversione)"
+            " 2: auto_stop_dx2, auto_stop_sx4"
+            and riga_stop_senza_posa([])
+            == "giocatore: stop con PNG ma senza la posa (raw cancellato a una conversione)"
+            " 0: "
+        )
+        ok = ok and ok_riga_stop
+        print("autotest riga_stop_senza_posa: " + ("OK" if ok_riga_stop else "FALLITO"))
+        # righe_pose_disallineate: le due righe del ridisegno non convertito e la
+        # riga di allineamento, prima print inline in controllo_pose_giocatore(),
+        # restano provabili senza toccare i PNG/raw dell'auto di Andrea. Copre
+        # il caso disallineato e quello tutto allineato.
+        ok_pose_dis = (
+            righe_pose_disallineate(["auto_dx2 (10% pixel diversi)"], 9)
+            == [
+                "giocatore: pose presenti con png diverso dal raw 1: auto_dx2 (10% pixel diversi)",
+                "giocatore: il raw non e' piu' il png (ridisegno non convertito). Conversione"
+                " bloccata da qui (auto di Andrea): da segnalare ad Andrea, non rigenerare il"
+                " disegno e non lanciare converti_pose_auto.py al posto suo.",
+            ]
+            and righe_pose_disallineate([], 10)
+            == ["giocatore: raw pose confrontati e allineati 10"]
+        )
+        ok = ok and ok_pose_dis
+        print("autotest righe_pose_disallineate: " + ("OK" if ok_pose_dis else "FALLITO"))
+        # pose_da_raw: lo stem di un raw si traduce nella posa, prima inline in
+        # controllo_pose_giocatore(); lo stop 'dritta' ha il nome speciale senza
+        # numero. Provabile senza toccare i PNG/raw bloccati di Andrea.
+        ok_pose_da_raw = (
+            pose_da_raw("auto_stop_dritta") == "dritta"
+            and pose_da_raw("auto_stop_sx1") == "sx1"
+            and pose_da_raw("auto_dritta") == "dritta"
+            and pose_da_raw("auto_dx4") == "dx4"
+            and pose_da_raw("auto_salita") == "salita"
+        )
+        ok = ok and ok_pose_da_raw
+        print("autotest pose_da_raw: " + ("OK" if ok_pose_da_raw else "FALLITO"))
         ok_doppia = (
             base_doppia_estensione(Path("x/lato_furgone_bianco.png.png"))
             == "lato_furgone_bianco"
@@ -1462,6 +1725,18 @@ if __name__ == "__main__":
         )
         ok = ok and ok_cop
         print("autotest riga_copertura: " + ("OK" if ok_cop else "FALLITO"))
+        # riga_png_fuori_copertura: formato fisso per PNG fuori da confronto e
+        # fuori dai non-motore noti; prima era una f-string inline nel ciclo di
+        # controllo_copertura() e non si poteva provare senza toccare GRAFICA.
+        ok_fuori_cop = (
+            riga_png_fuori_copertura("scenari/lv_01/oggetti/bozza.png", "2026-11-27 01:00:00")
+            == "PNG-FUORI-COPERTURA scenari/lv_01/oggetti/bozza.png: png 2026-11-27 01:00:00"
+            " (nessun raw e nessuna categoria nota)"
+            and riga_png_fuori_copertura("ui/prova.png", "?")
+            == "PNG-FUORI-COPERTURA ui/prova.png: png ? (nessun raw e nessuna categoria nota)"
+        )
+        ok = ok and ok_fuori_cop
+        print("autotest riga_png_fuori_copertura: " + ("OK" if ok_fuori_cop else "FALLITO"))
         # classifica_skyline_confronto: i due stati 'da rigenerare' contano nuovo
         # con la frase giusta, gli altri due contano ok senza riga; prima l'if/elif
         # ripeteva contatore e formattazione e un nuovo stato poteva sfuggire.
@@ -1581,6 +1856,94 @@ if __name__ == "__main__":
         )
         ok = ok and ok_residuo
         print("autotest riga_altri_residuo: " + ("OK" if ok_residuo else "FALLITO"))
+        # riga_doppia_intro: formato esatto della riga di apertura della diagnosi
+        # doppia estensione, prima inline in main() e non provabile senza GRAFICA.
+        ok_intro = (
+            riga_doppia_intro("traffico_incrocio", "lato.png.png", "26/11 18:00")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: png 26/11 18:00"
+            " (doppia estensione: il catalogo non lo vede)"
+            and riga_doppia_intro("rivali", "x.png.png", "D2")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE rivali/x.png.png: png D2"
+            " (doppia estensione: il catalogo non lo vede)"
+        )
+        ok = ok and ok_intro
+        print("autotest riga_doppia_intro: " + ("OK" if ok_intro else "FALLITO"))
+        # riga_doppia_stato: riga intera del dettaglio del .png.png, prima inline in
+        # main() con la coda concatenata a mano; la coda dipende solo dallo stato
+        # passato e resta provabile senza toccare GRAFICA.
+        ok_stato_riga = (
+            riga_doppia_stato("traffico_incrocio", "lato.png.png", "doppione", "identico al raw")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: doppione"
+            " (identico al raw): doppione inutile, nessun ridisegno da convertire"
+            and riga_doppia_stato("traffico", "y.png.png", "ridisegno", "25% pixel diversi")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico/y.png.png: ridisegno (25% pixel diversi)"
+            ": e' un disegno diverso dal raw, va col nome corretto e convertito"
+            and riga_doppia_stato("rivali", "x.png.png", "senza-raw", "raw manca")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE rivali/x.png.png: senza-raw (raw manca)"
+        )
+        ok = ok and ok_stato_riga
+        print("autotest riga_doppia_stato: " + ("OK" if ok_stato_riga else "FALLITO"))
+        # riga_doppia_sintesi: riga di chiusura del residuo .png.png, prima inline in
+        # main() con la coda concatenata a mano; 'risolto' chiude con la sua frase,
+        # ogni altro stato resta da decidere con Andrea.
+        ok_sintesi_riga = (
+            riga_doppia_sintesi("traffico_incrocio", "lato.png.png", "risolto")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE traffico_incrocio/lato.png.png: stato risolto"
+            " (asset corretto gia' allineato, nessuna conversione VG3)"
+            and riga_doppia_sintesi("rivali", "x.png.png", "ridisegno-da-decidere")
+            == "ALTRI-PNG-DOPPIA-ESTENSIONE rivali/x.png.png: stato ridisegno-da-decidere"
+            " (decide Andrea: rinominare/convertire)"
+        )
+        ok = ok and ok_sintesi_riga
+        print("autotest riga_doppia_sintesi: " + ("OK" if ok_sintesi_riga else "FALLITO"))
+        # riga_skyline_residuo_confronto: i due rami (sfondo ricostruibile / da
+        # decidere con Andrea) leggono lo stesso formato, prima due f-string inline
+        # in residuo_skyline() non provabili senza toccare GRAFICA.
+        ok_residuo_riga = (
+            riga_skyline_residuo_confronto(
+                "lv_04_cromo", "26/11 18:00", "26/11 18:05", True
+            )
+            == "SKYLINE-RESIDUO lv_04_cromo: skyline_trama.png 26/11 18:00 identico al raw"
+            " 26/11 18:05: lo sfondo in gioco e' quello, manca solo il PNG di Andrea"
+            and riga_skyline_residuo_confronto("lv_01_neon", "D1", "D2", False)
+            == "SKYLINE-RESIDUO lv_01_neon: skyline_trama.png D1 diverso dal raw"
+            " D2: da decidere con Andrea"
+        )
+        ok = ok and ok_residuo_riga
+        print(
+            "autotest riga_skyline_residuo_confronto: "
+            + ("OK" if ok_residuo_riga else "FALLITO")
+        )
+        # riga_raw_gruppo_ignoto / riga_gruppi_raw_noti: le due righe del controllo
+        # dei gruppi di raw, prima f-string inline in controllo_gruppi_raw(), restano
+        # provabili senza toccare i raw del motore.
+        ok_gruppi = (
+            riga_raw_gruppo_ignoto("bozze")
+            == "RAW-GRUPPO-IGNOTO bozze: nessuna regola di conversione"
+            and riga_gruppi_raw_noti(8, 0) == "gruppi di raw noti: 8, sconosciuti: 0"
+            and riga_gruppi_raw_noti(8, 2) == "gruppi di raw noti: 8, sconosciuti: 2"
+        )
+        ok = ok and ok_gruppi
+        print("autotest righe_gruppi_raw: " + ("OK" if ok_gruppi else "FALLITO"))
+        # Le ultime quattro righe di diagnosi lasciate inline in
+        # controllo_pose_giocatore() passano da funzioni pure: il testo e' fissato
+        # qui e non si puo' cambiare senza accorgersene, senza toccare i PNG/raw
+        # bloccati di Andrea. Copre i tre avvisi costanti e lo stop non apribile.
+        ok_avvisi = (
+            avviso_area_bloccata()
+            == "giocatore: area bloccata (auto di Andrea), nessuna conversione da qui."
+            " Rilanciare converti_pose_auto.py senza questi PNG cancella il raw:"
+            " da riavere da git f2f3581 o da ridisegnare."
+            and avviso_riquadro_non_riproducibile()
+            == "giocatore: riquadro di ritaglio non riproducibile (dipende da tutte le pose):"
+            " confronto contenuto png/raw saltato finche' i PNG mancanti non tornano."
+            and avviso_pose_illeggibili()
+            == "giocatore: pose PNG illeggibili, confronto contenuto saltato"
+            and riga_pose_non_apribile("auto_stop_sx1")
+            == "giocatore: auto_stop_sx1.png non apribile da PIL"
+        )
+        ok = ok and ok_avvisi
+        print("autotest righe_area_bloccata: " + ("OK" if ok_avvisi else "FALLITO"))
         print(f"exit {0 if ok else 1}")
         raise SystemExit(0 if ok else 1)
     codice = main()

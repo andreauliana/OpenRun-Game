@@ -74,3 +74,16 @@ Registro append-only degli eventi checkpoint. Il dettaglio e le prove sono nei d
 | 2026-11-26 | — | T1(0/12)@capo:V47∞;CHK no peer;gate no;0 CP. Dev lv02 g40 exit0 spike61ms;jr 27/27 VJ1 lv01 ok pali lv06 ex27 D20 inv;gf g212. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-26 | — | T1(0/12)@capo:fonti rilette;V47∞;CHK auto no peer;gate no;0 CP. D20 5 hunk+VJ3 lv05 2.40% aperti;handoff dev17:47/jr17:46/gf09:27. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
 | 2026-11-26 | — | T1(1/12)@capo:fonti rilette;V47∞;CHK no peer;gate no;0 CP. D20 5 hunk+VJ3 lv05 2.40% invariati;STATI/STATO/RIASS/diario agg. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-26 | — | T2(2/12)@capo:fonti lette;V47∞;CHK no peer;gate no;0 CP. D20 5 hunk+VJ3 lv05 2.40% inv;STATI/STATO/REG/RIASS/diario agg. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-26 | — | T2(2/12)@capo:riepilogo mattina scritto in bacheca/capo (root vietata);D20+VJ3 lv05 aperti;ANDREA_REVIEW §7 nessuna. | BLOCCATO (D20+VJ3 lv05) | UFFICIO/bacheche/capo/RIEPILOGO_MATTINA.md |
+| 2026-11-27 | — | T5(8/12)@capo:V47∞;CHK auto no peer;gate no;0 CP chiudibili. D20 5 hunk+VJ3 lv05 2.40% invariati. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T5(9/12)@capo:V47∞;CHK no peer;gate no;0 CP. D20 5 hunk+VJ3 lv05 2.40% inv;handoff dev17:47/jr17:46/gf09:27. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T5(9/12)@capo:fonti lette;V47∞;CHK no peer;gate no;0 CP. D20 5h+VJ3 lv05 2.40% inv;gf g233 27/11;jr VJ5 27/11. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T5(9/12)@capo:riconferma V47∞;0 CP chiudibili;D20 5h+VJ3 lv05 2.40% inv;CHK auto no peer;gate no. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T6(10/12)@capo:V47∞;CHK no peer;gate no;0 CP. D20 5h+VJ3 lv05 2.40% inv;dev03:33 lv05 g42 ok;jr03:35 VJ5 r3014;gf03:30 g243. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T1(0/12)@capo:V47∞;CHK no peer;gate no;0 CP. D20+VJ3 lv05 inv;dev04:09 lv02 g43 max2.756;jr04:01 VJ5 r1940;gf03:30 g243. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T1(0/12)@capo:fonti lette;V47∞;CHK no peer;gate no;0 CP. D20+VJ3 inv;dev04:09 lv02;jr04:01 r1940;gf07:49 g248. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T1(1/12)@capo:V47∞;CHK no peer;gate no;0 CP. D20 5h+VJ3 lv05 2.40% inv;dev04:09 lv02;jr04:01 r1940;gf07:49 g248. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T1(1/12)@capo:V47∞;CHK no peer;gate no;0 CP. D20+VJ3 inv;dev08:46 lv03 g44→lv04;jr08:48 VJ5 graffito;gf08:54 g254. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T2(2/12)@capo:V47∞;CHK auto no peer;gate no;0 CP. D20+VJ3 inv;dev09:20 lv06 g44→lv01;jr09:21 VJ5 paesaggio;gf09:24 g257. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |
+| 2026-11-27 | — | T2(2/12)@capo verifica:fonti rilette;V47∞;CHK no peer;gate no;0 CP chiudibili. D20 5h+VJ3 lv05 2.40% inv;deleghe confermate. | BLOCCATO (D20+VJ3 lv05) | STATI_PROPOSTI.md;STATO_CORRENTE.md |

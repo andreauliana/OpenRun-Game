@@ -121,6 +121,64 @@ Aggiunta 26/11 (turno 7): l'ultima logica rimasta inline in main() (il ciclo
 'for riga in righe: print(riga)') e' ora la funzione pura testo_report(), provata
 in autotest: Una riga per elemento, nessuna riga vuota in coda e stampa solo se
 il testo non e' vuoto. L'output non cambia.
+
+Aggiunta 27/11: il passo di stampa condizionale rimasto in main() ('if testo:
+print(testo)') e' ora la funzione stampa_se_testo() con 'stampa' iniettabile,
+provata in autotest: nessuna chiamata se il testo e' vuoto, una stampa del testo
+altrimenti. E' l'ultimo passo di I/O di main(), reso provabile senza stdout.
+L'output non cambia.
+
+Aggiunta 27/11 (turno 5): la composizione rimasta inline in main()
+('stampa_se_testo(testo_report(righe))') e' ora emetti_report(righe, stampa),
+con la funzione di stampa iniettabile e autotest dedicato: prova che righe vuote
+non stampino nulla e che righe piene stampino un solo testo con le righe unite.
+main() non compone piu' nulla a mano. L'output non cambia.
+
+Aggiunta 27/11 (turno 6): i sei default risolti inline all'inizio di
+report_da_disco() (lib, catalogo, pattern, esiste_cat, carica, png_trov) sono ora
+la funzione pura risolvi_default_disco(), provata in autotest: i valori espliciti
+restano invariati e i None prendono i default reali, con '.exists()' chiamato sul
+catalogo gia' risolto. L'output di main() non cambia.
+
+Aggiunta 27/11 (turno 7): il caricamento condizionato rimasto in report_da_disco()
+('cat = carica(...) if esiste else None' e 'trovati = png_trov(...) if esiste else
+[]') e' ora la funzione pura carica_se_esiste(), provata in autotest: con esiste
+False i due callable non vengono chiamati e si ottengono (None, []), con esiste
+True il catalogo e i PNG sono quelli restituiti dai callable iniettati. La regola
+'catalogo mancante -> non leggere nulla' sta in un punto solo. L'output non cambia.
+
+Aggiunta 27/11 (turno 8): noti_mancanti() e noti_catalogati(), che leggevano
+sempre il globale NOTI_NON_ASSET, ricevono l'elenco dei noti iniettabile
+(default NOTI_NON_ASSET), come classifica(): l'autotest prova noti custom e
+vuoti senza toccare il globale. Le chiamate in noti_spariti()/esito_noti()
+lasciano il default, quindi l'output di main() non cambia.
+
+Aggiunta 27/11 (turno 9): noti_spariti(), che chiamava noti_mancanti(noti) col
+default, riceve a sua volta l'elenco dei noti iniettabile (default
+NOTI_NON_ASSET) e lo passa a noti_mancanti(): completa cosi' la catena resa pura
+nel turno prima. L'autotest prova noti custom, vuoti e default senza toccare il
+globale. La chiamata in esito_noti() lascia il default, output invariato.
+
+Aggiunta 27/11 (turno 10): le 34 righe di esito dell'autotest (prima concatenate
+inline con 'autotest <nome>: ' + ('OK'/'FALLITO')) sono ora la funzione pura
+riga_autotest(nome, ok), provata in autotest: il formato minuscolo di questo tool
+resta identico e sta in un punto solo. L'output di main() non cambia.
+
+Aggiunta 27/11 (turno 11): il messaggio 'FALLITO: catalogo non trovato in ...'
+(prima un f-string inline nel ramo 'catalogo mancante' di esito_main()) e' ora la
+funzione pura riga_catalogo_mancante(percorso), provata in autotest: il formato
+sta in un punto solo, come promesso nella docstring di esito_main(). L'output
+di main() non cambia.
+
+Aggiunta 27/11 (turno 12): l'ultima decisione rimasta inline in autotest()
+('return 0 if ok else 1') e' ora la funzione pura esito_autotest(ok), provata in
+autotest: la policy del codice di uscita (True -> 0, False -> 1) sta in un punto
+solo, come nel tool gemello vg3_raw_senza_catalogo.py. L'output non cambia.
+
+Aggiunta 27/11 (turno 13): l'elenco ordinato dei noti 'tranne uno' (prima tre
+comprensioni inline diverse in autotest(), con due che riordinavano e una no) e'
+ora la funzione pura noti_tranne(), provata in autotest: filtro e ordine stanno
+in un punto solo. Le prove usano lo stesso elenco atteso, main() non cambia.
 """
 import glob
 import json
@@ -175,34 +233,52 @@ def classifica(fuori, noti_noti=None):
     return noti, da_decidere
 
 
-def noti_mancanti(presenti):
-    """Residui noti che non sono piu' sul disco (erano attesi, ora spariti)."""
+def noti_mancanti(presenti, noti_noti=None):
+    """Residui noti che non sono piu' sul disco (erano attesi, ora spariti).
+
+    Come classifica(), l'elenco dei noti e' iniettabile (default NOTI_NON_ASSET):
+    l'autotest prova noti custom e vuoti senza leggere il globale. La chiamata in
+    noti_spariti() lascia il default, quindi l'output di main() non cambia.
+    """
+    if noti_noti is None:
+        noti_noti = NOTI_NON_ASSET
     visti = set(presenti)
-    return [f for f in sorted(NOTI_NON_ASSET) if f not in visti]
+    return [f for f in sorted(noti_noti) if f not in visti]
 
 
-def noti_catalogati(usati):
+def noti_catalogati(usati, noti_noti=None):
     """Noti non-asset ora presenti nel catalogo (non piu' fuori catalogo).
 
     Un noto che finisce in CATALOGO_GRAFICO.json non appare piu' tra i PNG fuori
     catalogo: senza questo controllo veniva segnalato come NOTO-SPARITO, che e'
     fuorviante (il file puo' essere ancora su disco). Diagnosi informativa:
     il noto va tolto da NOTI_NON_ASSET o rivalutato.
+
+    Come classifica() e noti_mancanti(), l'elenco dei noti e' iniettabile
+    (default NOTI_NON_ASSET): l'autotest prova noti custom e vuoti senza leggere
+    il globale. La chiamata in esito_noti() lascia il default: output invariato.
     """
+    if noti_noti is None:
+        noti_noti = NOTI_NON_ASSET
     visti = set(usati)
-    return [f for f in sorted(NOTI_NON_ASSET) if f in visti]
+    return [f for f in sorted(noti_noti) if f in visti]
 
 
-def noti_spariti(noti, catalogati):
+def noti_spariti(noti, catalogati, noti_noti=None):
     """Noti fuori catalogo spariti dal disco e NON finiti nel catalogo (puro).
 
     Un noto che e' andato in CATALOGO_GRAFICO.json non appare piu' tra i PNG fuori
     catalogo, ma puo' essere ancora su disco: stampare insieme NOTO-CATALOGATO e
     NOTO-SPARITO era fuorviante. Estrarre la regola che era inline in main() la
     rende provabile e documenta l'interazione tra i due elenchi.
+
+    Come noti_mancanti()/noti_catalogati(), l'elenco dei noti e' iniettabile
+    (default NOTI_NON_ASSET) e viene passato a noti_mancanti(): l'autotest prova
+    noti custom e vuoti senza leggere il globale. La chiamata in esito_noti()
+    lascia il default, quindi l'output di main() non cambia.
     """
     cat = set(catalogati)
-    return [f for f in noti_mancanti(noti) if f not in cat]
+    return [f for f in noti_mancanti(noti, noti_noti) if f not in cat]
 
 
 def esito_noti(noti, usati):
@@ -462,6 +538,16 @@ def report_da_dati(cat, trovati):
     return report_da_png(trovati, usati)
 
 
+def riga_catalogo_mancante(percorso):
+    """Riga di errore per catalogo mancante (funzione pura).
+
+    esito_main() costruiva il messaggio inline con un f-string nel ramo
+    'catalogo non trovato': tenerlo qui mette il formato in un punto solo,
+    provabile in autotest senza leggere il disco. L'output di main() non cambia.
+    """
+    return f"FALLITO: catalogo non trovato in {percorso}"
+
+
 def esito_main(esiste, cat, trovati, percorso):
     """Righe da stampare e codice d'uscita finali di main() (puri).
 
@@ -473,8 +559,58 @@ def esito_main(esiste, cat, trovati, percorso):
     solo. 'cat' e 'trovati' sono ignorati quando 'esiste' e' False.
     """
     if not esiste:
-        return [f"FALLITO: catalogo non trovato in {percorso}"], 4
+        return [riga_catalogo_mancante(percorso)], 4
     return report_da_dati(cat, trovati), 0
+
+
+def risolvi_default_disco(lib, catalogo, pattern, esiste_cat, carica, png_trov):
+    """Risolve in un punto solo i default di report_da_disco() (pura).
+
+    Prima i sei argomenti venivano controllati uno per uno con 'if x is None'
+    all'inizio di report_da_disco(); tenerli qui rende provabile in autotest
+    che un valore esplicito (percorso, pattern, esiste_cat, callable) non venga
+    mai sostituito e che '.exists()' sia chiamato sul catalogo risolto, non su
+    quello passato (che puo' essere None). L'output di main() non cambia.
+    """
+    cat_path = CATALOGO if catalogo is None else catalogo
+    return (
+        LIBRERIA if lib is None else lib,
+        cat_path,
+        PATTERN if pattern is None else pattern,
+        cat_path.exists() if esiste_cat is None else esiste_cat,
+        carica_catalogo if carica is None else carica,
+        png_trovati if png_trov is None else png_trov,
+    )
+
+
+def carica_se_esiste(esiste, catalogo, carica, lib, pattern, png_trov):
+    """Carica catalogo e PNG solo se il catalogo esiste (pura, callable iniettati).
+
+    report_da_disco() faceva inline 'cat = carica(catalogo) if esiste else None'
+    e 'trovati = png_trov(lib, pattern) if esiste else []': tenerli qui, con
+    carica e png_trov passabili come parametri, rende provabile in autotest che
+    un catalogo mancante non legga nulla (i callable non vengono chiamati) e che
+    con catalogo presente si ottengano esattamente i dati restituiti. L'output
+    di main() non cambia.
+    """
+    if not esiste:
+        return None, []
+    return carica(catalogo), png_trov(lib, pattern)
+
+
+def report_da_disco(lib=None, catalogo=None, pattern=None, esiste_cat=None, carica=None, png_trov=None):
+    """Legge catalogo e PNG da disco e restituisce (righe, codice) come main().
+
+    Come vg3_raw_senza_catalogo.py e vg3_date_png_raw.py: la lettura disco in
+    main() e' estratta in una funzione pura con dipendenze iniettabili. Output
+    invariato rispetto al flusso precedente.
+    """
+    lib, catalogo, pattern, esiste_cat, carica, png_trov = risolvi_default_disco(
+        lib, catalogo, pattern, esiste_cat, carica, png_trov
+    )
+    esiste = esiste_cat
+    cat, trovati = carica_se_esiste(esiste, catalogo, carica, lib, pattern, png_trov)
+    return esito_main(esiste, cat, trovati, catalogo)
 
 
 def testo_report(righe):
@@ -488,15 +624,66 @@ def testo_report(righe):
     return "\n".join(righe)
 
 
-def main() -> int:
-    esiste = CATALOGO.exists()
-    cat = carica_catalogo(CATALOGO) if esiste else None
-    trovati = png_trovati(LIBRERIA, PATTERN) if esiste else []
-    righe, codice = esito_main(esiste, cat, trovati, CATALOGO)
-    testo = testo_report(righe)
+def stampa_se_testo(testo, stampa=print):
+    """Stampa il testo del report solo se non vuoto, con 'stampa' iniettabile.
+
+    Era l'ultimo passo di I/O inline in main() ('if testo: print(testo)'): tenerlo
+    qui, con la funzione di stampa passabile come parametro, rende provabile in
+    autotest la regola 'testo vuoto -> nessuna stampa' senza catturare stdout.
+    L'output di main() non cambia.
+    """
     if testo:
-        print(testo)
+        stampa(testo)
+
+
+def emetti_report(righe, stampa=print):
+    """Serializza e stampa le righe del report, con 'stampa' iniettabile (pura).
+
+    Era l'ultima composizione inline in main(): 'stampa_se_testo(testo_report(righe))'.
+    Tenerla qui, con la funzione di stampa passabile come parametro, rende provabile
+    in autotest che un report vuoto non stampi nulla e che un report con righe
+    produca una sola stampa col testo gia' unito, senza catturare stdout.
+    L'output di main() non cambia.
+    """
+    stampa_se_testo(testo_report(righe), stampa)
+
+
+def main() -> int:
+    righe, codice = report_da_disco()
+    emetti_report(righe)
     return codice
+
+
+def riga_autotest(nome, ok):
+    """Riga di esito di una prova di autotest (funzione pura).
+
+    Erano 34 concatenazioni inline nel corpo di autotest(): qui si prova in
+    isolamento il formato ('OK' / 'FALLITO'), identico a prima (minuscolo
+    'autotest', come in questo tool). Nessun disco, nessuna stampa.
+    """
+    return f"autotest {nome}: {'OK' if ok else 'FALLITO'}"
+
+
+def esito_autotest(ok):
+    """Codice di uscita dell'autotest: 0 se la prova e' OK, 1 altrimenti (pura).
+
+    Era l'espressione inline 'return 0 if ok else 1' in coda a autotest(): qui si
+    prova in isolamento la policy (True -> 0, False -> 1), come nel tool gemello
+    vg3_raw_senza_catalogo.py. Nessun disco.
+    """
+    return 0 if ok else 1
+
+
+def noti_tranne(noti, escluso):
+    """Elenco ordinato dei noti tranne 'escluso' (funzione pura).
+
+    Nelle prove un noto e' presente/catalogato e quindi va tolto dall'elenco dei
+    'spariti' attesi: prima la comprensione era ripetuta in tre punti di
+    autotest(), due con sorted() e uno senza, con il rischio che l'ordine atteso
+    divergesse. Tenerla qui fissa filtro e ordine in un punto solo; 'noti' puo'
+    essere una lista o un dict (le chiavi), come NOTI_NON_ASSET. main() non cambia.
+    """
+    return sorted(f for f in noti if f != escluso)
 
 
 def autotest():
@@ -510,7 +697,7 @@ def autotest():
         len(noti) == 2
         and da_decidere == ["GRAFICA/sprite/traffico/nuovo_ridisegno.png"]
     )
-    print("autotest classifica: " + ("OK" if ok else "FALLITO"))
+    print(riga_autotest("classifica", ok))
     # classifica con elenco di noti iniettabile: un noto custom viene riconosciuto,
     # un PNG fuori dall'elenco resta da decidere; con elenco vuoto tutti sono da
     # decidere; il default (None) resta NOTI_NON_ASSET e non cambia l'output.
@@ -532,7 +719,7 @@ def autotest():
         == (["GRAFICA/sprite/giocatore_pose/car-custom.png"], [])
     )
     ok = ok and ok_iniet
-    print("autotest classifica_iniettabile: " + ("OK" if ok_iniet else "FALLITO"))
+    print(riga_autotest("classifica_iniettabile", ok_iniet))
     ok_spariti = (
         noti_mancanti([
             "GRAFICA/sprite/giocatore_pose/car-custom.png",
@@ -545,26 +732,58 @@ def autotest():
         ]) == ["GRAFICA/sprite/giocatore_pose/car-custom-sx.png"]
     )
     ok = ok and ok_spariti
-    print("autotest noti_mancanti: " + ("OK" if ok_spariti else "FALLITO"))
+    print(riga_autotest("noti_mancanti", ok_spariti))
     ok_catalogati = (
         noti_catalogati({"GRAFICA/sprite/giocatore_pose/car-custom.png"})
         == ["GRAFICA/sprite/giocatore_pose/car-custom.png"]
         and noti_catalogati({"GRAFICA/sprite/traffico/altro.png"}) == []
     )
     ok = ok and ok_catalogati
-    print("autotest noti_catalogati: " + ("OK" if ok_catalogati else "FALLITO"))
+    print(riga_autotest("noti_catalogati", ok_catalogati))
+    # noti iniettabile: noti_mancanti()/noti_catalogati(), come classifica(), non
+    # leggono sempre il globale. Con noti custom cambia quali noti contano, con
+    # elenco vuoto non ne conta nessuno, con None resta NOTI_NON_ASSET (default,
+    # che e' cio' che usano noti_spariti()/esito_noti() e quindi main()).
+    noto_custom = "GRAFICA/sprite/giocatore_pose/car-custom.png"
+    ok_noti_iniet = (
+        noti_mancanti([], noti_custom) == [noto_custom]
+        and noti_mancanti([noto_custom], noti_custom) == []
+        and noti_catalogati([noto_custom], noti_custom) == [noto_custom]
+        and noti_catalogati([], noti_custom) == []
+        and noti_mancanti([], {}) == []
+        and noti_catalogati([noto_custom], {}) == []
+        and noti_mancanti([]) == sorted(NOTI_NON_ASSET)
+        and noti_catalogati(sorted(NOTI_NON_ASSET)) == sorted(NOTI_NON_ASSET)
+    )
+    ok = ok and ok_noti_iniet
+    print(riga_autotest("noti_iniettabile", ok_noti_iniet))
     # noti_spariti: un noto finito nel catalogo non e' sparito (non va stampato
     # due volte come NOTO-CATALOGATO e NOTO-SPARITO); uno assente da entrambi si.
     esempio = "GRAFICA/sprite/giocatore_pose/car-custom-sx.png"
     tutti = sorted(NOTI_NON_ASSET)
-    senza_esempio = [f for f in tutti if f != esempio]
+    senza_esempio = noti_tranne(tutti, esempio)
     ok_spariti = (
         noti_spariti(tutti, []) == []
         and noti_spariti(senza_esempio, []) == [esempio]
         and noti_spariti(senza_esempio, [esempio]) == []
     )
     ok = ok and ok_spariti
-    print("autotest noti_spariti: " + ("OK" if ok_spariti else "FALLITO"))
+    print(riga_autotest("noti_spariti", ok_spariti))
+    # noti_spariti iniettabile: come noti_mancanti/noti_catalogati, legge l'elenco
+    # dei noti dal parametro (default NOTI_NON_ASSET). Con un noto custom cambia
+    # quali noti possono risultare spariti, con elenco vuoto nessuno lo e', e il
+    # default resta NOTI_NON_ASSET (cio' che usa esito_noti() e quindi main()).
+    noto_custom = "GRAFICA/sprite/giocatore_pose/car-custom.png"
+    noti_custom_mappa = {noto_custom: "motivo custom"}
+    ok_spariti_iniet = (
+        noti_spariti([], [], noti_custom_mappa) == [noto_custom]
+        and noti_spariti([noto_custom], [], noti_custom_mappa) == []
+        and noti_spariti([], [noto_custom], noti_custom_mappa) == []
+        and noti_spariti([], [], {}) == []
+        and noti_spariti(tutti, []) == []
+    )
+    ok = ok and ok_spariti_iniet
+    print(riga_autotest("noti_spariti_iniettabile", ok_spariti_iniet))
     # esito_noti: unifica catalogati+spariti con la stessa regola di precedenza;
     # un noto finito nel catalogo non deve finire tra gli spariti. Usa lo stesso
     # esempio delle prove qui sopra: il vecchio furgone non e' piu' un noto.
@@ -575,7 +794,7 @@ def autotest():
         and esito_noti(tutti, [esempio]) == ([esempio], [])
     )
     ok = ok and ok_esito
-    print("autotest esito_noti: " + ("OK" if ok_esito else "FALLITO"))
+    print(riga_autotest("esito_noti", ok_esito))
     ok_sorgente = (
         sorgente("GRAFICA/scenari/lv_03_foglie/oggetti/nuovo.png") == "scenario-oggetti"
         and sorgente("GRAFICA/scenari/lv_04_cromo/skyline.png") == "scenario-skyline"
@@ -588,7 +807,7 @@ def autotest():
         == "giocatore-area-bloccata"
     )
     ok = ok and ok_sorgente
-    print("autotest sorgente: " + ("OK" if ok_sorgente else "FALLITO"))
+    print(riga_autotest("sorgente", ok_sorgente))
     ok_bloccata = (
         area_bloccata("GRAFICA/sprite/giocatore_pose/auto_nuova.png")
         and area_bloccata("GRAFICA/sprite/giocatore/auto_nuova.png")
@@ -596,7 +815,7 @@ def autotest():
         and not area_bloccata("GRAFICA/sprite/giocatore_pose_extra/nuovo.png")
     )
     ok = ok and ok_bloccata
-    print("autotest area_bloccata: " + ("OK" if ok_bloccata else "FALLITO"))
+    print(riga_autotest("area_bloccata", ok_bloccata))
     ok_conteggio = conteggio_per_sorgente([
         "GRAFICA/scenari/lv_01_neon/oggetti/a.png",
         "GRAFICA/scenari/lv_02_atomico/oggetti/b.png",
@@ -604,10 +823,10 @@ def autotest():
         "GRAFICA/sprite/traffico/c.png",
     ]) == {"scenario-oggetti": 2, "scenario-skyline": 1, "sprite": 1}
     ok = ok and ok_conteggio
-    print("autotest conteggio_per_sorgente: " + ("OK" if ok_conteggio else "FALLITO"))
+    print(riga_autotest("conteggio_per_sorgente", ok_conteggio))
     ok_vuoti = classifica([]) == ([], []) and conteggio_per_sorgente([]) == {}
     ok = ok and ok_vuoti
-    print("autotest casi_vuoti: " + ("OK" if ok_vuoti else "FALLITO"))
+    print(riga_autotest("casi_vuoti", ok_vuoti))
     # file_usati_voce: una voce alla volta, 'file' stringa/lista, raw, vuoti ignorati.
     ok_voce = (
         file_usati_voce({"file": "GRAFICA/a.png", "raw": "raw/a.sglraw"})
@@ -620,7 +839,7 @@ def autotest():
         == ["GRAFICA/d.png"]
     )
     ok = ok and ok_voce
-    print("autotest file_usati_voce: " + ("OK" if ok_voce else "FALLITO"))
+    print(riga_autotest("file_usati_voce", ok_voce))
     # file_usati: 'file' stringa e lista, piu' 'raw'; vuoti/assenti non citano nulla.
     ok_usati = file_usati({"elementi": [
         {"file": "GRAFICA/a.png", "raw": "raw/a.sglraw"},
@@ -631,10 +850,10 @@ def autotest():
         "GRAFICA/a.png", "raw/a.sglraw", "GRAFICA/b.png", "GRAFICA/c.png",
     }
     ok = ok and ok_usati
-    print("autotest file_usati: " + ("OK" if ok_usati else "FALLITO"))
+    print(riga_autotest("file_usati", ok_usati))
     ok_usati_vuoti = file_usati({"elementi": []}) == set()
     ok = ok and ok_usati_vuoti
-    print("autotest file_usati_vuoti: " + ("OK" if ok_usati_vuoti else "FALLITO"))
+    print(riga_autotest("file_usati_vuoti", ok_usati_vuoti))
     # fuori_catalogo: un PNG nuovo resta fuori, uno catalogato e' escluso,
     # l'ordine resta stabile e un doppio passaggio resta visibile (non si dedupa).
     ok_fuori = fuori_catalogo(
@@ -643,7 +862,7 @@ def autotest():
     ) == ["GRAFICA/a.png", "GRAFICA/a.png", "GRAFICA/z.png"]
     ok_fuori = ok_fuori and fuori_catalogo([], {"GRAFICA/a.png"}) == []
     ok = ok and ok_fuori
-    print("autotest fuori_catalogo: " + ("OK" if ok_fuori else "FALLITO"))
+    print(riga_autotest("fuori_catalogo", ok_fuori))
     # riga_sintesi: formato esatto della riga finale (i quattro conteggi, nell'ordine
     # in cui main() li passa); un conteggio spostato cambierebbe il testo stampato.
     ok_riga = (
@@ -653,7 +872,7 @@ def autotest():
         == "png non catalogati: 3 (noti non-asset 1, noti catalogati 2, noti spariti 5)"
     )
     ok = ok and ok_riga
-    print("autotest riga_sintesi: " + ("OK" if ok_riga else "FALLITO"))
+    print(riga_autotest("riga_sintesi", ok_riga))
     # dettaglio_per_area: formato stabile, chiavi ordinate alfabeticamente.
     ok_dettaglio = (
         dettaglio_per_area({"sprite": 2, "scenario-oggetti": 1}) == "scenario-oggetti 1, sprite 2"
@@ -661,7 +880,7 @@ def autotest():
         and dettaglio_per_area({}) == ""
     )
     ok = ok and ok_dettaglio
-    print("autotest dettaglio_per_area: " + ("OK" if ok_dettaglio else "FALLITO"))
+    print(riga_autotest("dettaglio_per_area", ok_dettaglio))
     # riga_noto: stesso formato per i tre tag, motivo tra parentesi, due spazi iniziali.
     ok_noto = (
         riga_noto("noto non-asset", "GRAFICA/a.png", "motivo")
@@ -672,7 +891,7 @@ def autotest():
         == "  NOTO-SPARITO: GRAFICA/c.png (m3)"
     )
     ok = ok and ok_noto
-    print("autotest riga_noto: " + ("OK" if ok_noto else "FALLITO"))
+    print(riga_autotest("riga_noto", ok_noto))
     # righe_noti: ordine noto / NOTO-CATALOGATO / NOTO-SPARITO, tag corretto e
     # formato identico a riga_noto; elenco vuoto = nessuna riga.
     a = "GRAFICA/sprite/giocatore_pose/car-custom.png"
@@ -690,7 +909,7 @@ def autotest():
         f"  noto non-asset: {a} ({motivo})",
     ]
     ok = ok and ok_noti_righe
-    print("autotest righe_noti: " + ("OK" if ok_noti_righe else "FALLITO"))
+    print(riga_autotest("righe_noti", ok_noti_righe))
     # voci_noti: solo ordine e tag, senza motivo/formato (dati puri per righe_noti).
     ok_voci = voci_noti([], [], []) == []
     ok_voci = ok_voci and voci_noti([a], [b], [c]) == [
@@ -700,7 +919,7 @@ def autotest():
         ("noto non-asset", c), ("noto non-asset", a),
     ]
     ok = ok and ok_voci
-    print("autotest voci_noti: " + ("OK" if ok_voci else "FALLITO"))
+    print(riga_autotest("voci_noti", ok_voci))
     # righe_da_decidere: una riga per PNG nell'ordine ricevuto, riepilogo per area
     # solo se c'e' almeno un'area (elenco vuoto = nessuna riga).
     ok_righe = righe_da_decidere([]) == []
@@ -719,7 +938,7 @@ def autotest():
         "  da decidere per area: giocatore-area-bloccata 1",
     ]
     ok = ok and ok_righe
-    print("autotest righe_da_decidere: " + ("OK" if ok_righe else "FALLITO"))
+    print(riga_autotest("righe_da_decidere", ok_righe))
     # png_trovati: glob e relpath iniettati, nessun accesso al disco. L'ordine
     # segue pattern poi glob (non riordinato) e i percorsi sono relativi a lib.
     radice_finta = "/radice"
@@ -741,11 +960,11 @@ def autotest():
         radice_finta, [], globber=glob_finto
     ) == []
     ok = ok and ok_trovati
-    print("autotest png_trovati: " + ("OK" if ok_trovati else "FALLITO"))
+    print(riga_autotest("png_trovati", ok_trovati))
     # analizza_png: raccoglie i 4 gruppi del report in un solo punto puro.
     # Caso misto: b e' noto fuori catalogo, un nuovo sprite resta da_decidere;
     # gli altri due noti non sono in fuori ne' in usati -> spariti.
-    altri_noti = sorted(f for f in NOTI_NON_ASSET if f != b)
+    altri_noti = noti_tranne(NOTI_NON_ASSET, b)
     ok_analizza = analizza_png(
         [b, "GRAFICA/sprite/traffico/nuovo.png"],
         set(),
@@ -763,7 +982,7 @@ def autotest():
     ) == ([b, c], [], [], [a])
     ok_analizza = ok_analizza and analizza_png([], set()) == ([], [], [], sorted(NOTI_NON_ASSET))
     ok = ok and ok_analizza
-    print("autotest analizza_png: " + ("OK" if ok_analizza else "FALLITO"))
+    print(riga_autotest("analizza_png", ok_analizza))
     # righe_report: composizione completa noti -> sintesi -> da_decidere, ordine fisso.
     ok_report = righe_report([], [], [], []) == [
         "png non catalogati: 0 (noti non-asset 0, noti catalogati 0, noti spariti 0)",
@@ -777,7 +996,7 @@ def autotest():
         "  da decidere per area: sprite 1",
     ]
     ok = ok and ok_report
-    print("autotest righe_report: " + ("OK" if ok_report else "FALLITO"))
+    print(riga_autotest("righe_report", ok_report))
     # report_da_png: la sequenza completa e' la composizione delle tre fasi; un
     # PNG nuovo resta 'da decidere', un noto catalogato non finisce tra gli
     # spariti e i noti assenti da tutto finiscono tra gli spariti.
@@ -787,10 +1006,10 @@ def autotest():
         [], [x], [], sorted(NOTI_NON_ASSET),
     )
     ok_pipeline = ok_pipeline and report_da_png([b, x], {b}) == righe_report(
-        [], [x], [b], [f for f in sorted(NOTI_NON_ASSET) if f != b],
+        [], [x], [b], noti_tranne(NOTI_NON_ASSET, b),
     )
     ok = ok and ok_pipeline
-    print("autotest report_da_png: " + ("OK" if ok_pipeline else "FALLITO"))
+    print(riga_autotest("report_da_png", ok_pipeline))
     # carica_catalogo: parsing con lettura iniettabile, nessun file reale aperto.
     ok_carica = (
         carica_catalogo("finto.json", leggi=lambda p: '{"elementi": [{"id": "x"}]}')
@@ -799,7 +1018,7 @@ def autotest():
         == {"elementi": []}
     )
     ok = ok and ok_carica
-    print("autotest carica_catalogo: " + ("OK" if ok_carica else "FALLITO"))
+    print(riga_autotest("carica_catalogo", ok_carica))
     # report_da_dati: catalogo + PNG trovati -> righe, senza disco. Un catalogo
     # vuoto lascia il PNG tra i 'da decidere'; un PNG citato dal catalogo (campo
     # 'file') non finisce tra i da_decidere. Deve essere la composizione esatta
@@ -812,10 +1031,20 @@ def autotest():
         and report_da_dati({"elementi": []}, []) == righe_report([], [], [], sorted(NOTI_NON_ASSET))
     )
     ok = ok and ok_dati
-    print("autotest report_da_dati: " + ("OK" if ok_dati else "FALLITO"))
+    print(riga_autotest("report_da_dati", ok_dati))
+    # riga_catalogo_mancante: formato del messaggio di catalogo assente, identico
+    # al vecchio f-string inline in esito_main(), provato senza disco.
+    ok_mancante = (
+        riga_catalogo_mancante("CATALOGO.json")
+        == "FALLITO: catalogo non trovato in CATALOGO.json"
+        and riga_catalogo_mancante(CATALOGO)
+        == f"FALLITO: catalogo non trovato in {CATALOGO}"
+    )
+    ok = ok and ok_mancante
+    print(riga_autotest("riga_catalogo_mancante", ok_mancante))
     # esito_main: ramo catalogo mancante (una riga + codice 4, cat/trovati
     # ignorati) e ramo normale (righe del report + codice 0), senza disco.
-    mancante = [f"FALLITO: catalogo non trovato in {CATALOGO}"]
+    mancante = [riga_catalogo_mancante(CATALOGO)]
     ok_main = esito_main(False, None, [], CATALOGO) == (mancante, 4)
     ok_main = ok_main and esito_main(
         False, {"elementi": [{"file": x}]}, [x], CATALOGO,
@@ -824,7 +1053,7 @@ def autotest():
         True, {"elementi": []}, [x], CATALOGO,
     ) == (report_da_dati({"elementi": []}, [x]), 0)
     ok = ok and ok_main
-    print("autotest esito_main: " + ("OK" if ok_main else "FALLITO"))
+    print(riga_autotest("esito_main", ok_main))
     # testo_report: serializzazione provata in isolamento, senza disco.
     ok_testo = (
         testo_report(["riga 1", "riga 2"]) == "riga 1\nriga 2"
@@ -832,8 +1061,95 @@ def autotest():
         and testo_report([]) == ""
     )
     ok = ok and ok_testo
-    print("autotest testo_report: " + ("OK" if ok_testo else "FALLITO"))
-    return 0 if ok else 1
+    print(riga_autotest("testo_report", ok_testo))
+    # stampa_se_testo: testo vuoto -> nessuna stampa, testo pieno -> una stampa
+    # col testo esatto; 'stampa' iniettato registra le chiamate senza stdout.
+    chiamate = []
+    registratore = lambda t: chiamate.append(t)
+    stampa_se_testo("", registratore)
+    ok_stampa = chiamate == []
+    stampa_se_testo("riga 1\nriga 2", registratore)
+    ok_stampa = ok_stampa and chiamate == ["riga 1\nriga 2"]
+    ok = ok and ok_stampa
+    print(riga_autotest("stampa_se_testo", ok_stampa))
+    # emetti_report: composizione testo_report + stampa_se_testo provata in
+    # isolamento; righe vuote -> nessuna stampa, righe piene -> una stampa col
+    # testo unito; 'stampa' iniettato registra le chiamate senza stdout.
+    chiamate = []
+    registratore = lambda t: chiamate.append(t)
+    emetti_report([], registratore)
+    ok_emetti = chiamate == []
+    emetti_report(["riga 1", "riga 2"], registratore)
+    ok_emetti = ok_emetti and chiamate == ["riga 1\nriga 2"]
+    ok = ok and ok_emetti
+    print(riga_autotest("emetti_report", ok_emetti))
+    # risolvi_default_disco: valori espliciti preservati (percorso, pattern,
+    # esiste_cat e callable) e None -> default reali, senza leggere il disco
+    # perche' esiste_cat viene sempre iniettato. Il catalogo finto non esiste:
+    # con esiste=False report_da_disco restituisce il ramo 'catalogo mancante'.
+    finto_png = lambda lib, pattern: ["GRAFICA/x.png"]
+    finto_carica = lambda path: {"elementi": []}
+    percorso_finto = pathlib.Path("CATALOGO_FINTO.json")
+    lib_finta = pathlib.Path("radice_finta")
+    pattern_finto = ["GRAFICA/finta/*.png"]
+    ok_default = risolvi_default_disco(
+        lib_finta, percorso_finto, pattern_finto, False, finto_carica, finto_png,
+    ) == (
+        lib_finta, percorso_finto, pattern_finto, False, finto_carica, finto_png,
+    )
+    ok_default = ok_default and risolvi_default_disco(
+        None, None, None, False, None, None,
+    ) == (LIBRERIA, CATALOGO, PATTERN, False, carica_catalogo, png_trovati)
+    ok_default = ok_default and risolvi_default_disco(
+        None, CATALOGO, None, True, None, None,
+    )[3] is True
+    ok_default = ok_default and report_da_disco(
+        lib_finta, percorso_finto, pattern_finto, False, finto_carica, finto_png,
+    ) == esito_main(False, None, [], percorso_finto)
+    ok = ok and ok_default
+    print(riga_autotest("risolvi_default_disco", ok_default))
+    # carica_se_esiste: con esiste False i due callable non vanno chiamati e il
+    # risultato e' (None, []); con esiste True tornano catalogo e PNG iniettati.
+    chiamate_carica = []
+    chiamate_png = []
+    finto_carica2 = lambda path: (chiamate_carica.append(path) or {"elementi": []})
+    finto_png2 = lambda lib, pattern: (chiamate_png.append((lib, pattern)) or [x])
+    ok_carica_se = carica_se_esiste(
+        False, CATALOGO, finto_carica2, LIBRERIA, PATTERN, finto_png2,
+    ) == (None, [])
+    ok_carica_se = ok_carica_se and chiamate_carica == [] and chiamate_png == []
+    ok_carica_se = ok_carica_se and carica_se_esiste(
+        True, CATALOGO, finto_carica2, LIBRERIA, PATTERN, finto_png2,
+    ) == ({"elementi": []}, [x])
+    ok_carica_se = ok_carica_se and chiamate_carica == [CATALOGO]
+    ok_carica_se = ok_carica_se and chiamate_png == [(LIBRERIA, PATTERN)]
+    ok = ok and ok_carica_se
+    print(riga_autotest("carica_se_esiste", ok_carica_se))
+    # riga_autotest: formato 'autotest <nome>: OK/FALLITO' identico a prima delle
+    # 34 righe inline; provato in isolamento (funzione pura, nessun disco).
+    ok_riga_autotest = (
+        riga_autotest("x", True) == "autotest x: OK"
+        and riga_autotest("x", False) == "autotest x: FALLITO"
+    )
+    ok = ok and ok_riga_autotest
+    print(riga_autotest("riga_autotest", ok_riga_autotest))
+    # esito_autotest: policy del codice di uscita, provata in isolamento (pura,
+    # nessun disco): ok True -> 0, ok False -> 1, come nel tool gemello.
+    ok_esito_autotest = esito_autotest(True) == 0 and esito_autotest(False) == 1
+    ok = ok and ok_esito_autotest
+    print(riga_autotest("esito_autotest", ok_esito_autotest))
+    # noti_tranne: elenco ordinato dei noti senza l'escluso, provato in isolamento
+    # (puro). Con lista non ordinata l'ordine atteso resta alfabetico; con un
+    # escluso assente l'elenco e' comunque ordinato; elemento assente -> vuoto.
+    ok_noti_tranne = (
+        noti_tranne([], "x") == []
+        and noti_tranne(["b", "a", "c"], "b") == ["a", "c"]
+        and noti_tranne(["b", "a", "c"], "z") == ["a", "b", "c"]
+        and noti_tranne({"b": "m", "a": "m"}, "b") == ["a"]
+    )
+    ok = ok and ok_noti_tranne
+    print(riga_autotest("noti_tranne", ok_noti_tranne))
+    return esito_autotest(ok)
 
 
 if __name__ == "__main__":

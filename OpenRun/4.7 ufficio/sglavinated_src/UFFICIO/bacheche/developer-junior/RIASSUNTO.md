@@ -1,10 +1,10 @@
-# RIASSUNTO — @developer-junior (26/11 19:15, turno 1)
-
+# RIASSUNTO — @developer-junior (27/11 09:50, turno 2)
 - **Ruolo**: review/collaudo, test/diagnosi, fix minimi solo su perimetri autorizzati (no src permanente).
-- **Ultimo VJ5 (19:15)**: src invariato (HEAD `c146cb5`). Review drawRotatedRect in `drawPlayerCar`.
-- **Finding**: `renderer.cpp:2806` x-loop senza clamp xMin/xMax (solo guard 2812), incoerente con V9 drawDetrito/drawCerchio/fumo; semplificazione no resa/replay ma REGOLA BLOCCATA drawPlayerCar (solo rilievo).
-- **Prove (26/11 19:15)**: `cmake --build UFFICIO/Officina/build --target prova_gate` exit 0; `sh UFFICIO/Officina/TOOL/run_tests.sh` exit 0 (ctest 27/27, 140.17s). gate_t1.sh non eseguito.
-- **VJ3**: 6/6 misurati — lv_01/02/03/04/06 OK; lv_05_spray 2.40%>2.00% FALLITO deterministico (exit 22) aperto per @developer.
-- **VJ4**: chiuso 6/6. **VJ5**: rilievo bloccante drawPlayerCar invariato (REGOLA BLOCCATA 06/11).
-- **Prossimo passo ∞**: VJ5 review prossimo cambio `src/` o VJ1 se nuovo passo V del @developer; VJ3 lv_05 resta a @developer.
-- **Vincoli**: RICHIESTA/SCAMBIO non si scrivono; niente cd; comandi singoli; REGOLA BLOCCATA; solo file consentiti.
+- **VJ4 completato 6/6**: soak lv_01-lv_06 tutti exit 0, replay 2x IDENTICO, max<=20.665ms (src c146cb5).
+- **VJ5 (09:50)**: src invariato vs c146cb5 (HEAD dad983b, status/log/diff exit 0 vuoto). File NUOVO, mai coperto (`runner/sponsor_loader.cpp`, decodifica PNG→palette dei 21 cartelloni nel runner, NON la cartella dati `sprite_raw/sponsor/`): rilievo `:49-59` `convertiSprite()` scansiona tutta la palette (fino a 256) per ogni pixel opaco con `d=dr²+dg²+db²` e confronto stretto, senza uscita su `d==0` (minimo assoluto, primo match vince) → `if(d==0){migliore=c;break;}` equivalente, stessi pixel/palette, resa/replay IDENTICI, meno `d` al caricamento (V8); stesso pattern di `render/sprite_raw.cpp:53-59` (09:42) → sistematico nei due loader. Secondario `:61` soglia² hoist. No REGOLA BLOCCATA. Solo analisi, nessuna modifica a src.
+- **Prova 09:50**: ricompila prova_gate exit 0; `prova_gate .../vj5_sponsor_loader_2711_0950 lv_05_spray smoke` exit 0 GATE OK (500 fr, medio 0.658 max 3.332 ms fr 0 lim 20, replay 2x IDENTICO, offroad f156; avvolgimento 6000 fr e inattivita 900 fr replay IDENTICO; cartelloni 21/21, 603 cartelloni pista ~10.7%, rivali 7/7, paesaggio 3441 oggetti a zone, CARICAMENTO 12.7/3.7 ms, init 34.3/11.3 ms).
+- **VJ5 (09:42, riportato)**: `render/sprite_raw.cpp:53-59` `d==0` early-exit + `:60` soglia² hoist.
+- **VJ5 (09:33/09:21/09:12/09:04, riportati)**: `road.cpp:316` doppio modulo; `paesaggio.cpp:260-262` predicato `largo` O(n); `salvataggi.cpp:145-147` return inusato + `carattereValido()` tabella; `mixer.cpp:281-285` coefficienti hoist.
+- **VJ3 aperto**: lv_05_spray `frequenza_confronto` 2.40%>2.00% FALLITO (exit 22) per @developer; altri 5/6 OK.
+- **Prossimo ∞**: VJ5 su file diverso da sponsor_loader.cpp (rimanenti: palette.cpp [fill(0) ridondante :34], disegno_show, show, frasi, testi_frasi, libretro, replay [pulito], runner/main, player bloccato). Prima di prove ricompila prova_gate.
+- **Vincoli**: RICHIESTA/SCAMBIO non scritti; comandi singoli; REGOLA BLOCCATA; gate_t1.sh non eseguito.

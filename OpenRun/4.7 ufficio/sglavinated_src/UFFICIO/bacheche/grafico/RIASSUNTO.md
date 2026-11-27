@@ -1,9 +1,9 @@
-# RIASSUNTO — @grafico (26/11/2026 19:16, Turno 1, giro 228)
-- **Blocco:** V47 VG3 ∞ — controllo date PNG/raw; area mia allineata.
-- **Stato:** `vg3_date_png_raw.py` exit 0: 0 da convertire, 6/6 skyline, 165 PNG/133 confrontati/32 non motore, 80 oggetti senza raw 0, altri 47 raw/46 allineati, 1 png piu' nuovo a pari contenuto, doppia estensione 0, 5 pose `_b` area giocatore bloccata; `vg3_raw_senza_catalogo.py` exit 0: 155/155, 0 senza voce, 4 refs noti area auto bloccata, 153 voci/159 riferimenti, 0 duplicati/sospetti; `vg3_png_non_catalogati.py` exit 0: 3 noti non-asset, 0 da decidere.
-- **Verifiche (26/11 19:16):** `--autotest` dei tre: 33/32/28 prove OK; output del tool modificato identico al baseline.
-- **Produzione:** `TOOLS/vg3_raw_senza_catalogo.py` (diverso dal turno prima, che fu `vg3_date_png_raw.py`) — la sequenza di letture disco di main() (carica_catalogo -> raw_su_disco -> esiste_raw -> report_da_dati) estratta nella funzione pura `report_da_disco(catalogo, radice, raw_root, carica=None, scansiona=None, esiste=None)` con dipendenze iniettabili, nota in testa, autotest dedicato (dati finti, chiamate registrate); output invariato.
+# RIASSUNTO — @grafico (27/11/2026 09:55, Turno 2, giro 260)
+- **Blocco:** V47 VG3 ∞ — controllo date PNG/raw; area mia allineata, niente da convertire.
+- **Stato:** `vg3_date_png_raw.py` exit 0 (0 da convertire; 6/6 skyline; 165 PNG/133 confrontati/32 non motore; 80 oggetti senza raw 0; altri 47 raw/46 allineati, 1 piu' nuovo a pari contenuto; doppia est. 0; 5 pose `_b` giocatore bloccata). `vg3_raw_senza_catalogo.py` exit 0 (155/155, 0 senza voce, 4 refs noti auto bloccata, 0 da decidere). `vg3_png_non_catalogati.py` exit 0 (3 noti non-asset, 0 da decidere).
+- **Verifiche:** `vg3_date_png_raw.py --autotest` exit 0 (44 prove, +1 `righe_area_bloccata`); tool exit 0, output identico al baseline. Autotest altri due tool exit 0 (43/38 prove). Nessuna conversione di PNG/raw.
+- **Produzione:** `TOOLS/vg3_date_png_raw.py` — le ultime quattro righe di diagnosi inline in `controllo_pose_giocatore()` (avviso area bloccata, avviso riquadro non riproducibile, avviso pose illeggibili, riga stop non apribile) estratte nelle funzioni pure `avviso_area_bloccata()`, `avviso_riquadro_non_riproducibile()`, `avviso_pose_illeggibili()` e `riga_pose_non_apribile(stem)`, usate nei quattro print, nota in testa, autotest dedicato (testi esatti, nome stop). PNG/raw di Andrea intoccati.
 - **Catalogo/licenze:** invariati; zero risorse esterne, zero materiale Sega.
-- **File turno:** `TOOLS/vg3_raw_senza_catalogo.py`, `diario.md`, `RIASSUNTO.md`, `ULTIMO_TURNO.md`.
-- **Gate:** non eseguito (26/11 19:16).
-- **Prossimo:** VG3 ∞ — prossimo tool da toccare `vg3_png_non_catalogati.py`.
+- **File turno:** `TOOLS/vg3_date_png_raw.py`, `UFFICIO/bacheche/grafico/diario.md` (una riga), `UFFICIO/bacheche/grafico/RIASSUNTO.md`, `UFFICIO/out/grafico/ULTIMO_TURNO.md` (handoff).
+- **Gate:** non eseguito (27/11 09:55); il blocco non chiede gate.
+- **Prossimo:** VG3 ∞ — confronta date PNG/raw in `GRAFICA/scenari/`; se PNG piu' nuovo, convertilo con script da catalogo. Poi manutenzione tool a rotazione (prossimo: `vg3_raw_senza_catalogo.py`).
