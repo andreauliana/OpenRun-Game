@@ -48,14 +48,43 @@ Nuovo blocco: `## BLOCCO <NOME> — @ruolo ...`, righe `| Compito |`, `| Vincoli
 - **VG2 [x] CHIUSO (Claude 11/11): frasi.json va bene cosi', non riscriverla piu'.** Era: rileggi le 156 frasi di `motore_nuovo/dati/frasi.json` (`linea1`/`linea2`) e sistema quelle che in inglese suonano strane o restano a meta'. Max 16 caratteri per riga, maiuscole, stesso id e personaggio; `it1`/`it2` non si toccano. Venti frasi per turno.
 - **∞ VG3 PNG di Andrea convertiti:** Andrea sta ridisegnando gli oggetti. A ogni turno confronta le date dei PNG in `GRAFICA/scenari/` con i loro `.sglraw`: se un PNG e' piu' nuovo, convertilo con lo script del catalogo (per `comuni/oggetti`: `converti_oggetti_raw.py`) senza ritoccare il disegno, e scrivi quali file. Se e' tutto allineato, scrivilo in una riga e fermati.
 
-| Chi tocca adesso | @developer V9 ∞ · @developer-junior VJ4 poi VJ5 ∞ · @grafico VG3 ∞ (VG2 chiuso) |
+| Chi tocca adesso | sostituito dal BLOCCO V48 (27/11) |
 |---|---|
-| Stato | [~] | (Claude 10/11: seconda lista, lavoro continuo, nessuna attesa) |
+| Stato | [-] | (Claude 27/11: V9, VJ5 e VG3 ∞ sostituiti da V48. Il lavoro fatto fino al 27/11 resta tutto, non si rifà e non si annulla) |
 
 <!-- ===== FINE AREA V47 ===== -->
+
+## BLOCCO V48 — Pi 400, RetroPie e 60 fps @developer @developer-junior @grafico @capo
+
+**Andrea 27/11:** si tiene tutto il lavoro degli agenti fino a stamattina (ctest 27/27). Adesso conta che il gioco giri bene sul **Raspberry Pi 400 e su RetroPie**, a **60 fps costanti**, e che l'esperienza di gioco migliori. Basta ritocchi invisibili sul Mac. Un passo per turno, dentro ANDREA_REVIEW (legacy e auto del giocatore non si toccano: `drawPlayerCar` resta bloccata, D20).
+
+**60 Hz (Andrea 27/11):** il gioco si fa, si prova e si misura **solo a 60 Hz** (Mac, HDMI, Raspberry Pi 400, RetroPie). Niente piu' lavoro o prove a 50 Hz: non lanciare `frequenza` o `frequenza_confronto`, VJ3 e' chiuso, la differenza 2,40% su lv_05_spray non conta. Il codice dell'opzione 50 Hz resta com'e' (non si toglie e non si ritocca).
+
+**Riferimento di guida:** chi tocca guida, rivali, urti o tempi controlla la sezione "Riferimento di guida" in fondo a `REGOLE_AUTO_GIOCATORE.md`. Si ottimizza la velocita' del codice, non la sensazione di guida.
+
+**Paletti a bordo strada: chiusi.** Oggi non ci sono al bivio, sul ponte, in galleria e agli incroci, e vanno bene cosi'. Non si ritoccano piu'. La prova `pali` e' tarata su lv_01: su lv_06 esce 27 per la soglia, non per un errore del gioco; non usarla sugli altri livelli.
+
+### @developer
+- **W1 Pad SNES e PS1 su RetroPie (subito).** Andrea 27/11: priorita' ai pad comuni (cloni SNES USB, PlayStation 1/2 via adattatore), non a volanti e stick analogici (lo stick resta com'e', nessun lavoro). Stessi tasti nel runner (`src/runner/main.cpp`, usato da Ports) e nel core (`src/libretro/sglavinated_libretro.cpp`): croce = sterzo e menu; gas = B del SNES / Croce PS1 (+ R2); freno = A del SNES / Cerchio PS1 (+ L2, + Giu'); Start = pausa; Select+Start = esci. Oggi nel runner i grilletti L2/R2 dei pad riconosciuti da SDL non sono mappati: aggiungili. Scrivi la tabella dei tasti in `pi/LEGGIMI.md`. **Fine:** runner e core con la stessa mappa; `ctest -j1` 27/27; una riga in `ULTIMO_TURNO.md`.
+- **W2 Pi 400 sotto i 12 ms.** Usa `misura_pi` (PR #127: `misura_pi <out> <secondi> [livello|gara]`) invece del gate `percorso`. Prendi il livello con p99 più alto e alleggerisci **una** funzione pesante per turno (render della strada, oggetti, CRT), mai l'auto del giocatore. Quando Andrea porta `misure_pi400/<data>/riepilogo.txt` dal Pi, si lavora su quei numeri. Resa e replay IDENTICI. **Fine:** p99 <= 12 ms su tutti i livelli alla misura di Andrea sul Pi; finché non c'è, p99 sul Mac senza peggiorare.
+- **W4 Caricamento leggero.** Misura avvio, menu e caricamento di ogni livello (PNG/raw, musica .xm, tracciati) con i log CARICAMENTO del gate. Se un caricamento supera 1 s sul Mac (sul Pi conta 4-5 volte di piu'), togli letture doppie o conversioni ripetute. Dati e resa identici.
+- **W3 60 fps costanti.** In `soak` su tutti i 6 livelli nessun frame sopra 16,7 ms (un frame perso a 60 Hz). Se succede: livello, frame, funzione, correzione.
+
+### @developer-junior
+- **WJ1 Misura di riferimento (subito).** `misura_pi` sui 6 livelli + `gara` sul Mac. Una riga per livello in `REVIEW_V48.md`: media, p95, p99, max ms/frame (update/render/CRT). Nessun codice toccato.
+- **WJ2 Review di W1-W4** (al posto di VJ5): dopo ogni passo del @developer, ricompila (`run_tests.sh`), prova dedicata e una riga in `REVIEW_V48.md`. Per W1: confronta tasto per tasto la mappa del runner con quella del core.
+- **WJ3 RetroPie senza Pi.** Compila il core (`-DBUILD_LIBRETRO=ON`) e controlla che `pi/compila_e_installa.sh` e `pi/LEGGIMI.md` usino percorsi e target che esistono davvero. Solo elenco in `REVIEW_V48.md`, non modificare gli script `pi/`.
+
+### @grafico
+- **WG1 Un solo controllo.** Unisci `vg3_date_png_raw.py`, `vg3_png_non_catalogati.py` e `vg3_raw_senza_catalogo.py` in **un** script con gli stessi controlli ed exit code; cancella i tre vecchi e i `_tmp_*.py`. **Fine:** un solo script vg3 in `Dipartimento Grafico/TOOLS/`, exit 0 sul main.
+- **WG2 Poi fermo.** Converti solo quando Andrea cambia un PNG. Se non c'è nulla: una riga nel diario e ti fermi. Gli script non si riscrivono più.
+
+| Chi tocca adesso | @developer W1 poi W2/W3/W4 · @developer-junior WJ1 poi WJ2, WJ3 · @grafico WG1 poi WG2 |
+|---|---|
+| Stato | [~] | (Claude 27/11, deciso con Andrea) |
 
 ---
 
 ## RIEPILOGO CORRENTE — tenuto da Andrea/Claude, un solo blocco
-Stato (18/11): unico blocco aperto V47 [~], lavoro continuo con passi sempre disponibili (∞). Base legacy 08/11 e milestone "legacy 18/11" (guida, auto, voce dello sterzo) bloccate: si AGGIUNGE, non si ritocca (ANDREA_REVIEW.md). Prova sul Pi 400 (blocco H) sospesa finche' Andrea non la fa.
-Tocca a (Claude 18/11): @developer V9 ∞ · @developer-junior VJ4 poi VJ5 ∞ · @grafico VG3 ∞ · @capo una riga di registro breve per turno. "Nessun blocco azionabile" non e' un esito valido finche' esiste un tuo passo ∞. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).
+Stato (27/11): unico blocco aperto **V48** [~] (Pi 400, RetroPie, 60 fps). V47 [-] sostituito, il suo lavoro resta. Base legacy 08/11 e milestone "legacy 18/11" (guida, auto, voce dello sterzo) bloccate: si AGGIUNGE, non si ritocca (ANDREA_REVIEW.md). Prova sul Pi 400 (blocco H) sospesa finche' Andrea non la fa.
+Tocca a (Claude 27/11): @developer W1 · @developer-junior WJ1 · @grafico WG1 · @capo una riga di registro breve per turno. Lo storico dei vecchi "Tocca a" e' in `UFFICIO/archivio_per_claude/RICHIESTA_TOCCA_A_FINO_08NOV.md` (non leggerlo).

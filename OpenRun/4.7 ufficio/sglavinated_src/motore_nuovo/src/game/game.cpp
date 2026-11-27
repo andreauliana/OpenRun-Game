@@ -3187,7 +3187,9 @@ void Game::render() {
         sobbalzoPx += 1.0f;
     // Arrivo: frenata con il muso che si abbassa e una scodata, poi un
     // rimbalzo quando l'auto si ferma.
-    bool frena = false;
+    // Stop accesi anche in gara (Andrea 27/11): col freno premuto (B o Giu')
+    // si accendono, prima solo dopo il traguardo. Niente durante l'incidente.
+    bool frena = player_.freno() && !playerFlipping_;
     if (arrivo_) {
         const f32 k = velocitaArrivo_ > 0.0f ? 1.0f - player_.speed / velocitaArrivo_ : 1.0f;
         frena = fermoS_ < 0.4f;
