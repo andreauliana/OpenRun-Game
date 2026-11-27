@@ -96,7 +96,16 @@ Nessuno aspetta l'ok di Andrea. Finiti i propri passi MIG1, ogni ruolo va avanti
 
 ## 7. Decisioni aperte
 
-Nessuna. Formato per una nuova voce:
+Nessuna aperta.
+
+## D20 | V47 V9 | developer | [CHIUSA 27/11]
+Domanda: tenere o annullare le ottimizzazioni di `Renderer::drawPlayerCar` (commit 8ab971a e c146cb5 del 26/11: limiti dello schermo calcolati una volta e scrittura diretta nel framebuffer, al posto di `fb_.put` per pixel)?
+Opzioni: A) revert B) tenerle
+DEFAULT usato nel frattempo: revert in preparazione.
+RISPOSTA DI ANDREA (27/11): **B, si tengono.** Stessi pixel, replay identico, rendering piu' leggero. Nessun revert.
+Vale **solo** per quei due commit: `drawPlayerCar`, pose e auto del giocatore restano REGOLA BLOCCATA (sezione 2). Da qui in poi nessun agente ci scrive piu', nemmeno per ottimizzare.
+
+Formato per una nuova voce:
 ```
 ## D<numero> | <blocco> | <agente> | [APERTA]
 Domanda:
