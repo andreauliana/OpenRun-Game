@@ -358,6 +358,7 @@ constexpr u32 TRAFFICO_DISTANZA_VAR = 25000u;    // + 0..25000
 constexpr f32 TRAFFICO_DIETRO = 3000.0f;         // superato di tanto: torna davanti
 constexpr f32 TRAFFICO_MARGINE_BIVIO = 2000.0f;  // nessun veicolo nuovo nella zona del bivio
 constexpr f32 TRAFFICO_CODA = 3000.0f;           // stessa corsia: si accoda a chi e' davanti
+constexpr f32 TRAFFICO_DIETRO_MARGINE_X = 160.0f; // da dietro: corsia del giocatore con un po' di margine (27/11)
 constexpr f32 TRAFFICO_LATERALE_PER_S = 900.0f;
 constexpr f32 TRAFFICO_CORSIA = 1200.0f;         // larghezza corsia = mezza strada normale
 // Sollevamento: parte sopra il 98% della velocita' massima con curva quasi
@@ -1781,6 +1782,18 @@ void Game::aggiornaTraffico(f32 dt) {
             if (&a == &v || !a.attivo || std::abs(a.x - v.x) > 300.0f) continue;
             const f32 dz = a.z - v.z;
             if (dz > 0.0f && dz < TRAFFICO_CODA) passo = std::min(passo, a.passo);
+        }
+        // Andrea 27/11 ("sbatto contro un'auto del traffico che non vedo"): chi
+        // arriva da dietro non passa sotto l'auto del giocatore. Il traffico non
+        // cambia corsia: se e' dietro la carrozzeria, nella stessa corsia, si
+        // accoda alla velocita' del giocatore (come i rivali da dietro). Prima
+        // passava sotto la telecamera e sbucava nella zona d'urto, coperto
+        // dall'auto del giocatore: la botta arrivava senza vedere nulla.
+        if (gara_ && dt > 0.0f && v.z < road_.bivioInizioZ()) {
+            const f32 dzGiocatore = v.z - road_.playerZ;
+            if (dzGiocatore <= Game::URTO_Z_MIN && dzGiocatore > Game::URTO_Z_MIN - TRAFFICO_CODA &&
+                std::abs(v.x - player_.x) < URTO_LARGHEZZA + TRAFFICO_DIETRO_MARGINE_X)
+                passo = std::min(passo, passoGiocatore_ / dt);
         }
         // PERC1 D2: stessa regola verso i rivali sulla tappa del giocatore. Con
         // piu' auto il traffico non deve tamponare un rivale lento (curva o KO):
@@ -3925,6 +3938,8 @@ constexpr f32 INCROCIO_SCALA = 3.6f;        // scala degli sprite di lato (leggi
 constexpr f32 INCROCIO_CORSIA_Z = 550.0f;   // corsie della strada perpendicolare dal centro
 constexpr f32 INCROCIO_LONTANO = 9000.0f;   // da qui le auto entrano ed escono dalla vista laterale
 constexpr f32 INCROCIO_MARGINE_S = 0.35f;   // secondi di margine sulla precedenza
+constexpr f32 INCROCIO_PRECEDENZA_MARGINE_Z = 300.0f; // 27/11: oltre la zona d'urto, prima di ripartire dalla linea
+constexpr f32 INCROCIO_PRECEDENZA_V = 0.5f;     // 27/11: sotto meta' punta (dove l'urto e' solo botta) si aspetta il giocatore
 } // namespace
 
 f32 Game::zCorsiaIncrocio(i32 verso) const {
@@ -3981,7 +3996,22 @@ void Game::aggiornaIncroci(f32 dt) {
         const bool fuori = davanti < -bordo;
         if (fuori && davanti > -bordo - 900.0f) {
             const f32 attraversa = (2.0f * bordo + 2.0f * L) / a.passo + INCROCIO_MARGINE_S;
-            if (!liberaPer(zc + zCorsiaIncrocio(a.verso), attraversa))
+            // Andrea 27/11 ("sbatto contro qualcosa che non vedo"): col giocatore
+            // lento sull'incrocio (di solito dopo una prima botta) chi partiva
+            // dalla linea di stop gli arrivava addosso di lato da fuori schermo:
+            // vicino alla telecamera la vista copre poco piu' della strada e
+            // l'auto si vedeva solo 0,2-0,3 s prima dell'urto. Ora chi e' alla
+            // linea aspetta se il giocatore lento e' nella sua corsia o ci
+            // arriva prima che lei abbia finito di attraversare. Alla velocita'
+            // di gara non cambia nulla: le auto passano di continuo e quelle
+            // gia' in strada (che si vedono) si possono prendere in pieno.
+            const f32 dzCorsia = zc + zCorsiaIncrocio(a.verso) - road_.playerZ;
+            const f32 vGiocatore = dt > 0.0f ? passoGiocatore_ / dt : 0.0f;
+            const f32 mancaZona = dzCorsia - (URTO_Z_MAX + 100.0f); // <= 0: carrozzeria gia' nella corsia
+            const bool giocatoreLento = player_.speed < INCROCIO_PRECEDENZA_V * player_.maxSpeed();
+            const bool giocatoreInArrivo = dzCorsia > URTO_Z_MIN - 200.0f - INCROCIO_PRECEDENZA_MARGINE_Z &&
+                                           (mancaZona <= 0.0f || mancaZona < vGiocatore * attraversa);
+            if (!liberaPer(zc + zCorsiaIncrocio(a.verso), attraversa) || (giocatoreLento && giocatoreInArrivo))
                 nuovaX = (f32)a.verso * std::min((f32)a.verso * nuovaX, -bordo - 40.0f - L);
         }
         // Il giocatore fermo (quasi) sulla corsia davanti al muso: lo si aspetta.
